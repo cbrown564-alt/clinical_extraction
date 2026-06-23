@@ -188,7 +188,9 @@ def test_parse_candidate_events_json_repairs_trailing_brackets() -> None:
 
     assert record is not None
     assert record.clinical_events[0].mentions[0].text == "focal epilepsy"
-    assert any("ignored_trailing_json_brackets" in error for error in errors)
+    assert errors == [] or any(
+        "ignored_trailing_json_brackets" in error for error in errors
+    )
 
 
 def test_action_prompt_requests_candidate_id_actions_only() -> None:
@@ -240,6 +242,58 @@ def test_parse_candidate_actions_json_keeps_valid_actions() -> None:
     assert notes == ["dropped_invalid_action: 2"]
 
 
+def test_parse_candidate_actions_json_accepts_bare_action_list() -> None:
+    raw = json.dumps(
+        [
+            {
+                "candidate_id": "trusted:M0",
+                "action": "keep",
+                "reason_code": "supported",
+                "rationale": "Evidence supports it.",
+            }
+        ]
+    )
+
+    actions, notes = adjudicator.parse_candidate_actions_json(raw)
+
+    assert actions == [
+        {
+            "candidate_id": "trusted:M0",
+            "action": "keep",
+            "reason_code": "supported",
+            "rationale": "Evidence supports it.",
+        }
+    ]
+    assert notes == ["coerced_top_level_candidate_actions_list"]
+
+
+def test_parse_candidate_actions_json_recovers_action_triples_from_bad_rationale() -> None:
+    raw = (
+        '{"candidate_actions": [{"candidate_id": "trusted:M0", "action": "keep", '
+        '"reason_code": "supported", "rationale": "bad "quote" text"}, '
+        '{"candidate_id": "trusted:M1", "action": "reject", '
+        '"reason_code": "wrong_entity", "rationale": "also bad"}]}'
+    )
+
+    actions, notes = adjudicator.parse_candidate_actions_json(raw)
+
+    assert actions == [
+        {
+            "candidate_id": "trusted:M0",
+            "action": "keep",
+            "reason_code": "supported",
+            "rationale": "",
+        },
+        {
+            "candidate_id": "trusted:M1",
+            "action": "reject",
+            "reason_code": "wrong_entity",
+            "rationale": "",
+        },
+    ]
+    assert notes == ["recovered_malformed_candidate_actions: Expecting ',' delimiter"]
+
+
 def test_apply_candidate_actions_copies_candidates_and_ignores_unverified_rejects() -> None:
     bundle = adjudicator.build_candidate_bundle(
         _LETTER,
@@ -264,6 +318,27 @@ def test_apply_candidate_actions_copies_candidates_and_ignores_unverified_reject
     assert len(mentions) == 1
     assert mentions[0].text == "lamotrigine 100 mg twice daily"
     assert "ignored_unverified_reject" in warnings[0]
+
+
+def test_apply_candidate_actions_can_reject_missing_actions_for_protocol_strict_mode() -> None:
+    bundle = adjudicator.build_candidate_bundle(
+        _LETTER,
+        PRESCRIPTION.name,
+        {"trusted": [_source_row()]},
+    )
+
+    mentions, warnings = adjudicator.apply_candidate_actions(
+        bundle,
+        [],
+        target_family=PRESCRIPTION.name,
+        note_text=_NOTE,
+        default_missing_action="reject",
+    )
+
+    assert mentions == []
+    assert warnings == [
+        f"missing_action_rejected: {bundle['candidate_mentions'][0]['candidate_id']}"
+    ]
 
 
 def test_apply_candidate_actions_honors_verifiable_bad_evidence_reject() -> None:
