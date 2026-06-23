@@ -47,6 +47,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_lab
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
+    repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
@@ -623,10 +624,14 @@ def parse_critic_decision_json(
     except ValidationError as exc:
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
     if decision.proposed_final_label:
-        repaired_label = repair_prediction_label_with_evidence(
-            decision.proposed_final_label,
-            decision.evidence,
-        )
+        format_label = repair_prediction_label_format_preserving(decision.proposed_final_label)
+        if _label_kind(format_label) in {"seizure_free", "unknown", "no_reference"}:
+            repaired_label = format_label
+        else:
+            repaired_label = repair_prediction_label_with_evidence(
+                decision.proposed_final_label,
+                decision.evidence,
+            )
         if repaired_label != decision.proposed_final_label:
             errors.append(
                 "proposed_final_label_repaired: "

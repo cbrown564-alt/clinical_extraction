@@ -75,10 +75,10 @@ MISS_CANDIDATE_SOURCE = "candidate_source"
 MISS_PROJECTION = "projection"
 MISS_OVER_EMISSION = "over_emission"
 
-# Regime thresholds on the projection share of gold misses (Finding 2). These are
-# diagnostic heuristics chosen to reproduce the doc's regime assignment:
-# representation-bound entities ran 67-100% projection, recall-bound 17-29%, and
-# the mixed pair (SeizureFrequency, Onset) sat at 55-58%.
+# Regime thresholds on the projection share of gold misses (Finding 2). These
+# diagnostic heuristics keep the original regime bands: representation-bound
+# entities ran 67-100% projection, recall-bound 17-29%, and the mixed pair
+# (SeizureFrequency, Onset) sat at 55-58% in the historical analysis.
 REGIME_REPRESENTATION_BOUND_MIN = 0.60
 REGIME_RECALL_BOUND_MAX = 0.40
 

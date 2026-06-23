@@ -2,6 +2,12 @@
 
 Date: 2026-06-22
 
+Superseded live-scoreboard status: Satellite 13 Phase 1 cleanup on 2026-06-23
+demoted this table to archived path evidence. The active comparison table is now
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md`.
+DeepSeek/Qwen v0.9.x artifacts from this workstream are archived under
+`experiments/_archive/exectv2_richschema_iterations/`.
+
 Scope: Phase 1 refreshed comparison across the current GPT-4.1-mini dev140
 controls and the completed DeepSeek/Qwen dev140 diagnostics. This is a no-call
 report built from existing artifacts.

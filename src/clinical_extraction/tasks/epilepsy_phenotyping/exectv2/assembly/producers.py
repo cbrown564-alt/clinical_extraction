@@ -67,6 +67,7 @@ class SavedJsonlProducer:
             mode=str(row.get("mode", "")),
             ownership_label=self.ownership_label,
             source_lane=source_lane or self.source_lane or self.producer_id,
+            fact_origin=fact_origin_from_row(row),
         )
 
 
@@ -183,6 +184,25 @@ def lane_diagnostics_from_row(row: Mapping[str, Any]) -> dict[str, Any]:
         "component_owner": row.get("component_owner", ""),
         "n_evidence_invalid": row.get("n_evidence_invalid", 0),
     }
+
+
+def fact_origin_from_row(row: Mapping[str, Any]) -> str:
+    """Classify the prediction-bearing fact source for attribution reporting."""
+
+    explicit = str(row.get("fact_origin") or row.get("attribution_fact_origin") or "").strip()
+    if explicit:
+        return explicit
+    pipeline_family = str(row.get("pipeline_family", "")).lower()
+    mode = str(row.get("mode", "")).lower()
+    if (
+        row.get("candidate_actions") is not None
+        or row.get("candidate_mentions") is not None
+        or "candidate_adjudicator" in pipeline_family
+        or "candidate-backed" in pipeline_family
+        or "live-actions" in mode
+    ):
+        return "upstream_candidate_copied"
+    return "target_model_generated"
 
 
 def status_from_row(row: Mapping[str, Any]) -> dict[str, Any]:

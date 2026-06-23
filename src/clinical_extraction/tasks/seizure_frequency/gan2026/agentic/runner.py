@@ -675,7 +675,7 @@ def _normalized_label_vote(results: Sequence[Mapping[str, Any]]) -> dict[str, An
 def _vote_record(result: Mapping[str, Any]) -> dict[str, Any]:
     decision_record = dict(result.get("decision_record") or {})
     raw_label = result.get("raw_model_final_label") or decision_record.get("final_label")
-    vote_input_label = decision_record.get("final_label") or raw_label
+    vote_input_label = _vote_input_label(raw_label, decision_record)
     trace = repair_prediction_label_format_preserving_with_trace(str(vote_input_label))
     repair_events = [
         {
@@ -697,6 +697,32 @@ def _vote_record(result: Mapping[str, Any]) -> dict[str, Any]:
         "normalized_label": trace.final_label,
         "repair_events": repair_events,
     }
+
+
+def _vote_input_label(raw_label: Any, decision_record: Mapping[str, Any]) -> str:
+    raw_trace = repair_prediction_label_format_preserving_with_trace(str(raw_label))
+    raw_normalized = raw_trace.final_label
+    decision_label = decision_record.get("final_label")
+    if decision_label is None:
+        return raw_normalized
+
+    decision_trace = repair_prediction_label_format_preserving_with_trace(str(decision_label))
+    decision_normalized = decision_trace.final_label
+    if _use_decision_repair_for_vote(raw_normalized, decision_normalized):
+        return decision_normalized
+    return raw_normalized
+
+
+def _use_decision_repair_for_vote(raw_normalized: str, decision_normalized: str) -> bool:
+    if raw_normalized in {"unknown", "no seizure frequency reference"}:
+        return False
+    if raw_normalized == decision_normalized:
+        return True
+    if " to " in decision_normalized and " to " not in raw_normalized:
+        return True
+    if "cluster" in decision_normalized and "cluster" not in raw_normalized:
+        return True
+    return False
 
 
 def _trace_attribution_layer(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date
@@ -271,6 +272,31 @@ def render_finding_assembly_markdown(
                 f"{by_indicator[INVESTIGATIONS.name]['f1']:.4f} |"
             )
 
+    origin_counts = report.get("fact_origin_accounting", {}).get("by_surface", {})
+    if origin_counts:
+        all_origins = sorted(
+            {
+                origin
+                for counts in origin_counts.values()
+                for origin in counts
+                if origin
+            }
+        )
+        lines += [
+            "",
+            "## Fact-Origin Accounting",
+            "",
+            "| Surface | " + " | ".join(all_origins) + " |",
+            "| --- | " + " | ".join("---:" for _ in all_origins) + " |",
+        ]
+        for surface in MATERIALIZED_SURFACES:
+            counts = origin_counts.get(surface, {})
+            lines.append(
+                f"| `{surface}` | "
+                + " | ".join(str(counts.get(origin, 0)) for origin in all_origins)
+                + " |"
+            )
+
     benchmark = report["score_ladder"]["benchmark"]
     companions = report["score_ladder"]["fidelity_companions"]
     lines += [
@@ -481,7 +507,11 @@ def _lane_prediction_surfaces(
         store.findings(entity=entity, producer_id=producer_id, raw_surface=False)
     )
     evidence_valid = [finding for finding in source_scored if finding.evidence_valid]
-    protocol_model_preserving_canonical = list(source_scored)
+    protocol_model_preserving_canonical = [
+        finding
+        for finding in source_scored
+        if finding.source.fact_origin == "target_model_generated"
+    ]
     final = list(final_findings)
     dictionary_normalized = [
         finding for finding in final if not _is_deterministic_addition(finding)
@@ -535,6 +565,7 @@ def _build_report(
         "score_ladder": dict(score_ladder),
         "target_report": dict(target_report),
         "lane_diagnostics": _lane_diagnostics(rows, gold_letters),
+        "fact_origin_accounting": _fact_origin_accounting(rows),
         "changed_row_accounting": dict(changed),
         "gate_decision": _gate_decision(
             score_ladder,
@@ -669,6 +700,38 @@ def _lane_diagnostics(
             "exact_evidence_rate": round(exact / scored, 4) if scored else 1.0,
         }
     return out
+
+
+def _fact_origin_accounting(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    by_surface: dict[str, Counter[str]] = {
+        surface: Counter() for surface in MATERIALIZED_SURFACES
+    }
+    by_lane: dict[str, dict[str, Counter[str]]] = {}
+    for row in rows:
+        for indicator, lane in row.get("lanes", {}).items():
+            lane_counters = by_lane.setdefault(
+                str(indicator),
+                {surface: Counter() for surface in MATERIALIZED_SURFACES},
+            )
+            for surface, mentions in lane.get("prediction_surfaces", {}).items():
+                if surface not in by_surface:
+                    continue
+                for mention in mentions:
+                    origin = str(mention.get("fact_origin", "unknown"))
+                    by_surface[surface][origin] += 1
+                    lane_counters[surface][origin] += 1
+    return {
+        "by_surface": {
+            surface: dict(sorted(counter.items())) for surface, counter in by_surface.items()
+        },
+        "by_lane": {
+            lane: {
+                surface: dict(sorted(counter.items()))
+                for surface, counter in surface_counts.items()
+            }
+            for lane, surface_counts in by_lane.items()
+        },
+    }
 
 
 def _evidence_invalid_for_lane(lane: Mapping[str, Any], indicator: str) -> int:

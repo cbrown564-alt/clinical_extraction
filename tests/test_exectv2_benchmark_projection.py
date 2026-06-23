@@ -320,6 +320,31 @@ def test_attach_benchmark_concept_does_not_overwrite_existing_clinical_attribute
     }
 
 
+def test_project_cuis_preserves_model_selected_diagnosis_category() -> None:
+    prediction = PredictedLetter(
+        letter_id="PROJ-DX-001",
+        mentions=(
+            PredictedMention(
+                entity=DIAGNOSIS.name,
+                text="focal seizures",
+                attributes={
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                evidence="focal seizures",
+                component_owner="fixture",
+            ),
+        ),
+    )
+
+    projected = project_cuis(prediction)
+
+    assert projected.mentions[0].attributes["DiagCategory"] == "MultipleSeizures"
+    assert projected.mentions[0].attributes["CUI"] == "C0751495"
+    assert projected.mentions[0].attributes["CUIPhrase"] == "focal-seizures"
+
+
 def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_guessing() -> None:
     prediction = PredictedLetter(
         letter_id="PROJ-001",

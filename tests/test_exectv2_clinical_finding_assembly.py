@@ -123,6 +123,46 @@ def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
     assert materialized["residual_benchmark_added"]["overall"]["pred_count"] == 4
 
 
+def test_protocol_clean_surface_excludes_candidate_backed_passthrough(
+    tmp_path: Path,
+) -> None:
+    letters = _letters()[:1]
+    control = _write_jsonl(tmp_path / "control.jsonl", [_control_row("EA1")])
+    candidate_backed_diagnosis = _diagnosis_row("EA1")
+    candidate_backed_diagnosis["pipeline_family"] = (
+        "exectv2_hybrid_family_conditioned_candidate_adjudicator"
+    )
+    candidate_backed_diagnosis["mode"] = "live-actions-strict"
+    candidate_backed_diagnosis["candidate_actions"] = [
+        {"candidate_id": "best_diagnosis:M0", "action": "keep"}
+    ]
+    candidate_backed_diagnosis["candidate_mentions"] = list(
+        candidate_backed_diagnosis["predicted_mentions"]
+    )
+    diagnosis = _write_jsonl(tmp_path / "diagnosis.jsonl", [candidate_backed_diagnosis])
+    sf = _write_jsonl(tmp_path / "sf.jsonl", [_sf_row("EA1")])
+
+    run = build_finding_assembly(
+        _manifest(control=control, diagnosis=diagnosis, sf=sf, row_count=1),
+        generated_on="2026-06-23",
+        gold_loader=lambda _split: letters,
+    )
+
+    dx_surfaces = run.rows[0]["lanes"]["Diagnosis"]["prediction_surfaces"]
+    assert len(dx_surfaces["source_scored"]) == 1
+    assert dx_surfaces["source_scored"][0]["fact_origin"] == "upstream_candidate_copied"
+    assert dx_surfaces["protocol_model_preserving_canonical"] == []
+    assert len(dx_surfaces["residual_benchmark_added"]) == 1
+    accounting = run.report["fact_origin_accounting"]["by_surface"]
+    assert accounting["source_scored"]["upstream_candidate_copied"] == 1
+    assert accounting["protocol_model_preserving_canonical"].get(
+        "upstream_candidate_copied", 0
+    ) == 0
+    assert run.report["score_ladder"]["materialized_surfaces"][
+        "protocol_model_preserving_canonical"
+    ]["overall"]["pred_count"] == 3
+
+
 def test_assembly_retains_evidence_invalid_raw_findings_but_fails_final_invalid(
     tmp_path: Path,
 ) -> None:
@@ -545,7 +585,7 @@ def test_holistic_manifest_reproduces_dev140_score_ladder() -> None:
     assert headline["by_indicator"]["Prescription"]["f1"] == 0.8214
     assert headline["by_indicator"]["Investigations"]["f1"] == 0.8615
     assert benchmark["raw"] == 0.2968
-    assert benchmark["after_cui_projection"] == 0.3157
+    assert benchmark["after_cui_projection"] == 0.3786
     assert companions["Diagnosis"]["concept_negation"]["f1"] == 0.7572
     assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.3931
 

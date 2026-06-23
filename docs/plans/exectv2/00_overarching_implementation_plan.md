@@ -253,3 +253,8 @@ canonical pipeline, ADR 0013).
 9. [[12_holistic_clinical_finding_architecture]] — refactor Plan 11 around a
    unified clinical finding store, entity lenses, manifest-driven assembly, and
    explicit scoring views.
+10. [[13_dedup_clinical_facts_llm_only]] — **PRIMARY FOCUS (2026-06-23).**
+    De-duplicated clinical-fact recovery on the `clinical_headline` surface via a
+    single-prompt attribution-clean LLM-only system; goal `>0.900` with
+    GPT-4.1-mini, then DeepSeek/Qwen. Rich-schema (certainty/negation/operand)
+    runs are demoted to 1–2 comparison baselines (cleanup phase).

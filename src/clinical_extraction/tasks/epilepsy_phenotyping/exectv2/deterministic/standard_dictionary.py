@@ -2120,6 +2120,12 @@ def is_sf_convention_noise(
         re.IGNORECASE,
     ):
         return True
+    if (
+        cui == "C1299590"
+        and attrs.get("NumberOfSeizures") == "0"
+        and _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
+    ):
+        return True
     if cui == "C1299590" and attrs.get("NumberOfSeizures") == "0":
         return False
     if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and (

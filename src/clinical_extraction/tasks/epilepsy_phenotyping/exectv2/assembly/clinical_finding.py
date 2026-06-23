@@ -26,6 +26,7 @@ class FindingSource:
     mode: str
     ownership_label: str
     source_lane: str = ""
+    fact_origin: str = "target_model_generated"
 
 
 @dataclass(frozen=True)
@@ -108,6 +109,7 @@ class ClinicalFinding:
                         "producer_id": source.producer_id,
                         "source_lane": source.source_lane,
                         "raw_surface": raw_surface,
+                        "fact_origin": source.fact_origin,
                         "diagnostics": dict(diagnostics),
                     },
                 ),
@@ -160,6 +162,7 @@ class ClinicalFinding:
             "source_pipeline_family": self.source.pipeline_family,
             "source_model": self.source.model,
             "source_prompt_version": self.source.prompt_version,
+            "fact_origin": self.source.fact_origin,
             "raw_surface": self.raw_surface,
             "evidence_valid": self.evidence_valid,
             "finding_id": self.finding_id,
