@@ -251,6 +251,8 @@ def build_reliability_scorecard_payload(
     scorecard_path: Path = RELIABILITY_SCORECARD_PATH,
     cross_model_path: Path = CROSS_MODEL_REPORT_PATH,
 ) -> dict[str, Any]:
+    from . import cross_model_reliability_analysis as reliability_analysis
+
     scorecard_md = load_markdown(scorecard_path)
     cross_model_md = load_markdown(cross_model_path)
     dimensions = parse_scorecard_dimensions(scorecard_md)
@@ -268,6 +270,7 @@ def build_reliability_scorecard_payload(
         "residual_risks": parse_residual_risks(scorecard_md),
         "upgrade_plan": parse_upgrade_plan(scorecard_md),
         "comparison_rows": parse_comparison_rows(cross_model_md),
+        "computed_reliability": reliability_analysis.build_cross_model_reliability_analysis(),
     }
 
 
