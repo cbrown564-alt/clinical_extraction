@@ -355,7 +355,7 @@ def render_component_ablation_markdown(
         "",
         (
             "| Architecture | Decision | Final F1 | Raw candidates | Dictionary | "
-            "Final assembly | Headline projection |"
+            "Residual semantic | Headline projection |"
         ),
         "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
     ]
@@ -369,7 +369,7 @@ def render_component_ablation_markdown(
             f"{architecture['final_score']['overall']['f1']:.4f} | "
             f"{scores.get('raw_lane_candidates', 0.0):.4f} | "
             f"{scores.get('dictionary_normalized', 0.0):.4f} | "
-            f"{scores.get('final_assembly', 0.0):.4f} | "
+            f"{scores.get('residual_semantic_added', 0.0):.4f} | "
             f"{scores.get('headline_projection', 0.0):.4f} |"
         )
     lines.extend(
