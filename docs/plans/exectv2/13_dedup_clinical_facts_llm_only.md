@@ -1,7 +1,7 @@
 # Satellite 13 — De-duplicated Clinical-Fact LLM-Only Extraction (PRIMARY FOCUS)
 
 Parent: [[00_overarching_implementation_plan]]
-Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 complete; no Phase 5 model rollout promoted because no Phase 4 winner cleared the dev25 gate; post-Phase-4 direction is now explicit deterministic projection taxonomy/pilot work with separate score lines.**
+Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 complete; no model rollout promoted because no Phase 4 winner cleared the dev25 gate; the post-plateau deterministic projection taxonomy and Prescription pilot are complete with separate LLM-only, hybrid-rescue, and verifier-filtered score lines.**
 Dev-split only until a separately authorized Phase 7 audit.
 Decision basis:
 `docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`,
@@ -341,7 +341,7 @@ help local behavior but do not solve the prediction-bearing ontology/state
 boundary. See
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`.
 
-### Phase 5 — Deterministic projection taxonomy and Prescription pilot — next, not started
+### Phase 5 — Deterministic projection taxonomy and Prescription pilot — complete 2026-06-24
 This phase is **not** a continuation of the LLM-only prompt ladder and does not
 resurrect the `>0.900` LLM-only target by hidden repair. It formalizes the
 post-Phase-4 finding that deterministic rules can help map clinical meaning onto
@@ -369,6 +369,31 @@ Exit: a Prescription pilot report showing per-rule counts, score deltas by
 score line, and examples of accepted projection versus boundary violations. The
 phase succeeds if it clarifies attribution and benchmark-convention effects,
 even if it does not materially raise overall `clinical_headline`.
+
+Completion note: Phase 5 added the deterministic projection taxonomy in
+`docs/design/deterministic_projection_rule_taxonomy.md` and the offline
+Prescription pilot in
+`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/prescription_projection_pilot.py`.
+The pilot replayed the Phase 3 GPT-4.1-mini dev140 rows without new model calls
+and reported:
+
+- `raw_model` Prescription clinical headline `0.812`, benchmark+CUI `0.000`,
+  Drug+CUI `0.000`.
+- `llm_only_meaning_preserving_projection` Prescription clinical headline
+  `0.814`, benchmark+CUI `0.180`, Drug+CUI `0.907`.
+- accepted LLM-only projection counts: drugname/CUI `213`, frequency
+  abbreviation rendering `190`, dose-unit normalization `219`, PRN rendering `1`.
+- separated boundary counts not applied to the LLM-only line: missing medication
+  rescue `21`, missing dose/frequency completion `8`, duplicate-regimen collapse
+  `20`, unsupported medication rejection `35`.
+
+Report:
+`docs/experiments/exectv2/key_entities/exectv2_phase5_prescription_projection_pilot_2026-06-24.md`.
+JSON:
+`experiments/exectv2_phase5_prescription_projection_pilot_dev140_gpt41mini_20260624.json`.
+The result confirms that Prescription projection mostly quantifies benchmark
+format/CUI convention effects, not a hidden clinical-recovery rescue. Hybrid
+rescue and verifier-filtered candidates remain separated and unapplied.
 
 ### Phase 6 — Rollout to DeepSeek and Qwen — parked
 Only run a model swap if a future GPT-4.1-mini configuration or projection-aware
@@ -449,7 +474,7 @@ This plan is complete when:
 - GPT-4.1-mini clears `0.900` de-dup `clinical_headline` on dev140, or a localized
   plateau is documented (Phases 3–4);
 - the post-plateau deterministic projection taxonomy and Prescription pilot are
-  either completed with projection-aware score lines or explicitly deferred
+  completed with projection-aware score lines
   (Phase 5);
 - any future DeepSeek/Qwen rollout is tied to a stated transfer question rather
   than treated as a required continuation (Phase 6);

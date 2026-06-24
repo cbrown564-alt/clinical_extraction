@@ -6,10 +6,10 @@ Last updated: 2026-06-24
 
 Satellite 13 remains the primary ExECTv2 research focus, but the direct
 de-duplicated clinical-fact LLM-only path has now plateaued. Phase 0 through
-Phase 4 are complete. No DeepSeek/Qwen rollout is promoted because no
+Phase 5 are complete. No DeepSeek/Qwen rollout is promoted because no
 GPT-4.1-mini fallback configuration cleared the dev25 gate. The post-plateau
-direction is a deterministic projection taxonomy and Prescription-first pilot
-with separate LLM-only, hybrid-rescue, and verifier-filtered score lines.
+Prescription projection pilot is complete and keeps LLM-only projection,
+hybrid-rescue, and verifier-filtered score lines separate.
 
 ## Current Read
 
@@ -40,17 +40,22 @@ unit-boundary errors. Clearer prompt guidelines improved dev140 overall only to
 and
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`.
 
-The follow-up decision is captured in `CONTEXT.md` and the Satellite 13 plan:
-deterministic rules may support meaning-preserving benchmark projection over
-model-selected facts, but missing-fact rescue, unsupported-overcall rejection,
-specificity promotion, clinical-type conversion, and state inference must be
-reported as hybrid or verifier-filtered behavior, not as LLM-only.
+Phase 5 added the deterministic projection taxonomy
+(`docs/design/deterministic_projection_rule_taxonomy.md`) and the Prescription
+pilot report
+(`docs/experiments/exectv2/key_entities/exectv2_phase5_prescription_projection_pilot_2026-06-24.md`).
+On Phase 3 GPT-4.1-mini dev140 replay, allowed Prescription projection moved
+clinical headline only `0.812` -> `0.814`, while benchmark+CUI moved `0.000` ->
+`0.180` and Drug+CUI moved `0.000` -> `0.907`. Boundary actions were counted
+but not applied to the LLM-only line: missed-medication rescue `21`,
+missing dose/frequency completion `8`, duplicate-regimen collapse `20`, and
+unsupported-medication rejection `35`.
 
 ## Active Priorities
 
-1. Build the Satellite 13 Phase 5 deterministic projection taxonomy and
-   Prescription-first pilot with explicit attribution tags and score-line
-   separation.
+1. Keep Satellite 13 Phase 5 as the completed projection-aware Prescription
+   pilot: use it to explain benchmark-convention effects, not as a hidden
+   clinical-recovery rescue.
 2. Treat `clinical_headline` de-duplicated clinical recovery as the primary
    LLM-only optimization target; report strict benchmark results only as a
    required diagnostic/comparability surface.
@@ -65,17 +70,15 @@ reported as hybrid or verifier-filtered behavior, not as LLM-only.
 
 ### Now
 
-- Draft the Phase 5 deterministic projection rule taxonomy and Prescription
-  pilot acceptance tests.
 - Keep `single_call_dedup_facts` v0.5 and
   `single_call_dedup_facts_per_family` compact as plateau comparators.
+- Keep Phase 6 DeepSeek/Qwen rollout parked unless there is a clearly stated
+  transfer question and projection-aware reporting plan.
 
 ### Next
 
-- Implement the Prescription projection pilot with rule-level attribution tags
-  and separate LLM-only, hybrid-rescue, and verifier-filtered score lines.
-- Keep DeepSeek/Qwen rollout parked unless there is a clearly stated transfer
-  question and projection-aware reporting plan.
+- If a paper-facing ExECTv2 audit is proposed, predeclare the split/surface,
+  scorer, stop rule, and row-inspection boundary before running it.
 
 ### Blocked
 
@@ -86,13 +89,18 @@ reported as hybrid or verifier-filtered behavior, not as LLM-only.
 
 ### Done Recently
 
+- 2026-06-24: Completed Satellite 13 Phase 5 with the deterministic projection
+  taxonomy and Prescription projection pilot. Allowed projection mainly restored
+  benchmark/CUI convention visibility (`0.000` -> `0.180`) while clinical
+  headline barely moved (`0.812` -> `0.814`); hybrid rescue and verifier
+  candidates stayed separated and unapplied.
 - 2026-06-24: Completed Satellite 13 Phase 4 as an LLM-only fallback plateau,
   added error analysis, and tested decision-table prompt guidelines. Best
   compact per-family dev25 score was `0.796`; best prompt-guideline dev140 score
   was `0.729`; no model rollout was promoted.
 - 2026-06-24: Resolved the deterministic-rule attribution boundary in
-  `CONTEXT.md` and updated the Satellite 13 plan. The next direction is a
-  projection-aware Prescription pilot, not another prompt loop.
+  `CONTEXT.md` and updated the Satellite 13 plan. The projection-aware
+  Prescription pilot is now the completed Phase 5 handoff artifact.
 - 2026-06-23: Completed Satellite 13 Phases 0-3: ADR 0033, rich-schema archive
   cleanup, the `single_call_dedup_facts` route/adapter/tests, and the
   single-prompt plateau report.

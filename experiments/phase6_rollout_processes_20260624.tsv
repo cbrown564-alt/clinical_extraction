@@ -1,0 +1,4 @@
+name	pid	log
+phase6_deepseek_v4_flash		experiments\phase6_deepseek_v4_flash_20260624.log
+phase6_deepseek_chat		experiments\phase6_deepseek_chat_20260624.log
+phase6_qwen36		experiments\phase6_qwen36_20260624.log
