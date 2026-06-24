@@ -1,0 +1,296 @@
+{
+  "dataset": "exectv2",
+  "generated_on": "2026-06-24",
+  "source_scorecard": "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md",
+  "source_cross_model_report": "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md",
+  "evidence_set": [
+    {
+      "role": "Performance control",
+      "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+      "surface": "dev140 headline_target",
+      "overall_f1": 0.9152,
+      "decision": "Control"
+    },
+    {
+      "role": "Simplicity control",
+      "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+      "surface": "dev140 headline_target",
+      "overall_f1": 0.9059,
+      "decision": "Control"
+    },
+    {
+      "role": "Hosted non-GPT comparator",
+      "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+      "surface": "dev140 headline_target",
+      "overall_f1": 0.901,
+      "decision": "Diagnostic, do not promote"
+    },
+    {
+      "role": "Local-model comparator",
+      "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+      "surface": "dev140 headline_target",
+      "overall_f1": 0.9001,
+      "decision": "Diagnostic, do not promote"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "task_correctness",
+      "number": 1,
+      "dimension": "Task correctness",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "v08 clears all four dev140 families above 0.900; v09 remains above 0.900 overall; final DeepSeek/Qwen dev140 diagnostics reach 0.9010 and 0.9001 overall but miss family/parity gates and remain do-not-promote.",
+      "gap_to_close": "Freeze a full-200/holdout protocol before any broader claim.",
+      "strength": "strong"
+    },
+    {
+      "id": "factuality_and_over_inference",
+      "number": 2,
+      "dimension": "Factuality and over-inference",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "Assembly rows preserve exact evidence, FP/FN counts, residual ledgers, and changed-row categories. Final DeepSeek/Qwen dev140 reports include changed-row controls and error ledgers, but over-inference rates are not yet normalized across all rows.",
+      "gap_to_close": "Build per-family over-emission and miss-rate tables for all selected rows.",
+      "strength": "medium"
+    },
+    {
+      "id": "faithfulness_exact_evidence",
+      "number": 3,
+      "dimension": "Faithfulness / exact evidence",
+      "coverage": 5,
+      "coverage_max": 5,
+      "current_evidence": "v08/v09/DeepSeek/Qwen selected assemblies report exact evidence rate 1.0000 on scored mentions. Source runs show evidence-validity differences: DeepSeek v0.9.10 source 0.9857, Qwen compact source 0.9541. JSONL rows preserve evidence text, component ownership, lane, and provenance.",
+      "gap_to_close": "Preserve exact-evidence gate for every refreshed source artifact.",
+      "strength": "strong"
+    },
+    {
+      "id": "calibration",
+      "number": 4,
+      "dimension": "Calibration",
+      "coverage": 2,
+      "coverage_max": 5,
+      "current_evidence": "Scores and residuals exist, but no calibrated confidence model or reliability curve exists for ExECTv2.",
+      "gap_to_close": "Build no-call confidence proxies from provenance, family, evidence shape, and residual class; validate on dev only.",
+      "strength": "weak"
+    },
+    {
+      "id": "abstention_review_routing",
+      "number": 5,
+      "dimension": "Abstention / review routing",
+      "coverage": 2,
+      "coverage_max": 5,
+      "current_evidence": "No accepted abstention policy exists. Residual families identify plausible triggers but are not operationalized.",
+      "gap_to_close": "Predeclare review triggers for Diagnosis assertion/hierarchy, SF active-rate fidelity, Prescription current-vs-plan ambiguity, and Investigations result-state ambiguity.",
+      "strength": "weak"
+    },
+    {
+      "id": "robustness",
+      "number": 6,
+      "dimension": "Robustness",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; final DeepSeek/Qwen dev140 diagnostics strengthen cross-model transfer evidence while exposing persistent Diagnosis/SF sensitivity.",
+      "gap_to_close": "Add perturbation or hard-slice panels before making robustness claims.",
+      "strength": "medium"
+    },
+    {
+      "id": "consistency",
+      "number": 7,
+      "dimension": "Consistency",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "Assembly replay is deterministic from saved artifacts. There is no cross-seed or same-prompt resampling panel for the ExECTv2 selected rows.",
+      "gap_to_close": "Run predeclared same-prompt or same-artifact consistency panels only if needed for the paper.",
+      "strength": "medium"
+    },
+    {
+      "id": "safety_and_compliance",
+      "number": 8,
+      "dimension": "Safety and compliance",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "Dev/test boundaries are documented; deterministic semantic repairs have provenance; full-200/holdout row-level inspection is blocked without protocol.",
+      "gap_to_close": "Add automated ExECTv2 holdout/full-200 inspection guards mirroring Gan.",
+      "strength": "strong"
+    },
+    {
+      "id": "family_parity",
+      "number": 9,
+      "dimension": "Family parity",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "v08 clears all target families; final non-GPT dev140 rows expose uneven family portability. DeepSeek misses Dx/SF targets; Qwen misses Dx and active-rate fidelity despite strong Inv/Rx.",
+      "gap_to_close": "Convert residual ledgers to subtype parity metrics within each family.",
+      "strength": "strong"
+    },
+    {
+      "id": "operational_reliability",
+      "number": 10,
+      "dimension": "Operational reliability",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "v08/v09 are no-call replayable. DeepSeek source and assembly diagnostics are clean. Qwen source has ten parse/schema failures and the assembly reports ten parse/schema failures per family lens surface.",
+      "gap_to_close": "Keep source parse/call warnings separate from repaired assembly success, and define gates for future live runs.",
+      "strength": "strong"
+    }
+  ],
+  "weak_dimensions": [
+    {
+      "id": "calibration",
+      "number": 4,
+      "dimension": "Calibration",
+      "coverage": 2,
+      "coverage_max": 5,
+      "current_evidence": "Scores and residuals exist, but no calibrated confidence model or reliability curve exists for ExECTv2.",
+      "gap_to_close": "Build no-call confidence proxies from provenance, family, evidence shape, and residual class; validate on dev only.",
+      "strength": "weak"
+    },
+    {
+      "id": "abstention_review_routing",
+      "number": 5,
+      "dimension": "Abstention / review routing",
+      "coverage": 2,
+      "coverage_max": 5,
+      "current_evidence": "No accepted abstention policy exists. Residual families identify plausible triggers but are not operationalized.",
+      "gap_to_close": "Predeclare review triggers for Diagnosis assertion/hierarchy, SF active-rate fidelity, Prescription current-vs-plan ambiguity, and Investigations result-state ambiguity.",
+      "strength": "weak"
+    }
+  ],
+  "metrics_available_now": [
+    {
+      "metric": "Exact evidence rate by model/family",
+      "current_status": "Available from assembly JSON lane diagnostics."
+    },
+    {
+      "metric": "Evidence-valid but wrong counts",
+      "current_status": "Available through FP/FN and residual ledgers, but not yet normalized into a single table for every selected row."
+    },
+    {
+      "metric": "Family-level miss and over-emission",
+      "current_status": "Available in target_report.candidates[].error_analysis.per_indicator; needs consolidation."
+    },
+    {
+      "metric": "Cross-model agreement on dev140",
+      "current_status": "Feasible because v08, v09, DeepSeek v0.9.16, and Qwen v0.9.22 share dev140 letter_id, but not built in this closeout pass."
+    },
+    {
+      "metric": "Review triggers from provenance",
+      "current_status": "Feasible from component owner, source lane, evidence validity, and residual family tags; not operationalized."
+    }
+  ],
+  "residual_risks": [
+    {
+      "family": "Diagnosis",
+      "current_strength": "v08/v09 clear dev140; DeepSeek 0.8828 and Qwen 0.8563 remain below target",
+      "residual_risk": "Assertion, hierarchy, and convention repairs are prediction-bearing and need explicit attribution."
+    },
+    {
+      "family": "SeizureFrequency",
+      "current_strength": "v08/v09 headline clears dev140; Qwen reaches 0.8908 and DeepSeek 0.8675",
+      "residual_risk": "Active-rate fidelity remains weaker, especially Qwen 0.3618."
+    },
+    {
+      "family": "Prescription",
+      "current_strength": "Strongest cross-model family",
+      "residual_risk": "Current-vs-plan ambiguity and deterministic regimen repair must stay visible as semantic components; final non-GPT changed-row controls still fail."
+    },
+    {
+      "family": "Investigations",
+      "current_strength": "v08 clears; final DeepSeek 0.9231 and Qwen 0.9579 are strong",
+      "residual_risk": "Result-state ambiguity and repair-mediated component ownership remain important, especially because Qwen changed-row controls fail."
+    }
+  ],
+  "upgrade_plan": [
+    {
+      "dimension": "Calibration",
+      "next_metric_needed": "Family-aware confidence/risk proxy with reliability bins over dev rows."
+    },
+    {
+      "dimension": "Abstention / review routing",
+      "next_metric_needed": "Predeclared route triggers and burden/benefit table: reviewed rows, caught errors, missed errors."
+    },
+    {
+      "dimension": "Robustness",
+      "next_metric_needed": "Frozen perturbation panel for current vs historical/future states, med plans, investigation result states, and diagnosis conventions."
+    },
+    {
+      "dimension": "Consistency",
+      "next_metric_needed": "Same-prompt resampling or same-artifact replay stability table, separated from deterministic assembly replay."
+    },
+    {
+      "dimension": "Family parity",
+      "next_metric_needed": "Residual subtype table by family and model, including FP, FN, evidence-valid-but-wrong, and component owner."
+    }
+  ],
+  "comparison_rows": [
+    {
+      "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+      "model": "GPT-4.1-mini-family lanes",
+      "architecture_family": "Holistic finding assembly, focused lanes",
+      "split_stage": "dev140",
+      "call_failures": 0.0,
+      "parse_schema_failures": 0.0,
+      "exact_evidence_rate": 1.0,
+      "overall_f1": 0.9152,
+      "diagnosis_f1": 0.9083,
+      "seizure_frequency_f1": 0.9053,
+      "prescription_f1": 0.9357,
+      "investigations_f1": 0.9132,
+      "companion_surface": "SF active-rate fidelity 0.5969; evidence-valid overall 0.8872",
+      "decision": "Performance control",
+      "claim_boundary": "Dev-only component evidence"
+    },
+    {
+      "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+      "model": "GPT-4.1-mini-family lanes",
+      "architecture_family": "Partial hybrid simplification",
+      "split_stage": "dev140",
+      "call_failures": 0.0,
+      "parse_schema_failures": 0.0,
+      "exact_evidence_rate": 1.0,
+      "overall_f1": 0.9059,
+      "diagnosis_f1": 0.9083,
+      "seizure_frequency_f1": 0.9053,
+      "prescription_f1": 0.9357,
+      "investigations_f1": 0.8549,
+      "companion_surface": "Simplifies Investigations stack; evidence-valid overall 0.8779",
+      "decision": "Simplicity control",
+      "claim_boundary": "Dev-only simplification evidence"
+    },
+    {
+      "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+      "model": "deepseek/deepseek-chat",
+      "architecture_family": "Single GPT-style key-family ledger plus standard dictionaries/lenses",
+      "split_stage": "dev140",
+      "call_failures": 0.0,
+      "parse_schema_failures": 0.0,
+      "exact_evidence_rate": 1.0,
+      "overall_f1": 0.901,
+      "diagnosis_f1": 0.8828,
+      "seizure_frequency_f1": 0.8675,
+      "prescription_f1": 0.943,
+      "investigations_f1": 0.9231,
+      "companion_surface": "evidence-valid overall 0.8554; SF active-rate fidelity 0.6057; raw candidate 0.0000; changed-row controls fail Rx 35 and Inv 6",
+      "decision": "Final diagnostic, do not promote",
+      "claim_boundary": "diagnostic-same-raw-deepseek-v0910-through-v0916-dictionary-dev140"
+    },
+    {
+      "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+      "model": "ollama_chat/qwen3.6:35b",
+      "architecture_family": "Compact local-model ledger plus standard dictionaries/lenses and residual repair",
+      "split_stage": "dev140",
+      "call_failures": 0.0,
+      "parse_schema_failures": 10.0,
+      "exact_evidence_rate": 1.0,
+      "overall_f1": 0.9001,
+      "diagnosis_f1": 0.8563,
+      "seizure_frequency_f1": 0.8908,
+      "prescription_f1": 0.9343,
+      "investigations_f1": 0.9579,
+      "companion_surface": "evidence-valid overall 0.8567; SF active-rate fidelity 0.3618; raw candidate 0.0000; changed-row controls fail Rx 29 and Inv 48",
+      "decision": "Final diagnostic, do not promote",
+      "claim_boundary": "local-qwen-v0910-qwen-compact-live-dev140-ctx12288-maxtok2500-standard-dictionary-residual-repair-v13"
+    }
+  ]
+}

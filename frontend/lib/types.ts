@@ -438,12 +438,73 @@ export interface Exectv2RunsResponse {
 
 export interface ReliabilityScorecardDimension {
   id: string;
+  number?: number;
   dimension: string;
-  coverage: number;
+  coverage: number | null;
+  coverage_max?: number | null;
+  strength?: "strong" | "medium" | "weak" | "unknown";
   current_evidence: string;
   gap_to_close: string;
   artifact_path?: string;
 }
+
+export interface Exectv2ReliabilityEvidenceRow {
+  role: string;
+  candidate: string;
+  surface: string;
+  overall_f1: number | null;
+  decision: string;
+}
+
+export interface Exectv2ReliabilityMetricStatus {
+  metric: string;
+  current_status: string;
+}
+
+export interface Exectv2ResidualRisk {
+  family: string;
+  current_strength: string;
+  residual_risk: string;
+}
+
+export interface Exectv2UpgradePlanItem {
+  dimension: string;
+  next_metric_needed: string;
+}
+
+export interface Exectv2ComparisonRow {
+  candidate: string;
+  model: string;
+  architecture_family: string;
+  split_stage: string;
+  call_failures: number | null;
+  parse_schema_failures: number | null;
+  exact_evidence_rate: number | null;
+  overall_f1: number | null;
+  diagnosis_f1: number | null;
+  seizure_frequency_f1: number | null;
+  prescription_f1: number | null;
+  investigations_f1: number | null;
+  companion_surface: string;
+  decision: string;
+  claim_boundary: string;
+}
+
+export interface Exectv2ReliabilityScorecardResponse {
+  dataset?: ClinicalTask;
+  generated_on: string;
+  source_scorecard: string;
+  source_cross_model_report: string;
+  evidence_set: Exectv2ReliabilityEvidenceRow[];
+  dimensions: ReliabilityScorecardDimension[];
+  weak_dimensions: ReliabilityScorecardDimension[];
+  metrics_available_now: Exectv2ReliabilityMetricStatus[];
+  residual_risks: Exectv2ResidualRisk[];
+  upgrade_plan: Exectv2UpgradePlanItem[];
+  comparison_rows: Exectv2ComparisonRow[];
+}
+
+export type ReliabilityScorecardResponse = Exectv2ReliabilityScorecardResponse;
 
 // ── Hybrid artifact row ──
 

@@ -24,6 +24,7 @@ export const gan2026Dataset: DatasetDescriptor = {
     observatory: true,
     laboratory: true,
     gallery: true,
+    reliability: true,
   },
   tone: "llm",
   families: [

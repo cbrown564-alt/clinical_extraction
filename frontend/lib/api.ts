@@ -180,6 +180,10 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     mockPath = "/mock-data/prompts.json";
   } else if (path === "/exectv2/runs") {
     mockPath = "/mock-data/exectv2/runs.json";
+  } else if (path === "/exectv2/reliability-scorecard") {
+    mockPath = "/mock-data/exectv2/reliability-scorecard.json";
+  } else if (path === "/gan2026/reliability-scorecard") {
+    mockPath = "/mock-data/gan2026/reliability-scorecard.json";
   } else if (path.startsWith("/artifacts/")) {
     const runId = path.split("/")[2].split("?")[0];
     mockPath = `/mock-data/artifacts/${runId}.json`;
@@ -341,6 +345,20 @@ export function fetchArtifact(runId: string, artifactPath?: string, limit?: numb
 
 export function fetchExectv2Runs() {
   return fetchJson<import("./types").Exectv2RunsResponse>("/exectv2/runs");
+}
+
+export function fetchExectv2ReliabilityScorecard() {
+  return fetchJson<import("./types").Exectv2ReliabilityScorecardResponse>(
+    "/exectv2/reliability-scorecard"
+  );
+}
+
+export function fetchReliabilityScorecard(dataset: import("./types").ClinicalTask) {
+  const path =
+    dataset === "exectv2"
+      ? "/exectv2/reliability-scorecard"
+      : "/gan2026/reliability-scorecard";
+  return fetchJson<import("./types").ReliabilityScorecardResponse>(path);
 }
 
 export function runAblation(params: {

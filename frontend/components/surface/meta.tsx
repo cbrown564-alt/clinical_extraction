@@ -5,12 +5,13 @@ import {
   BarChart3,
   Boxes,
   GalleryHorizontalEnd,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import type { DatasetTone, ExplorerSurface } from "@/lib/datasets";
 
 /**
- * Single source of truth for the four review surfaces.
+ * Single source of truth for the review surfaces.
  *
  * The Navbar, the shared {@link SurfaceHeader}, and any cross-surface link pill
  * all read from here so a surface's name, icon, and accent tone never drift
@@ -57,6 +58,13 @@ export const SURFACE_META: Record<ExplorerSurface, SurfaceMeta> = {
     tone: "error",
     Icon: GalleryHorizontalEnd,
   },
+  reliability: {
+    surface: "reliability",
+    label: "Reliability Scorecard",
+    href: "/reliability-scorecard",
+    tone: "success",
+    Icon: ShieldCheck,
+  },
 };
 
 /** Surfaces in canonical app-shell order. */
@@ -64,6 +72,7 @@ export const SURFACE_ORDER: ExplorerSurface[] = [
   "workbench",
   "observatory",
   "laboratory",
+  "reliability",
   "gallery",
 ];
 

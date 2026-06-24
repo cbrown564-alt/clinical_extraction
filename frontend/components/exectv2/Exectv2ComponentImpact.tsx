@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Info, Wrench } from "lucide-react";
+import { AlertTriangle, Info, Wrench } from "lucide-react";
 import { exectv2Dataset, EXECTV2_FAMILIES, TONE_CLASSES } from "@/lib/datasets";
 import type { ComponentTypeDescriptor } from "@/lib/datasets";
 import type { Exectv2Entity } from "@/lib/types";
@@ -140,16 +140,32 @@ function ObservedImpactPanel({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Observed Impact</h2>
-        <div className="mt-2 flex items-start gap-2 rounded-md border border-deterministic-alt/25 bg-deterministic-alt/8 px-2.5 py-2 text-[10px] leading-snug text-muted">
-          <Info className="mt-0.5 h-3 w-3 shrink-0 text-deterministic-alt" />
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Ablation status</h2>
+        <div className="mt-2 flex items-start gap-2 rounded-md border border-error/25 bg-error/[0.04] px-2.5 py-2 text-[10px] leading-snug text-muted">
+          <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-error" />
           <span>
-            Live ablation runs against the backend for Gan. ExECTv2 architectures are checkpointed, so this
-            panel reports <span className="font-medium text-foreground">observed</span> family F1 and deltas
-            rather than a live simulation.
+            ExECTv2 does not yet have replayable component ablations wired into
+            the frontend. This panel shows observed architecture deltas and
+            provenance only; causal component-impact readouts need the next
+            consolidation phase.
           </span>
         </div>
       </div>
+
+      <section className="rounded-md border border-border bg-surface p-3">
+        <div className="flex items-start gap-2">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deterministic-alt" />
+          <div>
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Phase needed
+            </h3>
+            <p className="mt-1 text-[10px] leading-relaxed text-muted">
+              Define component boundaries, replay one-component-off assemblies,
+              score deltas by family, and attach those artifacts here.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="rounded-md border border-border bg-surface">
         <div className="border-b border-border px-3 py-2">
@@ -209,11 +225,11 @@ export default function Exectv2ComponentImpact() {
   const header = (
     <SurfaceHeader
       surface="laboratory"
-      dataset={exectv2Dataset}
-      description="Prediction-bearing components by provenance: producer lanes, dictionaries, lenses, assembly, and evidence validation. Deterministic formatting is flagged separately from semantic add/drop/replace."
-      right={
-        selectedRun && (
-          <>
+          dataset={exectv2Dataset}
+          description="Component provenance for the selected architecture. True one-component-off ablation deltas are not built yet and are tracked as the next consolidation phase."
+          right={
+            selectedRun && (
+              <>
             <select
               value={selectedRun.run_id}
               onChange={(e) => set({ run: e.target.value })}
@@ -226,6 +242,7 @@ export default function Exectv2ComponentImpact() {
               ))}
             </select>
             <SurfaceLink surface="workbench" datasetId="exectv2" params={{ run: selectedRun.run_id }} label="Explore" />
+            <SurfaceLink surface="reliability" datasetId="exectv2" label="Reliability" />
           </>
         )
       }
