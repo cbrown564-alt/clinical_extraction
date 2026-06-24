@@ -57,6 +57,7 @@ DEFAULT_MARKDOWN = Path(
 )
 SELECTIVE_POLICY_V01 = "v01_broad_ambiguous"
 SELECTIVE_POLICY_V02 = "v02_empty_pending_or_explicit_not_performed"
+MAX_ACCEPTABLE_SELECTIVE_BURDEN = 0.20
 
 _PENDING_OR_PLANNED_RE = re.compile(
     r"\b(?:will|arrang(?:e|ed|ing)|request(?:ed|ing)?|await(?:ing)?|"
@@ -175,6 +176,7 @@ def build_investigations_rule_ablation_payload(
             "structured_direct_investigations_f1": _metrics(direct_rows)["f1"],
             "verifier_plus_arbitration_investigations_f1": _metrics(arbitrated_rows)["f1"],
         },
+        "max_acceptable_selective_burden": MAX_ACCEPTABLE_SELECTIVE_BURDEN,
         "development_policy_selection": _development_policy_selection(
             development_direct_rows,
             development_arbitration_rows,
@@ -266,6 +268,10 @@ def render_investigations_rule_ablation_markdown(
         f"- Row inspection policy: `{payload['row_inspection_policy']}`",
         f"- Model calls during this build: `{payload['allow_model_calls']}`",
         f"- Surface: {payload['surface']}",
+        (
+            "- Maximum acceptable selective review burden: "
+            f"`{payload['max_acceptable_selective_burden']:.2f}`"
+        ),
         f"- Claim boundary: {payload['claim_boundary']}",
         "",
         "## Aggregate Table",
@@ -319,6 +325,10 @@ def render_investigations_rule_ablation_markdown(
                 "- Deterministic replacement promoted: "
                 f"`{decision['deterministic_replacement_promoted']}`"
             ),
+            (
+                "- Selective burden acceptable: "
+                f"`{decision['selective_v02_burden_acceptable']}`"
+            ),
             f"- Rationale: {decision['rationale']}",
             "",
             "## Interpretation",
@@ -331,8 +341,9 @@ def render_investigations_rule_ablation_markdown(
                 "the broad unknown-result and multi-modality triggers while keeping "
                 "empty-output, planned-test, and explicit-not-performed cases routed. "
                 "On the aggregate-only full-200 replay it reduces verifier burden "
-                "versus v01 without improving F1, so it remains diagnostic rather "
-                "than promoted."
+                "versus v01 without improving F1, but `0.5100` is far above the "
+                "maximum acceptable review burden of `0.2000`, so it fails the "
+                "cost target and remains diagnostic rather than promoted."
             ),
             "",
         ]
@@ -391,8 +402,13 @@ def _decision(variants: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     direct_suppression_f1 = by_id["structured_direct_pending_suppression"]["metrics"]["f1"]
     verifier_arbitrated_f1 = by_id["verifier_plus_pending_suppression"]["metrics"]["f1"]
     selective_v01_f1 = by_id["selective_verifier_v01_broad_pending_suppression"]["metrics"]["f1"]
-    selective_v02_f1 = by_id["selective_verifier_v02_empty_pending_no"]["metrics"]["f1"]
+    selective_v02 = by_id["selective_verifier_v02_empty_pending_no"]
+    selective_v02_f1 = selective_v02["metrics"]["f1"]
+    selective_v02_burden = float(selective_v02["selective_call_burden"])
     deterministic_promoted = direct_suppression_f1 >= verifier_arbitrated_f1 - 0.01
+    selective_v02_burden_acceptable = (
+        selective_v02_burden <= MAX_ACCEPTABLE_SELECTIVE_BURDEN
+    )
     selected = (
         "deterministic_investigations_replacement"
         if deterministic_promoted
@@ -402,6 +418,9 @@ def _decision(variants: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "selected_next_architecture": selected,
         "deterministic_replacement_promoted": deterministic_promoted,
         "direct_to_verifier_arbitrated_gap": round(verifier_arbitrated_f1 - direct_f1, 4),
+        "max_acceptable_selective_burden": MAX_ACCEPTABLE_SELECTIVE_BURDEN,
+        "selective_v02_burden": selective_v02_burden,
+        "selective_v02_burden_acceptable": selective_v02_burden_acceptable,
         "direct_suppression_to_verifier_arbitrated_gap": round(
             verifier_arbitrated_f1 - direct_suppression_f1,
             4,
@@ -417,8 +436,9 @@ def _decision(variants: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "rationale": (
             "Deterministic replacement is promoted only if direct structured plus "
             "deterministic suppression is within 0.0100 F1 of the verifier plus "
-            "suppression control. Otherwise the next diagnostic is the dev-selected "
-            "v02 selective Investigations adjudication policy."
+            "suppression control. A selective Investigations policy is acceptable "
+            "only if review burden is at or below 0.2000; v02 is diagnostic but "
+            "fails that burden ceiling."
         ),
     }
 
