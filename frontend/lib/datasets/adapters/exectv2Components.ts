@@ -18,6 +18,7 @@ export type Exectv2ComponentTypeId =
   | "semantic_lens"
   | "assembler"
   | "evidence_validation"
+  | "deterministic_projection"
   | "scorer";
 
 export interface Exectv2ComponentSummary {
@@ -42,7 +43,10 @@ export function classifyComponentOwner(owner: string): Exectv2ComponentTypeId {
   if (o.includes("arbitration") || o.includes("union") || o.includes("merge")) {
     return "assembler";
   }
-  if (o.includes("repair") || o.includes("dictionary") || o.includes("alias")) {
+  if (o.includes("projection") || o.includes("format") || o.includes("repair")) {
+    return "deterministic_projection";
+  }
+  if (o.includes("dictionary") || o.includes("alias")) {
     return "dictionary";
   }
   if (o.includes("recovery") || o.includes("residual") || o.includes("reconciler")) {
@@ -56,7 +60,13 @@ export function classifyComponentOwner(owner: string): Exectv2ComponentTypeId {
 
 function isDeterministic(owner: string): boolean {
   const o = owner.toLowerCase();
-  return o.includes("deterministic") || o.includes("repair") || o.includes("dictionary");
+  return (
+    o.includes("deterministic") ||
+    o.includes("projection") ||
+    o.includes("format") ||
+    o.includes("repair") ||
+    o.includes("dictionary")
+  );
 }
 
 /**

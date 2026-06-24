@@ -157,11 +157,13 @@ function ObservedImpactPanel({
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-deterministic-alt" />
           <div>
             <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              Phase needed
+              Ablation contract
             </h3>
             <p className="mt-1 text-[10px] leading-relaxed text-muted">
-              Define component boundaries, replay one-component-off assemblies,
-              score deltas by family, and attach those artifacts here.
+              True one-component-off deltas remain gated on dev140 replay
+              configs, family deltas, transition counts, and
+              projection-vs-semantic provenance tags. Until then this surface stays
+              provenance-only.
             </p>
           </div>
         </div>
