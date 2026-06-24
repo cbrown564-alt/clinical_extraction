@@ -6,10 +6,11 @@ Last updated: 2026-06-24
 
 Satellite 13 remains the primary ExECTv2 research focus, but the direct
 de-duplicated clinical-fact LLM-only path has now plateaued. Phase 0 through
-Phase 5 are complete. No DeepSeek/Qwen rollout is promoted because no
-GPT-4.1-mini fallback configuration cleared the dev25 gate. The post-plateau
-Prescription projection pilot is complete and keeps LLM-only projection,
-hybrid-rescue, and verifier-filtered score lines separate.
+Phase 6 are complete. The DeepSeek/Qwen rollout was reactivated for the stated
+`decision_table_sf_inv` transfer question and is now complete; no model-swap
+condition closes the gap to the v08 hybrid. The post-plateau Prescription
+projection pilot remains separate from hybrid-rescue and verifier-filtered
+score lines.
 
 ## Current Read
 
@@ -24,21 +25,22 @@ scored `0.334`/`0.339` strict F1 for GPT-4.1-mini/Qwen on dev140 but
 dev140 clinical-recovery control at `0.9155`. The active scoreboard is
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md`.
 
-Phase 2 added `single_call_dedup_facts` and fixed canonical headline reporting.
-Phase 3 single-prompt GPT-4.1-mini plateaued at dev140 `0.710` with evidence
-validity `0.9613`. Phase 4 per-family prompting improved the dev25 gate to
-`0.796` but did not beat the Phase 3 dev25 gate (`0.800`) or approach `>0.900`.
-Readouts: `docs/experiments/exectv2/key_entities/exectv2_dedup_phase3_single_prompt_plateau_2026-06-23.md`
-and `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_fallback_plateau_2026-06-24.md`.
-
-The Phase 4 error analysis and decision-table prompt probe show the plateau is
-prediction-bearing rather than infrastructural. Diagnosis failures are mostly
-ontology/granularity errors; SeizureFrequency failures are mostly state and
-unit-boundary errors. Clearer prompt guidelines improved dev140 overall only to
-`0.729` and did not solve SeizureFrequency. Reports:
-`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_error_analysis_2026-06-24.md`
+Phases 2-4 built the `single_call_dedup_facts` routes and localized the
+LLM-only plateau. GPT-4.1-mini scored `0.710` with the single prompt, compact
+per-family prompting reached `0.796` on dev25, and the best
+`decision_table_sf_inv` dev140 readout reached only `0.729`. The remaining gap
+is prediction-bearing Diagnosis ontology/granularity and SeizureFrequency
+state/unit selection, not infrastructure. Readouts:
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase3_single_prompt_plateau_2026-06-23.md`,
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_fallback_plateau_2026-06-24.md`,
 and
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`.
+
+Phase 6 then ran the same mixed `decision_table_sf_inv` dev140 configuration on
+DeepSeek and Qwen. DeepSeek reached `0.745` clinical headline F1, Qwen reached
+`0.694`, and GPT-4.1-mini remains `0.729`; all strict benchmark F1s stayed near
+`0.13`. The rollout report is
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase6_model_rollout_2026-06-24.md`.
 
 Phase 5 added the deterministic projection taxonomy
 (`docs/design/deterministic_projection_rule_taxonomy.md`) and the Prescription
@@ -63,32 +65,37 @@ unsupported-medication rejection `35`.
    deterministic code may validate evidence and perform tagged
    meaning-preserving projection, but must not add, select, or reject clinical
    facts inside the LLM-only score line.
-4. Keep all dev140/full-200/holdout-facing escalation behind a frozen protocol
-   and explicit authorization.
+4. Treat Phase 6 as a completed model-transfer readout; further improvement
+   needs a new architecture, ontology-supervision experiment, or explicitly
+   separated projection/hybrid score line.
 
 ## Work Board
 
 ### Now
 
-- Keep `single_call_dedup_facts` v0.5 and
-  `single_call_dedup_facts_per_family` compact as plateau comparators.
-- Keep Phase 6 DeepSeek/Qwen rollout parked unless there is a clearly stated
-  transfer question and projection-aware reporting plan.
+- Keep the Phase 3-6 direct LLM-only runs as plateau comparators with fixed
+  clinical-recovery claim language.
 
 ### Next
 
 - If a paper-facing ExECTv2 audit is proposed, predeclare the split/surface,
   scorer, stop rule, and row-inspection boundary before running it.
+- If continuing Satellite 13, choose a new declared path: ontology supervision,
+  hybrid/selector ownership, or projection-aware analysis.
 
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need
   explicit authorization plus a frozen protocol.
-- ExECTv2 full-200 or holdout row-level inspection needs benchmark-facing
+- ExECTv2 full-200 or holdout row-level inspection needs a benchmark-facing
   protocol, scorer surface, stop rule, and inspection boundary.
 
 ### Done Recently
 
+- 2026-06-24: Completed Satellite 13 Phase 6 model rollout for the
+  `decision_table_sf_inv` dev140 transfer question. DeepSeek reached `0.745`
+  clinical headline F1, Qwen reached `0.694`, and neither changed the plateau
+  conclusion.
 - 2026-06-24: Completed Satellite 13 Phase 5 with the deterministic projection
   taxonomy and Prescription projection pilot. Allowed projection mainly restored
   benchmark/CUI convention visibility (`0.000` -> `0.180`) while clinical
@@ -96,11 +103,7 @@ unsupported-medication rejection `35`.
   candidates stayed separated and unapplied.
 - 2026-06-24: Completed Satellite 13 Phase 4 as an LLM-only fallback plateau,
   added error analysis, and tested decision-table prompt guidelines. Best
-  compact per-family dev25 score was `0.796`; best prompt-guideline dev140 score
-  was `0.729`; no model rollout was promoted.
-- 2026-06-24: Resolved the deterministic-rule attribution boundary in
-  `CONTEXT.md` and updated the Satellite 13 plan. The projection-aware
-  Prescription pilot is now the completed Phase 5 handoff artifact.
+  prompt-guideline dev140 score was `0.729`.
 - 2026-06-23: Completed Satellite 13 Phases 0-3: ADR 0033, rich-schema archive
   cleanup, the `single_call_dedup_facts` route/adapter/tests, and the
   single-prompt plateau report.

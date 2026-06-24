@@ -1,7 +1,7 @@
 # Satellite 13 — De-duplicated Clinical-Fact LLM-Only Extraction (PRIMARY FOCUS)
 
 Parent: [[00_overarching_implementation_plan]]
-Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, and Phase 5 complete; no model rollout promoted because no Phase 4 winner cleared the dev25 gate; the post-plateau deterministic projection taxonomy and Prescription pilot are complete with separate LLM-only, hybrid-rescue, and verifier-filtered score lines.**
+Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0 through Phase 6 complete. Direct attribution-clean de-duplicated clinical-fact prompting plateaued below the v08 hybrid; the completed DeepSeek/Qwen rollout answers the model-transfer question and does not promote a new LLM-only path.**
 Dev-split only until a separately authorized Phase 7 audit.
 Decision basis:
 `docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`,
@@ -10,6 +10,7 @@ Decision basis:
 `docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`,
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_error_analysis_2026-06-24.md`,
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`,
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase6_model_rollout_2026-06-24.md`,
 `CONTEXT.md` terms: [[Meaning-Preserving Benchmark Projection]],
 [[Projection Boundary Violation]], [[Projection Attribution Tag]],
 [[Projection-Aware Score Line]], [[Clinical-First Model Output]],
@@ -395,16 +396,38 @@ The result confirms that Prescription projection mostly quantifies benchmark
 format/CUI convention effects, not a hidden clinical-recovery rescue. Hybrid
 rescue and verifier-filtered candidates remain separated and unapplied.
 
-### Phase 6 — Rollout to DeepSeek and Qwen — parked
-Only run a model swap if a future GPT-4.1-mini configuration or projection-aware
-score line has a clearly stated transfer question. The original model rollout
-was not promoted because no Phase 4 LLM-only fallback cleared the dev25 gate.
+### Phase 6 — Rollout to DeepSeek and Qwen — complete 2026-06-24
+Reactivated transfer question: does the best mixed prompt-guideline profile
+(`decision_table_sf_inv`) transfer to DeepSeek and Qwen on the same dev140
+surface after GPT-4.1-mini showed enough local improvement to justify a model
+swap readout?
 
-If reactivated, run the selected configuration unchanged on
-`deepseek/deepseek-chat` and `ollama_chat/qwen3.6:35b`. Report the three-model
-de-dup comparison and per-family deltas; note any model-specific gap (expected:
-SF state for Qwen, per the closeout). Projection-aware reporting must keep
-LLM-only, hybrid rescue, and verifier-filtered score lines separate.
+The selected configuration was run unchanged:
+`single_call_dedup_facts_per_family`, prompt profile `decision_table_sf_inv`,
+canonical `clinical_headline`, dev140, 0 call/parse/schema failures for both
+new model runs. Results:
+
+| Model | Clinical headline F1 | Diagnosis | SF | Rx | Inv | Strict F1 | Evidence validity |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 0.729 | 0.681 | 0.556 | 0.851 | 0.883 | 0.130 | 0.9694 |
+| DeepSeek chat | 0.745 | 0.689 | 0.674 | 0.788 | 0.898 | 0.128 | 0.9617 |
+| Qwen 3.6 35B | 0.694 | 0.633 | 0.562 | 0.795 | 0.837 | 0.127 | 0.9418 |
+
+Primary report:
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase6_model_rollout_2026-06-24.md`.
+Run artifacts:
+
+- DeepSeek:
+  `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.{jsonl,md}`
+- Qwen:
+  `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.{jsonl,md}`
+
+Completion note: DeepSeek transferred modestly better than GPT-4.1-mini overall,
+mainly through SeizureFrequency, but still remained far below the v08 hybrid
+control (`0.9155`) and the original `>0.900` LLM-only target. Qwen scored lower
+than GPT-4.1-mini and lower than its earlier clean-render de-dup replay
+baseline. The transfer result preserves the plateau interpretation: model swap
+alone does not solve the prediction-bearing Diagnosis and SeizureFrequency gap.
 
 ### Phase 7 — (Optional, separately authorized) audit and paper framing
 If the dev result is strong and stable, predeclare a frozen full-200 /
@@ -421,7 +444,9 @@ Every de-dup result is reported against the two kept rich-schema comparators on
 | v08 (hybrid, full schema) | multi-component | ~0.374 | 0.9155 |
 | dedup_facts v0.5 | 1 call, de-dup target | diagnostic | 0.710 dev140 |
 | dedup_facts_per_family compact | 4 calls, de-dup target | diagnostic | 0.796 dev25 gate |
-| decision_table_sf_inv | 4 calls, mixed prompt profile | diagnostic | 0.729 dev140 |
+| decision_table_sf_inv GPT-4.1-mini | 4 calls, mixed prompt profile | 0.130 | 0.729 dev140 |
+| decision_table_sf_inv DeepSeek | 4 calls, mixed prompt profile | 0.128 | 0.745 dev140 |
+| decision_table_sf_inv Qwen 3.6 | 4 calls, mixed prompt profile | 0.127 | 0.694 dev140 |
 | Projection-aware Prescription pilot | deterministic projection over model-selected facts | diagnostic | separate LLM-only / hybrid / verifier-filtered lines |
 
 The current claim is specifically: *direct attribution-clean LLM-only prompting
@@ -448,9 +473,10 @@ effects without changing the LLM-only clinical-recovery attribution.
 
 Allowed now:
 > On dev140, direct attribution-clean LLM-only prompting for de-duplicated
-> clinical facts plateaued at `0.710`–`0.729` overall clinical-recovery F1,
-> below the v08 hybrid `0.9155`, with the residual concentrated in
-> prediction-bearing Diagnosis and SeizureFrequency decisions.
+> clinical facts plateaued at `0.694`–`0.745` overall clinical-recovery F1
+> across GPT-4.1-mini, DeepSeek, and Qwen transfer runs, below the v08 hybrid
+> `0.9155`, with the residual concentrated in prediction-bearing Diagnosis and
+> SeizureFrequency decisions.
 
 Allowed for Phase 5:
 > A projection-aware Prescription pilot reports LLM-only clinical recovery plus
@@ -476,7 +502,7 @@ This plan is complete when:
 - the post-plateau deterministic projection taxonomy and Prescription pilot are
   completed with projection-aware score lines
   (Phase 5);
-- any future DeepSeek/Qwen rollout is tied to a stated transfer question rather
-  than treated as a required continuation (Phase 6);
+- DeepSeek/Qwen rollout is tied to a stated transfer question and reported as a
+  model-transfer readout rather than a required continuation (Phase 6);
 - every result is reported on both the de-dup and strict surfaces with fixed
   clinical-recovery claim language.
