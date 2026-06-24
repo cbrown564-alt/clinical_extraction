@@ -11,7 +11,10 @@ import {
   getDataset,
   type DatasetTone,
 } from "@/lib/datasets";
-import type { ReliabilityScorecardDimension } from "@/lib/types";
+import type {
+  Exectv2ComputedReliability,
+  ReliabilityScorecardDimension,
+} from "@/lib/types";
 import {
   SurfaceHeader,
   SurfaceLayout,
@@ -104,6 +107,209 @@ function DimensionRows({ dimensions }: { dimensions: ReliabilityScorecardDimensi
 function familyTone(family: string): DatasetTone {
   if (family === "SeizureFrequency") return "llm";
   return EXECTV2_FAMILIES.find((item) => item.id === family)?.tone ?? "muted";
+}
+
+function ComputedReliabilityPanel({
+  computed,
+}: {
+  computed?: Exectv2ComputedReliability;
+}) {
+  if (!computed) return null;
+
+  const agreement = computed.cross_model_agreement.overall;
+  const calibration = computed.calibration_proxy;
+  const routing = computed.review_routing;
+  const operatingPoints = routing.operating_points;
+  const activeRows = computed.active_llm_only_readout.filter((row) =>
+    row.model_label.includes("DeepSeek") || row.model_label.includes("Qwen")
+  );
+
+  return (
+    <section className="space-y-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="rounded-md border border-border bg-surface p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Agreement
+          </p>
+          <p className="mt-2 font-mono text-xl font-semibold text-foreground">
+            {formatMetricValue(agreement.mean_pairwise_jaccard, "rate", {
+              asPercent: true,
+              digits: 0,
+            })}
+          </p>
+          <p className="mt-1 text-[10px] text-muted">{agreement.cell_count} cells</p>
+        </div>
+        <div className="rounded-md border border-border bg-surface p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Exact Cells
+          </p>
+          <p className="mt-2 font-mono text-xl font-semibold text-foreground">
+            {formatMetricValue(agreement.exact_cell_agreement_rate, "rate", {
+              asPercent: true,
+              digits: 0,
+            })}
+          </p>
+          <p className="mt-1 text-[10px] text-muted">{agreement.pair_count} pairs</p>
+        </div>
+        <div className="rounded-md border border-border bg-surface p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Review Catch
+          </p>
+          <p className="mt-2 font-mono text-xl font-semibold text-foreground">
+            {formatMetricValue(routing.catch_rate, "rate", { asPercent: true, digits: 0 })}
+          </p>
+          <p className="mt-1 text-[10px] text-muted">
+            {routing.caught_error_cells}/{routing.total_error_cells} error cells
+          </p>
+        </div>
+        <div className="rounded-md border border-border bg-surface p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Calibration ECE
+          </p>
+          <p className="mt-2 font-mono text-xl font-semibold text-foreground">
+            {formatMetricValue(calibration.expected_calibration_error, "f1")}
+          </p>
+          <p className="mt-1 text-[10px] text-muted">
+            {calibration.bin_count} bins / {calibration.cell_count} cells
+          </p>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-md border border-border bg-surface">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+            Review Routing Operating Points
+          </h2>
+        </div>
+        <table className="w-full border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+              <th className="px-3 py-2 text-left font-semibold">Route</th>
+              <th className="px-3 py-2 text-right font-semibold">Burden</th>
+              <th className="px-3 py-2 text-right font-semibold">Catch</th>
+              <th className="px-3 py-2 text-right font-semibold">False alarm</th>
+              <th className="px-3 py-2 text-right font-semibold">Burden delta</th>
+              <th className="px-3 py-2 text-left font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {operatingPoints.map((point) => (
+              <tr key={point.id} className="border-b border-border/60 last:border-b-0">
+                <td className="max-w-[18rem] px-3 py-2 align-top">
+                  <div className="font-medium text-foreground">{point.label}</div>
+                  <div className="mt-1 font-mono text-[9px] leading-snug text-muted">
+                    {point.rules.join(" + ")}
+                  </div>
+                </td>
+                <td className="px-3 py-2 text-right align-top font-mono text-foreground">
+                  {formatMetricValue(point.review_burden, "rate", {
+                    asPercent: true,
+                    digits: 1,
+                  })}
+                </td>
+                <td className="px-3 py-2 text-right align-top font-mono text-foreground">
+                  {formatMetricValue(point.catch_rate, "rate", {
+                    asPercent: true,
+                    digits: 1,
+                  })}
+                </td>
+                <td className="px-3 py-2 text-right align-top font-mono text-muted">
+                  {formatMetricValue(point.false_alarm_rate, "rate", {
+                    asPercent: true,
+                    digits: 1,
+                  })}
+                </td>
+                <td className="px-3 py-2 text-right align-top font-mono text-muted">
+                  {formatMetricValue(point.review_burden_delta_vs_high_recall, "rate", {
+                    asPercent: true,
+                    digits: 1,
+                  })}
+                </td>
+                <td className="max-w-[14rem] px-3 py-2 align-top text-muted">
+                  {point.validation_status}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="overflow-hidden rounded-md border border-border bg-surface">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+            Latest DeepSeek / Qwen Check
+          </h2>
+        </div>
+        <table className="w-full border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+              <th className="px-3 py-2 text-left font-semibold">Surface</th>
+              <th className="px-3 py-2 text-left font-semibold">DeepSeek</th>
+              <th className="px-3 py-2 text-left font-semibold">Qwen</th>
+              <th className="px-3 py-2 text-left font-semibold">Policy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {computed.latest_run_check.surfaces.map((surface) => (
+              <tr key={surface.surface_id} className="border-b border-border/60 last:border-b-0">
+                <td className="px-3 py-2 font-medium text-foreground">
+                  {surface.surface_label}
+                </td>
+                <td className="px-3 py-2 font-mono text-muted">
+                  {surface.latest_deepseek.candidate}
+                </td>
+                <td className="px-3 py-2 font-mono text-muted">
+                  {surface.latest_qwen.candidate}
+                </td>
+                <td className="px-3 py-2 text-muted">{surface.replacement_policy}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="overflow-hidden rounded-md border border-border bg-surface">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+            Active LLM-Only Transfer Rows
+          </h2>
+        </div>
+        <table className="w-full border-collapse text-[11px]">
+          <thead>
+            <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+              <th className="px-3 py-2 text-left font-semibold">Model</th>
+              <th className="px-3 py-2 text-right font-semibold">Clinical F1</th>
+              <th className="px-3 py-2 text-right font-semibold">Strict F1</th>
+              <th className="px-3 py-2 text-right font-semibold">Evidence</th>
+              <th className="px-3 py-2 text-left font-semibold">Artifact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activeRows.map((row) => (
+              <tr key={row.candidate} className="border-b border-border/60 last:border-b-0">
+                <td className="px-3 py-2 font-medium text-foreground">{row.model_label}</td>
+                <td className="px-3 py-2 text-right font-mono text-foreground">
+                  {formatMetricValue(row.clinical_headline_f1, "f1")}
+                </td>
+                <td className="px-3 py-2 text-right font-mono text-muted">
+                  {formatMetricValue(row.strict_benchmark_f1, "f1")}
+                </td>
+                <td className="px-3 py-2 text-right font-mono text-muted">
+                  {formatMetricValue(row.evidence_validity, "rate", {
+                    asPercent: true,
+                    digits: 1,
+                  })}
+                </td>
+                <td className="max-w-[24rem] px-3 py-2 font-mono text-[10px] text-muted">
+                  {row.rows_path}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 
 export default function ReliabilityScorecardSurface() {
@@ -213,6 +419,8 @@ export default function ReliabilityScorecardSurface() {
             </table>
           </section>
 
+          <ComputedReliabilityPanel computed={payload.computed_reliability} />
+
           <div className="flex flex-wrap items-center gap-2">
             <FilterButton active={filter === "all"} label="All dimensions" onClick={() => setFilter("all")} />
             <FilterButton active={filter === "weak"} label="Weak only" onClick={() => setFilter("weak")} />
@@ -258,4 +466,3 @@ export default function ReliabilityScorecardSurface() {
     </SurfaceLayout>
   );
 }
-

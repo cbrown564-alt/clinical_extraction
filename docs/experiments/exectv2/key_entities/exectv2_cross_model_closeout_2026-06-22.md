@@ -27,7 +27,7 @@ report built from existing artifacts.
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
 | `exectv2_holistic_finding_assembly_v08_dev140` | GPT-4.1-mini-family lanes | Holistic finding assembly, focused lanes | dev140 | no-call replay | 0 | 0 | 1.0000 | 0.9152 | 0.9083 | 0.9053 | 0.9357 | 0.9132 | SF active-rate fidelity `0.5969`; evidence-valid overall `0.8872` | Performance control | Dev-only component evidence |
 | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | GPT-4.1-mini-family lanes | Partial hybrid simplification | dev140 | no-call replay | 0 | 0 | 1.0000 | 0.9059 | 0.9083 | 0.9053 | 0.9357 | 0.8549 | Simplifies Investigations stack; evidence-valid overall `0.8779` | Simplicity control | Dev-only simplification evidence |
-| `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | `deepseek/deepseek-chat` | Single GPT-style key-family ledger plus standard dictionaries/lenses | dev140 | source 140; assembly no-call replay | 0 | 0 | 1.0000 | 0.9010 | 0.8828 | 0.8675 | 0.9430 | 0.9231 | evidence-valid overall `0.8554`; SF active-rate fidelity `0.6057`; raw candidate `0.0000`; changed-row controls fail Rx 35 and Inv 6 | Final diagnostic, do not promote | `diagnostic-same-raw-deepseek-v0910-through-v0916-dictionary-dev140` |
+| `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | `deepseek/deepseek-chat` | Single GPT-style key-family ledger plus standard dictionaries/lenses | dev140 | source 140; assembly no-call replay | 0 | 0 | 1.0000 | 0.9174 | 0.8898 | 0.9017 | 0.9415 | 0.9658 | evidence-valid overall `0.8728`; SF active-rate fidelity `0.6310`; raw candidate `0.0000`; changed-row controls fail Rx 37 and Inv 25 | Final diagnostic, do not promote | `diagnostic-same-raw-deepseek-v0910-through-v0916-dictionary-dev140` |
 | `exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140` | `ollama_chat/qwen3.6:35b` | Compact local-model ledger plus standard dictionaries/lenses and residual repair | dev140 | source 140; assembly no-call replay | 0 | 10 per family lens surface | 1.0000 | 0.9001 | 0.8563 | 0.8908 | 0.9343 | 0.9579 | evidence-valid overall `0.8567`; SF active-rate fidelity `0.3618`; raw candidate `0.0000`; changed-row controls fail Rx 29 and Inv 48 | Final diagnostic, do not promote | `local-qwen-v0910-qwen-compact-live-dev140-ctx12288-maxtok2500-standard-dictionary-residual-repair-v13` |
 
 ## What Transfers Across Models
@@ -35,11 +35,11 @@ report built from existing artifacts.
 - Exact-evidence enforcement transfers well after assembly/lens replay. The
   final DeepSeek and Qwen dev140 assemblies have exact evidence rate `1.0000`
   on the scored mentions reported by their assembly diagnostics.
-- Prescription is the most portable family. DeepSeek v0.9.16 reaches `0.9430`,
+- Prescription is the most portable family. DeepSeek v0.9.16 reaches `0.9415`,
   and Qwen v0.9.22 reaches `0.9343`, both close to or above the v08
   Prescription control.
 - Investigations is strong in the final non-GPT dev140 rows: DeepSeek reaches
-  `0.9231`, and Qwen reaches `0.9579`. This supports model-portability
+  `0.9658`, and Qwen reaches `0.9579`. This supports model-portability
   evidence for the family, with the caveat that Qwen's score is repair-mediated.
 - Non-GPT architectures can reach the `0.900` overall range on dev140 after
   standard dictionaries and residual lenses, but this is architecture evidence,
@@ -48,13 +48,13 @@ report built from existing artifacts.
 ## What Does Not Transfer
 
 - Diagnosis remains below the v08/v09 control outside GPT-4.1-mini. DeepSeek
-  reaches `0.8828`, and Qwen reaches `0.8563`, so neither clears the family
+  reaches `0.8898`, and Qwen reaches `0.8563`, so neither clears the family
   target.
 - SeizureFrequency headline improves materially at dev140 scale, especially for
-  Qwen, but still trails v08/v09: DeepSeek reaches `0.8675`, and Qwen reaches
-  `0.8908` versus the GPT control at `0.9053`.
+  DeepSeek, but still trails or barely misses v08/v09: DeepSeek reaches `0.9017`,
+  and Qwen reaches `0.8908` versus the GPT control at `0.9053`.
 - SeizureFrequency active-rate fidelity remains weak. DeepSeek reaches
-  `0.6057`, roughly tied with the GPT control, while Qwen remains poor at
+  `0.6310`, slightly above the GPT control, while Qwen remains poor at
   `0.3618`.
 - Qwen still carries an operational burden: the final assembly reports ten
   parse/schema failures per family lens surface, and the useful score depends
@@ -100,7 +100,8 @@ pending dev25 signals. They strengthen the cross-model story, but they do not
 replace v08:
 
 - v08 remains the only row with all four target families above `0.900`.
-- DeepSeek v0.9.16 misses Diagnosis and SeizureFrequency family targets.
+- DeepSeek v0.9.16 misses Diagnosis and still fails changed-row controls,
+  despite clearing the SeizureFrequency headline target.
 - Qwen v0.9.22 misses Diagnosis, has weak active-rate fidelity, and carries ten
   parse/schema failures per family lens surface.
 - Both final non-GPT reports have `raw_candidate` score view `0.0000`; the

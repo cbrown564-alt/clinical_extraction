@@ -22,7 +22,7 @@
       "role": "Hosted non-GPT comparator",
       "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "surface": "dev140 headline_target",
-      "overall_f1": 0.901,
+      "overall_f1": 0.9174,
       "decision": "Diagnostic, do not promote"
     },
     {
@@ -40,7 +40,7 @@
       "dimension": "Task correctness",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "v08 clears all four dev140 families above 0.900; v09 remains above 0.900 overall; final DeepSeek/Qwen dev140 diagnostics reach 0.9010 and 0.9001 overall but miss family/parity gates and remain do-not-promote.",
+      "current_evidence": "v08 clears all four dev140 families above 0.900; v09 remains above 0.900 overall; final DeepSeek/Qwen dev140 diagnostics reach 0.9174 and 0.9001 overall. DeepSeek still misses Diagnosis parity (0.8898), Qwen misses Diagnosis and SF parity, and both remain do-not-promote.",
       "gap_to_close": "Freeze a full-200/holdout protocol before any broader claim.",
       "strength": "strong"
     },
@@ -48,11 +48,11 @@
       "id": "factuality_and_over_inference",
       "number": 2,
       "dimension": "Factuality and over-inference",
-      "coverage": 3,
+      "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "Assembly rows preserve exact evidence, FP/FN counts, residual ledgers, and changed-row categories. Final DeepSeek/Qwen dev140 reports include changed-row controls and error ledgers, but over-inference rates are not yet normalized across all rows.",
-      "gap_to_close": "Build per-family over-emission and miss-rate tables for all selected rows.",
-      "strength": "medium"
+      "current_evidence": "Assembly rows preserve exact evidence, FP/FN counts, residual ledgers, and changed-row categories. The refresh computes per-family over-emission and miss rates for all four selected rows; Qwen Diagnosis remains the clearest pressure point (0.1525 over-emission, 0.1347 miss rate).",
+      "gap_to_close": "Convert high-burden review triggers into lower-burden operating points.",
+      "strength": "strong"
     },
     {
       "id": "faithfulness_exact_evidence",
@@ -68,41 +68,41 @@
       "id": "calibration",
       "number": 4,
       "dimension": "Calibration",
-      "coverage": 2,
+      "coverage": 3,
       "coverage_max": 5,
-      "current_evidence": "Scores and residuals exist, but no calibrated confidence model or reliability curve exists for ExECTv2.",
-      "gap_to_close": "Build no-call confidence proxies from provenance, family, evidence shape, and residual class; validate on dev only.",
-      "strength": "weak"
+      "current_evidence": "A no-call external confidence proxy now bins 1,706 dev140 candidate-family cells using family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden. Expected calibration error is 0.1456; bins are diagnostic and not yet an accepted confidence model.",
+      "gap_to_close": "Improve monotonicity and reduce circular family priors before any calibration claim.",
+      "strength": "medium"
     },
     {
       "id": "abstention_review_routing",
       "number": 5,
       "dimension": "Abstention / review routing",
-      "coverage": 2,
+      "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "No accepted abstention policy exists. Residual families identify plausible triggers but are not operationalized.",
-      "gap_to_close": "Predeclare review triggers for Diagnosis assertion/hierarchy, SF active-rate fidelity, Prescription current-vs-plan ambiguity, and Investigations result-state ambiguity.",
-      "strength": "weak"
+      "current_evidence": "Predeclared triggers now produce a burden/benefit table: 1,605/1,706 reviewed cells (0.9408 burden), catching 379/426 error cells (0.8897) but with 1,226 false-alarm cells. A dev-tuned lower-burden candidate reviews 1,291/1,706 cells (0.7567) while catching 342/426 error cells (0.8028).",
+      "gap_to_close": "Validate the operating point under a frozen audit protocol before promotion.",
+      "strength": "strong"
     },
     {
       "id": "robustness",
       "number": 6,
       "dimension": "Robustness",
-      "coverage": 3,
+      "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; final DeepSeek/Qwen dev140 diagnostics strengthen cross-model transfer evidence while exposing persistent Diagnosis/SF sensitivity.",
+      "current_evidence": "v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; rich-schema DeepSeek/Qwen diagnostics strengthen cross-model transfer evidence. Latest Phase 6 LLM-only runs are also reported separately: DeepSeek 0.745, Qwen 0.697 computed clinical-headline F1.",
       "gap_to_close": "Add perturbation or hard-slice panels before making robustness claims.",
-      "strength": "medium"
+      "strength": "strong"
     },
     {
       "id": "consistency",
       "number": 7,
       "dimension": "Consistency",
-      "coverage": 3,
+      "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "Assembly replay is deterministic from saved artifacts. There is no cross-seed or same-prompt resampling panel for the ExECTv2 selected rows.",
-      "gap_to_close": "Run predeclared same-prompt or same-artifact consistency panels only if needed for the paper.",
-      "strength": "medium"
+      "current_evidence": "Assembly replay is deterministic from saved artifacts. The refresh adds cross-model dev140 agreement over shared letter_id: pairwise clinical-headline mean Jaccard 0.8852, exact family-cell agreement 0.8000. There is still no cross-seed same-prompt panel.",
+      "gap_to_close": "Run predeclared same-prompt resampling only if needed for the paper.",
+      "strength": "strong"
     },
     {
       "id": "safety_and_compliance",
@@ -118,10 +118,10 @@
       "id": "family_parity",
       "number": 9,
       "dimension": "Family parity",
-      "coverage": 4,
+      "coverage": 5,
       "coverage_max": 5,
-      "current_evidence": "v08 clears all target families; final non-GPT dev140 rows expose uneven family portability. DeepSeek misses Dx/SF targets; Qwen misses Dx and active-rate fidelity despite strong Inv/Rx.",
-      "gap_to_close": "Convert residual ledgers to subtype parity metrics within each family.",
+      "current_evidence": "v08 clears all target families; final non-GPT dev140 rows expose uneven family portability with residual subtype tables. DeepSeek misses only Diagnosis (0.8898) on the rich-schema headline; Qwen misses Diagnosis (0.8563) and SF (0.8908) despite strong Rx/Inv.",
+      "gap_to_close": "Use subtype parity to target architecture work; do not promote non-GPT rows from aggregate F1 alone.",
       "strength": "strong"
     },
     {
@@ -135,28 +135,7 @@
       "strength": "strong"
     }
   ],
-  "weak_dimensions": [
-    {
-      "id": "calibration",
-      "number": 4,
-      "dimension": "Calibration",
-      "coverage": 2,
-      "coverage_max": 5,
-      "current_evidence": "Scores and residuals exist, but no calibrated confidence model or reliability curve exists for ExECTv2.",
-      "gap_to_close": "Build no-call confidence proxies from provenance, family, evidence shape, and residual class; validate on dev only.",
-      "strength": "weak"
-    },
-    {
-      "id": "abstention_review_routing",
-      "number": 5,
-      "dimension": "Abstention / review routing",
-      "coverage": 2,
-      "coverage_max": 5,
-      "current_evidence": "No accepted abstention policy exists. Residual families identify plausible triggers but are not operationalized.",
-      "gap_to_close": "Predeclare review triggers for Diagnosis assertion/hierarchy, SF active-rate fidelity, Prescription current-vs-plan ambiguity, and Investigations result-state ambiguity.",
-      "strength": "weak"
-    }
-  ],
+  "weak_dimensions": [],
   "metrics_available_now": [
     {
       "metric": "Exact evidence rate by model/family",
@@ -164,30 +143,34 @@
     },
     {
       "metric": "Evidence-valid but wrong counts",
-      "current_status": "Available through FP/FN and residual ledgers, but not yet normalized into a single table for every selected row."
+      "current_status": "Computed as computed_reliability.family_error_table[].evidence_valid_error_count."
     },
     {
       "metric": "Family-level miss and over-emission",
-      "current_status": "Available in target_report.candidates[].error_analysis.per_indicator; needs consolidation."
+      "current_status": "Computed for all selected rows from target_report.candidates[].headline_scores and residual ledgers."
     },
     {
       "metric": "Cross-model agreement on dev140",
-      "current_status": "Feasible because v08, v09, DeepSeek v0.9.16, and Qwen v0.9.22 share dev140 letter_id, but not built in this closeout pass."
+      "current_status": "Built from shared dev140 letter_id: mean pairwise Jaccard 0.8852, exact family-cell agreement 0.8000."
     },
     {
       "metric": "Review triggers from provenance",
-      "current_status": "Feasible from component owner, source lane, evidence validity, and residual family tags; not operationalized."
+      "current_status": "Operationalized as diagnostic triggers plus operating-point scan; current high-recall burden is 0.9408, and the lower-burden dev candidate is 0.7567 burden / 0.8028 catch."
+    },
+    {
+      "metric": "Latest DeepSeek/Qwen surface check",
+      "current_status": "Built into computed_reliability.latest_run_check; Phase 6 LLM-only runs are reported separately from rich-schema reliability comparators."
     }
   ],
   "residual_risks": [
     {
       "family": "Diagnosis",
-      "current_strength": "v08/v09 clear dev140; DeepSeek 0.8828 and Qwen 0.8563 remain below target",
+      "current_strength": "v08/v09 clear dev140; DeepSeek 0.8898 and Qwen 0.8563 remain below target",
       "residual_risk": "Assertion, hierarchy, and convention repairs are prediction-bearing and need explicit attribution."
     },
     {
       "family": "SeizureFrequency",
-      "current_strength": "v08/v09 headline clears dev140; Qwen reaches 0.8908 and DeepSeek 0.8675",
+      "current_strength": "v08/v09 headline clears dev140; DeepSeek reaches 0.9017; Qwen reaches 0.8908",
       "residual_risk": "Active-rate fidelity remains weaker, especially Qwen 0.3618."
     },
     {
@@ -197,18 +180,18 @@
     },
     {
       "family": "Investigations",
-      "current_strength": "v08 clears; final DeepSeek 0.9231 and Qwen 0.9579 are strong",
+      "current_strength": "v08 clears; final DeepSeek 0.9658 and Qwen 0.9579 are strong",
       "residual_risk": "Result-state ambiguity and repair-mediated component ownership remain important, especially because Qwen changed-row controls fail."
     }
   ],
   "upgrade_plan": [
     {
       "dimension": "Calibration",
-      "next_metric_needed": "Family-aware confidence/risk proxy with reliability bins over dev rows."
+      "next_metric_needed": "Better-calibrated risk proxy with monotone bins and lower ECE than 0.1456."
     },
     {
       "dimension": "Abstention / review routing",
-      "next_metric_needed": "Predeclared route triggers and burden/benefit table: reviewed rows, caught errors, missed errors."
+      "next_metric_needed": "Frozen validation of the lower-burden candidate; current diagnostic trigger set reviews 94.08% of eligible cells, while the dev-tuned candidate reviews 75.67%."
     },
     {
       "dimension": "Robustness",
@@ -216,11 +199,11 @@
     },
     {
       "dimension": "Consistency",
-      "next_metric_needed": "Same-prompt resampling or same-artifact replay stability table, separated from deterministic assembly replay."
+      "next_metric_needed": "Same-prompt resampling panel, separated from deterministic assembly replay and cross-model agreement."
     },
     {
       "dimension": "Family parity",
-      "next_metric_needed": "Residual subtype table by family and model, including FP, FN, evidence-valid-but-wrong, and component owner."
+      "next_metric_needed": "Use the residual subtype table to predeclare targeted architecture work."
     }
   ],
   "comparison_rows": [
@@ -266,12 +249,12 @@
       "call_failures": 0.0,
       "parse_schema_failures": 0.0,
       "exact_evidence_rate": 1.0,
-      "overall_f1": 0.901,
-      "diagnosis_f1": 0.8828,
-      "seizure_frequency_f1": 0.8675,
-      "prescription_f1": 0.943,
-      "investigations_f1": 0.9231,
-      "companion_surface": "evidence-valid overall 0.8554; SF active-rate fidelity 0.6057; raw candidate 0.0000; changed-row controls fail Rx 35 and Inv 6",
+      "overall_f1": 0.9174,
+      "diagnosis_f1": 0.8898,
+      "seizure_frequency_f1": 0.9017,
+      "prescription_f1": 0.9415,
+      "investigations_f1": 0.9658,
+      "companion_surface": "evidence-valid overall 0.8728; SF active-rate fidelity 0.6310; raw candidate 0.0000; changed-row controls fail Rx 37 and Inv 25",
       "decision": "Final diagnostic, do not promote",
       "claim_boundary": "diagnostic-same-raw-deepseek-v0910-through-v0916-dictionary-dev140"
     },
@@ -292,5 +275,939 @@
       "decision": "Final diagnostic, do not promote",
       "claim_boundary": "local-qwen-v0910-qwen-compact-live-dev140-ctx12288-maxtok2500-standard-dictionary-residual-repair-v13"
     }
-  ]
+  ],
+  "computed_reliability": {
+    "analysis_kind": "exectv2_cross_model_reliability_no_call_dev140",
+    "claim_boundary": "Computed from saved dev140 artifacts only; no full-200 or holdout row-level inspection.",
+    "latest_run_check": {
+      "surfaces": [
+        {
+          "surface_id": "rich_schema_reliability",
+          "surface_label": "Rich-schema holistic finding assembly reliability scorecard",
+          "latest_deepseek": {
+            "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+            "model_label": "DeepSeek chat",
+            "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl",
+            "role": "hosted non-GPT diagnostic",
+            "claim_boundary": "diagnostic same-raw DeepSeek v0910 through v0916 dictionary dev140",
+            "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
+          },
+          "latest_qwen": {
+            "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+            "model_label": "Qwen 3.6 35B",
+            "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl",
+            "role": "local-model diagnostic",
+            "claim_boundary": "local Qwen compact dev140 standard-dictionary residual repair",
+            "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
+          },
+          "replacement_policy": "same-surface comparators retained",
+          "rationale": "These are the final dev140 non-GPT diagnostics for the 2026-06-22 scorecard surface."
+        },
+        {
+          "surface_id": "active_llm_only",
+          "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
+          "latest_deepseek": {
+            "candidate": "decision_table_sf_inv_deepseek_chat_dev140",
+            "model_label": "DeepSeek chat",
+            "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
+            "role": "latest DeepSeek LLM-only transfer",
+            "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+          },
+          "latest_qwen": {
+            "candidate": "decision_table_sf_inv_qwen36_side11435_dev140",
+            "model_label": "Qwen 3.6 35B",
+            "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
+            "role": "latest Qwen LLM-only transfer",
+            "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+          },
+          "replacement_policy": "reported separately; different claim surface",
+          "rationale": "Phase 6 uses model-emitted de-duplicated clinical facts, not rich-schema holistic assembly, so it should not replace the archived scorecard comparators."
+        }
+      ]
+    },
+    "family_error_table": [
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Diagnosis",
+        "f1": 0.909,
+        "precision": 0.9024,
+        "recall": 0.9158,
+        "tp": 272,
+        "fp": 29,
+        "fn": 25,
+        "pred_count": 297,
+        "gold_count": 297,
+        "over_emission_rate": 0.0976,
+        "miss_rate": 0.0842,
+        "candidate_miss": 25,
+        "wrong_detail_selection": 29,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 54
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "SeizureFrequency",
+        "f1": 0.9053,
+        "precision": 0.9,
+        "recall": 0.9107,
+        "tp": 153,
+        "fp": 17,
+        "fn": 15,
+        "pred_count": 170,
+        "gold_count": 168,
+        "over_emission_rate": 0.1,
+        "miss_rate": 0.0893,
+        "candidate_miss": 29,
+        "wrong_detail_selection": 51,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 32
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Prescription",
+        "f1": 0.9357,
+        "precision": 0.9286,
+        "recall": 0.943,
+        "tp": 182,
+        "fp": 14,
+        "fn": 11,
+        "pred_count": 196,
+        "gold_count": 193,
+        "over_emission_rate": 0.0714,
+        "miss_rate": 0.057,
+        "candidate_miss": 11,
+        "wrong_detail_selection": 14,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 25
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Investigations",
+        "f1": 0.9132,
+        "precision": 0.938,
+        "recall": 0.8897,
+        "tp": 121,
+        "fp": 8,
+        "fn": 15,
+        "pred_count": 129,
+        "gold_count": 136,
+        "over_emission_rate": 0.062,
+        "miss_rate": 0.1103,
+        "candidate_miss": 15,
+        "wrong_detail_selection": 8,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 23
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Diagnosis",
+        "f1": 0.909,
+        "precision": 0.9024,
+        "recall": 0.9158,
+        "tp": 272,
+        "fp": 29,
+        "fn": 25,
+        "pred_count": 297,
+        "gold_count": 297,
+        "over_emission_rate": 0.0976,
+        "miss_rate": 0.0842,
+        "candidate_miss": 25,
+        "wrong_detail_selection": 29,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 54
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "SeizureFrequency",
+        "f1": 0.9053,
+        "precision": 0.9,
+        "recall": 0.9107,
+        "tp": 153,
+        "fp": 17,
+        "fn": 15,
+        "pred_count": 170,
+        "gold_count": 168,
+        "over_emission_rate": 0.1,
+        "miss_rate": 0.0893,
+        "candidate_miss": 29,
+        "wrong_detail_selection": 51,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 32
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Prescription",
+        "f1": 0.9357,
+        "precision": 0.9286,
+        "recall": 0.943,
+        "tp": 182,
+        "fp": 14,
+        "fn": 11,
+        "pred_count": 196,
+        "gold_count": 193,
+        "over_emission_rate": 0.0714,
+        "miss_rate": 0.057,
+        "candidate_miss": 11,
+        "wrong_detail_selection": 14,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 25
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "family": "Investigations",
+        "f1": 0.8549,
+        "precision": 0.916,
+        "recall": 0.8015,
+        "tp": 109,
+        "fp": 10,
+        "fn": 27,
+        "pred_count": 119,
+        "gold_count": 136,
+        "over_emission_rate": 0.084,
+        "miss_rate": 0.1985,
+        "candidate_miss": 27,
+        "wrong_detail_selection": 10,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 37
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+        "model_label": "DeepSeek chat",
+        "family": "Diagnosis",
+        "f1": 0.8898,
+        "precision": 0.8622,
+        "recall": 0.9192,
+        "tp": 273,
+        "fp": 43,
+        "fn": 24,
+        "pred_count": 312,
+        "gold_count": 297,
+        "over_emission_rate": 0.1378,
+        "miss_rate": 0.0808,
+        "candidate_miss": 24,
+        "wrong_detail_selection": 43,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 67
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+        "model_label": "DeepSeek chat",
+        "family": "SeizureFrequency",
+        "f1": 0.9017,
+        "precision": 0.8764,
+        "recall": 0.9286,
+        "tp": 156,
+        "fp": 22,
+        "fn": 12,
+        "pred_count": 178,
+        "gold_count": 168,
+        "over_emission_rate": 0.1236,
+        "miss_rate": 0.0714,
+        "candidate_miss": 48,
+        "wrong_detail_selection": 59,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 34
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+        "model_label": "DeepSeek chat",
+        "family": "Prescription",
+        "f1": 0.9415,
+        "precision": 0.925,
+        "recall": 0.9585,
+        "tp": 185,
+        "fp": 15,
+        "fn": 8,
+        "pred_count": 200,
+        "gold_count": 193,
+        "over_emission_rate": 0.075,
+        "miss_rate": 0.0415,
+        "candidate_miss": 8,
+        "wrong_detail_selection": 15,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 23
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+        "model_label": "DeepSeek chat",
+        "family": "Investigations",
+        "f1": 0.9658,
+        "precision": 1.0,
+        "recall": 0.9338,
+        "tp": 127,
+        "fp": 0,
+        "fn": 9,
+        "pred_count": 127,
+        "gold_count": 136,
+        "over_emission_rate": 0.0,
+        "miss_rate": 0.0662,
+        "candidate_miss": 9,
+        "wrong_detail_selection": 0,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 9
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "family": "Diagnosis",
+        "f1": 0.8563,
+        "precision": 0.8475,
+        "recall": 0.8653,
+        "tp": 257,
+        "fp": 43,
+        "fn": 40,
+        "pred_count": 282,
+        "gold_count": 297,
+        "over_emission_rate": 0.1525,
+        "miss_rate": 0.1347,
+        "candidate_miss": 40,
+        "wrong_detail_selection": 43,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 83
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "family": "SeizureFrequency",
+        "f1": 0.8908,
+        "precision": 0.8611,
+        "recall": 0.9226,
+        "tp": 155,
+        "fp": 25,
+        "fn": 13,
+        "pred_count": 180,
+        "gold_count": 168,
+        "over_emission_rate": 0.1389,
+        "miss_rate": 0.0774,
+        "candidate_miss": 48,
+        "wrong_detail_selection": 60,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 38
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "family": "Prescription",
+        "f1": 0.9343,
+        "precision": 0.9113,
+        "recall": 0.9585,
+        "tp": 185,
+        "fp": 18,
+        "fn": 8,
+        "pred_count": 203,
+        "gold_count": 193,
+        "over_emission_rate": 0.0887,
+        "miss_rate": 0.0415,
+        "candidate_miss": 8,
+        "wrong_detail_selection": 18,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 26
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "family": "Investigations",
+        "f1": 0.9579,
+        "precision": 1.0,
+        "recall": 0.9191,
+        "tp": 125,
+        "fp": 0,
+        "fn": 11,
+        "pred_count": 125,
+        "gold_count": 136,
+        "over_emission_rate": 0.0,
+        "miss_rate": 0.0809,
+        "candidate_miss": 11,
+        "wrong_detail_selection": 0,
+        "projection_gap": 0,
+        "evidence_failure": 0,
+        "evidence_valid_error_count": 11
+      }
+    ],
+    "family_parity": [
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "worst_family": "SeizureFrequency",
+        "worst_family_f1": 0.9053,
+        "best_family": "Prescription",
+        "best_family_f1": 0.9357,
+        "family_f1_spread": 0.0304,
+        "families_below_0_90": []
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+        "model_label": "GPT-4.1-mini-family lanes",
+        "worst_family": "Investigations",
+        "worst_family_f1": 0.8549,
+        "best_family": "Prescription",
+        "best_family_f1": 0.9357,
+        "family_f1_spread": 0.0808,
+        "families_below_0_90": [
+          "Investigations"
+        ]
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+        "model_label": "DeepSeek chat",
+        "worst_family": "Diagnosis",
+        "worst_family_f1": 0.8898,
+        "best_family": "Investigations",
+        "best_family_f1": 0.9658,
+        "family_f1_spread": 0.076,
+        "families_below_0_90": [
+          "Diagnosis"
+        ]
+      },
+      {
+        "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "worst_family": "Diagnosis",
+        "worst_family_f1": 0.8563,
+        "best_family": "Investigations",
+        "best_family_f1": 0.9579,
+        "family_f1_spread": 0.1016,
+        "families_below_0_90": [
+          "Diagnosis",
+          "SeizureFrequency"
+        ]
+      }
+    ],
+    "cross_model_agreement": {
+      "overall": {
+        "pair_count": 6,
+        "cell_count": 3360,
+        "exact_cell_agreement_rate": 0.8,
+        "mean_pairwise_jaccard": 0.8852
+      },
+      "by_family": [
+        {
+          "family": "Diagnosis",
+          "mean_pairwise_jaccard": 0.8593
+        },
+        {
+          "family": "Investigations",
+          "mean_pairwise_jaccard": 0.9242
+        },
+        {
+          "family": "Prescription",
+          "mean_pairwise_jaccard": 0.9051
+        },
+        {
+          "family": "SeizureFrequency",
+          "mean_pairwise_jaccard": 0.8524
+        }
+      ],
+      "pairwise": [
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 1.0,
+          "mean_jaccard": 1.0
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 1.0,
+          "mean_jaccard": 1.0
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 1.0,
+          "mean_jaccard": 1.0
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8786,
+          "mean_jaccard": 0.9012
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.6357,
+          "mean_jaccard": 0.8535
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.7214,
+          "mean_jaccard": 0.8264
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8214,
+          "mean_jaccard": 0.8701
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.9214,
+          "mean_jaccard": 0.9405
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.5643,
+          "mean_jaccard": 0.7978
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.6643,
+          "mean_jaccard": 0.8054
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8071,
+          "mean_jaccard": 0.8695
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.9143,
+          "mean_jaccard": 0.9369
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.6357,
+          "mean_jaccard": 0.8535
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.7214,
+          "mean_jaccard": 0.8264
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8214,
+          "mean_jaccard": 0.8701
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8643,
+          "mean_jaccard": 0.8869
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.5643,
+          "mean_jaccard": 0.7978
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.6643,
+          "mean_jaccard": 0.8054
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8071,
+          "mean_jaccard": 0.8695
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.8571,
+          "mean_jaccard": 0.8833
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Diagnosis",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.6643,
+          "mean_jaccard": 0.8533
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "SeizureFrequency",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.7571,
+          "mean_jaccard": 0.8506
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Prescription",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.9214,
+          "mean_jaccard": 0.9512
+        },
+        {
+          "left_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+          "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+          "family": "Investigations",
+          "cells": 140,
+          "exact_cell_agreement_rate": 0.9929,
+          "mean_jaccard": 0.9964
+        }
+      ]
+    },
+    "calibration_proxy": {
+      "definition": "External no-call confidence proxy from family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden.",
+      "cell_count": 1706,
+      "bin_count": 4,
+      "expected_calibration_error": 0.1456,
+      "bins": [
+        {
+          "bin": "very_high",
+          "cells": 88,
+          "avg_confidence_proxy": 0.8236,
+          "accuracy": 0.6023,
+          "mean_cell_f1": 0.7018
+        },
+        {
+          "bin": "high",
+          "cells": 788,
+          "avg_confidence_proxy": 0.6982,
+          "accuracy": 0.8452,
+          "mean_cell_f1": 0.9324
+        },
+        {
+          "bin": "medium",
+          "cells": 560,
+          "avg_confidence_proxy": 0.573,
+          "accuracy": 0.6446,
+          "mean_cell_f1": 0.8591
+        },
+        {
+          "bin": "low",
+          "cells": 270,
+          "avg_confidence_proxy": 0.4701,
+          "accuracy": 0.7407,
+          "mean_cell_f1": 0.9026
+        }
+      ]
+    },
+    "review_routing": {
+      "definition": "Predeclared dev-only review triggers over evidence-invalid cells, high proxy risk, source-to-final changes, and family-specific ambiguity cues.",
+      "eligible_cells": 1706,
+      "reviewed_cells": 1605,
+      "review_burden": 0.9408,
+      "total_error_cells": 426,
+      "caught_error_cells": 379,
+      "catch_rate": 0.8897,
+      "false_alarm_cells": 1226,
+      "missed_error_cells": 47,
+      "operating_points": [
+        {
+          "id": "high_recall_predeclared",
+          "label": "High-recall predeclared trigger net",
+          "rules": [
+            "any current review trigger",
+            "risk >= 0.35",
+            "evidence invalid",
+            "family-specific ambiguity cue"
+          ],
+          "validation_status": "dev replay only; not a promoted policy",
+          "eligible_cells": 1706,
+          "reviewed_cells": 1605,
+          "review_burden": 0.9408,
+          "total_error_cells": 426,
+          "caught_error_cells": 379,
+          "catch_rate": 0.8897,
+          "false_alarm_cells": 1226,
+          "false_alarm_rate": 0.7639,
+          "missed_error_cells": 47,
+          "review_burden_delta_vs_high_recall": 0.0,
+          "catch_rate_delta_vs_high_recall": 0.0
+        },
+        {
+          "id": "risk_ge_030",
+          "label": "Risk proxy >= 0.30",
+          "rules": [
+            "risk >= 0.30"
+          ],
+          "validation_status": "dev replay threshold scan",
+          "eligible_cells": 1706,
+          "reviewed_cells": 1247,
+          "review_burden": 0.7309,
+          "total_error_cells": 426,
+          "caught_error_cells": 335,
+          "catch_rate": 0.7864,
+          "false_alarm_cells": 912,
+          "false_alarm_rate": 0.7314,
+          "missed_error_cells": 91,
+          "review_burden_delta_vs_high_recall": -0.2099,
+          "catch_rate_delta_vs_high_recall": -0.1033
+        },
+        {
+          "id": "balanced_dev_candidate",
+          "label": "Balanced dev candidate",
+          "rules": [
+            "risk >= 0.35",
+            "source-to-final delta",
+            "low confidence",
+            "investigation result-state cue"
+          ],
+          "validation_status": "dev-tuned candidate; needs frozen validation",
+          "eligible_cells": 1706,
+          "reviewed_cells": 1291,
+          "review_burden": 0.7567,
+          "total_error_cells": 426,
+          "caught_error_cells": 342,
+          "catch_rate": 0.8028,
+          "false_alarm_cells": 949,
+          "false_alarm_rate": 0.7351,
+          "missed_error_cells": 84,
+          "review_burden_delta_vs_high_recall": -0.1841,
+          "catch_rate_delta_vs_high_recall": -0.0869
+        },
+        {
+          "id": "transition_focus",
+          "label": "Transition-focused candidate",
+          "rules": [
+            "source-to-final delta",
+            "SF active-rate cue",
+            "Prescription plan language",
+            "Investigation result-state cue"
+          ],
+          "validation_status": "dev-tuned candidate; needs frozen validation",
+          "eligible_cells": 1706,
+          "reviewed_cells": 1075,
+          "review_burden": 0.6301,
+          "total_error_cells": 426,
+          "caught_error_cells": 320,
+          "catch_rate": 0.7512,
+          "false_alarm_cells": 755,
+          "false_alarm_rate": 0.7023,
+          "missed_error_cells": 106,
+          "review_burden_delta_vs_high_recall": -0.3107,
+          "catch_rate_delta_vs_high_recall": -0.1385
+        }
+      ],
+      "trigger_counts": {
+        "diagnosis_convention_or_assertion_repair": 517,
+        "high_proxy_risk": 835,
+        "investigations_result_state": 235,
+        "prescription_current_vs_plan": 440,
+        "sf_state_or_rate_fidelity": 404
+      },
+      "by_family": [
+        {
+          "family": "Diagnosis",
+          "reviewed_cells": 517,
+          "false_alarm_cells": 339,
+          "eligible_cells": 520,
+          "caught_error_cells": 178,
+          "total_error_cells": 181,
+          "missed_error_cells": 3,
+          "review_burden": 0.9942,
+          "catch_rate": 0.9834
+        },
+        {
+          "family": "Investigations",
+          "reviewed_cells": 235,
+          "false_alarm_cells": 202,
+          "eligible_cells": 315,
+          "caught_error_cells": 33,
+          "total_error_cells": 59,
+          "missed_error_cells": 26,
+          "review_burden": 0.746,
+          "catch_rate": 0.5593
+        },
+        {
+          "family": "Prescription",
+          "reviewed_cells": 440,
+          "false_alarm_cells": 375,
+          "eligible_cells": 450,
+          "caught_error_cells": 65,
+          "total_error_cells": 75,
+          "missed_error_cells": 10,
+          "review_burden": 0.9778,
+          "catch_rate": 0.8667
+        },
+        {
+          "family": "SeizureFrequency",
+          "reviewed_cells": 413,
+          "false_alarm_cells": 310,
+          "eligible_cells": 421,
+          "missed_error_cells": 8,
+          "total_error_cells": 111,
+          "caught_error_cells": 103,
+          "review_burden": 0.981,
+          "catch_rate": 0.9279
+        }
+      ]
+    },
+    "active_llm_only_readout": [
+      {
+        "candidate": "decision_table_sf_inv_gpt41mini_dev140",
+        "model_label": "GPT-4.1-mini",
+        "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl",
+        "rows": 140,
+        "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
+        "clinical_headline_f1": 0.729,
+        "precision": 0.7529,
+        "recall": 0.7065,
+        "strict_benchmark_f1": 0.13,
+        "evidence_validity": 0.9694,
+        "call_failures": 0,
+        "parse_errors": 250,
+        "family_f1": {
+          "Diagnosis": 0.6809,
+          "SeizureFrequency": 0.5556,
+          "Prescription": 0.8512,
+          "Investigations": 0.8826
+        },
+        "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+      },
+      {
+        "candidate": "decision_table_sf_inv_deepseek_chat_dev140",
+        "model_label": "DeepSeek chat",
+        "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
+        "rows": 140,
+        "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
+        "clinical_headline_f1": 0.7448,
+        "precision": 0.7193,
+        "recall": 0.772,
+        "strict_benchmark_f1": 0.128,
+        "evidence_validity": 0.9617,
+        "call_failures": 0,
+        "parse_errors": 24,
+        "family_f1": {
+          "Diagnosis": 0.6886,
+          "SeizureFrequency": 0.6744,
+          "Prescription": 0.7885,
+          "Investigations": 0.8981
+        },
+        "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+      },
+      {
+        "candidate": "decision_table_sf_inv_qwen36_side11435_dev140",
+        "model_label": "Qwen 3.6 35B",
+        "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
+        "rows": 140,
+        "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
+        "clinical_headline_f1": 0.6969,
+        "precision": 0.684,
+        "recall": 0.7103,
+        "strict_benchmark_f1": 0.1274,
+        "evidence_validity": 0.9418,
+        "call_failures": 0,
+        "parse_errors": 213,
+        "family_f1": {
+          "Diagnosis": 0.6426,
+          "SeizureFrequency": 0.5623,
+          "Prescription": 0.7951,
+          "Investigations": 0.8372
+        },
+        "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+      }
+    ],
+    "holdout_guardrail": {
+      "full_200_or_holdout_rows_loaded": false,
+      "blocked_surfaces": [
+        "full-200",
+        "holdout",
+        "test"
+      ],
+      "policy": "Latest active rows are dev140 only. Any full-200 or holdout analysis still requires a frozen protocol and explicit authorization."
+    },
+    "coverage_update": [
+      {
+        "id": "factuality_and_over_inference",
+        "coverage": 4,
+        "evidence_added": "Per-family FP/FN over-emission and miss-rate table."
+      },
+      {
+        "id": "calibration",
+        "coverage": 3,
+        "evidence_added": "No-call external confidence proxy with reliability bins."
+      },
+      {
+        "id": "abstention_review_routing",
+        "coverage": 4,
+        "evidence_added": "Predeclared trigger set with burden/benefit table."
+      },
+      {
+        "id": "robustness",
+        "coverage": 4,
+        "evidence_added": "Latest DeepSeek/Qwen transfer rows reported by surface."
+      },
+      {
+        "id": "consistency",
+        "coverage": 4,
+        "evidence_added": "Cross-model dev140 agreement panel over shared letter IDs."
+      },
+      {
+        "id": "family_parity",
+        "coverage": 5,
+        "evidence_added": "Residual subtype and parity metrics across all selected models."
+      }
+    ]
+  }
 }

@@ -21,12 +21,22 @@ def test_reliability_scorecard_payload_parses_final_reports() -> None:
         "exectv2_cross_model_reliability_scorecard_2026-06-22.md"
     )
     assert len(payload["dimensions"]) == 10
-    assert [d["id"] for d in payload["weak_dimensions"]] == [
-        "calibration",
-        "abstention_review_routing",
-    ]
+    assert payload["weak_dimensions"] == []
     assert len(payload["evidence_set"]) == 4
     assert len(payload["comparison_rows"]) == 4
+    assert payload["computed_reliability"]["latest_run_check"]["surfaces"][0][
+        "replacement_policy"
+    ] == "same-surface comparators retained"
+    assert payload["computed_reliability"]["review_routing"]["caught_error_cells"] > 0
+    balanced_route = next(
+        item
+        for item in payload["computed_reliability"]["review_routing"][
+            "operating_points"
+        ]
+        if item["id"] == "balanced_dev_candidate"
+    )
+    assert balanced_route["review_burden"] < 0.8
+    assert balanced_route["catch_rate"] > 0.8
 
     v08 = next(
         row
@@ -36,6 +46,13 @@ def test_reliability_scorecard_payload_parses_final_reports() -> None:
     assert v08["overall_f1"] == 0.9152
     assert v08["diagnosis_f1"] == 0.9083
     assert v08["exact_evidence_rate"] == 1.0
+    deepseek = next(
+        row
+        for row in payload["comparison_rows"]
+        if row["candidate"] == "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140"
+    )
+    assert deepseek["overall_f1"] == 0.9174
+    assert deepseek["seizure_frequency_f1"] == 0.9017
 
 
 def test_static_frontend_scorecard_matches_builder_contract() -> None:
@@ -54,6 +71,7 @@ def test_static_frontend_scorecard_matches_builder_contract() -> None:
     assert static_payload["source_cross_model_report"] == built_payload["source_cross_model_report"]
     assert static_payload["dimensions"] == built_payload["dimensions"]
     assert static_payload["comparison_rows"] == built_payload["comparison_rows"]
+    assert static_payload["computed_reliability"] == built_payload["computed_reliability"]
 
 
 def test_gan_reliability_scorecard_payload_parses_master_scorecard() -> None:
@@ -93,8 +111,14 @@ def test_observatory_serves_exectv2_reliability_scorecard() -> None:
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["weak_dimensions"][0]["dimension"] == "Calibration"
+    calibration = next(
+        item for item in payload["dimensions"] if item["id"] == "calibration"
+    )
+    assert calibration["coverage"] == 3
     assert payload["evidence_set"][0]["role"] == "Performance control"
+    assert payload["computed_reliability"]["active_llm_only_readout"][1][
+        "model_label"
+    ] == "DeepSeek chat"
 
 
 def test_observatory_serves_gan_reliability_scorecard() -> None:

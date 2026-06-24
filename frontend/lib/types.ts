@@ -761,6 +761,114 @@ export interface Exectv2ComparisonRow {
   claim_boundary: string;
 }
 
+export interface Exectv2ReliabilityRunRef {
+  candidate: string;
+  model_label: string;
+  rows_path: string;
+  role: string;
+  claim_boundary: string;
+  summary_path?: string;
+}
+
+export interface Exectv2ReliabilityLatestSurface {
+  surface_id: string;
+  surface_label: string;
+  latest_deepseek: Exectv2ReliabilityRunRef;
+  latest_qwen: Exectv2ReliabilityRunRef;
+  replacement_policy: string;
+  rationale: string;
+}
+
+export interface Exectv2ReliabilityMetricBin {
+  bin: string;
+  cells: number;
+  avg_confidence_proxy: number;
+  accuracy: number;
+  mean_cell_f1: number;
+}
+
+export interface Exectv2ReliabilityReviewFamily {
+  family: string;
+  eligible_cells: number;
+  reviewed_cells?: number;
+  caught_error_cells?: number;
+  false_alarm_cells?: number;
+  missed_error_cells?: number;
+  total_error_cells?: number;
+  review_burden: number;
+  catch_rate: number;
+}
+
+export interface Exectv2ReliabilityReviewOperatingPoint {
+  id: string;
+  label: string;
+  rules: string[];
+  validation_status: string;
+  eligible_cells: number;
+  reviewed_cells: number;
+  review_burden: number;
+  total_error_cells: number;
+  caught_error_cells: number;
+  catch_rate: number;
+  false_alarm_cells: number;
+  false_alarm_rate: number;
+  missed_error_cells: number;
+  review_burden_delta_vs_high_recall: number;
+  catch_rate_delta_vs_high_recall: number;
+}
+
+export interface Exectv2ReliabilityActiveReadout {
+  candidate: string;
+  model_label: string;
+  rows_path: string;
+  rows: number;
+  surface: string;
+  clinical_headline_f1: number;
+  precision: number;
+  recall: number;
+  strict_benchmark_f1: number;
+  evidence_validity: number;
+  call_failures: number;
+  parse_errors: number;
+  family_f1: Record<string, number>;
+  claim_boundary: string;
+}
+
+export interface Exectv2ComputedReliability {
+  analysis_kind: string;
+  claim_boundary: string;
+  latest_run_check: {
+    surfaces: Exectv2ReliabilityLatestSurface[];
+  };
+  cross_model_agreement: {
+    overall: {
+      pair_count: number;
+      cell_count: number;
+      exact_cell_agreement_rate: number;
+      mean_pairwise_jaccard: number;
+    };
+  };
+  calibration_proxy: {
+    cell_count: number;
+    bin_count: number;
+    expected_calibration_error: number;
+    bins: Exectv2ReliabilityMetricBin[];
+  };
+  review_routing: {
+    eligible_cells: number;
+    reviewed_cells: number;
+    review_burden: number;
+    total_error_cells: number;
+    caught_error_cells: number;
+    catch_rate: number;
+    false_alarm_cells: number;
+    missed_error_cells: number;
+    operating_points: Exectv2ReliabilityReviewOperatingPoint[];
+    by_family: Exectv2ReliabilityReviewFamily[];
+  };
+  active_llm_only_readout: Exectv2ReliabilityActiveReadout[];
+}
+
 export interface Exectv2ReliabilityScorecardResponse {
   dataset?: ClinicalTask;
   generated_on: string;
@@ -773,6 +881,7 @@ export interface Exectv2ReliabilityScorecardResponse {
   residual_risks: Exectv2ResidualRisk[];
   upgrade_plan: Exectv2UpgradePlanItem[];
   comparison_rows: Exectv2ComparisonRow[];
+  computed_reliability?: Exectv2ComputedReliability;
 }
 
 export type ReliabilityScorecardResponse = Exectv2ReliabilityScorecardResponse;
