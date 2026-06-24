@@ -268,6 +268,58 @@ It may emit scorer sentinels or Gan-specific cluster syntax, but it must not
 choose a different clinical fact.
 _Avoid_: clinical selector, semantic repair, final-label policy
 
+**Meaning-Preserving Benchmark Projection**: A deterministic projection that
+maps a model-selected clinical fact onto benchmark conventions without changing
+concept identity, assertion, temporality, frequency state, negation, or
+prescription status. It may canonicalize equivalent surfaces, fill
+benchmark-required attributes entailed by the selected fact, and collapse
+duplicates only within the same declared [[Headline Scoring Unit]].
+_Avoid_: prediction-bearing rescue, semantic repair, hidden clinical selector
+
+**Projection Boundary Violation**: A deterministic change that adds a missed
+fact, drops an unsupported selected fact, promotes specificity, changes
+clinical type, fills a clinically meaningful attribute, or derives
+seizure-frequency state without explicit entailment from the selected phrase.
+It belongs to a named hybrid rescue or verifier layer, not to
+[[Meaning-Preserving Benchmark Projection]].
+_Avoid_: aggressive projection, helpful normalization, silent benchmark fix
+
+**Projection Attribution Tag**: A named audit label emitted by any
+deterministic rule that changes the scored representation. Tags distinguish
+[[Meaning-Preserving Benchmark Projection]] from hybrid rescue and verifier
+rejection.
+_Avoid_: unlogged repair, implicit rule, anonymous normalization
+
+**Projection-Aware Score Line**: A reported score line that includes
+[[Meaning-Preserving Benchmark Projection]] inside the LLM-only clinical
+recovery headline while reporting hybrid rescue and verifier-filtered outputs
+as separate lines.
+_Avoid_: blended benchmark F1, single mixed scoreboard, hidden hybrid score
+
+**Clinical-First Model Output**: An LLM output contract where the model selects
+source-supported clinical facts before any benchmark-facing fields are rendered.
+The model owns clinical fact selection; deterministic projection owns benchmark
+rendering.
+_Avoid_: benchmark-first extraction, scorer-shaped model output, direct label imitation
+
+**Benchmark-Mimicry Guardrail**: A prompt and evaluation rule that rewards
+source-supported clinical meaning rather than imitation of ExECT annotation
+quirks. Benchmark-specific phrase boundaries, ontology surfaces, and guideline
+defaults belong to tagged deterministic projection.
+_Avoid_: optimize-to-annotation, gold-style guessing, scorer overfitting
+
+**Deterministic Projection Eligibility**: The rule that projection eligibility
+is decided by deterministic code from model-selected clinical facts and
+attributes. The model supplies clinical structure; it does not self-certify that
+a benchmark projection is allowed.
+_Avoid_: model-approved projection, self-certified rendering, prompt-only eligibility
+
+**Deterministic Projection Rule Taxonomy**: The named categories that classify
+each deterministic rule as LLM-only-compatible projection, hybrid rescue, or
+verifier rejection before it affects scored output. No projection rule should
+ship without an attribution category.
+_Avoid_: ad hoc projection rules, uncategorized normalization, helpful one-off fixes
+
 **Cluster Cadence As Event Rate**: A narrow cluster projection policy where a
 clear current cluster cadence may render as a simple seizure-frequency rate
 when events-per-cluster burden is absent. It is owned by

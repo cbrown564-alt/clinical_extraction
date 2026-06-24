@@ -28,7 +28,12 @@ PROMPT_VERSION = "exectv2_llm_only_key_entities_generation_selection_v0.5"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_generation_selection"
 COMPONENT_OWNER = "qwen_llm_only_generation_selection"
 FACT_ORIGIN = "target_model_generated"
-PromptProfile = Literal["compact", "full_examples"]
+PromptProfile = Literal[
+    "compact",
+    "full_examples",
+    "decision_table",
+    "decision_table_sf_inv",
+]
 CallStrategy = Literal[
     "two_stage",
     "single_call_dedup_facts",
@@ -56,6 +61,9 @@ DEDUP_FACT_FAMILIES: tuple[DedupFactFamily, ...] = (
     "seizure_frequency",
     "prescription",
     "investigation",
+)
+DECISION_TABLE_FAMILIES: frozenset[DedupFactFamily] = frozenset(
+    {"seizure_frequency", "investigation"}
 )
 
 _ARCHITECTURE = {
@@ -275,6 +283,157 @@ _DEDUP_FACT_OUTPUT_SCHEMA = {
         },
     ],
 }
+
+
+def _dedup_fact_decision_tables(
+    target_family: DedupFactFamily | None = None,
+) -> dict[str, list[dict[str, str]]]:
+    tables: dict[str, list[dict[str, str]]] = {
+        "diagnosis": [
+            {
+                "source_pattern": "epilepsy heading or diagnosis line",
+                "emit": (
+                    "the most specific epilepsy concept stated: epilepsy, focal "
+                    "epilepsy/focal-onset epilepsy, temporal lobe epilepsy, "
+                    "generalised epilepsy, genetic generalised epilepsy, or "
+                    "intractable epilepsy"
+                ),
+                "do_not_emit": (
+                    "a generic epilepsy fact instead of a more specific stated "
+                    "epilepsy concept"
+                ),
+            },
+            {
+                "source_pattern": "seizure type named in a seizure type/frequency statement",
+                "emit": (
+                    "the seizure type diagnosis, e.g. focal seizures, focal seizures "
+                    "with altered awareness, focal to bilateral convulsive seizures, "
+                    "generalised tonic clonic seizures, complex partial seizures"
+                ),
+                "do_not_emit": (
+                    "an epilepsy syndrome such as focal epilepsy or temporal lobe "
+                    "epilepsy unless the source states that syndrome separately"
+                ),
+            },
+            {
+                "source_pattern": (
+                    "febrile seizures, dissociative/non-epileptic events, isolated "
+                    "jerks, migraine, syncope, blackouts, or uncertain attacks"
+                ),
+                "emit": (
+                    "nothing unless the phrase is explicitly listed as the patient's "
+                    "current epileptic seizure type"
+                ),
+                "do_not_emit": (
+                    "mimics, historical febrile seizures, or symptoms as "
+                    "diagnosis facts"
+                ),
+            },
+            {
+                "source_pattern": "no absences/no focal seizures/no convulsive seizures",
+                "emit": "a negated diagnosis fact for the named target seizure type",
+                "do_not_emit": "an affirmed diagnosis fact for the negated phrase",
+            },
+        ],
+        "seizure_frequency": [
+            {
+                "source_pattern": "explicit nonzero count, rate, cadence, or interval",
+                "emit": (
+                    "state=active_rate for that exact seizure type; examples include "
+                    "2 per month, twice weekly, every 3 weeks, one seizure last week, "
+                    "3 since last clinic"
+                ),
+                "do_not_emit": "active_rate without an explicit burden expression",
+            },
+            {
+                "source_pattern": (
+                    "continues to get, ongoing, returned, occasional, frequent, "
+                    "infrequent"
+                ),
+                "emit": (
+                    "state=unknown only when this is a seizure type/frequency target "
+                    "statement; otherwise omit"
+                ),
+                "do_not_emit": (
+                    "active_rate, and never invent NumberOfSeizures=1 for qualitative "
+                    "language"
+                ),
+            },
+            {
+                "source_pattern": "last event, last seizure, no seizures since, seizure-free",
+                "emit": "state=seizure_free for the named seizure type, or seizures if generic",
+                "do_not_emit": "active_rate from a last-event date",
+            },
+            {
+                "source_pattern": "same seizure type has two distinct stated states",
+                "emit": (
+                    "one fact per distinct state, e.g. an infrequent/unknown state "
+                    "and a last-event/seizure_free state may both be present"
+                ),
+                "do_not_emit": "collapse different states for the same seizure type",
+            },
+            {
+                "source_pattern": (
+                    "specific seizure type and generic overall seizure statement "
+                    "both appear"
+                ),
+                "emit": (
+                    "specific seizure-type facts for specific evidence; generic "
+                    "seizures only for a separate overall statement"
+                ),
+                "do_not_emit": (
+                    "generic seizures from evidence that only names a specific "
+                    "seizure type"
+                ),
+            },
+        ],
+        "prescription": [
+            {
+                "source_pattern": (
+                    "current medication/current anti-seizure medication/she is "
+                    "taking/she is on"
+                ),
+                "emit": (
+                    "each standing current anti-seizure regimen with drug, dose, "
+                    "unit, frequency"
+                ),
+                "do_not_emit": "non-antiepileptic medicines or previous trials",
+            },
+            {
+                "source_pattern": "planned increase, taper, option, start later, reduce slowly",
+                "emit": "only the dose/frequency the patient is currently taking now",
+                "do_not_emit": "future target doses or medication-change plans",
+            },
+            {
+                "source_pattern": "can take, if necessary, rescue, PRN/as required",
+                "emit": (
+                    "nothing unless the source explicitly lists it as a current "
+                    "standing regimen"
+                ),
+                "do_not_emit": "contingency or rescue medication as ordinary current treatment",
+            },
+        ],
+        "investigation": [
+            {
+                "source_pattern": "completed MRI/CT/EEG/telemetry with normal or abnormal result",
+                "emit": "the modality with result normal or abnormal",
+                "do_not_emit": "dates or planned repeat tests",
+            },
+            {
+                "source_pattern": "completed test mentioned but result not stated",
+                "emit": "the modality with result unknown",
+                "do_not_emit": "unknown for a planned or requested test",
+            },
+            {
+                "source_pattern": "arranging/requested/awaiting/repeat/planned/future test",
+                "emit": "nothing",
+                "do_not_emit": "a completed investigation fact, even with result unknown",
+            },
+        ],
+    }
+    if target_family is None:
+        return tables
+    return {target_family: tables[target_family]}
 
 
 def _dedup_fact_output_schema(
@@ -1372,6 +1531,15 @@ def build_single_call_dedup_facts_prompt_payload(
             ),
             *fact_guidance,
         ]
+    if prompt_profile == "decision_table":
+        fact_guidance = [
+            (
+                "Before emitting facts, apply the decision_tables exactly. If a "
+                "decision table says omit, do not emit that fact even if the phrase "
+                "looks clinically related."
+            ),
+            *fact_guidance,
+        ]
 
     payload = {
         "prompt_version": PROMPT_VERSION,
@@ -1407,6 +1575,8 @@ def build_single_call_dedup_facts_prompt_payload(
             target_family=target_family,
         ),
     }
+    if prompt_profile == "decision_table":
+        payload["decision_tables"] = _dedup_fact_decision_tables(target_family)
     if target_family:
         payload["target_family"] = target_family
         payload["target_families"] = [target_family]
@@ -4244,9 +4414,13 @@ def _run_single_call_dedup_facts_per_family_letter(
     facts: list[dict[str, Any]] = []
 
     for family in DEDUP_FACT_FAMILIES:
+        family_prompt_profile = _dedup_fact_prompt_profile_for_family(
+            prompt_profile,
+            family,
+        )
         prompt_input_json = build_single_call_dedup_facts_prompt_input(
             letter,
-            prompt_profile=prompt_profile,
+            prompt_profile=family_prompt_profile,
             target_family=family,
         )
         prompt_by_family[family] = prompt_input_json
@@ -4312,6 +4486,15 @@ def _run_single_call_dedup_facts_per_family_letter(
             "dedup_adapter_deduplicated_facts": 0,
         },
     )
+
+
+def _dedup_fact_prompt_profile_for_family(
+    prompt_profile: PromptProfile,
+    family: DedupFactFamily,
+) -> PromptProfile:
+    if prompt_profile == "decision_table_sf_inv":
+        return "decision_table" if family in DECISION_TABLE_FAMILIES else "compact"
+    return prompt_profile
 
 
 def _run_single_call_inventory_letter(
@@ -5419,6 +5602,8 @@ def _dedup_fact_worked_examples(
     ]
     if prompt_profile == "full_examples":
         selected_examples = examples
+    elif prompt_profile == "decision_table":
+        selected_examples = [examples[index] for index in (0, 2, 4, 5)]
     else:
         selected_examples = examples[:4]
     if target_family is None:
@@ -5435,7 +5620,9 @@ def _dedup_fact_worked_examples(
             "note_fragment": example["note_fragment"],
             "clinical_facts": family_facts,
         }
-        if not family_facts:
+        if not family_facts and "omission_note" in example:
+            filtered["omission_note"] = example["omission_note"]
+        elif not family_facts:
             filtered["omission_note"] = (
                 f"No source-supported {target_family} facts are emitted for this "
                 "family-specific call."

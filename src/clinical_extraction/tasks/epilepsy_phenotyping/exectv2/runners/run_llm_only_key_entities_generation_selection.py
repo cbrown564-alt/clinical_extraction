@@ -57,9 +57,18 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--prompt-profile",
-        choices=["compact", "full_examples"],
+        choices=[
+            "compact",
+            "full_examples",
+            "decision_table",
+            "decision_table_sf_inv",
+        ],
         default="compact",
-        help="Prompt payload profile. compact limits in-context examples for local Qwen.",
+        help=(
+            "Prompt payload profile. compact limits examples for local Qwen; "
+            "decision_table adds targeted scorer-facing gates; "
+            "decision_table_sf_inv applies them only to SF/Investigations."
+        ),
     )
     parser.add_argument(
         "--call-strategy",

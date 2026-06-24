@@ -1,13 +1,20 @@
 # Satellite 13 — De-duplicated Clinical-Fact LLM-Only Extraction (PRIMARY FOCUS)
 
 Parent: [[00_overarching_implementation_plan]]
-Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 complete; no Phase 5 rollout promoted because no Phase 4 winner cleared the dev25 gate.**
+Status: **active — primary ExECTv2 research focus as of 2026-06-24; Phase 0, Phase 1, Phase 2, Phase 3, and Phase 4 complete; no Phase 5 model rollout promoted because no Phase 4 winner cleared the dev25 gate; post-Phase-4 direction is now explicit deterministic projection taxonomy/pilot work with separate score lines.**
 Dev-split only until a separately authorized Phase 7 audit.
 Decision basis:
 `docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`,
 `docs/decisions/0033-deduplicated-clinical-fact-recovery-is-the-primary-llm-only-target.md`,
 `docs/research/qwen_exectv2_llm_only_error_analysis_2026-06-23.md`,
-`docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`
+`docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`,
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_error_analysis_2026-06-24.md`,
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`,
+`CONTEXT.md` terms: [[Meaning-Preserving Benchmark Projection]],
+[[Projection Boundary Violation]], [[Projection Attribution Tag]],
+[[Projection-Aware Score Line]], [[Clinical-First Model Output]],
+[[Benchmark-Mimicry Guardrail]], [[Deterministic Projection Eligibility]], and
+[[Deterministic Projection Rule Taxonomy]].
 
 ## Purpose
 
@@ -46,7 +53,7 @@ GPT-4.1-mini and then rolling out to DeepSeek and Qwen.
 | Primary scored surface | strict benchmark / `model_preserving_canonical` (all attributes, exact text, multiplicity) | **`clinical_headline`** — de-duplicated, concept/component-level clinical facts |
 | Primary architecture | rich-schema producers (LLM-only and hybrid) reproducing the full annotation | **single-prompt LLM-only** emitting only de-duplicated clinical facts |
 | Rich-schema runs (certainty/negation/operands/multiplicity) | the main pursuit | **comparison points only** — keep 1–2 best dev140 comparators, archive the rest (Phase 1 cleanup) |
-| Attribution | model_preserving_canonical with no deterministic rescue | unchanged: still LLM-only; deterministic code only validates evidence, maps to the headline key, and scores |
+| Attribution | model_preserving_canonical with no deterministic rescue | LLM-only remains model-selected facts only; deterministic code may perform tagged meaning-preserving benchmark projection, while hybrid rescue/verifier filtering are separate score lines |
 
 This is consistent with decision 0027 ("clinical-recovery is the ExECTv2
 headline; projection is an artifact layer"). It does **not** abandon the strict
@@ -73,15 +80,30 @@ report uses for its `0.9155` headline). The unit per family:
 generate and select every scored fact. Deterministic code may only:
 
 - validate that each fact's evidence is an exact source substring;
-- map the model's simplified fact into the scorer's headline-key fields
-  (representation mapping of a model-selected fact — allowed);
+- perform [[Meaning-Preserving Benchmark Projection]]: map a model-selected
+  clinical fact into scorer/headline fields without changing concept identity,
+  assertion, temporality, frequency state, negation, or prescription status;
+- emit [[Projection Attribution Tag]] values for any deterministic rule that
+  changes the scored representation;
 - score on `clinical_headline`.
 
 Deterministic code may **not** add a fact the model did not emit, choose a
 seizure-frequency state the model omitted, expand ontology companions, or
-de-duplicate in a way that rescues a missed concept. De-duplication is the
-**model's** job in the prompt; the scorer's collapse only forgives, it does not
-add.
+de-duplicate in a way that rescues a missed concept. These are [[Projection
+Boundary Violation]] cases and must be reported only as hybrid rescue or
+verifier-filtered score lines, never blended into the LLM-only headline.
+De-duplication is the **model's** job in the prompt; the scorer's collapse only
+forgives, it does not add.
+
+Reporting now follows [[Projection-Aware Score Line]] discipline:
+
+1. **LLM-only clinical recovery + meaning-preserving projection** — model
+   selected every clinical fact; deterministic code only rendered benchmark
+   convention.
+2. **Hybrid rescue** — deterministic rules or candidates added facts, selected
+   missing states, or completed clinically meaningful attributes.
+3. **Verifier-filtered** — unsupported model predictions were rejected before
+   scoring by a named verifier/guard layer.
 
 ## 3. Baseline and Target
 
@@ -145,6 +167,12 @@ Design rules baked into the prompt:
 - **De-duplicate at the source.** Emit each distinct clinical fact once. Do not
   repeat a diagnosis, seizure-type state, drug regimen, or investigation that you
   have already listed.
+- **Clinical-first model output.** The model selects source-supported clinical
+  facts and attributes; deterministic code owns benchmark rendering and
+  projection eligibility.
+- **Benchmark-mimicry guardrail.** Do not imitate ExECT phrase boundaries,
+  ontology surfaces, or guideline defaults when they conflict with clinical
+  meaning. Benchmark quirks belong to tagged deterministic projection.
 - **No strict-schema fields.** No Certainty, no DiagCategory, no counts/periods/
   dates, no section labels, no exact gold-string mimicry.
 - **Distinct seizure types, not events.** One seizure_frequency entry per distinct
@@ -163,8 +191,13 @@ Design rules baked into the prompt:
   `clinical_fact` into the minimal `PredictedMention`/`ClinicalFinding` fields the
   `clinical_headline` keys read (Diagnosis concept+Negation; SF seizure-type+state
   token; Rx DrugName/DrugDose/Frequency; Inv modality+Performed+Result). The
-  mapper performs representation mapping only and logs provenance per the
-  attribution protocol.
+  mapper performs [[Meaning-Preserving Benchmark Projection]] only and logs
+  [[Projection Attribution Tag]] values per the attribution protocol.
+- **Projection eligibility layer (post-Phase-4 direction):** deterministic code,
+  not the model, decides whether a selected fact is eligible for projection.
+  Every rule must be classified by the [[Deterministic Projection Rule Taxonomy]]
+  before it affects scored output: LLM-only-compatible projection, hybrid
+  rescue, or verifier rejection.
 - **Primary reported surface:** `clinical_headline` overall (micro-averaged) plus
   the four per-family headline F1s, evidence validity, and call/parse-failure
   counts. Strict benchmark is reported as a secondary diagnostic only.
@@ -299,18 +332,56 @@ the `>0.900` target, so no dev140 confirmation or Phase 5 model rollout was
 promoted. The plateau remains localized to Diagnosis and SeizureFrequency. See
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_fallback_plateau_2026-06-24.md`.
 
-### Phase 5 — Rollout to DeepSeek and Qwen
-Run the winning configuration unchanged (model swap only) on
+Prompt-guideline probe note: after the Phase 4 plateau, a targeted
+decision-table prompt profile was tested because several errors appeared
+prompt-addressable. The best mixed profile (`decision_table_sf_inv`) improved
+dev25 to `0.828` and dev140 overall to `0.729`, but did not improve dev140
+SeizureFrequency or approach `>0.900`. This confirms that clearer instructions
+help local behavior but do not solve the prediction-bearing ontology/state
+boundary. See
+`docs/experiments/exectv2/key_entities/exectv2_dedup_phase4_decision_table_prompt_probe_2026-06-24.md`.
+
+### Phase 5 — Deterministic projection taxonomy and Prescription pilot — next, not started
+This phase is **not** a continuation of the LLM-only prompt ladder and does not
+resurrect the `>0.900` LLM-only target by hidden repair. It formalizes the
+post-Phase-4 finding that deterministic rules can help map clinical meaning onto
+benchmark conventions only when their ownership is explicit.
+
+Deliverables:
+
+1. A small [[Deterministic Projection Rule Taxonomy]] with allowed
+   meaning-preserving categories and disallowed/separate hybrid categories.
+2. A Prescription-first projection pilot, because Prescription has the clearest
+   convention mappings: brand/generic equivalence, frequency abbreviation
+   rendering, exact dose/unit normalization, route synonym rendering,
+   guideline-defaulted rescue/PRN frequency, and duplicate regimen collapse
+   within the same headline unit.
+3. Rule-level [[Projection Attribution Tag]] output for every deterministic
+   mapping that changes the scored representation.
+4. Separate [[Projection-Aware Score Line]] reporting:
+   LLM-only + meaning-preserving projection; hybrid rescue; verifier-filtered.
+5. Tests proving that the LLM-only score line does not add missed medications,
+   infer current/past status the model omitted, drop hallucinated medications,
+   infer missing dose/frequency from clinical practice, or convert vague ASM
+   therapy into specific drugs.
+
+Exit: a Prescription pilot report showing per-rule counts, score deltas by
+score line, and examples of accepted projection versus boundary violations. The
+phase succeeds if it clarifies attribution and benchmark-convention effects,
+even if it does not materially raise overall `clinical_headline`.
+
+### Phase 6 — Rollout to DeepSeek and Qwen — parked
+Only run a model swap if a future GPT-4.1-mini configuration or projection-aware
+score line has a clearly stated transfer question. The original model rollout
+was not promoted because no Phase 4 LLM-only fallback cleared the dev25 gate.
+
+If reactivated, run the selected configuration unchanged on
 `deepseek/deepseek-chat` and `ollama_chat/qwen3.6:35b`. Report the three-model
 de-dup comparison and per-family deltas; note any model-specific gap (expected:
-SF state for Qwen, per the closeout).
-Exit: dev140 de-dup `clinical_headline` for all three models, with a portability
-read (which families transfer, which need model-specific prompting).
+SF state for Qwen, per the closeout). Projection-aware reporting must keep
+LLM-only, hybrid rescue, and verifier-filtered score lines separate.
 
-Status note: not started/promoted as of 2026-06-24 because Phase 4 did not
-produce a winning GPT-4.1-mini configuration to roll out unchanged.
-
-### Phase 6 — (Optional, separately authorized) audit and paper framing
+### Phase 7 — (Optional, separately authorized) audit and paper framing
 If the dev result is strong and stable, predeclare a frozen full-200 /
 holdout audit on the de-dup surface, framed explicitly as clinical-recovery.
 
@@ -323,12 +394,17 @@ Every de-dup result is reported against the two kept rich-schema comparators on
 | --- | --- | ---: | ---: |
 | clean_render (LLM-only, full schema) | 1 call, full schema | 0.334 / 0.339 | 0.713 / 0.725 |
 | v08 (hybrid, full schema) | multi-component | ~0.374 | 0.9155 |
-| **dedup_facts (this plan)** | 1 call, de-dup target | (diagnostic) | **target > 0.900** |
+| dedup_facts v0.5 | 1 call, de-dup target | diagnostic | 0.710 dev140 |
+| dedup_facts_per_family compact | 4 calls, de-dup target | diagnostic | 0.796 dev25 gate |
+| decision_table_sf_inv | 4 calls, mixed prompt profile | diagnostic | 0.729 dev140 |
+| Projection-aware Prescription pilot | deterministic projection over model-selected facts | diagnostic | separate LLM-only / hybrid / verifier-filtered lines |
 
-The claim is specifically: *an attribution-clean single-prompt LLM-only system,
-designed to emit de-duplicated clinical facts, recovers the clinical-recovery
-headline as well as the multi-component hybrid* — without deterministic fact
-rescue.
+The current claim is specifically: *direct attribution-clean LLM-only prompting
+for de-duplicated clinical facts plateaued below the v08 hybrid, with the
+remaining gap localized to prediction-bearing Diagnosis and SeizureFrequency
+decisions.* The next research question is whether tagged
+[[Meaning-Preserving Benchmark Projection]] can quantify benchmark-convention
+effects without changing the LLM-only clinical-recovery attribution.
 
 ## 8. Risks
 
@@ -338,23 +414,30 @@ rescue.
 | Single prompt plateaus below 0.900 | Phase 4 fallback rungs, all still LLM-only; a documented plateau is itself a valid result. |
 | Headline definition drift | Phase 2 locks one canonical `clinical_headline` (Diagnosis = `concept_negation`); adapter must reproduce the 0.713/0.725 baseline before any new judgment. |
 | Adapter silently rescues facts | Tests assert the scored fact set equals the model-emitted fact set (1:1), no additions; provenance logged. |
+| Projection pilot silently becomes hybrid rescue | Every rule must have a [[Projection Attribution Tag]] and a [[Deterministic Projection Rule Taxonomy]] category; hybrid rescue and verifier-filtered outputs get separate score lines. |
+| Prescription projection overstates general progress | Report per-family score deltas and rule counts; do not infer Diagnosis/SF recovery from Prescription convention mapping. |
 | Model de-dups too aggressively (recall loss) | Track recall separately; de-dup is "distinct facts," not "fewest facts." |
 | Cleanup deletes useful path evidence | Archive, never delete; keep a one-line manifest of the two retained comparators. |
 
 ## 9. Claim Language
 
-Allowed (after Phase 3/5):
-> On dev140, an attribution-clean single-prompt LLM-only system targeting
-> de-duplicated clinical facts reaches clinical-recovery (`clinical_headline`)
-> F1 of X with GPT-4.1-mini (and Y/Z for DeepSeek/Qwen), versus 0.713 for the
-> full-schema LLM-only baseline and 0.9155 for the full hybrid — without
-> deterministic fact rescue.
+Allowed now:
+> On dev140, direct attribution-clean LLM-only prompting for de-duplicated
+> clinical facts plateaued at `0.710`–`0.729` overall clinical-recovery F1,
+> below the v08 hybrid `0.9155`, with the residual concentrated in
+> prediction-bearing Diagnosis and SeizureFrequency decisions.
+
+Allowed for Phase 5:
+> A projection-aware Prescription pilot reports LLM-only clinical recovery plus
+> tagged meaning-preserving benchmark projection separately from hybrid rescue
+> and verifier-filtered score lines.
 
 Not allowed:
 - "Benchmark cleared" or any comparison to the paper's 0.87/0.90 (different,
   strict target).
 - "LLM-only" if the headline adapter adds, selects, or completes facts the model
   did not emit.
+- Blending hybrid rescue or verifier rejection into the LLM-only score line.
 - Reporting de-dup `clinical_headline` without the strict benchmark beside it.
 
 ## 10. Completion Criteria
@@ -365,7 +448,10 @@ This plan is complete when:
   route exists, tested and attribution-clean (Phase 2);
 - GPT-4.1-mini clears `0.900` de-dup `clinical_headline` on dev140, or a localized
   plateau is documented (Phases 3–4);
-- the winning configuration is rolled out to DeepSeek and Qwen with a three-model
-  de-dup comparison (Phase 5);
+- the post-plateau deterministic projection taxonomy and Prescription pilot are
+  either completed with projection-aware score lines or explicitly deferred
+  (Phase 5);
+- any future DeepSeek/Qwen rollout is tied to a stated transfer question rather
+  than treated as a required continuation (Phase 6);
 - every result is reported on both the de-dup and strict surfaces with fixed
   clinical-recovery claim language.
