@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import {
   useQuery,
   useMutation,
@@ -295,9 +295,9 @@ export function useArchitectUrlSync() {
 }
 
 // ── URL sync for Observatory page ──
-export function useObservatoryUrlSync(
-  activeTab: string,
-  setActiveTab: (tab: any) => void
+export function useObservatoryUrlSync<TTab extends string>(
+  activeTab: TTab,
+  setActiveTab: (tab: TTab) => void
 ) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -307,7 +307,7 @@ export function useObservatoryUrlSync(
   useEffect(() => {
     const tabParam = searchParams.get("tab");
     if (tabParam) {
-      setActiveTab(tabParam);
+      setActiveTab(tabParam as TTab);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -327,13 +327,13 @@ export function useObservatoryUrlSync(
 }
 
 // ── URL sync for Gallery page ──
-export function useGalleryUrlSync(
-  errorFilter: string,
-  setErrorFilter: (f: any) => void,
+export function useGalleryUrlSync<TErrorFilter extends string, TSortKey extends string>(
+  errorFilter: TErrorFilter,
+  setErrorFilter: (f: TErrorFilter) => void,
   categoryFilter: string,
   setCategoryFilter: (c: string) => void,
-  sortKey: string,
-  setSortKey: (s: any) => void,
+  sortKey: TSortKey,
+  setSortKey: (s: TSortKey) => void,
   compareRunId: string,
   setCompareRunId: (id: string) => void,
   expandedRowKey: string | null,
@@ -351,9 +351,9 @@ export function useGalleryUrlSync(
     const compareParam = searchParams.get("compare");
     const expandedParam = searchParams.get("expanded");
 
-    if (errorParam) setErrorFilter(errorParam);
+    if (errorParam) setErrorFilter(errorParam as TErrorFilter);
     if (catParam) setCategoryFilter(catParam);
-    if (sortParam) setSortKey(sortParam);
+    if (sortParam) setSortKey(sortParam as TSortKey);
     if (compareParam) setCompareRunId(compareParam);
     if (expandedParam) setExpandedRowKey(expandedParam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -491,9 +491,9 @@ export function useLaboratoryUrlSync(
 }
 
 // ── URL sync for Review page ──
-export function useReviewUrlSync(
-  activeTab: string,
-  setActiveTab: (tab: any) => void
+export function useReviewUrlSync<TTab extends string>(
+  activeTab: TTab,
+  setActiveTab: (tab: TTab) => void
 ) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -503,7 +503,7 @@ export function useReviewUrlSync(
   useEffect(() => {
     const tabParam = searchParams.get("tab");
     if (tabParam) {
-      setActiveTab(tabParam);
+      setActiveTab(tabParam as TTab);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

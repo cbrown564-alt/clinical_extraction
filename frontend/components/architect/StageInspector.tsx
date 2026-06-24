@@ -91,7 +91,7 @@ function ItemCard({ item }: { item: TraceItem }) {
       )}
       {item.evidence && (
         <div className="text-[11px] text-muted italic border-l-2 border-border pl-2">
-          "{item.evidence}"
+          &quot;{item.evidence}&quot;
         </div>
       )}
       {item.metadata && Object.keys(item.metadata).length > 0 && (
@@ -186,7 +186,7 @@ export default function StageInspector() {
             </div>
             <div className="rounded-lg border border-border bg-surface p-3 space-y-1">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-muted">Evidence</div>
-              <div className="text-sm text-foreground italic">"{trace.select.evidence}"</div>
+              <div className="text-sm text-foreground italic">&quot;{trace.select.evidence}&quot;</div>
             </div>
             {trace.select.selectedIds && trace.select.selectedIds.length > 0 && (
               <div className="rounded-lg border border-border bg-surface p-3">

@@ -103,9 +103,8 @@ export default function GoldAuditPanel() {
     return map;
   }, [decisionsData]);
 
-  const allRows = rowsData?.rows ?? [];
-
   const sortedRows = useMemo(() => {
+    const allRows = rowsData?.rows ?? [];
     const list = [...allRows];
     list.sort((a, b) => {
       const aDone = decisionsMap.has(Number(a.source_row_index));
@@ -114,7 +113,7 @@ export default function GoldAuditPanel() {
       return (b.priority_score ?? 0) - (a.priority_score ?? 0);
     });
     return list;
-  }, [allRows, decisionsMap]);
+  }, [rowsData?.rows, decisionsMap]);
 
   const reviewRows = useMemo(() => {
     return sortedRows.filter((r) => {
@@ -135,6 +134,7 @@ export default function GoldAuditPanel() {
 
   useEffect(() => {
     if (currentRow && currentSourceRowIndex == null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentSourceRowIndex(Number(currentRow.source_row_index));
     }
   }, [currentRow, currentSourceRowIndex]);
@@ -147,6 +147,7 @@ export default function GoldAuditPanel() {
 
   useEffect(() => {
     if (!currentRow) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSimpleClass(null);
       setNotes("");
       setCorrectedGoldLabel("");

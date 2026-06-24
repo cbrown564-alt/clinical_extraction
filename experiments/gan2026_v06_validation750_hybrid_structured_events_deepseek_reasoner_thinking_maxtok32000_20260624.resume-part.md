@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 10 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 30 rows.
 Rare full-validation reason: full_validation750_diagnostic_after_test450_gap_continue_from_validation250_validation_only_error_analysis
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 10 / 10
+- Structured records: 30 / 30
 - Call failures: 0
 - Parse/schema/label issues: 0
 - JSON dialect repairs: 0
-- Deterministic repair notes: 6
-- Exact selection evidence substrings: 10 / 10
-- Purist validation accuracy/micro F1 proxy: 0.9000 (9 / 10)
-- Pragmatic validation accuracy/micro F1 proxy: 0.9000 (9 / 10)
+- Deterministic repair notes: 13
+- Exact selection evidence substrings: 30 / 30
+- Purist validation accuracy/micro F1 proxy: 0.9333 (28 / 30)
+- Pragmatic validation accuracy/micro F1 proxy: 0.9333 (28 / 30)
 
 ## Rows
 
@@ -61,3 +61,23 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 5827 | multiple per week | multiple per week | yes |  |
 | 5837 | unknown | 2 cluster per 3 week, multiple per cluster | no | final_label_repaired: '2 clusters in 3 weeks' -> 'unknown' |
 | 5866 | 4 per 6 week | 4 per 6 week | yes | final_label_repaired: '2 to 3 per month' -> '4 per 6 week' |
+| 5873 | multiple per week | multiple per week | yes |  |
+| 5921 | 1 per 6 to 8 week | 1 per 6 to 8 week | yes | final_label_repaired: '1 per 6-8 weeks' -> '1 per 6 to 8 week' |
+| 5954 | 2 per week | 2 per week | yes |  |
+| 5961 | 1 per 2 to 3 week | 1 per 2 to 3 week | yes | final_label_repaired: 'less than once per week' -> '1 per 2 to 3 week' |
+| 5974 | unknown | unknown | yes |  |
+| 5977 | multiple per 6 week | unknown | yes | final_label_repaired: 'unknown' -> 'multiple per 6 week' |
+| 5995 | 3 per 7 month | 1 per 3 months | yes | final_label_repaired: 'less than 1 per month' -> 'multiple per month'; final_label_repaired: 'multiple per month' -> '3 per 7 month' |
+| 5996 | unknown | unknown | yes |  |
+| 6026 | 3 per 2 month | 3 per 2 month | yes | final_label_repaired: '3 per 2 months' -> '3 per 2 month' |
+| 6029 | unknown | unknown | yes |  |
+| 6034 | unknown | unknown | yes |  |
+| 6065 | 5 per month | 5 per month | yes |  |
+| 6077 | 1 per 8 month | unknown | no | final_label_repaired: '1 per 8 months' -> '1 per 8 month' |
+| 6087 | unknown | unknown | yes |  |
+| 6094 | 2 to 3 per month | 3 per month | yes |  |
+| 6112 | 3 to 5 per month | 3 to 5 per month | yes |  |
+| 6131 | unknown | unknown | yes |  |
+| 6137 | 1 per 2 to 3 week | 1 per 2 week | yes | final_label_repaired: '1 per 2-3 weeks' -> '1 per 2 to 3 week' |
+| 6153 | 6 per month | 9 per month | yes |  |
+| 6180 | multiple per week | multiple per week | yes |  |

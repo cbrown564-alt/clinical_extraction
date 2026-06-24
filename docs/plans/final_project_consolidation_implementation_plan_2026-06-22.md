@@ -724,6 +724,24 @@ Finish:
 - First cleanup PR or branch that only archives/quarantines non-canonical
   outputs and removes caches/logs.
 
+Completion note, 2026-06-24:
+
+- Canonical hashes are present in
+  `docs/experiments/final_artifact_index_2026-06-22.md`.
+- The final artifact index, cross-model report, reliability scorecard,
+  architecture selection memo, repo simplification plan, and `PROJECT_STATUS.md`
+  are current with the completed DeepSeek/Qwen dev140 diagnostic disposition and
+  later Satellite 13 plateau addendum.
+- The frontend ExECTv2 MVP is available through the task-aware workbench:
+  `/exectv2` redirects to `/workbench?dataset=exectv2`, with v08, v09,
+  DeepSeek, and Qwen selected architectures loaded from static mock data and a
+  letter-level gold/predicted/evidence inspector.
+- A cleanup branch was opened as `codex/final-consolidation-phase2`. Existing
+  superseded ExECTv2 rich-schema artifacts are quarantined under
+  `experiments/_archive/exectv2_richschema_iterations/`, now documented by
+  `experiments/_archive/README.md`. No additional canonical evidence was moved
+  or deleted in this phase.
+
 ### Phase 3 - Later This Week
 
 Finish:

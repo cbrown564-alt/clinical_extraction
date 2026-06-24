@@ -178,10 +178,11 @@ export default function RunSelector({
     }
   };
 
-  const SortButton = ({ k, label }: { k: SortKey; label: string }) => {
+  const renderSortButton = (k: SortKey, label: string) => {
     const active = sortKey === k;
     return (
       <button
+        key={k}
         onClick={() => {
           if (active) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
           else {
@@ -302,11 +303,11 @@ export default function RunSelector({
               {!allSelected && someSelected && <div className="h-2 w-2 rounded-sm bg-deterministic" />}
             </div>
           </button>
-          <SortButton k="family" label="Family" />
-          <SortButton k="split" label="Split" />
-          <SortButton k="rows" label="Rows" />
-          <SortButton k="decision" label="Decision" />
-          <SortButton k="date" label="Date" />
+          {renderSortButton("family", "Family")}
+          {renderSortButton("split", "Split")}
+          {renderSortButton("rows", "Rows")}
+          {renderSortButton("decision", "Decision")}
+          {renderSortButton("date", "Date")}
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted">Variant</span>
         </div>
 

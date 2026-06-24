@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchArtifact, fetchRegistry } from "@/lib/api";
 import { isActivePipelineFamily } from "@/lib/pipelineFamilies";
 import type { RegistryEntry, RowScore, RunSummary, CategoryMetrics } from "@/lib/types";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const STORAGE_KEY = "observatory-selected-runs";
 
@@ -77,8 +77,8 @@ function extractRowScore(row: unknown, fallbackIndex: number): RowScore | null {
     ? r.source_row_index
     : (typeof r.source_row_index === "string" ? parseInt(r.source_row_index, 10) : fallbackIndex);
 
-  const evSummary = r.evidence_summary as Record<string, any> | undefined;
-  const detDiag = r.deterministic_diagnostics as Record<string, any> | undefined;
+  const evSummary = r.evidence_summary as Record<string, unknown> | undefined;
+  const detDiag = r.deterministic_diagnostics as Record<string, unknown> | undefined;
 
   const rawEvValid = r.evidence_valid ?? evSummary?.selected_evidence_valid ?? detDiag?.evidence_valid;
   const evidenceValid = rawEvValid !== undefined
@@ -371,8 +371,6 @@ function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
 
 export function useObservatoryData() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const { data: registryData, isLoading: registryLoading } = useQuery({
     queryKey: ["registry"],

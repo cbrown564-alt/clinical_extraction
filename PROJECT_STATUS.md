@@ -10,7 +10,10 @@ Phase 6 are complete. The DeepSeek/Qwen rollout was reactivated for the stated
 `decision_table_sf_inv` transfer question and is now complete; no model-swap
 condition closes the gap to the v08 hybrid. The post-plateau Prescription
 projection pilot remains separate from hybrid-rescue and verifier-filtered
-score lines.
+score lines. The final project consolidation plan is complete through Phase 2:
+canonical hashes/indexes, closeout reports, architecture memo, simplification
+plan, frontend ExECTv2 MVP, and a documented non-canonical artifact quarantine
+are in place without moving canonical evidence.
 
 ## Current Read
 
@@ -75,6 +78,9 @@ unsupported-medication rejection `35`.
 
 - Keep the Phase 3-6 direct LLM-only runs as plateau comparators with fixed
   clinical-recovery claim language.
+- Treat `codex/final-consolidation-phase2` as the active consolidation cleanup
+  branch; unrelated modified Gan resume artifacts are not part of the Phase 2
+  frontend/status changes.
 
 ### Next
 
@@ -82,6 +88,9 @@ unsupported-medication rejection `35`.
   scorer, stop rule, and row-inspection boundary before running it.
 - If continuing Satellite 13, choose a new declared path: ontology supervision,
   hybrid/selector ownership, or projection-aware analysis.
+- For consolidation Phase 3, prioritize shared report builders, frontend
+  reliability scorecard surface, and canonical replay/governance tests before
+  any broader archive/delete pass.
 
 ### Blocked
 
@@ -92,6 +101,12 @@ unsupported-medication rejection `35`.
 
 ### Done Recently
 
+- 2026-06-24: Completed final project consolidation Phase 2 on
+  `codex/final-consolidation-phase2`: verified canonical hashes/index entries,
+  confirmed the ExECTv2 frontend MVP with v08/v09/DeepSeek/Qwen letter-level
+  inspection, fixed frontend lint/type blockers, documented
+  `experiments/_archive/` quarantine policy, and left canonical evidence in
+  place.
 - 2026-06-24: Completed Satellite 13 Phase 6 model rollout for the
   `decision_table_sf_inv` dev140 transfer question. DeepSeek reached `0.745`
   clinical headline F1, Qwen reached `0.694`, and neither changed the plateau
