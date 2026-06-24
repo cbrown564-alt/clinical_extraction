@@ -9,19 +9,14 @@ with no model calls.
 Every architecture is decomposed through one seam — ``StageLadderProvider`` — so
 the builder is architecture-agnostic: it asks each provider for its ordered
 ``stages()`` and its cumulative per-stage predictions, scores purist accuracy and
-per-band deltas at each rung, and emits one ``ComponentLadder`` payload. The three
-legacy ablation mechanisms become thin adapters *behind* that seam, each owning
-exactly one architecture family:
+per-band deltas at each rung, and emits one ``ComponentLadder`` payload. The
+comparison carries the best performer in each architecture family — deterministic,
+hybrid, and LLM-only — as thin adapters *behind* that seam:
 
 - ``DeterministicCanonicalProvider`` (``AblationConfig`` adapter) — re-runs the
   canonical rule stages with benchmark repair and the evidence-trace gate
   cumulatively enabled. **Flat** on purist *category* (rules already emit clean
   Gan labels) — an honest finding, not a gap.
-- ``HybridDeepReplayProvider`` (``disabled_ablation_switches`` adapter) — the LLM
-  produces a *clinical assessment* of a candidate set, so the deterministic
-  Normalize / Projection / Verify layers do real work turning it into a scored
-  label. Each layer's contribution is the score gained when its ablation switches
-  are enabled, via the reset-clinical-assessment deep-replay (no model calls).
 - ``StructuredEventsProvider`` (``StructuredRepairConfig`` adapter) — the LLM
   extracts source-near events and a selection; the deterministic stack normalizes
   the label, re-derives it from the selected evidence, then applies the
@@ -47,9 +42,6 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
-    CandidateSet,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -69,7 +61,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_canonical
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_only_canonical_pipeline,
-    llm_only_direct_labeler,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredRepairConfig,
@@ -88,44 +79,6 @@ _FULL_CONFIG = AblationConfig()
 _NO_REPAIR_CONFIG = AblationConfig(
     enabled_groups=frozenset(RuleGroup) - {RuleGroup.BENCHMARK_REPAIR}
 )
-
-# Hybrid deep-replay ablation switches, grouped by reset stage. Disabling a group
-# removes that layer from the deep-replay so its marginal contribution is the score
-# gained when it is enabled. Sourced from the reset-stage component inventory plus
-# the switches the projection/route code checks directly.
-_HYBRID_NORMALIZE = frozenset(
-    {
-        "normalize_diary_date_list_frequency_recovery",
-        "normalize_frequency_anchor_window_value_recovery",
-        "normalize_frequency_multi_month_bucket_value_recovery",
-        "normalize_seizure_free_duration_date_instrumentation",
-        "normalize_selected_evidence_frequency_value_recovery",
-        "normalize_vague_period_frequency_value_recovery",
-    }
-)
-_HYBRID_PROJECT = frozenset(
-    {
-        "project_current_summary_rate_priority",
-        "project_major_recent_relapse_over_background_frequency",
-        "project_previous_active_month_over_current_month_zero",
-        "project_cluster_cadence_default_multiple_per_cluster",
-        "project_date_anchored_ytd_denominator",
-    }
-)
-_HYBRID_VERIFY = frozenset(
-    {
-        "route_conditional_only_trigger",
-        "route_denominator_window_mismatch",
-        "route_relative_only_trend",
-        "route_selected_evidence_missing_exact_trace",
-        "route_selected_source_id_invalid",
-        "route_unresolved_cluster_cadence_with_per_cluster_burden",
-        "route_cyclic_window_patterns",
-        "route_sleep_restricted_patterns",
-        "verify_named_comparator_preservation_action_policy",
-    }
-)
-
 
 # ── Per-category (boundary band) breakdown, the Gan analog of ExECTv2 families ──
 @dataclass(frozen=True)
@@ -187,36 +140,6 @@ _DETERMINISTIC_STAGES: tuple[StageDefinition, ...] = (
     ),
 )
 
-_HYBRID_STAGES: tuple[StageDefinition, ...] = (
-    StageDefinition(
-        "raw_assessment",
-        "LLM clinical assessment",
-        "llm_assessment",
-        "The LLM's selection over the candidate set, rendered with every deterministic layer off.",
-    ),
-    StageDefinition(
-        "normalize",
-        "Normalize",
-        "normalize",
-        "Frequency value recovery: anchor windows, multi-month buckets, seizure-free duration, "
-        "vague periods.",
-    ),
-    StageDefinition(
-        "projection",
-        "Projection",
-        "projection",
-        "Projection policy: current-summary rate priority, relapse-over-background, "
-        "cluster cadence, YTD denominator.",
-    ),
-    StageDefinition(
-        "verify_route",
-        "Verify / route",
-        "verify_route",
-        "Routing of ambiguous/unsupported rows for review; affects disposition more than purist "
-        "category.",
-    ),
-)
-
 _STRUCTURED_EVENTS_STAGES: tuple[StageDefinition, ...] = (
     StageDefinition(
         "llm_selection",
@@ -269,8 +192,9 @@ def _comparison_jsonl(name: str) -> Path:
     return Path(f"experiments/gan2026_three_way_comparison_validation750_{name}.jsonl")
 
 
-_HYBRID_JSONL = _comparison_jsonl("hybrid_live_candidate_sets_gpt41mini_2026-06-08")
-
+# One best performer per architecture family. The reset-native hybrid and the
+# direct labeler were dropped as redundant: each is the weaker sibling of the
+# kept hybrid / LLM-only line on the same validation-750 basis.
 DEFAULT_ARCHITECTURE_SPECS: tuple[ArchitectureSpec, ...] = (
     ArchitectureSpec(
         run_id="deterministic_canonical_pipeline",
@@ -279,15 +203,6 @@ DEFAULT_ARCHITECTURE_SPECS: tuple[ArchitectureSpec, ...] = (
         decision="control",
         kind="deterministic",
         stages=_DETERMINISTIC_STAGES,
-    ),
-    ArchitectureSpec(
-        run_id="hybrid",
-        label="Hybrid (reset-native)",
-        model="openai/gpt-4.1-mini",
-        decision="diagnostic",
-        kind="hybrid",
-        source_jsonl=_HYBRID_JSONL,
-        stages=_HYBRID_STAGES,
     ),
     ArchitectureSpec(
         run_id="hybrid_structured_events",
@@ -305,15 +220,6 @@ DEFAULT_ARCHITECTURE_SPECS: tuple[ArchitectureSpec, ...] = (
         decision="diagnostic",
         kind="llm_only",
         source_jsonl=_comparison_jsonl("llm_only_canonical_pipeline_gpt41mini_2026-06-07"),
-        stages=_LLM_ONLY_STAGES,
-    ),
-    ArchitectureSpec(
-        run_id="llm_only_direct_labeler",
-        label="LLM-only (direct label)",
-        model="openai/gpt-4.1-mini",
-        decision="diagnostic",
-        kind="llm_only",
-        source_jsonl=_comparison_jsonl("llm_only_direct_labeler_gpt41mini_2026-06-07"),
         stages=_LLM_ONLY_STAGES,
     ),
 )
@@ -447,92 +353,6 @@ class DeterministicCanonicalProvider:
         return ["re-run: deterministic_canonical_stages (no model calls)"]
 
 
-# ── disabled_ablation_switches adapter: reset-native hybrid ────────────────────
-class HybridDeepReplayProvider:
-    """Cumulatively enables the deterministic layers in the hybrid deep-replay."""
-
-    def __init__(
-        self,
-        spec: ArchitectureSpec,
-        *,
-        data_path: Path | None,
-        manifest_path: Path | None,
-    ) -> None:
-        if spec.source_jsonl is None:
-            raise ValueError("hybrid deep-replay needs a source_jsonl")
-        self.spec = spec
-        self._rows: list[dict[str, Any]] = []
-        with (REPO_ROOT / spec.source_jsonl).open(encoding="utf-8-sig") as handle:
-            for line in handle:
-                line = line.strip()
-                if not line:
-                    continue
-                row = json.loads(line)
-                if isinstance(row.get("candidate_set"), dict) and row.get("assessment_draft"):
-                    self._rows.append(row)
-        self._candidate_sets = {
-            int(row["source_row_index"]): CandidateSet.model_validate(row["candidate_set"])
-            for row in self._rows
-        }
-        record_kwargs: dict[str, Any] = {}
-        if data_path is not None:
-            record_kwargs["data_path"] = data_path
-        if manifest_path is not None:
-            record_kwargs["manifest_path"] = manifest_path
-        self._gold_records = {
-            record.source_row_index: record
-            for record in load_records_for_split(DEFAULT_SPLIT, **record_kwargs)
-        }
-        self._order = [int(row["source_row_index"]) for row in self._rows]
-        self._golds = [self._gold_records[idx].gold_monthly_frequency for idx in self._order]
-
-    def stages(self) -> tuple[StageDefinition, ...]:
-        return self.spec.stages
-
-    def golds(self) -> list[float]:
-        return self._golds
-
-    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
-        from clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.reset_clinical_assessment_pipeline import (  # noqa: E501
-            build_reset_clinical_assessment_pipeline_artifact as run_deep_replay,
-        )
-
-        switches: set[str] = set()
-        if "normalize" in disabled_stage_ids:
-            switches |= _HYBRID_NORMALIZE
-        if "projection" in disabled_stage_ids:
-            switches |= _HYBRID_PROJECT
-        if "verify_route" in disabled_stage_ids:
-            switches |= _HYBRID_VERIFY
-        artifact = run_deep_replay(
-            assessment_rows=self._rows,
-            candidate_sets=self._candidate_sets,
-            gold_records=self._gold_records,
-            assessment_artifact_path="in_memory",
-            candidate_set_artifact_path="in_memory",
-            disabled_ablation_switches=switches,
-        )
-        predicted_by_index: dict[int, float] = {}
-        for score_row in artifact.score_rows:
-            index = int(score_row["source_row_index"])
-            score = score_row.get("score") or {}
-            frequency = score.get("predicted_monthly_frequency")
-            predicted_by_index[index] = (
-                UNKNOWN_FREQUENCY if frequency is None else float(frequency)
-            )
-        return [predicted_by_index.get(idx, UNKNOWN_FREQUENCY) for idx in self._order]
-
-    def build(self) -> StageLadder:
-        return _cumulative_build(self)
-
-    def source_artifacts(self) -> list[str]:
-        assert self.spec.source_jsonl is not None
-        return [
-            self.spec.source_jsonl.as_posix(),
-            "deep-replay: reset_clinical_assessment_pipeline (no model calls)",
-        ]
-
-
 # ── StructuredRepairConfig adapter: hybrid structured events ───────────────────
 def _structured_events_config(
     *, normalize_on: bool, evidence_on: bool, clinical_on: bool
@@ -614,10 +434,6 @@ _LLM_ONLY_MODULES: dict[str, _LlmOnlyModule] = {
     "llm_only_canonical_pipeline": _LlmOnlyModule(
         llm_only_canonical_pipeline._extract_json_object,
         llm_only_canonical_pipeline.parse_decision_json,
-    ),
-    "llm_only_direct_labeler": _LlmOnlyModule(
-        llm_only_direct_labeler._extract_json_object,
-        llm_only_direct_labeler.parse_decision_json,
     ),
 }
 
@@ -710,15 +526,11 @@ def _provider_for(
     spec: ArchitectureSpec,
     *,
     records: list[GanFrequencyRecord] | None,
-    data_path: Path | None,
-    manifest_path: Path | None,
 ) -> StageLadderProvider:
     if spec.kind == "deterministic":
         if records is None:
             raise ValueError("deterministic re-run requires split records")
         return DeterministicCanonicalProvider(spec, records)
-    if spec.kind == "hybrid":
-        return HybridDeepReplayProvider(spec, data_path=data_path, manifest_path=manifest_path)
     if spec.kind == "structured_events":
         return StructuredEventsProvider(spec)
     if spec.kind == "llm_only":
@@ -736,12 +548,8 @@ def build_architecture_ladder(
     *,
     records: list[GanFrequencyRecord] | None,
     generated_on: str,
-    data_path: Path | None = None,
-    manifest_path: Path | None = None,
 ) -> dict[str, Any]:
-    provider = _provider_for(
-        spec, records=records, data_path=data_path, manifest_path=manifest_path
-    )
+    provider = _provider_for(spec, records=records)
     ladder = provider.build()
     golds = ladder.golds
     by_stage = ladder.predictions_by_stage
@@ -811,13 +619,7 @@ def build_component_stage_ladder_payload(
             kwargs["manifest_path"] = manifest_path
         records = load_records_for_split(DEFAULT_SPLIT, **kwargs)
     architectures = [
-        build_architecture_ladder(
-            spec,
-            records=records,
-            generated_on=generated_on,
-            data_path=data_path,
-            manifest_path=manifest_path,
-        )
+        build_architecture_ladder(spec, records=records, generated_on=generated_on)
         for spec in specs
     ]
     return {
@@ -885,8 +687,8 @@ def render_markdown(payload: dict[str, Any], *, json_path: Path) -> str:
         f"- JSON: `{json_path.as_posix()}`",
         f"- Metric: {payload['metric_label']} · split `{payload['split']}`",
         f"- Claim boundary: {payload['claim_boundary']}",
-        "- No model calls; deterministic stages re-run, hybrid layers via deep-replay, "
-        "structured-events + LLM-only stacks replayed from saved raw outputs.",
+        "- No model calls; deterministic stages re-run, structured-events + LLM-only "
+        "stacks replayed from saved raw outputs.",
         "",
         "| Architecture | Decision | Rows | Final | Stages (score) |",
         "| --- | --- | ---: | ---: | --- |",
