@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchExectv2ComponentAblation } from "@/lib/api";
+import {
+  fetchExectv2ComponentAblation,
+  fetchExectv2ComponentTransitions,
+} from "@/lib/api";
 import { exectv2Dataset } from "@/lib/datasets";
 import { adaptExectv2Ladder } from "@/lib/componentLadder";
 import { SurfaceLoading, SurfaceError, SurfaceLink } from "@/components/surface";
@@ -13,6 +16,11 @@ export default function Exectv2ComponentImpact() {
   const query = useQuery({
     queryKey: ["exectv2-component-ablation"],
     queryFn: fetchExectv2ComponentAblation,
+    staleTime: 5 * 60 * 1000,
+  });
+  const transitionsQuery = useQuery({
+    queryKey: ["exectv2-component-transitions"],
+    queryFn: fetchExectv2ComponentTransitions,
     staleTime: 5 * 60 * 1000,
   });
   const { get, set } = useExectv2UrlState();
@@ -43,6 +51,7 @@ export default function Exectv2ComponentImpact() {
       description="How clinical F1 builds up across each architecture's pipeline stages."
       selectedArchitectureId={selectedId}
       onSelectArchitecture={(id) => set({ run: id })}
+      transitions={transitionsQuery.data}
       headerRight={
         <>
           {selectedId && (
