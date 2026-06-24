@@ -523,6 +523,59 @@ export interface Exectv2ComponentAblationResponse {
   ablations: Exectv2LayerImpact[];
 }
 
+// ── Gan 2026 component stage-ladder (replay-only cumulative purist ladder) ──
+
+export interface Gan2026LadderCategory {
+  id: string;
+  label: string;
+  short_label: string;
+  tone: string;
+}
+
+export interface Gan2026LadderStage {
+  stage_id: string;
+  label: string;
+  component_type: string;
+  score: number;
+  delta_from_previous: number;
+  is_baseline: boolean;
+  category_deltas: Record<string, number>;
+  interpretation: string;
+}
+
+export interface Gan2026ArchitectureLadder {
+  artifact_kind: "gan2026_component_architecture_ladder";
+  dataset: "gan2026";
+  generated_on: string;
+  run_id: string;
+  label: string;
+  model: string;
+  decision: string;
+  split: string;
+  row_count: number;
+  final_score: number;
+  stages: Gan2026LadderStage[];
+  source_artifacts: string[];
+  claim_boundary: string;
+  row_inspection_policy: string;
+}
+
+export interface Gan2026ComponentAblationResponse {
+  artifact_kind: "gan2026_component_stage_ladder_set";
+  dataset: "gan2026";
+  generated_on: string;
+  metric: string;
+  metric_label: string;
+  method: string;
+  method_note: string;
+  split: string;
+  row_inspection_policy: string;
+  allow_model_calls: boolean;
+  claim_boundary: string;
+  categories: Gan2026LadderCategory[];
+  architectures: Gan2026ArchitectureLadder[];
+}
+
 export interface ReliabilityScorecardDimension {
   id: string;
   number?: number;

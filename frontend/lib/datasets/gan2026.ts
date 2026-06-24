@@ -63,16 +63,40 @@ export const gan2026Dataset: DatasetDescriptor = {
       tone: "llm",
     },
     {
+      id: "llm_assessment",
+      label: "LLM producer",
+      description: "The LLM's selection/label, the producer floor every stage builds on.",
+      tone: "llm",
+    },
+    {
       id: "deterministic_rule",
       label: "Deterministic rule",
       description: "Regex/candidate-generation rule families.",
       tone: "deterministic",
     },
     {
+      id: "normalize",
+      label: "Normalize",
+      description: "Deterministic frequency/label normalization.",
+      tone: "deterministic",
+    },
+    {
+      id: "projection",
+      label: "Projection",
+      description: "Evidence-grounded projection of the label onto a Gan category.",
+      tone: "deterministic-alt",
+    },
+    {
       id: "repair",
       label: "Repair",
       description: "Post-processing label repair.",
       tone: "hybrid",
+    },
+    {
+      id: "verify_route",
+      label: "Verify / route",
+      description: "Routing of ambiguous rows for review; affects disposition, not category.",
+      tone: "muted",
     },
     {
       id: "scorer",
