@@ -2,6 +2,16 @@
 
 Date: 2026-06-24
 
+> **Update, 2026-06-24 (post-completion):** the live Component Impact comparison was
+> trimmed to one best performer per architecture family —
+> `deterministic_canonical_pipeline`, `hybrid_structured_events`, and
+> `llm_only_canonical_pipeline`. The reset-native hybrid (`hybrid`) and the direct
+> labeler (`llm_only_direct_labeler`) were dropped as redundant — each the weaker
+> sibling of the kept line on the same validation-750 basis — so the seam now routes
+> **three** Gan ladders, not five. The build history below, which exercised all
+> five, is retained as the record of the consolidation work; the current set of
+> record is the contract, `docs/design/gan2026_component_ablation_contract_2026-06-24.md`.
+
 Scope: a spin-off project to give the Component Impact surface a single, honest,
 replay-only ablation architecture that decomposes **every** Gan 2026 pipeline —
 and ExECTv2 — into the cumulative per-stage contributions that actually move the

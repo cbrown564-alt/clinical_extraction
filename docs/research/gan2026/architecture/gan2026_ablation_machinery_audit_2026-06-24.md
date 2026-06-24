@@ -2,6 +2,14 @@
 
 Date: 2026-06-24
 
+> **Update, 2026-06-24:** the live Component Impact comparison was later trimmed to
+> one best performer per family (`deterministic_canonical_pipeline`,
+> `hybrid_structured_events`, `llm_only_canonical_pipeline`). The reset-native
+> hybrid (`hybrid`) and the direct labeler (`llm_only_direct_labeler`) were dropped
+> as redundant. Their per-rung tables below remain as the measured audit record;
+> the `disabled_ablation_switches` / `HybridDeepReplayProvider` adapter and the
+> direct-labeler wiring were removed from `component_stage_ladder.py` with them.
+
 Scope: the read-only Phase 1 deliverable of the
 [component-impact ablation architecture plan](../../../plans/component_impact_ablation_architecture_plan_2026-06-24.md).
 It catalogues every mechanism by which a Gan 2026 pipeline stage can be turned

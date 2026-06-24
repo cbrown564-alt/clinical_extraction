@@ -847,6 +847,23 @@ Replay artifact note, 2026-06-24:
 - The artifacts are aggregate-only, make no model calls, and introduce no
   full-200 or holdout-facing row-level inspection.
 
+Gan comparison trim note, 2026-06-24:
+
+- The Gan Component Impact comparison was reduced from five architectures to one
+  best performer per family: `deterministic_canonical_pipeline` (0.91),
+  `hybrid_structured_events` (0.89), and `llm_only_canonical_pipeline` (0.78).
+- The reset-native hybrid (`hybrid`, 0.73) and the direct labeler
+  (`llm_only_direct_labeler`, 0.75) were dropped as redundant — each the weaker
+  sibling of the kept line on the same validation-750 basis. The two dropped
+  architectures stay in the historical research record (three-way comparison,
+  cross-model, closeoff) but no longer appear in the live comparison.
+- `component_stage_ladder.py`, the regenerated replay artifacts, the frontend
+  payload, the unit tests, and
+  `docs/design/gan2026_component_ablation_contract_2026-06-24.md` were updated to
+  the three-architecture set. No `test450`/holdout row-level inspection was
+  introduced. The final artifact index lists only the Gan reliability package, so
+  it carries no Gan component-impact architecture rows to trim.
+
 ## Parallel Work Matrix
 
 | Work item | Can run while Qwen active? | Can run while DeepSeek active? | Needs final model numbers? | Notes |

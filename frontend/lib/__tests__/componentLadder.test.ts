@@ -23,7 +23,7 @@ describe("adaptGan2026Ladder", () => {
   it("maps the payload onto the shared ComponentLadder shape", () => {
     expect(ladder.dataset).toBe("gan2026");
     expect(ladder.metricLabel).toBe("Purist accuracy");
-    expect(ladder.architectures).toHaveLength(5);
+    expect(ladder.architectures).toHaveLength(3);
     expect(ladder.categories.map((c) => c.shortLabel)).toContain("Wk");
   });
 
@@ -51,8 +51,8 @@ describe("adaptGan2026Ladder", () => {
     expect(byType["repair"]).toBe("hybrid");
   });
 
-  it("keeps llm_only configs as honest two-stage label-repair ladders", () => {
-    const arch = ladder.architectures.find((a) => a.id === "llm_only_direct_labeler")!;
+  it("keeps the llm_only config as an honest two-stage label-repair ladder", () => {
+    const arch = ladder.architectures.find((a) => a.id === "llm_only_canonical_pipeline")!;
     expect(arch.stages.map((s) => s.id)).toEqual(["model_label", "label_repair"]);
     expect(arch.stages[1].deltaFromPrevious).toBeGreaterThan(0.05);
   });

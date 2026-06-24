@@ -53,7 +53,6 @@ def test_structured_events_decomposes_into_a_moving_four_stage_ladder() -> None:
 def test_llm_only_configs_show_a_real_label_repair_contribution() -> None:
     expected_final = {
         "llm_only_canonical_pipeline": 0.7773,
-        "llm_only_direct_labeler": 0.7547,
     }
     for run_id, final in expected_final.items():
         ladder = _ladder(run_id)
