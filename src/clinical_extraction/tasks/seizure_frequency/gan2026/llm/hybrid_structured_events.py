@@ -102,7 +102,27 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
-PROMPT_VERSION = "gan2026_hybrid_structured_events_v0.6"
+PROMPT_VERSION_V0_6 = "gan2026_hybrid_structured_events_v0.6"
+PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
+# Active prompt version. v0.7 is the DeepSeek Reasoner-oriented iteration after
+# v0.6 reasoner/chat validation error analysis; v0.6 remains selectable for
+# comparator and replay scripts.
+PROMPT_VERSION = PROMPT_VERSION_V0_7
+_SUPPORTED_PROMPT_VERSIONS = frozenset({PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7})
+
+
+def set_active_prompt_version(version: str) -> None:
+    """Select the structured-events prompt version emitted by build_prompt_input."""
+
+    global PROMPT_VERSION
+    if version not in _SUPPORTED_PROMPT_VERSIONS:
+        raise ValueError(
+            f"unsupported prompt version {version!r}; "
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
+        )
+    PROMPT_VERSION = version
+
+
 PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
     {
         "policy_id": "se_v0.schema.events_plus_selection",
@@ -150,6 +170,16 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         "portability": "seizure_frequency",
         "status": "active",
         "description": "Every evidence value must be an exact substring from the note.",
+    },
+    {
+        "policy_id": "se_v0_7.reasoner.countable_fact_conservation",
+        "controlled_variable": "reasoner_countable_fact_conservation_policy",
+        "portability": "seizure_frequency",
+        "status": "active",
+        "description": (
+            "v0.7 adds a silent conservation check before selecting unknown, no_reference, "
+            "or seizure_free over countable frequency, cluster, or dated-window evidence."
+        ),
     },
 ]
 DEFAULT_JSONL_PATH = Path(
@@ -534,6 +564,60 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         },
         "note_text": record.note_text,
     }
+    if PROMPT_VERSION == PROMPT_VERSION_V0_7:
+        instructions = payload["instructions"]
+        assert isinstance(instructions, list)
+        instructions[-1:-1] = [
+            (
+                "Use any extra checking silently. The rationale must be one concise "
+                "clinical sentence, not step-by-step reasoning."
+            ),
+            (
+                "Before selecting unknown, no_reference, or seizure_free, run a "
+                "countable-fact check: does the note state a seizure count, a count "
+                "range, a days-with-seizures count, a cluster cadence, events per "
+                "cluster, or a sequence of dated events inside a recent/current window? "
+                "If yes, extract that fact and select it unless it is explicitly negated, "
+                "hypothetical, non-epileptic, or only a possible single event."
+            ),
+            (
+                "Do not demote countable frequency evidence to unknown just because the "
+                "wording is not phrased as an ongoing average. Counts such as 'two "
+                "seizures in February', 'second and third seizure in January', 'four "
+                "morning jerks since 03/2015', or '5 days per month with clusters' are "
+                "frequency_rate or cluster_frequency evidence when the surrounding text "
+                "gives the window."
+            ),
+            (
+                "Preserve the full observed window for dated counts and since-anchor "
+                "counts. If a note counts events since a prior dated seizure or across "
+                "several named months, keep the anchor date and event count in the events "
+                "rather than narrowing the answer to the most recent month."
+            ),
+            (
+                "For cluster language, keep cluster cadence and events-per-cluster "
+                "separate. Select cluster_frequency when both are supported, and do not "
+                "collapse it to unknown or no_reference merely because clusters are "
+                "episodic. If only one side is known, preserve the known side and use "
+                "unknown_frequency only for the missing burden."
+            ),
+            (
+                "Keep the useful remission boundary behavior: select seizure_free when "
+                "the note gives a clear current absence interval and there is no active "
+                "countable seizure-like event in that same or later window."
+            ),
+            (
+                "Do not let a general 'no seizures since review' or 'no tonic-clonic "
+                "seizures' statement erase active auras, jerks, absence clusters, or "
+                "other current seizure-like counts. In that case select the active "
+                "frequency or cluster event."
+            ),
+            (
+                "Use no_reference only when the note truly has no seizure-frequency, "
+                "seizure-free, last-event, or seizure-control evidence. If seizures are "
+                "mentioned but the burden cannot be counted, use unknown_frequency."
+            ),
+        ]
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 

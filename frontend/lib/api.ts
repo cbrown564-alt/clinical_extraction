@@ -186,6 +186,8 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     mockPath = "/mock-data/exectv2/component-transitions.json";
   } else if (path === "/gan2026/component-ablation") {
     mockPath = "/mock-data/gan2026/component-ablation.json";
+  } else if (path === "/gan2026/component-transitions") {
+    mockPath = "/mock-data/gan2026/component-transitions.json";
   } else if (path === "/exectv2/reliability-scorecard") {
     mockPath = "/mock-data/exectv2/reliability-scorecard.json";
   } else if (path === "/gan2026/reliability-scorecard") {
@@ -374,6 +376,12 @@ export function fetchExectv2ComponentTransitions() {
 export function fetchGan2026ComponentAblation() {
   return fetchJson<import("./types").Gan2026ComponentAblationResponse>(
     "/gan2026/component-ablation"
+  );
+}
+
+export function fetchGan2026ComponentTransitions() {
+  return fetchJson<import("./types").Gan2026ComponentTransitionsResponse>(
+    "/gan2026/component-transitions"
   );
 }
 
