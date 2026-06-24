@@ -43,10 +43,14 @@ export function classifyComponentOwner(owner: string): Exectv2ComponentTypeId {
   if (o.includes("arbitration") || o.includes("union") || o.includes("merge")) {
     return "assembler";
   }
-  if (o.includes("projection") || o.includes("format") || o.includes("repair")) {
+  // Meaning-preserving format/benchmark projection is kept distinct from the
+  // deterministic dictionary-normalization path: a family repair lane normalizes
+  // mentions (a dictionary action), so it must not be caught by the generic
+  // "repair" keyword before the dictionary check (ExECTv2 contract).
+  if (o.includes("projection") || o.includes("format") || o.includes("benchmark")) {
     return "deterministic_projection";
   }
-  if (o.includes("dictionary") || o.includes("alias")) {
+  if (o.includes("dictionary") || o.includes("alias") || o.includes("repair")) {
     return "dictionary";
   }
   if (o.includes("recovery") || o.includes("residual") || o.includes("reconciler")) {
