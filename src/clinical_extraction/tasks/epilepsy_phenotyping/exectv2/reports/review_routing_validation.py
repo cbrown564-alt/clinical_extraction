@@ -23,8 +23,24 @@ REPORT_PATH = Path(
 
 _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
     {
+        "path": (
+            "experiments/"
+            "exectv2_holistic_finding_assembly_v08_full200_currentcode_"
+            "gpt41mini_20260624.jsonl"
+        ),
+        "surface": "current-code v08-shape rich-schema holistic assembly",
+        "eligibility": "eligible",
+        "reason": (
+            "Accepted for a one-shot aggregate validation of the current-code "
+            "v08-shaped rich-schema holistic assembly surface. This is not "
+            "byte-identical archived dev140 prompt/module replay, so promotion "
+            "claims remain limited to the current-code validation surface."
+        ),
+    },
+    {
         "path": "experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.jsonl",
         "surface": "historical Phase 7 SF-only hybrid audit",
+        "eligibility": "ineligible",
         "reason": (
             "SF-only audit artifact; not the rich-schema holistic assembly "
             "headline_target surface used by the reliability scorecard."
@@ -33,6 +49,7 @@ _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
     {
         "path": "experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl",
         "surface": "historical all-entity LLM-only audit",
+        "eligibility": "ineligible",
         "reason": (
             "LLM-only all-entity surface; lacks the final-consolidation "
             "rich-schema assembly surface and provenance features that define "
@@ -42,6 +59,7 @@ _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
     {
         "path": "experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.jsonl",
         "surface": "historical SF-only LLM-only per-entity audit",
+        "eligibility": "ineligible",
         "reason": (
             "SF-only audit artifact; not the all-family rich-schema holistic "
             "assembly reliability surface."
@@ -50,6 +68,7 @@ _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
     {
         "path": "experiments/exectv2_audit_rules_full200_modelindependent_20260611.jsonl",
         "surface": "historical SF-only deterministic-rules audit",
+        "eligibility": "ineligible",
         "reason": (
             "Rules-only SF audit artifact; not the rich-schema holistic "
             "assembly scorecard surface."
@@ -77,8 +96,12 @@ def build_review_routing_validation_audit(
     balanced = operating_points["balanced_dev_candidate"]
     inventory = _artifact_inventory(repo_root)
     eligible = [item for item in inventory if item["eligible"]]
+    validation = _validation_readout(repo_root, eligible[0]) if eligible else None
+    promotion_decision = (
+        _promotion_decision(validation) if validation else "not_promoted"
+    )
     stop_status = (
-        "ready_for_aggregate_validation"
+        "completed_current_code_surface_validation"
         if eligible
         else "blocked_no_same_surface_full200_artifact"
     )
@@ -100,23 +123,35 @@ def build_review_routing_validation_audit(
         ],
         "artifact_inventory": inventory,
         "eligible_validation_artifacts": len(eligible),
+        "validation_readout": validation,
         "stop_rule_outcome": {
             "status": stop_status,
             "validation_run_executed": bool(eligible),
-            "promotion_decision": "not_promoted",
+            "promotion_decision": promotion_decision,
             "reason": (
                 "No full-200 artifact matches the frozen rich-schema holistic "
                 "assembly reliability surface, so applying the dev routing "
                 "candidate would blend surfaces."
             )
-            if not eligible
-            else "Eligible aggregate validation artifact is available.",
+            if validation is None
+            else (
+                "The current-code v08-shaped full-200 artifact was accepted as "
+                "an aggregate-only validation surface, but the lower-burden dev "
+                "candidate did not preserve a lower review burden on validation."
+            ),
         },
-        "promotion_gates": _promotion_gates(high_recall, balanced, bool(eligible)),
+        "promotion_gates": _promotion_gates(high_recall, balanced, validation),
         "next_action": (
             "Freeze and generate a same-surface full-200 rich-schema holistic "
             "assembly artifact, then run the validation once with this report "
             "template before reading metrics."
+        )
+        if validation is None
+        else (
+            "Do not promote the lower-burden review-routing candidate. Move "
+            "review-routing work back to dev140 risk-feature redesign or a "
+            "fresh predeclared calibration/routing model before another "
+            "validation attempt."
         ),
     }
 
@@ -173,6 +208,53 @@ def render_markdown(audit: dict[str, Any]) -> str:
             f"{eligibility} | {item['reason']} |"
         )
 
+    if audit.get("validation_readout"):
+        validation = audit["validation_readout"]
+        lines.extend(
+            [
+                "",
+                "## Aggregate Validation Readout",
+                "",
+                f"- Artifact: `{validation['artifact_path']}`",
+                f"- Rows: {validation['rows']}",
+                f"- Eligible family cells: {validation['eligible_cells']}",
+                "",
+                (
+                    "| Operating point | Reviewed | Burden | Error cells | Caught | "
+                    "Catch | False alarms | False alarms / caught error |"
+                ),
+                "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for row in validation["operating_points"]:
+            lines.append(
+                f"| {row['label']} | {row['reviewed_cells']} | "
+                f"{row['review_burden']:.4f} | {row['total_error_cells']} | "
+                f"{row['caught_error_cells']} | {row['catch_rate']:.4f} | "
+                f"{row['false_alarm_cells']} | "
+                f"{row['false_alarms_per_caught_error']:.4f} |"
+            )
+        lines.extend(
+            [
+                "",
+                "### Per-Family Validation Metrics",
+                "",
+                (
+                    "| Operating point | Family | Eligible | Errors | Reviewed | "
+                    "Caught | Missed | False alarms | Burden | Catch |"
+                ),
+                "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for row in validation["by_family"]:
+            lines.append(
+                f"| {row['operating_point']} | {row['family']} | "
+                f"{row['eligible_cells']} | {row['total_error_cells']} | "
+                f"{row['reviewed_cells']} | {row['caught_error_cells']} | "
+                f"{row['missed_error_cells']} | {row['false_alarm_cells']} | "
+                f"{row['review_burden']:.4f} | {row['catch_rate']:.4f} |"
+            )
+
     stop = audit["stop_rule_outcome"]
     lines.extend(
         [
@@ -198,9 +280,7 @@ def render_markdown(audit: dict[str, Any]) -> str:
             "",
             "## Result",
             "",
-            "The lower-burden review-routing candidate is not promoted. The dev140 "
-            "candidate remains useful but unvalidated because the available full-200 "
-            "artifacts do not match the frozen rich-schema holistic assembly surface.",
+            _result_paragraph(audit),
             "",
             f"Next action: {audit['next_action']}",
             "",
@@ -231,11 +311,144 @@ def _artifact_inventory(repo_root: Path) -> list[dict[str, Any]]:
                 "exists": path.exists(),
                 "rows": _count_jsonl_rows(path) if path.exists() else 0,
                 "surface": item["surface"],
-                "eligible": False,
+                "eligible": path.exists() and item["eligibility"] == "eligible",
                 "reason": item["reason"],
             }
         )
     return rows
+
+
+def _validation_readout(
+    repo_root: Path,
+    artifact: dict[str, Any],
+) -> dict[str, Any]:
+    rows = reliability._load_jsonl(repo_root / artifact["path"])
+    cells = _validation_cells(rows)
+    high_recall = _aggregate_operating_point(
+        cells,
+        point_id="high_recall_predeclared",
+        label="High-recall predeclared trigger net",
+        review_fn=lambda cell: bool(reliability._review_triggers(cell)),
+    )
+    balanced = _aggregate_operating_point(
+        cells,
+        point_id="balanced_dev_candidate",
+        label="Balanced dev candidate",
+        review_fn=_balanced_review_decision,
+    )
+    return {
+        "artifact_path": artifact["path"],
+        "rows": len(rows),
+        "eligible_cells": len(cells),
+        "operating_points": [high_recall, balanced],
+        "by_family": [
+            *high_recall.pop("by_family"),
+            *balanced.pop("by_family"),
+        ],
+    }
+
+
+def _validation_cells(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    cells: list[dict[str, Any]] = []
+    for row in rows:
+        for family in reliability.FAMILIES:
+            score = reliability._row_family_score(row, family)
+            if score.pred_count == 0 and score.gold_count == 0:
+                continue
+            features = reliability._risk_features(row, family)
+            cells.append(
+                {
+                    "family": family,
+                    "correct": score.fp == 0 and score.fn == 0,
+                    "risk_score": reliability._risk_score(family, features),
+                    "features": features,
+                }
+            )
+    return cells
+
+
+def _balanced_review_decision(cell: dict[str, Any]) -> bool:
+    features = cell["features"]
+    return (
+        float(cell["risk_score"]) >= 0.35
+        or bool(features["source_final_delta"])
+        or bool(features["low_confidence"])
+        or bool(features["result_state"])
+    )
+
+
+def _aggregate_operating_point(
+    cells: list[dict[str, Any]],
+    *,
+    point_id: str,
+    label: str,
+    review_fn: Any,
+) -> dict[str, Any]:
+    by_family: dict[str, dict[str, int]] = {}
+    reviewed = caught = false_alarm = total_errors = 0
+    for cell in cells:
+        family = str(cell["family"])
+        counts = by_family.setdefault(
+            family,
+            {
+                "eligible_cells": 0,
+                "total_error_cells": 0,
+                "reviewed_cells": 0,
+                "caught_error_cells": 0,
+                "missed_error_cells": 0,
+                "false_alarm_cells": 0,
+            },
+        )
+        is_error = not bool(cell["correct"])
+        is_reviewed = bool(review_fn(cell))
+        counts["eligible_cells"] += 1
+        if is_error:
+            total_errors += 1
+            counts["total_error_cells"] += 1
+        if is_reviewed:
+            reviewed += 1
+            counts["reviewed_cells"] += 1
+            if is_error:
+                caught += 1
+                counts["caught_error_cells"] += 1
+            else:
+                false_alarm += 1
+                counts["false_alarm_cells"] += 1
+        elif is_error:
+            counts["missed_error_cells"] += 1
+
+    by_family_rows = []
+    for family, counts in sorted(by_family.items()):
+        by_family_rows.append(
+            {
+                "operating_point": label,
+                "family": family,
+                **counts,
+                "review_burden": _round_rate(
+                    counts["reviewed_cells"], counts["eligible_cells"]
+                ),
+                "catch_rate": _round_rate(
+                    counts["caught_error_cells"], counts["total_error_cells"]
+                ),
+            }
+        )
+
+    return {
+        "id": point_id,
+        "label": label,
+        "eligible_cells": len(cells),
+        "reviewed_cells": reviewed,
+        "review_burden": _round_rate(reviewed, len(cells)),
+        "total_error_cells": total_errors,
+        "caught_error_cells": caught,
+        "catch_rate": _round_rate(caught, total_errors),
+        "false_alarm_cells": false_alarm,
+        "missed_error_cells": total_errors - caught,
+        "false_alarms_per_caught_error": round(false_alarm / caught, 4)
+        if caught
+        else 0.0,
+        "by_family": by_family_rows,
+    }
 
 
 def _candidate_summary(point: dict[str, Any]) -> dict[str, Any]:
@@ -261,9 +474,9 @@ def _candidate_summary(point: dict[str, Any]) -> dict[str, Any]:
 def _promotion_gates(
     high_recall: dict[str, Any],
     balanced: dict[str, Any],
-    validation_available: bool,
+    validation: dict[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not validation_available:
+    if validation is None:
         blocked = "not_evaluable"
         reason = "No same-surface full-200 aggregate artifact is available."
         return [
@@ -294,29 +507,86 @@ def _promotion_gates(
             },
         ]
 
-    burden_delta = float(high_recall["review_burden"]) - float(balanced["review_burden"])
-    high_cost = int(high_recall["false_alarm_cells"]) / int(high_recall["caught_error_cells"])
-    balanced_cost = int(balanced["false_alarm_cells"]) / int(balanced["caught_error_cells"])
+    validation_points = {row["id"]: row for row in validation["operating_points"]}
+    validation_high = validation_points["high_recall_predeclared"]
+    validation_balanced = validation_points["balanced_dev_candidate"]
+    burden_delta = float(validation_high["review_burden"]) - float(
+        validation_balanced["review_burden"]
+    )
+    high_cost = int(validation_high["false_alarm_cells"]) / int(
+        validation_high["caught_error_cells"]
+    )
+    balanced_cost = int(validation_balanced["false_alarm_cells"]) / int(
+        validation_balanced["caught_error_cells"]
+    )
+    family_floor_pass = _family_catch_floor_pass(validation, "Balanced dev candidate")
     return [
         {
             "gate": "Review burden at least 0.15 absolute below high-recall burden",
             "outcome": "pass" if burden_delta >= 0.15 else "fail",
-            "note": f"Dev-frozen delta is {burden_delta:.4f}; validation metrics still required.",
+            "note": f"Validation burden delta is {burden_delta:.4f}.",
         },
         {
             "gate": "Overall error catch at least 0.80",
-            "outcome": "pass" if float(balanced["catch_rate"]) >= 0.80 else "fail",
-            "note": "Validation aggregate required before promotion.",
+            "outcome": "pass"
+            if float(validation_balanced["catch_rate"]) >= 0.80
+            else "fail",
+            "note": f"Validation catch is {validation_balanced['catch_rate']:.4f}.",
+        },
+        {
+            "gate": "Per-family eligible/error/caught/missed/false-alarm metrics",
+            "outcome": "pass",
+            "note": "Per-family aggregate metrics are reported without row-level details.",
+        },
+        {
+            "gate": "No family with at least ten error cells below 0.70 catch",
+            "outcome": "pass" if family_floor_pass else "fail",
+            "note": "Balanced candidate family catch floor evaluated on aggregate counts.",
         },
         {
             "gate": "False alarms per caught error lower than high-recall policy",
             "outcome": "pass" if balanced_cost < high_cost else "fail",
             "note": (
-                f"Dev-frozen high-recall cost {high_cost:.4f}; "
+                f"Validation high-recall cost {high_cost:.4f}; "
                 f"balanced cost {balanced_cost:.4f}."
             ),
         },
     ]
+
+
+def _family_catch_floor_pass(validation: dict[str, Any], operating_point: str) -> bool:
+    rows = [
+        row
+        for row in validation["by_family"]
+        if row["operating_point"] == operating_point
+        and int(row["total_error_cells"]) >= 10
+    ]
+    return all(float(row["catch_rate"]) >= 0.70 for row in rows)
+
+
+def _promotion_decision(validation: dict[str, Any]) -> str:
+    gates = _promotion_gates({}, {}, validation)
+    return "promoted" if all(gate["outcome"] == "pass" for gate in gates) else "not_promoted"
+
+
+def _result_paragraph(audit: dict[str, Any]) -> str:
+    if not audit.get("validation_readout"):
+        return (
+            "The lower-burden review-routing candidate is not promoted. The dev140 "
+            "candidate remains useful but unvalidated because the available full-200 "
+            "artifacts do not match the frozen rich-schema holistic assembly surface."
+        )
+    return (
+        "The current-code v08-shaped full-200 artifact was accepted for this "
+        "aggregate-only validation readout, but the lower-burden review-routing "
+        "candidate is not promoted. It preserved high catch, but review burden "
+        "rose to the high-recall policy level instead of meeting the predeclared "
+        "lower-burden gate."
+    )
+
+
+def _round_rate(numerator: int, denominator: int) -> float:
+    return round(numerator / denominator, 4) if denominator else 0.0
 
 
 def _count_jsonl_rows(path: Path) -> int:
