@@ -26,12 +26,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import (
     cached_exectv2_runs_json,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (  # noqa: E501
     cached_component_ablation_json,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
     cached_gan_reliability_scorecard_json,
     cached_reliability_scorecard_json,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.component_stage_ladder import (  # noqa: E501
+    cached_component_stage_ladder_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.gold_audit_active_sampler import (  # noqa: E501
     enrich_rows_for_active_sampling,
@@ -344,6 +347,22 @@ def create_app(
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to build Gan reliability scorecard: {exc}",
+            ) from exc
+
+    @app.get("/gan2026/component-ablation")
+    def get_gan2026_component_ablation() -> Response:
+        """Replay-only Gan component stage-ladder for the frontend view."""
+        try:
+            return Response(
+                content=cached_component_stage_ladder_json(),
+                media_type="application/json",
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build Gan component ablation payload: {exc}",
             ) from exc
 
     @app.post("/run/note")
