@@ -25,8 +25,16 @@ def test_component_ablation_replay_builds_layer_ladders_for_all_architectures() 
     assert payload["row_inspection_policy"] == "aggregate_only"
     assert payload["allow_model_calls"] is False
     assert len(payload["architectures"]) == 4
-    assert len(payload["layers"]) == 7
-    assert len(payload["ablations"]) == 28
+    assert len(payload["layers"]) == 6
+    assert len(payload["ablations"]) == 24
+
+    layer_ids = [layer["layer_id"] for layer in payload["layers"]]
+    # The redundant always-zero "final assembly" stage is gone entirely.
+    assert "final_assembly" not in layer_ids
+    # The two structurally-inert producer guards are kept but tagged for the
+    # frontend to hide (not deleted from the aggregate provenance).
+    inert = {layer["layer_id"] for layer in payload["layers"] if layer.get("inert")}
+    assert inert == {"source_scored", "evidence_valid"}
 
     architectures = _by_run(payload)
     v08 = architectures["exectv2_holistic_finding_assembly_v08_dev140"]
@@ -100,7 +108,7 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
         for line in lines
     )
     assert "No model calls" in md_path.read_text(encoding="utf-8")
-    assert len(list(config_dir.glob("*.yaml"))) == 28
+    assert len(list(config_dir.glob("*.yaml"))) == 24
 
 
 def test_committed_component_ablation_artifact_matches_builder_contract() -> None:
@@ -127,4 +135,4 @@ def test_observatory_serves_exectv2_component_ablation_payload() -> None:
     payload = response.json()
     assert payload["artifact_kind"] == "exectv2_component_ablation_set"
     assert len(payload["architectures"]) == 4
-    assert len(payload["ablations"]) == 28
+    assert len(payload["ablations"]) == 24

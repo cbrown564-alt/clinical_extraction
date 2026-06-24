@@ -2,8 +2,9 @@
 
 This is an *explanatory-only* artifact. It shows, for a few curated dev letters,
 how the mention set evolves stage-to-stage (added / dropped / changed) as the
-replay walks the pipeline from raw lane candidates through to final assembly. It
-is NOT a scoring surface and never feeds an architecture decision: the scoring
+replay walks the pipeline from raw lane candidates through to the assembled
+mention set and headline projection. It is NOT a scoring surface and never feeds
+an architecture decision: the scoring
 component-impact ladder (`component_ablation_replay`) stays strictly
 `aggregate_only`. We expose a handful of letters purely so the stage ladder is
 intuitive at a glance — you can see what each component actually does to one
@@ -48,7 +49,6 @@ LAYER_SURFACE_SOURCE: dict[str, tuple[str, str | None]] = {
     "evidence_valid": ("surface", "evidence_valid"),
     "dictionary_normalized": ("surface", "dictionary_normalized"),
     "residual_semantic_added": ("surface", "residual_benchmark_added"),
-    "final_assembly": ("surface", "final"),
     "headline_projection": ("projection", None),
 }
 

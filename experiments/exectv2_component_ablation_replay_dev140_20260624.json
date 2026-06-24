@@ -14,7 +14,8 @@
       "component_type": "llm_producer",
       "score_source": "score_ladder",
       "surface_key": "raw_lane_score",
-      "interpretation": "Prediction-bearing producer outputs before downstream cleanup."
+      "interpretation": "Prediction-bearing producer outputs before downstream cleanup.",
+      "inert": false
     },
     {
       "layer_id": "source_scored",
@@ -22,7 +23,8 @@
       "component_type": "llm_producer",
       "score_source": "materialized_surfaces",
       "surface_key": "source_scored",
-      "interpretation": "Scored source mentions before evidence/dictionary/projection layers."
+      "interpretation": "Scored source mentions before evidence/dictionary/projection layers. Inert on these single-lane holistic runs: scoring attaches confidence but adds or drops no mention, so the score is unchanged.",
+      "inert": true
     },
     {
       "layer_id": "evidence_valid",
@@ -30,7 +32,8 @@
       "component_type": "evidence_validation",
       "score_source": "materialized_surfaces",
       "surface_key": "evidence_valid",
-      "interpretation": "Mentions after exact-evidence validation."
+      "interpretation": "Mentions after exact-evidence validation. Inert on these runs: the producers only emit verbatim-grounded mentions, so nothing fails the guard and the surface is identical to source-scored.",
+      "inert": true
     },
     {
       "layer_id": "dictionary_normalized",
@@ -38,7 +41,8 @@
       "component_type": "dictionary",
       "score_source": "materialized_surfaces",
       "surface_key": "dictionary_normalized",
-      "interpretation": "Standard dictionaries and format-normalization layers applied."
+      "interpretation": "Standard dictionaries and format-normalization layers applied.",
+      "inert": false
     },
     {
       "layer_id": "residual_semantic_added",
@@ -46,15 +50,8 @@
       "component_type": "semantic_lens",
       "score_source": "materialized_surfaces",
       "surface_key": "residual_benchmark_added",
-      "interpretation": "Residual recovery and semantic add/drop/replace layers applied."
-    },
-    {
-      "layer_id": "final_assembly",
-      "label": "Final assembly",
-      "component_type": "assembler",
-      "score_source": "materialized_surfaces",
-      "surface_key": "final",
-      "interpretation": "Final assembled mention set before headline projection."
+      "interpretation": "Residual recovery and semantic add/drop/replace layers applied. This is the full assembled mention set fed to headline projection.",
+      "inert": false
     },
     {
       "layer_id": "headline_projection",
@@ -62,7 +59,8 @@
       "component_type": "deterministic_projection",
       "score_source": "score_ladder",
       "surface_key": "headline_target",
-      "interpretation": "Clinical headline / projection surface used for final reporting."
+      "interpretation": "Clinical headline / projection surface used for final reporting.",
+      "inert": false
     }
   ],
   "architectures": [
@@ -142,6 +140,7 @@
           "component_type": "llm_producer",
           "surface_key": "raw_lane_score",
           "interpretation": "Prediction-bearing producer outputs before downstream cleanup.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8142,
@@ -206,7 +205,8 @@
           "label": "Source-scored mentions",
           "component_type": "llm_producer",
           "surface_key": "source_scored",
-          "interpretation": "Scored source mentions before evidence/dictionary/projection layers.",
+          "interpretation": "Scored source mentions before evidence/dictionary/projection layers. Inert on these single-lane holistic runs: scoring attaches confidence but adds or drops no mention, so the score is unchanged.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.8128,
@@ -271,7 +271,8 @@
           "label": "Evidence-valid mentions",
           "component_type": "evidence_validation",
           "surface_key": "evidence_valid",
-          "interpretation": "Mentions after exact-evidence validation.",
+          "interpretation": "Mentions after exact-evidence validation. Inert on these runs: the producers only emit verbatim-grounded mentions, so nothing fails the guard and the surface is identical to source-scored.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.8128,
@@ -337,6 +338,7 @@
           "component_type": "dictionary",
           "surface_key": "dictionary_normalized",
           "interpretation": "Standard dictionaries and format-normalization layers applied.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.871,
@@ -401,72 +403,8 @@
           "label": "Residual semantic additions",
           "component_type": "semantic_lens",
           "surface_key": "residual_benchmark_added",
-          "interpretation": "Residual recovery and semantic add/drop/replace layers applied.",
-          "scores": {
-            "overall": {
-              "precision": 0.875,
-              "recall": 0.8997,
-              "f1": 0.8872,
-              "tp": 718,
-              "fp": 102,
-              "fn": 80,
-              "pred_count": 816,
-              "gold_count": 798,
-              "precision_tp": 714,
-              "recall_tp": 718
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.938,
-                "recall": 0.8897,
-                "f1": 0.9132,
-                "tp": 121,
-                "fp": 8,
-                "fn": 15,
-                "pred_count": 129,
-                "gold_count": 136
-              }
-            }
-          }
-        },
-        {
-          "layer_id": "final_assembly",
-          "label": "Final assembly",
-          "component_type": "assembler",
-          "surface_key": "final",
-          "interpretation": "Final assembled mention set before headline projection.",
+          "interpretation": "Residual recovery and semantic add/drop/replace layers applied. This is the full assembled mention set fed to headline projection.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.875,
@@ -532,6 +470,7 @@
           "component_type": "deterministic_projection",
           "surface_key": "headline_target",
           "interpretation": "Clinical headline / projection surface used for final reporting.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.9141,
@@ -1221,147 +1160,11 @@
           "dataset": "exectv2",
           "generated_on": "2026-06-24",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
-          "layer_id": "final_assembly",
-          "layer_label": "Final assembly",
-          "component_type": "assembler",
-          "previous_layer_id": "residual_semantic_added",
-          "previous_layer_label": "Residual semantic additions",
-          "overall_delta_from_previous": 0.0,
-          "family_deltas": {
-            "Diagnosis": 0.0,
-            "SeizureFrequency": 0.0,
-            "Prescription": 0.0,
-            "Investigations": 0.0
-          },
-          "current_score": {
-            "overall": {
-              "precision": 0.875,
-              "recall": 0.8997,
-              "f1": 0.8872,
-              "tp": 718,
-              "fp": 102,
-              "fn": 80,
-              "pred_count": 816,
-              "gold_count": 798,
-              "precision_tp": 714,
-              "recall_tp": 718
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.938,
-                "recall": 0.8897,
-                "f1": 0.9132,
-                "tp": 121,
-                "fp": 8,
-                "fn": 15,
-                "pred_count": 129,
-                "gold_count": 136
-              }
-            }
-          },
-          "previous_score": {
-            "overall": {
-              "precision": 0.875,
-              "recall": 0.8997,
-              "f1": 0.8872,
-              "tp": 718,
-              "fp": 102,
-              "fn": 80,
-              "pred_count": 816,
-              "gold_count": 798,
-              "precision_tp": 714,
-              "recall_tp": 718
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.938,
-                "recall": 0.8897,
-                "f1": 0.9132,
-                "tp": 121,
-                "fp": 8,
-                "fn": 15,
-                "pred_count": 129,
-                "gold_count": 136
-              }
-            }
-          },
-          "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-          "row_inspection_policy": "aggregate_only"
-        },
-        {
-          "artifact_kind": "exectv2_component_layer_impact",
-          "dataset": "exectv2",
-          "generated_on": "2026-06-24",
-          "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
           "component_type": "deterministic_projection",
-          "previous_layer_id": "final_assembly",
-          "previous_layer_label": "Final assembly",
+          "previous_layer_id": "residual_semantic_added",
+          "previous_layer_label": "Residual semantic additions",
           "overall_delta_from_previous": 0.0283,
           "family_deltas": {
             "Diagnosis": 0.0,
@@ -1572,6 +1375,7 @@
           "component_type": "llm_producer",
           "surface_key": "raw_lane_score",
           "interpretation": "Prediction-bearing producer outputs before downstream cleanup.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8095,
@@ -1636,7 +1440,8 @@
           "label": "Source-scored mentions",
           "component_type": "llm_producer",
           "surface_key": "source_scored",
-          "interpretation": "Scored source mentions before evidence/dictionary/projection layers.",
+          "interpretation": "Scored source mentions before evidence/dictionary/projection layers. Inert on these single-lane holistic runs: scoring attaches confidence but adds or drops no mention, so the score is unchanged.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.8081,
@@ -1701,7 +1506,8 @@
           "label": "Evidence-valid mentions",
           "component_type": "evidence_validation",
           "surface_key": "evidence_valid",
-          "interpretation": "Mentions after exact-evidence validation.",
+          "interpretation": "Mentions after exact-evidence validation. Inert on these runs: the producers only emit verbatim-grounded mentions, so nothing fails the guard and the surface is identical to source-scored.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.8081,
@@ -1767,6 +1573,7 @@
           "component_type": "dictionary",
           "surface_key": "dictionary_normalized",
           "interpretation": "Standard dictionaries and format-normalization layers applied.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8668,
@@ -1831,72 +1638,8 @@
           "label": "Residual semantic additions",
           "component_type": "semantic_lens",
           "surface_key": "residual_benchmark_added",
-          "interpretation": "Residual recovery and semantic add/drop/replace layers applied.",
-          "scores": {
-            "overall": {
-              "precision": 0.871,
-              "recall": 0.8847,
-              "f1": 0.8778,
-              "tp": 706,
-              "fp": 104,
-              "fn": 92,
-              "pred_count": 806,
-              "gold_count": 798,
-              "precision_tp": 702,
-              "recall_tp": 706
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.916,
-                "recall": 0.8015,
-                "f1": 0.8549,
-                "tp": 109,
-                "fp": 10,
-                "fn": 27,
-                "pred_count": 119,
-                "gold_count": 136
-              }
-            }
-          }
-        },
-        {
-          "layer_id": "final_assembly",
-          "label": "Final assembly",
-          "component_type": "assembler",
-          "surface_key": "final",
-          "interpretation": "Final assembled mention set before headline projection.",
+          "interpretation": "Residual recovery and semantic add/drop/replace layers applied. This is the full assembled mention set fed to headline projection.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.871,
@@ -1962,6 +1705,7 @@
           "component_type": "deterministic_projection",
           "surface_key": "headline_target",
           "interpretation": "Clinical headline / projection surface used for final reporting.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.9105,
@@ -2651,147 +2395,11 @@
           "dataset": "exectv2",
           "generated_on": "2026-06-24",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-          "layer_id": "final_assembly",
-          "layer_label": "Final assembly",
-          "component_type": "assembler",
-          "previous_layer_id": "residual_semantic_added",
-          "previous_layer_label": "Residual semantic additions",
-          "overall_delta_from_previous": 0.0,
-          "family_deltas": {
-            "Diagnosis": 0.0,
-            "SeizureFrequency": 0.0,
-            "Prescription": 0.0,
-            "Investigations": 0.0
-          },
-          "current_score": {
-            "overall": {
-              "precision": 0.871,
-              "recall": 0.8847,
-              "f1": 0.8778,
-              "tp": 706,
-              "fp": 104,
-              "fn": 92,
-              "pred_count": 806,
-              "gold_count": 798,
-              "precision_tp": 702,
-              "recall_tp": 706
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.916,
-                "recall": 0.8015,
-                "f1": 0.8549,
-                "tp": 109,
-                "fp": 10,
-                "fn": 27,
-                "pred_count": 119,
-                "gold_count": 136
-              }
-            }
-          },
-          "previous_score": {
-            "overall": {
-              "precision": 0.871,
-              "recall": 0.8847,
-              "f1": 0.8778,
-              "tp": 706,
-              "fp": 104,
-              "fn": 92,
-              "pred_count": 806,
-              "gold_count": 798,
-              "precision_tp": 702,
-              "recall_tp": 706
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.9024,
-                "recall": 0.9158,
-                "f1": 0.909,
-                "tp": 272,
-                "fp": 29,
-                "fn": 25,
-                "pred_count": 297,
-                "gold_count": 297,
-                "precision_tp": 268,
-                "recall_tp": 272
-              },
-              "SeizureFrequency": {
-                "precision": 0.7371,
-                "recall": 0.8314,
-                "f1": 0.7814,
-                "tp": 143,
-                "fp": 51,
-                "fn": 29,
-                "pred_count": 194,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9286,
-                "recall": 0.943,
-                "f1": 0.9357,
-                "tp": 182,
-                "fp": 14,
-                "fn": 11,
-                "pred_count": 196,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 0.916,
-                "recall": 0.8015,
-                "f1": 0.8549,
-                "tp": 109,
-                "fp": 10,
-                "fn": 27,
-                "pred_count": 119,
-                "gold_count": 136
-              }
-            }
-          },
-          "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-          "row_inspection_policy": "aggregate_only"
-        },
-        {
-          "artifact_kind": "exectv2_component_layer_impact",
-          "dataset": "exectv2",
-          "generated_on": "2026-06-24",
-          "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
           "component_type": "deterministic_projection",
-          "previous_layer_id": "final_assembly",
-          "previous_layer_label": "Final assembly",
+          "previous_layer_id": "residual_semantic_added",
+          "previous_layer_label": "Residual semantic additions",
           "overall_delta_from_previous": 0.0283,
           "family_deltas": {
             "Diagnosis": 0.0,
@@ -3002,6 +2610,7 @@
           "component_type": "llm_producer",
           "surface_key": "raw_lane_score",
           "interpretation": "Prediction-bearing producer outputs before downstream cleanup.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.7289,
@@ -3066,7 +2675,8 @@
           "label": "Source-scored mentions",
           "component_type": "llm_producer",
           "surface_key": "source_scored",
-          "interpretation": "Scored source mentions before evidence/dictionary/projection layers.",
+          "interpretation": "Scored source mentions before evidence/dictionary/projection layers. Inert on these single-lane holistic runs: scoring attaches confidence but adds or drops no mention, so the score is unchanged.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.7289,
@@ -3131,7 +2741,8 @@
           "label": "Evidence-valid mentions",
           "component_type": "evidence_validation",
           "surface_key": "evidence_valid",
-          "interpretation": "Mentions after exact-evidence validation.",
+          "interpretation": "Mentions after exact-evidence validation. Inert on these runs: the producers only emit verbatim-grounded mentions, so nothing fails the guard and the surface is identical to source-scored.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.7289,
@@ -3197,6 +2808,7 @@
           "component_type": "dictionary",
           "surface_key": "dictionary_normalized",
           "interpretation": "Standard dictionaries and format-normalization layers applied.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8762,
@@ -3261,72 +2873,8 @@
           "label": "Residual semantic additions",
           "component_type": "semantic_lens",
           "surface_key": "residual_benchmark_added",
-          "interpretation": "Residual recovery and semantic add/drop/replace layers applied.",
-          "scores": {
-            "overall": {
-              "precision": 0.8577,
-              "recall": 0.8885,
-              "f1": 0.8728,
-              "tp": 709,
-              "fp": 117,
-              "fn": 89,
-              "pred_count": 822,
-              "gold_count": 798,
-              "precision_tp": 705,
-              "recall_tp": 709
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8622,
-                "recall": 0.9192,
-                "f1": 0.8898,
-                "tp": 273,
-                "fp": 43,
-                "fn": 24,
-                "pred_count": 312,
-                "gold_count": 297,
-                "precision_tp": 269,
-                "recall_tp": 273
-              },
-              "SeizureFrequency": {
-                "precision": 0.6776,
-                "recall": 0.7209,
-                "f1": 0.6986,
-                "tp": 124,
-                "fp": 59,
-                "fn": 48,
-                "pred_count": 183,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.925,
-                "recall": 0.9585,
-                "f1": 0.9415,
-                "tp": 185,
-                "fp": 15,
-                "fn": 8,
-                "pred_count": 200,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9338,
-                "f1": 0.9658,
-                "tp": 127,
-                "fp": 0,
-                "fn": 9,
-                "pred_count": 127,
-                "gold_count": 136
-              }
-            }
-          }
-        },
-        {
-          "layer_id": "final_assembly",
-          "label": "Final assembly",
-          "component_type": "assembler",
-          "surface_key": "final",
-          "interpretation": "Final assembled mention set before headline projection.",
+          "interpretation": "Residual recovery and semantic add/drop/replace layers applied. This is the full assembled mention set fed to headline projection.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8577,
@@ -3392,6 +2940,7 @@
           "component_type": "deterministic_projection",
           "surface_key": "headline_target",
           "interpretation": "Clinical headline / projection surface used for final reporting.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.9021,
@@ -4081,147 +3630,11 @@
           "dataset": "exectv2",
           "generated_on": "2026-06-24",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-          "layer_id": "final_assembly",
-          "layer_label": "Final assembly",
-          "component_type": "assembler",
-          "previous_layer_id": "residual_semantic_added",
-          "previous_layer_label": "Residual semantic additions",
-          "overall_delta_from_previous": 0.0,
-          "family_deltas": {
-            "Diagnosis": 0.0,
-            "SeizureFrequency": 0.0,
-            "Prescription": 0.0,
-            "Investigations": 0.0
-          },
-          "current_score": {
-            "overall": {
-              "precision": 0.8577,
-              "recall": 0.8885,
-              "f1": 0.8728,
-              "tp": 709,
-              "fp": 117,
-              "fn": 89,
-              "pred_count": 822,
-              "gold_count": 798,
-              "precision_tp": 705,
-              "recall_tp": 709
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8622,
-                "recall": 0.9192,
-                "f1": 0.8898,
-                "tp": 273,
-                "fp": 43,
-                "fn": 24,
-                "pred_count": 312,
-                "gold_count": 297,
-                "precision_tp": 269,
-                "recall_tp": 273
-              },
-              "SeizureFrequency": {
-                "precision": 0.6776,
-                "recall": 0.7209,
-                "f1": 0.6986,
-                "tp": 124,
-                "fp": 59,
-                "fn": 48,
-                "pred_count": 183,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.925,
-                "recall": 0.9585,
-                "f1": 0.9415,
-                "tp": 185,
-                "fp": 15,
-                "fn": 8,
-                "pred_count": 200,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9338,
-                "f1": 0.9658,
-                "tp": 127,
-                "fp": 0,
-                "fn": 9,
-                "pred_count": 127,
-                "gold_count": 136
-              }
-            }
-          },
-          "previous_score": {
-            "overall": {
-              "precision": 0.8577,
-              "recall": 0.8885,
-              "f1": 0.8728,
-              "tp": 709,
-              "fp": 117,
-              "fn": 89,
-              "pred_count": 822,
-              "gold_count": 798,
-              "precision_tp": 705,
-              "recall_tp": 709
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8622,
-                "recall": 0.9192,
-                "f1": 0.8898,
-                "tp": 273,
-                "fp": 43,
-                "fn": 24,
-                "pred_count": 312,
-                "gold_count": 297,
-                "precision_tp": 269,
-                "recall_tp": 273
-              },
-              "SeizureFrequency": {
-                "precision": 0.6776,
-                "recall": 0.7209,
-                "f1": 0.6986,
-                "tp": 124,
-                "fp": 59,
-                "fn": 48,
-                "pred_count": 183,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.925,
-                "recall": 0.9585,
-                "f1": 0.9415,
-                "tp": 185,
-                "fp": 15,
-                "fn": 8,
-                "pred_count": 200,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9338,
-                "f1": 0.9658,
-                "tp": 127,
-                "fp": 0,
-                "fn": 9,
-                "pred_count": 127,
-                "gold_count": 136
-              }
-            }
-          },
-          "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-          "row_inspection_policy": "aggregate_only"
-        },
-        {
-          "artifact_kind": "exectv2_component_layer_impact",
-          "dataset": "exectv2",
-          "generated_on": "2026-06-24",
-          "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
           "component_type": "deterministic_projection",
-          "previous_layer_id": "final_assembly",
-          "previous_layer_label": "Final assembly",
+          "previous_layer_id": "residual_semantic_added",
+          "previous_layer_label": "Residual semantic additions",
           "overall_delta_from_previous": 0.0446,
           "family_deltas": {
             "Diagnosis": 0.0,
@@ -4432,6 +3845,7 @@
           "component_type": "llm_producer",
           "surface_key": "raw_lane_score",
           "interpretation": "Prediction-bearing producer outputs before downstream cleanup.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.6433,
@@ -4496,7 +3910,8 @@
           "label": "Source-scored mentions",
           "component_type": "llm_producer",
           "surface_key": "source_scored",
-          "interpretation": "Scored source mentions before evidence/dictionary/projection layers.",
+          "interpretation": "Scored source mentions before evidence/dictionary/projection layers. Inert on these single-lane holistic runs: scoring attaches confidence but adds or drops no mention, so the score is unchanged.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.6433,
@@ -4561,7 +3976,8 @@
           "label": "Evidence-valid mentions",
           "component_type": "evidence_validation",
           "surface_key": "evidence_valid",
-          "interpretation": "Mentions after exact-evidence validation.",
+          "interpretation": "Mentions after exact-evidence validation. Inert on these runs: the producers only emit verbatim-grounded mentions, so nothing fails the guard and the surface is identical to source-scored.",
+          "inert": true,
           "scores": {
             "overall": {
               "precision": 0.6433,
@@ -4627,6 +4043,7 @@
           "component_type": "dictionary",
           "surface_key": "dictionary_normalized",
           "interpretation": "Standard dictionaries and format-normalization layers applied.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8537,
@@ -4691,72 +4108,8 @@
           "label": "Residual semantic additions",
           "component_type": "semantic_lens",
           "surface_key": "residual_benchmark_added",
-          "interpretation": "Residual recovery and semantic add/drop/replace layers applied.",
-          "scores": {
-            "overall": {
-              "precision": 0.8476,
-              "recall": 0.8659,
-              "f1": 0.8567,
-              "tp": 691,
-              "fp": 121,
-              "fn": 107,
-              "pred_count": 794,
-              "gold_count": 798,
-              "precision_tp": 673,
-              "recall_tp": 691
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8475,
-                "recall": 0.8653,
-                "f1": 0.8563,
-                "tp": 257,
-                "fp": 43,
-                "fn": 40,
-                "pred_count": 282,
-                "gold_count": 297,
-                "precision_tp": 239,
-                "recall_tp": 257
-              },
-              "SeizureFrequency": {
-                "precision": 0.6739,
-                "recall": 0.7209,
-                "f1": 0.6966,
-                "tp": 124,
-                "fp": 60,
-                "fn": 48,
-                "pred_count": 184,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9113,
-                "recall": 0.9585,
-                "f1": 0.9343,
-                "tp": 185,
-                "fp": 18,
-                "fn": 8,
-                "pred_count": 203,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9191,
-                "f1": 0.9579,
-                "tp": 125,
-                "fp": 0,
-                "fn": 11,
-                "pred_count": 125,
-                "gold_count": 136
-              }
-            }
-          }
-        },
-        {
-          "layer_id": "final_assembly",
-          "label": "Final assembly",
-          "component_type": "assembler",
-          "surface_key": "final",
-          "interpretation": "Final assembled mention set before headline projection.",
+          "interpretation": "Residual recovery and semantic add/drop/replace layers applied. This is the full assembled mention set fed to headline projection.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8476,
@@ -4822,6 +4175,7 @@
           "component_type": "deterministic_projection",
           "surface_key": "headline_target",
           "interpretation": "Clinical headline / projection surface used for final reporting.",
+          "inert": false,
           "scores": {
             "overall": {
               "precision": 0.8911,
@@ -5511,147 +4865,11 @@
           "dataset": "exectv2",
           "generated_on": "2026-06-24",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-          "layer_id": "final_assembly",
-          "layer_label": "Final assembly",
-          "component_type": "assembler",
-          "previous_layer_id": "residual_semantic_added",
-          "previous_layer_label": "Residual semantic additions",
-          "overall_delta_from_previous": 0.0,
-          "family_deltas": {
-            "Diagnosis": 0.0,
-            "SeizureFrequency": 0.0,
-            "Prescription": 0.0,
-            "Investigations": 0.0
-          },
-          "current_score": {
-            "overall": {
-              "precision": 0.8476,
-              "recall": 0.8659,
-              "f1": 0.8567,
-              "tp": 691,
-              "fp": 121,
-              "fn": 107,
-              "pred_count": 794,
-              "gold_count": 798,
-              "precision_tp": 673,
-              "recall_tp": 691
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8475,
-                "recall": 0.8653,
-                "f1": 0.8563,
-                "tp": 257,
-                "fp": 43,
-                "fn": 40,
-                "pred_count": 282,
-                "gold_count": 297,
-                "precision_tp": 239,
-                "recall_tp": 257
-              },
-              "SeizureFrequency": {
-                "precision": 0.6739,
-                "recall": 0.7209,
-                "f1": 0.6966,
-                "tp": 124,
-                "fp": 60,
-                "fn": 48,
-                "pred_count": 184,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9113,
-                "recall": 0.9585,
-                "f1": 0.9343,
-                "tp": 185,
-                "fp": 18,
-                "fn": 8,
-                "pred_count": 203,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9191,
-                "f1": 0.9579,
-                "tp": 125,
-                "fp": 0,
-                "fn": 11,
-                "pred_count": 125,
-                "gold_count": 136
-              }
-            }
-          },
-          "previous_score": {
-            "overall": {
-              "precision": 0.8476,
-              "recall": 0.8659,
-              "f1": 0.8567,
-              "tp": 691,
-              "fp": 121,
-              "fn": 107,
-              "pred_count": 794,
-              "gold_count": 798,
-              "precision_tp": 673,
-              "recall_tp": 691
-            },
-            "families": {
-              "Diagnosis": {
-                "precision": 0.8475,
-                "recall": 0.8653,
-                "f1": 0.8563,
-                "tp": 257,
-                "fp": 43,
-                "fn": 40,
-                "pred_count": 282,
-                "gold_count": 297,
-                "precision_tp": 239,
-                "recall_tp": 257
-              },
-              "SeizureFrequency": {
-                "precision": 0.6739,
-                "recall": 0.7209,
-                "f1": 0.6966,
-                "tp": 124,
-                "fp": 60,
-                "fn": 48,
-                "pred_count": 184,
-                "gold_count": 172
-              },
-              "Prescription": {
-                "precision": 0.9113,
-                "recall": 0.9585,
-                "f1": 0.9343,
-                "tp": 185,
-                "fp": 18,
-                "fn": 8,
-                "pred_count": 203,
-                "gold_count": 193
-              },
-              "Investigations": {
-                "precision": 1.0,
-                "recall": 0.9191,
-                "f1": 0.9579,
-                "tp": 125,
-                "fp": 0,
-                "fn": 11,
-                "pred_count": 125,
-                "gold_count": 136
-              }
-            }
-          },
-          "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-          "row_inspection_policy": "aggregate_only"
-        },
-        {
-          "artifact_kind": "exectv2_component_layer_impact",
-          "dataset": "exectv2",
-          "generated_on": "2026-06-24",
-          "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
           "component_type": "deterministic_projection",
-          "previous_layer_id": "final_assembly",
-          "previous_layer_label": "Final assembly",
+          "previous_layer_id": "residual_semantic_added",
+          "previous_layer_label": "Residual semantic additions",
           "overall_delta_from_previous": 0.0434,
           "family_deltas": {
             "Diagnosis": 0.0,
@@ -6416,147 +5634,11 @@
       "dataset": "exectv2",
       "generated_on": "2026-06-24",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
-      "layer_id": "final_assembly",
-      "layer_label": "Final assembly",
-      "component_type": "assembler",
-      "previous_layer_id": "residual_semantic_added",
-      "previous_layer_label": "Residual semantic additions",
-      "overall_delta_from_previous": 0.0,
-      "family_deltas": {
-        "Diagnosis": 0.0,
-        "SeizureFrequency": 0.0,
-        "Prescription": 0.0,
-        "Investigations": 0.0
-      },
-      "current_score": {
-        "overall": {
-          "precision": 0.875,
-          "recall": 0.8997,
-          "f1": 0.8872,
-          "tp": 718,
-          "fp": 102,
-          "fn": 80,
-          "pred_count": 816,
-          "gold_count": 798,
-          "precision_tp": 714,
-          "recall_tp": 718
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.9024,
-            "recall": 0.9158,
-            "f1": 0.909,
-            "tp": 272,
-            "fp": 29,
-            "fn": 25,
-            "pred_count": 297,
-            "gold_count": 297,
-            "precision_tp": 268,
-            "recall_tp": 272
-          },
-          "SeizureFrequency": {
-            "precision": 0.7371,
-            "recall": 0.8314,
-            "f1": 0.7814,
-            "tp": 143,
-            "fp": 51,
-            "fn": 29,
-            "pred_count": 194,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9286,
-            "recall": 0.943,
-            "f1": 0.9357,
-            "tp": 182,
-            "fp": 14,
-            "fn": 11,
-            "pred_count": 196,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 0.938,
-            "recall": 0.8897,
-            "f1": 0.9132,
-            "tp": 121,
-            "fp": 8,
-            "fn": 15,
-            "pred_count": 129,
-            "gold_count": 136
-          }
-        }
-      },
-      "previous_score": {
-        "overall": {
-          "precision": 0.875,
-          "recall": 0.8997,
-          "f1": 0.8872,
-          "tp": 718,
-          "fp": 102,
-          "fn": 80,
-          "pred_count": 816,
-          "gold_count": 798,
-          "precision_tp": 714,
-          "recall_tp": 718
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.9024,
-            "recall": 0.9158,
-            "f1": 0.909,
-            "tp": 272,
-            "fp": 29,
-            "fn": 25,
-            "pred_count": 297,
-            "gold_count": 297,
-            "precision_tp": 268,
-            "recall_tp": 272
-          },
-          "SeizureFrequency": {
-            "precision": 0.7371,
-            "recall": 0.8314,
-            "f1": 0.7814,
-            "tp": 143,
-            "fp": 51,
-            "fn": 29,
-            "pred_count": 194,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9286,
-            "recall": 0.943,
-            "f1": 0.9357,
-            "tp": 182,
-            "fp": 14,
-            "fn": 11,
-            "pred_count": 196,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 0.938,
-            "recall": 0.8897,
-            "f1": 0.9132,
-            "tp": 121,
-            "fp": 8,
-            "fn": 15,
-            "pred_count": 129,
-            "gold_count": 136
-          }
-        }
-      },
-      "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-      "row_inspection_policy": "aggregate_only"
-    },
-    {
-      "artifact_kind": "exectv2_component_layer_impact",
-      "dataset": "exectv2",
-      "generated_on": "2026-06-24",
-      "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
       "component_type": "deterministic_projection",
-      "previous_layer_id": "final_assembly",
-      "previous_layer_label": "Final assembly",
+      "previous_layer_id": "residual_semantic_added",
+      "previous_layer_label": "Residual semantic additions",
       "overall_delta_from_previous": 0.0283,
       "family_deltas": {
         "Diagnosis": 0.0,
@@ -7311,147 +6393,11 @@
       "dataset": "exectv2",
       "generated_on": "2026-06-24",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-      "layer_id": "final_assembly",
-      "layer_label": "Final assembly",
-      "component_type": "assembler",
-      "previous_layer_id": "residual_semantic_added",
-      "previous_layer_label": "Residual semantic additions",
-      "overall_delta_from_previous": 0.0,
-      "family_deltas": {
-        "Diagnosis": 0.0,
-        "SeizureFrequency": 0.0,
-        "Prescription": 0.0,
-        "Investigations": 0.0
-      },
-      "current_score": {
-        "overall": {
-          "precision": 0.871,
-          "recall": 0.8847,
-          "f1": 0.8778,
-          "tp": 706,
-          "fp": 104,
-          "fn": 92,
-          "pred_count": 806,
-          "gold_count": 798,
-          "precision_tp": 702,
-          "recall_tp": 706
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.9024,
-            "recall": 0.9158,
-            "f1": 0.909,
-            "tp": 272,
-            "fp": 29,
-            "fn": 25,
-            "pred_count": 297,
-            "gold_count": 297,
-            "precision_tp": 268,
-            "recall_tp": 272
-          },
-          "SeizureFrequency": {
-            "precision": 0.7371,
-            "recall": 0.8314,
-            "f1": 0.7814,
-            "tp": 143,
-            "fp": 51,
-            "fn": 29,
-            "pred_count": 194,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9286,
-            "recall": 0.943,
-            "f1": 0.9357,
-            "tp": 182,
-            "fp": 14,
-            "fn": 11,
-            "pred_count": 196,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 0.916,
-            "recall": 0.8015,
-            "f1": 0.8549,
-            "tp": 109,
-            "fp": 10,
-            "fn": 27,
-            "pred_count": 119,
-            "gold_count": 136
-          }
-        }
-      },
-      "previous_score": {
-        "overall": {
-          "precision": 0.871,
-          "recall": 0.8847,
-          "f1": 0.8778,
-          "tp": 706,
-          "fp": 104,
-          "fn": 92,
-          "pred_count": 806,
-          "gold_count": 798,
-          "precision_tp": 702,
-          "recall_tp": 706
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.9024,
-            "recall": 0.9158,
-            "f1": 0.909,
-            "tp": 272,
-            "fp": 29,
-            "fn": 25,
-            "pred_count": 297,
-            "gold_count": 297,
-            "precision_tp": 268,
-            "recall_tp": 272
-          },
-          "SeizureFrequency": {
-            "precision": 0.7371,
-            "recall": 0.8314,
-            "f1": 0.7814,
-            "tp": 143,
-            "fp": 51,
-            "fn": 29,
-            "pred_count": 194,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9286,
-            "recall": 0.943,
-            "f1": 0.9357,
-            "tp": 182,
-            "fp": 14,
-            "fn": 11,
-            "pred_count": 196,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 0.916,
-            "recall": 0.8015,
-            "f1": 0.8549,
-            "tp": 109,
-            "fp": 10,
-            "fn": 27,
-            "pred_count": 119,
-            "gold_count": 136
-          }
-        }
-      },
-      "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-      "row_inspection_policy": "aggregate_only"
-    },
-    {
-      "artifact_kind": "exectv2_component_layer_impact",
-      "dataset": "exectv2",
-      "generated_on": "2026-06-24",
-      "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
       "component_type": "deterministic_projection",
-      "previous_layer_id": "final_assembly",
-      "previous_layer_label": "Final assembly",
+      "previous_layer_id": "residual_semantic_added",
+      "previous_layer_label": "Residual semantic additions",
       "overall_delta_from_previous": 0.0283,
       "family_deltas": {
         "Diagnosis": 0.0,
@@ -8206,147 +7152,11 @@
       "dataset": "exectv2",
       "generated_on": "2026-06-24",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-      "layer_id": "final_assembly",
-      "layer_label": "Final assembly",
-      "component_type": "assembler",
-      "previous_layer_id": "residual_semantic_added",
-      "previous_layer_label": "Residual semantic additions",
-      "overall_delta_from_previous": 0.0,
-      "family_deltas": {
-        "Diagnosis": 0.0,
-        "SeizureFrequency": 0.0,
-        "Prescription": 0.0,
-        "Investigations": 0.0
-      },
-      "current_score": {
-        "overall": {
-          "precision": 0.8577,
-          "recall": 0.8885,
-          "f1": 0.8728,
-          "tp": 709,
-          "fp": 117,
-          "fn": 89,
-          "pred_count": 822,
-          "gold_count": 798,
-          "precision_tp": 705,
-          "recall_tp": 709
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.8622,
-            "recall": 0.9192,
-            "f1": 0.8898,
-            "tp": 273,
-            "fp": 43,
-            "fn": 24,
-            "pred_count": 312,
-            "gold_count": 297,
-            "precision_tp": 269,
-            "recall_tp": 273
-          },
-          "SeizureFrequency": {
-            "precision": 0.6776,
-            "recall": 0.7209,
-            "f1": 0.6986,
-            "tp": 124,
-            "fp": 59,
-            "fn": 48,
-            "pred_count": 183,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.925,
-            "recall": 0.9585,
-            "f1": 0.9415,
-            "tp": 185,
-            "fp": 15,
-            "fn": 8,
-            "pred_count": 200,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 1.0,
-            "recall": 0.9338,
-            "f1": 0.9658,
-            "tp": 127,
-            "fp": 0,
-            "fn": 9,
-            "pred_count": 127,
-            "gold_count": 136
-          }
-        }
-      },
-      "previous_score": {
-        "overall": {
-          "precision": 0.8577,
-          "recall": 0.8885,
-          "f1": 0.8728,
-          "tp": 709,
-          "fp": 117,
-          "fn": 89,
-          "pred_count": 822,
-          "gold_count": 798,
-          "precision_tp": 705,
-          "recall_tp": 709
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.8622,
-            "recall": 0.9192,
-            "f1": 0.8898,
-            "tp": 273,
-            "fp": 43,
-            "fn": 24,
-            "pred_count": 312,
-            "gold_count": 297,
-            "precision_tp": 269,
-            "recall_tp": 273
-          },
-          "SeizureFrequency": {
-            "precision": 0.6776,
-            "recall": 0.7209,
-            "f1": 0.6986,
-            "tp": 124,
-            "fp": 59,
-            "fn": 48,
-            "pred_count": 183,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.925,
-            "recall": 0.9585,
-            "f1": 0.9415,
-            "tp": 185,
-            "fp": 15,
-            "fn": 8,
-            "pred_count": 200,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 1.0,
-            "recall": 0.9338,
-            "f1": 0.9658,
-            "tp": 127,
-            "fp": 0,
-            "fn": 9,
-            "pred_count": 127,
-            "gold_count": 136
-          }
-        }
-      },
-      "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-      "row_inspection_policy": "aggregate_only"
-    },
-    {
-      "artifact_kind": "exectv2_component_layer_impact",
-      "dataset": "exectv2",
-      "generated_on": "2026-06-24",
-      "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
       "component_type": "deterministic_projection",
-      "previous_layer_id": "final_assembly",
-      "previous_layer_label": "Final assembly",
+      "previous_layer_id": "residual_semantic_added",
+      "previous_layer_label": "Residual semantic additions",
       "overall_delta_from_previous": 0.0446,
       "family_deltas": {
         "Diagnosis": 0.0,
@@ -9101,147 +7911,11 @@
       "dataset": "exectv2",
       "generated_on": "2026-06-24",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-      "layer_id": "final_assembly",
-      "layer_label": "Final assembly",
-      "component_type": "assembler",
-      "previous_layer_id": "residual_semantic_added",
-      "previous_layer_label": "Residual semantic additions",
-      "overall_delta_from_previous": 0.0,
-      "family_deltas": {
-        "Diagnosis": 0.0,
-        "SeizureFrequency": 0.0,
-        "Prescription": 0.0,
-        "Investigations": 0.0
-      },
-      "current_score": {
-        "overall": {
-          "precision": 0.8476,
-          "recall": 0.8659,
-          "f1": 0.8567,
-          "tp": 691,
-          "fp": 121,
-          "fn": 107,
-          "pred_count": 794,
-          "gold_count": 798,
-          "precision_tp": 673,
-          "recall_tp": 691
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.8475,
-            "recall": 0.8653,
-            "f1": 0.8563,
-            "tp": 257,
-            "fp": 43,
-            "fn": 40,
-            "pred_count": 282,
-            "gold_count": 297,
-            "precision_tp": 239,
-            "recall_tp": 257
-          },
-          "SeizureFrequency": {
-            "precision": 0.6739,
-            "recall": 0.7209,
-            "f1": 0.6966,
-            "tp": 124,
-            "fp": 60,
-            "fn": 48,
-            "pred_count": 184,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9113,
-            "recall": 0.9585,
-            "f1": 0.9343,
-            "tp": 185,
-            "fp": 18,
-            "fn": 8,
-            "pred_count": 203,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 1.0,
-            "recall": 0.9191,
-            "f1": 0.9579,
-            "tp": 125,
-            "fp": 0,
-            "fn": 11,
-            "pred_count": 125,
-            "gold_count": 136
-          }
-        }
-      },
-      "previous_score": {
-        "overall": {
-          "precision": 0.8476,
-          "recall": 0.8659,
-          "f1": 0.8567,
-          "tp": 691,
-          "fp": 121,
-          "fn": 107,
-          "pred_count": 794,
-          "gold_count": 798,
-          "precision_tp": 673,
-          "recall_tp": 691
-        },
-        "families": {
-          "Diagnosis": {
-            "precision": 0.8475,
-            "recall": 0.8653,
-            "f1": 0.8563,
-            "tp": 257,
-            "fp": 43,
-            "fn": 40,
-            "pred_count": 282,
-            "gold_count": 297,
-            "precision_tp": 239,
-            "recall_tp": 257
-          },
-          "SeizureFrequency": {
-            "precision": 0.6739,
-            "recall": 0.7209,
-            "f1": 0.6966,
-            "tp": 124,
-            "fp": 60,
-            "fn": 48,
-            "pred_count": 184,
-            "gold_count": 172
-          },
-          "Prescription": {
-            "precision": 0.9113,
-            "recall": 0.9585,
-            "f1": 0.9343,
-            "tp": 185,
-            "fp": 18,
-            "fn": 8,
-            "pred_count": 203,
-            "gold_count": 193
-          },
-          "Investigations": {
-            "precision": 1.0,
-            "recall": 0.9191,
-            "f1": 0.9579,
-            "tp": 125,
-            "fp": 0,
-            "fn": 11,
-            "pred_count": 125,
-            "gold_count": 136
-          }
-        }
-      },
-      "claim_boundary": "dev140 replay-only aggregate component-impact ladder",
-      "row_inspection_policy": "aggregate_only"
-    },
-    {
-      "artifact_kind": "exectv2_component_layer_impact",
-      "dataset": "exectv2",
-      "generated_on": "2026-06-24",
-      "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
       "component_type": "deterministic_projection",
-      "previous_layer_id": "final_assembly",
-      "previous_layer_label": "Final assembly",
+      "previous_layer_id": "residual_semantic_added",
+      "previous_layer_label": "Residual semantic additions",
       "overall_delta_from_previous": 0.0434,
       "family_deltas": {
         "Diagnosis": 0.0,

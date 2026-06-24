@@ -68,7 +68,6 @@ MATERIALIZED_SURFACES = (
     "protocol_model_preserving_canonical",
     "dictionary_normalized",
     "residual_benchmark_added",
-    "final",
 )
 
 
@@ -516,6 +515,10 @@ def _lane_prediction_surfaces(
     dictionary_normalized = [
         finding for finding in final if not _is_deterministic_addition(finding)
     ]
+    # `residual_benchmark_added` is the full assembled set after residual recovery —
+    # i.e. the pipeline's final surface. We deliberately do not emit a separate
+    # "final" surface: it was a literal alias of this one and only created a
+    # confusing always-zero "final assembly" delta downstream.
     residual_benchmark_added = list(final)
     return {
         "source_scored": source_scored,
@@ -523,7 +526,6 @@ def _lane_prediction_surfaces(
         "protocol_model_preserving_canonical": protocol_model_preserving_canonical,
         "dictionary_normalized": dictionary_normalized,
         "residual_benchmark_added": residual_benchmark_added,
-        "final": final,
     }
 
 

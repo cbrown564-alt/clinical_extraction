@@ -7,7 +7,7 @@ source_artifacts:
   aggregate_json: experiments/exectv2_component_ablation_replay_dev140_20260624.json
 component_boundary: headline_projection
 component_type: deterministic_projection
-previous_surface: final_assembly
+previous_surface: residual_semantic_added
 current_surface: headline_projection
 row_inspection_policy: aggregate_only
 allow_model_calls: false

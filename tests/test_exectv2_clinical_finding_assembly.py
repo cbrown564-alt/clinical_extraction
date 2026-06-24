@@ -62,7 +62,6 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
         "protocol_model_preserving_canonical",
         "dictionary_normalized",
         "residual_benchmark_added",
-        "final",
     }
     assert run.report["score_ladder"]["materialized_surfaces"]["source_scored"][
         "overall"
@@ -116,7 +115,6 @@ def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
     assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0][
         "evidence"
     ]
-    assert [m["text"] for m in rx_surfaces["final"]] == ["lamotrigine"]
     materialized = run.report["score_ladder"]["materialized_surfaces"]
     assert materialized["protocol_model_preserving_canonical"]["overall"]["pred_count"] == 3
     assert materialized["dictionary_normalized"]["overall"]["pred_count"] == 3

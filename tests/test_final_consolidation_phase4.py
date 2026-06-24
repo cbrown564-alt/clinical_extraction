@@ -57,6 +57,6 @@ def test_phase4_exectv2_frontend_keeps_projection_separate_from_prediction_beari
     assert '| "deterministic_projection"' in adapter
     assert 'return "deterministic_projection";' in adapter
     assert "fetchExectv2ComponentAblation" in surface
-    assert "Architecture Layer Ladder" in surface
-    assert "Layer Impact Matrix" in surface
-    assert "SelectedArchitectureDetail" in surface
+    # The surface delegates rendering to the shared cumulative stage-ladder seam.
+    assert "adaptExectv2Ladder" in surface
+    assert "ComponentLadderSurface" in surface
