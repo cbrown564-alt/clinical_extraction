@@ -816,14 +816,36 @@ Completion note, 2026-06-24:
   fallback and Observatory API routes.
 - Gan Component Impact now runs baseline versus one-component-off rules-only
   ablations and leads with F1/accuracy deltas before component detail.
-- ExECTv2 Component Impact is explicitly provenance-only until replayable
-  component ablation artifacts exist; it no longer presents reliability
-  evidence as component impact.
+- ExECTv2 Component Impact is wired to replayable aggregate layer artifacts for
+  v08, v09, DeepSeek, and Qwen; it no longer presents reliability evidence as
+  component impact.
 - The ExECTv2 replay-ablation contract is documented in
   `docs/design/exectv2_component_ablation_contract_2026-06-24.md`, including
   fixed component boundaries, dev140 replay scope, aggregate payload fields,
   deterministic projection separation, and no full-200 or holdout-facing
   row-level inspection.
+
+Replay artifact note, 2026-06-24:
+
+- Generated the ExECTv2 layered component-impact replay artifacts:
+  `experiments/exectv2_component_ablation_replay_dev140_20260624.json`,
+  `.jsonl`, `.md`, static frontend payload
+  `frontend/public/mock-data/exectv2/component-ablation.json`, and 28 layer
+  YAML configs under `configs/exectv2/ablations/`.
+- The replay covers four architectures: v08 dev140 control, v09 partial-hybrid
+  simplification, DeepSeek v0.9.16 dev140 diagnostic, and Qwen v0.9.22 dev140
+  diagnostic.
+- Each architecture is shown across seven ordered layers: raw lane candidates,
+  source-scored mentions, evidence-valid mentions, dictionary normalized,
+  residual semantic additions, final assembly, and headline projection.
+- The most visible deltas are dictionary normalization, residual semantic
+  additions, and headline projection. Final headline F1 is 0.9155 for v08,
+  0.9061 for v09, 0.9174 for DeepSeek, and 0.9001 for Qwen.
+- The redesigned Component Impact page now reads the aggregate payload and
+  displays an architecture ladder, layer-impact matrix, and selected
+  architecture details.
+- The artifacts are aggregate-only, make no model calls, and introduce no
+  full-200 or holdout-facing row-level inspection.
 
 ## Parallel Work Matrix
 

@@ -1,0 +1,15 @@
+candidate: exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140
+split: dev140
+scorer_view: layered_component_impact
+source_artifacts:
+  baseline_summary: experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json
+  baseline_assembly: experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl
+  aggregate_json: experiments/exectv2_component_ablation_replay_dev140_20260624.json
+component_boundary: headline_projection
+component_type: deterministic_projection
+previous_surface: final_assembly
+current_surface: headline_projection
+row_inspection_policy: aggregate_only
+allow_model_calls: false
+allow_post_run_tuning: false
+claim_boundary: dev140 replay-only aggregate component-impact ladder

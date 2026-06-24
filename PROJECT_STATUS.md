@@ -24,6 +24,13 @@ The controls are fixed. Bare rich-schema LLM-only remains far below the v08
 hybrid dev140 clinical-recovery control (`0.9155`). The active scoreboard is
 `docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md`.
 
+The ExECTv2 component replay artifacts now exist as layered aggregate ladders
+for v08, v09 partial hybrid, DeepSeek v0.9.16, and Qwen v0.9.22 dev140. Each
+architecture is shown across raw candidates, source scoring, evidence
+validation, dictionary normalization, residual semantic additions, final
+assembly, and headline projection. The most visible gains come from dictionary
+normalization, residual semantic additions, and headline projection.
+
 Phases 2-6 localized the LLM-only plateau. The best
 `decision_table_sf_inv` dev140 readout reached `0.729`; DeepSeek reached
 `0.745`; Qwen reached `0.694`; all strict benchmark F1s stayed near `0.13`.
@@ -54,15 +61,16 @@ hybrid rescue and verifier candidates remain separated and unapplied.
 
 - Keep Phase 3-6 direct LLM-only runs as plateau comparators with fixed
   clinical-recovery claim language.
-- Treat ExECTv2 Component Impact as provenance-only until replayable component
-  ablations exist.
+- Use the redesigned ExECTv2 Component Impact page as the aggregate layer
+  replay surface across v08, v09, DeepSeek, and Qwen.
 
 ### Next
 
 - Predeclare split/surface, scorer, stop rule, and row-inspection boundary
   before any paper-facing ExECTv2 audit.
-- Build ExECTv2 component ablations: fixed component boundaries, replay-only
-  one-component-off assemblies, family-level deltas, and frontend payloads.
+- Extend ExECTv2 component ablations from saved layer ladders to true
+  one-component-off rows only when upstream candidates, family deltas,
+  transition counts, and provenance tags can be preserved cleanly.
 
 ### Blocked
 
@@ -73,6 +81,12 @@ hybrid rescue and verifier candidates remain separated and unapplied.
 
 ### Done Recently
 
+- 2026-06-24: Generated ExECTv2 replay-only layered component-impact artifacts
+  for v08, v09, DeepSeek, and Qwen dev140: aggregate JSON/JSONL/Markdown,
+  frontend payload, and 28 layer YAML configs. The redesigned Component Impact
+  page now shows architecture ladders, layer deltas, and selected-run details.
+  The replay is no-call, aggregate-only, and leaves full-200/holdout row-level
+  guardrails unchanged.
 - 2026-06-24: Completed final project consolidation Phase 4: split Reliability
   Scorecard into its own cross-dataset tab for Gan and ExECTv2, simplified Gan
   Component Impact into baseline-vs-ablation deltas, documented the ExECTv2

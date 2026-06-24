@@ -35,10 +35,11 @@ def test_phase4_exectv2_component_ablation_contract_is_documented() -> None:
         assert boundary in contract
 
     for required_field in (
-        "baseline_run_id",
-        "ablated_run_id",
-        "component_boundary",
-        "overall_f1_delta",
+        "exectv2_component_ablation_set",
+        "architectures",
+        "layers",
+        "ablations",
+        "overall_delta_from_previous",
         "family_deltas",
         "provenance_policy",
     ):
@@ -55,4 +56,7 @@ def test_phase4_exectv2_frontend_keeps_projection_separate_from_prediction_beari
     assert 'id: "deterministic_projection"' in descriptor
     assert '| "deterministic_projection"' in adapter
     assert 'return "deterministic_projection";' in adapter
-    assert "True one-component-off deltas remain gated" in surface
+    assert "fetchExectv2ComponentAblation" in surface
+    assert "Architecture Layer Ladder" in surface
+    assert "Layer Impact Matrix" in surface
+    assert "SelectedArchitectureDetail" in surface
