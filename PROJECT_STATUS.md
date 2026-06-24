@@ -16,6 +16,8 @@ The 2026-06-24 reliability refresh added no-call dev140 evidence from saved arti
 
 The scorecard is improved but not finished. The biggest reliability gains now require frozen validation rather than another aggregate prompt run: calibrated risk modeling, lower-burden review routing, perturbation/hard-slice robustness, same-prompt consistency, and true component-off reliability ablations. The frozen audit protocol is now predeclared at `docs/experiments/exectv2/reliability/exectv2_reliability_audit_protocol_predeclaration_2026-06-24.md`; it allows aggregate validation only and keeps full-200/holdout row-level inspection blocked. The aggregate review-routing validation preflight stopped without promotion because the available full-200 artifacts do not match the frozen rich-schema holistic assembly surface.
 
+The authorized full-200 GPT-4.1-mini run now exists for the strongest v08-shaped architecture using the current code path. Aggregate headline clinical-recovery F1 is `0.8502` overall: Diagnosis `0.8321`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.9213`. It is a current-code v08-shape artifact, not byte-identical to the archived dev140 prompt/module versions, and the assembly gate remains `do-not-promote` because changed-row controls fail even though all family headline gates pass.
+
 ## Active Priorities
 
 1. Treat `clinical_headline` de-duplicated clinical recovery as the primary LLM-only optimization target; report strict benchmark results only as a diagnostic/comparability surface.
@@ -28,12 +30,13 @@ The scorecard is improved but not finished. The biggest reliability gains now re
 ### Now
 
 - Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the lower-burden review-routing candidate unpromoted until a same-surface full-200 aggregate artifact exists.
+- Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the lower-burden review-routing candidate unpromoted until the new full-200 current-code v08-shape artifact is accepted as the validation surface and passes aggregate review-routing gates.
 - Keep Phase 3-6 direct LLM-only runs as plateau comparators with fixed clinical-recovery claim language.
 - Use the redesigned ExECTv2 Component Impact page as the aggregate layer replay surface across v08, v09, DeepSeek, and Qwen.
 
 ### Next
 
-- Freeze and generate a same-surface full-200 rich-schema holistic assembly artifact for review-routing validation, then run the aggregate-only audit once without row-level inspection.
+- Decide whether the current-code v08-shape full-200 artifact is an acceptable review-routing validation surface despite not being byte-identical to archived dev140 prompt/module versions; if yes, run the aggregate-only audit once without row-level inspection.
 - Replace the heuristic calibration proxy with a frozen, leakage-audited risk model or cross-validated scoring rule; report ECE, Brier score, reliability bins, and per-family calibration before claiming calibration coverage above `3/5`.
 - Build robustness panels that can move the scorecard: current-vs-historical SF state perturbations, medication current-vs-plan ambiguity, investigation result-state ambiguity, diagnosis assertion/hierarchy conventions, and evidence paraphrase/deletion stress tests.
 - Add same-prompt/cross-seed consistency panels for live LLM surfaces, with schema validity, evidence validity, call failures, and family-cell agreement separated from deterministic replay stability.
@@ -43,11 +46,12 @@ The scorecard is improved but not finished. The biggest reliability gains now re
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need explicit authorization plus a frozen protocol.
 - ExECTv2 full-200 or holdout row-level inspection remains blocked; the reliability-audit protocol only authorizes aggregate validation outputs.
-- Promotion of the lower-burden review-routing candidate is blocked: the 2026-06-24 audit preflight found no same-surface full-200 aggregate artifact, so the validation gates are not evaluable.
+- Promotion of the lower-burden review-routing candidate is blocked until the current-code v08-shape full-200 artifact is either accepted for validation or replaced by a byte-identical archived-surface full-200 artifact, and the aggregate validation gates pass.
 
 ### Done Recently
 
 - 2026-06-24: Completed the aggregate-only ExECTv2 review-routing validation preflight; the high-recall and lower-burden dev candidates remain unpromoted because existing full-200 artifacts are surface-mismatched, with the null result recorded at `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`.
+- 2026-06-24: Ran the authorized full-200 current-code v08-shape GPT-4.1-mini architecture audit and materialized the holistic assembly artifact at `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md`; aggregate headline F1 is `0.8502` overall with no producer call/parse failures.
 - 2026-06-24: Upgraded the ExECTv2 reliability scorecard with computed no-call dev140 evidence, latest DeepSeek/Qwen surface separation, calibration proxy, review-routing operating points, frontend payload/UI, and replay/API tests.
 - 2026-06-24: Predeclared the frozen ExECTv2 reliability-audit protocol for split/surface, scorer, stop rule, row-inspection boundary, promotion gates, and allowed dev140/full-200/holdout artifact use.
 - 2026-06-24: Generated ExECTv2 replay-only layered component-impact artifacts for v08, v09, DeepSeek, and Qwen dev140.
