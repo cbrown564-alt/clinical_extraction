@@ -9,12 +9,12 @@
 
 ## Architecture Summary
 
-| Architecture | Decision | Final F1 | Raw candidates | Dictionary | Final assembly | Headline projection |
+| Architecture | Decision | Final F1 | Raw candidates | Dictionary | Residual semantic | Headline projection |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| `exectv2_holistic_finding_assembly_v08_dev140` | control | 0.9155 | 0.8328 | 0.8697 | 0.0000 | 0.9155 |
-| `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | simplification | 0.9061 | 0.8231 | 0.8601 | 0.0000 | 0.9061 |
-| `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | diagnostic | 0.9174 | 0.7498 | 0.8334 | 0.0000 | 0.9174 |
-| `exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140` | diagnostic | 0.9001 | 0.6406 | 0.7526 | 0.0000 | 0.9001 |
+| `exectv2_holistic_finding_assembly_v08_dev140` | control | 0.9155 | 0.8328 | 0.8697 | 0.8872 | 0.9155 |
+| `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | simplification | 0.9061 | 0.8231 | 0.8601 | 0.8778 | 0.9061 |
+| `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | diagnostic | 0.9174 | 0.7498 | 0.8334 | 0.8728 | 0.9174 |
+| `exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140` | diagnostic | 0.9001 | 0.6406 | 0.7526 | 0.8567 | 0.9001 |
 
 ## Layer Impacts
 

@@ -26,22 +26,27 @@ not an authorization to run full-200 or holdout-facing row-level analysis.
 | Deterministic dictionaries | `dictionary` | conditional | compare dictionary-normalized surface against evidence-valid/source-scored surfaces | Dictionary changes may alter CUI/CUIPhrase normalization; reports must state whether the change is benchmark-formatting or clinical meaning. |
 | Semantic lenses | `semantic_lens` | yes | compare residual semantic additions against dictionary-normalized surfaces | Includes heading recovery, residual convention recovery, and any add/drop/replace lens that changes clinical facts. |
 | Evidence validation | `evidence_validation` | no | compare evidence-valid surface against source-scored mentions | Must report invalid-evidence deltas separately from clinical F1 deltas. |
-| Assembly / arbitration | `assembler` | yes | compare final assembly against the previous materialized mention surface | The replay must keep the same upstream candidate files and expose the aggregate layer transition. |
-| Deterministic projection | `deterministic_projection` | no unless explicitly promoted | compare headline projection against final assembly | Separates meaning-preserving projection from prediction-bearing semantic add/drop/replace. |
+| Assembly / arbitration | `assembler` | yes | reserved for future true one-component-off rows when assembly changes a materialized mention surface | The current holistic replay has no distinct assembly delta; the redundant always-zero final-assembly stage is intentionally omitted. |
+| Deterministic projection | `deterministic_projection` | no unless explicitly promoted | compare headline projection against residual semantic additions | Separates meaning-preserving projection from prediction-bearing semantic add/drop/replace. |
 
 The scorer is not an ablation boundary. It is the declared measurement surface.
 
 ## Replay Surfaces
 
-The current replay ladder uses seven ordered surfaces for every architecture:
+The current replay ladder exposes six ordered surfaces for every architecture:
 
 1. `raw_lane_candidates`
 2. `source_scored`
 3. `evidence_valid`
 4. `dictionary_normalized`
 5. `residual_semantic_added`
-6. `final_assembly`
-7. `headline_projection`
+6. `headline_projection`
+
+`source_scored` and `evidence_valid` are retained in the payload with
+`inert: true` because they are provenance guards on these single-lane holistic
+runs. The frontend hides them and recomputes visible-stage deltas from absolute
+scores. `final_assembly` is omitted entirely because it was a redundant
+always-zero stage for these replay artifacts.
 
 Layer configs are generated as:
 
@@ -61,7 +66,7 @@ source_artifacts:
   aggregate_json: experiments/exectv2_component_ablation_replay_dev140_20260624.json
 component_boundary: headline_projection
 component_type: deterministic_projection
-previous_surface: final_assembly
+previous_surface: residual_semantic_added
 current_surface: headline_projection
 row_inspection_policy: aggregate_only
 allow_model_calls: false
@@ -123,7 +128,7 @@ Each impact row contains:
   "layer_id": "headline_projection",
   "layer_label": "Headline projection",
   "component_type": "deterministic_projection",
-  "previous_layer_id": "final_assembly",
+  "previous_layer_id": "residual_semantic_added",
   "overall_delta_from_previous": 0.0283,
   "family_deltas": {
     "Diagnosis": 0.0,
@@ -158,7 +163,7 @@ ExECTv2 Component Impact can remain in ablation mode when:
 
 1. The four selected architecture ladders are generated from saved artifacts
    without model calls.
-2. The aggregate payload exposes all seven layers and 28 layer-impact rows.
+2. The aggregate payload exposes six layers and 24 layer-impact rows.
 3. Tests confirm family-level deltas and static frontend parity.
 4. The frontend reads the payload instead of inferring causal impact from
    reliability scorecard or cross-model comparison data.
@@ -173,10 +178,10 @@ Generated on 2026-06-24:
 - `frontend/public/mock-data/exectv2/component-ablation.json`
 - `configs/exectv2/ablations/{candidate}__layer_{layer_id}.yaml`
 
-The committed replay covers four architectures and seven layers, producing 28
+The committed replay covers four architectures and six layers, producing 24
 aggregate component-impact rows:
 
-| Architecture | Decision | Final F1 | Raw candidates | Dictionary | Final assembly | Headline projection |
+| Architecture | Decision | Final F1 | Raw candidates | Dictionary | Residual semantic | Headline projection |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | `exectv2_holistic_finding_assembly_v08_dev140` | control | 0.9155 | 0.8328 | 0.8697 | 0.8872 | 0.9155 |
 | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | simplification | 0.9061 | 0.8231 | 0.8601 | 0.8778 | 0.9061 |

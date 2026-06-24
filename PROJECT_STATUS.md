@@ -27,9 +27,10 @@ hybrid dev140 clinical-recovery control (`0.9155`). The active scoreboard is
 The ExECTv2 component replay artifacts now exist as layered aggregate ladders
 for v08, v09 partial hybrid, DeepSeek v0.9.16, and Qwen v0.9.22 dev140. Each
 architecture is shown across raw candidates, source scoring, evidence
-validation, dictionary normalization, residual semantic additions, final
-assembly, and headline projection. The most visible gains come from dictionary
-normalization, residual semantic additions, and headline projection.
+validation, dictionary normalization, residual semantic additions, and headline
+projection. The redundant always-zero final-assembly stage is omitted. The most
+visible gains come from dictionary normalization, residual semantic additions,
+and headline projection.
 
 Phases 2-6 localized the LLM-only plateau. The best
 `decision_table_sf_inv` dev140 readout reached `0.729`; DeepSeek reached
@@ -81,11 +82,12 @@ hybrid rescue and verifier candidates remain separated and unapplied.
 
 ### Done Recently
 
-- 2026-06-24: Generated ExECTv2 replay-only layered component-impact artifacts
-  for v08, v09, DeepSeek, and Qwen dev140: aggregate JSON/JSONL/Markdown,
-  frontend payload, and 28 layer YAML configs. The redesigned Component Impact
-  page now shows architecture ladders, layer deltas, and selected-run details.
-  The replay is no-call, aggregate-only, and leaves full-200/holdout row-level
+- 2026-06-24: Generated and reconciled ExECTv2 replay-only layered
+  component-impact artifacts for v08, v09, DeepSeek, and Qwen dev140: aggregate
+  JSON/JSONL/Markdown, frontend payload, and 24 layer YAML configs. The
+  redesigned Component Impact page now shows architecture ladders, layer deltas,
+  and selected-run details. The replay is no-call, aggregate-only, omits the
+  redundant final-assembly stage, and leaves full-200/holdout row-level
   guardrails unchanged.
 - 2026-06-24: Completed final project consolidation Phase 4: split Reliability
   Scorecard into its own cross-dataset tab for Gan and ExECTv2, simplified Gan

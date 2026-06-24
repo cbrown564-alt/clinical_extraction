@@ -107,7 +107,10 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
         line["artifact_kind"] == "exectv2_component_architecture_ladder"
         for line in lines
     )
-    assert "No model calls" in md_path.read_text(encoding="utf-8")
+    markdown = md_path.read_text(encoding="utf-8")
+    assert "No model calls" in markdown
+    assert "Final assembly" not in markdown
+    assert "Residual semantic" in markdown
     assert len(list(config_dir.glob("*.yaml"))) == 24
 
 

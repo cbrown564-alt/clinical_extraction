@@ -830,14 +830,15 @@ Replay artifact note, 2026-06-24:
 - Generated the ExECTv2 layered component-impact replay artifacts:
   `experiments/exectv2_component_ablation_replay_dev140_20260624.json`,
   `.jsonl`, `.md`, static frontend payload
-  `frontend/public/mock-data/exectv2/component-ablation.json`, and 28 layer
+  `frontend/public/mock-data/exectv2/component-ablation.json`, and 24 layer
   YAML configs under `configs/exectv2/ablations/`.
 - The replay covers four architectures: v08 dev140 control, v09 partial-hybrid
   simplification, DeepSeek v0.9.16 dev140 diagnostic, and Qwen v0.9.22 dev140
   diagnostic.
-- Each architecture is shown across seven ordered layers: raw lane candidates,
+- Each architecture is shown across six ordered layers: raw lane candidates,
   source-scored mentions, evidence-valid mentions, dictionary normalized,
-  residual semantic additions, final assembly, and headline projection.
+  residual semantic additions, and headline projection. The redundant
+  always-zero final-assembly stage is omitted from the current replay.
 - The most visible deltas are dictionary normalization, residual semantic
   additions, and headline projection. Final headline F1 is 0.9155 for v08,
   0.9061 for v09, 0.9174 for DeepSeek, and 0.9001 for Qwen.

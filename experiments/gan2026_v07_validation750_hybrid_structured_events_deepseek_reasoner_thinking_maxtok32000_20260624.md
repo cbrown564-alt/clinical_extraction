@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 30 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 50 rows.
 Rare full-validation reason: validation750_v07_deepseek_reasoner_prompt_iteration_after_validation_error_analysis_validation250_too_low_signal
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 30 / 30
+- Structured records: 50 / 50
 - Call failures: 0
 - Parse/schema/label issues: 0
 - JSON dialect repairs: 0
-- Deterministic repair notes: 18
-- Exact selection evidence substrings: 30 / 30
-- Purist validation accuracy/micro F1 proxy: 1.0000 (30 / 30)
-- Pragmatic validation accuracy/micro F1 proxy: 1.0000 (30 / 30)
+- Deterministic repair notes: 26
+- Exact selection evidence substrings: 50 / 50
+- Purist validation accuracy/micro F1 proxy: 1.0000 (50 / 50)
+- Pragmatic validation accuracy/micro F1 proxy: 1.0000 (50 / 50)
 
 ## Rows
 
@@ -81,3 +81,23 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 694 | 1 per week | 1 per week | yes |  |
 | 704 | 2 per month | 2 per month | yes |  |
 | 725 | 1 per day | 1 per day | yes |  |
+| 731 | 1 per day | 1 per day | yes |  |
+| 743 | unknown | multiple per week | yes |  |
+| 744 | multiple per week | multiple per week | yes |  |
+| 763 | 1 per week | 1 per week | yes |  |
+| 790 | 1 per 7 to 10 day | 1 per 7 to 10 day | yes | final_label_repaired: 'once every 7 to 10 days' -> '1 per 7 to 10 day' |
+| 816 | 1 per month | 1 per month | yes |  |
+| 849 | 1 per year | 1 per year | yes |  |
+| 854 | 1 per year | 1 per year | yes |  |
+| 869 | unknown | multiple per month | yes |  |
+| 891 | 1 per 2 day | 1 per 2 day | yes | final_label_repaired: 'every other day' -> '1 per 2 day' |
+| 899 | 1 per 2 week | 1 per 2 week | yes | final_label_repaired: 'every other week' -> '1 per 2 week' |
+| 959 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: 'bimonthly' -> '1 per 2 month' |
+| 960 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: 'every 2 months' -> '1 per 2 month' |
+| 978 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: 'every other month' -> '1 per 2 month' |
+| 987 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: '1 seizure every 2 months' -> '1 per 2 month' |
+| 1030 | 1 to 3 per month | 1 to 3 per month | yes |  |
+| 1046 | 3 to 5 per month | 3 to 5 per month | yes |  |
+| 1070 | 3 to 4 per week | 3 to 4 per week | yes |  |
+| 1094 | 3 to 5 per week | 3 to 5 per week | yes |  |
+| 1165 | 7 per 3 week | 5 to 7 per 3 week | yes | final_label_repaired: 'multiple per week' -> '7 per 3 week' |
