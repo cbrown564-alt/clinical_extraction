@@ -154,6 +154,31 @@ def test_per_family_dedup_facts_prompt_is_family_gated() -> None:
     )
 
 
+def test_decision_table_profile_adds_targeted_family_gates() -> None:
+    payload_str = route.build_single_call_dedup_facts_prompt_input(
+        _LETTER,
+        prompt_profile="decision_table",
+        target_family="seizure_frequency",
+    )
+    payload = json.loads(payload_str)
+
+    assert payload["prompt_profile"] == "decision_table"
+    assert set(payload["decision_tables"]) == {"seizure_frequency"}
+    table_text = json.dumps(payload["decision_tables"], sort_keys=True)
+    guidance_text = " ".join(payload["fact_guidance"])
+    examples_text = json.dumps(payload["worked_examples"], sort_keys=True)
+    assert "apply the decision_tables exactly" in guidance_text
+    assert "continues to get" in table_text
+    assert "never invent NumberOfSeizures=1" in table_text
+    assert "same seizure type has two distinct stated states" in table_text
+    assert "Continues to get has no count/rate/window" in examples_text
+    assert all(
+        fact["family"] == "seizure_frequency"
+        for example in payload["worked_examples"]
+        for fact in example["clinical_facts"]
+    )
+
+
 def test_parse_and_adapter_map_facts_one_to_one_without_deduplication() -> None:
     raw = json.dumps({"clinical_facts": [*_facts(), _facts()[0]]})
     record, errors = route.parse_dedup_clinical_facts_json(raw)
@@ -266,6 +291,36 @@ def test_prompt_only_run_split_records_per_family_dedup_prompts(tmp_path: Path) 
     assert "Call strategy: `single_call_dedup_facts_per_family`" in report_path.read_text(
         encoding="utf-8"
     )
+
+
+def test_prompt_only_mixed_decision_table_profile_targets_sf_and_investigation(
+    tmp_path: Path,
+) -> None:
+    rows, _metadata = route.run_split(
+        [_LETTER],
+        split="dev",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=128,
+        mode="prompt-only",
+        call_strategy="single_call_dedup_facts_per_family",
+        prompt_profile="decision_table_sf_inv",
+        checkpoint_jsonl_path=tmp_path / "rows.jsonl",
+        checkpoint_report_path=tmp_path / "report.md",
+        progress_every=1,
+    )
+
+    prompt_bundle = json.loads(rows[0]["inventory_prompt_input_json"])
+    diagnosis_prompt = json.loads(prompt_bundle["diagnosis"])
+    sf_prompt = json.loads(prompt_bundle["seizure_frequency"])
+    investigation_prompt = json.loads(prompt_bundle["investigation"])
+
+    assert diagnosis_prompt["prompt_profile"] == "compact"
+    assert "decision_tables" not in diagnosis_prompt
+    assert sf_prompt["prompt_profile"] == "decision_table"
+    assert set(sf_prompt["decision_tables"]) == {"seizure_frequency"}
+    assert investigation_prompt["prompt_profile"] == "decision_table"
+    assert set(investigation_prompt["decision_tables"]) == {"investigation"}
 
 
 def test_no_call_replay_maps_saved_mentions_through_dedup_adapter() -> None:
