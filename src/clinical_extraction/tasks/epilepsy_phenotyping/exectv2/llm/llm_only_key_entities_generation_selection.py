@@ -1,4 +1,4 @@
-"""Attribution-clean Qwen generation-selection scaffold for ExECTv2 key entities."""
+"""Attribution-clean generation-selection scaffold for ExECTv2 key entities."""
 
 from __future__ import annotations
 
@@ -73,6 +73,32 @@ _ARCHITECTURE = {
     "selection_owner": "target_model",
     "program_role": "json_schema_validation_evidence_validation_projection_reporting",
 }
+
+
+def component_owner_for_model(model: str | None) -> str:
+    """Return the attribution owner label for a concrete source model."""
+
+    model_key = (model or "").lower()
+    if "deepseek" in model_key:
+        return "deepseek_llm_only_generation_selection"
+    if "qwen" in model_key:
+        return COMPONENT_OWNER
+    if "gpt" in model_key or "openai" in model_key:
+        return "gpt_llm_only_generation_selection"
+    return "target_model_llm_only_generation_selection"
+
+
+def report_model_label(model: str | None) -> str:
+    """Short display label used in Markdown reports."""
+
+    model_key = (model or "").lower()
+    if "deepseek" in model_key:
+        return "DeepSeek"
+    if "qwen" in model_key:
+        return "Qwen"
+    if "gpt" in model_key or "openai" in model_key:
+        return "GPT"
+    return "Target-Model"
 
 _OUTPUT_SCHEMA = {
     "clinical_events": [
@@ -3059,6 +3085,7 @@ def replay_dedup_facts_from_rows(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Replay saved model mention rows through the simplified fact adapter."""
 
+    component_owner = component_owner_for_model(model)
     replay_rows: list[dict[str, Any]] = []
     for row in rows:
         facts, fact_notes = clinical_facts_from_mentions(row.get(source_key) or [])
@@ -3093,7 +3120,7 @@ def replay_dedup_facts_from_rows(
         "prompt_profile": "replay",
         "call_strategy": "single_call_dedup_facts",
         "pipeline_family": PIPELINE_FAMILY,
-        "component_owner": COMPONENT_OWNER,
+        "component_owner": component_owner,
         "fact_origin": FACT_ORIGIN,
         "model": model,
         "mode": "replay",
@@ -3107,6 +3134,8 @@ def replay_dedup_facts_from_rows(
 def to_predicted_letter(
     letter: ExectLetter,
     final_record: structured.StructuredExtractionRecord | Mapping[str, Any],
+    *,
+    component_owner: str = COMPONENT_OWNER,
 ) -> tuple[PredictedLetter, list[str]]:
     record = _coerce_record(final_record)
     return structured.to_predicted_letter(
@@ -3114,7 +3143,7 @@ def to_predicted_letter(
         structured.flatten_events(record),
         note_text=letter.note_text,
         prompt_version=PROMPT_VERSION,
-        component_owner=COMPONENT_OWNER,
+        component_owner=component_owner,
         pipeline_family=PIPELINE_FAMILY,
     )
 
@@ -3122,6 +3151,8 @@ def to_predicted_letter(
 def to_predicted_letter_from_mentions(
     letter: ExectLetter,
     final_mentions: Sequence[structured.MentionForEvidence | Mapping[str, Any]],
+    *,
+    component_owner: str = COMPONENT_OWNER,
 ) -> tuple[PredictedLetter, list[str]]:
     mentions = _coerce_mentions(final_mentions)
     return structured.to_predicted_letter(
@@ -3129,7 +3160,7 @@ def to_predicted_letter_from_mentions(
         mentions,
         note_text=letter.note_text,
         prompt_version=PROMPT_VERSION,
-        component_owner=COMPONENT_OWNER,
+        component_owner=component_owner,
         pipeline_family=PIPELINE_FAMILY,
     )
 
@@ -3137,6 +3168,8 @@ def to_predicted_letter_from_mentions(
 def to_predicted_letter_from_dedup_facts(
     letter: ExectLetter,
     record: DedupClinicalFactsRecord | Mapping[str, Any],
+    *,
+    component_owner: str = COMPONENT_OWNER,
 ) -> tuple[PredictedLetter, list[str], list[dict[str, Any]], list[str]]:
     fact_record = (
         record
@@ -3146,7 +3179,11 @@ def to_predicted_letter_from_dedup_facts(
     mentions, provenance, adapter_notes = clinical_facts_to_mentions(
         fact_record.clinical_facts
     )
-    predicted, gate_warnings = to_predicted_letter_from_mentions(letter, mentions)
+    predicted, gate_warnings = to_predicted_letter_from_mentions(
+        letter,
+        mentions,
+        component_owner=component_owner,
+    )
     return predicted, gate_warnings, provenance, adapter_notes
 
 
@@ -3165,14 +3202,19 @@ def row_from_final_record(
     """Project final model-selected events to the benchmark row format."""
 
     record = _coerce_record(final_record)
-    predicted_letter, gate_warnings = to_predicted_letter(letter, record)
+    component_owner = component_owner_for_model(model)
+    predicted_letter, gate_warnings = to_predicted_letter(
+        letter,
+        record,
+        component_owner=component_owner,
+    )
     mentions_raw = structured.flatten_events(record)
     return {
         "letter_id": letter.letter_id,
         "split": split,
         "prompt_version": PROMPT_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
-        "component_owner": COMPONENT_OWNER,
+        "component_owner": component_owner,
         "fact_origin": FACT_ORIGIN,
         "model": model,
         "mode": mode,
@@ -3217,13 +3259,18 @@ def row_from_final_dedup_facts(
     mentions, provenance, adapter_notes = clinical_facts_to_mentions(
         fact_record.clinical_facts
     )
-    predicted_letter, gate_warnings = to_predicted_letter_from_mentions(letter, mentions)
+    component_owner = component_owner_for_model(model)
+    predicted_letter, gate_warnings = to_predicted_letter_from_mentions(
+        letter,
+        mentions,
+        component_owner=component_owner,
+    )
     return {
         "letter_id": letter.letter_id,
         "split": split,
         "prompt_version": PROMPT_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
-        "component_owner": COMPONENT_OWNER,
+        "component_owner": component_owner,
         "fact_origin": FACT_ORIGIN,
         "model": model,
         "mode": mode,
@@ -3266,13 +3313,18 @@ def row_from_final_mentions(
     """Project final model-selected direct mentions to the benchmark row format."""
 
     mentions = _coerce_mentions(final_mentions)
-    predicted_letter, gate_warnings = to_predicted_letter_from_mentions(letter, mentions)
+    component_owner = component_owner_for_model(model)
+    predicted_letter, gate_warnings = to_predicted_letter_from_mentions(
+        letter,
+        mentions,
+        component_owner=component_owner,
+    )
     return {
         "letter_id": letter.letter_id,
         "split": split,
         "prompt_version": PROMPT_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
-        "component_owner": COMPONENT_OWNER,
+        "component_owner": component_owner,
         "fact_origin": FACT_ORIGIN,
         "model": model,
         "mode": mode,
@@ -3808,12 +3860,13 @@ def run_split(
             )
 
     rows = merge_rows(rows, order, key="letter_id")
+    component_owner = component_owner_for_model(model)
     metadata = {
         "prompt_version": PROMPT_VERSION,
         "prompt_profile": prompt_profile,
         "call_strategy": call_strategy,
         "pipeline_family": PIPELINE_FAMILY,
-        "component_owner": COMPONENT_OWNER,
+        "component_owner": component_owner,
         "fact_origin": FACT_ORIGIN,
         "model": model,
         "temperature": temperature,
@@ -3872,7 +3925,11 @@ def write_report(
     summary = metadata.get("summary") or summarize_rows(rows)
     is_checkpoint = bool(metadata.get("is_checkpoint"))
     total_letters = int(metadata.get("total_letters") or metadata.get("n_letters") or 0)
-    lines = ["# ExECTv2 Qwen LLM-Only Generation-Selection", ""]
+    lines = [
+        f"# ExECTv2 {report_model_label(str(metadata.get('model') or ''))} "
+        "LLM-Only Generation-Selection",
+        "",
+    ]
     if is_checkpoint:
         processed = summary.get("examples", len(rows))
         total = total_letters or processed
@@ -5146,7 +5203,7 @@ def _emit_checkpoint(
                 "prompt_profile": prompt_profile,
                 "call_strategy": call_strategy,
                 "pipeline_family": PIPELINE_FAMILY,
-                "component_owner": COMPONENT_OWNER,
+                "component_owner": component_owner_for_model(model),
                 "fact_origin": FACT_ORIGIN,
                 "split": split,
                 "model": model,
