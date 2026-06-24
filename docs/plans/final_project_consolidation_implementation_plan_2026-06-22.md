@@ -754,6 +754,61 @@ Finish:
 - Optional ExECTv2 full-200 aggregate protocol, but only after the scorecard
   and controls are frozen.
 
+Completion note, 2026-06-24:
+
+- Added the Phase 3 shared final-consolidation builder at
+  `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/final_consolidation.py`.
+  It parses the canonical cross-model closeout and reliability scorecard
+  Markdown into structured comparison rows, ten-dimension scorecard data,
+  residual risks, upgrade metrics, and weak-dimension summaries.
+- Added the static generator
+  `scripts/build_exectv2_reliability_scorecard_data.py`, the committed frontend
+  fallback `frontend/public/mock-data/exectv2/reliability-scorecard.json`, and
+  the live Observatory endpoint `/exectv2/reliability-scorecard`.
+- Added the ExECTv2 reliability scorecard frontend surface on the task-aware
+  Laboratory/Component Impact route. The view shows the final evidence set,
+  coverage filters, weak dimensions, residual family risks, upgrade metrics,
+  and source-report paths while linking back to aggregate runs and letter
+  inspection.
+- Added canonical replay/governance coverage in
+  `tests/test_exectv2_final_consolidation.py`, including parser contract,
+  static fallback parity, and API serving checks.
+- No optional non-GPT dev140 rerun or full-200/holdout protocol was started;
+  existing guardrails remain unchanged.
+
+### Phase 4 - Component Ablation Story
+
+Finish:
+
+- Move Reliability Scorecard to its own cross-dataset app surface/tab, separate
+  from Component Impact.
+- Make Gan Component Impact read as an ablation surface first:
+  - compare baseline vs one-component-off results;
+  - show headline deltas before rule inventory detail;
+  - prioritize meaningful component families over individual rule toggles.
+- Define ExECTv2 component ablation infrastructure:
+  - fixed component boundaries for LLM producers, dictionaries, semantic lenses,
+    evidence validation, assembly/arbitration, and deterministic projection;
+  - replay-only one-component-off assembly configs for v08 and v09 controls;
+  - no-call score deltas by overall and family;
+  - provenance tags that separate format-only projection from prediction-bearing
+    semantic add/drop/replace;
+  - frontend payload contract for Component Impact.
+- Populate ExECTv2 Component Impact with ablation artifacts only after the replay
+  surfaces exist; until then, show provenance inventory plus an explicit phase
+  gap instead of implying causal impact.
+
+Acceptance criteria:
+
+- Reliability Scorecard exists as its own tab and works for both Gan 2026 and
+  ExECTv2.
+- Gan Component Impact answers "what changed when this component was removed?"
+  without requiring rule-by-rule inspection first.
+- ExECTv2 Component Impact no longer presents reliability evidence as component
+  impact, and the missing ablation contract is documented as the next phase.
+- No full-200 or holdout-facing row inspection is introduced while building
+  replay ablations.
+
 ## Parallel Work Matrix
 
 | Work item | Can run while Qwen active? | Can run while DeepSeek active? | Needs final model numbers? | Notes |

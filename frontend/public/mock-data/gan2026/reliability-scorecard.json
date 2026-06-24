@@ -1,0 +1,182 @@
+{
+  "dataset": "gan2026",
+  "generated_on": "2026-06-24",
+  "source_scorecard": "experiments/gan2026_reliability_master_scorecard_2026-06-17.md",
+  "source_cross_model_report": "",
+  "evidence_set": [
+    {
+      "role": "Canonical reliability subject",
+      "candidate": "single GPT structured-event pass v0_reference",
+      "surface": "validation + locked-test aggregate reliability package",
+      "overall_f1": null,
+      "decision": "Reliability subject"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "task_correctness",
+      "number": 1,
+      "dimension": "Task correctness",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "Subject Purist 0.881 val / 0.809 test (v0_reference); risk-coverage AUC 0.0404.",
+      "gap_to_close": "Keep validation/test distinction visible; do not turn reliability evidence into new tuning.",
+      "strength": "strong"
+    },
+    {
+      "id": "factuality_over_inference",
+      "number": 2,
+      "dimension": "Factuality (over-inference)",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "Unknown-gold over-read rate 0.094 val / 0.127 test.",
+      "gap_to_close": "Normalize over-read residuals by hidden family and selected-evidence pattern.",
+      "strength": "medium"
+    },
+    {
+      "id": "faithfulness",
+      "number": 3,
+      "dimension": "Faithfulness",
+      "coverage": 5,
+      "coverage_max": 5,
+      "current_evidence": "Faithfulness rate 0.921 val / 0.929 test (subject); faithful-but-wrong 80 val / 80 test [comparator V12-full-gpt4.1: 703/750, 423/450 exact].",
+      "gap_to_close": "Preserve exact-evidence reporting beside faithful-but-wrong analysis.",
+      "strength": "strong"
+    },
+    {
+      "id": "calibration",
+      "number": 4,
+      "dimension": "Calibration",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "Self-confidence degenerate (99.2% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781.",
+      "gap_to_close": "Keep external confidence separate from degenerate self-confidence signals.",
+      "strength": "medium"
+    },
+    {
+      "id": "abstention",
+      "number": 5,
+      "dimension": "Abstention",
+      "coverage": 5,
+      "coverage_max": 5,
+      "current_evidence": "Full risk-coverage curve: AUC 0.0404 (oracle 0.0073); selective risk 3.0% @ 50% coverage, 7.8% @ 80%.",
+      "gap_to_close": "Choose operating points by review burden, not only by curve quality.",
+      "strength": "strong"
+    },
+    {
+      "id": "robustness",
+      "number": 6,
+      "dimension": "Robustness",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "Continuous index: direct_labeler_v0_5 0.547, evidence_v0_6 0.694, evidence_v0_7 1.000 (overfit-gap is the diagnostic leg).",
+      "gap_to_close": "Keep overfit-gap and perturbation panels separate from primary accuracy claims.",
+      "strength": "strong"
+    },
+    {
+      "id": "consistency",
+      "number": 7,
+      "dimension": "Consistency",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "P2.1 varying-temperature (0.3/0.5/0.7/1.0) semantic entropy, n=150 (23 residual): mean label entropy 0.012, residual 0.018 (band_unknown 0.000); raw prose varies, decisions do not -> H0_confident_over_reading. [also: hard50 temp-0 unanimous acc 0.689]",
+      "gap_to_close": "Add only predeclared resampling panels if paper claims require them.",
+      "strength": "strong"
+    },
+    {
+      "id": "safety_compliance",
+      "number": 8,
+      "dimension": "Safety & compliance",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "0 C→W selective floor (RQ6); abstain-to-unknown gate v0_9; canaries + hash pinning + aggregate-only readout guard; PHI/demographic evals N/A on synthetic.",
+      "gap_to_close": "Maintain aggregate-only locked-test readout and no row-level test inspection.",
+      "strength": "strong"
+    },
+    {
+      "id": "fairness_clinical_family",
+      "number": 9,
+      "dimension": "Fairness (clinical family)",
+      "coverage": 3,
+      "coverage_max": 5,
+      "current_evidence": "Per-band error spread 7.8%, CV 0.032; worst subgroup seizure_free_duration.",
+      "gap_to_close": "Convert family spread into review-routing burden and residual subtype metrics.",
+      "strength": "medium"
+    },
+    {
+      "id": "operational_reliability",
+      "number": 10,
+      "dimension": "Operational reliability",
+      "coverage": 4,
+      "coverage_max": 5,
+      "current_evidence": "0 model render failures / 5483 recoverable repairs across 1950 rows; offline est ~$1.16/1000 notes; latency+retry still blocked (P2.2).",
+      "gap_to_close": "Complete latency/retry measurement if operational deployment is claimed.",
+      "strength": "strong"
+    }
+  ],
+  "weak_dimensions": [],
+  "metrics_available_now": [
+    {
+      "metric": "Task correctness",
+      "current_status": "Subject Purist 0.881 val / 0.809 test (v0_reference); risk-coverage AUC 0.0404."
+    },
+    {
+      "metric": "Factuality (over-inference)",
+      "current_status": "Unknown-gold over-read rate 0.094 val / 0.127 test."
+    },
+    {
+      "metric": "Faithfulness",
+      "current_status": "Faithfulness rate 0.921 val / 0.929 test (subject); faithful-but-wrong 80 val / 80 test [comparator V12-full-gpt4.1: 703/750, 423/450 exact]."
+    },
+    {
+      "metric": "Calibration",
+      "current_status": "Self-confidence degenerate (99.2% one bucket); external-confidence ECE 0.080, Brier 0.102, failure AUROC 0.781."
+    },
+    {
+      "metric": "Abstention",
+      "current_status": "Full risk-coverage curve: AUC 0.0404 (oracle 0.0073); selective risk 3.0% @ 50% coverage, 7.8% @ 80%."
+    },
+    {
+      "metric": "Robustness",
+      "current_status": "Continuous index: direct_labeler_v0_5 0.547, evidence_v0_6 0.694, evidence_v0_7 1.000 (overfit-gap is the diagnostic leg)."
+    },
+    {
+      "metric": "Consistency",
+      "current_status": "P2.1 varying-temperature (0.3/0.5/0.7/1.0) semantic entropy, n=150 (23 residual): mean label entropy 0.012, residual 0.018 (band_unknown 0.000); raw prose varies, decisions do not -> H0_confident_over_reading. [also: hard50 temp-0 unanimous acc 0.689]"
+    },
+    {
+      "metric": "Safety & compliance",
+      "current_status": "0 C→W selective floor (RQ6); abstain-to-unknown gate v0_9; canaries + hash pinning + aggregate-only readout guard; PHI/demographic evals N/A on synthetic."
+    },
+    {
+      "metric": "Fairness (clinical family)",
+      "current_status": "Per-band error spread 7.8%, CV 0.032; worst subgroup seizure_free_duration."
+    },
+    {
+      "metric": "Operational reliability",
+      "current_status": "0 model render failures / 5483 recoverable repairs across 1950 rows; offline est ~$1.16/1000 notes; latency+retry still blocked (P2.2)."
+    }
+  ],
+  "residual_risks": [
+    {
+      "family": "SeizureFrequency",
+      "current_strength": "Faithfulness, abstention, and consistency are well populated.",
+      "residual_risk": "Confident over-reading remains the central residual; self-confidence is not useful as a guardrail without external corroboration."
+    }
+  ],
+  "upgrade_plan": [
+    {
+      "dimension": "Factuality (over-inference)",
+      "next_metric_needed": "Normalize over-read residuals by hidden family and selected-evidence pattern."
+    },
+    {
+      "dimension": "Calibration",
+      "next_metric_needed": "Keep external confidence separate from degenerate self-confidence signals."
+    },
+    {
+      "dimension": "Fairness (clinical family)",
+      "next_metric_needed": "Convert family spread into review-routing burden and residual subtype metrics."
+    }
+  ],
+  "comparison_rows": []
+}

@@ -2,7 +2,7 @@
  * Dataset kernel — shared frontend contracts.
  *
  * The review instrument has stable surfaces (Example Explorer, Aggregate
- * Performance, Component Impact, Error Gallery) and swappable datasets. These
+ * Performance, Component Impact, Error Gallery, Reliability Scorecard) and swappable datasets. These
  * types are the shared language the surfaces speak so that components stop
  * importing Gan-only assumptions. Each dataset provides a {@link DatasetDescriptor}
  * that declares what it supports, which families/metrics/components/error
@@ -12,7 +12,12 @@
 export type DatasetId = "gan2026" | "exectv2";
 
 /** A stable review surface, keyed by its route segment. */
-export type ExplorerSurface = "workbench" | "observatory" | "laboratory" | "gallery";
+export type ExplorerSurface =
+  | "workbench"
+  | "observatory"
+  | "laboratory"
+  | "gallery"
+  | "reliability";
 
 /**
  * A colour tone from the design system. Drives tints/borders so each dataset
@@ -33,6 +38,7 @@ export interface DatasetSurfaceSupport {
   observatory: boolean;
   laboratory: boolean;
   gallery: boolean;
+  reliability: boolean;
 }
 
 /** A task family/sub-task within a dataset (e.g. a Gan category view or an ExECTv2 entity). */

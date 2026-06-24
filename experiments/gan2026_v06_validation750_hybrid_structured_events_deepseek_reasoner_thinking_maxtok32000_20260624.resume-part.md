@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 30 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 80 rows.
 Rare full-validation reason: full_validation750_diagnostic_after_test450_gap_continue_from_validation250_validation_only_error_analysis
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 30 / 30
+- Structured records: 80 / 80
 - Call failures: 0
 - Parse/schema/label issues: 0
 - JSON dialect repairs: 0
-- Deterministic repair notes: 13
-- Exact selection evidence substrings: 30 / 30
-- Purist validation accuracy/micro F1 proxy: 0.9333 (28 / 30)
-- Pragmatic validation accuracy/micro F1 proxy: 0.9333 (28 / 30)
+- Deterministic repair notes: 35
+- Exact selection evidence substrings: 78 / 80
+- Purist validation accuracy/micro F1 proxy: 0.8375 (67 / 80)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8375 (67 / 80)
 
 ## Rows
 
@@ -81,3 +81,53 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 6137 | 1 per 2 to 3 week | 1 per 2 week | yes | final_label_repaired: '1 per 2-3 weeks' -> '1 per 2 to 3 week' |
 | 6153 | 6 per month | 9 per month | yes |  |
 | 6180 | multiple per week | multiple per week | yes |  |
+| 6192 | unknown | unknown | yes |  |
+| 6204 | 2 per month | 2 per month | yes |  |
+| 6209 | multiple per day | multiple per day | yes | final_label_repaired: 'daily' -> 'multiple per day' |
+| 6244 | 2 per week | unknown | no |  |
+| 6251 | no seizure frequency reference | 1 per 1 to 2 month | no | final_label_repaired: '1 in 2 months' -> 'no seizure frequency reference' |
+| 6273 | unknown | unknown | yes |  |
+| 6319 | 1 per week | 1 per week | yes |  |
+| 6321 | 1 per month | unknown | no | final_label_repaired: 'approximately 1 per month' -> '1 per month' |
+| 6331 | 2 per 6 week | 2 per 6 weeks | yes | final_label_repaired: '2 per 6 weeks' -> '2 per 6 week' |
+| 6358 | seizure free for 16 month | seizure free for 15 to 16 months | yes |  |
+| 6368 | 1 per 1 to 2 week | unknown | no | final_label_repaired: '1 cluster per 1-2 weeks' -> '1 per 1 to 2 week' |
+| 6395 | 1 to 2 per month | 1 to 2 per month | yes |  |
+| 6501 | unknown | unknown | yes | final_label_repaired: '1 cluster per month' -> 'unknown' |
+| 6509 | multiple per week | 1 per week | no |  |
+| 6571 | seizure free for 3.5 month | unknown | no | final_label_repaired: 'seizure free for 3.5 months' -> 'seizure free for 3.5 month' |
+| 6607 | unknown | unknown | yes | evidence_not_exact_substring |
+| 6684 | 3 per 4 month | 3 per 4 month | yes | final_label_repaired: '3 events in 4 months' -> '3 per 4 month' |
+| 6701 | 4 per 3 week | 4 per 3 week | yes | final_label_repaired: '4 per 3 weeks' -> '4 per 3 week' |
+| 6738 | 1 per 6 to 8 week | 1 per 6 to 8 week | yes | final_label_repaired: 'once every 6–8 weeks' -> '1 per 6 to 8 week' |
+| 6852 | 4 to 6 per month | 4 to 6 per month | yes |  |
+| 6889 | multiple per week | multiple per week | yes |  |
+| 6952 | 2 per week | 2 per week | yes | final_label_repaired: 'approximately 2 per week' -> '2 per week' |
+| 6967 | unknown | unknown | yes |  |
+| 6987 | unknown | unknown | yes |  |
+| 7093 | unknown | unknown | yes | evidence_not_exact_substring |
+| 7126 | unknown | unknown | yes |  |
+| 7141 | 1 per month | unknown | no |  |
+| 7167 | unknown | 1 cluster per 2 weeks, 2 to 4 per cluster | no | final_label_repaired: '3 clusters in 6 weeks' -> 'unknown' |
+| 7168 | unknown | unknown | yes |  |
+| 7192 | multiple per week | multiple per week | yes | final_label_repaired: 'multiple clusters per week' -> 'multiple per week' |
+| 7195 | 1 per month | unknown | no | final_label_repaired: 'unknown' -> '1 per month' |
+| 7196 | 6 per 6 week | 1 per week | yes | final_label_repaired: '1 per week' -> '6 per 6 week' |
+| 7198 | unknown | unknown | yes |  |
+| 7275 | 3 per 2 month | 1 per month | no | final_label_repaired: '1 per month' -> '3 per 12 week'; final_label_repaired: '3 per 12 week' -> '3 per 2 month' |
+| 7290 | unknown | unknown | yes |  |
+| 7316 | 1 to 2 per month | 1 to 2 per month | yes |  |
+| 7389 | unknown | unknown | yes |  |
+| 7392 | 2 to 4 per week | 2 to 4 per week | yes |  |
+| 7401 | unknown | 2 cluster per 6 week, 1 to 2 per cluster | no | final_label_repaired: '2 clusters in 6 weeks' -> 'unknown' |
+| 7409 | multiple per week | unknown | yes | final_label_repaired: 'most weeks' -> 'multiple per week' |
+| 7455 | unknown | unknown | yes |  |
+| 7475 | 2 per 4 month | 2 per 6 month | yes | final_label_repaired: '2 per 6 months' -> '2 per 2 month'; final_label_repaired: '2 per 2 month' -> '2 per 4 month' |
+| 7491 | unknown | unknown | yes |  |
+| 7506 | unknown | unknown | yes |  |
+| 7573 | 1 per 2 week | 1 per 2 week | yes | final_label_repaired: '2 per month' -> '1 per 2 week' |
+| 7581 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 7615 | 3 to 6 per month | 3 to 7 per month | yes |  |
+| 7650 | unknown | unknown | yes |  |
+| 7738 | seizure free for 6 month | seizure free for multiple month | yes | final_label_repaired: 'seizure free for 6 months' -> 'seizure free for 6 month' |
+| 7785 | seizure free for 12 month | seizure free for 12 month | yes | final_label_repaired: 'seizure free for 12 months' -> 'seizure free for 12 month' |

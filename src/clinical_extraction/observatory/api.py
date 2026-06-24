@@ -26,7 +26,10 @@ from pydantic import BaseModel, ConfigDict, Field
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import (
     cached_exectv2_runs_json,
 )
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
+    cached_gan_reliability_scorecard_json,
+    cached_reliability_scorecard_json,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.gold_audit_active_sampler import (  # noqa: E501
     enrich_rows_for_active_sampling,
 )
@@ -79,10 +82,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2
 
 # Hard-slice atlas imports (may fail if dependencies missing; guarded below)
 try:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.hidden_family_atlas import (
-        ATLAS_HARD_SLICE_DEFINITIONS,
-        classify_hidden_families,
+    from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+        hidden_family_atlas,
     )
+
+    ATLAS_HARD_SLICE_DEFINITIONS = hidden_family_atlas.ATLAS_HARD_SLICE_DEFINITIONS
+    classify_hidden_families = hidden_family_atlas.classify_hidden_families
 except Exception:  # pragma: no cover
     ATLAS_HARD_SLICE_DEFINITIONS = ()
     classify_hidden_families = None  # type: ignore[assignment, misc]
@@ -261,7 +266,10 @@ def create_app(
     app = FastAPI(
         title="Clinical Extraction Observatory API",
         version="0.1.0",
-        summary="Thin backend over the clinical-extraction pipelines, artifacts, and frontend datasets (Gan 2026 and ExECTv2).",
+        summary=(
+            "Thin backend over the clinical-extraction pipelines, artifacts, "
+            "and frontend datasets (Gan 2026 and ExECTv2)."
+        ),
     )
     app.state.observatory_settings = settings
 
@@ -282,7 +290,42 @@ def create_app(
         except FileNotFoundError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
         except Exception as exc:  # pragma: no cover - defensive
-            raise HTTPException(status_code=500, detail=f"Failed to build ExECTv2 runs: {exc}") from exc
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build ExECTv2 runs: {exc}",
+            ) from exc
+
+    @app.get("/exectv2/reliability-scorecard")
+    def get_exectv2_reliability_scorecard() -> Response:
+        """Structured ExECTv2 reliability scorecard for the frontend view."""
+        try:
+            return Response(
+                content=cached_reliability_scorecard_json(),
+                media_type="application/json",
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build ExECTv2 reliability scorecard: {exc}",
+            ) from exc
+
+    @app.get("/gan2026/reliability-scorecard")
+    def get_gan2026_reliability_scorecard() -> Response:
+        """Structured Gan reliability scorecard for the frontend view."""
+        try:
+            return Response(
+                content=cached_gan_reliability_scorecard_json(),
+                media_type="application/json",
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build Gan reliability scorecard: {exc}",
+            ) from exc
 
     @app.post("/run/note")
     def run_note(request: RunNoteRequest) -> dict[str, Any]:
@@ -516,8 +559,18 @@ def create_app(
         return {
             "error_types": [
                 {"id": "correct", "description": "Prediction exactly matches gold standard."},
-                {"id": "false_negative", "description": "Predicted no-seizure/unknown when note describes a frequency."},
-                {"id": "false_positive", "description": "Predicted a frequency when gold is no-seizure/unknown."},
+                {
+                    "id": "false_negative",
+                    "description": (
+                        "Predicted no-seizure/unknown when note describes a frequency."
+                    ),
+                },
+                {
+                    "id": "false_positive",
+                    "description": (
+                        "Predicted a frequency when gold is no-seizure/unknown."
+                    ),
+                },
                 {"id": "over_estimate", "description": "Predicted higher frequency than gold."},
                 {"id": "under_estimate", "description": "Predicted lower frequency than gold."},
                 {"id": "near_miss", "description": "Off by exactly one category bucket."},
@@ -530,7 +583,11 @@ def create_app(
 
     @app.post("/tag-error")
     def tag_error(request: TagErrorRequest) -> dict[str, Any]:
-        return _classify_error(request.gold_category, request.predicted_category, request.purist_correct)
+        return _classify_error(
+            request.gold_category,
+            request.predicted_category,
+            request.purist_correct,
+        )
 
     # ── Hard-slice endpoints ──
 
@@ -574,7 +631,10 @@ def create_app(
         if module_name not in PROMPT_MODULES:
             raise HTTPException(
                 status_code=404,
-                detail=f"Unknown prompt module: {module_name!r}. Expected one of {list(PROMPT_MODULES)}.",
+                detail=(
+                    f"Unknown prompt module: {module_name!r}. "
+                    f"Expected one of {list(PROMPT_MODULES)}."
+                ),
             )
         return _prompt_template_payload(module_name)
 
@@ -985,7 +1045,11 @@ def _category_magnitude(cat: str) -> int:
     return _CATEGORY_MAGNITUDE.get(cat, 0)
 
 
-def _classify_error(gold_category: str, predicted_category: str, purist_correct: bool) -> dict[str, Any]:
+def _classify_error(
+    gold_category: str,
+    predicted_category: str,
+    purist_correct: bool,
+) -> dict[str, Any]:
     if purist_correct:
         return {"error_type": "correct", "severity": 0, "severity_level": "none"}
 
