@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 140 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 160 rows.
 Rare full-validation reason: validation750_v07_deepseek_reasoner_prompt_iteration_after_validation_error_analysis_validation250_too_low_signal
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 140 / 140
+- Structured records: 160 / 160
 - Call failures: 0
 - Parse/schema/label issues: 0
 - JSON dialect repairs: 0
-- Deterministic repair notes: 67
-- Exact selection evidence substrings: 140 / 140
-- Purist validation accuracy/micro F1 proxy: 0.9143 (128 / 140)
-- Pragmatic validation accuracy/micro F1 proxy: 0.9500 (133 / 140)
+- Deterministic repair notes: 77
+- Exact selection evidence substrings: 160 / 160
+- Purist validation accuracy/micro F1 proxy: 0.9187 (147 / 160)
+- Pragmatic validation accuracy/micro F1 proxy: 0.9500 (152 / 160)
 
 ## Rows
 
@@ -191,3 +191,23 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 3058 | seizure free for 12 month | seizure free for 12 month | yes |  |
 | 3082 | seizure free for 10 month | seizure free for 10 month | yes | final_label_repaired: 'seizure free for 10 months' -> 'seizure free for 10 month' |
 | 3095 | seizure free for 12 month | seizure free for 12 month | yes | final_label_repaired: 'seizure free for 12 months' -> 'seizure free for 12 month' |
+| 3113 | seizure free for 14 month | seizure free for 14 month | yes | final_label_repaired: 'seizure free for 14 months' -> 'seizure free for 14 month' |
+| 3118 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free since last visit' -> 'seizure free for multiple year' |
+| 3137 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 3224 | 1 cluster per month, 6 to 7 per cluster | 1 cluster per month, 6 to 7 per cluster | yes | final_label_repaired: '1 cluster per month, 6-7 seizures per cluster' -> '1 cluster per month, 6 to 7 per cluster' |
+| 3242 | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | final_label_repaired: '2 clusters per month, each with ~5 absences' -> '2 cluster per month, 5 per cluster' |
+| 3261 | 2 cluster per month, 4 per cluster | 2 cluster per month, 4 per cluster | yes | final_label_repaired: '2 clusters per month' -> '2 cluster per month, 4 per cluster' |
+| 3262 | 2 cluster per month, 5 per cluster | 2 cluster per month, 5 per cluster | yes | final_label_repaired: '2 clusters per month' -> '2 cluster per month, 5 per cluster' |
+| 3281 | 8 per month | 8 per month | yes |  |
+| 3297 | 6 per month | 6 per month | yes |  |
+| 3325 | 3 per week | 3 per week | yes | final_label_repaired: '3 days per week' -> '3 per week' |
+| 3356 | unknown | unknown | yes |  |
+| 3371 | 1 per 8 week | unknown | no | final_label_repaired: '1 event in 8 weeks' -> '1 per 8 week' |
+| 3436 | unknown | unknown | yes |  |
+| 3468 | unknown | unknown | yes | final_label_repaired: '1 cluster per month' -> 'unknown' |
+| 3469 | unknown | unknown | yes |  |
+| 3482 | unknown | unknown | yes |  |
+| 3493 | unknown | unknown | yes |  |
+| 3507 | unknown | unknown | yes |  |
+| 3512 | unknown | unknown | yes |  |
+| 3528 | unknown | unknown | yes |  |
