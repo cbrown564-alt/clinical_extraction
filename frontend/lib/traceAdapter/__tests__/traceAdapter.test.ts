@@ -37,6 +37,7 @@ function assertValidTrace(trace: PipelineTrace) {
 async function loadFirstArtifactRow(family: string): Promise<unknown> {
   switch (family) {
     case "llm_only_direct_labeler":
+    case "llm_only_canonical_pipeline":
     case "llm_first_direct_extractor":
     case "dspy_final_selection_adjudicator":
       return {
@@ -165,6 +166,7 @@ async function loadFirstArtifactRow(family: string): Promise<unknown> {
 
 const activeFamilies = [
   "llm_only_direct_labeler",
+  "llm_only_canonical_pipeline",
   "llm_first_direct_extractor",
   "dspy_final_selection_adjudicator",
   "llm_structured_events",

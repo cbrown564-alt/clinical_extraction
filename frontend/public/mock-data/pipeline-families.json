@@ -6,6 +6,20 @@
       "executable": true,
       "kind": "rules_only",
       "has_replay_artifact": true
+    },
+    {
+      "value": "hybrid_structured_events",
+      "label": "Hybrid Structured Events",
+      "executable": false,
+      "kind": "hybrid",
+      "has_replay_artifact": true
+    },
+    {
+      "value": "llm_only_canonical_pipeline",
+      "label": "LLM-only Canonical",
+      "executable": false,
+      "kind": "llm_only",
+      "has_replay_artifact": true
     }
   ]
 }
