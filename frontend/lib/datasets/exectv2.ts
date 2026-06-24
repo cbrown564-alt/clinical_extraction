@@ -131,6 +131,12 @@ export const exectv2Dataset: DatasetDescriptor = {
       tone: "success",
     },
     {
+      id: "deterministic_projection",
+      label: "Deterministic projection",
+      description: "Format-only projection and benchmark repair kept separate from semantic recovery.",
+      tone: "deterministic",
+    },
+    {
       id: "scorer",
       label: "Scorer",
       description: "Clinical mention scoring surface.",

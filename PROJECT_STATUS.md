@@ -73,10 +73,11 @@ hybrid rescue and verifier candidates remain separated and unapplied.
 
 ### Done Recently
 
-- 2026-06-24: Split Reliability Scorecard into its own cross-dataset tab for
-  Gan and ExECTv2, simplified Gan Component Impact into baseline-vs-ablation
-  deltas, and documented ExECTv2 component ablation infrastructure as the next
-  consolidation phase.
+- 2026-06-24: Completed final project consolidation Phase 4: split Reliability
+  Scorecard into its own cross-dataset tab for Gan and ExECTv2, simplified Gan
+  Component Impact into baseline-vs-ablation deltas, documented the ExECTv2
+  replay-ablation contract, and kept ExECTv2 Component Impact provenance-only
+  until replay artifacts exist.
 - 2026-06-24: Completed final project consolidation Phase 3: shared ExECTv2
   final-consolidation builder, static and live reliability scorecard JSON,
   ExECTv2 scorecard surface, and parser/static/API replay tests. No

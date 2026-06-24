@@ -809,6 +809,22 @@ Acceptance criteria:
 - No full-200 or holdout-facing row inspection is introduced while building
   replay ablations.
 
+Completion note, 2026-06-24:
+
+- Reliability Scorecard is a standalone cross-dataset surface at
+  `/reliability-scorecard`, with Gan and ExECTv2 payloads served through static
+  fallback and Observatory API routes.
+- Gan Component Impact now runs baseline versus one-component-off rules-only
+  ablations and leads with F1/accuracy deltas before component detail.
+- ExECTv2 Component Impact is explicitly provenance-only until replayable
+  component ablation artifacts exist; it no longer presents reliability
+  evidence as component impact.
+- The ExECTv2 replay-ablation contract is documented in
+  `docs/design/exectv2_component_ablation_contract_2026-06-24.md`, including
+  fixed component boundaries, dev140 replay scope, aggregate payload fields,
+  deterministic projection separation, and no full-200 or holdout-facing
+  row-level inspection.
+
 ## Parallel Work Matrix
 
 | Work item | Can run while Qwen active? | Can run while DeepSeek active? | Needs final model numbers? | Notes |

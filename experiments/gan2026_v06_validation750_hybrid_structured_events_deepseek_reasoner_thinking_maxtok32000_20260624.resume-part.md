@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 80 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 100 rows.
 Rare full-validation reason: full_validation750_diagnostic_after_test450_gap_continue_from_validation250_validation_only_error_analysis
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 80 / 80
+- Structured records: 100 / 100
 - Call failures: 0
 - Parse/schema/label issues: 0
 - JSON dialect repairs: 0
-- Deterministic repair notes: 35
-- Exact selection evidence substrings: 78 / 80
-- Purist validation accuracy/micro F1 proxy: 0.8375 (67 / 80)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8375 (67 / 80)
+- Deterministic repair notes: 52
+- Exact selection evidence substrings: 98 / 100
+- Purist validation accuracy/micro F1 proxy: 0.8500 (85 / 100)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8500 (85 / 100)
 
 ## Rows
 
@@ -131,3 +131,23 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 7650 | unknown | unknown | yes |  |
 | 7738 | seizure free for 6 month | seizure free for multiple month | yes | final_label_repaired: 'seizure free for 6 months' -> 'seizure free for 6 month' |
 | 7785 | seizure free for 12 month | seizure free for 12 month | yes | final_label_repaired: 'seizure free for 12 months' -> 'seizure free for 12 month' |
+| 7818 | seizure free for 2 year | seizure free for 2 years | yes | final_label_repaired: 'seizure free for 2 years' -> 'seizure free for 2 year' |
+| 7834 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free (unspecified duration)' -> 'seizure free for multiple year' |
+| 7859 | unknown | unknown | yes |  |
+| 7872 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 7911 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 7961 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for over 2 years' -> 'seizure free for multiple year' |
+| 8002 | 1 per 6 to 8 week | 1 per 6 to 8 week | yes | final_label_repaired: 'once every 6 to 8 weeks' -> '1 per 6 to 8 week' |
+| 8006 | seizure free for 6 month | seizure free for multiple month | yes | final_label_repaired: 'seizure free for 6 months' -> 'seizure free for 6 month' |
+| 8079 | seizure free for 1 year | seizure free for 18 month | yes | final_label_repaired: 'seizure free for 1 year 6 months' -> 'seizure free for 1 year' |
+| 8089 | seizure free for multiple year | seizure free for 16 month | yes | final_label_repaired: 'seizure free since 29-May-2023' -> 'seizure free for multiple year' |
+| 8124 | seizure free for 13 month | seizure free for 13 month | yes | final_label_repaired: 'seizure free for 13 months' -> 'seizure free for 13 month' |
+| 8144 | unknown | seizure free for multiple month | no |  |
+| 8145 | seizure free for 6 month | seizure free for 6 month | yes | final_label_repaired: 'seizure free for 6 months' -> 'seizure free for 6 month' |
+| 8160 | 1 per month | seizure free for multiple month | no |  |
+| 8180 | seizure free for 6 month | seizure free for multiple month | yes | final_label_repaired: 'seizure free for 6 months' -> 'seizure free for 6 month' |
+| 8188 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 8203 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 8224 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free for at least 3 months' -> 'seizure free for multiple year' |
+| 8235 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 8264 | seizure free for 4 month | seizure free for 4 month | yes | final_label_repaired: 'seizure free for 4 months' -> 'seizure free for 4 month' |
