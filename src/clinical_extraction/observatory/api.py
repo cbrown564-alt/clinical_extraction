@@ -100,8 +100,8 @@ except Exception:  # pragma: no cover
 
 PipelineFamily = Literal[
     "rules_only",
-    "llm_only_direct_labeler",
     "hybrid_structured_events",
+    "llm_only_canonical_pipeline",
 ]
 TEMPORAL_SELECTION_RULES = temporal_selection.TEMPORAL_SELECTION_RULES
 
@@ -126,21 +126,17 @@ RETIRED_PIPELINE_FAMILIES: set[str] = {
     "llm_only_typed_operations_reasoner",
 }
 
-RETAINED_COMPARATOR_PIPELINE_FAMILIES: set[str] = {
-    "dspy_final_selection_adjudicator",
-    "hybrid_clinical_frequency_state_graph",
-    "llm_first_direct_extractor",
-    "llm_heavy_clinical_frequency_reasoner",
-    "llm_heavy_evidence_selection_with_deterministic_adapters",
-    "llm_replacement_postprocessing_ablation",
-    "llm_structured_events",
-}
-
+# The Explorer pipeline dropdown is trimmed to the three canonical Gan
+# architectures that the Component Impact stage-ladder compares — one best
+# performer per family (deterministic / hybrid / LLM-only). Historical
+# comparator families stay in the registry but are no longer surfaced here.
+# Re-introducing qwen/deepseek comparators (and unifying the labels with
+# Component Impact) is tracked in
+# docs/plans/architecture_comparison_expansion_qwen_deepseek_2026-06-24.md.
 CANONICAL_PIPELINE_FAMILIES: dict[str, tuple[str, str]] = {
     "rules_only": ("Deterministic V1", "rules_only"),
-    "llm_only_direct_labeler": ("LLM Direct Labeler", "llm_only"),
     "hybrid_structured_events": ("Hybrid Structured Events", "hybrid"),
-    "reset_clinical_assessment_pipeline": ("Reset Clinical Assessment", "hybrid"),
+    "llm_only_canonical_pipeline": ("LLM-only Canonical", "llm_only"),
 }
 
 
@@ -954,100 +950,45 @@ def _llm_family_payload(module_name: str) -> dict[str, Any]:
     }
 
 
-def _derive_family_kind(family: str) -> str:
-    if family == "rules_only":
-        return "rules_only"
-    if "hybrid" in family:
-        return "hybrid"
-    if family.startswith("llm_"):
-        return "llm_only"
-    if "deterministic" in family:
-        return "rules_only"
-    return "llm_only"
-
-
-# Concise human-readable labels for the workbench dropdown.
-# Overrides the long prose `model_role` values from the registry.
-FAMILY_SHORT_LABELS: dict[str, str] = {
-    "rules_only": "Deterministic V1",
-    "dspy_final_selection_adjudicator": "DSPY Adjudicator",
-    "hybrid_clinical_frequency_state_graph": "State Graph",
-    "llm_only_direct_labeler": "LLM Direct Labeler",
-    "hybrid_structured_events": "Hybrid Structured Events",
-    "llm_first_direct_extractor": "Direct Extractor",
-    "llm_heavy_clinical_frequency_reasoner": "LLM Heavy Reasoner",
-    "llm_heavy_evidence_selection_with_deterministic_adapters": "LLM Heavy + Det",
-    "llm_replacement_postprocessing_ablation": "Replacement Ablation",
-    "llm_structured_events": "Structured Events",
-    "reset_clinical_assessment_pipeline": "Reset Clinical Assessment",
-}
-
-
-def _derive_family_label(family: str, runs: list[dict[str, Any]]) -> str:
-    """Derive a human-readable label from registry runs for a family."""
-    # 1. Hard-coded short labels (preferred)
-    if family in FAMILY_SHORT_LABELS:
-        return FAMILY_SHORT_LABELS[family]
-    # 2. Fallback: model_role from the run with the most rows
-    best_run = max(runs, key=lambda r: r.get("row_count", 0), default=None)
-    if best_run and best_run.get("model_role"):
-        return str(best_run["model_role"])
-    # 3. Ultimate fallback: prettify the family name
-    return family.replace("_", " ").title()
-
-
 def _build_pipeline_families(settings: ObservatorySettings) -> list[dict[str, Any]]:
-    """Build pipeline family list from registry runs plus executable deterministic."""
+    """Build the Explorer pipeline-family dropdown.
+
+    Surfaces exactly the canonical Gan architectures declared in
+    ``CANONICAL_PIPELINE_FAMILIES`` (deterministic / hybrid / LLM-only), in that
+    order, so the Explorer dropdown matches the Component Impact comparison.
+    Registry runs only supply each family's replay availability and run count;
+    the label and kind are the canonical declarations, not registry prose.
+    """
     entries = load_run_registry(settings.registry_path)
 
-    # Group registry entries by pipeline_family
+    # Group registry runs for each canonical family (ignore everything else).
     by_family: dict[str, list[dict[str, Any]]] = {}
     for entry in entries:
         record = entry.to_json_record()
         family = record.get("pipeline_family")
         if not family or family in RETIRED_PIPELINE_FAMILIES:
             continue
-        if (
-            family not in CANONICAL_PIPELINE_FAMILIES
-            and family not in RETAINED_COMPARATOR_PIPELINE_FAMILIES
-        ):
+        if family not in CANONICAL_PIPELINE_FAMILIES:
             continue
         by_family.setdefault(family, []).append(record)
 
     families: list[dict[str, Any]] = []
-
-    # Always include canonical families, even before they have registry-backed runs.
     for family, (label, kind) in CANONICAL_PIPELINE_FAMILIES.items():
-        if family in by_family:
-            continue
+        runs = by_family.get(family, [])
+        has_jsonl = any(
+            any(p.endswith(".jsonl") for p in r.get("artifact_paths", []))
+            for r in runs
+        )
         families.append(
             {
                 "value": family,
                 "label": label,
                 "executable": family in EXECUTABLE_PIPELINES,
                 "kind": kind,
-                "has_replay_artifact": False,
-                "run_count": 0,
+                "has_replay_artifact": has_jsonl,
+                "run_count": len(runs),
             }
         )
-
-    for family, runs in sorted(by_family.items()):
-        has_jsonl = any(
-            any(p.endswith(".jsonl") for p in r.get("artifact_paths", []))
-            for r in runs
-        )
-        kind = _derive_family_kind(family)
-        executable = family in EXECUTABLE_PIPELINES
-        label = _derive_family_label(family, runs)
-
-        families.append({
-            "value": family,
-            "label": label,
-            "executable": executable,
-            "kind": kind,
-            "has_replay_artifact": has_jsonl,
-            "run_count": len(runs),
-        })
 
     return families
 

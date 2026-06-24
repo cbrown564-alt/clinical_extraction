@@ -111,15 +111,18 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
     family_values = {
         family["value"] for family in client.get("/pipeline-families").json()["families"]
     }
+    # The Explorer dropdown is trimmed to the three canonical Gan architectures
+    # (deterministic / hybrid / LLM-only). Comparator and retired families stay
+    # in the registry but are no longer surfaced here.
     assert family_values == {
         "rules_only",
-        "llm_only_direct_labeler",
         "hybrid_structured_events",
-        "reset_clinical_assessment_pipeline",
-        "llm_heavy_clinical_frequency_reasoner",
+        "llm_only_canonical_pipeline",
     }
     assert "llm_only_claim_table_selector" not in family_values
     assert "unreviewed_old_family" not in family_values
+    # Former retained comparators are no longer surfaced.
+    assert "llm_heavy_clinical_frequency_reasoner" not in family_values
     assert client.get("/splits/validation").json()["source_row_indices"] == [1]
     assert client.get("/artifacts/example_run").json()["content"][0]["source_row_index"] == 1
 
