@@ -26,6 +26,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import (
     cached_exectv2_runs_json,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+    cached_component_ablation_json,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
     cached_gan_reliability_scorecard_json,
     cached_reliability_scorecard_json,
@@ -309,6 +312,22 @@ def create_app(
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to build ExECTv2 reliability scorecard: {exc}",
+            ) from exc
+
+    @app.get("/exectv2/component-ablation")
+    def get_exectv2_component_ablation() -> Response:
+        """Structured ExECTv2 layered component-impact replay for the frontend."""
+        try:
+            return Response(
+                content=cached_component_ablation_json(),
+                media_type="application/json",
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build ExECTv2 component ablation payload: {exc}",
             ) from exc
 
     @app.get("/gan2026/reliability-scorecard")

@@ -436,6 +436,93 @@ export interface Exectv2RunsResponse {
   runs: Exectv2RunSummary[];
 }
 
+export interface Exectv2LayerScore {
+  precision?: number;
+  recall?: number;
+  f1: number;
+  tp?: number;
+  fp?: number;
+  fn?: number;
+  pred_count?: number;
+  gold_count?: number;
+  precision_tp?: number;
+  recall_tp?: number;
+}
+
+export interface Exectv2LayerScoreSet {
+  overall: Exectv2LayerScore;
+  families: Record<Exectv2Entity, Exectv2LayerScore>;
+}
+
+export interface Exectv2LayerDefinition {
+  layer_id: string;
+  label: string;
+  component_type: string;
+  score_source: string;
+  surface_key: string;
+  interpretation: string;
+}
+
+export interface Exectv2LayerSnapshot {
+  layer_id: string;
+  label: string;
+  component_type: string;
+  surface_key: string;
+  interpretation: string;
+  scores: Exectv2LayerScoreSet;
+}
+
+export interface Exectv2LayerImpact {
+  artifact_kind: "exectv2_component_layer_impact";
+  dataset: "exectv2";
+  generated_on: string;
+  run_id: string;
+  layer_id: string;
+  layer_label: string;
+  component_type: string;
+  previous_layer_id: string;
+  previous_layer_label: string;
+  overall_delta_from_previous: number;
+  family_deltas: Record<Exectv2Entity, number>;
+  current_score: Exectv2LayerScoreSet;
+  previous_score: Exectv2LayerScoreSet | null;
+  claim_boundary: string;
+  row_inspection_policy: string;
+}
+
+export interface Exectv2ArchitectureLadder {
+  artifact_kind: "exectv2_component_architecture_ladder";
+  dataset: "exectv2";
+  generated_on: string;
+  run_id: string;
+  label: string;
+  model: string;
+  decision: string;
+  architecture_family: string;
+  split: string;
+  row_count: number;
+  final_score: Exectv2LayerScoreSet;
+  layers: Exectv2LayerSnapshot[];
+  layer_impacts: Exectv2LayerImpact[];
+  source_artifacts: string[];
+  claim_boundary: string;
+  row_inspection_policy: string;
+}
+
+export interface Exectv2ComponentAblationResponse {
+  artifact_kind: "exectv2_component_ablation_set";
+  dataset: "exectv2";
+  generated_on: string;
+  row_inspection_policy: string;
+  allow_model_calls: boolean;
+  allow_post_run_tuning: boolean;
+  claim_boundary: string;
+  provenance_policy: string;
+  layers: Exectv2LayerDefinition[];
+  architectures: Exectv2ArchitectureLadder[];
+  ablations: Exectv2LayerImpact[];
+}
+
 export interface ReliabilityScorecardDimension {
   id: string;
   number?: number;
