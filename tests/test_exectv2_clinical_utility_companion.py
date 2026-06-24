@@ -60,7 +60,6 @@ def test_companion_report_splits_deterministic_actions_and_labels_proxy_surfaces
     assert surfaces["dictionary_normalization_only"]["overall"]["f1"] == 0.8
     assert surfaces["dictionary_normalization_only"]["materialization"] == "directly_scored"
     assert surfaces["residual_benchmark_additions"]["overall"]["f1"] == 0.85
-    assert surfaces["full_final_assembly"]["overall"]["f1"] == 0.88
     assert surfaces["clinical_headline"]["overall"]["f1"] == 0.9
 
 
@@ -157,7 +156,6 @@ def _assembly_report() -> dict:
                 "evidence_valid": surface(0.7),
                 "dictionary_normalized": surface(0.8),
                 "residual_benchmark_added": surface(0.85),
-                "final": surface(0.88),
             },
         },
     }

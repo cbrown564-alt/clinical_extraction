@@ -71,7 +71,6 @@ SCORE_SURFACES: tuple[tuple[str, str, str], ...] = (
         "materialized_surfaces",
         "residual_benchmark_added",
     ),
-    ("full_final_assembly", "materialized_surfaces", "final"),
     ("clinical_headline", "headline_target", ""),
 )
 
@@ -122,10 +121,11 @@ def build_companion_report(
                 "Clinical-utility flags are review heuristics, not replacement labels."
             ),
             "repair_ablation_note": (
-                "Raw/source, evidence-valid, dictionary-only, residual-addition, "
-                "and final surfaces are directly scored when the assembly row "
-                "contains materialized prediction_surfaces. Older artifacts fall "
-                "back to their closest available scored surfaces."
+                "Raw/source, evidence-valid, dictionary-only, and residual-addition "
+                "surfaces are directly scored when the assembly row contains "
+                "materialized prediction_surfaces. The residual-addition surface is "
+                "the full assembled set. Older artifacts fall back to their closest "
+                "available scored surfaces."
             ),
         },
         "runs": runs,
@@ -229,7 +229,6 @@ def _surface_score(
             "evidence_valid": "evidence_valid_score",
             "dictionary_normalized": "evidence_valid_score",
             "residual_benchmark_added": "evidence_valid_score",
-            "final": "evidence_valid_score",
         }[surface_key]
         return ladder.get(fallback, {})
     return ladder.get(surface_group, {})
@@ -482,9 +481,9 @@ def render_markdown(report: Mapping[str, Any], *, json_path: Path) -> str:
             "",
             (
                 "| Run | Source | Evidence-valid | Dictionary-only "
-                "| Residual additions | Direct final | Clinical headline |"
+                "| Residual additions | Clinical headline |"
             ),
-            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
     for run in report["runs"]:
@@ -495,7 +494,6 @@ def render_markdown(report: Mapping[str, Any], *, json_path: Path) -> str:
             f"{_f1(surfaces['evidence_valid_only']):.4f} | "
             f"{_f1(surfaces['dictionary_normalization_only']):.4f} | "
             f"{_f1(surfaces['residual_benchmark_additions']):.4f} | "
-            f"{_f1(surfaces['full_final_assembly']):.4f} | "
             f"{_f1(surfaces['clinical_headline']):.4f} |"
         )
     lines.extend(

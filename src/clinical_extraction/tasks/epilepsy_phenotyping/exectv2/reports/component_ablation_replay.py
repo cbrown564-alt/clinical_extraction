@@ -48,6 +48,11 @@ class LayerDefinition:
     score_source: str
     surface_key: str
     interpretation: str
+    # Tag for structurally inert stages: on these single-lane holistic
+    # architectures the surface never changes the score (every prediction passes
+    # straight through). The stage is kept in the aggregate ladder for provenance
+    # but the frontend hides it rather than render a permanently ~0 row.
+    inert: bool = False
 
 
 DEFAULT_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (
@@ -127,7 +132,12 @@ LAYER_DEFINITIONS: tuple[LayerDefinition, ...] = (
         component_type="llm_producer",
         score_source="materialized_surfaces",
         surface_key="source_scored",
-        interpretation="Scored source mentions before evidence/dictionary/projection layers.",
+        interpretation=(
+            "Scored source mentions before evidence/dictionary/projection layers. "
+            "Inert on these single-lane holistic runs: scoring attaches confidence "
+            "but adds or drops no mention, so the score is unchanged."
+        ),
+        inert=True,
     ),
     LayerDefinition(
         layer_id="evidence_valid",
@@ -135,7 +145,12 @@ LAYER_DEFINITIONS: tuple[LayerDefinition, ...] = (
         component_type="evidence_validation",
         score_source="materialized_surfaces",
         surface_key="evidence_valid",
-        interpretation="Mentions after exact-evidence validation.",
+        interpretation=(
+            "Mentions after exact-evidence validation. Inert on these runs: the "
+            "producers only emit verbatim-grounded mentions, so nothing fails the "
+            "guard and the surface is identical to source-scored."
+        ),
+        inert=True,
     ),
     LayerDefinition(
         layer_id="dictionary_normalized",
@@ -151,15 +166,10 @@ LAYER_DEFINITIONS: tuple[LayerDefinition, ...] = (
         component_type="semantic_lens",
         score_source="materialized_surfaces",
         surface_key="residual_benchmark_added",
-        interpretation="Residual recovery and semantic add/drop/replace layers applied.",
-    ),
-    LayerDefinition(
-        layer_id="final_assembly",
-        label="Final assembly",
-        component_type="assembler",
-        score_source="materialized_surfaces",
-        surface_key="final",
-        interpretation="Final assembled mention set before headline projection.",
+        interpretation=(
+            "Residual recovery and semantic add/drop/replace layers applied. This "
+            "is the full assembled mention set fed to headline projection."
+        ),
     ),
     LayerDefinition(
         layer_id="headline_projection",
@@ -446,6 +456,7 @@ def _layer_score(summary: dict[str, Any], layer: LayerDefinition) -> dict[str, A
         "component_type": layer.component_type,
         "surface_key": layer.surface_key,
         "interpretation": layer.interpretation,
+        "inert": layer.inert,
         "scores": _surface_scores(score),
     }
 

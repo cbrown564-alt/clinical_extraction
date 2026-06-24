@@ -461,6 +461,8 @@ export interface Exectv2LayerDefinition {
   score_source: string;
   surface_key: string;
   interpretation: string;
+  /** Structurally inert stage (no score change on these single-lane runs); hidden from the ladder. */
+  inert?: boolean;
 }
 
 export interface Exectv2LayerSnapshot {
@@ -469,6 +471,8 @@ export interface Exectv2LayerSnapshot {
   component_type: string;
   surface_key: string;
   interpretation: string;
+  /** Structurally inert stage (no score change on these single-lane runs); hidden from the ladder. */
+  inert?: boolean;
   scores: Exectv2LayerScoreSet;
 }
 
