@@ -1,16 +1,27 @@
+import type { GoldAuditDecision, GoldAuditRow } from "./types";
+
 const API_BASE = "/api";
 const STORAGE_DECISIONS_KEY = "mock-gold-audit-decisions";
+
+type MockGoldAuditRow = Pick<GoldAuditRow, "source_row_index"> & {
+  has_decision?: boolean | string;
+};
+type MockRowsPayload = {
+  rows?: MockGoldAuditRow[];
+  decided?: number;
+  decisions?: GoldAuditDecision[];
+};
 
 async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   // If it's a POST to decide, persist in localStorage and return success payload
   if (path === "/gold-audit/decide" && init?.method === "POST" && init.body) {
-    const decision = JSON.parse(init.body as string);
+    const decision = JSON.parse(init.body as string) as GoldAuditDecision;
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(STORAGE_DECISIONS_KEY);
-      const list = saved ? JSON.parse(saved) : [];
+      const list = saved ? (JSON.parse(saved) as GoldAuditDecision[]) : [];
       // Remove any existing decision for same index+split
       const filtered = list.filter(
-        (d: any) =>
+        (d) =>
           !(d.source_row_index === decision.source_row_index && d.split === decision.split)
       );
       filtered.push({
@@ -149,7 +160,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   // Handle /gold-audit/next
   if (path.startsWith("/gold-audit/next")) {
     const rowsRes = await fetchMockData<import("./types").GoldAuditRowsResponse>("/gold-audit/rows", init);
-    const nextRow = rowsRes.rows.find((r: any) => !r.has_decision) || null;
+    const nextRow = rowsRes.rows.find((r) => !r.has_decision) || null;
     return {
       split: "validation",
       row: nextRow,
@@ -225,12 +236,12 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     throw new Error(`Failed to load mock data from ${mockPath}: ${res.statusText}`);
   }
   
-  const data = await res.json();
+  const data = (await res.json()) as MockRowsPayload;
 
   // Merge localStorage decisions for mock mode
   if (path.startsWith("/gold-audit/decisions") && typeof window !== "undefined") {
     const saved = localStorage.getItem(STORAGE_DECISIONS_KEY);
-    const localDecisions = saved ? JSON.parse(saved) : [];
+    const localDecisions = saved ? (JSON.parse(saved) as GoldAuditDecision[]) : [];
     const mergedDecisions = [...(data.decisions || []), ...localDecisions];
     return {
       decisions: mergedDecisions,
@@ -241,18 +252,18 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   // Update rows in queue as decided based on localStorage decisions
   if (path.startsWith("/gold-audit/rows") && typeof window !== "undefined") {
     const saved = localStorage.getItem(STORAGE_DECISIONS_KEY);
-    const localDecisions = saved ? JSON.parse(saved) : [];
-    const localIndices = new Set(localDecisions.map((d: any) => Number(d.source_row_index)));
+    const localDecisions = saved ? (JSON.parse(saved) as GoldAuditDecision[]) : [];
+    const localIndices = new Set(localDecisions.map((d) => Number(d.source_row_index)));
     
     if (data.rows) {
-      data.rows = data.rows.map((row: any) => {
+      data.rows = data.rows.map((row) => {
         const hasDecision = localIndices.has(Number(row.source_row_index));
         return {
           ...row,
           has_decision: hasDecision || row.has_decision,
         };
       });
-      data.decided = data.rows.filter((r: any) => r.has_decision || r.has_decision === "true").length;
+      data.decided = data.rows.filter((r) => r.has_decision || r.has_decision === "true").length;
     }
   }
 
