@@ -29,6 +29,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review impo
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (  # noqa: E501
     cached_component_ablation_json,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_transition_examples import (  # noqa: E501
+    cached_component_transitions_json,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
     cached_gan_reliability_scorecard_json,
     cached_reliability_scorecard_json,
@@ -327,6 +330,22 @@ def create_app(
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to build ExECTv2 component ablation payload: {exc}",
+            ) from exc
+
+    @app.get("/exectv2/component-transitions")
+    def get_exectv2_component_transitions() -> Response:
+        """Illustrative per-letter stage-transition examples for the Component Impact sidebar."""
+        try:
+            return Response(
+                content=cached_component_transitions_json(),
+                media_type="application/json",
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to build ExECTv2 component transition examples: {exc}",
             ) from exc
 
     @app.get("/gan2026/reliability-scorecard")

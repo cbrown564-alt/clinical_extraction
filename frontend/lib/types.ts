@@ -523,6 +523,72 @@ export interface Exectv2ComponentAblationResponse {
   ablations: Exectv2LayerImpact[];
 }
 
+// ── ExECTv2 per-letter stage-transition examples (illustrative, explanatory only) ──
+
+export interface Exectv2TransitionMention {
+  entity: string;
+  text: string;
+  concept: string;
+  attributes: Record<string, string>;
+  source_lane: string;
+  evidence: string;
+}
+
+export interface Exectv2TransitionChange {
+  before: Exectv2TransitionMention;
+  after: Exectv2TransitionMention;
+}
+
+export interface Exectv2TransitionStage {
+  stage_id: string;
+  label: string;
+  component_type: string;
+  interpretation: string;
+  has_transition: boolean;
+  is_baseline: boolean;
+  mention_count: number | null;
+  added: Exectv2TransitionMention[];
+  dropped: Exectv2TransitionMention[];
+  changed: Exectv2TransitionChange[];
+  kept: number;
+  note?: string;
+}
+
+export interface Exectv2TransitionGoldMention {
+  entity: string;
+  text: string;
+}
+
+export interface Exectv2TransitionExample {
+  letter_id: string;
+  gold: Exectv2TransitionGoldMention[];
+  gold_count: number;
+  final_count: number | null;
+  change_count: number;
+  stages: Exectv2TransitionStage[];
+}
+
+export interface Exectv2TransitionArchitecture {
+  run_id: string;
+  label: string;
+  model: string;
+  decision: string;
+  examples: Exectv2TransitionExample[];
+}
+
+export interface Exectv2ComponentTransitionsResponse {
+  artifact_kind: "exectv2_component_transition_examples";
+  dataset: "exectv2";
+  generated_on: string;
+  row_inspection_policy: string;
+  allow_model_calls: boolean;
+  allow_post_run_tuning: boolean;
+  claim_boundary: string;
+  examples_per_architecture: number;
+  stage_order: string[];
+  architectures: Exectv2TransitionArchitecture[];
+}
+
 // ── Gan 2026 component stage-ladder (replay-only cumulative purist ladder) ──
 
 export interface Gan2026LadderCategory {
