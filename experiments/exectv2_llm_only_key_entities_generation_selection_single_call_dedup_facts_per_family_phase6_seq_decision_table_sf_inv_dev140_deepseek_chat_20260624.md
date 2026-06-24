@@ -1,11 +1,11 @@
-# ExECTv2 Qwen LLM-Only Generation-Selection
+# ExECTv2 DeepSeek LLM-Only Generation-Selection
 
 - JSONL: `experiments\exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl`
 - Prompt version: `exectv2_llm_only_key_entities_generation_selection_v0.5`
 - Prompt profile: `decision_table_sf_inv`
 - Call strategy: `single_call_dedup_facts_per_family`
 - Pipeline family: `exectv2_llm_only_key_entities_generation_selection`
-- Component owner: `qwen_llm_only_generation_selection`
+- Component owner: `deepseek_llm_only_generation_selection`
 - Fact origin: `target_model_generated`
 - Split: `dev`
 - Model: `deepseek/deepseek-chat`

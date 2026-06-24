@@ -95,7 +95,8 @@ unsupported-medication rejection `35`.
 - 2026-06-24: Completed Satellite 13 Phase 6 model rollout for the
   `decision_table_sf_inv` dev140 transfer question. DeepSeek reached `0.745`
   clinical headline F1, Qwen reached `0.694`, and neither changed the plateau
-  conclusion.
+  conclusion. The final artifact index now includes a Satellite 13 addendum
+  with hashes for the GPT/DeepSeek/Qwen Phase 6 comparison artifacts.
 - 2026-06-24: Completed Satellite 13 Phase 5 with the deterministic projection
   taxonomy and Prescription projection pilot. Allowed projection mainly restored
   benchmark/CUI convention visibility (`0.000` -> `0.180`) while clinical

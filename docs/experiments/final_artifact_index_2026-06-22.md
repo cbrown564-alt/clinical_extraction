@@ -177,6 +177,51 @@ Stable hashes:
 | `experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl` | `af0a0e328aba5b5ad14fe64ee03de94a99b259bc28cd51bbfa49f6ec18eb73fe` |
 | `experiments/exectv2_v0922_qwencompact_residualrepair_dev140_error_ledger_20260622.json` | `c9334e930a52d27e5b8ba93e9aab45c7e97fcb303a90680b46c78cabfe1ac9d6` |
 
+## Satellite 13 Addendum: De-duplicated Clinical-Fact LLM-Only Plateau
+
+Date added: 2026-06-24
+
+Satellite 13 tested whether direct attribution-clean LLM-only prompting for
+de-duplicated clinical facts could close the ExECTv2 gap without the v08 hybrid
+assembly. It did not promote a replacement architecture. The completed Phase 6
+model-transfer readout is indexed here as plateau and model-transfer evidence
+because it is now part of the closeout explanation for why v08 remains the
+ExECTv2 control.
+
+| Field | Value |
+| --- | --- |
+| Candidate | `single_call_dedup_facts_per_family` with `decision_table_sf_inv` prompt profile |
+| Models | `openai/gpt-4.1-mini`, `deepseek/deepseek-chat`, and `ollama_chat/qwen3.6:35b` |
+| Split and row count | `dev140`, 140 letters |
+| Scorer/view | Canonical de-duplicated `clinical_headline`; strict `model_preserving_canonical` reported as diagnostic companion |
+| Report | `docs/experiments/exectv2/key_entities/exectv2_dedup_phase6_model_rollout_2026-06-24.md` |
+| GPT artifact | `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.{jsonl,md}` |
+| DeepSeek artifact | `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.{jsonl,md}` |
+| Qwen artifact | `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.{jsonl,md}` |
+| Claim boundary | Dev140 clinical-recovery plateau evidence; not a strict benchmark, full-200, holdout, or v08 replacement claim |
+| Promotion decision | Do not promote; model swap alone does not close the Diagnosis and SeizureFrequency gap |
+| Row-level inspection | Dev140 development surface only; full-200/holdout row-level inspection remains blocked without protocol |
+
+Headline scores:
+
+| Model | Clinical headline F1 | Diagnosis | SeizureFrequency | Prescription | Investigations | Strict F1 | Evidence validity |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | `0.729` | `0.681` | `0.556` | `0.851` | `0.883` | `0.130` | `0.9694` |
+| DeepSeek chat | `0.745` | `0.689` | `0.674` | `0.788` | `0.898` | `0.128` | `0.9617` |
+| Qwen 3.6 35B | `0.694` | `0.633` | `0.562` | `0.795` | `0.837` | `0.127` | `0.9418` |
+
+Stable hashes:
+
+| Path | SHA-256 |
+| --- | --- |
+| `docs/experiments/exectv2/key_entities/exectv2_dedup_phase6_model_rollout_2026-06-24.md` | `46fd7e7495591699abbdb26ca6c62ca53b620d359d5c735abbc362fc3efe55c9` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl` | `f280588a277a8cfad6348ca9525105f5113285d28340d0ae837ba05805c2fa26` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.md` | `8c75dcc4614819b7d882f0e2ed768b6afc64cb061b715dde22e2517f2a6b4d5b` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl` | `063850b1851b7f9e2df26692e5e1c6fbbbbcc9c6e81081c7438c7be7de4495cd` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.md` | `0ff56f4ccfbaafc46b97d0378f62142c4dadc62ab8a46def602e2defef0adacc` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl` | `b11083f2e94fc217bfa1d79a6bc15ca5c2f210a75a81eb66d77e92a5de03720b` |
+| `experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.md` | `b705ed69993f4a613a9ed32b73e137d9ab970c20ee2dca121c1b1cfef73c3efe` |
+
 ## Non-Canonical, Scratch, Or Superseded Artifacts
 
 - `experiments/exectv2_holistic_finding_assembly_v097_deepseek_dev25_20260622.*`

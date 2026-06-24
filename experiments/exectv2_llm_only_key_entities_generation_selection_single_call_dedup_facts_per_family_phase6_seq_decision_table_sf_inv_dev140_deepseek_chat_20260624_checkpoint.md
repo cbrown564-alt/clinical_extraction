@@ -1,4 +1,4 @@
-# ExECTv2 Qwen LLM-Only Generation-Selection
+# ExECTv2 DeepSeek LLM-Only Generation-Selection
 
 CHECKPOINT ONLY: processed 140 / 140 letters
 
@@ -7,7 +7,7 @@ CHECKPOINT ONLY: processed 140 / 140 letters
 - Prompt profile: `decision_table_sf_inv`
 - Call strategy: `single_call_dedup_facts_per_family`
 - Pipeline family: `exectv2_llm_only_key_entities_generation_selection`
-- Component owner: `qwen_llm_only_generation_selection`
+- Component owner: `deepseek_llm_only_generation_selection`
 - Fact origin: `target_model_generated`
 - Split: `dev`
 - Model: `deepseek/deepseek-chat`

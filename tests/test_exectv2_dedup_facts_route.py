@@ -293,6 +293,31 @@ def test_prompt_only_run_split_records_per_family_dedup_prompts(tmp_path: Path) 
     )
 
 
+def test_prompt_only_per_family_report_labels_source_model(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "rows.jsonl"
+    report_path = tmp_path / "report.md"
+
+    rows, metadata = route.run_split(
+        [_LETTER],
+        split="dev",
+        model="deepseek/deepseek-chat",
+        temperature=0.0,
+        max_tokens=128,
+        mode="prompt-only",
+        call_strategy="single_call_dedup_facts_per_family",
+        checkpoint_jsonl_path=jsonl_path,
+        checkpoint_report_path=report_path,
+        progress_every=1,
+    )
+    route.write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
+
+    report = report_path.read_text(encoding="utf-8")
+    assert metadata["component_owner"] == "deepseek_llm_only_generation_selection"
+    assert rows[0]["component_owner"] == "deepseek_llm_only_generation_selection"
+    assert "# ExECTv2 DeepSeek LLM-Only Generation-Selection" in report
+    assert "Component owner: `deepseek_llm_only_generation_selection`" in report
+
+
 def test_prompt_only_mixed_decision_table_profile_targets_sf_and_investigation(
     tmp_path: Path,
 ) -> None:
