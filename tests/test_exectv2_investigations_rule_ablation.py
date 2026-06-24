@@ -25,10 +25,12 @@ def test_investigations_rule_ablation_scores_variants_and_counts_actions() -> No
     assert variants["structured_direct_result_lens"]["metrics"]["f1"] == 0.5
     assert variants["verifier_only"]["metrics"]["f1"] == 1.0
     assert variants["verifier_plus_pending_suppression"]["action_counts"] == {}
-    assert variants["selective_verifier_pending_suppression"]["selective_call_burden"] == 0.5
-    assert variants["selective_verifier_pending_suppression"]["routed_letters"] == 1
+    assert variants["selective_verifier_v02_empty_pending_no"]["selective_call_burden"] == 0.5
+    assert variants["selective_verifier_v02_empty_pending_no"]["routed_letters"] == 1
+    assert payload["max_acceptable_selective_burden"] == 0.20
+    assert payload["decision"]["selective_v02_burden_acceptable"] is False
     assert payload["decision"]["selected_next_architecture"] == (
-        "selective_investigations_adjudicator_diagnostic"
+        "selective_investigations_adjudicator_v02_empty_pending_no_diagnostic"
     )
 
 
@@ -59,6 +61,67 @@ def test_selective_policy_routes_ambiguous_direct_rows_to_arbitrated_verifier() 
     assert routed == 1
     assert selective[0]["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "Yes"
     assert selective[1]["predicted_mentions"][0]["attributes"]["CT_Performed"] == "Yes"
+
+
+def test_v02_selective_policy_does_not_route_unknown_or_multimodality_alone() -> None:
+    direct_rows = [
+        _row(
+            "EA1",
+            [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Unknown"})],
+        ),
+        _row(
+            "EA2",
+            [
+                _mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"}),
+                _mention("EEG", {"EEG_Performed": "Yes", "EEG_Results": "Normal"}),
+            ],
+        ),
+        _row("EA3", []),
+    ]
+    arbitrated_verifier_rows = [
+        _row("EA1", [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"})]),
+        _row("EA2", [_mention("EEG", {"EEG_Performed": "Yes", "EEG_Results": "Abnormal"})]),
+        _row("EA3", [_mention("CT", {"CT_Performed": "Yes", "CT_Results": "Normal"})]),
+    ]
+
+    selective, routed = ablation.selective_verifier_rows(
+        direct_rows,
+        arbitrated_verifier_rows,
+        policy=ablation.SELECTIVE_POLICY_V02,
+    )
+
+    assert routed == 1
+    assert selective[0]["predicted_mentions"][0]["attributes"]["MRI_Results"] == "Unknown"
+    assert selective[1]["predicted_mentions"][1]["attributes"]["EEG_Results"] == "Normal"
+    assert selective[2]["predicted_mentions"][0]["attributes"]["CT_Performed"] == "Yes"
+
+
+def test_v01_selective_policy_retains_broad_ambiguity_comparator() -> None:
+    direct_rows = [
+        _row(
+            "EA1",
+            [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Unknown"})],
+        ),
+        _row(
+            "EA2",
+            [
+                _mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"}),
+                _mention("EEG", {"EEG_Performed": "Yes", "EEG_Results": "Normal"}),
+            ],
+        ),
+    ]
+    arbitrated_verifier_rows = [
+        _row("EA1", [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"})]),
+        _row("EA2", [_mention("EEG", {"EEG_Performed": "Yes", "EEG_Results": "Abnormal"})]),
+    ]
+
+    _, routed = ablation.selective_verifier_rows(
+        direct_rows,
+        arbitrated_verifier_rows,
+        policy=ablation.SELECTIVE_POLICY_V01,
+    )
+
+    assert routed == 2
 
 
 def _row(letter_id: str, mentions: list[dict[str, object]]) -> dict[str, object]:

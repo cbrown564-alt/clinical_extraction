@@ -18,7 +18,7 @@ The scorecard is improved but not finished. The biggest reliability gains now re
 
 The authorized full-200 GPT-4.1-mini run now exists for the strongest v08-shaped architecture using the current code path. Aggregate headline clinical-recovery F1 is `0.8502` overall: Diagnosis `0.8321`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.9213`. A no-verifier ablation scored `0.8431` overall: Diagnosis `0.8410`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.8563`. The simplification frontier found the first cost-performance cliff: the 3-call structured + Diagnosis decomposer + SF adjudicator candidate passes (`0.8426` overall), while removing the Diagnosis decomposer drops Diagnosis to `0.7643` and removing the SF adjudicator drops SF to `0.7525`; the frontier is recorded at `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`.
 
-The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic replacement is not ready: structured direct + result lens scores `0.8563`, adding pending-test suppression reaches `0.8665`, verifier-only scores `0.8770`, and verifier + deterministic suppression remains strongest at `0.9213`. A first selective-adjudicator diagnostic routes `73.5%` of letters and scores `0.8812`, so the next useful work is a sharper predeclared selective-routing policy, not deterministic-only promotion. Artifact: `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`.
+The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic replacement is not ready: structured direct + result lens scores `0.8563`, adding pending-test suppression reaches `0.8665`, verifier-only scores `0.8770`, and verifier + deterministic suppression remains strongest at `0.9213`. Selective review burden must be `<=0.20` to be operationally acceptable. The dev-selected v02 selective router limits calls to empty-output, planned-test, and explicit-not-performed cases; dev140 burden drops from `0.8357` to `0.5643` while F1 rises from `0.9042` to `0.9084`. Full-200 aggregate replay drops burden from `0.7350` to `0.5100` at the same `0.8812` F1 as v01, but this is still far above the acceptable ceiling, so v02 fails the cost target and remains diagnostic rather than promoted. Artifact: `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`.
 
 ## Active Priorities
 
@@ -32,7 +32,6 @@ The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic r
 ### Now
 
 - Treat `exectv2_holistic_finding_assembly_full200_gpt41mini_3call_dxdecomposer_sfadjudicator` as the current lean GPT-4.1-mini cost-performance diagnostic from the simplification frontier; do not use it as the validation/review-routing surface without a fresh predeclaration that freezes that exact candidate.
-- Redesign the Investigations selective-adjudicator router on dev-only features to reduce the `0.7350` call burden while preserving more of the verifier + deterministic suppression control (`0.9213` F1); start from `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`.
 - Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the failed lower-burden review-routing candidate unpromoted unless a fresh dev140 risk-feature redesign is predeclared.
 
 ### Next
@@ -41,6 +40,7 @@ The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic r
 - Build robustness panels that can move the scorecard: current-vs-historical SF state perturbations, medication current-vs-plan ambiguity, investigation result-state ambiguity, diagnosis assertion/hierarchy conventions, and evidence paraphrase/deletion stress tests.
 - Add same-prompt/cross-seed consistency panels for live LLM surfaces, with schema validity, evidence validity, call failures, and family-cell agreement separated from deterministic replay stability.
 - Keep Phase 3-6 direct LLM-only runs as plateau comparators with fixed clinical-recovery claim language when updating scoreboards or paper-facing summaries.
+- If continuing Investigations cost work, redesign for `<=0.20` selective review burden before any live selective-adjudicator experiment; v02 preserved v01 F1 but still routes `0.5100` of full-200 letters and stays far below the `0.9213` verifier + deterministic suppression control.
 
 ### Blocked
 
@@ -50,7 +50,7 @@ The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic r
 
 ### Done Recently
 
-- 2026-06-25: Completed the aggregate-only Investigations rule/adjudicator ablation at `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`; deterministic pending-test suppression improves structured direct from `0.8563` to `0.8665`, but verifier + deterministic suppression remains strongest at `0.9213`, and the first selective diagnostic routes `73.5%` of letters for `0.8812` F1.
+- 2026-06-25: Completed the aggregate-only Investigations rule/adjudicator ablation and dev-selected selective-router v02 diagnostic at `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`; deterministic pending-test suppression improves structured direct from `0.8563` to `0.8665`, verifier + deterministic suppression remains strongest at `0.9213`, and v02 cuts full-200 aggregate burden from `0.7350` to `0.5100` at unchanged `0.8812` F1, which still fails the `<=0.20` acceptable review-burden ceiling.
 - 2026-06-24: Completed the aggregate-only ExECTv2 review-routing validation on the accepted current-code v08-shape full-200 artifact at `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`; the lower-burden dev candidate is not promoted because validation burden rose to `0.9661` despite `0.9037` catch.
 - 2026-06-24: Completed the GPT-4.1-mini ExECTv2 simplification frontier at `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`; the recommended lean current-code full-200 candidate is the 3-call structured + Diagnosis decomposer + SF adjudicator architecture (`0.8426` overall), with both 2-call removals failing predeclared family guardrails.
 - 2026-06-24: Ran the authorized full-200 current-code v08-shape GPT-4.1-mini architecture audit and materialized the holistic assembly artifact at `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md`; aggregate headline F1 is `0.8502` overall with no producer call/parse failures.

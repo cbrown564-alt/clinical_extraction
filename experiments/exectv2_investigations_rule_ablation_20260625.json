@@ -10,11 +10,60 @@
     "deterministic_replacement_promoted": false,
     "direct_suppression_to_verifier_arbitrated_gap": 0.0549,
     "direct_to_verifier_arbitrated_gap": 0.065,
-    "rationale": "Deterministic replacement is promoted only if direct structured plus deterministic suppression is within 0.0100 F1 of the verifier plus suppression control. Otherwise the next diagnostic is selective Investigations adjudication.",
-    "selected_next_architecture": "selective_investigations_adjudicator_diagnostic",
-    "selective_to_verifier_arbitrated_gap": 0.0402
+    "max_acceptable_selective_burden": 0.2,
+    "rationale": "Deterministic replacement is promoted only if direct structured plus deterministic suppression is within 0.0100 F1 of the verifier plus suppression control. A selective Investigations policy is acceptable only if review burden is at or below 0.2000; v02 is diagnostic but fails that burden ceiling.",
+    "selected_next_architecture": "selective_investigations_adjudicator_v02_empty_pending_no_diagnostic",
+    "selective_v01_to_verifier_arbitrated_gap": 0.0402,
+    "selective_v02_burden": 0.51,
+    "selective_v02_burden_acceptable": false,
+    "selective_v02_to_verifier_arbitrated_gap": 0.0402
   },
+  "development_policy_selection": [
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 0.8357,
+      "changed_rows": 76,
+      "evidence_validity_rate": 0.9765625,
+      "label": "v01 broad ambiguity",
+      "metrics": {
+        "f1": 0.9042145593869731,
+        "fn": 18,
+        "fp": 7,
+        "precision": 0.944,
+        "recall": 0.8676470588235294,
+        "tp": 118
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 117,
+      "rule_family": "v01_broad_ambiguous",
+      "selective_call_burden": 0.8357,
+      "variant_id": "v01_broad_ambiguous"
+    },
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 0.5643,
+      "changed_rows": 38,
+      "evidence_validity_rate": 0.9769230769230769,
+      "label": "v02 empty/pending/not-performed",
+      "metrics": {
+        "f1": 0.9083969465648855,
+        "fn": 17,
+        "fp": 7,
+        "precision": 0.9444444444444444,
+        "recall": 0.875,
+        "tp": 119
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 79,
+      "rule_family": "v02_empty_pending_or_explicit_not_performed",
+      "selective_call_burden": 0.5643,
+      "variant_id": "v02_empty_pending_or_explicit_not_performed"
+    }
+  ],
   "generated_on": "2026-06-25",
+  "max_acceptable_selective_burden": 0.2,
   "row_inspection_policy": "aggregate_only_no_full200_failure_ledgers",
   "surface": "current-code v08-shape full-200 Investigations",
   "variants": [
@@ -114,7 +163,7 @@
       "calls_per_letter": 0.735,
       "changed_rows": 24,
       "evidence_validity_rate": 1.0,
-      "label": "Selective verifier for ambiguous direct rows + pending-test suppression",
+      "label": "Selective verifier v01 broad ambiguity + pending-test suppression",
       "metrics": {
         "f1": 0.881159420289855,
         "fn": 31,
@@ -127,7 +176,30 @@
       "routed_letters": 147,
       "rule_family": "selective_llm_verifier_plus_pending_test_suppression",
       "selective_call_burden": 0.735,
-      "variant_id": "selective_verifier_pending_suppression"
+      "variant_id": "selective_verifier_v01_broad_pending_suppression"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 9
+      },
+      "call_failures": 0,
+      "calls_per_letter": 0.51,
+      "changed_rows": 10,
+      "evidence_validity_rate": 1.0,
+      "label": "Selective verifier v02 empty/pending/not-performed + pending-test suppression",
+      "metrics": {
+        "f1": 0.881159420289855,
+        "fn": 31,
+        "fp": 10,
+        "precision": 0.9382716049382716,
+        "recall": 0.8306010928961749,
+        "tp": 152
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 102,
+      "rule_family": "selective_llm_verifier_v02_plus_pending_test_suppression",
+      "selective_call_burden": 0.51,
+      "variant_id": "selective_verifier_v02_empty_pending_no"
     }
   ]
 }

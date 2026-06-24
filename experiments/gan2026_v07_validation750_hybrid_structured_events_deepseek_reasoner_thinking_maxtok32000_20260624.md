@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 710 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 720 rows.
 Rare full-validation reason: validation750_v07_deepseek_reasoner_prompt_iteration_after_validation_error_analysis_validation250_too_low_signal
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 704 / 710
+- Structured records: 714 / 720
 - Call failures: 0
 - Parse/schema/label issues: 6
 - JSON dialect repairs: 0
-- Deterministic repair notes: 421
-- Exact selection evidence substrings: 696 / 710
-- Purist validation accuracy/micro F1 proxy: 0.8648 (614 / 710)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8901 (632 / 710)
+- Deterministic repair notes: 430
+- Exact selection evidence substrings: 705 / 720
+- Purist validation accuracy/micro F1 proxy: 0.8639 (622 / 720)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8889 (640 / 720)
 
 ## Rows
 
@@ -761,3 +761,13 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 16450 | multiple per week | 1 per multiple day | yes |  |
 | 16529 | 1 per 5 day | 1 per 5 day | yes | final_label_repaired: '1 cluster every 5 days' -> '1 per 5 day' |
 | 16557 | 1 per 2 to 3 day | 1 per 2 to 3 day | yes | final_label_repaired: '1 cluster every 2-3 days' -> '1 per 2 to 3 day' |
+| 16574 | multiple per week | 1 per 4 day | no |  |
+| 16590 | 1 per 4 to 5 day | 1 per 4 to 5 day | yes | final_label_repaired: 'clusters every 4-5 days' -> 'unknown'; final_label_repaired: 'unknown' -> '1 per 4 to 5 day' |
+| 16618 | 1 per 5 day | 1 per 5 day | yes | final_label_repaired: '1 cluster per week' -> 'unknown'; final_label_repaired: 'unknown' -> '1 per 5 day' |
+| 16645 | 5 per 7 month | 5 per 7 month | yes | final_label_repaired: '1 seizure' -> '1 per month'; final_label_repaired: '1 per month' -> '5 per 7 month' |
+| 16674 | 6 per 4 month | 7 per 6 month | yes | final_label_repaired: '1 absence in September 2011' -> 'unknown'; final_label_repaired: 'unknown' -> '6 per 4 month' |
+| 16685 | 10 per 3 month | 10 per 3 month | yes | final_label_repaired: '6 per month' -> '10 per 3 month' |
+| 16697 | 2 per 3 month | 3 per 6 month | yes | final_label_repaired: '3 per 6 months' -> '3 per 6 month'; final_label_repaired: '3 per 6 month' -> '2 per 3 month' |
+| 16704 | 9 per 6 month | 9 per 6 month | yes | final_label_repaired: '7 per month' -> '9 per 6 month' |
+| 16714 | 5 per 4 month | 5 per 6 month | no | final_label_repaired: 'unknown' -> '5 per 4 month'; evidence_not_exact_substring |
+| 16717 | 5 per 6 month | 5 per 6 month | yes | final_label_repaired: '1 seizure in past month' -> '1 per month'; final_label_repaired: '1 per month' -> '5 per 6 month' |
