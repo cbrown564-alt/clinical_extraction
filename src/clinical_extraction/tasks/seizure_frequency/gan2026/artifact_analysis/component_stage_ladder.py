@@ -272,12 +272,42 @@ class StageLadder:
     predictions_by_stage: dict[str, list[float]]
 
 
+@dataclass(frozen=True)
+class StageCell:
+    """One row's prediction at one rung: the scored label, its rate, and evidence.
+
+    ``monthly_frequency`` is exactly the value the aggregate ladder scores;
+    ``label`` is the human-readable predicted label at this rung (``"unknown"``
+    when the evidence gate drops the prediction); ``evidence`` is the selected
+    source span. Carried only for the illustrative per-note worked example — the
+    scoring ladder reads ``monthly_frequency`` and nothing else here.
+    """
+
+    label: str
+    monthly_frequency: float
+    evidence: str
+
+
+@dataclass(frozen=True)
+class RowMeta:
+    """Per-row identity for illustrative worked examples (never used for scoring)."""
+
+    source_row_index: int | None
+    note_text: str
+    gold_label: str
+
+
 class StageLadderProvider(Protocol):
     """One stage-ablation seam for the architecture-agnostic ladder builder.
 
     ``stages()`` is the ordered downstream stack; ``predict(disabled)`` returns the
     per-row monthly frequency with the named stages turned off (replay-only, no
     model calls); ``build()`` walks the ladder, cumulatively re-enabling stages.
+
+    ``predict_cells(disabled)`` is the same computation retaining each row's label
+    and evidence (``predict`` is exactly its monthly-frequency projection), and
+    ``rows_metadata()`` carries row identity — both feed the explanatory-only
+    per-note worked example, never the aggregate score.
     """
 
     spec: ArchitectureSpec
@@ -286,7 +316,11 @@ class StageLadderProvider(Protocol):
 
     def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]: ...
 
+    def predict_cells(self, disabled_stage_ids: frozenset[str]) -> list[StageCell]: ...
+
     def golds(self) -> list[float]: ...
+
+    def rows_metadata(self) -> list[RowMeta]: ...
 
     def build(self) -> StageLadder: ...
 
@@ -316,6 +350,10 @@ class DeterministicCanonicalProvider:
     def __init__(self, spec: ArchitectureSpec, records: list[GanFrequencyRecord]) -> None:
         self.spec = spec
         self._golds = [record.gold_monthly_frequency for record in records]
+        self._meta = [
+            RowMeta(record.source_row_index, record.note_text, record.gold_label)
+            for record in records
+        ]
         # Extraction is config-independent, so do it once and reuse across rungs.
         self._extracted: list[tuple[str, Any, Any]] = []
         for record in records:
@@ -332,19 +370,30 @@ class DeterministicCanonicalProvider:
     def golds(self) -> list[float]:
         return self._golds
 
-    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+    def rows_metadata(self) -> list[RowMeta]:
+        return self._meta
+
+    def predict_cells(self, disabled_stage_ids: frozenset[str]) -> list[StageCell]:
         repair_on = "benchmark_repair" not in disabled_stage_ids
         gate_on = "evidence_trace_check" not in disabled_stage_ids
         config = _FULL_CONFIG if repair_on else _NO_REPAIR_CONFIG
-        predictions: list[float] = []
+        cells: list[StageCell] = []
         for note, raw_candidates, candidate_events in self._extracted:
             normalized = normalize_stage(candidate_events, raw_candidates, ablation_config=config)
             selected = select_and_render_stage(candidate_events, normalized, ablation_config=config)
             frequency = selected.monthly_frequency
+            label = selected.final_label or ""
             if gate_on and not evidence_is_substring(note, selected.evidence):
+                # The evidence-trace check drops an ungrounded prediction to unknown.
                 frequency = UNKNOWN_FREQUENCY
-            predictions.append(frequency)
-        return predictions
+                label = "unknown"
+            cells.append(
+                StageCell(label=label, monthly_frequency=frequency, evidence=selected.evidence or "")
+            )
+        return cells
+
+    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+        return [cell.monthly_frequency for cell in self.predict_cells(disabled_stage_ids)]
 
     def build(self) -> StageLadder:
         return _cumulative_build(self)
@@ -397,20 +446,34 @@ class StructuredEventsProvider:
     def golds(self) -> list[float]:
         return self._golds
 
-    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+    def rows_metadata(self) -> list[RowMeta]:
+        return [_row_meta(row) for row in self._rows]
+
+    def predict_cells(self, disabled_stage_ids: frozenset[str]) -> list[StageCell]:
         config = _structured_events_config(
             normalize_on="normalize" not in disabled_stage_ids,
             evidence_on="evidence_projection" not in disabled_stage_ids,
             clinical_on="clinical_repair" not in disabled_stage_ids,
         )
-        predictions: list[float] = []
+        cells: list[StageCell] = []
         for row in self._rows:
             extraction, _normalized, _errors = parse_structured_json(
-                row["raw_output"], note_text=row["note_text"], repair_config=config
+                row["raw_output"], note_text=row["note_text"] or "", repair_config=config
             )
-            label = extraction.selection.final_label if extraction else None
-            predictions.append(_label_to_frequency(label))
-        return predictions
+            selection = extraction.selection if extraction else None
+            label = selection.final_label if selection else None
+            evidence = selection.evidence if selection else ""
+            cells.append(
+                StageCell(
+                    label=label or "",
+                    monthly_frequency=_label_to_frequency(label),
+                    evidence=evidence or "",
+                )
+            )
+        return cells
+
+    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+        return [cell.monthly_frequency for cell in self.predict_cells(disabled_stage_ids)]
 
     def build(self) -> StageLadder:
         return _cumulative_build(self)
@@ -458,30 +521,49 @@ class LlmOnlyProvider:
     def golds(self) -> list[float]:
         return self._golds
 
-    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+    def rows_metadata(self) -> list[RowMeta]:
+        return [_row_meta(row) for row in self._rows]
+
+    def predict_cells(self, disabled_stage_ids: frozenset[str]) -> list[StageCell]:
         repaired = "label_repair" not in disabled_stage_ids
-        predictions: list[float] = []
+        cells: list[StageCell] = []
         for row in self._rows:
             raw_output = row["raw_output"]
             if repaired:
                 decision, _errors = self._module.parse_decision_json(raw_output)
                 label = decision.final_label if decision else None
+                evidence = decision.evidence if decision else ""
             else:
-                label = self._raw_label(raw_output)
-            predictions.append(_label_to_frequency(label))
-        return predictions
+                label, evidence = self._raw_label_evidence(raw_output)
+            cells.append(
+                StageCell(
+                    label=label or "",
+                    monthly_frequency=_label_to_frequency(label),
+                    evidence=evidence or "",
+                )
+            )
+        return cells
 
-    def _raw_label(self, raw_output: str) -> str | None:
-        """The model's emitted final_label, before any deterministic repair."""
+    def predict(self, disabled_stage_ids: frozenset[str]) -> list[float]:
+        return [cell.monthly_frequency for cell in self.predict_cells(disabled_stage_ids)]
+
+    def _raw_label_evidence(self, raw_output: str) -> tuple[str | None, str]:
+        """The model's emitted final_label + evidence, before any deterministic repair."""
 
         if not raw_output:
-            return None
+            return None, ""
         try:
             payload = json.loads(self._module.extract_json_object(raw_output))
         except (json.JSONDecodeError, ValueError):
-            return None
-        label = payload.get("final_label") if isinstance(payload, dict) else None
-        return label if isinstance(label, str) else None
+            return None, ""
+        if not isinstance(payload, dict):
+            return None, ""
+        label = payload.get("final_label")
+        evidence = payload.get("evidence")
+        return (
+            label if isinstance(label, str) else None,
+            evidence if isinstance(evidence, str) else "",
+        )
 
     def build(self) -> StageLadder:
         return _cumulative_build(self)
@@ -501,7 +583,8 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
             if not line:
                 continue
             row = json.loads(line)
-            gold = (row.get("reference") or {}).get("gold_monthly_frequency")
+            reference = row.get("reference") or {}
+            gold = reference.get("gold_monthly_frequency")
             if gold is None:
                 continue
             note_text: str | None = None
@@ -515,11 +598,22 @@ def _load_rows(path: Path) -> list[dict[str, Any]]:
                 {
                     "source_row_index": row.get("source_row_index"),
                     "gold": float(gold),
+                    "gold_label": str(reference.get("gold_label") or ""),
                     "note_text": note_text,
                     "raw_output": row.get("raw_output") or "",
                 }
             )
     return rows
+
+
+def _row_meta(row: dict[str, Any]) -> RowMeta:
+    """RowMeta for a replayed producer row (structured-events / LLM-only)."""
+
+    return RowMeta(
+        source_row_index=row.get("source_row_index"),
+        note_text=row.get("note_text") or "",
+        gold_label=row.get("gold_label") or "",
+    )
 
 
 def _provider_for(

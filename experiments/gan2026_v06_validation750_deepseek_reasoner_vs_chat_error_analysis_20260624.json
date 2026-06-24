@@ -1,0 +1,223 @@
+{
+  "artifacts": {
+    "ledger_csv": "experiments\\gan2026_v06_validation750_deepseek_reasoner_vs_chat_transition_ledger_20260624.csv",
+    "non_reasoning": "experiments\\gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl",
+    "reasoning": "experiments\\gan2026_v06_validation750_hybrid_structured_events_deepseek_reasoner_thinking_maxtok32000_20260624.jsonl"
+  },
+  "by_confidence": {
+    "C->C": {
+      "high": 481,
+      "low": 2,
+      "medium": 75
+    },
+    "C->W": {
+      "": 4,
+      "high": 51,
+      "medium": 9
+    },
+    "W->C": {
+      "high": 54,
+      "low": 1,
+      "medium": 3
+    },
+    "W->W": {
+      "": 1,
+      "high": 52,
+      "medium": 17
+    }
+  },
+  "by_evidence_shift": {
+    "(False, False, 'C->C')": 1,
+    "(False, False, 'W->W')": 1,
+    "(False, True, 'C->C')": 14,
+    "(False, True, 'W->C')": 8,
+    "(False, True, 'W->W')": 7,
+    "(True, False, 'C->C')": 10,
+    "(True, False, 'C->W')": 7,
+    "(True, True, 'C->C')": 533,
+    "(True, True, 'C->W')": 57,
+    "(True, True, 'W->C')": 50,
+    "(True, True, 'W->W')": 62
+  },
+  "by_family": {
+    "C->C": {
+      "cluster_or_cluster_burden": 215,
+      "evidence_validity_shift": 24,
+      "label_changed": 90,
+      "range_or_vague_multiple": 353,
+      "rate_denominator_or_window": 409,
+      "seizure_free_boundary": 401,
+      "semantic_kind_shift": 50,
+      "unknown_or_no_reference_boundary": 198
+    },
+    "C->W": {
+      "cluster_or_cluster_burden": 29,
+      "evidence_validity_shift": 7,
+      "label_changed": 64,
+      "parse_schema_issue": 4,
+      "range_or_vague_multiple": 42,
+      "rate_denominator_or_window": 56,
+      "seizure_free_boundary": 52,
+      "semantic_kind_shift": 21,
+      "unknown_or_no_reference_boundary": 42
+    },
+    "W->C": {
+      "cluster_or_cluster_burden": 26,
+      "evidence_validity_shift": 8,
+      "label_changed": 58,
+      "parse_schema_issue": 3,
+      "range_or_vague_multiple": 44,
+      "rate_denominator_or_window": 48,
+      "seizure_free_boundary": 42,
+      "semantic_kind_shift": 16,
+      "unknown_or_no_reference_boundary": 31
+    },
+    "W->W": {
+      "cluster_or_cluster_burden": 50,
+      "evidence_validity_shift": 7,
+      "label_changed": 37,
+      "parse_schema_issue": 2,
+      "range_or_vague_multiple": 62,
+      "rate_denominator_or_window": 65,
+      "seizure_free_boundary": 63,
+      "semantic_kind_shift": 16,
+      "unknown_or_no_reference_boundary": 49
+    }
+  },
+  "by_gold_kind": {
+    "frequency": {
+      "C->C": 330,
+      "C->W": 49,
+      "W->C": 38,
+      "W->W": 51
+    },
+    "no_reference": {
+      "C->C": 17,
+      "C->W": 4,
+      "W->C": 4,
+      "W->W": 2
+    },
+    "seizure_free": {
+      "C->C": 92,
+      "C->W": 5,
+      "W->C": 11,
+      "W->W": 4
+    },
+    "unknown": {
+      "C->C": 78,
+      "C->W": 5,
+      "W->C": 4,
+      "W->W": 13
+    },
+    "unresolved_multiple": {
+      "C->C": 41,
+      "C->W": 1,
+      "W->C": 1
+    }
+  },
+  "by_kind_shift": {
+    "('', 'no_reference', 'W->C')": 2,
+    "('', 'no_reference', 'W->W')": 1,
+    "('', 'unknown', 'W->C')": 1,
+    "('frequency', 'seizure_free', 'C->W')": 2,
+    "('frequency', 'seizure_free', 'W->W')": 1,
+    "('frequency', 'unknown', 'C->C')": 45,
+    "('frequency', 'unknown', 'C->W')": 9,
+    "('frequency', 'unknown', 'W->C')": 3,
+    "('frequency', 'unknown', 'W->W')": 3,
+    "('no_reference', '', 'C->W')": 4,
+    "('no_reference', 'seizure_free', 'W->C')": 5,
+    "('no_reference', 'unknown', 'C->C')": 2,
+    "('no_reference', 'unknown', 'C->W')": 1,
+    "('no_reference', 'unknown', 'W->W')": 1,
+    "('seizure_free', 'frequency', 'C->C')": 2,
+    "('seizure_free', 'frequency', 'C->W')": 2,
+    "('seizure_free', 'frequency', 'W->C')": 2,
+    "('seizure_free', 'frequency', 'W->W')": 7,
+    "('seizure_free', 'unknown', 'C->W')": 2,
+    "('seizure_free', 'unknown', 'W->C')": 2,
+    "('seizure_free', 'unresolved_multiple', 'W->C')": 1,
+    "('unknown', 'frequency', 'C->C')": 1,
+    "('unknown', 'no_reference', 'W->W')": 1,
+    "('unresolved_multiple', 'frequency', 'W->W')": 2,
+    "('unresolved_multiple', 'unknown', 'C->W')": 1
+  },
+  "by_order_band": {
+    "001-250": {
+      "C->C": 225,
+      "C->W": 12,
+      "W->C": 7,
+      "W->W": 6
+    },
+    "251-500": {
+      "C->C": 186,
+      "C->W": 15,
+      "W->C": 17,
+      "W->W": 32
+    },
+    "501-750": {
+      "C->C": 147,
+      "C->W": 37,
+      "W->C": 34,
+      "W->W": 32
+    }
+  },
+  "changed_final_kind": 103,
+  "changed_labels": 249,
+  "summary": {
+    "non_reasoning_test450_aggregate_only": {
+      "evidence_valid": 440,
+      "n": 450,
+      "parse_fail": 4,
+      "pragmatic_accuracy": 0.8178,
+      "pragmatic_correct": 368,
+      "purist_accuracy": 0.7867,
+      "purist_correct": 354,
+      "repair_notes": 351,
+      "repair_rows": 307,
+      "structured": 446
+    },
+    "non_reasoning_validation750": {
+      "evidence_valid": 719,
+      "n": 750,
+      "parse_fail": 5,
+      "pragmatic_accuracy": 0.8613,
+      "pragmatic_correct": 646,
+      "purist_accuracy": 0.8293,
+      "purist_correct": 622,
+      "repair_notes": 581,
+      "repair_rows": 500,
+      "structured": 745
+    },
+    "reasoning_test450_aggregate_only": {
+      "evidence_valid": 441,
+      "n": 450,
+      "parse_fail": 3,
+      "pragmatic_accuracy": 0.8111,
+      "pragmatic_correct": 365,
+      "purist_accuracy": 0.7667,
+      "purist_correct": 345,
+      "repair_notes": 278,
+      "repair_rows": 257,
+      "structured": 447
+    },
+    "reasoning_validation750": {
+      "evidence_valid": 731,
+      "n": 750,
+      "parse_fail": 5,
+      "pragmatic_accuracy": 0.8653,
+      "pragmatic_correct": 649,
+      "purist_accuracy": 0.8213,
+      "purist_correct": 616,
+      "repair_notes": 459,
+      "repair_rows": 415,
+      "structured": 745
+    }
+  },
+  "transitions": {
+    "C->C": 558,
+    "C->W": 64,
+    "W->C": 58,
+    "W->W": 70
+  }
+}
