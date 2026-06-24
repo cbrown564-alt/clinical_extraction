@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 490 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 710 rows.
 Rare full-validation reason: validation750_v07_deepseek_reasoner_prompt_iteration_after_validation_error_analysis_validation250_too_low_signal
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -38,14 +38,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 486 / 490
+- Structured records: 704 / 710
 - Call failures: 0
-- Parse/schema/label issues: 4
+- Parse/schema/label issues: 6
 - JSON dialect repairs: 0
-- Deterministic repair notes: 267
-- Exact selection evidence substrings: 480 / 490
-- Purist validation accuracy/micro F1 proxy: 0.8776 (430 / 490)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8898 (436 / 490)
+- Deterministic repair notes: 421
+- Exact selection evidence substrings: 696 / 710
+- Purist validation accuracy/micro F1 proxy: 0.8648 (614 / 710)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8901 (632 / 710)
 
 ## Rows
 
@@ -541,3 +541,223 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 11711 | no seizure frequency reference | no seizure frequency reference | yes |  |
 | 11728 | no seizure frequency reference | no seizure frequency reference | yes |  |
 | 11734 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11737 | unknown | no seizure frequency reference | yes |  |
+| 11752 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11756 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11763 |  | no seizure frequency reference | no | schema_validation_error: Input should be 'current', 'recent', 'historical', 'future' or 'unclear'; evidence_not_exact_substring |
+| 11804 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11824 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11841 | no seizure frequency reference | no seizure frequency reference | yes |  |
+| 11852 |  | no seizure frequency reference | no | schema_validation_error: Input should be 'current', 'recent', 'historical', 'future' or 'unclear'; evidence_not_exact_substring |
+| 12036 | multiple per day | multiple per day | yes |  |
+| 12041 | multiple per day | multiple per day | yes |  |
+| 12046 | multiple per day | multiple per day | yes |  |
+| 12051 | 1 per day | multiple per day | no | final_label_repaired: 'near daily' -> '1 per day' |
+| 12111 | multiple per week | multiple per week | yes |  |
+| 12127 | multiple per week | multiple per week | yes |  |
+| 12130 | multiple per week | multiple per week | yes |  |
+| 12139 | multiple per week | multiple per week | yes |  |
+| 12145 | multiple per week | multiple per week | yes |  |
+| 12192 | 1 per day | 1 per day | yes |  |
+| 12218 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12236 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12246 | 1 to 2 per day | 1 to 2 per day | yes | final_label_repaired: '1-2 per day' -> '1 to 2 per day' |
+| 12314 | 3 per week | 3 per week | yes |  |
+| 12366 | 4 per day | 4 per day | yes |  |
+| 12378 | 4 per day | 4 per day | yes |  |
+| 12383 | 4 per day | 4 per day | yes |  |
+| 12403 | 2 to 3 per day | 2 to 3 per day | yes | final_label_repaired: '2-3 per day' -> '2 to 3 per day' |
+| 12412 | 2 per day | 2 per day | yes |  |
+| 12422 | 1 per day | 1 per day | yes |  |
+| 12438 | 1 per day | 1 per day | yes |  |
+| 12456 | 1 per day | 1 per day | yes |  |
+| 12460 | 1 per day | 1 per day | yes |  |
+| 12468 | 1 per day | 1 per day | yes |  |
+| 12484 | 3 to 4 per day | 3 to 4 per day | yes |  |
+| 12502 | 4 per day | 4 per day | yes |  |
+| 12506 | 4 per day | 4 per day | yes |  |
+| 12537 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12548 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12551 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12556 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12562 | 1 per day | 1 per day | yes |  |
+| 12573 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12584 | 1 per week | 1 per week | yes |  |
+| 12641 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12665 | 1 per day | 1 per day | yes |  |
+| 12667 | 1 per day | 1 per day | yes | final_label_repaired: 'daily' -> '1 per day' |
+| 12676 | 1 per day | 1 per day | yes |  |
+| 12679 | 1 per day | 1 per day | yes |  |
+| 12749 | 3 to 4 per day | 3 to 4 per day | yes |  |
+| 12751 | 4 per day | 4 per day | yes |  |
+| 12788 | 6 per 4 month | 6 per 4 month | yes | final_label_repaired: '1 to 2 per month' -> '6 per 4 month' |
+| 12810 | 5 per 2 month | 5 per 2 month | yes | final_label_repaired: '2 to 3 per month' -> '5 per 2 month' |
+| 12823 | 9 per month | 9 per month | yes | final_label_repaired: 'multiple per week' -> '9 per month' |
+| 12827 | 5 per 5 month | 5 per 5 month | yes | final_label_repaired: '1 per month' -> '5 per 5 month' |
+| 12835 | 4 per month | 4 per month | yes | final_label_repaired: '4 tonic seizures in 2015 so far' -> '4 per month' |
+| 12877 | 10 per 4 month | 10 per 4 month | yes | final_label_repaired: '2 to 3 per month' -> '10 per 4 month' |
+| 12882 | 7 per 4 month | 7 per 4 month | yes | final_label_repaired: '2 per month' -> '7 per 4 month' |
+| 12901 | 8 per 5 month | 8 per 5 month | yes | final_label_repaired: 'multiple per month' -> '8 per 5 month' |
+| 12949 | 9 per 6 month | 9 per 6 month | yes | final_label_repaired: '2 per month' -> '9 per 6 month' |
+| 12950 | 7 per 3 month | 7 per 3 month | yes | final_label_repaired: '7 in 3 months' -> '7 per 3 month' |
+| 12963 | unknown | unknown | yes |  |
+| 12979 | 3 per 4 month | 3 per 4 month | yes | final_label_repaired: '3 in 4 months' -> '3 per 4 month' |
+| 13008 | 4 per month | 4 per month | yes | final_label_repaired: '4 seizures in January 2021' -> '4 per month' |
+| 13011 | 3 per 4 month | 3 per 4 month | yes | final_label_repaired: '3 in 4 months' -> '3 per 4 month' |
+| 13051 | 2 per 8 month | 2 per 8 month | yes | final_label_repaired: 'unknown' -> '2 per 8 month' |
+| 13058 | 2 per 7 month | 2 per 7 month | yes | final_label_repaired: 'unknown' -> '2 per 7 month' |
+| 13114 | 1 per month | 1 per year | no | final_label_repaired: '1 seizure in the past month' -> '1 per month' |
+| 13122 | 3 per 1 year | 3 per year | yes | final_label_repaired: '3 seizures in one cluster' -> 'unknown'; final_label_repaired: 'unknown' -> '3 per 1 year' |
+| 13149 | 3 per 1 year | 3 per year | yes | final_label_repaired: '3 tonic seizures' -> 'unknown'; final_label_repaired: 'unknown' -> '3 per 1 year' |
+| 13178 | 1 per 6 month | 1 per 6 month | yes | final_label_repaired: '1 seizure in recent 2 weeks' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '1 per 6 month' |
+| 13190 | 1 per 5 month | 1 per 5 month | yes | final_label_repaired: 'single seizure, recent three weeks' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '1 per 5 month' |
+| 13209 | 1 per 4 to 5 week | 1 per 8 month | no | final_label_repaired: '1 cluster per 4-5 weeks' -> '1 per 4 to 5 week' |
+| 13267 | 2 per 5 month | 2 per 5 month | yes | final_label_repaired: 'unknown' -> '2 per 5 month' |
+| 13290 | 2 per day | 4 per 6 month | no | final_label_repaired: '2 seizures in one day' -> '2 per day' |
+| 13327 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for several years' -> 'seizure free for multiple year' |
+| 13336 | seizure free for 1.5 year | seizure free for 1.5 year | yes | final_label_repaired: 'seizure free for 1.5 years' -> 'seizure free for 1.5 year' |
+| 13349 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for several years' -> 'seizure free for multiple year' |
+| 13385 | seizure free for 1.5 year | seizure free for 1.5 year | yes | final_label_repaired: 'seizure free for 1.5 years' -> 'seizure free for 1.5 year' |
+| 13450 | seizure free for multiple year | seizure free for 1 year | yes | final_label_repaired: 'seizure free for over 1 year' -> 'seizure free for multiple year' |
+| 13471 | seizure free for multiple year | seizure free for 5 year | yes | final_label_repaired: 'seizure free for over 5 years' -> 'seizure free for multiple year' |
+| 13478 | seizure free for multiple year | seizure free for 1 year | yes | final_label_repaired: 'seizure free for over 1 year' -> 'seizure free for multiple year' |
+| 13485 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for over several years' -> 'seizure free for multiple year' |
+| 13487 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for over several years' -> 'seizure free for multiple year' |
+| 13513 | seizure free for 1.5 year | seizure free for 1.5 year | yes | final_label_repaired: 'seizure free for 1.5 years' -> 'seizure free for 1.5 year' |
+| 13574 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for years' -> 'seizure free for multiple year' |
+| 13595 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for years' -> 'seizure free for multiple year' |
+| 13598 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for years' -> 'seizure free for multiple year' |
+| 13608 | seizure free for multiple year | seizure free for multiple year | yes | final_label_repaired: 'seizure free for years' -> 'seizure free for multiple year' |
+| 13627 | 33 per 12 month | 64 per 12 month | no | final_label_repaired: '5 days per month' -> '5 per month'; final_label_repaired: '5 per month' -> '33 per 12 month' |
+| 13635 | 30 per 5 month | 47 per 7 month | yes | final_label_repaired: '7 days per month' -> '7 per month'; final_label_repaired: '7 per month' -> '30 per 5 month' |
+| 13711 | 35 per 8 month | 76 per 12 month | yes | final_label_repaired: '10 days per month' -> '10 per month'; final_label_repaired: '10 per month' -> '35 per 8 month' |
+| 13721 | 56 per 11 month | 77 per 12 month | yes | final_label_repaired: '10 days per month' -> '10 per month'; final_label_repaired: '10 per month' -> '56 per 11 month' |
+| 13732 | 27 per 6 month | 52 per 8 month | yes | final_label_repaired: '11 days per month' -> '11 per month'; final_label_repaired: '11 per month' -> '27 per 6 month' |
+| 13843 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'no seizure frequency reference' -> 'seizure free for multiple year' |
+| 13858 | unknown | seizure free for multiple month | no |  |
+| 13889 | seizure free for multiple year | seizure free for multiple month | yes | final_label_repaired: 'unknown' -> 'seizure free for multiple year' |
+| 13893 | 2 per year | 2 per year | yes |  |
+| 13922 | 2 per month | unknown | no | final_label_repaired: '2 seizures' -> '2 per month' |
+| 14002 | unknown | unknown | yes |  |
+| 14025 | no seizure frequency reference | unknown | yes | final_label_repaired: '2 drop attacks' -> 'no seizure frequency reference' |
+| 14029 | unknown | unknown | yes |  |
+| 14040 | unknown | unknown | yes |  |
+| 14076 | unknown | unknown | yes |  |
+| 14092 | no seizure frequency reference | unknown | yes | final_label_repaired: '5 myoclonic jerks' -> 'no seizure frequency reference' |
+| 14096 | no seizure frequency reference | unknown | yes | final_label_repaired: '5 myoclonic jerks since last visit' -> 'no seizure frequency reference' |
+| 14137 | no seizure frequency reference | unknown | yes | final_label_repaired: '3-4 over 3 months' -> 'no seizure frequency reference' |
+| 14146 | no seizure frequency reference | unknown | yes | final_label_repaired: '3 GTC seizures' -> 'no seizure frequency reference' |
+| 14187 | 2 to 3 per month | 2 to 3 per month | yes | final_label_repaired: '2 to 3 seizures' -> '2 to 3 per month' |
+| 14214 | multiple per week | 2 to 4 per month | no |  |
+| 14250 | 2 per 1 week | 2 per month | no | final_label_repaired: '2 per week' -> '2 per 1 week' |
+| 14282 | multiple per week | multiple per month | yes |  |
+| 14284 | 1 per 2 month | 2 to 3 per month | no | final_label_repaired: '2 to 3 per week' -> '1 per 2 month' |
+| 14317 | 4 per month | 4 per 2 month | no | final_label_repaired: '4 seizures' -> '4 per month' |
+| 14332 | seizure free for multiple year | 5 per 2 month | no | final_label_repaired: 'seizure free since October' -> 'seizure free for multiple year' |
+| 14335 | 12 per 3 month | 3 to 4 per 2 month | no | final_label_repaired: 'seizure free for 8 week' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '12 per 3 month' |
+| 14383 | 3 to 4 per 3 month | 3 to 4 per 3 month | yes | final_label_repaired: 'seizure free for 3 months' -> 'seizure free for 3 month'; final_label_repaired: 'seizure free for 3 month' -> '3 to 4 per 3 month' |
+| 14454 | no seizure frequency reference | 2 per 2 month | no | final_label_repaired: '2 seizures (in recent interval)' -> 'no seizure frequency reference' |
+| 14524 | unknown | 2 per 6 month | no |  |
+| 14530 | 2 per 2 month | 2 per 2 month | yes | final_label_repaired: '2 seizures in 3 months' -> '2 per 3 month'; final_label_repaired: '2 per 3 month' -> '2 per 2 month' |
+| 14540 | seizure free for multiple year | 2 per 8 month | no | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 14562 | 3 per 6 month | 3 per 6 month | yes | final_label_repaired: 'less than 1 per month' -> 'multiple per month'; final_label_repaired: 'multiple per month' -> '3 per 6 month' |
+| 14567 | 3 per 3 month | 3 per 3 month | yes | final_label_repaired: 'unknown' -> '3 per 3 month' |
+| 14581 | 1 per 1 month | 2 per 3 month | no | final_label_repaired: 'seizure free since late October 2014' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 1 month' |
+| 14587 | no seizure frequency reference | 2 per 3 month | no | final_label_repaired: '2 in 3 months' -> 'no seizure frequency reference' |
+| 14592 | 3 per 5 month | 3 per 5 month | yes | final_label_repaired: '2 per month' -> '3 per 5 month' |
+| 14611 | seizure free for multiple year | 2 per 4 month | no | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 14628 | 1 per month | 2 per 2 month | yes |  |
+| 14635 | seizure free for multiple year | 5 per 4 month | no | final_label_repaired: 'seizure free for approximately 2 weeks' -> 'seizure free for multiple year' |
+| 14645 | seizure free for multiple year | 2 per 6 month | no | final_label_repaired: 'seizure free since November 2018' -> 'seizure free for multiple year' |
+| 14662 | 3 per 4 month | 3 per 4 month | yes | final_label_repaired: '2 events in September 2024' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '3 per 4 month' |
+| 14672 | seizure free for multiple year | 3 per 8 month | no | final_label_repaired: 'seizure free' -> 'seizure free for multiple year' |
+| 14706 | 2 per 5 month | 2 per 5 month | yes | final_label_repaired: '2 events in 5 months' -> '2 per 5 month' |
+| 14765 | 1 per 1 month | 1 per month | yes | final_label_repaired: 'seizure free since 30/01/2022' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 1 month' |
+| 14806 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: 'seizure free for 1 month' -> '1 per 2 month' |
+| 14810 | 1 per 1 month | 1 per month | yes | final_label_repaired: 'seizure free for 4 weeks' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 1 month' |
+| 14821 | 1 per 1 month | 1 per month | yes | final_label_repaired: 'seizure free for 3 weeks' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 1 month' |
+| 14872 | 1 per 1 month | 1 per month | yes | final_label_repaired: 'seizure free for 2 weeks' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 1 month' |
+| 14943 | 1 per 3 month | 1 per 3 month | yes | final_label_repaired: 'seizure free since 21 Feb 2018' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 3 month' |
+| 14949 | 1 per month | 1 per month | yes |  |
+| 14965 | 1 per 3 month | 1 per 3 month | yes | final_label_repaired: 'seizure free since 20 May 2015' -> 'seizure free for multiple year'; final_label_repaired: 'seizure free for multiple year' -> '1 per 3 month' |
+| 14973 | 1 per 1 month | 1 per month | yes | final_label_repaired: 'seizure free for 1 month' -> '1 per 1 month' |
+| 15004 | 1 per 3 month | 1 per 3 month | yes | final_label_repaired: 'seizure free for 3 months' -> 'seizure free for 3 month'; final_label_repaired: 'seizure free for 3 month' -> '1 per 3 month' |
+| 15012 | 1 per 2 month | 1 per 2 month | yes | final_label_repaired: 'seizure free for 2 months' -> 'seizure free for 2 month'; final_label_repaired: 'seizure free for 2 month' -> '1 per 2 month' |
+| 15021 | 1 per 3 month | 1 per 3 month | yes | final_label_repaired: '1 per 3 months' -> '1 per 3 month' |
+| 15029 | 1 per 3 month | 1 per 3 month | yes | final_label_repaired: 'seizure free for 3 months' -> 'seizure free for 3 month'; final_label_repaired: 'seizure free for 3 month' -> '1 per 3 month' |
+| 15094 | 3 per 13 month | 4 per 13 month | yes | final_label_repaired: 'less than 1 per month' -> 'multiple per month'; final_label_repaired: 'multiple per month' -> '3 per 13 month' |
+| 15108 | 2 to 3 per 15 month | 3 to 4 per 15 month | no | final_label_repaired: '2 to 3 since January 2024' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '2 to 3 per 12 month'; final_label_repaired: '2 to 3 per 12 month' -> '2 to 3 per 15 month' |
+| 15127 | 4 per 13 month | 5 per 13 month | yes | final_label_repaired: 'less than 1 per month' -> 'multiple per month'; final_label_repaired: 'multiple per month' -> '4 per 13 month' |
+| 15129 | 4 per 15 month | 4 per 15 month | yes | final_label_repaired: '4 jerks since March 2015' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '4 per 15 month' |
+| 15141 | 3 to 4 per 15 month | 4 to 5 per 15 month | yes | final_label_repaired: 'no seizure frequency reference' -> '3 to 4 per 15 month' |
+| 15168 | unknown | multiple per 15 month | yes | evidence_not_exact_substring |
+| 15193 | unknown | multiple per 13 month | yes |  |
+| 15242 | unknown | multiple cluster per 15 month, multiple per cluster | no | evidence_not_exact_substring |
+| 15262 | unknown | multiple cluster per 13 month, multiple per cluster | no |  |
+| 15267 | 3 per 14 month | 3 per 14 month | yes | final_label_repaired: '3 jerks over 8 months' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '3 per 14 month' |
+| 15306 | 2 to 3 per 15 month | 2 to 3 per 15 month | yes | final_label_repaired: '2 to 3 jerks' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '2 to 3 per 15 month' |
+| 15317 | 2 to 3 per 15 month | 2 to 3 per 15 month | yes | final_label_repaired: '2 to 3 single jerks' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '2 to 3 per 15 month' |
+| 15376 | multiple per day | 1 cluster per 2 week, 4 to 6 per cluster | no |  |
+| 15404 | 3 to 4 per 4 month | 1 cluster per 4 month, 3 to 4 per cluster | yes | final_label_repaired: 'unknown' -> '3 to 4 per 4 month' |
+| 15429 | 4 per 2 month | 1 cluster per 2 month, 4 per cluster | yes | final_label_repaired: '4 per cluster' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '4 per 2 month' |
+| 15431 | seizure free for multiple year | 1 cluster per 4 month, 5 per cluster | no | final_label_repaired: 'up to 4 month seizure-free then clusters of 5 seizures per day' -> 'seizure free for multiple year' |
+| 15442 | 1 cluster per 4 day, 2 per cluster | 1 cluster per 4 day, 2 per cluster | yes | final_label_repaired: '1 cluster per week' -> '1 cluster per 4 day, 2 per cluster' |
+| 15470 | 2 per 3 month | 1 cluster per 5 day, multiple per cluster | no | final_label_repaired: '2 per 3 months' -> '2 per 3 month' |
+| 15479 | 1 cluster per 4 to 5 day, 2 per cluster | 1 cluster per 4 to 5 day, 2 per cluster | yes | final_label_repaired: '1 cluster per week' -> '1 cluster per 4 to 5 day, 2 per cluster' |
+| 15497 | 1 cluster per 5 day, 5 per cluster | 1 cluster per 4 to 5 day, 5 per cluster | yes | final_label_repaired: 'clusters of 5 seizures every 4-5 days' -> '1 cluster per 5 day, 5 per cluster' |
+| 15503 | unknown | 1 cluster per 5 day, 3 to 4 per cluster | no | final_label_repaired: '3-4 per 24 hours during clusters' -> 'unknown' |
+| 15513 | 1 per 4 to 5 day | 1 cluster per 4 to 5 day, 2 to 3 per cluster | yes | final_label_repaired: '1 cluster per week' -> 'unknown'; final_label_repaired: 'unknown' -> '1 per 4 to 5 day' |
+| 15519 | 2 per month | 1 cluster per 4 day, 3 per cluster | no | final_label_repaired: '2 clusters per month' -> '2 per month' |
+| 15529 | no seizure frequency reference | 1 cluster per 3 day, 4 per cluster | no | final_label_repaired: '4 per 24 hours' -> 'no seizure frequency reference' |
+| 15593 | 1 cluster per 5 day, 2 to 4 per cluster | 1 cluster per 5 day, 2 to 4 per cluster | yes | final_label_repaired: '1 cluster per week' -> '1 cluster per 5 day, 2 to 4 per cluster' |
+| 15614 | 3 per week | 3 per week | yes |  |
+| 15628 | multiple per week | multiple per week | yes |  |
+| 15639 | 2 per week | 2 per week | yes |  |
+| 15642 | 2 to 4 per week | 2 to 4 per week | yes |  |
+| 15650 | 3 to 4 per day | 3 to 4 per day | yes |  |
+| 15672 | 1 per day | 1 per day | yes | final_label_repaired: 'clusters almost daily' -> '1 per day' |
+| 15697 | 1 per day | 1 per day | yes | final_label_repaired: '1 cluster per day' -> '1 per day' |
+| 15715 | 1 per day | 1 per day | yes | final_label_repaired: '1 cluster per day' -> '1 per day' |
+| 15745 | 2 to 3 per week | 2 to 3 per week | yes | final_label_repaired: '2 to 3 days per week' -> '2 to 3 per week' |
+| 15766 | 4 per week | 4 per week | yes | final_label_repaired: '4 days per week' -> '4 per week' |
+| 15768 | 2 to 3 per week | 2 to 3 per week | yes | final_label_repaired: '2-3 days per week' -> '2 to 3 per week' |
+| 15771 | 3 per week | 3 per week | yes | final_label_repaired: '3 days per week' -> '3 per week' |
+| 15772 | 2 per week | 2 per week | yes |  |
+| 15774 | 2 per week | 2 per week | yes | final_label_repaired: 'on 2 days per week' -> '2 per week' |
+| 15783 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 15802 | 7 per week | 7 per week | yes |  |
+| 15831 | 2 to 4 per day | 2 to 4 per day | yes |  |
+| 15834 | 5 per week | 5 per week | yes |  |
+| 15964 | 11 per 3 month | 11 per 3 month | yes | final_label_repaired: '6 per month' -> '11 per 3 month' |
+| 15965 | 13 per 2 month | 13 per 2 month | yes | final_label_repaired: '6 per month' -> '13 per 2 month' |
+| 15966 | 5 per 3 month | 5 per 3 month | yes | final_label_repaired: '3 per month' -> '5 per 3 month' |
+| 15982 | 9 per 2 month | 9 per 2 month | yes | final_label_repaired: '8 per month' -> '9 per 2 month' |
+| 15986 | 11 per 3 month | 11 per 3 month | yes | final_label_repaired: 'multiple per week' -> '11 per 3 month' |
+| 15992 | 10 per 2 month | 7 per 2 month | no | final_label_repaired: '4 per month' -> '10 per 2 month' |
+| 15997 | 10 per 3 month | 10 per 3 month | yes | final_label_repaired: '6 per month' -> '10 per 3 month' |
+| 16021 | 9 per 3 month | 9 per 3 month | yes | final_label_repaired: 'unknown' -> '9 per 3 month' |
+| 16041 | 11 per 3 month | 9 per 3 month | yes | final_label_repaired: '4 per month' -> '11 per 3 month' |
+| 16084 | 8 per 4 month | 8 per 4 month | yes | final_label_repaired: '4 per month' -> '8 per 4 month' |
+| 16091 | 3 per 3 month | 3 per 3 month | yes | final_label_repaired: '2 per month' -> '3 per 3 month' |
+| 16097 | 17 per 4 month | 17 per 4 month | yes | final_label_repaired: '6 per month' -> '17 per 4 month' |
+| 16107 | 8 per 3 month | 8 per 3 month | yes | final_label_repaired: '4 per month' -> '8 per 3 month' |
+| 16108 | 12 per 4 month | 12 per 4 month | yes | final_label_repaired: '5 per month' -> '12 per 4 month' |
+| 16132 | 15 per 3 month | 15 per 3 month | yes | final_label_repaired: '2 per month' -> '15 per 3 month' |
+| 16133 | 18 per 4 month | 18 per 4 month | yes | final_label_repaired: '6 per month' -> '18 per 4 month' |
+| 16161 | 11 per 3 month | 18 per 3 month | no | final_label_repaired: '7 per month' -> '11 per 3 month' |
+| 16162 | 11 per 3 month | 11 per 3 month | yes | final_label_repaired: '6 per month' -> '11 per 3 month' |
+| 16181 | 15 per 4 month | 15 per 4 month | yes | final_label_repaired: '4 per month' -> '15 per 4 month' |
+| 16195 | 16 per 4 month | 16 per 4 month | yes | final_label_repaired: '6 per month' -> '16 per 4 month' |
+| 16203 | 9 per 3 month | 9 per 3 month | yes | final_label_repaired: '5 per month' -> '9 per 3 month' |
+| 16204 | 4 per 2 month | 5 per 3 month | yes | final_label_repaired: '1 per month' -> '4 per 2 month' |
+| 16220 | 11 per 4 month | 11 per 4 month | yes | final_label_repaired: '4 per month' -> '11 per 4 month' |
+| 16324 | 10 per 3 month | 10 per 3 month | yes | final_label_repaired: '3 per month' -> '10 per 3 month' |
+| 16335 | 7 per 3 month | 7 per 3 month | yes | final_label_repaired: '2 to 3 per month' -> '7 per 3 month' |
+| 16356 | 1 per 4 day | 1 per 4 day | yes | final_label_repaired: '1 cluster per 4 days' -> '1 per 4 day' |
+| 16394 | 1 per 2 to 4 day | 1 per 2 to 4 day | yes | final_label_repaired: 'every 2 to 4 days' -> '1 per 2 to 4 day' |
+| 16408 | 1 per 3 day | 1 per 3 day | yes | final_label_repaired: 'multiple per week' -> '1 per 3 day' |
+| 16429 | 1 per 2 to 3 day | 1 per 2 to 3 day | yes | final_label_repaired: 'every 2 to 3 days' -> '1 per 2 to 3 day' |
+| 16432 | 1 per day | 1 per 2 day | no |  |
+| 16450 | multiple per week | 1 per multiple day | yes |  |
+| 16529 | 1 per 5 day | 1 per 5 day | yes | final_label_repaired: '1 cluster every 5 days' -> '1 per 5 day' |
+| 16557 | 1 per 2 to 3 day | 1 per 2 to 3 day | yes | final_label_repaired: '1 cluster every 2-3 days' -> '1 per 2 to 3 day' |

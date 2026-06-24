@@ -1,0 +1,133 @@
+{
+  "allow_model_calls": false,
+  "artifact_kind": "exectv2_investigations_rule_ablation",
+  "claim_boundary": "Aggregate-only component ablation over saved current-code full-200 Investigations artifacts. Reports rule-family deltas, call burden, and action counts without full-200 row identifiers, note text, evidence snippets, rationales, or failure examples.",
+  "controls": {
+    "structured_direct_investigations_f1": 0.8563049853372434,
+    "verifier_plus_arbitration_investigations_f1": 0.9213483146067416
+  },
+  "decision": {
+    "deterministic_replacement_promoted": false,
+    "direct_suppression_to_verifier_arbitrated_gap": 0.0549,
+    "direct_to_verifier_arbitrated_gap": 0.065,
+    "rationale": "Deterministic replacement is promoted only if direct structured plus deterministic suppression is within 0.0100 F1 of the verifier plus suppression control. Otherwise the next diagnostic is selective Investigations adjudication.",
+    "selected_next_architecture": "selective_investigations_adjudicator_diagnostic",
+    "selective_to_verifier_arbitrated_gap": 0.0402
+  },
+  "generated_on": "2026-06-25",
+  "row_inspection_policy": "aggregate_only_no_full200_failure_ledgers",
+  "surface": "current-code v08-shape full-200 Investigations",
+  "variants": [
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 0.0,
+      "changed_rows": 0,
+      "evidence_validity_rate": 1.0,
+      "label": "Structured direct + result lens",
+      "metrics": {
+        "f1": 0.8563049853372434,
+        "fn": 37,
+        "fp": 12,
+        "precision": 0.9240506329113924,
+        "recall": 0.7978142076502732,
+        "tp": 146
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 0,
+      "rule_family": "result_lens",
+      "selective_call_burden": 0.0,
+      "variant_id": "structured_direct_result_lens"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 4
+      },
+      "call_failures": 0,
+      "calls_per_letter": 0.0,
+      "changed_rows": 2,
+      "evidence_validity_rate": 1.0,
+      "label": "Structured direct + pending-test suppression",
+      "metrics": {
+        "f1": 0.8664688427299704,
+        "fn": 37,
+        "fp": 8,
+        "precision": 0.948051948051948,
+        "recall": 0.7978142076502732,
+        "tp": 146
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 0,
+      "rule_family": "pending_test_suppression",
+      "selective_call_burden": 0.0,
+      "variant_id": "structured_direct_pending_suppression"
+    },
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 1.0,
+      "changed_rows": 62,
+      "evidence_validity_rate": 0.9790575916230366,
+      "label": "Verifier only",
+      "metrics": {
+        "f1": 0.877005347593583,
+        "fn": 19,
+        "fp": 27,
+        "precision": 0.8586387434554974,
+        "recall": 0.8961748633879781,
+        "tp": 164
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 0,
+      "rule_family": "llm_verifier",
+      "selective_call_burden": 0.0,
+      "variant_id": "verifier_only"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 16
+      },
+      "call_failures": 0,
+      "calls_per_letter": 1.0,
+      "changed_rows": 13,
+      "evidence_validity_rate": 1.0,
+      "label": "Verifier + deterministic pending-test suppression",
+      "metrics": {
+        "f1": 0.9213483146067416,
+        "fn": 19,
+        "fp": 9,
+        "precision": 0.9479768786127167,
+        "recall": 0.8961748633879781,
+        "tp": 164
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 0,
+      "rule_family": "llm_verifier_plus_pending_test_suppression",
+      "selective_call_burden": 0.0,
+      "variant_id": "verifier_plus_pending_suppression"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 10
+      },
+      "call_failures": 0,
+      "calls_per_letter": 0.735,
+      "changed_rows": 24,
+      "evidence_validity_rate": 1.0,
+      "label": "Selective verifier for ambiguous direct rows + pending-test suppression",
+      "metrics": {
+        "f1": 0.881159420289855,
+        "fn": 31,
+        "fp": 10,
+        "precision": 0.9382716049382716,
+        "recall": 0.8306010928961749,
+        "tp": 152
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 147,
+      "rule_family": "selective_llm_verifier_plus_pending_test_suppression",
+      "selective_call_burden": 0.735,
+      "variant_id": "selective_verifier_pending_suppression"
+    }
+  ]
+}

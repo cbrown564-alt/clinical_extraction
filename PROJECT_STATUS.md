@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Active Objective
 
@@ -14,9 +14,11 @@ The controls are fixed. Bare rich-schema LLM-only remains far below the v08 hybr
 
 The 2026-06-24 reliability refresh added no-call dev140 evidence from saved artifacts only. Mean scorecard coverage is now `4.1/5` with no weak dimensions. It keeps same-surface rich-schema DeepSeek/Qwen rows separate from newer active LLM-only Phase 6 transfer rows. Current computed evidence: cross-model agreement `0.8852` mean pairwise Jaccard, calibration proxy `0.1456` ECE, high-recall review routing `0.9408` burden / `0.8897` catch, and a lower-burden dev candidate `0.7567` burden / `0.8028` catch.
 
-The scorecard is improved but not finished. The biggest reliability gains now require frozen validation rather than another aggregate prompt run: calibrated risk modeling, lower-burden review routing, perturbation/hard-slice robustness, same-prompt consistency, and true component-off reliability ablations. The frozen audit protocol is now predeclared at `docs/experiments/exectv2/reliability/exectv2_reliability_audit_protocol_predeclaration_2026-06-24.md`; it allows aggregate validation only and keeps full-200/holdout row-level inspection blocked. The aggregate review-routing validation preflight stopped without promotion because the available full-200 artifacts do not match the frozen rich-schema holistic assembly surface.
+The scorecard is improved but not finished. The biggest reliability gains now require frozen validation rather than another aggregate prompt run: calibrated risk modeling, lower-burden review routing, perturbation/hard-slice robustness, same-prompt consistency, and true component-off reliability ablations. The frozen audit protocol is now predeclared at `docs/experiments/exectv2/reliability/exectv2_reliability_audit_protocol_predeclaration_2026-06-24.md`; it allows aggregate validation only and keeps full-200/holdout row-level inspection blocked. The current-code v08-shape full-200 artifact was accepted as a one-shot aggregate review-routing validation surface, but the lower-burden dev candidate failed promotion because validation burden rose to `0.9661` while catch was `0.9037`; the null result is recorded at `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`.
 
-The authorized full-200 GPT-4.1-mini run now exists for the strongest v08-shaped architecture using the current code path. Aggregate headline clinical-recovery F1 is `0.8502` overall: Diagnosis `0.8321`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.9213`. It is a current-code v08-shape artifact, not byte-identical to the archived dev140 prompt/module versions, and the assembly gate remains `do-not-promote` because changed-row controls fail even though all family headline gates pass.
+The authorized full-200 GPT-4.1-mini run now exists for the strongest v08-shaped architecture using the current code path. Aggregate headline clinical-recovery F1 is `0.8502` overall: Diagnosis `0.8321`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.9213`. A no-verifier ablation scored `0.8431` overall: Diagnosis `0.8410`, SeizureFrequency `0.7850`, Prescription `0.8926`, Investigations `0.8563`. The simplification frontier found the first cost-performance cliff: the 3-call structured + Diagnosis decomposer + SF adjudicator candidate passes (`0.8426` overall), while removing the Diagnosis decomposer drops Diagnosis to `0.7643` and removing the SF adjudicator drops SF to `0.7525`; the frontier is recorded at `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`.
+
+The 2026-06-25 aggregate-only Investigations rule ablation shows deterministic replacement is not ready: structured direct + result lens scores `0.8563`, adding pending-test suppression reaches `0.8665`, verifier-only scores `0.8770`, and verifier + deterministic suppression remains strongest at `0.9213`. A first selective-adjudicator diagnostic routes `73.5%` of letters and scores `0.8812`, so the next useful work is a sharper predeclared selective-routing policy, not deterministic-only promotion. Artifact: `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`.
 
 ## Active Priorities
 
@@ -29,29 +31,30 @@ The authorized full-200 GPT-4.1-mini run now exists for the strongest v08-shaped
 
 ### Now
 
-- Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the lower-burden review-routing candidate unpromoted until a same-surface full-200 aggregate artifact exists.
-- Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the lower-burden review-routing candidate unpromoted until the new full-200 current-code v08-shape artifact is accepted as the validation surface and passes aggregate review-routing gates.
-- Keep Phase 3-6 direct LLM-only runs as plateau comparators with fixed clinical-recovery claim language.
-- Use the redesigned ExECTv2 Component Impact page as the aggregate layer replay surface across v08, v09, DeepSeek, and Qwen.
+- Treat `exectv2_holistic_finding_assembly_full200_gpt41mini_3call_dxdecomposer_sfadjudicator` as the current lean GPT-4.1-mini cost-performance diagnostic from the simplification frontier; do not use it as the validation/review-routing surface without a fresh predeclaration that freezes that exact candidate.
+- Redesign the Investigations selective-adjudicator router on dev-only features to reduce the `0.7350` call burden while preserving more of the verifier + deterministic suppression control (`0.9213` F1); start from `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`.
+- Use the refreshed ExECTv2 reliability scorecard and frozen audit protocol as the control surface for calibration, robustness, and consistency work; keep the failed lower-burden review-routing candidate unpromoted unless a fresh dev140 risk-feature redesign is predeclared.
 
 ### Next
 
-- Decide whether the current-code v08-shape full-200 artifact is an acceptable review-routing validation surface despite not being byte-identical to archived dev140 prompt/module versions; if yes, run the aggregate-only audit once without row-level inspection.
 - Replace the heuristic calibration proxy with a frozen, leakage-audited risk model or cross-validated scoring rule; report ECE, Brier score, reliability bins, and per-family calibration before claiming calibration coverage above `3/5`.
 - Build robustness panels that can move the scorecard: current-vs-historical SF state perturbations, medication current-vs-plan ambiguity, investigation result-state ambiguity, diagnosis assertion/hierarchy conventions, and evidence paraphrase/deletion stress tests.
 - Add same-prompt/cross-seed consistency panels for live LLM surfaces, with schema validity, evidence validity, call failures, and family-cell agreement separated from deterministic replay stability.
-- Extend ExECTv2 component ablations from saved layer ladders to true one-component-off rows only when upstream candidates, family deltas, transition counts, and provenance tags can be preserved cleanly.
+- Keep Phase 3-6 direct LLM-only runs as plateau comparators with fixed clinical-recovery claim language when updating scoreboards or paper-facing summaries.
 
 ### Blocked
 
 - Gan holdout-facing reruns, row-level test analysis, and post-test tuning need explicit authorization plus a frozen protocol.
 - ExECTv2 full-200 or holdout row-level inspection remains blocked; the reliability-audit protocol only authorizes aggregate validation outputs.
-- Promotion of the lower-burden review-routing candidate is blocked until the current-code v08-shape full-200 artifact is either accepted for validation or replaced by a byte-identical archived-surface full-200 artifact, and the aggregate validation gates pass.
+- Promotion of the lower-burden review-routing candidate is blocked by failed aggregate validation; any retry needs dev140-only risk-feature redesign plus a fresh predeclaration.
 
 ### Done Recently
 
-- 2026-06-24: Completed the aggregate-only ExECTv2 review-routing validation preflight; the high-recall and lower-burden dev candidates remain unpromoted because existing full-200 artifacts are surface-mismatched, with the null result recorded at `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`.
+- 2026-06-25: Completed the aggregate-only Investigations rule/adjudicator ablation at `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`; deterministic pending-test suppression improves structured direct from `0.8563` to `0.8665`, but verifier + deterministic suppression remains strongest at `0.9213`, and the first selective diagnostic routes `73.5%` of letters for `0.8812` F1.
+- 2026-06-24: Completed the aggregate-only ExECTv2 review-routing validation on the accepted current-code v08-shape full-200 artifact at `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`; the lower-burden dev candidate is not promoted because validation burden rose to `0.9661` despite `0.9037` catch.
+- 2026-06-24: Completed the GPT-4.1-mini ExECTv2 simplification frontier at `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`; the recommended lean current-code full-200 candidate is the 3-call structured + Diagnosis decomposer + SF adjudicator architecture (`0.8426` overall), with both 2-call removals failing predeclared family guardrails.
 - 2026-06-24: Ran the authorized full-200 current-code v08-shape GPT-4.1-mini architecture audit and materialized the holistic assembly artifact at `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md`; aggregate headline F1 is `0.8502` overall with no producer call/parse failures.
+- 2026-06-24: Ran the authorized full-200 no-verifier ablation at `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_no_verifiers_gpt41mini_20260624.md`; aggregate headline F1 is `0.8431`, with Diagnosis slightly higher and Investigations lower versus the verifier-backed run.
 - 2026-06-24: Upgraded the ExECTv2 reliability scorecard with computed no-call dev140 evidence, latest DeepSeek/Qwen surface separation, calibration proxy, review-routing operating points, frontend payload/UI, and replay/API tests.
 - 2026-06-24: Predeclared the frozen ExECTv2 reliability-audit protocol for split/surface, scorer, stop rule, row-inspection boundary, promotion gates, and allowed dev140/full-200/holdout artifact use.
 - 2026-06-24: Generated ExECTv2 replay-only layered component-impact artifacts for v08, v09, DeepSeek, and Qwen dev140.
