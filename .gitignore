@@ -35,3 +35,8 @@ experiments/*_stdout.txt
 scripts/*_stderr.txt
 scripts/*_stdout.txt
 logs/
+
+# Local MLflow observability state is intentionally optional and untracked.
+mlruns/
+mlflow.db
+mlflow.db-*

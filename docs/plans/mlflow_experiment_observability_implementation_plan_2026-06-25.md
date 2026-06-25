@@ -9,6 +9,13 @@ Phase 0-1 after the current reporting/run-surfacing sequence is stable. MLflow
 must remain optional observability; the registry, run index, and reports remain
 canonical. See `docs/plans/recent_plan_rationalisation_2026-06-25.md`.
 
+Implementation status, 2026-06-26: Phase 0-1 is complete. The repo now has ADR
+0034, an optional `mlops` dependency, gitignored local MLflow state, and
+`src/clinical_extraction/core/mlflow_tracking.py` with disabled-safe optional
+import behavior, payload normalization, registry-entry payload conversion,
+artifact path safety, and focused tests. The next step is the dry-run registry
+sync script; MLflow is still not the claim-of-record.
+
 ## Objective
 
 Add MLflow to this project as a lightweight research-MLOps layer that makes
@@ -338,6 +345,10 @@ aggregate-only in the research protocol, MLflow logs only aggregate-safe data.
 
 Goal: make the MLflow role explicit before code changes.
 
+Status: complete as of 2026-06-26 via
+`docs/decisions/0034-mlflow-is-optional-observability.md`, the optional
+`mlops` dependency, and gitignored local MLflow state.
+
 Work:
 
 - Add or update a design note/ADR stating:
@@ -367,6 +378,10 @@ Completion gate:
 ### Phase 1: Shared MLflow Tracking Helper
 
 Goal: centralize MLflow usage behind one typed helper.
+
+Status: complete as of 2026-06-26 via
+`src/clinical_extraction/core/mlflow_tracking.py` and
+`tests/test_core_mlflow_tracking.py`.
 
 Add:
 

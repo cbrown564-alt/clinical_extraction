@@ -16,7 +16,8 @@ The plan stack should collapse to one active sequence:
 2. Clean up run surfacing and labels so the frontend/Observatory comparison
    views are registry-driven and model-aware.
 3. Add MLflow observability as optional infrastructure after the canonical
-   registry remains visibly in charge.
+   registry remains visibly in charge. Phase 0-1 is complete; next is a dry-run
+   registry sync script.
 4. Defer repo archival/refactor cleanup until the evidence spine and current
    reporting surfaces are stable.
 
@@ -97,12 +98,13 @@ full-200 inclusion.
   from the same curation via `component_stage_ladder.py`.
 - Reconcile helper: `scripts/reconcile_gan_run_registry.py`.
 
-### P3: Optional MLflow Observability
+### P3: Optional MLflow Observability - Phase 0-1 Complete
 
-- Implement MLflow Phase 0-1 only: ADR/dependency boundary, `.gitignore`, and a
-  disabled-safe helper with tests.
-- Treat the same-core model-swap dev140 comparison as the first mirror target
-  after the helper exists.
+- Completed Phase 0-1: ADR/dependency boundary, `.gitignore`, optional `mlops`
+  dependency, disabled-safe `core/mlflow_tracking.py`, and focused tests.
+- Next: add a dry-run registry sync script over one or two recent registry rows.
+- Treat the same-core model-swap dev140 comparison as the first real mirror
+  target after the dry-run path exists.
 - Keep `experiments/registry.jsonl`, `RUN_INDEX.md`, and source reports as the
   claim-of-record.
 
