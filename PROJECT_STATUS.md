@@ -54,13 +54,11 @@ aggregate readout.
 
 ### Now
 
-- Add the MLflow dry-run registry sync script after Phase 0-1 landed; keep it
-  registry-first and aggregate-safe.
+- Mirror the same-core model-swap dev140 comparison as the first real MLflow
+  parent/child group, using the dry-run sync path as the guardrail.
 
 ### Next
 
-- Mirror the same-core model-swap dev140 comparison as the first real MLflow
-  parent/child group after the dry-run sync path exists.
 - If Qwen is revisited, predeclare a fresh same-core repair/assembly rerun using
   the shared standard evidence-repair family; parser/schema stability is no
   longer the limiting failure after v02.
@@ -81,6 +79,11 @@ aggregate readout.
 
 ### Done Recently
 
+- 2026-06-26: Added registry-first MLflow dry-run sync planning:
+  `clinical_extraction.core.mlflow_registry_sync`,
+  `scripts/sync_registry_to_mlflow.py`, `clinical-extraction-mlflow-sync`, and
+  tests. Restricted/full-200 row-level artifacts are pointer-only; MLflow still
+  remains optional observability, not the claim-of-record.
 - 2026-06-26: Completed MLflow observability Phase 0-1: ADR 0034, optional
   `mlops`, local-state ignores, disabled-safe `core/mlflow_tracking.py`, and
   tests. Registry/report artifacts remain the claim-of-record.

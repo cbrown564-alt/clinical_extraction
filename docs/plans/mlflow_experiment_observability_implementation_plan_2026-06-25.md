@@ -9,12 +9,14 @@ Phase 0-1 after the current reporting/run-surfacing sequence is stable. MLflow
 must remain optional observability; the registry, run index, and reports remain
 canonical. See `docs/plans/recent_plan_rationalisation_2026-06-25.md`.
 
-Implementation status, 2026-06-26: Phase 0-1 is complete. The repo now has ADR
-0034, an optional `mlops` dependency, gitignored local MLflow state, and
-`src/clinical_extraction/core/mlflow_tracking.py` with disabled-safe optional
-import behavior, payload normalization, registry-entry payload conversion,
-artifact path safety, and focused tests. The next step is the dry-run registry
-sync script; MLflow is still not the claim-of-record.
+Implementation status, 2026-06-26: Phase 0-1 and the Phase 2 dry-run path are
+complete. The repo now has ADR 0034, an optional `mlops` dependency, gitignored
+local MLflow state, `src/clinical_extraction/core/mlflow_tracking.py`, and
+`src/clinical_extraction/core/mlflow_registry_sync.py` with
+`scripts/sync_registry_to_mlflow.py` / `clinical-extraction-mlflow-sync`.
+Dry-run sync loads typed registry rows, emits MLflow payload summaries, and
+keeps restricted row-level artifacts pointer-only. MLflow is still not the
+claim-of-record.
 
 ## Objective
 
@@ -432,6 +434,10 @@ Completion gate:
 Goal: mirror canonical registry entries into MLflow without touching live
 runners.
 
+Status: dry-run planning path complete as of 2026-06-26. Actual MLflow write
+mode, existing-run lookup by `registry_run_id`, and idempotent update behavior
+remain future work.
+
 Add a CLI or script:
 
 ```text
@@ -467,7 +473,7 @@ Behavior:
 
 Completion gate:
 
-- A dry run prints the MLflow experiment/run names and artifact policy.
+- A dry run prints the MLflow experiment/run names and artifact policy. **DONE**
 - Syncing a small temporary registry in tests creates one run with expected
   params/tags/metrics.
 - Syncing twice is idempotent enough for ordinary use.
@@ -832,7 +838,9 @@ Implement Phase 0 and Phase 1:
 2. Add `core/mlflow_tracking.py` with optional-import behavior.
 3. Add tests for payload conversion and disabled/no-MLflow behavior.
 4. Add a dry-run registry sync script for one or two recent ExECTv2 reliability
-   entries.
+   entries. **DONE** via `scripts/sync_registry_to_mlflow.py`; current registry
+   rows predate 2026-06-25, so the smoke test used a known indexed full-200 run
+   and confirmed JSONL pointer-only handling.
 
 After that, mirror the same-core model-swap dev140 artifacts as the first real
 MLflow group because it is the cleanest current example of why parent-child run
