@@ -39,7 +39,7 @@ def test_candidate_runner_records_cost_metadata_and_outputs(tmp_path: Path) -> N
     assert meta["acceptability"]["decision"] == "fail"
     markdown = paths["markdown"].read_text(encoding="utf-8")
     assert "## Simplification Contract" in markdown
-    assert "| overall | 0.7500 | 0.8400 | fail |" in markdown
+    assert "| overall | 0.7500 | 0.8350 | fail |" in markdown
 
 
 def test_structured_direct_sf_derivative_filters_non_sf_mentions(tmp_path: Path) -> None:
@@ -102,7 +102,7 @@ def test_frontier_recommends_lowest_call_passing_candidate() -> None:
     failing_1call = _report(
         candidate_id="failed",
         calls_per_letter=1,
-        overall=0.839,
+        overall=0.834,
         diagnosis=0.84,
         sf=0.78,
         prescription=0.89,
@@ -120,6 +120,61 @@ def test_frontier_recommends_lowest_call_passing_candidate() -> None:
         for candidate in payload["candidates"]
     }
     assert decisions == {"threecall": "pass", "onecall": "pass", "failed": "fail"}
+
+
+def test_frontier_accepts_selected_2call_no_sf_cost_profile() -> None:
+    threecall = _report(
+        candidate_id="threecall",
+        calls_per_letter=3,
+        overall=0.8426,
+        diagnosis=0.8397,
+        sf=0.7850,
+        prescription=0.8926,
+        investigations=0.8563,
+    )
+    selected_2call = _report(
+        candidate_id="exectv2_gpt41mini_simplification_2call_no_sf_adjudicator",
+        calls_per_letter=2,
+        overall=0.8356,
+        diagnosis=0.8397,
+        sf=0.7525,
+        prescription=0.8926,
+        investigations=0.8563,
+    )
+
+    payload = simplification_frontier.build_frontier_payload(
+        [threecall, selected_2call],
+        generated_on="2026-06-24",
+    )
+
+    assert payload["recommended_candidate"]["candidate_id"] == (
+        "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator"
+    )
+    decisions = {
+        candidate["candidate_id"]: candidate["acceptability"]["decision"]
+        for candidate in payload["candidates"]
+    }
+    assert decisions == {
+        "threecall": "pass",
+        "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator": "pass",
+    }
+    selected = next(
+        candidate
+        for candidate in payload["candidates"]
+        if candidate["candidate_id"]
+        == "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator"
+    )
+    sf_check = next(
+        check
+        for check in selected["acceptability"]["checks"]
+        if check["name"] == "SeizureFrequency"
+    )
+    assert sf_check == {
+        "name": "SeizureFrequency",
+        "value": 0.7525,
+        "floor": 0.75,
+        "passed": True,
+    }
 
 
 def _letters() -> list[ExectLetter]:

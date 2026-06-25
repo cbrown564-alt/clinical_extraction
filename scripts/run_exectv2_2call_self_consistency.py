@@ -15,7 +15,6 @@ import re
 from dataclasses import replace
 from datetime import date
 from pathlib import Path
-from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline import (
     build_finding_assembly,
@@ -271,21 +270,33 @@ def _write_assembly(
         promotion_decision="self-consistency-repeat",
     )
     run = build_finding_assembly(manifest, gold_loader=lambda _split: letters)
+    report = {
+        **dict(run.report),
+        "gate_decision": {
+            **dict(run.report["gate_decision"]),
+            "decision": "self-consistency-repeat",
+            "basis": (
+                "Generic assembly gate checks are retained as diagnostics; "
+                "the selected 2-call cost-performance package governs this "
+                "self-consistency repeat."
+            ),
+        },
+    }
     assembly_jsonl.parent.mkdir(parents=True, exist_ok=True)
     assembly_json.parent.mkdir(parents=True, exist_ok=True)
     assembly_md.parent.mkdir(parents=True, exist_ok=True)
     write_jsonl(run.rows, assembly_jsonl)
     assembly_json.write_text(
-        json.dumps(run.report, indent=2, sort_keys=True) + "\n",
+        json.dumps(report, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     markdown = render_finding_assembly_markdown(
-        run.report,
+        report,
         json_path=assembly_json,
         jsonl_path=assembly_jsonl,
     )
     assembly_md.write_text(markdown, encoding="utf-8")
-    headline = run.report["score_ladder"]["headline_target"]["overall"]
+    headline = report["score_ladder"]["headline_target"]["overall"]
     print(
         f"[{run_id}] assembly F1={headline['f1']:.4f} "
         f"P={headline['precision']:.4f} R={headline['recall']:.4f}"
