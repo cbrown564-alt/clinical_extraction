@@ -161,6 +161,66 @@ def test_model_swap_readiness_marks_completed_operational_failures(tmp_path: Pat
     ]
 
 
+def test_model_swap_full200_payload_uses_aggregate_only_boundary(tmp_path: Path) -> None:
+    shared_rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
+    gpt_path = _write_config(
+        tmp_path,
+        candidate_id="swap_gpt_full200",
+        model="openai/gpt-4.1-mini",
+        model_label="GPT-4.1-mini",
+        artifact=shared_rows,
+        split="full200",
+        row_count=200,
+    )
+    deepseek_path = _write_config(
+        tmp_path,
+        candidate_id="swap_deepseek_full200",
+        model="deepseek/deepseek-chat",
+        model_label="DeepSeek chat",
+        artifact=shared_rows,
+        split="full200",
+        row_count=200,
+    )
+    configs = [
+        model_swap.load_model_swap_config(path) for path in (gpt_path, deepseek_path)
+    ]
+    parity = model_swap.validate_same_core_configs(configs)
+    rows = [
+        _complete_model_row("swap_gpt_full200", "GPT-4.1-mini", row_count=200),
+        _complete_model_row(
+            "swap_deepseek_full200",
+            "DeepSeek chat",
+            row_count=200,
+            parse_failures=1,
+        ),
+    ]
+
+    payload = model_swap.build_model_swap_payload(
+        configs=configs,
+        model_rows=rows,
+        parity=parity,
+        generated_on="2026-06-25",
+    )
+    markdown = model_swap.render_model_swap_markdown(payload)
+
+    assert payload["artifact_kind"] == "exectv2_same_core_model_swap_full200"
+    assert payload["overall_status"] == "ready_for_same_core_scorecard_review"
+    assert (
+        payload["readiness_gates"]["operational_stability"]["status"]
+        == "pass_with_caveat"
+    )
+    assert payload["row_inspection_policy"] == (
+        "aggregate_only_no_full200_or_holdout_row_level_inspection"
+    )
+    assert payload["predeclaration"].endswith(
+        "exectv2_same_core_full200_predeclaration_2026-06-25.md"
+    )
+    assert "# ExECTv2 Same-Core Model-Swap Full-200 Aggregate Validation" in markdown
+    assert "accepted with an explicit schema-stability caveat" in payload[
+        "claim_boundary"
+    ]
+
+
 def test_model_swap_parity_fails_when_component_graph_changes(tmp_path: Path) -> None:
     rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
     gpt = _write_config(
@@ -356,6 +416,8 @@ def _write_config(
     artifact: Path,
     prompt_profile: str = "full",
     replayed_components: list[str] | None = None,
+    split: str = "toy",
+    row_count: int = 2,
 ) -> Path:
     payload = {
         "candidate_id": candidate_id,
@@ -389,8 +451,8 @@ def _write_config(
             "candidate_id": candidate_id,
             "pipeline_family": "toy_same_core_model_swap",
             "ownership": "toy_model_swap",
-            "split": "toy",
-            "row_count": 2,
+            "split": split,
+            "row_count": row_count,
             "claim_boundary": "toy model swap",
             "baseline_producer": "structured_key_family_event_ledger",
             "promotion_decision": "same-core-model-swap-readout",
@@ -482,14 +544,16 @@ def _complete_model_row(
     candidate_id: str,
     model_label: str,
     *,
-    call_failures: int,
-    parse_failures: int,
+    call_failures: int = 0,
+    parse_failures: int = 0,
+    row_count: int = 2,
 ) -> dict[str, object]:
     return {
         "candidate_id": candidate_id,
         "model": model_label,
         "model_label": model_label,
         "status": "complete",
+        "row_count": row_count,
         "metrics": {"overall": {"f1": 0.8}, "by_indicator": {}},
         "diagnostics": {
             "call_failures": call_failures,

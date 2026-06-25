@@ -21,7 +21,10 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.core.evidence import (
+    evidence_is_substring,
+    repair_evidence_text_if_source_exact,
+)
 from clinical_extraction.core.run_resume import (
     merge_rows,
     pending_items,
@@ -507,12 +510,16 @@ def check_evidence(
     invalid: list[MentionRecord] = []
     warnings: list[str] = []
     for mention in mentions:
-        if mention.evidence and evidence_is_substring(note_text, mention.evidence):
+        repaired_evidence = repair_evidence_text_if_source_exact(mention.evidence, note_text)
+        if repaired_evidence and evidence_is_substring(note_text, repaired_evidence):
+            if repaired_evidence != mention.evidence:
+                warnings.append(f"repaired_evidence_exact_copy: text={mention.text!r}")
+                mention = mention.model_copy(update={"evidence": repaired_evidence})
             valid.append(mention)
-        else:
-            invalid.append(mention)
-            reason = "empty_evidence" if not mention.evidence else "evidence_not_substring"
-            warnings.append(f"dropped_{reason}: text={mention.text!r}")
+            continue
+        invalid.append(mention)
+        reason = "empty_evidence" if not mention.evidence else "evidence_not_substring"
+        warnings.append(f"dropped_{reason}: text={mention.text!r}")
     return valid, invalid, warnings
 
 
