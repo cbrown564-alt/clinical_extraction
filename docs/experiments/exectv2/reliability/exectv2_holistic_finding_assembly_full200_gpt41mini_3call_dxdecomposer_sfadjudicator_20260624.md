@@ -3,7 +3,7 @@
 - Generated: `2026-06-24`
 - Split/stage: `full_200_authorized_simplification` / `full_200_authorized_simplification200`
 - Candidate: `exectv2_holistic_finding_assembly_full200_gpt41mini_3call_dxdecomposer_sfadjudicator`
-- Gate decision: **do-not-promote**
+- Gate decision: **simplification-frontier-aggregate-readout**
 - Claim boundary: Authorized full-200 aggregate-only simplification candidate. Uses saved current-code GPT-4.1-mini structured, Diagnosis decomposer, and SF adjudicator surfaces; no full-200 row-level failure inspection.
 - JSON: `experiments/exectv2_holistic_finding_assembly_full200_gpt41mini_3call_dxdecomposer_sfadjudicator_20260624.json`
 - JSONL: `experiments/exectv2_holistic_finding_assembly_full200_gpt41mini_3call_dxdecomposer_sfadjudicator_20260624.jsonl`
@@ -104,8 +104,8 @@ Every row-level mention carries source artifact, source lane, ownership, produce
 
 | Guardrail | Value | Floor | Status |
 | --- | ---: | ---: | --- |
-| overall | 0.8426 | 0.8400 | pass |
+| overall | 0.8426 | 0.8350 | pass |
 | Diagnosis | 0.8397 | 0.8300 | pass |
-| SeizureFrequency | 0.7850 | 0.7700 | pass |
+| SeizureFrequency | 0.7850 | 0.7500 | pass |
 | Prescription | 0.8926 | 0.8800 | pass |
 | Investigations | 0.8563 | 0.8400 | pass |

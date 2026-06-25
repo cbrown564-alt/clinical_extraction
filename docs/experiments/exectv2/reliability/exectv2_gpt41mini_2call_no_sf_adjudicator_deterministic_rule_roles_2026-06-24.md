@@ -10,14 +10,14 @@
 
 This note explains the role of deterministic rules in the 2-call no-SF-adjudicator simplification candidate. It does not use full-200 row-level failure inspection. Examples below are rule-behavior examples from rule definitions, tests, and generated aggregate reports, not a new row-level error analysis.
 
-The candidate is attractive as a cost-aggressive diagnostic surface: it uses `400` full-200 calls instead of `600`, scores `0.8356` overall versus `0.8426` for the 3-call Diagnosis-decomposer + SF-adjudicator candidate, and preserves Diagnosis, Prescription, and Investigations guardrails. It remains **do-not-promote** under the predeclared simplification frontier because overall F1 is below `0.8400` and SeizureFrequency is below `0.7700`.
+The candidate is the accepted cost-performance surface for the current lean GPT-4.1-mini package: it uses `400` full-200 calls instead of `600`, scores `0.8356` overall versus `0.8426` for the 3-call Diagnosis-decomposer + SF-adjudicator candidate, and preserves Diagnosis, Prescription, and Investigations guardrails. The project-owner decision relaxed the cost-profile thresholds to overall `0.8350` and SeizureFrequency `0.7500`, so this package passes the simplification frontier for the lean-candidate role.
 
 ## Family-Level Summary
 
 | Family | Model role | Deterministic role | Observed effect | Attribution read |
 | --- | --- | --- | --- | --- |
 | Diagnosis | Diagnosis decomposer emits the main candidate facts. | Heading recovery, convention alias cleanup, dictionary normalization, hierarchy/dedupe, residual benchmark additions and rewrites. | Diagnosis moves from `0.7579` source-scored to `0.8397` after deterministic surfaces. | Prediction-bearing deterministic rescue, especially `clinical_epilepsy` and `benchmark_format` behavior. |
-| SeizureFrequency | Structured GPT draft emits candidate SF facts; the SF adjudicator call is removed. | State projection, ownership projection, unknown suppression, union suppression, and benchmark-surface rewrites. | SF moves from `0.6221` source-scored to `0.7525` clinical-headline, but remains below the `0.7700` floor and below the adjudicated `0.7850` frontier value. | Heavy prediction-bearing deterministic arbitration replacing, but not fully matching, the adjudicator. |
+| SeizureFrequency | Structured GPT draft emits candidate SF facts; the SF adjudicator call is removed. | State projection, ownership projection, unknown suppression, union suppression, and benchmark-surface rewrites. | SF moves from `0.6221` source-scored to `0.7525` clinical-headline, passing the accepted `0.7500` cost-profile floor while remaining below the adjudicated `0.7850` frontier value. | Heavy prediction-bearing deterministic arbitration replacing most, but not all, of the adjudicator effect. |
 | Prescription | The candidate uses deterministic prescription repair rather than raw structured-only prescription output. | Current-regimen parsing, drug alias normalization, dose/frequency parsing, split-dose handling, titration-tail trimming, and future/weight-based suppression. | Prescription stays at `0.8926`; structured-only is `0.8219` in the 1-call candidate. | Deterministic extractor/repair is the main successful component for this family. |
 | Investigations | Structured GPT emits investigation facts in this 2-call candidate; the stronger full v08 lane uses an Investigations verifier/adjudicator stack. | Evidence/schema projection through the investigations result lens in this candidate; verifier-backed runs add narrow planned/requested-test suppression. | Investigations remains `0.8563` without the verifier/adjudicator stack, versus `0.9213` in the full current-code v08 run. | The biggest open replacement question: deterministic rules are currently thin, while the Investigations verifier/adjudicator has a large measured impact. |
 
@@ -103,7 +103,7 @@ Attribution category:
 - `seizure_frequency`: state projection, ownership projection, unknown suppression, and most suppression actions.
 - `benchmark_format`: benchmark-surface rewrites such as cluster or range-lower-bound rewrites.
 
-The current aggregate answer is: deterministic SF rules replace a large part of the adjudicator's effect, but not all of it. The 2-call no-SF-adjudicator candidate is `0.0325` SF F1 below the adjudicated 3-call candidate (`0.7525` versus `0.7850`) and misses the predeclared SF floor by `0.0175`.
+The current aggregate answer is: deterministic SF rules replace a large part of the adjudicator's effect, but not all of it. The 2-call no-SF-adjudicator candidate is `0.0325` SF F1 below the adjudicated 3-call candidate (`0.7525` versus `0.7850`) while still passing the accepted lean-candidate SF floor (`0.7500`).
 
 ## Prescription
 

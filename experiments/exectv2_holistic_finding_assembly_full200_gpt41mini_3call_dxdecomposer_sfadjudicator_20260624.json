@@ -35220,6 +35220,7 @@
     "benchmark_cui"
   ],
   "gate_decision": {
+    "basis": "Generic assembly gate checks are retained as diagnostics; the simplification acceptability contract governs this cost-performance frontier.",
     "checks": [
       {
         "detail": "delta vs v0.42 control +0.0712; floor -0.0100",
@@ -35262,7 +35263,7 @@
         "passed": true
       }
     ],
-    "decision": "do-not-promote"
+    "decision": "simplification-frontier-aggregate-readout"
   },
   "generated_on": "2026-06-24",
   "input_artifacts": {
@@ -35931,7 +35932,7 @@
     "acceptability": {
       "checks": [
         {
-          "floor": 0.84,
+          "floor": 0.835,
           "name": "overall",
           "passed": true,
           "value": 0.8426
@@ -35943,7 +35944,7 @@
           "value": 0.8397
         },
         {
-          "floor": 0.77,
+          "floor": 0.75,
           "name": "SeizureFrequency",
           "passed": true,
           "value": 0.785

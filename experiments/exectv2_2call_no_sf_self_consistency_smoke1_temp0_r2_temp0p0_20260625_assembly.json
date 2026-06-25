@@ -351,7 +351,7 @@
         "passed": true
       }
     ],
-    "decision": "do-not-promote"
+    "decision": "self-consistency-repeat"
   },
   "generated_on": "2026-06-25",
   "input_artifacts": {

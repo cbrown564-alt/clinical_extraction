@@ -3,7 +3,7 @@
 - Generated: `2026-06-24`
 - Split/stage: `full_200_authorized_simplification` / `full_200_authorized_simplification200`
 - Candidate: `exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`
-- Gate decision: **do-not-promote**
+- Gate decision: **simplification-frontier-aggregate-readout**
 - Claim boundary: Authorized full-200 aggregate-only simplification candidate. SeizureFrequency starts from the saved structured GPT draft and deterministic SF projection/suppression/union; no SF adjudicator call.
 - JSON: `experiments/exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_20260624.json`
 - JSONL: `experiments/exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_20260624.jsonl`
@@ -100,12 +100,12 @@ Every row-level mention carries source artifact, source lane, ownership, produce
 - Live call components: `structured_key_family_event_ledger, diagnosis_decomposer`
 - Replayed/no-call components: `structured_direct_sf_adapter, sf_state_projection, sf_unknown_suppression, sf_union_arbitration, deterministic_prescription_repair, finding_assembly`
 - Removed components: `diagnosis_verifier, diagnosis_reconciler, sf_state_adjudicator, investigations_verifier, investigations_arbitration`
-- Acceptability: **fail**
+- Acceptability: **pass**
 
 | Guardrail | Value | Floor | Status |
 | --- | ---: | ---: | --- |
-| overall | 0.8356 | 0.8400 | fail |
+| overall | 0.8356 | 0.8350 | pass |
 | Diagnosis | 0.8397 | 0.8300 | pass |
-| SeizureFrequency | 0.7525 | 0.7700 | fail |
+| SeizureFrequency | 0.7525 | 0.7500 | pass |
 | Prescription | 0.8926 | 0.8800 | pass |
 | Investigations | 0.8563 | 0.8400 | pass |

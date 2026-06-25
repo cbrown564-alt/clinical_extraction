@@ -3,7 +3,7 @@
 - Generated: `2026-06-25`
 - Split/stage: `entropy_dev140_temps` / `entropy_dev140_temps140`
 - Candidate: `exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_entropy_dev140_temps_r3_temp0p7`
-- Gate decision: **do-not-promote**
+- Gate decision: **self-consistency-repeat**
 - Claim boundary: Self-consistency repeat for selected GPT-4.1-mini 2-call no-SF-adjudicator candidate. Structured ledger and Diagnosis decomposer are live repeat surfaces; SF/Rx/Inv and final assembly are no-call deterministic rebuilds.
 - JSON: `experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_assembly.json`
 - JSONL: `experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_assembly.jsonl`

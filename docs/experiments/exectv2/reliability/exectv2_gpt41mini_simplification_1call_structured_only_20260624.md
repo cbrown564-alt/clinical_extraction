@@ -3,7 +3,7 @@
 - Generated: `2026-06-24`
 - Split/stage: `full_200_authorized_simplification` / `full_200_authorized_simplification200`
 - Candidate: `exectv2_gpt41mini_simplification_1call_structured_only`
-- Gate decision: **do-not-promote**
+- Gate decision: **simplification-frontier-aggregate-readout**
 - Claim boundary: Authorized full-200 aggregate-only diagnostic simplification candidate. All four families come directly from the saved structured GPT draft; deterministic Prescription repair is removed.
 - JSON: `experiments/exectv2_gpt41mini_simplification_1call_structured_only_20260624.json`
 - JSONL: `experiments/exectv2_gpt41mini_simplification_1call_structured_only_20260624.jsonl`
@@ -104,8 +104,8 @@ Every row-level mention carries source artifact, source lane, ownership, produce
 
 | Guardrail | Value | Floor | Status |
 | --- | ---: | ---: | --- |
-| overall | 0.7571 | 0.8400 | fail |
+| overall | 0.7571 | 0.8350 | fail |
 | Diagnosis | 0.7597 | 0.8300 | fail |
-| SeizureFrequency | 0.6114 | 0.7700 | fail |
+| SeizureFrequency | 0.6114 | 0.7500 | fail |
 | Prescription | 0.8219 | 0.8800 | fail |
 | Investigations | 0.8563 | 0.8400 | pass |

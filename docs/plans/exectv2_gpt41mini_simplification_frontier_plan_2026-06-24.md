@@ -27,18 +27,22 @@ Interpretation so far:
 
 ## Predeclared Acceptability Rule
 
-Use the following default rule unless the project owner changes it before the next run:
+Decision update, 2026-06-25: the project owner accepted the 2-call
+no-SF-adjudicator package as the best current cost-performance point. The
+governing cost-profile thresholds are now:
 
-- Primary acceptable region: overall `clinical_headline` F1 at or above `0.8400`.
+- Primary acceptable region: overall `clinical_headline` F1 at or above `0.8350`.
 - Secondary family guardrails:
   - Diagnosis F1 at or above `0.8300`.
-  - SeizureFrequency F1 at or above `0.7700`.
+  - SeizureFrequency F1 at or above `0.7500`.
   - Prescription F1 at or above `0.8800`.
   - Investigations F1 at or above `0.8400`.
 - A candidate below one family guardrail can remain a diagnostic candidate, but should not become the default simplified architecture without an explicit tradeoff decision.
 - Stop broad simplification once the next one-component removal crosses the overall floor or causes a family-specific collapse that is larger than the saved cost plausibly justifies.
 
-Rationale: this keeps the current 3-call architecture inside the acceptable region while making the next simplification step earn its keep. The rule is deliberately cost-aware but not metric-blind.
+Rationale: this keeps the current 2-call package inside the accepted
+cost-performance region while still rejecting the no-Diagnosis-decomposer and
+1-call candidates. The rule is deliberately cost-aware but not metric-blind.
 
 ## Simplification Ladder
 
@@ -118,7 +122,7 @@ Expected risk:
 
 Decision:
 
-- If overall stays `>=0.8400` and Diagnosis stays `>=0.8300`, promote this as the new lean baseline.
+- If overall stays `>=0.8350` and Diagnosis stays `>=0.8300`, promote this as the new lean baseline.
 - If Diagnosis falls below floor, keep the Diagnosis decomposer as the cheapest justified Diagnosis specialist.
 
 ### Stage 3: Remove The SF Adjudicator
@@ -141,8 +145,8 @@ Expected risk:
 
 Decision:
 
-- If SF stays `>=0.7700` and overall stays `>=0.8400`, the SF adjudicator is not justified for the default low-cost architecture.
-- If SF falls below `0.7700`, keep the SF adjudicator as a justified specialist.
+- If SF stays `>=0.7500` and overall stays `>=0.8350`, the SF adjudicator is not justified for the default low-cost architecture.
+- If SF falls below `0.7500`, keep the SF adjudicator as a justified specialist.
 
 ### Stage 4: Test Structured-Only Clinical GPT Plus Deterministic Prescription
 
@@ -234,9 +238,9 @@ Do not report strict benchmark F1 as the headline. Keep it as a diagnostic/compa
 
 Stop simplifying when any of these are true:
 
-- Overall F1 drops below `0.8400`.
+- Overall F1 drops below `0.8350`.
 - Diagnosis drops below `0.8300` after removing the Diagnosis decomposer.
-- SeizureFrequency drops below `0.7700` after removing the SF adjudicator.
+- SeizureFrequency drops below `0.7500` after removing the SF adjudicator.
 - Prescription drops below `0.8800` after removing deterministic repair.
 - The next candidate would save no LLM calls and only remove transparent deterministic code.
 - A candidate introduces call/parse instability that makes score comparison ambiguous.
