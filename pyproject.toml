@@ -32,6 +32,9 @@ dev = [
   "mypy>=1.10.0",
   "httpx2>=2.0.0",
 ]
+mlops = [
+  "mlflow>=3.0.0",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/clinical_extraction"]
