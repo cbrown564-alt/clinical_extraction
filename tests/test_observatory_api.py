@@ -109,19 +109,20 @@ def test_observatory_registry_rules_prompts_and_artifacts(tmp_path: Path) -> Non
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/registry").json()["runs"][0]["run_id"] == "example_run"
     family_values = {
-        family["value"] for family in client.get("/pipeline-families").json()["families"]
+        family["run_id"] for family in client.get("/pipeline-families").json()["families"]
     }
-    # The Explorer dropdown is trimmed to the three canonical Gan architectures
-    # (deterministic / hybrid / LLM-only). Comparator and retired families stay
-    # in the registry but are no longer surfaced here.
+    # Explorer dropdown is registry-driven: one entry per curated comparator run.
     assert family_values == {
         "rules_only",
-        "hybrid_structured_events",
-        "llm_only_canonical_pipeline",
+        "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07",
+        "gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08",
+        "gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08",
+        "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07",
+        "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08",
+        "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08",
     }
     assert "llm_only_claim_table_selector" not in family_values
     assert "unreviewed_old_family" not in family_values
-    # Former retained comparators are no longer surfaced.
     assert "llm_heavy_clinical_frequency_reasoner" not in family_values
     assert client.get("/splits/validation").json()["source_row_indices"] == [1]
     assert client.get("/artifacts/example_run").json()["content"][0]["source_row_index"] == 1

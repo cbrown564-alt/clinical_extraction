@@ -55,13 +55,14 @@ export default function TraceControls() {
     noteText,
     split,
     sourceRowIndex,
+    selectedRunId,
     pipelineFamily,
     ablationConfig,
     replayRowIndex,
     setNoteText,
     setSplit,
     setSourceRowIndex,
-    setPipelineFamily,
+    setSelectedRunId,
     setTrace,
     setIsLoading,
     setError,
@@ -84,12 +85,22 @@ export default function TraceControls() {
   const isLive = isLiveFamily(pipelineFamily);
   const isReplay = !isLive;
 
+  const pipelineOptions = familiesQuery.data?.families ?? [];
+
   // When dataset record loads, update note text
   useEffect(() => {
     if (recordQuery.data?.note_text) {
       setNoteText(recordQuery.data.note_text);
     }
   }, [recordQuery.data, setNoteText]);
+
+  // Keep adapter family aligned once surfaced run metadata loads.
+  useEffect(() => {
+    const option = pipelineOptions.find((opt) => opt.run_id === selectedRunId);
+    if (option && option.pipeline_family !== pipelineFamily) {
+      setSelectedRunId(selectedRunId, option.pipeline_family);
+    }
+  }, [pipelineOptions, pipelineFamily, selectedRunId, setSelectedRunId]);
 
   // When pipeline family changes to non-deterministic, auto-load replay artifacts
   useEffect(() => {
@@ -106,26 +117,15 @@ export default function TraceControls() {
       setError(null);
       try {
         const registry = await fetchRegistry();
-        // Find all runs for this family that have JSONL artifacts
-        const matchingRuns = registry.runs.filter(
-          (r) =>
-            r.pipeline_family === pipelineFamily &&
-            r.artifact_paths.some((p) => p.endsWith(".jsonl"))
-        );
-        if (matchingRuns.length === 0) {
-          setError(`No replay artifact found for ${pipelineFamily}`);
+        const matchingRun = registry.runs.find((r) => r.run_id === selectedRunId);
+        if (!matchingRun) {
+          setError(`No replay artifact found for ${selectedRunId}`);
           setIsLoading(false);
           return;
         }
-        // Prefer the run with the most rows (largest corpus)
-        const matchingRun = matchingRuns.reduce((a, b) =>
-          (a.row_count || 0) > (b.row_count || 0) ? a : b
-        );
-        const jsonlPath = matchingRun.artifact_paths.find((p) =>
-          p.endsWith(".jsonl")
-        );
+        const jsonlPath = matchingRun.artifact_paths.find((p) => p.endsWith(".jsonl"));
         if (!jsonlPath) {
-          setError(`No JSONL artifact found for ${pipelineFamily}`);
+          setError(`No JSONL artifact found for ${selectedRunId}`);
           setIsLoading(false);
           return;
         }
@@ -146,7 +146,15 @@ export default function TraceControls() {
     return () => {
       cancelled = true;
     };
-  }, [pipelineFamily, setError, setIsLoading, setReplayArtifactRows, setReplayRunId, setReplayRowIndex, isLive]);
+  }, [
+    selectedRunId,
+    isLive,
+    setError,
+    setIsLoading,
+    setReplayArtifactRows,
+    setReplayRunId,
+    setReplayRowIndex,
+  ]);
 
   const handleRun = useCallback(() => {
     if (!noteText.trim()) return;
@@ -266,8 +274,6 @@ export default function TraceControls() {
       }
     }
   }, [isLive, replayRows, sourceRowIndex, replayRowIndex, handleLoadReplayRow]);
-
-  const pipelineOptions = familiesQuery.data?.families ?? [];
 
   const handleOpenCustomNote = () => {
     setCustomNoteDraft(noteText);
@@ -400,14 +406,17 @@ export default function TraceControls() {
             Pipeline
           </label>
           <select
-            className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic"
-            value={pipelineFamily}
-            onChange={(e) =>
-              setPipelineFamily(e.target.value as PipelineFamily)
-            }
+            className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic min-w-[220px]"
+            value={selectedRunId}
+            onChange={(e) => {
+              const option = pipelineOptions.find((opt) => opt.run_id === e.target.value);
+              if (option) {
+                setSelectedRunId(option.run_id, option.pipeline_family);
+              }
+            }}
           >
             {pipelineOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.run_id} value={opt.run_id}>
                 {opt.label}
                 {!opt.executable ? " (replay)" : ""}
               </option>

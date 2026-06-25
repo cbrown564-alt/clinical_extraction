@@ -86,6 +86,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
     load_run_registry,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (
+    load_surfaced_runs_from_registry,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
@@ -132,18 +135,10 @@ RETIRED_PIPELINE_FAMILIES: set[str] = {
     "llm_only_typed_operations_reasoner",
 }
 
-# The Explorer pipeline dropdown is trimmed to the three canonical Gan
-# architectures that the Component Impact stage-ladder compares — one best
-# performer per family (deterministic / hybrid / LLM-only). Historical
-# comparator families stay in the registry but are no longer surfaced here.
-# Re-introducing qwen/deepseek comparators (and unifying the labels with
-# Component Impact) is tracked in
+# The Explorer pipeline dropdown is registry-driven: one entry per curated
+# validation-750 comparator (deterministic live line plus replay runs per model).
+# Curation lives in run_surfacing.py; see
 # docs/plans/architecture_comparison_expansion_qwen_deepseek_2026-06-24.md.
-CANONICAL_PIPELINE_FAMILIES: dict[str, tuple[str, str]] = {
-    "rules_only": ("Deterministic V1", "rules_only"),
-    "hybrid_structured_events": ("Hybrid Structured Events", "hybrid"),
-    "llm_only_canonical_pipeline": ("LLM-only Canonical", "llm_only"),
-}
 
 
 class ObservatorySettings(BaseModel):
@@ -989,46 +984,9 @@ def _llm_family_payload(module_name: str) -> dict[str, Any]:
 
 
 def _build_pipeline_families(settings: ObservatorySettings) -> list[dict[str, Any]]:
-    """Build the Explorer pipeline-family dropdown.
+    """Build the Explorer architecture dropdown from curated registry runs."""
 
-    Surfaces exactly the canonical Gan architectures declared in
-    ``CANONICAL_PIPELINE_FAMILIES`` (deterministic / hybrid / LLM-only), in that
-    order, so the Explorer dropdown matches the Component Impact comparison.
-    Registry runs only supply each family's replay availability and run count;
-    the label and kind are the canonical declarations, not registry prose.
-    """
-    entries = load_run_registry(settings.registry_path)
-
-    # Group registry runs for each canonical family (ignore everything else).
-    by_family: dict[str, list[dict[str, Any]]] = {}
-    for entry in entries:
-        record = entry.to_json_record()
-        family = record.get("pipeline_family")
-        if not family or family in RETIRED_PIPELINE_FAMILIES:
-            continue
-        if family not in CANONICAL_PIPELINE_FAMILIES:
-            continue
-        by_family.setdefault(family, []).append(record)
-
-    families: list[dict[str, Any]] = []
-    for family, (label, kind) in CANONICAL_PIPELINE_FAMILIES.items():
-        runs = by_family.get(family, [])
-        has_jsonl = any(
-            any(p.endswith(".jsonl") for p in r.get("artifact_paths", []))
-            for r in runs
-        )
-        families.append(
-            {
-                "value": family,
-                "label": label,
-                "executable": family in EXECUTABLE_PIPELINES,
-                "kind": kind,
-                "has_replay_artifact": has_jsonl,
-                "run_count": len(runs),
-            }
-        )
-
-    return families
+    return load_surfaced_runs_from_registry(settings.registry_path)
 
 
 def _jsonable_mapping_sequence(items: Iterable[Any]) -> list[dict[str, Any]]:

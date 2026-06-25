@@ -122,6 +122,7 @@ interface ArchitectState {
   noteText: string;
   split: string | null;
   sourceRowIndex: number | null;
+  selectedRunId: string;
   pipelineFamily: PipelineFamily;
   ablationConfig: AblationConfigPayload;
   activeStage: TraceStage;
@@ -135,6 +136,7 @@ interface ArchitectState {
   setNoteText: (t: string) => void;
   setSplit: (s: string | null) => void;
   setSourceRowIndex: (i: number | null) => void;
+  setSelectedRunId: (runId: string, pipelineFamily: PipelineFamily) => void;
   setPipelineFamily: (p: PipelineFamily) => void;
   setAblationConfig: (a: AblationConfigPayload) => void;
   setActiveStage: (stage: TraceStage) => void;
@@ -181,6 +183,7 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   noteText: "",
   split: "validation",
   sourceRowIndex: 10,
+  selectedRunId: "rules_only",
   pipelineFamily: "rules_only",
   ablationConfig: {},
   activeStage: "extract",
@@ -193,6 +196,14 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
   setNoteText: (noteText) => set({ noteText }),
   setSplit: (split) => set({ split, sourceRowIndex: null }),
   setSourceRowIndex: (sourceRowIndex) => set({ sourceRowIndex }),
+  setSelectedRunId: (selectedRunId, pipelineFamily) =>
+    set({
+      selectedRunId,
+      pipelineFamily,
+      trace: null,
+      replayArtifactRows: null,
+      replayRowIndex: null,
+    }),
   setPipelineFamily: (pipelineFamily) => set({ pipelineFamily, trace: null, replayArtifactRows: null, replayRowIndex: null }),
   setAblationConfig: (ablationConfig) => set({ ablationConfig }),
   setActiveStage: (activeStage) => set({ activeStage }),
@@ -221,6 +232,7 @@ export const useArchitectStore = create<ArchitectState>((set) => ({
       noteText: "",
       split: null,
       sourceRowIndex: null,
+      selectedRunId: "rules_only",
       pipelineFamily: "rules_only",
       ablationConfig: {},
       activeStage: "extract",

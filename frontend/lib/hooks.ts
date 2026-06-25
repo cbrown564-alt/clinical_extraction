@@ -223,7 +223,19 @@ export function useWorkbenchUrlSync() {
   ]);
 }
 
-// ── URL sync for the Architect store (Workbench / Trace viewer) ──
+const LEGACY_FAMILY_DEFAULT_RUN: Record<string, string> = {
+  rules_only: "rules_only",
+  hybrid_structured_events:
+    "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07",
+  llm_only_canonical_pipeline:
+    "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07",
+};
+
+function resolveRunId(value: string | null): string | null {
+  if (!value) return null;
+  if (value in LEGACY_FAMILY_DEFAULT_RUN) return LEGACY_FAMILY_DEFAULT_RUN[value];
+  return value;
+}
 
 export function useArchitectUrlSync() {
   const searchParams = useSearchParams();
@@ -233,6 +245,7 @@ export function useArchitectUrlSync() {
   const {
     split,
     sourceRowIndex,
+    selectedRunId,
     pipelineFamily,
     ablationConfig,
     activeStage,
@@ -240,7 +253,7 @@ export function useArchitectUrlSync() {
     replayRowIndex,
     setSplit,
     setSourceRowIndex,
-    setPipelineFamily,
+    setSelectedRunId,
     setAblationConfig,
     setActiveStage,
     setReplayRunId,
@@ -249,7 +262,7 @@ export function useArchitectUrlSync() {
 
   // Restore from URL on mount
   useEffect(() => {
-    const pipelineParam = searchParams.get("pipeline");
+    const runParam = resolveRunId(searchParams.get("run") ?? searchParams.get("pipeline"));
     const splitParam = searchParams.get("split");
     const rowParam = searchParams.get("row");
     const ablationParam = searchParams.get("ablation");
@@ -257,7 +270,12 @@ export function useArchitectUrlSync() {
     const replayRunIdParam = searchParams.get("replayRunId");
     const replayRowIndexParam = searchParams.get("replayRowIndex");
 
-    if (pipelineParam) setPipelineFamily(pipelineParam);
+    if (runParam) {
+      const legacyFamily = Object.entries(LEGACY_FAMILY_DEFAULT_RUN).find(
+        ([, runId]) => runId === runParam
+      )?.[0];
+      setSelectedRunId(runParam, legacyFamily ?? runParam);
+    }
     if (splitParam) setSplit(splitParam);
     if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
     if (ablationParam) setAblationConfig(deserializeAblation(ablationParam));
@@ -270,8 +288,7 @@ export function useArchitectUrlSync() {
   // Sync to URL when state changes
   useEffect(() => {
     const params = new URLSearchParams();
-    if (pipelineFamily && pipelineFamily !== "rules_only")
-      params.set("pipeline", pipelineFamily);
+    if (selectedRunId && selectedRunId !== "rules_only") params.set("run", selectedRunId);
     if (split) params.set("split", split);
     if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
     const ablationStr = serializeAblation(ablationConfig);
@@ -284,7 +301,7 @@ export function useArchitectUrlSync() {
     router.replace(newUrl, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    pipelineFamily,
+    selectedRunId,
     split,
     sourceRowIndex,
     ablationConfig,
