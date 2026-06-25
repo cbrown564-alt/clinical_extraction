@@ -1,0 +1,2 @@
+{"call_failures": 0, "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200", "minimum_exact_evidence_rate": 1.0, "model_label": "GPT-4.1-mini", "overall_clinical_headline_f1": 0.8356, "parse_schema_failures": 0, "status": "complete"}
+{"call_failures": 0, "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200", "minimum_exact_evidence_rate": 1.0, "model_label": "DeepSeek chat", "overall_clinical_headline_f1": 0.8566, "parse_schema_failures": 1, "status": "complete"}

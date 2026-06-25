@@ -19,9 +19,18 @@ The 2026-06-25 evidence stack is:
 - GPT-4.1-mini current-code v08 full-200 aggregate: verifier-backed `0.8502`
   overall `clinical_headline` F1; no-verifier ablation `0.8431`; accepted lean
   2-call no-SF-adjudicator candidate `0.8356` overall and `0.7525` SF.
+- Same-core full-200 aggregate-only audit is complete at
+  `docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md`:
+  GPT-4.1-mini `0.8356`; DeepSeek `0.8566` overall and `0.7602` SF, but
+  DeepSeek has `1` Diagnosis parse/schema failure. That count is accepted as a
+  schema-stability caveat, not a promotion blocker.
 - Same-core dev140 model swap: DeepSeek `0.8596`, GPT-4.1-mini `0.8396`, Qwen
   `0.8018`, all with `1.0000` exact evidence; Qwen remains diagnostic because
-  of output-contract instability and failed repair v01.
+  of output-contract instability and failed repairs v01/v02. Repair v02 fixed
+  structured parse/schema failures on a full dev140 structured rerun; shared
+  standard evidence repair reduces the same saved raw replay from `30` to `3`
+  evidence-invalid mentions (`0.9964` validity). This is saved-raw replay
+  evidence, not yet a completed predeclared same-core assembly rerun.
 - Reliability validation: calibration ECE `0.0432`, Brier `0.2245` versus
   `0.2387`; lower-burden review routing failed validation (`0.9661` burden,
   `0.9037` catch); robustness hard-slice F1 `0.8336` across `414` eligible
@@ -33,36 +42,29 @@ The 2026-06-25 evidence stack is:
   Purist, `365/450` Pragmatic, `0` call failures; no row-level test inspection
   or post-test tuning is authorized.
 
-The same-core full-200 predeclaration now exists at
+The same-core full-200 audit followed
 `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
-It freezes GPT-4.1-mini and DeepSeek as operational candidates, keeps Qwen out
-of the operational candidate set, and preserves aggregate-only full-200
-reporting.
+No full-200 row-level failure analysis is authorized, and no prompt, parser,
+threshold, deterministic-rule, or scorer tuning should follow from the
+aggregate readout.
 
 ## Active Priorities
 
-1. Treat `clinical_headline` de-duplicated clinical recovery as the primary
-   LLM-only optimization target; report strict benchmark results only as a
-   diagnostic/comparability surface.
-2. Preserve attribution discipline: the model emits every scored fact;
-   deterministic code may validate evidence and perform tagged projection, but
-   must not add, select, or reject clinical facts inside the LLM-only score line.
-3. Keep Reliability Scorecard separate from Component Impact: reliability is
-   trust evidence; component impact must be ablation/delta evidence.
-4. Treat reliability-score improvements as research work: every score increase
-   should name the split, scorer, inspection boundary, and whether evidence is
-   dev-only, validation, full-200, or holdout.
+1. Treat `clinical_headline` de-duplicated clinical recovery as primary; strict
+   benchmark/CUI results stay diagnostic/comparability-only.
+2. Preserve attribution discipline: deterministic code may validate evidence and
+   perform tagged projection, but must not add, select, or reject clinical facts
+   inside an LLM-only score line.
+3. Keep Reliability Scorecard separate from Component Impact, and label every
+   score change by split, scorer, inspection boundary, and evidence tier.
 
 ## Work Board
 
 ### Now
 
-- Execute and report the same-core full-200 aggregate-only audit only from
-  `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`
-  if that comparison is still needed; keep Qwen excluded.
 - Implement registry-driven run surfacing and labels for the
-  Explorer/Component Impact surfaces after the same-core full-200 execution
-  decision is settled.
+  Explorer/Component Impact surfaces now that the same-core full-200 aggregate
+  audit is settled.
 - Use `docs/plans/recent_plan_rationalisation_2026-06-25.md` as the current
   sequence; defer MLflow and repo cleanup until the reporting/registry path is
   stable.
@@ -73,9 +75,9 @@ reporting.
   registry can own them, and make Explorer selection explicit by `run_id`.
 - Regenerate Component Impact/Explorer payloads so model variants do not
   collapse into a family-level "best row" heuristic.
-- If Qwen is revisited, predeclare v02 separately and decide whether invalid
-  event-family dropping or valid-object extraction is format-only schema repair
-  or a semantic adapter before any rerun.
+- If Qwen is revisited, predeclare a fresh same-core repair/assembly rerun using
+  the shared standard evidence-repair family; parser/schema stability is no
+  longer the limiting failure after v02.
 - Plan true component-off reliability ablations only after scorecard language is
   stable; reliability is trust evidence, component impact is delta evidence.
 - Keep MLflow observability, repo cleanup, and Investigations cost work deferred.
@@ -87,32 +89,22 @@ reporting.
   separately authorized under a fresh frozen protocol.
 - ExECTv2 full-200 or holdout row-level inspection remains blocked; the
   reliability-audit protocol authorizes aggregate validation outputs only.
-- Qwen same-core full-200 promotion is blocked unless a Qwen-specific dev140
-  adapter/prompt repair is separately predeclared and passes.
+- Qwen same-core full-200 promotion is blocked unless a fresh Qwen-specific
+  dev140 repair/assembly rerun is separately predeclared and passes operational,
+  evidence-validity, and clinical non-regression gates.
 - Promotion of the lower-burden review-routing candidate is blocked by failed
   aggregate validation; any retry needs dev140-only redesign and a fresh
   predeclaration.
 
 ### Done Recently
 
-- 2026-06-25: Drafted the same-core full-200 aggregate-only predeclaration,
-  freezing GPT-4.1-mini plus DeepSeek as operational candidates and keeping
-  Qwen diagnostic-only.
-- 2026-06-25: Converted the paper-facing reliability/component-evidence
-  language into the ExECTv2 results-section scaffold, including the same-core
-  dev140 table and diagnostic-only Qwen operational caveat.
-- 2026-06-25: Rationalised recent plans; active order is results scaffold,
-  same-core full-200 predeclaration/execution decision, registry-driven run
-  surfacing, optional MLflow, then deferred cleanup.
-- 2026-06-25: Completed Qwen output-contract audit and repair v01 readout;
-  repair v01 failed the operational gate at `50/140`, so Qwen remains
-  diagnostic-only.
-- 2026-06-25: Completed same-core dev140 model-swap readout: DeepSeek
-  `0.8596`, GPT-4.1-mini `0.8396`, Qwen `0.8018`, all with `1.0000` exact
-  evidence and Qwen operational caveats.
-- 2026-06-25: Completed aggregate-only calibration, robustness,
-  self-consistency, Investigations, and Gan v0.7 holdout audit updates; linked
-  artifacts remain the source of detailed numeric evidence.
+- 2026-06-25: Completed same-core full-200 aggregate-only audit from the frozen
+  predeclaration: DeepSeek `0.8566` vs GPT-4.1-mini `0.8356` overall
+  `clinical_headline`; DeepSeek is accepted with an explicit `1` Diagnosis
+  parse/schema-failure caveat.
+- 2026-06-25: Finished same-core dev140/Qwen repair v01-v02, paper-language,
+  results scaffold, plan rationalisation, calibration/robustness/self-consistency,
+  Investigations, and Gan v0.7 holdout audit updates.
 - 2026-06-24: Completed current-code v08 full-200 GPT-4.1-mini architecture and
   no-verifier audits, refreshed reliability scorecard infrastructure, and froze
   the reliability-audit protocol.

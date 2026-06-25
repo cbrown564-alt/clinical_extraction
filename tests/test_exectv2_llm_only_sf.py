@@ -282,6 +282,20 @@ def test_check_evidence_non_substring_is_dropped() -> None:
     assert any("dropped_evidence_not_substring" in w for w in warnings)
 
 
+def test_check_evidence_repairs_standard_copy_drift_before_drop() -> None:
+    mention = _make_mention(
+        "2 seizures per month",
+        "she reports approximately 2 seizures per month",
+    )
+
+    valid, invalid, warnings = check_evidence([mention], note_text=_NOTE)
+
+    assert len(valid) == 1
+    assert len(invalid) == 0
+    assert valid[0].evidence == "She reports approximately 2 seizures per month"
+    assert any("repaired_evidence_exact_copy" in warning for warning in warnings)
+
+
 def test_check_evidence_empty_evidence_is_dropped() -> None:
     mention = _make_mention("some phrase", "")
     valid, invalid, warnings = check_evidence([mention], note_text=_NOTE)

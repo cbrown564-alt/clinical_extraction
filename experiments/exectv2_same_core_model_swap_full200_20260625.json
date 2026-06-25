@@ -1,0 +1,408 @@
+{
+  "allow_full200_or_holdout_row_inspection": false,
+  "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
+  "artifact_kind": "exectv2_same_core_model_swap_full200",
+  "claim_boundary": "Full-200 aggregate-only same-core validation is complete and accepted with an explicit schema-stability caveat: one Diagnosis parse/schema failure is tolerated, strict benchmark/CUI scores are diagnostic only, and no full-200 row-level failure analysis or tuning is authorized.",
+  "configs": [
+    "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_gpt41mini_full200.json",
+    "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_deepseek_full200.json"
+  ],
+  "generated_on": "2026-06-25",
+  "historical_diagnostic_boundary": {
+    "not_same_core_rows": [
+      "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+      "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+      "exectv2_holistic_finding_assembly_v0924_qwencompact_schemaoperand_dev140",
+      "exectv2_holistic_finding_assembly_v05_qwen_relaxed_actions_dev140"
+    ],
+    "policy": "Retain as historical diagnostics/path evidence only. Do not use them as final same-core model swaps."
+  },
+  "model_rows": [
+    {
+      "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "claim_boundary": "Full-200 aggregate-only same-core GPT-4.1-mini reference row replayed from the accepted 2-call no-SF-adjudicator simplification artifacts. Strict benchmark/CUI scores are diagnostic only.",
+      "deterministic_action_counts": {
+        "prescription_deterministic_mentions": 0,
+        "sf_evidence_invalid_dropped": 0
+      },
+      "diagnostics": {
+        "by_family": {
+          "Diagnosis": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 563,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 610,
+            "scored_mentions": 563
+          },
+          "Investigations": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 158,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 158,
+            "scored_mentions": 158
+          },
+          "Prescription": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 276,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 276,
+            "scored_mentions": 276
+          },
+          "SeizureFrequency": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 360,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 360,
+            "scored_mentions": 360
+          }
+        },
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "minimum_exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0
+      },
+      "metrics": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.8397,
+            "fn": 70,
+            "fp": 62,
+            "gold_count": 420,
+            "precision": 0.8462,
+            "precision_tp": 341,
+            "pred_count": 403,
+            "recall": 0.8333,
+            "recall_tp": 350,
+            "shortfall_to_target": 0.0603,
+            "tp": 350
+          },
+          "Investigations": {
+            "f1": 0.8563,
+            "fn": 37,
+            "fp": 12,
+            "gold_count": 183,
+            "precision": 0.9241,
+            "pred_count": 158,
+            "recall": 0.7978,
+            "shortfall_to_target": 0.0437,
+            "tp": 146
+          },
+          "Prescription": {
+            "f1": 0.8926,
+            "fn": 31,
+            "fp": 27,
+            "gold_count": 272,
+            "precision": 0.8993,
+            "pred_count": 268,
+            "recall": 0.886,
+            "shortfall_to_target": 0.0074,
+            "tp": 241
+          },
+          "SeizureFrequency": {
+            "f1": 0.7525,
+            "fn": 55,
+            "fp": 68,
+            "gold_count": 242,
+            "precision": 0.7333,
+            "pred_count": 255,
+            "recall": 0.7727,
+            "shortfall_to_target": 0.1475,
+            "tp": 187
+          }
+        },
+        "overall": {
+          "f1": 0.8356,
+          "fn": 193,
+          "fp": 169,
+          "gold_count": 1117,
+          "precision": 0.8441,
+          "precision_tp": 915,
+          "pred_count": 1084,
+          "recall": 0.8272,
+          "recall_tp": 924,
+          "tp": 924
+        },
+        "strict_benchmark_cui_f1": 0.4638
+      },
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "paths": {
+        "config": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_gpt41mini_full200.json",
+        "json": "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+        "jsonl": "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl",
+        "markdown": "docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_2026-06-25.md"
+      },
+      "producer_ownership": {
+        "Diagnosis": "same_core_diagnosis_decomposer",
+        "Investigations": "same_core_structured_direct_investigations",
+        "Prescription": "same_core_deterministic_prescription_repair_v03",
+        "SeizureFrequency": "same_core_structured_sf_direct+deterministic_union_arbitration"
+      },
+      "row_count": 200,
+      "split": "full200",
+      "status": "complete",
+      "surface": "clinical_headline"
+    },
+    {
+      "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "claim_boundary": "Full-200 aggregate-only same-core DeepSeek model-swap row under the frozen 2-call no-SF-adjudicator graph. Strict benchmark/CUI scores are diagnostic only.",
+      "deterministic_action_counts": {
+        "prescription_deterministic_mentions": 0,
+        "sf_evidence_invalid_dropped": 0
+      },
+      "diagnostics": {
+        "by_family": {
+          "Diagnosis": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 594,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 1,
+            "raw_mentions": 635,
+            "scored_mentions": 594
+          },
+          "Investigations": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 158,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 158,
+            "scored_mentions": 158
+          },
+          "Prescription": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 276,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 276,
+            "scored_mentions": 276
+          },
+          "SeizureFrequency": {
+            "call_failures": 0,
+            "evidence_invalid_dropped": 0,
+            "exact_evidence_mentions": 391,
+            "exact_evidence_rate": 1.0,
+            "parse_schema_failures": 0,
+            "raw_mentions": 391,
+            "scored_mentions": 391
+          }
+        },
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "minimum_exact_evidence_rate": 1.0,
+        "parse_schema_failures": 1
+      },
+      "metrics": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.8708,
+            "fn": 50,
+            "fp": 59,
+            "gold_count": 420,
+            "precision": 0.8608,
+            "precision_tp": 365,
+            "pred_count": 424,
+            "recall": 0.881,
+            "recall_tp": 370,
+            "shortfall_to_target": 0.0292,
+            "tp": 370
+          },
+          "Investigations": {
+            "f1": 0.9091,
+            "fn": 28,
+            "fp": 3,
+            "gold_count": 183,
+            "precision": 0.981,
+            "pred_count": 158,
+            "recall": 0.847,
+            "shortfall_to_target": 0.0,
+            "tp": 155
+          },
+          "Prescription": {
+            "f1": 0.8926,
+            "fn": 31,
+            "fp": 27,
+            "gold_count": 272,
+            "precision": 0.8993,
+            "pred_count": 268,
+            "recall": 0.886,
+            "shortfall_to_target": 0.0074,
+            "tp": 241
+          },
+          "SeizureFrequency": {
+            "f1": 0.7602,
+            "fn": 47,
+            "fp": 76,
+            "gold_count": 242,
+            "precision": 0.7196,
+            "pred_count": 271,
+            "recall": 0.8058,
+            "shortfall_to_target": 0.1398,
+            "tp": 195
+          }
+        },
+        "overall": {
+          "f1": 0.8566,
+          "fn": 156,
+          "fp": 165,
+          "gold_count": 1117,
+          "precision": 0.8528,
+          "precision_tp": 956,
+          "pred_count": 1121,
+          "recall": 0.8603,
+          "recall_tp": 961,
+          "tp": 961
+        },
+        "strict_benchmark_cui_f1": 0.5002
+      },
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "paths": {
+        "config": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_deepseek_full200.json",
+        "json": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+        "jsonl": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl",
+        "markdown": "docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_deepseek_full200_2026-06-25.md"
+      },
+      "producer_ownership": {
+        "Diagnosis": "same_core_diagnosis_decomposer",
+        "Investigations": "same_core_structured_direct_investigations",
+        "Prescription": "same_core_deterministic_prescription_repair_v03",
+        "SeizureFrequency": "same_core_structured_sf_direct+deterministic_union_arbitration"
+      },
+      "row_count": 200,
+      "split": "full200",
+      "status": "complete",
+      "surface": "clinical_headline"
+    }
+  ],
+  "next_actions": [
+    "Record the same-core full-200 aggregate-only comparison as accepted with a schema-stability caveat.",
+    "Move registry-driven run surfacing to the active work item."
+  ],
+  "overall_status": "ready_for_same_core_scorecard_review",
+  "predeclaration": "docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md",
+  "primary_surface": "clinical_headline",
+  "readiness_gates": {
+    "architecture_parity": {
+      "detail": "All configs share the frozen component graph.",
+      "status": "pass"
+    },
+    "attribution_clarity": {
+      "detail": "Configs separate model-generated structured/Diagnosis outputs from deterministic SF projection and Prescription repair.",
+      "status": "pass"
+    },
+    "claim_boundary": {
+      "detail": "This artifact is aggregate-only and does not inspect full-200 or holdout row-level failures.",
+      "status": "pass"
+    },
+    "evidence_validity": {
+      "detail": "Completed rows minimum exact evidence rate is 1.0000; 0 model row(s) still pending.",
+      "status": "pass"
+    },
+    "family_parity": {
+      "detail": "Per-family clinical-headline metrics are available for every model.",
+      "status": "pass"
+    },
+    "operational_stability": {
+      "detail": "Completed rows call failures=0, parse/schema failures=1; 0 model row(s) still pending. Full-200 tolerance allows up to 1 parse/schema failure with zero call failures.",
+      "status": "pass_with_caveat"
+    }
+  },
+  "row_inspection_policy": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+  "same_core_parity": {
+    "adapter_differences": {
+      "exectv2_2call_no_sf_adjudicator_deepseek_full200": {
+        "model": "deepseek/deepseek-chat",
+        "model_label": "DeepSeek chat",
+        "prompt_profile": "full",
+        "runtime": "deepseek_chat"
+      },
+      "exectv2_2call_no_sf_adjudicator_gpt41mini_full200": {
+        "model": "openai/gpt-4.1-mini",
+        "model_label": "GPT-4.1-mini",
+        "prompt_profile": "full",
+        "runtime": "openai_chat"
+      }
+    },
+    "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
+    "component_graph_identical": true,
+    "core_ids": [
+      "exectv2_2call_no_sf_adjudicator_model_swap"
+    ],
+    "mismatched_candidates": [],
+    "shared_signature": {
+      "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
+      "baseline_producer": "structured_key_family_event_ledger",
+      "calls_per_letter": 2.0,
+      "lenses": {
+        "Diagnosis": {
+          "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+          "ownership_label": "same_core_diagnosis_decomposer",
+          "portability": "benchmark_format",
+          "producer": "diagnosis_decomposer",
+          "source_lane": "same_core_diagnosis_decomposer"
+        },
+        "Investigations": {
+          "lens": "investigations_result_v01",
+          "ownership_label": "same_core_structured_direct_investigations",
+          "portability": "clinical_epilepsy",
+          "producer": "structured_key_family_event_ledger",
+          "source_lane": "same_core_structured_direct_investigations"
+        },
+        "Prescription": {
+          "lens": "prescription_regimen_v01",
+          "ownership_label": "same_core_deterministic_prescription_repair_v03",
+          "portability": "clinical_epilepsy",
+          "producer": "prescription_deterministic_repair",
+          "source_lane": "same_core_prescription_deterministic_repair_v03"
+        },
+        "SeizureFrequency": {
+          "lens": "sf_state_union_arbitration_v08",
+          "ownership_label": "same_core_structured_sf_direct+deterministic_union_arbitration",
+          "portability": "seizure_frequency",
+          "producer": "sf_structured_union",
+          "source_lane": "same_core_structured_direct_sf_union_no_adjudicator"
+        }
+      },
+      "live_call_components": [
+        "structured_key_family_event_ledger",
+        "diagnosis_decomposer"
+      ],
+      "producer_ids": [
+        "diagnosis_decomposer",
+        "prescription_deterministic_repair",
+        "sf_structured_union",
+        "structured_key_family_event_ledger"
+      ],
+      "replayed_components": [
+        "sf_structured_direct_adapter",
+        "sf_state_projection",
+        "sf_unknown_suppression",
+        "sf_union_arbitration",
+        "prescription_deterministic_repair",
+        "finding_assembly"
+      ],
+      "row_count": 200,
+      "split": "full200",
+      "views": [
+        "raw_candidate",
+        "evidence_valid",
+        "clinical_headline",
+        "fidelity_companion",
+        "benchmark_cui"
+      ]
+    }
+  }
+}

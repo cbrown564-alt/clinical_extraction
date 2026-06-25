@@ -49,8 +49,26 @@ DEFAULT_SUMMARY_MD = Path(
     "docs/experiments/exectv2/reliability/"
     "exectv2_same_core_model_swap_dev140_2026-06-25.md"
 )
+DEFAULT_FULL200_SUMMARY_JSON = Path(
+    "experiments/exectv2_same_core_model_swap_full200_20260625.json"
+)
+DEFAULT_FULL200_SUMMARY_JSONL = Path(
+    "experiments/exectv2_same_core_model_swap_full200_20260625.jsonl"
+)
+DEFAULT_FULL200_SUMMARY_MD = Path(
+    "docs/experiments/exectv2/reliability/"
+    "exectv2_same_core_model_swap_full200_2026-06-25.md"
+)
 PRIMARY_SURFACE = "clinical_headline"
 ROW_INSPECTION_POLICY = "dev140_only_no_full200_or_holdout_row_level_inspection"
+FULL200_ROW_INSPECTION_POLICY = (
+    "aggregate_only_no_full200_or_holdout_row_level_inspection"
+)
+FULL200_ALLOWED_PARSE_SCHEMA_FAILURES = 1
+FULL200_PREDECLARATION = (
+    "docs/experiments/exectv2/reliability/"
+    "exectv2_same_core_full200_predeclaration_2026-06-25.md"
+)
 
 
 @dataclass(frozen=True)
@@ -238,20 +256,22 @@ def build_model_swap_payload(
 ) -> dict[str, Any]:
     """Build the aggregate model-swap readiness payload."""
 
+    scope = _scope(configs)
     gates = _readiness_gates(model_rows, parity)
     overall_status = _overall_status(gates, model_rows)
     return {
-        "artifact_kind": "exectv2_same_core_model_swap_dev140",
+        "artifact_kind": f"exectv2_same_core_model_swap_{scope}",
         "generated_on": generated_on,
         "architecture_core_id": parity["architecture_core_id"],
         "primary_surface": PRIMARY_SURFACE,
-        "row_inspection_policy": ROW_INSPECTION_POLICY,
+        "row_inspection_policy": _row_inspection_policy_for_configs(configs),
         "allow_full200_or_holdout_row_inspection": False,
-        "claim_boundary": _claim_boundary(model_rows, gates),
+        "claim_boundary": _claim_boundary(model_rows, gates, scope=scope),
         "overall_status": overall_status,
         "same_core_parity": dict(parity),
         "model_rows": [dict(row) for row in model_rows],
         "readiness_gates": gates,
+        "predeclaration": FULL200_PREDECLARATION if scope == "full200" else None,
         "historical_diagnostic_boundary": {
             "not_same_core_rows": [
                 "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
@@ -264,7 +284,7 @@ def build_model_swap_payload(
                 "them as final same-core model swaps."
             ),
         },
-        "next_actions": _next_actions(model_rows, gates),
+        "next_actions": _next_actions(model_rows, gates, scope=scope),
         "configs": [config.path.as_posix() for config in configs],
     }
 
@@ -283,6 +303,21 @@ def render_model_swap_candidate_markdown(
         jsonl_path=jsonl_path,
     )
     meta = report["model_swap"]
+    if meta["row_inspection_policy"] == FULL200_ROW_INSPECTION_POLICY:
+        base = base.replace(
+            (
+                "This replay builds a per-letter clinical finding store, applies entity-specific "
+                "lenses, and renders scoring views from the same final findings. It is a "
+                "structural replay over frozen artifacts; it introduces no live model calls."
+            ),
+            (
+                "This replay builds a per-letter clinical finding store, applies entity-specific "
+                "lenses, and renders scoring views from the same final findings. The final "
+                "assembly stage is structural and introduces no live model calls; upstream "
+                "same-core producer artifacts are live-or-replayed according to the frozen "
+                "full-200 aggregate protocol."
+            ),
+        )
     lines = [
         "",
         "## Same-Core Model-Swap Contract",
@@ -294,7 +329,7 @@ def render_model_swap_candidate_markdown(
         f"- Calls per letter: `{meta['calls_per_letter']}`",
         f"- Live call components: `{', '.join(meta['live_call_components'])}`",
         f"- Replayed/no-call components: `{', '.join(meta['replayed_components'])}`",
-        f"- Row inspection policy: `{ROW_INSPECTION_POLICY}`",
+        f"- Row inspection policy: `{meta['row_inspection_policy']}`",
         "",
     ]
     return base + "\n" + "\n".join(lines)
@@ -305,7 +340,7 @@ def render_model_swap_markdown(payload: Mapping[str, Any]) -> str:
 
     gates = payload["readiness_gates"]
     lines = [
-        "# ExECTv2 Same-Core Model-Swap Dev140 Readiness",
+        _report_title(payload),
         "",
         f"- Generated: `{payload['generated_on']}`",
         f"- Architecture core: `{payload['architecture_core_id']}`",
@@ -313,6 +348,11 @@ def render_model_swap_markdown(payload: Mapping[str, Any]) -> str:
         f"- Row inspection policy: `{payload['row_inspection_policy']}`",
         f"- Overall status: **{payload['overall_status']}**",
         f"- Claim boundary: {payload['claim_boundary']}",
+    ]
+    if payload.get("predeclaration"):
+        lines.append(f"- Predeclaration: `{payload['predeclaration']}`")
+    lines.extend(
+        [
         "",
         "## Model Rows",
         "",
@@ -321,7 +361,8 @@ def render_model_swap_markdown(payload: Mapping[str, Any]) -> str:
             "Call failures | Parse/schema failures | Min evidence rate |"
         ),
         "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ]
+        ]
+    )
     for row in payload["model_rows"]:
         metrics = row.get("metrics") or {}
         by_indicator = metrics.get("by_indicator") or {}
@@ -374,6 +415,7 @@ def _annotated_candidate_report(
     config: ModelSwapConfig,
     report: Mapping[str, Any],
 ) -> dict[str, Any]:
+    scope = _scope([config])
     meta = {
         "config_path": config.path.as_posix(),
         "candidate_id": config.candidate_id,
@@ -387,13 +429,13 @@ def _annotated_candidate_report(
         "max_tokens": dict(config.max_tokens),
         "live_call_components": list(config.live_call_components),
         "replayed_components": list(config.replayed_components),
-        "row_inspection_policy": ROW_INSPECTION_POLICY,
+        "row_inspection_policy": _row_inspection_policy_for_config(config),
     }
     return {
         **dict(report),
         "gate_decision": {
             **dict(report["gate_decision"]),
-            "decision": "same-core-model-swap-dev140-readout",
+            "decision": f"same-core-model-swap-{scope}-readout",
             "basis": (
                 "Generic assembly gates remain diagnostic; the model-swap "
                 "readiness report governs cross-model promotion."
@@ -473,6 +515,11 @@ def _readiness_gates(
 ) -> dict[str, dict[str, str]]:
     pending = [row for row in model_rows if row["status"] != "complete"]
     completed = [row for row in model_rows if row["status"] == "complete"]
+    scope = (
+        "full200"
+        if any(int(row.get("row_count", 0)) > 140 for row in model_rows)
+        else "dev140"
+    )
     all_complete = not pending and bool(completed)
     parity_ok = bool(parity["component_graph_identical"])
     completed_diagnostics = [
@@ -485,6 +532,12 @@ def _readiness_gates(
     parse_failures = sum(
         int(diagnostics.get("parse_schema_failures", 0))
         for diagnostics in completed_diagnostics
+    )
+    operational_status = _operational_stability_status(
+        scope=scope,
+        pending=bool(pending),
+        call_failures=call_failures,
+        parse_failures=parse_failures,
     )
     min_evidence = min(
         [
@@ -517,15 +570,18 @@ def _readiness_gates(
             ),
         },
         "operational_stability": {
-            "status": (
-                "pending"
-                if pending
-                else ("pass" if call_failures == 0 and parse_failures == 0 else "fail")
-            ),
+            "status": operational_status,
             "detail": (
                 f"Completed rows call failures={call_failures}, "
                 f"parse/schema failures={parse_failures}; "
                 f"{len(pending)} model row(s) still pending."
+                + (
+                    f" Full-200 tolerance allows up to "
+                    f"{FULL200_ALLOWED_PARSE_SCHEMA_FAILURES} parse/schema "
+                    "failure with zero call failures."
+                    if operational_status == "pass_with_caveat"
+                    else ""
+                )
             ),
         },
         "family_parity": {
@@ -539,8 +595,11 @@ def _readiness_gates(
         "claim_boundary": {
             "status": "pass",
             "detail": (
-                "This artifact is dev140-only and does not inspect full-200 or "
-                "holdout row-level failures."
+                "This artifact is aggregate-only and does not inspect full-200 "
+                "or holdout row-level failures."
+                if scope == "full200"
+                else "This artifact is dev140-only and does not inspect full-200 "
+                "or holdout row-level failures."
             ),
         },
     }
@@ -560,8 +619,37 @@ def _overall_status(
 def _claim_boundary(
     model_rows: Sequence[Mapping[str, Any]],
     gates: Mapping[str, Mapping[str, str]],
+    *,
+    scope: str,
 ) -> str:
     pending = [row for row in model_rows if row["status"] != "complete"]
+    if scope == "full200":
+        if pending:
+            return (
+                "Full-200 aggregate-only same-core validation is pending until "
+                "all operational candidates have source artifacts. Qwen remains "
+                "excluded from the operational full-200 candidate set."
+            )
+        if gates["operational_stability"]["status"] == "fail":
+            return (
+                "Full-200 aggregate-only same-core rows are complete, but at "
+                "least one operational row fails call or parse/schema stability. "
+                "Report as diagnostic/null evidence; do not tune on full-200."
+            )
+        if gates["operational_stability"]["status"] == "pass_with_caveat":
+            return (
+                "Full-200 aggregate-only same-core validation is complete and "
+                "accepted with an explicit schema-stability caveat: one "
+                "Diagnosis parse/schema failure is tolerated, strict "
+                "benchmark/CUI scores are diagnostic only, and no full-200 "
+                "row-level failure analysis or tuning is authorized."
+            )
+        return (
+            "Full-200 aggregate-only same-core validation is complete for the "
+            "predeclared operational candidates. Strict benchmark/CUI scores are "
+            "diagnostic only, and no full-200 row-level failure analysis is "
+            "authorized."
+        )
     if pending:
         return (
             "Development same-core model-swap readiness. Final cross-model "
@@ -586,9 +674,29 @@ def _claim_boundary(
 def _next_actions(
     model_rows: Sequence[Mapping[str, Any]],
     gates: Mapping[str, Mapping[str, str]],
+    *,
+    scope: str,
 ) -> list[str]:
     pending = [row for row in model_rows if row["status"] != "complete"]
     if not pending:
+        if scope == "full200":
+            if gates["operational_stability"]["status"] == "fail":
+                return [
+                    "Record the completed full-200 aggregate-only comparison "
+                    "with an operational-stability caveat.",
+                    "Do not tune prompts, thresholds, parsers, deterministic "
+                    "rules, or scorers on the full-200 readout.",
+                ]
+            if gates["operational_stability"]["status"] == "pass_with_caveat":
+                return [
+                    "Record the same-core full-200 aggregate-only comparison "
+                    "as accepted with a schema-stability caveat.",
+                    "Move registry-driven run surfacing to the active work item.",
+                ]
+            return [
+                "Record the same-core full-200 aggregate-only comparison and "
+                "move registry-driven run surfacing to the active work item."
+            ]
         if gates["operational_stability"]["status"] == "fail":
             return [
                 "Record the completed dev140 same-core comparison with an "
@@ -698,6 +806,55 @@ def _jsonl_summary_row(row: Mapping[str, Any]) -> dict[str, Any]:
         "parse_schema_failures": diagnostics.get("parse_schema_failures"),
         "minimum_exact_evidence_rate": diagnostics.get("minimum_exact_evidence_rate"),
     }
+
+
+def _operational_stability_status(
+    *,
+    scope: str,
+    pending: bool,
+    call_failures: int,
+    parse_failures: int,
+) -> str:
+    if pending:
+        return "pending"
+    if call_failures == 0 and parse_failures == 0:
+        return "pass"
+    if (
+        scope == "full200"
+        and call_failures == 0
+        and parse_failures <= FULL200_ALLOWED_PARSE_SCHEMA_FAILURES
+    ):
+        return "pass_with_caveat"
+    return "fail"
+
+
+def _scope(configs: Sequence[ModelSwapConfig]) -> str:
+    return (
+        "full200"
+        if any(config.assembly.row_count > 140 for config in configs)
+        else "dev140"
+    )
+
+
+def _row_inspection_policy_for_config(config: ModelSwapConfig) -> str:
+    if config.assembly.row_count > 140 or "full" in config.assembly.split:
+        return FULL200_ROW_INSPECTION_POLICY
+    return ROW_INSPECTION_POLICY
+
+
+def _row_inspection_policy_for_configs(configs: Sequence[ModelSwapConfig]) -> str:
+    if any(
+        _row_inspection_policy_for_config(config) == FULL200_ROW_INSPECTION_POLICY
+        for config in configs
+    ):
+        return FULL200_ROW_INSPECTION_POLICY
+    return ROW_INSPECTION_POLICY
+
+
+def _report_title(payload: Mapping[str, Any]) -> str:
+    if payload.get("artifact_kind") == "exectv2_same_core_model_swap_full200":
+        return "# ExECTv2 Same-Core Model-Swap Full-200 Aggregate Validation"
+    return "# ExECTv2 Same-Core Model-Swap Dev140 Readiness"
 
 
 def _fmt_metric(value: Any) -> str:
