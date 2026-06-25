@@ -4,9 +4,10 @@ Date: 2026-06-25
 Scope: ExECTv2 DeepSeek, Qwen, and GPT-4.1-mini architecture alignment before final reliability-scorecard incorporation  
 Protocol boundary: dev140 development comparison first; any full-200 use must be predeclared aggregate-only with no full-200 or holdout row-level failure inspection
 
-Rationalisation status, 2026-06-25: dev140 complete; full-200 is pending only
-as a fresh aggregate-only predeclaration for GPT-4.1-mini plus DeepSeek. Qwen is
-diagnostic unless a separate predeclared repair passes dev140. See
+Rationalisation status, 2026-06-25: dev140 complete; the fresh aggregate-only
+full-200 predeclaration for GPT-4.1-mini plus DeepSeek is complete at
+`docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
+Qwen is diagnostic unless a separate predeclared repair passes dev140. See
 `docs/plans/recent_plan_rationalisation_2026-06-25.md`.
 
 ## Objective
@@ -59,12 +60,10 @@ Completed:
 
 Still pending:
 
-- Review the completed operational-stability caveat before any optional
-  full-200 aggregate-only predeclaration: Qwen contributed `1` call failure and
-  `12` parse/schema failures, while DeepSeek contributed `1` parse/schema
-  failure.
-- Any full-200 use remains blocked until a fresh aggregate-only predeclaration
-  freezes candidate ids, scorer surface, row-inspection policy, and stop rule.
+- Execute and report the optional full-200 aggregate-only comparison only from
+  the frozen predeclaration if that comparison is still needed.
+- Keep Qwen excluded from operational full-200 promotion unless a separate
+  Qwen-specific repair is predeclared and passes dev140.
 
 ## Why This Plan Exists
 
@@ -291,10 +290,11 @@ Completion gate:
 
 ### Phase 4: Optional Full-200 Aggregate Audit
 
-Only after Phase 3 passes, write a frozen aggregate-only full-200 audit
-predeclaration for same-core model-swap rows.
+Phase 3 has produced a dev140 readiness report, and the frozen aggregate-only
+full-200 audit predeclaration now exists for same-core model-swap rows at
+`docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
 
-The predeclaration must include:
+The predeclaration includes:
 
 - exact candidate ids;
 - scorer and views;
@@ -419,8 +419,9 @@ frontend/public/mock-data/exectv2/reliability-scorecard.json
 
 ## Open Questions
 
-1. Should the same-core comparison use dev140 only, or should successful rows
-   proceed to aggregate full-200 under the existing reliability audit protocol?
+1. Should the same-core comparison now be executed/reported on full-200 from the
+   frozen aggregate-only predeclaration, or remain dev140 evidence for the paper
+   draft?
 2. Should DeepSeek use chat or reasoner mode for ExECTv2, given the need for
    stable structured output and no hidden architecture changes?
 3. Should Qwen use the compact v0924-style prompt adapter or a direct port of
@@ -442,6 +443,8 @@ frontend/public/mock-data/exectv2/reliability-scorecard.json
 
 ## Immediate Next Action
 
-Write the freeze memo and create the three dev140 model-swap configs. Once the
-configs prove the component graph is identical, run the GPT reference row first,
-then DeepSeek and Qwen with only model-adapter differences.
+If the same-core full-200 comparison is still needed, execute and report only
+from
+`docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
+Otherwise, proceed to registry-driven run surfacing with the dev140 same-core
+rows and the frozen full-200 predeclaration as the claim boundary.

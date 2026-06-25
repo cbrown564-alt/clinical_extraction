@@ -10,8 +10,9 @@ individual plans remain as historical design records.
 
 The plan stack should collapse to one active sequence:
 
-1. Predeclare and, if still needed, run same-core full-200 aggregate validation
-   for GPT-4.1-mini plus DeepSeek only.
+1. Execute and report same-core full-200 aggregate validation only from the
+   frozen predeclaration if that comparison is still needed; GPT-4.1-mini plus
+   DeepSeek are the operational candidates and Qwen remains diagnostic-only.
 2. Clean up run surfacing and labels so the frontend/Observatory comparison
    views are registry-driven and model-aware.
 3. Add MLflow observability as optional infrastructure after the canonical
@@ -31,7 +32,7 @@ row unless a separately predeclared adapter/prompt repair passes dev140.
 | `exectv2_frontend_dataset_integration_implementation_plan_2026-06-22.md` | Complete, with optional resharding | No active work except optional static-data resharding. |
 | `component_impact_ablation_architecture_plan_2026-06-24.md` | Complete | No active work; the live contract is the Gan/ExECTv2 component-ablation contract docs and payloads. |
 | `exectv2_gpt41mini_simplification_frontier_plan_2026-06-24.md` | Complete | Accepted lean candidate is `exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`; no further simplification is active. |
-| `exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md` | Dev140 complete; full-200 predeclaration pending | Keep only the full-200 aggregate predeclaration path active, excluding Qwen from operational candidates. |
+| `exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md` | Dev140 complete; full-200 predeclaration complete | Execute/report only from the frozen full-200 aggregate predeclaration if still needed, excluding Qwen from operational candidates. |
 | `architecture_comparison_expansion_qwen_deepseek_2026-06-24.md` | Active but lower priority than paper/full-200 sequencing | Implement registry-driven run surfacing and labels after the paper-facing ExECTv2 sequence is stable. |
 | `mlflow_experiment_observability_implementation_plan_2026-06-25.md` | Future infrastructure | Start with Phase 0-1 only after the reporting sequence is no longer moving underneath it. |
 
@@ -62,6 +63,10 @@ row unless a separately predeclared adapter/prompt repair passes dev140.
 - [x] ExECTv2 results-section scaffold exists at
   `docs/research/exectv2_results_section_scaffold_2026-06-25.md`, including the
   same-core dev140 table and diagnostic-only Qwen caveat.
+- [x] Same-core full-200 aggregate-only predeclaration exists at
+  `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`;
+  GPT-4.1-mini plus DeepSeek are the operational candidates and Qwen is excluded
+  from promotion.
 
 ## Remaining Work, In Order
 
@@ -73,14 +78,15 @@ GPT-4.1-mini `0.8396`, Qwen `0.8018`, all on `clinical_headline`, with Qwen
 clearly marked diagnostic because of operational/output-contract failures.
 Strict benchmark/CUI results remain diagnostic/comparability only.
 
-### P1: Same-Core Full-200 Predeclaration
+### P1: Same-Core Full-200 Predeclaration - Complete
 
-- Draft a fresh aggregate-only predeclaration for the frozen same-core
-  architecture.
-- Include GPT-4.1-mini and DeepSeek as operational candidates.
-- Include Qwen only as a caveated diagnostic row if it is included at all.
-- Freeze candidate ids, scorer/view, stop rule, allowed aggregate outputs, and
-  the no-row-inspection policy before any execution.
+Completed in
+`docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
+The predeclaration freezes candidate ids, scorer/view, stop rule, allowed
+aggregate outputs, and the no-row-inspection policy before any new full-200
+execution. GPT-4.1-mini and DeepSeek are the operational candidates. Qwen is
+diagnostic-only and requires a separate passing dev140 repair before any
+full-200 inclusion.
 
 ### P2: Registry-Driven Run Surfacing
 
