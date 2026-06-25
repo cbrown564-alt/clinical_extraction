@@ -52,6 +52,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
     score_entity,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
@@ -322,12 +325,14 @@ def parse_extraction_json(
     Non-blocking issues (coercions, unknown fields) are noted in errors.
     """
     try:
-        payload = json.loads(_extract_json_object(raw_output))
+        payload, dialect_notes = parse_json_payload_with_schema_repair(
+            _extract_json_object(raw_output)
+        )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
     payload, coerce_notes = _coerce_payload(payload)
-    errors: list[str] = list(coerce_notes)
+    errors: list[str] = [*dialect_notes, *coerce_notes]
 
     try:
         record = ExtractionRecord.model_validate(payload)
@@ -335,6 +340,24 @@ def parse_extraction_json(
         return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
 
     return record, errors
+
+
+def raw_output_from_adapter_parse_error(error_text: str) -> str | None:
+    """Recover the model payload embedded in a DSPy adapter parse error."""
+
+    marker = "LM Response:"
+    if marker not in error_text:
+        return None
+    tail = error_text.split(marker, 1)[1]
+    for stop in (
+        "\n\nExpected to find output fields",
+        "\r\n\r\nExpected to find output fields",
+    ):
+        if stop in tail:
+            tail = tail.split(stop, 1)[0]
+            break
+    payload = tail.strip()
+    return payload or None
 
 
 def _extract_json_object(raw: str) -> str:
@@ -402,6 +425,9 @@ def _balanced_json_candidates(text: str) -> list[str]:
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:
     """Coerce numeric attribute values to strings; note coercions."""
     notes: list[str] = []
+    if isinstance(payload, list):
+        notes.append("coerced_top_level_mention_array")
+        payload = {"mentions": payload}
     if not isinstance(payload, dict):
         return payload, notes
     mentions_raw = payload.get("mentions")

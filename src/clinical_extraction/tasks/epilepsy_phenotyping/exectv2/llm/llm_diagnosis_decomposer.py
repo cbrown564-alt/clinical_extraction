@@ -31,6 +31,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     MentionRecord,
     check_evidence,
     parse_extraction_json,
+    raw_output_from_adapter_parse_error,
     repair_attributes,
     write_jsonl,
 )
@@ -39,6 +40,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 PROMPT_VERSION = "exectv2_hybrid_diagnosis_decomposer_v0.1"
 PIPELINE_FAMILY = "exectv2_hybrid_diagnosis_decomposer"
 COMPONENT_OWNER = "hybrid_diagnosis_decomposer"
+PromptProfile = Literal["full", "qwen_compact"]
 
 _HEADING_RE = re.compile(
     r"\b(diagnosis|impression|epilepsy|classification|syndrome)\b",
@@ -164,6 +166,8 @@ def build_prompt_input(
     letter: ExectLetter,
     draft_mentions: Sequence[Mapping[str, Any]],
     diagnosis_spans: Sequence[DiagnosisSpan] | None = None,
+    *,
+    prompt_profile: PromptProfile = "full",
 ) -> str:
     spans = (
         list(diagnosis_spans)
@@ -217,6 +221,13 @@ def build_prompt_input(
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
+    if prompt_profile == "qwen_compact":
+        payload["output_contract_reminder"] = [
+            "Return only one JSON object with exactly the top-level key 'mentions'.",
+            "Do not return a top-level list.",
+            "Do not use Python dict syntax or single quotes.",
+            "Do not include analysis, scratchpad text, or a second corrected object.",
+        ]
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
@@ -352,6 +363,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
+    prompt_profile: PromptProfile = "full",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     program = DspyDiagnosisDecomposer()
     if mode == "live":
@@ -378,19 +390,33 @@ def run_split(
     for letter in todo:
         draft_mentions = drafts.get(letter.letter_id, [])
         diagnosis_spans = diagnosis_spans_for_letter(letter, draft_mentions)
-        prompt_input_json = build_prompt_input(letter, draft_mentions, diagnosis_spans)
+        prompt_input_json = build_prompt_input(
+            letter,
+            draft_mentions,
+            diagnosis_spans,
+            prompt_profile=prompt_profile,
+        )
         raw_output = ""
         call_error: str | None = None
+        adapter_repair_notes: list[str] = []
         if mode == "live":
             try:
                 prediction = program(prompt_input_json=prompt_input_json)
                 raw_output = str(prediction.extraction_json)
             except Exception as exc:  # pragma: no cover
                 call_error = f"{type(exc).__name__}: {exc}"
+                recovered = raw_output_from_adapter_parse_error(call_error)
+                if recovered:
+                    raw_output = recovered
+                    call_error = None
+                    adapter_repair_notes.append(
+                        "adapter_output_field_repaired: extraction_json_missing"
+                    )
 
         extraction, parse_errors = (
             parse_extraction_json(raw_output) if raw_output else (None, ["not_run"])
         )
+        parse_errors = [*adapter_repair_notes, *parse_errors]
         mentions = extraction.mentions if extraction else []
         predicted_letter, gate_warnings = to_predicted_letter(
             letter.letter_id,
@@ -402,6 +428,7 @@ def run_split(
                 "letter_id": letter.letter_id,
                 "split": split,
                 "prompt_version": PROMPT_VERSION,
+                "prompt_profile": prompt_profile,
                 "pipeline_family": PIPELINE_FAMILY,
                 "model": model,
                 "mode": mode,
@@ -441,6 +468,7 @@ def run_split(
     rows = merge_rows(rows, order, key="letter_id")
     metadata = {
         "prompt_version": PROMPT_VERSION,
+        "prompt_profile": prompt_profile,
         "pipeline_family": PIPELINE_FAMILY,
         "model": model,
         "temperature": temperature,

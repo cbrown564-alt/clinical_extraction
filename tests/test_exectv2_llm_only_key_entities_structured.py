@@ -636,6 +636,102 @@ def test_parse_structured_events_drops_no_mention_reject_events() -> None:
     assert "dropped_no_mention_reject_event: event[0]" in errors
 
 
+def test_parse_structured_events_drops_unknown_event_family_without_coercion() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "diabetes",
+                    "anchor_text": "Diabetes",
+                    "evidence": "Diabetes, hypothyroidism",
+                    "mentions": [
+                        {
+                            "entity": DIAGNOSIS.name,
+                            "text": "Diabetes",
+                            "attributes": {"Negation": "Affirmed"},
+                        }
+                    ],
+                    "confidence": "high",
+                    "rationale": "",
+                },
+                {
+                    "family": "diagnosis",
+                    "anchor_text": "epilepsy",
+                    "evidence": "Diagnosis: epilepsy",
+                    "mentions": [
+                        {
+                            "entity": DIAGNOSIS.name,
+                            "text": "epilepsy",
+                            "attributes": {
+                                "DiagCategory": "Epilepsy",
+                                "Certainty": "5",
+                                "Negation": "Affirmed",
+                            },
+                        }
+                    ],
+                    "confidence": "high",
+                    "rationale": "Diagnosis stated.",
+                },
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert [event.family for event in record.clinical_events] == ["diagnosis"]
+    assert "dropped_unknown_event_family: event[0] family='diabetes'" in errors
+
+
+def test_parse_structured_events_strips_unclosed_non_scored_rationale() -> None:
+    raw = """
+{
+  "clinical_events": [
+    {
+      "family": "diagnosis",
+      "anchor_text": "epilepsy",
+      "evidence": "Diagnosis: epilepsy",
+      "event_state": {"Certainty": "5", "DiagCategory": "Epilepsy"},
+      "mentions": [
+        {
+          "entity": "Diagnosis",
+          "text": "epilepsy",
+          "attributes": {"Certainty": "5", "DiagCategory": "Epilepsy"}
+        }
+      ],
+      "confidence": "high",
+      "rationale": "I will reason through several alternatives.
+    },
+    {
+      "family": "investigation",
+      "anchor_text": "MRI",
+      "evidence": "MRI 2011 Normal",
+      "event_state": {"MRI_Performed": "Yes", "MRI_Results": "Normal"},
+      "mentions": [
+        {
+          "entity": "Investigations",
+          "text": "MRI",
+          "attributes": {"MRI_Performed": "Yes", "MRI_Results": "Normal"}
+        }
+      ],
+      "confidence": "high",
+      "rationale": "MRI result stated."
+    }
+  ]
+}
+"""
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert [event.family for event in record.clinical_events] == [
+        "diagnosis",
+        "investigation",
+    ]
+    assert record.clinical_events[0].rationale == ""
+    assert "json_dialect_repaired: stripped_non_scored_rationale" in errors
+
+
 def test_parse_structured_events_accepts_top_level_event_array() -> None:
     raw = json.dumps(
         [

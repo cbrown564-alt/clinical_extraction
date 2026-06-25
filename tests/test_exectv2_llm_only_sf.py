@@ -33,6 +33,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     MentionRecord,
     check_evidence,
     parse_extraction_json,
+    raw_output_from_adapter_parse_error,
     repair_attributes,
     to_predicted_letter,
 )
@@ -149,6 +150,50 @@ def test_parse_numeric_attribute_values_are_coerced_to_strings() -> None:
     assert record is not None
     assert record.mentions[0].attributes["NumberOfSeizures"] == "2"
     assert any("coerced_attribute_value" in e for e in errors)
+
+
+def test_parse_repairs_python_literal_payload() -> None:
+    raw = (
+        "{'mentions': [{'text': 'focal seizures', "
+        "'attributes': {'Certainty': 5}, "
+        "'evidence': 'focal seizures', "
+        "'confidence': 'high', 'rationale': 'Directly stated.'}]}"
+    )
+
+    record, errors = parse_extraction_json(raw)
+
+    assert record is not None
+    assert record.mentions[0].text == "focal seizures"
+    assert record.mentions[0].attributes["Certainty"] == "5"
+    assert "json_dialect_repaired: python_literal" in errors
+
+
+def test_parse_coerces_top_level_mention_array() -> None:
+    raw = json.dumps([
+        {
+            "text": "focal seizures",
+            "attributes": {"Certainty": "5"},
+            "evidence": "focal seizures",
+            "confidence": "high",
+            "rationale": "Directly stated.",
+        }
+    ])
+
+    record, errors = parse_extraction_json(raw)
+
+    assert record is not None
+    assert record.mentions[0].text == "focal seizures"
+    assert "coerced_top_level_mention_array" in errors
+
+
+def test_recovers_raw_payload_from_adapter_parse_error() -> None:
+    error = (
+        "AdapterParseError: Adapter JSONAdapter failed to parse the LM response.\n\n"
+        "LM Response: {\"mentions\": []} \n\n"
+        "Expected to find output fields in the LM response: [extraction_json]"
+    )
+
+    assert raw_output_from_adapter_parse_error(error) == '{"mentions": []}'
 
 
 def test_parse_fenced_json_is_extracted() -> None:

@@ -31,6 +31,27 @@
       "surface": "dev140 headline_target",
       "overall_f1": 0.9001,
       "decision": "Diagnostic, do not promote"
+    },
+    {
+      "role": "Same-core GPT reference",
+      "candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "surface": "dev140 clinical_headline",
+      "overall_f1": 0.8396,
+      "decision": "Frozen-core reference"
+    },
+    {
+      "role": "Same-core DeepSeek swap",
+      "candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "surface": "dev140 clinical_headline",
+      "overall_f1": 0.8596,
+      "decision": "Complete; operational caveat: 1 parse/schema failure"
+    },
+    {
+      "role": "Same-core Qwen swap",
+      "candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+      "surface": "dev140 clinical_headline",
+      "overall_f1": 0.8018,
+      "decision": "Complete; operational caveat: 1 call failure and 12 parse/schema failures"
     }
   ],
   "dimensions": [
@@ -40,8 +61,8 @@
       "dimension": "Task correctness",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "v08 clears all four dev140 families above 0.900; v09 remains above 0.900 overall; final DeepSeek/Qwen dev140 diagnostics reach 0.9174 and 0.9001 overall. DeepSeek still misses Diagnosis parity (0.8898), Qwen misses Diagnosis and SF parity, and both remain do-not-promote.",
-      "gap_to_close": "Freeze a full-200/holdout protocol before any broader claim.",
+      "current_evidence": "v08 clears all four dev140 families above 0.900; v09 remains above 0.900 overall; historical DeepSeek/Qwen dev140 diagnostics reach 0.9174 and 0.9001 overall but are not same-core model swaps. The frozen same-core dev140 comparison is complete: DeepSeek 0.8596, GPT-4.1-mini 0.8396, and Qwen 0.8018 overall clinical-headline F1. DeepSeek leads overall, GPT remains cleaner operationally, and Qwen lags most in SeizureFrequency (0.6919).",
+      "gap_to_close": "Record the dev140 model-swap result with operational caveats; review Qwen output-contract failures before any full-200 predeclaration.",
       "strength": "strong"
     },
     {
@@ -51,7 +72,7 @@
       "coverage": 4,
       "coverage_max": 5,
       "current_evidence": "Assembly rows preserve exact evidence, FP/FN counts, residual ledgers, and changed-row categories. The refresh computes per-family over-emission and miss rates for all four selected rows; Qwen Diagnosis remains the clearest pressure point (0.1525 over-emission, 0.1347 miss rate).",
-      "gap_to_close": "Convert high-burden review triggers into lower-burden operating points.",
+      "gap_to_close": "Redesign review-risk features on dev140 if a lower-burden operating point is still needed.",
       "strength": "strong"
     },
     {
@@ -80,8 +101,8 @@
       "dimension": "Abstention / review routing",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "Predeclared triggers now produce a burden/benefit table: 1,605/1,706 reviewed cells (0.9408 burden), catching 379/426 error cells (0.8897) but with 1,226 false-alarm cells. A dev-tuned lower-burden candidate reviews 1,291/1,706 cells (0.7567) while catching 342/426 error cells (0.8028).",
-      "gap_to_close": "Validate the operating point under a frozen audit protocol before promotion.",
+      "current_evidence": "Predeclared triggers produce a high-recall burden/benefit table: 1,605/1,706 reviewed cells (0.9408 burden), catching 379/426 error cells (0.8897) but with 1,226 false-alarm cells. The dev-tuned lower-burden candidate reviewed 1,291/1,706 cells (0.7567) while catching 342/426 error cells (0.8028) on dev, but failed aggregate full-200 validation: validation burden rose to 0.9661 while catch was 0.9037, so it is not promoted.",
+      "gap_to_close": "Keep the high-recall point as standing evidence; any lower-burden retry needs dev140-only feature redesign plus a fresh predeclaration.",
       "strength": "strong"
     },
     {
@@ -90,8 +111,8 @@
       "dimension": "Robustness",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; rich-schema DeepSeek/Qwen diagnostics strengthen cross-model transfer evidence. Latest Phase 6 LLM-only runs are also reported separately: DeepSeek 0.745, Qwen 0.697 computed clinical-headline F1.",
-      "gap_to_close": "Add perturbation or hard-slice panels before making robustness claims.",
+      "current_evidence": "v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; rich-schema DeepSeek/Qwen diagnostics strengthen cross-model transfer evidence. Latest Phase 6 LLM-only runs are also reported separately: DeepSeek 0.745, Qwen 0.697 computed clinical-headline F1. The deterministic fixture-panel preflight covers SF current/historical/future states, prescription current/plan, investigation result state, diagnosis assertion/hierarchy, and evidence perturbations. The frozen aggregate-only full-200 robustness audit now promotes current-code v08 hard-slice evidence: overall F1 0.8503, hard-slice F1 0.8336 across 414 eligible family cells, non-hard-slice F1 0.8909, schema/evidence validity 1.0000, 0 call/parse failures. Evidence paraphrase/deletion remain adversarial fixture stress evidence, not naturally observed full-200 failures.",
+      "gap_to_close": "Keep the claim limited to aggregate full-200 hard-slice validation; add holdout/external perturbation confirmation only under a fresh protocol.",
       "strength": "strong"
     },
     {
@@ -120,7 +141,7 @@
       "dimension": "Family parity",
       "coverage": 5,
       "coverage_max": 5,
-      "current_evidence": "v08 clears all target families; final non-GPT dev140 rows expose uneven family portability with residual subtype tables. DeepSeek misses only Diagnosis (0.8898) on the rich-schema headline; Qwen misses Diagnosis (0.8563) and SF (0.8908) despite strong Rx/Inv.",
+      "current_evidence": "v08 clears all target families; historical non-GPT dev140 rows expose uneven family portability with residual subtype tables. Same-core dev140 family metrics are now available: DeepSeek Dx 0.8845, SF 0.7658, Rx 0.8895, Inv 0.8966; GPT Dx 0.8573, SF 0.7645, Rx 0.8895, Inv 0.8347; Qwen Dx 0.8027, SF 0.6919, Rx 0.8895, Inv 0.8354.",
       "gap_to_close": "Use subtype parity to target architecture work; do not promote non-GPT rows from aggregate F1 alone.",
       "strength": "strong"
     },
@@ -130,8 +151,8 @@
       "dimension": "Operational reliability",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "v08/v09 are no-call replayable. DeepSeek source and assembly diagnostics are clean. Qwen source has ten parse/schema failures and the assembly reports ten parse/schema failures per family lens surface.",
-      "gap_to_close": "Keep source parse/call warnings separate from repaired assembly success, and define gates for future live runs.",
+      "current_evidence": "v08/v09 are no-call replayable. DeepSeek source and assembly diagnostics are clean. Qwen source has ten parse/schema failures and the assembly reports ten parse/schema failures per family lens surface. Same-core dev140 replay/live rows are complete with 1.0000 exact evidence across all models. GPT has 0 call/parse failures; DeepSeek has 0 call failures and 1 parse/schema failure; Qwen has 1 call failure and 12 parse/schema failures, so the readiness artifact blocks operational promotion.",
+      "gap_to_close": "Keep source parse/call warnings separate from repaired assembly success; review Qwen output-contract failures before any full-200 predeclaration.",
       "strength": "strong"
     }
   ],
@@ -159,11 +180,19 @@
     },
     {
       "metric": "Review triggers from provenance",
-      "current_status": "Operationalized as diagnostic triggers plus operating-point scan; current high-recall burden is 0.9408, and the lower-burden dev candidate is 0.7567 burden / 0.8028 catch."
+      "current_status": "Operationalized as diagnostic triggers plus operating-point scan; current high-recall dev burden is 0.9408, and the lower-burden dev candidate is 0.7567 burden / 0.8028 catch. Aggregate full-200 validation did not promote the lower-burden candidate because validation burden rose to 0.9661 despite 0.9037 catch."
+    },
+    {
+      "metric": "Robustness hard-slice validation",
+      "current_status": "Aggregate full-200 current-code v08 readout: 414 hard-slice family cells, hard-slice F1 0.8336 versus overall 0.8503, schema/evidence validity 1.0000, and 0 call/parse failures."
     },
     {
       "metric": "Latest DeepSeek/Qwen surface check",
       "current_status": "Built into computed_reliability.latest_run_check; Phase 6 LLM-only runs are reported separately from rich-schema reliability comparators."
+    },
+    {
+      "metric": "Same-core model-swap readiness",
+      "current_status": "Freeze memo and configs exist at docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_freeze_2026-06-25.md and configs/exectv2/model_swap/. Readiness artifact experiments/exectv2_same_core_model_swap_dev140_20260625.json marks architecture parity, attribution clarity, evidence validity, family parity, and claim boundary as passed; operational stability fails because completed rows total 1 call failure and 13 parse/schema failures."
     }
   ],
   "residual_risks": [
@@ -195,11 +224,11 @@
     },
     {
       "dimension": "Abstention / review routing",
-      "next_metric_needed": "Frozen validation of the lower-burden candidate; current diagnostic trigger set reviews 94.08% of eligible cells, while the dev-tuned candidate reviews 75.67%."
+      "next_metric_needed": "Dev140-only redesign plus fresh predeclaration for any lower-burden retry; the first lower-burden validation attempt was not promoted."
     },
     {
       "dimension": "Robustness",
-      "next_metric_needed": "Frozen perturbation panel for current vs historical/future states, med plans, investigation result states, and diagnosis conventions."
+      "next_metric_needed": "Holdout or external aggregate-only confirmation if robustness is promoted beyond the current full-200 hard-slice evidence surface; keep evidence perturbation claims tied to the frozen fixture panel unless a live adversarial panel is separately authorized."
     },
     {
       "dimension": "Consistency",
@@ -1881,7 +1910,7 @@
       {
         "id": "consistency",
         "coverage": 4,
-        "evidence_added": "Cross-model dev140 agreement plus selected GPT-4.1-mini 2-call no-SF-adjudicator live-repeat evidence: hard50 temp-0 reproducibility and dev140 varying-temperature entropy."
+        "evidence_added": "Cross-model dev140 agreement plus explicit same-prompt live resampling panel contract; saved cross-seed repeats are not yet present."
       },
       {
         "id": "family_parity",
