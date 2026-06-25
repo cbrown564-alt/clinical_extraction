@@ -160,6 +160,33 @@ def test_run_registry_validates_artifact_paths_relative_to_repo(tmp_path: Path) 
         validate_run_registry_artifacts([missing], repo_root=tmp_path)
 
 
+def test_run_registry_parses_surfacing_fields() -> None:
+    entry = registry_entry_from_json_record(
+        {
+            "run_id": "surfaced",
+            "artifact_paths": ["experiments/example.jsonl"],
+            "date": "2026-06-01",
+            "pipeline_family": "hybrid_structured_events",
+            "split": "validation",
+            "row_count": 750,
+            "model": "openai/gpt-4.1-mini",
+            "model_role": "comparator",
+            "mode": "replay",
+            "replay_status": "saved_output_replay",
+            "decision": "revise",
+            "surface_as_architecture": True,
+            "display_label": "Hybrid (LLM extract) · GPT-4.1-mini",
+            "architecture_family": "hybrid",
+            "comparison_role": "diagnostic",
+        }
+    )
+
+    assert entry.surface_as_architecture is True
+    assert entry.display_label == "Hybrid (LLM extract) · GPT-4.1-mini"
+    assert entry.architecture_family == "hybrid"
+    assert entry.comparison_role == "diagnostic"
+
+
 def test_run_registry_renders_decision_grouped_markdown_index(tmp_path: Path) -> None:
     revise = RunRegistryEntry(
         run_id="revise_run",

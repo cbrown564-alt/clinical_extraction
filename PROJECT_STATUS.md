@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 ## Active Objective
 
@@ -62,25 +62,20 @@ aggregate readout.
 
 ### Now
 
-- Implement registry-driven run surfacing and labels for the
-  Explorer/Component Impact surfaces now that the same-core full-200 aggregate
-  audit is settled.
 - Use `docs/plans/recent_plan_rationalisation_2026-06-25.md` as the current
   sequence; defer MLflow and repo cleanup until the reporting/registry path is
   stable.
 
 ### Next
 
-- Add registry/display curation fields, remove hardcoded Gan labels where the
-  registry can own them, and make Explorer selection explicit by `run_id`.
-- Regenerate Component Impact/Explorer payloads so model variants do not
-  collapse into a family-level "best row" heuristic.
+- Add MLflow observability Phase 0-1 after the canonical registry remains visibly
+  in charge (`docs/plans/mlflow_experiment_observability_implementation_plan_2026-06-25.md`).
 - If Qwen is revisited, predeclare a fresh same-core repair/assembly rerun using
   the shared standard evidence-repair family; parser/schema stability is no
   longer the limiting failure after v02.
 - Plan true component-off reliability ablations only after scorecard language is
   stable; reliability is trust evidence, component impact is delta evidence.
-- Keep MLflow observability, repo cleanup, and Investigations cost work deferred.
+- Keep repo cleanup and Investigations cost work deferred.
 
 ### Blocked
 
@@ -98,6 +93,11 @@ aggregate readout.
 
 ### Done Recently
 
+- 2026-06-26: Registry-driven Gan Explorer/Component Impact surfacing: curated
+  validation-750 comparators (GPT-4.1-mini, DeepSeek, Qwen per hybrid/LLM-only
+  family) via `run_surfacing.py`, explicit `run_id` Explorer selection, reconciled
+  registry curation fields, and regenerated `pipeline-families.json` +
+  `component-ablation.json`.
 - 2026-06-25: Completed same-core full-200 aggregate-only audit from the frozen
   predeclaration: DeepSeek `0.8566` vs GPT-4.1-mini `0.8356` overall
   `clinical_headline`; DeepSeek is accepted with an explicit `1` Diagnosis

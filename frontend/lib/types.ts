@@ -135,9 +135,14 @@ export interface FullRecordResponse {
 
 export interface PipelineFamilyItem {
   value: PipelineFamily;
+  run_id: string;
   label: string;
+  display_label?: string;
   executable: boolean;
-  kind: "rules_only" | "llm_only" | "hybrid";
+  kind: "rules_only" | "hybrid" | "llm_only";
+  pipeline_family: string;
+  model?: string;
+  comparison_role?: "control" | "diagnostic";
   has_replay_artifact: boolean;
   run_count?: number;
 }

@@ -88,15 +88,14 @@ execution. GPT-4.1-mini and DeepSeek are the operational candidates. Qwen is
 diagnostic-only and requires a separate passing dev140 repair before any
 full-200 inclusion.
 
-### P2: Registry-Driven Run Surfacing
+### P2: Registry-Driven Run Surfacing - Complete
 
-- Implement the still-active architecture-comparison expansion after P0/P1.
-- Add registry/display curation fields, remove hardcoded Gan labels where the
-  registry can own them, and make Explorer selection explicit by `run_id`.
-- Regenerate Component Impact/Explorer payloads so model variants do not collapse
-  into a family-level "best row" heuristic.
-- Keep test450 and full-200 restricted surfaces out of interactive row-level
-  surfacing.
+- Implemented registry-driven surfacing in `run_surfacing.py` with curated
+  validation-750 comparators for deterministic (live), hybrid structured events,
+  and LLM-only canonical across GPT-4.1-mini, DeepSeek, and Qwen.
+- Explorer dropdown is explicit by `run_id`; Component Impact ladders regenerated
+  from the same curation via `component_stage_ladder.py`.
+- Reconcile helper: `scripts/reconcile_gan_run_registry.py`.
 
 ### P3: Optional MLflow Observability
 

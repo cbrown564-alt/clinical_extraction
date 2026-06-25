@@ -67,6 +67,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     parse_structured_json,
 )
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (
+    DETERMINISTIC_COMPONENT_RUN_ID,
+    LIVE_DETERMINISTIC,
+    SURFACED_REPLAY_RUNS,
+    SurfacedRunCuration,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[6]
 DEFAULT_GENERATED_ON = "2026-06-24"
 DEFAULT_SPLIT = "validation"
@@ -188,40 +195,38 @@ _LLM_ONLY_STAGES: tuple[StageDefinition, ...] = (
 )
 
 
-def _comparison_jsonl(name: str) -> Path:
-    return Path(f"experiments/gan2026_three_way_comparison_validation750_{name}.jsonl")
+def _curation_to_spec(curation: SurfacedRunCuration) -> ArchitectureSpec:
+    if curation.architecture_family == "hybrid":
+        return ArchitectureSpec(
+            run_id=curation.run_id,
+            label=curation.display_label,
+            model=curation.model_display,
+            decision=curation.comparison_role,
+            kind="structured_events",
+            source_jsonl=Path(curation.source_jsonl) if curation.source_jsonl else None,
+            stages=_STRUCTURED_EVENTS_STAGES,
+        )
+    return ArchitectureSpec(
+        run_id=curation.run_id,
+        label=curation.display_label,
+        model=curation.model_display,
+        decision=curation.comparison_role,
+        kind="llm_only",
+        source_jsonl=Path(curation.source_jsonl) if curation.source_jsonl else None,
+        stages=_LLM_ONLY_STAGES,
+    )
 
 
-# One best performer per architecture family. The reset-native hybrid and the
-# direct labeler were dropped as redundant: each is the weaker sibling of the
-# kept hybrid / LLM-only line on the same validation-750 basis.
 DEFAULT_ARCHITECTURE_SPECS: tuple[ArchitectureSpec, ...] = (
     ArchitectureSpec(
-        run_id="deterministic_canonical_pipeline",
-        label="Deterministic canonical",
-        model="rules",
-        decision="control",
+        run_id=DETERMINISTIC_COMPONENT_RUN_ID,
+        label=LIVE_DETERMINISTIC.display_label,
+        model=LIVE_DETERMINISTIC.model_display,
+        decision=LIVE_DETERMINISTIC.comparison_role,
         kind="deterministic",
         stages=_DETERMINISTIC_STAGES,
     ),
-    ArchitectureSpec(
-        run_id="hybrid_structured_events",
-        label="Hybrid (LLM extract)",
-        model="openai/gpt-4.1-mini",
-        decision="diagnostic",
-        kind="structured_events",
-        source_jsonl=_comparison_jsonl("hybrid_structured_events_gpt41mini_2026-06-07"),
-        stages=_STRUCTURED_EVENTS_STAGES,
-    ),
-    ArchitectureSpec(
-        run_id="llm_only_canonical_pipeline",
-        label="LLM-only (rules in prompt)",
-        model="openai/gpt-4.1-mini",
-        decision="diagnostic",
-        kind="llm_only",
-        source_jsonl=_comparison_jsonl("llm_only_canonical_pipeline_gpt41mini_2026-06-07"),
-        stages=_LLM_ONLY_STAGES,
-    ),
+    *tuple(_curation_to_spec(curation) for curation in SURFACED_REPLAY_RUNS),
 )
 
 
@@ -501,15 +506,23 @@ _LLM_ONLY_MODULES: dict[str, _LlmOnlyModule] = {
 }
 
 
+def _llm_only_module_for(spec: ArchitectureSpec) -> _LlmOnlyModule:
+    if spec.run_id in _LLM_ONLY_MODULES:
+        return _LLM_ONLY_MODULES[spec.run_id]
+    source_name = spec.source_jsonl.name if spec.source_jsonl is not None else ""
+    for parser_key in _LLM_ONLY_MODULES:
+        if parser_key in source_name:
+            return _LLM_ONLY_MODULES[parser_key]
+    raise ValueError(f"no LLM-only parser registered for {spec.run_id}")
+
+
 class LlmOnlyProvider:
     """Producer floor (raw model label) plus the deterministic label-repair stage."""
 
     def __init__(self, spec: ArchitectureSpec) -> None:
         if spec.source_jsonl is None:
             raise ValueError(f"{spec.run_id} needs a source_jsonl")
-        module = _LLM_ONLY_MODULES.get(spec.run_id)
-        if module is None:
-            raise ValueError(f"no LLM-only parser registered for {spec.run_id}")
+        module = _llm_only_module_for(spec)
         self.spec = spec
         self._module = module
         self._rows = _load_rows(spec.source_jsonl)

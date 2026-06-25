@@ -37,6 +37,9 @@ ReplayStatus = Literal[
     "analysis_only",
 ]
 
+ComparisonRole = Literal["control", "diagnostic"]
+ArchitectureFamily = Literal["rules_only", "hybrid", "llm_only"]
+
 MetricValue = int | float | str | None | list[int | float | str | None]
 
 RUN_DECISIONS: frozenset[RunDecision] = frozenset(
@@ -94,6 +97,10 @@ class RunRegistryEntry:
     supersedes: tuple[str, ...] = ()
     superseded_by: str | None = None
     claim_language_notes: str = ""
+    surface_as_architecture: bool = False
+    display_label: str | None = None
+    architecture_family: ArchitectureFamily | None = None
+    comparison_role: ComparisonRole | None = None
 
     def to_json_record(self) -> dict[str, Any]:
         """Return a deterministic JSON-compatible registry record."""
@@ -118,6 +125,10 @@ class RunRegistryEntry:
             "supersedes": list(self.supersedes),
             "superseded_by": self.superseded_by,
             "claim_language_notes": self.claim_language_notes,
+            "surface_as_architecture": self.surface_as_architecture,
+            "display_label": self.display_label,
+            "architecture_family": self.architecture_family,
+            "comparison_role": self.comparison_role,
         }
         return record
 
@@ -168,6 +179,10 @@ def registry_entry_from_json_record(record: Mapping[str, Any]) -> RunRegistryEnt
         supersedes=supersedes,
         superseded_by=_optional_str(record.get("superseded_by")),
         claim_language_notes=_optional_str(record.get("claim_language_notes")) or "",
+        surface_as_architecture=_optional_bool(record.get("surface_as_architecture")),
+        display_label=_optional_str(record.get("display_label")),
+        architecture_family=_optional_architecture_family(record.get("architecture_family")),
+        comparison_role=_optional_comparison_role(record.get("comparison_role")),
     )
     entry.validate()
     return entry
@@ -244,6 +259,36 @@ def _optional_str(value: Any) -> str | None:
     if not isinstance(value, str):
         raise ValueError("optional text fields must be strings or null")
     return value
+
+
+def _optional_bool(value: Any) -> bool:
+    if value is None:
+        return False
+    if not isinstance(value, bool):
+        raise ValueError("surface_as_architecture must be a boolean")
+    return value
+
+
+def _optional_architecture_family(value: Any) -> ArchitectureFamily | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ValueError("architecture_family must be a string or null")
+    allowed: frozenset[str] = frozenset(("rules_only", "hybrid", "llm_only"))
+    if value not in allowed:
+        raise ValueError(f"architecture_family must be one of: {', '.join(sorted(allowed))}")
+    return cast(ArchitectureFamily, value)
+
+
+def _optional_comparison_role(value: Any) -> ComparisonRole | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ValueError("comparison_role must be a string or null")
+    allowed: frozenset[str] = frozenset(("control", "diagnostic"))
+    if value not in allowed:
+        raise ValueError(f"comparison_role must be one of: {', '.join(sorted(allowed))}")
+    return cast(ComparisonRole, value)
 
 
 def _required_int(record: Mapping[str, Any], field_name: str) -> int:

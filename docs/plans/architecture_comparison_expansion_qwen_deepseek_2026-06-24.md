@@ -1,7 +1,7 @@
 # Architecture Comparison Expansion — Qwen/DeepSeek + Registry-Driven Labels
 
 Date: 2026-06-24
-Status: active follow-up, not yet started; sequenced after paper/results and same-core full-200 predeclaration work
+Status: complete (2026-06-26)
 Scope: Gan 2026 **and** ExECTv2 — the Example Explorer pipeline/architecture
 dropdown and the Component Impact comparison.
 
@@ -124,7 +124,7 @@ replay-only, aggregate, validation-750, no model calls.
 1. **Registry schema** — add `surface_as_architecture`, `display_label`,
    `architecture_family` to the Gan run record (+ ExECTv2 equivalent); backfill
    the three current Gan architectures and the qwen/deepseek runs. Migration:
-   `experiments/_reconcile_run_registry.py`.
+   `scripts/reconcile_gan_run_registry.py`.
 2. **Backend** — rewrite `_build_pipeline_families` to surface curated runs;
    update `/exectv2/runs` to read curation; update the API test
    (`tests/test_observatory_api.py`) to assert run-level surfacing.

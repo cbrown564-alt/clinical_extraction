@@ -15,6 +15,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 )
 
 
+GPT41_HYBRID_RUN = (
+    "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07"
+)
+GPT41_LLM_RUN = (
+    "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07"
+)
+
+
 def _spec(run_id: str) -> csl.ArchitectureSpec:
     return next(spec for spec in csl.DEFAULT_ARCHITECTURE_SPECS if spec.run_id == run_id)
 
@@ -26,7 +34,7 @@ def _ladder(run_id: str) -> dict[str, object]:
 
 
 def test_structured_events_decomposes_into_a_moving_four_stage_ladder() -> None:
-    ladder = _ladder("hybrid_structured_events")
+    ladder = _ladder(GPT41_HYBRID_RUN)
     stages = ladder["stages"]  # type: ignore[index]
 
     assert [s["stage_id"] for s in stages] == [
@@ -52,7 +60,7 @@ def test_structured_events_decomposes_into_a_moving_four_stage_ladder() -> None:
 
 def test_llm_only_configs_show_a_real_label_repair_contribution() -> None:
     expected_final = {
-        "llm_only_canonical_pipeline": 0.7773,
+        GPT41_LLM_RUN: 0.7773,
     }
     for run_id, final in expected_final.items():
         ladder = _ladder(run_id)
@@ -66,14 +74,14 @@ def test_llm_only_configs_show_a_real_label_repair_contribution() -> None:
 
 
 def test_provider_seam_baseline_equals_predict_with_downstream_off() -> None:
-    spec = _spec("hybrid_structured_events")
+    spec = _spec(GPT41_HYBRID_RUN)
     provider = csl.StructuredEventsProvider(spec)
     stage_ids = [stage.stage_id for stage in provider.stages()]
 
     floor = provider.predict(frozenset(stage_ids[1:]))
     baseline_score = round(csl._accuracy(floor, provider.golds()), 4)
 
-    ladder = _ladder("hybrid_structured_events")
+    ladder = _ladder(GPT41_HYBRID_RUN)
     assert baseline_score == ladder["stages"][0]["score"]  # type: ignore[index]
 
 
