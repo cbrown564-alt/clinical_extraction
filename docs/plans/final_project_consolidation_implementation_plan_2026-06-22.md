@@ -2,6 +2,12 @@
 
 Date: 2026-06-22
 
+Rationalisation status, 2026-06-25: mostly complete. This plan is now a
+historical closeout record; the active follow-up sequence is centralized in
+`docs/plans/recent_plan_rationalisation_2026-06-25.md`. Remaining cleanup/refactor
+ideas are deferred until paper-facing results and current reporting surfaces are
+stable.
+
 Scope: final-phase consolidation across Gan 2026 seizure frequency, ExECTv2
 key-family extraction, and the clinical-extraction frontend. This plan assumes
 the active ExECTv2 DeepSeek and Qwen runs may continue while no-call reporting,

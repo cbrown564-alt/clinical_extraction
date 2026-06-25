@@ -1,0 +1,23 @@
+{"call_failures": 0, "n_mentions_scored": 31, "parse_failures": 0, "processed": 10, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 55, "parse_failures": 0, "processed": 20, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 76, "parse_failures": 0, "processed": 30, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 110, "parse_failures": 1, "processed": 40, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 139, "parse_failures": 1, "processed": 50, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 167, "parse_failures": 3, "processed": 60, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 194, "parse_failures": 3, "processed": 70, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 214, "parse_failures": 5, "processed": 80, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 233, "parse_failures": 7, "processed": 90, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 255, "parse_failures": 7, "processed": 100, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 283, "parse_failures": 8, "processed": 110, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 303, "parse_failures": 9, "processed": 120, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 349, "parse_failures": 9, "processed": 130, "total": 140}
+{"call_failures": 0, "n_mentions_scored": 386, "parse_failures": 11, "processed": 140, "total": 140}
+[prescription deterministic] rows=140 mentions=192
+{
+  "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+  "json": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.json",
+  "jsonl": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.jsonl",
+  "markdown": "docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_dev140_2026-06-25.md",
+  "model": "ollama_chat/qwen3.6:35b",
+  "overall_clinical_headline_f1": 0.8018
+}

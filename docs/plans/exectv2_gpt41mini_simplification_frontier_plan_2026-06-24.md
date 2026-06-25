@@ -4,6 +4,11 @@ Date: 2026-06-24
 Scope: ExECTv2 current-code GPT-4.1-mini full-200 aggregate architecture simplification  
 Protocol boundary: aggregate-only full-200 scoring; no full-200 or holdout row-level failure inspection
 
+Rationalisation status, 2026-06-25: complete. The accepted lean candidate is
+`exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`; no further
+simplification work is active unless the project owner changes the cost/quality
+thresholds. See `docs/plans/recent_plan_rationalisation_2026-06-25.md`.
+
 ## Objective
 
 Build a controlled cost-performance frontier for the GPT-4.1-mini ExECTv2 architecture by removing one model-bearing or deterministic component at a time until clinical-recovery performance falls below a predeclared acceptable level.

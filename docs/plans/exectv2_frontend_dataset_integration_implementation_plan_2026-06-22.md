@@ -4,6 +4,11 @@ Date: 2026-06-22
 
 Status: implemented (frontend integration delivered 2026-06-22)
 
+Rationalisation status, 2026-06-25: complete. Keep this as the frontend design
+record; only optional static-data resharding remains, and it is not part of the
+current priority sequence. See
+`docs/plans/recent_plan_rationalisation_2026-06-25.md`.
+
 Scope: replace the current ExECTv2-as-separate-page direction with a
 dataset-aware explorer architecture. ExECTv2 should be selectable as a sticky
 dataset option in the top-right app shell, and that selection should drive the

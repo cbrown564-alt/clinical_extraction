@@ -2,6 +2,11 @@
 
 Date: 2026-06-24
 
+Rationalisation status, 2026-06-25: complete. The live source of truth is now
+the Gan and ExECTv2 component-ablation contracts plus generated payloads; this
+plan is retained as the design/build record. No active work remains from this
+plan in the current priority sequence.
+
 > **Update, 2026-06-24 (post-completion):** the live Component Impact comparison was
 > trimmed to one best performer per architecture family —
 > `deterministic_canonical_pipeline`, `hybrid_structured_events`, and

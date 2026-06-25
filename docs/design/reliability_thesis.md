@@ -116,6 +116,24 @@ and evidence gates, and the hybrid architecture makes explicit which component
 extracts candidates, which selects the clinical fact, and which only normalizes
 or formats.
 
+### 3.3 Current ExECTv2 Reliability Boundary
+
+The 2026-06-25 ExECTv2 reliability refresh makes the paper claim stronger but
+also narrower. Calibration and robustness now have frozen aggregate full-200
+validation evidence, and the selected lean GPT-4.1-mini candidate has saved
+same-prompt consistency evidence. The lower-burden review-routing candidate was
+tested and not promoted, so the high-recall operating point remains standing
+evidence and any low-burden retry returns to dev140-only design.
+
+These audits should be cited as **reliability evidence for a fixed architecture**:
+trust, calibration, review-risk, robustness, consistency, evidence validity,
+family parity, and replay integrity. They should not be cited as holdout
+performance, deployment calibration, or component-causal impact evidence.
+Component impact remains reserved for ablation and stage-ladder deltas.
+
+Paper-facing claim language is consolidated in
+`docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md`.
+
 ## 4. Why Three Architectures Per Task
 
 The three families are not redundant; each answers a different question, and the
@@ -177,6 +195,10 @@ figures, for each task and each architecture family:
 - error taxonomy with counts and examples, attributed to components
 - evidence-validity rate, schema-validity rate, repair rate
 - uncertainty calibration summary
+- reliability scorecard with explicit evidence level labels: dev-only,
+  aggregate full-200, holdout/external, or fixture-stress
+- component-impact table that is separated from reliability evidence and uses
+  replayable component-off or stage-ladder deltas
 - worked examples of successful and failed clinical/temporal reasoning
 
 ## 7. Success Criteria

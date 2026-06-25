@@ -48,6 +48,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     _extract_json_object,
     _has_blocking_parse_issue,
     check_evidence,
+    raw_output_from_adapter_parse_error,
     repair_attributes,
     write_jsonl,
 )
@@ -88,6 +89,7 @@ PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
 }
 
 EventFamily = Literal["medication", "diagnosis", "seizure_frequency", "investigation"]
+ALLOWED_EVENT_FAMILIES = {"medication", "diagnosis", "seizure_frequency", "investigation"}
 PromptProfile = Literal["full", "qwen_compact"]
 
 _MEDICATION_RE = re.compile(
@@ -2952,12 +2954,20 @@ def _worked_examples() -> list[dict[str, Any]]:
 def parse_structured_events_json(
     raw_output: str,
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
+    extracted = _extract_json_object(raw_output)
     try:
         payload, dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
+            extracted
         )
     except json.JSONDecodeError as exc:
-        return None, [f"invalid_json: {exc.msg}"]
+        repaired_raw, rationale_notes = _strip_non_scored_rationale_fields(extracted)
+        if not rationale_notes:
+            return None, [f"invalid_json: {exc.msg}"]
+        try:
+            payload, dialect_notes = parse_json_payload_with_schema_repair(repaired_raw)
+        except json.JSONDecodeError:
+            return None, [f"invalid_json: {exc.msg}"]
+        dialect_notes = [*dialect_notes, *rationale_notes]
 
     payload, coerce_notes = _coerce_structured_payload(payload)
     try:
@@ -2965,6 +2975,20 @@ def parse_structured_events_json(
     except Exception as exc:
         return None, [f"schema_validation_error: {exc}"]
     return record, [*dialect_notes, *coerce_notes]
+
+
+def _strip_non_scored_rationale_fields(raw_payload: str) -> tuple[str, list[str]]:
+    """Blank malformed free-text rationale values without touching scored fields."""
+
+    repaired, count = re.subn(
+        r'"rationale"\s*:\s*"(?:\\.|[^"\\])*?(?=\r?\n\s*[}\]])',
+        '"rationale": ""',
+        raw_payload,
+        flags=re.DOTALL,
+    )
+    if count == 0:
+        return raw_payload, []
+    return repaired, ["json_dialect_repaired: stripped_non_scored_rationale"]
 
 
 def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
@@ -2993,6 +3017,9 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
         mentions = event.get("mentions")
         if family == "reject" and (not isinstance(mentions, list) or not mentions):
             notes.append(f"dropped_no_mention_reject_event: event[{event_index}]")
+            continue
+        if family not in ALLOWED_EVENT_FAMILIES:
+            notes.append(f"dropped_unknown_event_family: event[{event_index}] family={family!r}")
             continue
         event["event_state"] = _stringify_mapping(
             event.get("event_state") or {},
@@ -3308,16 +3335,25 @@ def run_split(
         prompt_input_json = build_prompt_input(letter, prompt_profile=prompt_profile)
         raw_output = ""
         call_error: str | None = None
+        adapter_repair_notes: list[str] = []
         if mode == "live":
             try:
                 prediction = program(prompt_input_json=prompt_input_json)
                 raw_output = str(prediction.extraction_json)
             except Exception as exc:  # pragma: no cover
                 call_error = f"{type(exc).__name__}: {exc}"
+                recovered = raw_output_from_adapter_parse_error(call_error)
+                if recovered:
+                    raw_output = recovered
+                    call_error = None
+                    adapter_repair_notes.append(
+                        "adapter_output_field_repaired: extraction_json_missing"
+                    )
 
         record, parse_errors = (
             parse_structured_events_json(raw_output) if raw_output else (None, ["not_run"])
         )
+        parse_errors = [*adapter_repair_notes, *parse_errors]
         mentions = flatten_events(record) if record else []
         predicted_letter, gate_warnings = to_predicted_letter(
             letter.letter_id,

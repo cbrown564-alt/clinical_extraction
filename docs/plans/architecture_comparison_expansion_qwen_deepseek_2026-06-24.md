@@ -1,9 +1,14 @@
 # Architecture Comparison Expansion — Qwen/DeepSeek + Registry-Driven Labels
 
 Date: 2026-06-24
-Status: planned (not yet started)
+Status: active follow-up, not yet started; sequenced after paper/results and same-core full-200 predeclaration work
 Scope: Gan 2026 **and** ExECTv2 — the Example Explorer pipeline/architecture
 dropdown and the Component Impact comparison.
+
+Rationalisation status, 2026-06-25: still active, but below the immediate
+paper/results and same-core full-200-predeclaration work. Implement as the
+registry-driven run-surfacing phase in
+`docs/plans/recent_plan_rationalisation_2026-06-25.md`.
 
 ## Why this exists
 

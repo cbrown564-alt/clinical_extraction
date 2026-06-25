@@ -2,6 +2,12 @@
 
 Date: 2026-06-22
 
+Rationalisation status, 2026-06-25: deferred cleanup policy. Do not start
+archive/delete/refactor work from this plan until the current evidence spine,
+paper-facing ExECTv2 results scaffold, and run-surfacing work are stable. The
+active sequence is centralized in
+`docs/plans/recent_plan_rationalisation_2026-06-25.md`.
+
 Scope: non-destructive cleanup plan for the final closeout phase. This plan
 does not delete, move, or rename active evidence. It defines the policy and
 inventory to use after the artifact index, cross-model report, and reliability

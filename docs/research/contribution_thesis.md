@@ -131,6 +131,9 @@ The expected pattern is itself a research question: highly specific rules may fi
 The implementation should produce artifacts that can become paper tables and figures:
 
 - component ablation table
+- reliability scorecard and component-impact table as separate outputs; the
+  ExECTv2 paper-language boundary is maintained in
+  `docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md`
 - deterministic-rule category ablation table
 - error taxonomy with counts and examples
 - per-label purist and pragmatic performance
