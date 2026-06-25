@@ -18,6 +18,8 @@ def test_investigations_rule_ablation_scores_variants_and_counts_actions() -> No
     payload = ablation.build_investigations_rule_ablation_payload(
         direct_rows,
         verifier_rows,
+        development_direct_rows=direct_rows,
+        development_arbitration_rows=verifier_rows,
         generated_on="2026-06-25",
     )
 
@@ -29,8 +31,13 @@ def test_investigations_rule_ablation_scores_variants_and_counts_actions() -> No
     assert variants["selective_verifier_v02_empty_pending_no"]["routed_letters"] == 1
     assert payload["max_acceptable_selective_burden"] == 0.20
     assert payload["decision"]["selective_v02_burden_acceptable"] is False
+    gate = payload["selective_review_burden_gate"]
+    assert gate["ceiling"] == ablation.SELECTIVE_REVIEW_BURDEN_CEILING
+    assert gate["status"] == "passes_design_ceiling"
+    assert gate["selected_policy_id"] == ablation.SELECTIVE_POLICY_V04
+    assert ablation.SELECTIVE_POLICY_V02 in gate["blocked_policy_ids"]
     assert payload["decision"]["selected_next_architecture"] == (
-        "selective_investigations_adjudicator_v02_empty_pending_no_diagnostic"
+        "selective_investigations_adjudicator_low_burden_dev_scaffold"
     )
 
 
@@ -122,6 +129,72 @@ def test_v01_selective_policy_retains_broad_ambiguity_comparator() -> None:
     )
 
     assert routed == 2
+
+
+def test_v03_selective_policy_routes_only_empty_direct_outputs() -> None:
+    direct_rows = [
+        _row("EA1", []),
+        _row(
+            "EA2",
+            [
+                _mention(
+                    "MRI",
+                    {"MRI_Performed": "No", "MRI_Results": "Unknown"},
+                    evidence="I will arrange MRI",
+                )
+            ],
+        ),
+    ]
+    arbitrated_verifier_rows = [
+        _row("EA1", [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"})]),
+        _row("EA2", [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"})]),
+    ]
+
+    selective, routed = ablation.selective_verifier_rows(
+        direct_rows,
+        arbitrated_verifier_rows,
+        policy=ablation.SELECTIVE_POLICY_V03,
+    )
+
+    assert routed == 1
+    assert selective[0]["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "Yes"
+    assert selective[1]["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "No"
+
+
+def test_v04_capped_direct_risk_policy_never_exceeds_burden_ceiling() -> None:
+    direct_rows = [
+        _row(
+            f"EA{i}",
+            [
+                _mention(
+                    "MRI",
+                    {"MRI_Performed": "No", "MRI_Results": "Unknown"},
+                    evidence="I will arrange MRI",
+                )
+            ],
+        )
+        for i in range(10)
+    ]
+    arbitrated_verifier_rows = [
+        _row(
+            f"EA{i}",
+            [_mention("MRI", {"MRI_Performed": "Yes", "MRI_Results": "Normal"})],
+        )
+        for i in range(10)
+    ]
+
+    selective, routed = ablation.selective_verifier_rows(
+        direct_rows,
+        arbitrated_verifier_rows,
+        policy=ablation.SELECTIVE_POLICY_V04,
+    )
+
+    assert routed == 2
+    assert routed / len(direct_rows) <= ablation.SELECTIVE_REVIEW_BURDEN_CEILING
+    assert sum(
+        row["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "Yes"
+        for row in selective
+    ) == 2
 
 
 def _row(letter_id: str, mentions: list[dict[str, object]]) -> dict[str, object]:

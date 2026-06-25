@@ -1,6 +1,6 @@
 {
   "dataset": "exectv2",
-  "generated_on": "2026-06-24",
+  "generated_on": "2026-06-25",
   "source_scorecard": "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md",
   "source_cross_model_report": "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md",
   "evidence_set": [
@@ -68,11 +68,11 @@
       "id": "calibration",
       "number": 4,
       "dimension": "Calibration",
-      "coverage": 3,
+      "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "A no-call external confidence proxy now bins 1,706 dev140 candidate-family cells using family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden. Expected calibration error is 0.1456; bins are diagnostic and not yet an accepted confidence model.",
-      "gap_to_close": "Improve monotonicity and reduce circular family priors before any calibration claim.",
-      "strength": "medium"
+      "current_evidence": "A grouped cross-validated no-call scoring rule now scores 1,706 dev140 candidate-family cells using only predeclared family/provenance/evidence ambiguity features, grouped by letter_id to avoid train/test letter leakage. Dev-only ECE is 0.0277; Brier is 0.1774 versus 0.1874 for the grouped constant-base-rate comparator. The aggregate-only full-200 validation audit promotes the frozen scoring rule with ECE 0.0432, Brier 0.2245 versus 0.2387 constant base-rate Brier, five populated monotone bins, and per-family ECE reported for Diagnosis (0.1424), SeizureFrequency (0.1292), Prescription (0.1214), and Investigations (0.0925).",
+      "gap_to_close": "Keep the claim limited to aggregate full-200 calibration evidence; do not call it deployment-ready probability or holdout calibration.",
+      "strength": "strong"
     },
     {
       "id": "abstention_review_routing",
@@ -100,8 +100,8 @@
       "dimension": "Consistency",
       "coverage": 4,
       "coverage_max": 5,
-      "current_evidence": "Assembly replay is deterministic from saved artifacts. The refresh adds cross-model dev140 agreement over shared letter_id: pairwise clinical-headline mean Jaccard 0.8852, exact family-cell agreement 0.8000. There is still no cross-seed same-prompt panel.",
-      "gap_to_close": "Run predeclared same-prompt resampling only if needed for the paper.",
+      "current_evidence": "Assembly replay is deterministic from saved artifacts. The refresh adds cross-model dev140 agreement over shared letter_id: pairwise clinical-headline mean Jaccard 0.8852, exact family-cell agreement 0.8000. The selected GPT-4.1-mini 2-call no-SF-adjudicator candidate now has saved live-repeat evidence: hard50 temp-0 exact family-cell agreement 0.9217 / mean entropy 0.1261, and dev140 varying-temperature exact agreement 0.8857 / mean entropy 0.1905, with 0 call/parse failures and raw producer variation confirming non-cache replay.",
+      "gap_to_close": "Keep the claim aggregate-only; add holdout/external repeat confirmation only under a fresh protocol.",
       "strength": "strong"
     },
     {
@@ -154,6 +154,10 @@
       "current_status": "Built from shared dev140 letter_id: mean pairwise Jaccard 0.8852, exact family-cell agreement 0.8000."
     },
     {
+      "metric": "Selected-candidate same-prompt consistency",
+      "current_status": "Built from saved live repeats for exectv2_gpt41mini_simplification_2call_no_sf_adjudicator: hard50 temp-0 exact family-cell agreement 0.9217 / mean entropy 0.1261; dev140 varying-temperature exact agreement 0.8857 / mean entropy 0.1905."
+    },
+    {
       "metric": "Review triggers from provenance",
       "current_status": "Operationalized as diagnostic triggers plus operating-point scan; current high-recall burden is 0.9408, and the lower-burden dev candidate is 0.7567 burden / 0.8028 catch."
     },
@@ -187,7 +191,7 @@
   "upgrade_plan": [
     {
       "dimension": "Calibration",
-      "next_metric_needed": "Better-calibrated risk proxy with monotone bins and lower ECE than 0.1456."
+      "next_metric_needed": "Holdout or external aggregate-only confirmation if calibration is promoted beyond the current full-200 evidence surface."
     },
     {
       "dimension": "Abstention / review routing",
@@ -199,7 +203,7 @@
     },
     {
       "dimension": "Consistency",
-      "next_metric_needed": "Same-prompt resampling panel, separated from deterministic assembly replay and cross-model agreement."
+      "next_metric_needed": "Optional holdout/external repeat confirmation under a fresh protocol; the selected GPT-4.1-mini candidate already has hard50 temp-0 and dev140 varying-temperature live-repeat evidence."
     },
     {
       "dimension": "Family parity",
@@ -917,38 +921,193 @@
       ]
     },
     "calibration_proxy": {
-      "definition": "External no-call confidence proxy from family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden.",
+      "definition": "Frozen no-call scoring rule trained by grouped cross-validation over dev140 rich-schema candidate-family cells. Features are family and predeclared provenance/evidence ambiguity flags; no full-200 or holdout rows are loaded.",
+      "model_type": "grouped_cross_validated_logistic_scoring_rule",
+      "validation_status": "dev140 cross-validated development evidence only; not a full-200 or holdout calibration claim.",
+      "feature_set": [
+        "family:Diagnosis",
+        "family:SeizureFrequency",
+        "family:Prescription",
+        "family:Investigations",
+        "evidence_invalid",
+        "low_confidence",
+        "source_final_delta",
+        "active_rate",
+        "plan_language",
+        "result_state",
+        "deterministic_action_count",
+        "prediction_count"
+      ],
       "cell_count": 1706,
-      "bin_count": 4,
-      "expected_calibration_error": 0.1456,
+      "fold_count": 5,
+      "bin_count": 5,
+      "expected_calibration_error": 0.0277,
+      "brier_score": 0.1774,
+      "constant_base_rate_brier_score": 0.1874,
+      "brier_improvement_vs_base_rate": 0.01,
+      "overall_accuracy": 0.7503,
+      "mean_calibrated_confidence": 0.7487,
+      "max_adjacent_bin_reversal": 0.0053,
+      "leakage_audit": {
+        "surface": "dev140 rich-schema holistic assembly reliability scorecard",
+        "group_key": "letter_id",
+        "fold_count": 5,
+        "unique_groups": 137,
+        "shared_letter_between_train_and_test": false,
+        "forbidden_validation_rows_loaded": false,
+        "forbidden_row_level_outputs_emitted": false,
+        "candidate_identity_used_as_feature": false,
+        "gold_or_failure_residual_used_as_feature": false
+      },
+      "heuristic_baseline": {
+        "definition": "External no-call confidence proxy from family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden.",
+        "cell_count": 1706,
+        "bin_count": 4,
+        "expected_calibration_error": 0.1456,
+        "brier_score": 0.2035,
+        "bins": [
+          {
+            "bin": "very_high",
+            "cells": 88,
+            "avg_confidence_proxy": 0.8236,
+            "accuracy": 0.6023,
+            "mean_cell_f1": 0.7018
+          },
+          {
+            "bin": "high",
+            "cells": 788,
+            "avg_confidence_proxy": 0.6982,
+            "accuracy": 0.8452,
+            "mean_cell_f1": 0.9324
+          },
+          {
+            "bin": "medium",
+            "cells": 560,
+            "avg_confidence_proxy": 0.573,
+            "accuracy": 0.6446,
+            "mean_cell_f1": 0.8591
+          },
+          {
+            "bin": "low",
+            "cells": 270,
+            "avg_confidence_proxy": 0.4701,
+            "accuracy": 0.7407,
+            "mean_cell_f1": 0.9026
+          }
+        ]
+      },
       "bins": [
         {
-          "bin": "very_high",
-          "cells": 88,
-          "avg_confidence_proxy": 0.8236,
-          "accuracy": 0.6023,
-          "mean_cell_f1": 0.7018
+          "bin": "q1",
+          "confidence_range": [
+            0.5128,
+            0.6454
+          ],
+          "cells": 341,
+          "avg_confidence_proxy": 0.6058,
+          "avg_calibrated_confidence": 0.6058,
+          "accuracy": 0.5572,
+          "calibration_gap": -0.0487,
+          "ece_contribution": 0.0097,
+          "mean_cell_f1": 0.8673
         },
         {
-          "bin": "high",
-          "cells": 788,
-          "avg_confidence_proxy": 0.6982,
-          "accuracy": 0.8452,
-          "mean_cell_f1": 0.9324
+          "bin": "q2",
+          "confidence_range": [
+            0.6458,
+            0.7442
+          ],
+          "cells": 341,
+          "avg_confidence_proxy": 0.7156,
+          "avg_calibrated_confidence": 0.7156,
+          "accuracy": 0.7537,
+          "calibration_gap": 0.038,
+          "ece_contribution": 0.0076,
+          "mean_cell_f1": 0.8945
         },
         {
-          "bin": "medium",
-          "cells": 560,
-          "avg_confidence_proxy": 0.573,
-          "accuracy": 0.6446,
-          "mean_cell_f1": 0.8591
+          "bin": "q3",
+          "confidence_range": [
+            0.7443,
+            0.7978
+          ],
+          "cells": 341,
+          "avg_confidence_proxy": 0.7718,
+          "avg_calibrated_confidence": 0.7718,
+          "accuracy": 0.7977,
+          "calibration_gap": 0.0258,
+          "ece_contribution": 0.0052,
+          "mean_cell_f1": 0.8895
         },
         {
-          "bin": "low",
-          "cells": 270,
-          "avg_confidence_proxy": 0.4701,
-          "accuracy": 0.7407,
-          "mean_cell_f1": 0.9026
+          "bin": "q4",
+          "confidence_range": [
+            0.7978,
+            0.8232
+          ],
+          "cells": 341,
+          "avg_confidence_proxy": 0.8145,
+          "avg_calibrated_confidence": 0.8145,
+          "accuracy": 0.824,
+          "calibration_gap": 0.0096,
+          "ece_contribution": 0.0019,
+          "mean_cell_f1": 0.9092
+        },
+        {
+          "bin": "q5",
+          "confidence_range": [
+            0.8232,
+            0.8544
+          ],
+          "cells": 342,
+          "avg_confidence_proxy": 0.8353,
+          "avg_calibrated_confidence": 0.8353,
+          "accuracy": 0.8187,
+          "calibration_gap": -0.0166,
+          "ece_contribution": 0.0033,
+          "mean_cell_f1": 0.8982
+        }
+      ],
+      "per_family": [
+        {
+          "family": "Diagnosis",
+          "cells": 520,
+          "accuracy": 0.6519,
+          "mean_calibrated_confidence": 0.6614,
+          "expected_calibration_error": 0.0713,
+          "brier_score": 0.2098,
+          "constant_base_rate_brier_score": 0.2368,
+          "bin_count": 4
+        },
+        {
+          "family": "SeizureFrequency",
+          "cells": 421,
+          "accuracy": 0.7363,
+          "mean_calibrated_confidence": 0.7437,
+          "expected_calibration_error": 0.0489,
+          "brier_score": 0.1975,
+          "constant_base_rate_brier_score": 0.1943,
+          "bin_count": 4
+        },
+        {
+          "family": "Prescription",
+          "cells": 450,
+          "accuracy": 0.8333,
+          "mean_calibrated_confidence": 0.8151,
+          "expected_calibration_error": 0.0656,
+          "brier_score": 0.1373,
+          "constant_base_rate_brier_score": 0.1459,
+          "bin_count": 4
+        },
+        {
+          "family": "Investigations",
+          "cells": 315,
+          "accuracy": 0.8127,
+          "mean_calibrated_confidence": 0.8045,
+          "expected_calibration_error": 0.0296,
+          "brier_score": 0.1545,
+          "constant_base_rate_brier_score": 0.1561,
+          "bin_count": 4
         }
       ]
     },
@@ -1103,6 +1262,321 @@
         }
       ]
     },
+    "robustness_panel_preflight": {
+      "artifact_kind": "exectv2_robustness_panel_preflight",
+      "generated_on": "2026-06-25",
+      "surface": "rich-schema holistic assembly reliability scorecard",
+      "scorer": "headline_target clinical-recovery family cells",
+      "split": "deterministic_dev_fixture_panel",
+      "result_type": "dev_fixture_preflight_not_validation",
+      "allow_model_calls": false,
+      "row_inspection_policy": "Synthetic/dev-fixture panel only. No full-200 or holdout row-level inspection, examples, residual ledgers, or note text are loaded.",
+      "claim_boundary": "This artifact freezes the robustness panel schema and proves the scorer is sensitive to targeted perturbation failures. It is not a validation result until a frozen candidate is run once under the 2026-06-24 reliability-audit protocol.",
+      "panel_coverage": {
+        "case_count": 8,
+        "by_family": {
+          "Diagnosis": 2,
+          "Investigations": 1,
+          "Prescription": 2,
+          "SeizureFrequency": 3
+        },
+        "by_perturbation_family": {
+          "diagnosis_assertion_hierarchy": 2,
+          "evidence_deletion": 1,
+          "evidence_paraphrase": 1,
+          "investigations_result_state": 1,
+          "prescription_current_vs_plan": 1,
+          "sf_current_vs_future": 1,
+          "sf_current_vs_historical": 1
+        },
+        "minimum_coverage_met": true,
+        "missing_minimum_families": []
+      },
+      "promotion_gate": {
+        "scorecard_ready_for_frozen_candidate_run": true,
+        "scorecard_coverage_can_increase": false,
+        "reason": "Panel preflight is ready, but scorecard robustness coverage can increase only after an aggregate-only frozen candidate run passes the predeclared robustness gate."
+      },
+      "prediction_arms": [
+        {
+          "arm_id": "reference_oracle",
+          "label": "Reference oracle",
+          "overall": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "precision_tp": 9,
+            "recall_tp": 9,
+            "pred_count": 9,
+            "gold_count": 9,
+            "fp": 0,
+            "fn": 0
+          },
+          "by_family": [
+            {
+              "tp": 2,
+              "precision_tp": 2,
+              "recall_tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "family": "Diagnosis",
+              "companion_metrics": {
+                "assertion_f1": 1.0,
+                "negation_f1": 1.0
+              }
+            },
+            {
+              "tp": 3,
+              "precision_tp": 3,
+              "recall_tp": 3,
+              "fp": 0,
+              "fn": 0,
+              "pred_count": 3,
+              "gold_count": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "family": "SeizureFrequency",
+              "companion_metrics": {
+                "active_rate_fidelity_f1": 1.0,
+                "benchmark_with_cui_f1": 1.0
+              }
+            },
+            {
+              "tp": 2,
+              "precision_tp": 2,
+              "recall_tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "family": "Prescription",
+              "companion_metrics": {
+                "ordinary_complete_f1": 1.0,
+                "future_medication_f1": 0.0
+              }
+            },
+            {
+              "tp": 2,
+              "precision_tp": 2,
+              "recall_tp": 2,
+              "fp": 0,
+              "fn": 0,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
+              "family": "Investigations",
+              "companion_metrics": {
+                "performed_f1": 1.0,
+                "result_f1": 1.0
+              }
+            }
+          ],
+          "predicted_mentions": 9,
+          "schema_valid_mentions": 9,
+          "evidence_valid_mentions": 9,
+          "schema_validity_rate": 1.0,
+          "evidence_validity_rate": 1.0,
+          "validation_issue_counts": {},
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        },
+        {
+          "arm_id": "targeted_failure_control",
+          "label": "Targeted failure control",
+          "overall": {
+            "precision": 0.4444,
+            "recall": 0.4444,
+            "f1": 0.4444,
+            "precision_tp": 4,
+            "recall_tp": 4,
+            "pred_count": 9,
+            "gold_count": 9,
+            "fp": 5,
+            "fn": 5
+          },
+          "by_family": [
+            {
+              "tp": 1,
+              "precision_tp": 1,
+              "recall_tp": 1,
+              "fp": 1,
+              "fn": 1,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 0.5,
+              "recall": 0.5,
+              "f1": 0.5,
+              "family": "Diagnosis",
+              "companion_metrics": {
+                "assertion_f1": 0.0,
+                "negation_f1": 0.0
+              }
+            },
+            {
+              "tp": 1,
+              "precision_tp": 1,
+              "recall_tp": 1,
+              "fp": 2,
+              "fn": 2,
+              "pred_count": 3,
+              "gold_count": 3,
+              "precision": 0.3333,
+              "recall": 0.3333,
+              "f1": 0.3333,
+              "family": "SeizureFrequency",
+              "companion_metrics": {
+                "active_rate_fidelity_f1": 0.0,
+                "benchmark_with_cui_f1": 0.3333
+              }
+            },
+            {
+              "tp": 1,
+              "precision_tp": 1,
+              "recall_tp": 1,
+              "fp": 1,
+              "fn": 1,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 0.5,
+              "recall": 0.5,
+              "f1": 0.5,
+              "family": "Prescription",
+              "companion_metrics": {
+                "ordinary_complete_f1": 0.5,
+                "future_medication_f1": 0.0
+              }
+            },
+            {
+              "tp": 1,
+              "precision_tp": 1,
+              "recall_tp": 1,
+              "fp": 1,
+              "fn": 1,
+              "pred_count": 2,
+              "gold_count": 2,
+              "precision": 0.5,
+              "recall": 0.5,
+              "f1": 0.5,
+              "family": "Investigations",
+              "companion_metrics": {
+                "performed_f1": 0.5,
+                "result_f1": 0.6667
+              }
+            }
+          ],
+          "predicted_mentions": 9,
+          "schema_valid_mentions": 9,
+          "evidence_valid_mentions": 7,
+          "schema_validity_rate": 1.0,
+          "evidence_validity_rate": 0.7778,
+          "validation_issue_counts": {
+            "evidence_not_substring": 1,
+            "missing_evidence": 1
+          },
+          "call_failures": 0,
+          "parse_schema_failures": 0,
+          "delta_vs_reference_oracle": {
+            "overall_f1": -0.5556,
+            "schema_validity_rate": 0.0,
+            "evidence_validity_rate": -0.2222
+          }
+        }
+      ],
+      "cases": [
+        {
+          "case_id": "sf_current_over_historical",
+          "family": "SeizureFrequency",
+          "perturbation_family": "sf_current_vs_historical",
+          "failure_mode": "selects historical active rate instead of current state",
+          "rationale": "Current state must override older seizure-burden history.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "sf_current_over_future_plan",
+          "family": "SeizureFrequency",
+          "perturbation_family": "sf_current_vs_future",
+          "failure_mode": "drops the current active-rate state because future review is mentioned",
+          "rationale": "Future review language is not the current seizure state.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "rx_current_over_plan",
+          "family": "Prescription",
+          "perturbation_family": "prescription_current_vs_plan",
+          "failure_mode": "extracts planned clobazam as a current regimen",
+          "rationale": "Medication plans must stay separate from active regimens.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "inv_pending_vs_result",
+          "family": "Investigations",
+          "perturbation_family": "investigations_result_state",
+          "failure_mode": "treats pending MRI as performed with an unknown result",
+          "rationale": "Pending tests are not completed investigations with results.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "dx_specific_over_generic",
+          "family": "Diagnosis",
+          "perturbation_family": "diagnosis_assertion_hierarchy",
+          "failure_mode": "emits a generic or unsupported hierarchy diagnosis",
+          "rationale": "Hierarchy pressure cases must preserve the most specific assertion.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "dx_negation_assertion",
+          "family": "Diagnosis",
+          "perturbation_family": "diagnosis_assertion_hierarchy",
+          "failure_mode": "preserves concept identity but flips negation to affirmed",
+          "rationale": "Concept-only recovery can hide assertion errors; companion scoring exposes them.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "evidence_paraphrase_sf",
+          "family": "SeizureFrequency",
+          "perturbation_family": "evidence_paraphrase",
+          "failure_mode": "uses paraphrased non-verbatim evidence for a correct fact",
+          "rationale": "Evidence paraphrase preserves the fact but fails exact-evidence validity.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        },
+        {
+          "case_id": "evidence_deletion_rx",
+          "family": "Prescription",
+          "perturbation_family": "evidence_deletion",
+          "failure_mode": "deletes evidence while keeping the clinical fact",
+          "rationale": "Evidence deletion should reduce evidence validity even when scoring stays correct.",
+          "expected_mentions": [],
+          "failure_mentions": []
+        }
+      ],
+      "holdout_guardrail": {
+        "full_200_or_holdout_rows_loaded": false,
+        "blocked_surfaces": [
+          "full-200",
+          "holdout",
+          "test"
+        ],
+        "policy": "This module constructs synthetic fixture letters only. Full-200 or holdout use must remain aggregate-only and separately frozen."
+      }
+    },
     "active_llm_only_readout": [
       {
         "candidate": "decision_table_sf_inv_gpt41mini_dev140",
@@ -1168,6 +1642,212 @@
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
       }
     ],
+    "same_prompt_consistency": {
+      "evidence_type": "same_prompt_cross_seed_resampling",
+      "analysis_kind": "exectv2_same_prompt_consistency_no_call_dev140",
+      "deterministic_replay_included": false,
+      "claim_boundary": "Panels use saved live dev140 LLM artifacts only. Agreement metrics are populated only when at least two artifacts share surface, model, prompt version/profile, and temperature.",
+      "minimum_repeats_for_agreement": 2,
+      "panels": [
+        {
+          "surface_id": "active_llm_only",
+          "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
+          "model_label": "DeepSeek chat",
+          "prompt_version": "exectv2_llm_only_key_entities_generation_selection_v0.5",
+          "prompt_profile": "decision_table_sf_inv",
+          "temperature": "not_recorded",
+          "repeat_count": 1,
+          "seed_or_repeat_count": 1,
+          "seed_labels": [
+            "decision_table_sf_inv_deepseek_chat_dev140"
+          ],
+          "status": "blocked_needs_at_least_two_saved_live_repeats",
+          "artifact_rows": [
+            {
+              "candidate": "decision_table_sf_inv_deepseek_chat_dev140",
+              "model_label": "DeepSeek chat",
+              "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
+              "role": "latest DeepSeek LLM-only transfer",
+              "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline",
+              "rows": 140,
+              "mode": "live",
+              "seed": "decision_table_sf_inv_deepseek_chat_dev140"
+            }
+          ],
+          "rows": 140,
+          "call_failures": 0,
+          "schema_failures": 24,
+          "schema_invalid_rows": 4,
+          "schema_validity_rate": 0.9714,
+          "evidence_invalid_mentions": 35,
+          "raw_mentions": 913,
+          "evidence_validity_rate": 0.9617,
+          "within_model_pairwise_clinical_headline_jaccard": null,
+          "family_cell_agreement": {
+            "pairwise_comparisons": 0,
+            "cell_count": 0,
+            "exact_family_cell_agreement_rate": null
+          },
+          "per_family_disagreement_rates": [
+            {
+              "family": "Diagnosis",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "SeizureFrequency",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Prescription",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Investigations",
+              "cell_count": 0,
+              "disagreement_rate": null
+            }
+          ]
+        },
+        {
+          "surface_id": "active_llm_only",
+          "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
+          "model_label": "GPT-4.1-mini",
+          "prompt_version": "exectv2_llm_only_key_entities_generation_selection_v0.5",
+          "prompt_profile": "decision_table_sf_inv",
+          "temperature": "not_recorded",
+          "repeat_count": 1,
+          "seed_or_repeat_count": 1,
+          "seed_labels": [
+            "decision_table_sf_inv_gpt41mini_dev140"
+          ],
+          "status": "blocked_needs_at_least_two_saved_live_repeats",
+          "artifact_rows": [
+            {
+              "candidate": "decision_table_sf_inv_gpt41mini_dev140",
+              "model_label": "GPT-4.1-mini",
+              "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl",
+              "role": "active LLM-only control",
+              "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline",
+              "rows": 140,
+              "mode": "live",
+              "seed": "decision_table_sf_inv_gpt41mini_dev140"
+            }
+          ],
+          "rows": 140,
+          "call_failures": 0,
+          "schema_failures": 250,
+          "schema_invalid_rows": 20,
+          "schema_validity_rate": 0.8571,
+          "evidence_invalid_mentions": 23,
+          "raw_mentions": 751,
+          "evidence_validity_rate": 0.9694,
+          "within_model_pairwise_clinical_headline_jaccard": null,
+          "family_cell_agreement": {
+            "pairwise_comparisons": 0,
+            "cell_count": 0,
+            "exact_family_cell_agreement_rate": null
+          },
+          "per_family_disagreement_rates": [
+            {
+              "family": "Diagnosis",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "SeizureFrequency",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Prescription",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Investigations",
+              "cell_count": 0,
+              "disagreement_rate": null
+            }
+          ]
+        },
+        {
+          "surface_id": "active_llm_only",
+          "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
+          "model_label": "Qwen 3.6 35B",
+          "prompt_version": "exectv2_llm_only_key_entities_generation_selection_v0.5",
+          "prompt_profile": "decision_table_sf_inv",
+          "temperature": "not_recorded",
+          "repeat_count": 1,
+          "seed_or_repeat_count": 1,
+          "seed_labels": [
+            "decision_table_sf_inv_qwen36_side11435_dev140"
+          ],
+          "status": "blocked_needs_at_least_two_saved_live_repeats",
+          "artifact_rows": [
+            {
+              "candidate": "decision_table_sf_inv_qwen36_side11435_dev140",
+              "model_label": "Qwen 3.6 35B",
+              "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
+              "role": "latest Qwen LLM-only transfer",
+              "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline",
+              "rows": 140,
+              "mode": "live",
+              "seed": "decision_table_sf_inv_qwen36_side11435_dev140"
+            }
+          ],
+          "rows": 140,
+          "call_failures": 0,
+          "schema_failures": 213,
+          "schema_invalid_rows": 34,
+          "schema_validity_rate": 0.7571,
+          "evidence_invalid_mentions": 49,
+          "raw_mentions": 842,
+          "evidence_validity_rate": 0.9418,
+          "within_model_pairwise_clinical_headline_jaccard": null,
+          "family_cell_agreement": {
+            "pairwise_comparisons": 0,
+            "cell_count": 0,
+            "exact_family_cell_agreement_rate": null
+          },
+          "per_family_disagreement_rates": [
+            {
+              "family": "Diagnosis",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "SeizureFrequency",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Prescription",
+              "cell_count": 0,
+              "disagreement_rate": null
+            },
+            {
+              "family": "Investigations",
+              "cell_count": 0,
+              "disagreement_rate": null
+            }
+          ]
+        }
+      ]
+    },
+    "deterministic_replay_stability": {
+      "evidence_type": "deterministic_replay_stability",
+      "same_prompt_consistency_included": false,
+      "analysis_kind": "exectv2_saved_artifact_replay_stability_dev140",
+      "artifact_count": 4,
+      "rows": 560,
+      "replayable_from_saved_jsonl": true,
+      "call_failures": 0,
+      "schema_failures": 0,
+      "claim_boundary": "Deterministic replay confirms saved-artifact reproducibility only; it is not within-model live resampling evidence."
+    },
     "holdout_guardrail": {
       "full_200_or_holdout_rows_loaded": false,
       "blocked_surfaces": [
@@ -1185,8 +1865,8 @@
       },
       {
         "id": "calibration",
-        "coverage": 3,
-        "evidence_added": "No-call external confidence proxy with reliability bins."
+        "coverage": 4,
+        "evidence_added": "Grouped dev140 calibration rule plus aggregate full-200 validation audit with ECE, Brier, reliability bins, and per-family calibration."
       },
       {
         "id": "abstention_review_routing",
@@ -1201,7 +1881,7 @@
       {
         "id": "consistency",
         "coverage": 4,
-        "evidence_added": "Cross-model dev140 agreement panel over shared letter IDs."
+        "evidence_added": "Cross-model dev140 agreement plus selected GPT-4.1-mini 2-call no-SF-adjudicator live-repeat evidence: hard50 temp-0 reproducibility and dev140 varying-temperature entropy."
       },
       {
         "id": "family_parity",

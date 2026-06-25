@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
     cross_model_reliability_analysis as reliability_analysis,
 )
@@ -54,8 +56,27 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
     assert qwen_dx["miss_rate"] > 0.1
     assert qwen_dx["over_emission_rate"] > 0.1
 
-    assert analysis["calibration_proxy"]["bin_count"] >= 3
-    assert 0.0 <= analysis["calibration_proxy"]["expected_calibration_error"] <= 1.0
+    calibration = analysis["calibration_proxy"]
+    assert calibration["model_type"] == (
+        "grouped_cross_validated_logistic_scoring_rule"
+    )
+    assert calibration["leakage_audit"]["group_key"] == "letter_id"
+    assert calibration["leakage_audit"]["fold_count"] == 5
+    assert calibration["leakage_audit"]["shared_letter_between_train_and_test"] is False
+    assert calibration["bin_count"] >= 4
+    assert 0.0 <= calibration["expected_calibration_error"] <= 1.0
+    assert 0.0 <= calibration["brier_score"] <= 1.0
+    assert calibration["brier_score"] < calibration["constant_base_rate_brier_score"]
+    assert set(calibration["feature_set"]) >= {
+        "evidence_invalid",
+        "low_confidence",
+        "source_final_delta",
+        "deterministic_action_count",
+    }
+    assert {
+        row["family"]
+        for row in calibration["per_family"]
+    } == {"Diagnosis", "SeizureFrequency", "Prescription", "Investigations"}
     assert analysis["review_routing"]["reviewed_cells"] > 0
     assert analysis["review_routing"]["caught_error_cells"] > 0
     operating_points = {
@@ -73,6 +94,10 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
         < -0.18
     )
     assert analysis["cross_model_agreement"]["overall"]["mean_pairwise_jaccard"] > 0.5
+    robustness = analysis["robustness_panel_preflight"]
+    assert robustness["panel_coverage"]["minimum_coverage_met"] is True
+    assert robustness["promotion_gate"]["scorecard_ready_for_frozen_candidate_run"] is True
+    assert robustness["holdout_guardrail"]["full_200_or_holdout_rows_loaded"] is False
 
 
 def test_cross_model_reliability_analysis_scores_active_llm_only_latest_rows() -> None:
@@ -91,3 +116,130 @@ def test_cross_model_reliability_analysis_scores_active_llm_only_latest_rows() -
     assert active["Qwen 3.6 35B"]["rows_path"].endswith(
         QWEN_PHASE6_ROWS
     )
+
+
+def test_same_prompt_consistency_panel_keeps_live_resampling_separate_from_replay(
+    monkeypatch,
+) -> None:
+    run = reliability_analysis.ReliabilityRun(
+        candidate="same_prompt_seed_1",
+        model_label="GPT-4.1-mini",
+        rows_path=Path("experiments/same_prompt_seed_1.jsonl"),
+        surface_id="active_llm_only",
+        role="fixture",
+        claim_boundary="dev fixture",
+    )
+    rows = [
+        {
+            "letter_id": "EA1",
+            "mode": "live",
+            "prompt_version": "prompt_v1",
+            "prompt_profile": "decision_table",
+            "call_error": None,
+            "parse_errors": [],
+            "n_mentions_raw": 2,
+            "n_evidence_invalid": 1,
+            "predicted_mentions": [
+                {
+                    "entity": "Diagnosis",
+                    "text": "focal epilepsy",
+                    "attributes": {"Negation": "Affirmed"},
+                }
+            ],
+        }
+    ]
+    monkeypatch.setattr(reliability_analysis, "ACTIVE_LLM_ONLY_RUNS", (run,))
+
+    consistency = reliability_analysis._same_prompt_consistency({run.candidate: rows})
+    assert consistency["evidence_type"] == "same_prompt_cross_seed_resampling"
+    assert consistency["deterministic_replay_included"] is False
+    panel = consistency["panels"][0]
+    assert panel["status"] == "blocked_needs_at_least_two_saved_live_repeats"
+    assert panel["call_failures"] == 0
+    assert panel["schema_validity_rate"] == 1.0
+    assert panel["evidence_validity_rate"] == 0.5
+    assert panel["family_cell_agreement"]["exact_family_cell_agreement_rate"] is None
+    assert {
+        "Diagnosis",
+        "SeizureFrequency",
+        "Prescription",
+        "Investigations",
+    } == {
+        row["family"]
+        for row in panel["per_family_disagreement_rates"]
+    }
+
+    replay = reliability_analysis._deterministic_replay_stability(
+        {"saved_replay": [{"letter_id": "EA1", "call_error": None, "parse_errors": []}]}
+    )
+    assert replay["evidence_type"] == "deterministic_replay_stability"
+    assert replay["same_prompt_consistency_included"] is False
+    assert replay["rows"] > 0
+
+
+def test_same_prompt_consistency_panel_computes_saved_repeat_agreement(
+    monkeypatch,
+) -> None:
+    runs = (
+        reliability_analysis.ReliabilityRun(
+            candidate="same_prompt_seed_1",
+            model_label="GPT-4.1-mini",
+            rows_path=Path("experiments/same_prompt_seed_1.jsonl"),
+            surface_id="active_llm_only",
+        ),
+        reliability_analysis.ReliabilityRun(
+            candidate="same_prompt_seed_2",
+            model_label="GPT-4.1-mini",
+            rows_path=Path("experiments/same_prompt_seed_2.jsonl"),
+            surface_id="active_llm_only",
+        ),
+    )
+    base_row = {
+        "letter_id": "EA1",
+        "mode": "live",
+        "prompt_version": "prompt_v1",
+        "prompt_profile": "decision_table",
+        "call_error": None,
+        "parse_errors": [],
+        "n_mentions_raw": 1,
+        "n_evidence_invalid": 0,
+    }
+    active_rows = {
+        "same_prompt_seed_1": [
+            {
+                **base_row,
+                "predicted_mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "focal epilepsy",
+                        "attributes": {"Negation": "Affirmed"},
+                    }
+                ],
+            }
+        ],
+        "same_prompt_seed_2": [
+            {
+                **base_row,
+                "predicted_mentions": [
+                    {
+                        "entity": "Diagnosis",
+                        "text": "generalised epilepsy",
+                        "attributes": {"Negation": "Affirmed"},
+                    }
+                ],
+            }
+        ],
+    }
+    monkeypatch.setattr(reliability_analysis, "ACTIVE_LLM_ONLY_RUNS", runs)
+
+    panel = reliability_analysis._same_prompt_consistency(active_rows)["panels"][0]
+
+    assert panel["status"] == "computed_saved_live_repeats"
+    assert panel["family_cell_agreement"]["pairwise_comparisons"] == 1
+    assert panel["family_cell_agreement"]["cell_count"] == 4
+    assert panel["family_cell_agreement"]["exact_family_cell_agreement_rate"] == 0.75
+    diagnosis = next(
+        row for row in panel["per_family_disagreement_rates"]
+        if row["family"] == "Diagnosis"
+    )
+    assert diagnosis["disagreement_rate"] == 1.0

@@ -782,9 +782,24 @@ export interface Exectv2ReliabilityLatestSurface {
 export interface Exectv2ReliabilityMetricBin {
   bin: string;
   cells: number;
+  confidence_range?: [number, number];
   avg_confidence_proxy: number;
+  avg_calibrated_confidence?: number;
   accuracy: number;
+  calibration_gap?: number;
+  ece_contribution?: number;
   mean_cell_f1: number;
+}
+
+export interface Exectv2ReliabilityCalibrationFamily {
+  family: string;
+  cells: number;
+  accuracy: number;
+  mean_calibrated_confidence: number;
+  expected_calibration_error: number;
+  brier_score: number;
+  constant_base_rate_brier_score: number;
+  bin_count: number;
 }
 
 export interface Exectv2ReliabilityReviewFamily {
@@ -852,7 +867,25 @@ export interface Exectv2ComputedReliability {
     cell_count: number;
     bin_count: number;
     expected_calibration_error: number;
+    brier_score?: number;
+    constant_base_rate_brier_score?: number;
+    brier_improvement_vs_base_rate?: number;
+    mean_calibrated_confidence?: number;
+    max_adjacent_bin_reversal?: number;
+    model_type?: string;
+    validation_status?: string;
+    leakage_audit?: {
+      group_key: string;
+      fold_count: number;
+      unique_groups: number;
+      shared_letter_between_train_and_test: boolean;
+      forbidden_validation_rows_loaded: boolean;
+      forbidden_row_level_outputs_emitted: boolean;
+      candidate_identity_used_as_feature: boolean;
+      gold_or_failure_residual_used_as_feature: boolean;
+    };
     bins: Exectv2ReliabilityMetricBin[];
+    per_family?: Exectv2ReliabilityCalibrationFamily[];
   };
   review_routing: {
     eligible_cells: number;
