@@ -2,13 +2,15 @@
 
 Date: 2026-06-22
 
-Computed refresh: 2026-06-24
+Computed refresh: 2026-06-25
 
 Scope: Phase 1 no-call scorecard for the ExECTv2 final comparison set. This
 extends the v08 reliability language to completed DeepSeek/Qwen dev140
-diagnostics without claiming that calibration, abstention, robustness, or
-consistency are complete. The 2026-06-24 refresh adds computed dev140 reliability
-tables from saved artifacts only; it does not inspect full-200 or holdout rows.
+diagnostics without claiming that abstention or robustness are complete. The
+2026-06-25 refresh adds computed dev140 reliability tables from saved artifacts,
+an aggregate-only full-200 calibration validation audit, and selected
+GPT-4.1-mini 2-call no-SF-adjudicator self-consistency panels; it does not emit
+full-200 row-level details or inspect holdout rows.
 
 ## Evidence Set
 
@@ -37,18 +39,18 @@ Coverage score: `5` = strong current evidence; `1` = absent or only anecdotal.
 | 1 | Task correctness | 4/5 | v08 clears all four dev140 families above `0.900`; v09 remains above `0.900` overall; final DeepSeek/Qwen dev140 diagnostics reach `0.9174` and `0.9001` overall. DeepSeek still misses Diagnosis parity (`0.8898`), Qwen misses Diagnosis and SF parity, and both remain `do-not-promote`. | Freeze a full-200/holdout protocol before any broader claim. |
 | 2 | Factuality and over-inference | 4/5 | Assembly rows preserve exact evidence, FP/FN counts, residual ledgers, and changed-row categories. The refresh computes per-family over-emission and miss rates for all four selected rows; Qwen Diagnosis remains the clearest pressure point (`0.1525` over-emission, `0.1347` miss rate). | Convert high-burden review triggers into lower-burden operating points. |
 | 3 | Faithfulness / exact evidence | 5/5 | v08/v09/DeepSeek/Qwen selected assemblies report exact evidence rate `1.0000` on scored mentions. Source runs show evidence-validity differences: DeepSeek v0.9.10 source `0.9857`, Qwen compact source `0.9541`. JSONL rows preserve evidence text, component ownership, lane, and provenance. | Preserve exact-evidence gate for every refreshed source artifact. |
-| 4 | Calibration | 3/5 | A no-call external confidence proxy now bins `1,706` dev140 candidate-family cells using family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden. Expected calibration error is `0.1456`; bins are diagnostic and not yet an accepted confidence model. | Improve monotonicity and reduce circular family priors before any calibration claim. |
+| 4 | Calibration | 4/5 | A grouped cross-validated no-call scoring rule now scores `1,706` dev140 candidate-family cells using only predeclared family/provenance/evidence ambiguity features, grouped by `letter_id` to avoid train/test letter leakage. Dev-only ECE is `0.0277`; Brier is `0.1774` versus `0.1874` for the grouped constant-base-rate comparator. The aggregate-only full-200 validation audit promotes the frozen scoring rule with ECE `0.0432`, Brier `0.2245` versus `0.2387` constant base-rate Brier, five populated monotone bins, and per-family ECE reported for Diagnosis (`0.1424`), SeizureFrequency (`0.1292`), Prescription (`0.1214`), and Investigations (`0.0925`). | Keep the claim limited to aggregate full-200 calibration evidence; do not call it deployment-ready probability or holdout calibration. |
 | 5 | Abstention / review routing | 4/5 | Predeclared triggers now produce a burden/benefit table: `1,605/1,706` reviewed cells (`0.9408` burden), catching `379/426` error cells (`0.8897`) but with `1,226` false-alarm cells. A dev-tuned lower-burden candidate reviews `1,291/1,706` cells (`0.7567`) while catching `342/426` error cells (`0.8028`). | Validate the operating point under a frozen audit protocol before promotion. |
 | 6 | Robustness | 4/5 | v08/v09 lineage rejects naive single-GPT/dictionary simplification and noisy union/intersection swaps; rich-schema DeepSeek/Qwen diagnostics strengthen cross-model transfer evidence. Latest Phase 6 LLM-only runs are also reported separately: DeepSeek `0.745`, Qwen `0.697` computed clinical-headline F1. | Add perturbation or hard-slice panels before making robustness claims. |
-| 7 | Consistency | 4/5 | Assembly replay is deterministic from saved artifacts. The refresh adds cross-model dev140 agreement over shared `letter_id`: pairwise clinical-headline mean Jaccard `0.8852`, exact family-cell agreement `0.8000`. There is still no cross-seed same-prompt panel. | Run predeclared same-prompt resampling only if needed for the paper. |
+| 7 | Consistency | 4/5 | Assembly replay is deterministic from saved artifacts. The refresh adds cross-model dev140 agreement over shared `letter_id`: pairwise clinical-headline mean Jaccard `0.8852`, exact family-cell agreement `0.8000`. The selected GPT-4.1-mini 2-call no-SF-adjudicator candidate now has saved live-repeat evidence: hard50 temp-0 exact family-cell agreement `0.9217` / mean entropy `0.1261`, and dev140 varying-temperature exact agreement `0.8857` / mean entropy `0.1905`, with `0` call/parse failures and raw producer variation confirming non-cache replay. | Keep the claim aggregate-only; add holdout/external repeat confirmation only under a fresh protocol. |
 | 8 | Safety and compliance | 4/5 | Dev/test boundaries are documented; deterministic semantic repairs have provenance; full-200/holdout row-level inspection is blocked without protocol. | Add automated ExECTv2 holdout/full-200 inspection guards mirroring Gan. |
 | 9 | Family parity | 5/5 | v08 clears all target families; final non-GPT dev140 rows expose uneven family portability with residual subtype tables. DeepSeek misses only Diagnosis (`0.8898`) on the rich-schema headline; Qwen misses Diagnosis (`0.8563`) and SF (`0.8908`) despite strong Rx/Inv. | Use subtype parity to target architecture work; do not promote non-GPT rows from aggregate F1 alone. |
 | 10 | Operational reliability | 4/5 for replay, 3/5 source runs | v08/v09 are no-call replayable. DeepSeek source and assembly diagnostics are clean. Qwen source has ten parse/schema failures and the assembly reports ten parse/schema failures per family lens surface. | Keep source parse/call warnings separate from repaired assembly success, and define gates for future live runs. |
 
-Mean coverage: approximately `4.1/5`. The strongest dimensions are faithfulness,
+Mean coverage: approximately `4.2/5`. The strongest dimensions are faithfulness,
 family parity instrumentation, and replayability. The main remaining weaknesses
-are calibration quality, review burden, and lack of perturbation/same-prompt
-panels.
+are review burden, perturbation validation, and holdout/external confirmation;
+calibration is validated only on the aggregate full-200 surface.
 
 ## No-Call Metrics Available Now
 
@@ -58,6 +60,7 @@ panels.
 | Evidence-valid but wrong counts | Computed as `computed_reliability.family_error_table[].evidence_valid_error_count`. |
 | Family-level miss and over-emission | Computed for all selected rows from `target_report.candidates[].headline_scores` and residual ledgers. |
 | Cross-model agreement on dev140 | Built from shared dev140 `letter_id`: mean pairwise Jaccard `0.8852`, exact family-cell agreement `0.8000`. |
+| Selected-candidate same-prompt consistency | Built from saved live repeats for `exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`: hard50 temp-0 exact family-cell agreement `0.9217` / mean entropy `0.1261`; dev140 varying-temperature exact agreement `0.8857` / mean entropy `0.1905`. |
 | Review triggers from provenance | Operationalized as diagnostic triggers plus operating-point scan; current high-recall burden is `0.9408`, and the lower-burden dev candidate is `0.7567` burden / `0.8028` catch. |
 | Latest DeepSeek/Qwen surface check | Built into `computed_reliability.latest_run_check`; Phase 6 LLM-only runs are reported separately from rich-schema reliability comparators. |
 
@@ -74,10 +77,10 @@ panels.
 
 | Dimension | Next metric needed |
 | --- | --- |
-| Calibration | Better-calibrated risk proxy with monotone bins and lower ECE than `0.1456`. |
+| Calibration | Holdout or external aggregate-only confirmation if calibration is promoted beyond the current full-200 evidence surface. |
 | Abstention / review routing | Frozen validation of the lower-burden candidate; current diagnostic trigger set reviews `94.08%` of eligible cells, while the dev-tuned candidate reviews `75.67%`. |
 | Robustness | Frozen perturbation panel for current vs historical/future states, med plans, investigation result states, and diagnosis conventions. |
-| Consistency | Same-prompt resampling panel, separated from deterministic assembly replay and cross-model agreement. |
+| Consistency | Optional holdout/external repeat confirmation under a fresh protocol; the selected GPT-4.1-mini candidate already has hard50 temp-0 and dev140 varying-temperature live-repeat evidence. |
 | Family parity | Use the residual subtype table to predeclare targeted architecture work. |
 
 ## Final Refresh Status
@@ -86,5 +89,9 @@ panels.
   diagnostic architecture rows.
 - Earlier DeepSeek/Qwen dev25 rows remain path evidence, but are superseded in
   the final reliability evidence set.
+- The selected 2-call no-SF-adjudicator GPT-4.1-mini candidate has Gan-comparable
+  self-consistency evidence on hard50 temp-0 reproducibility and dev140
+  varying-temperature entropy; the hard50 panel is a temp-0 reproducibility
+  check, not a varying-temperature entropy panel.
 - Do not add full-200 or holdout claims to this scorecard without a protocol
   that freezes scorer surface, row-inspection policy, and stop rule first.

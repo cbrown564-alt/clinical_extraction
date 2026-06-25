@@ -1,6 +1,6 @@
 {
   "dataset": "gan2026",
-  "generated_on": "2026-06-24",
+  "generated_on": "2026-06-25",
   "source_scorecard": "experiments/gan2026_reliability_master_scorecard_2026-06-17.md",
   "source_cross_model_report": "",
   "evidence_set": [

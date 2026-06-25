@@ -10,7 +10,7 @@ Hypothesis: a slim source-near event schema plus LLM clinical selection can redu
 
 Minimal change: add an LLM-only structured-events extractor and selector. No deterministic V1 candidate diagnostics are provided to the model.
 
-Data surface: `validation` split, `gan2026_split_v1`, 720 rows.
+Data surface: `validation` split, `gan2026_split_v1`, 750 rows.
 Rare full-validation reason: validation750_v07_deepseek_reasoner_prompt_iteration_after_validation_error_analysis_validation250_too_low_signal
 Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a side-car.
 
@@ -27,6 +27,10 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 - DSPy cache enabled: `False`
 - Reused raw model outputs: `0`
 - Reuse source: `none`
+- Run started UTC: `2026-06-24T18:29:17.038273+00:00`
+- Run finished UTC: `2026-06-24T23:47:48.335096+00:00`
+- Wall-clock elapsed: `19110.227` seconds (`318.504` minutes)
+- Throughput: `0.039246` rows/sec (`25.48` sec/row)
 - Optimizer: none
 - Deterministic rule configuration: none before prediction; deterministic code only repairs labels selected by the LLM, validates evidence, and scores.
 - Repair mode: `hybrid_full_stack`
@@ -38,14 +42,14 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 
 ## Summary
 
-- Structured records: 714 / 720
+- Structured records: 744 / 750
 - Call failures: 0
 - Parse/schema/label issues: 6
 - JSON dialect repairs: 0
-- Deterministic repair notes: 430
-- Exact selection evidence substrings: 705 / 720
-- Purist validation accuracy/micro F1 proxy: 0.8639 (622 / 720)
-- Pragmatic validation accuracy/micro F1 proxy: 0.8889 (640 / 720)
+- Deterministic repair notes: 448
+- Exact selection evidence substrings: 734 / 750
+- Purist validation accuracy/micro F1 proxy: 0.8560 (642 / 750)
+- Pragmatic validation accuracy/micro F1 proxy: 0.8907 (668 / 750)
 
 ## Rows
 
@@ -771,3 +775,33 @@ Scorer policy: Gan-compatible Purist categories first, Pragmatic categories as a
 | 16704 | 9 per 6 month | 9 per 6 month | yes | final_label_repaired: '7 per month' -> '9 per 6 month' |
 | 16714 | 5 per 4 month | 5 per 6 month | no | final_label_repaired: 'unknown' -> '5 per 4 month'; evidence_not_exact_substring |
 | 16717 | 5 per 6 month | 5 per 6 month | yes | final_label_repaired: '1 seizure in past month' -> '1 per month'; final_label_repaired: '1 per month' -> '5 per 6 month' |
+| 16719 | 1 per week | 7 per 6 month | no |  |
+| 16728 | 4 per 4 month | 4 per 6 month | no | final_label_repaired: 'unknown' -> '4 per 4 month'; evidence_not_exact_substring |
+| 16750 | 6 per 7 month | 6 per 7 month | yes | final_label_repaired: '1 seizure in August 2010' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '6 per 7 month' |
+| 16757 | 18 per 3 month | 13 per 6 month | no | final_label_repaired: 'unknown' -> '18 per 3 month' |
+| 16758 | 8 per 4 month | 9 per 5 month | yes | final_label_repaired: '5 per month' -> '8 per 4 month' |
+| 16772 | 8 per 2 month | 9 per 5 month | no | final_label_repaired: '7 per month' -> '8 per 2 month' |
+| 16774 | 19 per 4 month | 19 per 7 month | no | final_label_repaired: '3 per month' -> '19 per 4 month' |
+| 16780 | unknown | 3 per 7 month | no |  |
+| 16824 | 11 per 3 month | 11 per 5 month | yes | final_label_repaired: '7 per month' -> '11 per 3 month' |
+| 16833 | 8 per 6 month | 8 per 6 month | yes | final_label_repaired: '5 per month' -> '8 per 6 month' |
+| 16839 | 12 per 3 month | 9 per 4 month | no | final_label_repaired: '4 seizures in a single night' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '12 per 3 month' |
+| 16867 | 5 per 4 month | 6 per 7 month | no | final_label_repaired: '1 seizure in June 2019' -> 'no seizure frequency reference'; final_label_repaired: 'no seizure frequency reference' -> '5 per 4 month' |
+| 16907 | 8 per 4 month | 9 per 6 month | yes | final_label_repaired: '1 seizure' -> '1 per month'; final_label_repaired: '1 per month' -> '8 per 4 month' |
+| 16938 | 2 per week | 2 per week | yes | final_label_repaired: 'up to 2 per week' -> '2 per week' |
+| 16947 | 2 per week | 2 per week | yes |  |
+| 16961 | 2 per week | 2 per week | yes |  |
+| 16983 | 2 to 3 per week | 2 to 3 per week | yes |  |
+| 16990 | 4 to 5 per week | 4 to 5 per week | yes |  |
+| 17001 | 5 per week | 5 per week | yes |  |
+| 17003 | 3 to 4 per month | 3 to 4 per month | yes |  |
+| 17110 | 4 to 5 per week | 4 to 5 cluster per week, multiple per cluster | no | final_label_repaired: '4 to 5 days per week' -> '4 to 5 per week' |
+| 17135 | 1 cluster per month, multiple per cluster | 5 cluster per month, multiple per cluster | no | final_label_repaired: '5 days per month with absence clusters' -> '1 cluster per month, multiple per cluster' |
+| 17146 | 1 per day | 1 per day | yes |  |
+| 17167 | 1 per week | 1 per week | yes |  |
+| 17189 | 1 per month | 1 per month | yes |  |
+| 17200 | 1 per month | 1 per month | yes | final_label_repaired: 'monthly' -> '1 per month' |
+| 17201 | 4 per month | 4 per month | yes |  |
+| 17273 | 1 per 2 day | 1 per 2 day | yes | final_label_repaired: '1 every 2 days' -> '1 per 2 day' |
+| 17279 | 1 per 4 to 5 week | 1 per 4 to 5 week | yes | final_label_repaired: '1 every 4 to 5 weeks' -> '1 per 4 to 5 week' |
+| 17287 | 1 per 1 to 2 day | 1 per 1 to 2 day | yes | final_label_repaired: '1 per 1-2 days' -> '1 per 1 to 2 day' |

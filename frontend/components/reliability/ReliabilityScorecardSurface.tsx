@@ -126,7 +126,7 @@ function ComputedReliabilityPanel({
 
   return (
     <section className="space-y-3">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <div className="rounded-md border border-border bg-surface p-4">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
             Agreement
@@ -172,6 +172,94 @@ function ComputedReliabilityPanel({
           <p className="mt-1 text-[10px] text-muted">
             {calibration.bin_count} bins / {calibration.cell_count} cells
           </p>
+        </div>
+        <div className="rounded-md border border-border bg-surface p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+            Brier Score
+          </p>
+          <p className="mt-2 font-mono text-xl font-semibold text-foreground">
+            {formatMetricValue(calibration.brier_score ?? null, "f1")}
+          </p>
+          <p className="mt-1 text-[10px] text-muted">
+            base {formatMetricValue(calibration.constant_base_rate_brier_score ?? null, "f1")}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-md border border-border bg-surface">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Calibration Reliability Bins
+            </h2>
+          </div>
+          <table className="w-full border-collapse text-[11px]">
+            <thead>
+              <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+                <th className="px-3 py-2 text-left font-semibold">Bin</th>
+                <th className="px-3 py-2 text-right font-semibold">Cells</th>
+                <th className="px-3 py-2 text-right font-semibold">Confidence</th>
+                <th className="px-3 py-2 text-right font-semibold">Accuracy</th>
+                <th className="px-3 py-2 text-right font-semibold">Gap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {calibration.bins.map((bin) => (
+                <tr key={bin.bin} className="border-b border-border/60 last:border-b-0">
+                  <td className="px-3 py-2 font-mono text-foreground">{bin.bin}</td>
+                  <td className="px-3 py-2 text-right font-mono text-muted">{bin.cells}</td>
+                  <td className="px-3 py-2 text-right font-mono text-foreground">
+                    {formatMetricValue(
+                      bin.avg_calibrated_confidence ?? bin.avg_confidence_proxy,
+                      "f1"
+                    )}
+                  </td>
+                  <td className="px-3 py-2 text-right font-mono text-foreground">
+                    {formatMetricValue(bin.accuracy, "f1")}
+                  </td>
+                  <td className="px-3 py-2 text-right font-mono text-muted">
+                    {formatMetricValue(bin.calibration_gap ?? null, "f1")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="overflow-hidden rounded-md border border-border bg-surface">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
+              Per-Family Calibration
+            </h2>
+          </div>
+          <table className="w-full border-collapse text-[11px]">
+            <thead>
+              <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
+                <th className="px-3 py-2 text-left font-semibold">Family</th>
+                <th className="px-3 py-2 text-right font-semibold">ECE</th>
+                <th className="px-3 py-2 text-right font-semibold">Brier</th>
+                <th className="px-3 py-2 text-right font-semibold">Accuracy</th>
+                <th className="px-3 py-2 text-right font-semibold">Cells</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(calibration.per_family ?? []).map((row) => (
+                <tr key={row.family} className="border-b border-border/60 last:border-b-0">
+                  <td className="px-3 py-2 font-medium text-foreground">{row.family}</td>
+                  <td className="px-3 py-2 text-right font-mono text-foreground">
+                    {formatMetricValue(row.expected_calibration_error, "f1")}
+                  </td>
+                  <td className="px-3 py-2 text-right font-mono text-foreground">
+                    {formatMetricValue(row.brier_score, "f1")}
+                  </td>
+                  <td className="px-3 py-2 text-right font-mono text-muted">
+                    {formatMetricValue(row.accuracy, "rate", { asPercent: true, digits: 1 })}
+                  </td>
+                  <td className="px-3 py-2 text-right font-mono text-muted">{row.cells}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 

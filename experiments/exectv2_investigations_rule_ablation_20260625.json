@@ -11,12 +11,16 @@
     "direct_suppression_to_verifier_arbitrated_gap": 0.0549,
     "direct_to_verifier_arbitrated_gap": 0.065,
     "max_acceptable_selective_burden": 0.2,
-    "rationale": "Deterministic replacement is promoted only if direct structured plus deterministic suppression is within 0.0100 F1 of the verifier plus suppression control. A selective Investigations policy is acceptable only if review burden is at or below 0.2000; v02 is diagnostic but fails that burden ceiling.",
-    "selected_next_architecture": "selective_investigations_adjudicator_v02_empty_pending_no_diagnostic",
+    "rationale": "Deterministic replacement is promoted only if direct structured plus deterministic suppression is within 0.0100 F1 of the verifier plus suppression control. Otherwise any selective Investigations policy must first satisfy the <= 0.20 dev140 routed-letter burden ceiling before a live selective-adjudicator experiment is predeclared.",
+    "selected_low_burden_policy": "v04_capped_direct_risk_top20",
+    "selected_next_architecture": "selective_investigations_adjudicator_low_burden_dev_scaffold",
+    "selective_review_burden_ceiling": 0.2,
     "selective_v01_to_verifier_arbitrated_gap": 0.0402,
     "selective_v02_burden": 0.51,
     "selective_v02_burden_acceptable": false,
-    "selective_v02_to_verifier_arbitrated_gap": 0.0402
+    "selective_v02_to_verifier_arbitrated_gap": 0.0402,
+    "selective_v03_to_verifier_arbitrated_gap": 0.0553,
+    "selective_v04_to_verifier_arbitrated_gap": 0.0559
   },
   "development_policy_selection": [
     {
@@ -60,11 +64,67 @@
       "rule_family": "v02_empty_pending_or_explicit_not_performed",
       "selective_call_burden": 0.5643,
       "variant_id": "v02_empty_pending_or_explicit_not_performed"
+    },
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 0.2929,
+      "changed_rows": 0,
+      "evidence_validity_rate": 0.9728260869565217,
+      "label": "v03 empty-output-only",
+      "metrics": {
+        "f1": 0.7579617834394904,
+        "fn": 17,
+        "fp": 59,
+        "precision": 0.6685393258426966,
+        "recall": 0.875,
+        "tp": 119
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 41,
+      "rule_family": "v03_empty_output_only",
+      "selective_call_burden": 0.2929,
+      "variant_id": "v03_empty_output_only"
+    },
+    {
+      "action_counts": {},
+      "call_failures": 0,
+      "calls_per_letter": 0.2,
+      "changed_rows": 8,
+      "evidence_validity_rate": 0.9761904761904762,
+      "label": "v04 capped direct-risk top 20%",
+      "metrics": {
+        "f1": 0.7986577181208053,
+        "fn": 17,
+        "fp": 43,
+        "precision": 0.7345679012345679,
+        "recall": 0.875,
+        "tp": 119
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 28,
+      "rule_family": "v04_capped_direct_risk_top20",
+      "selective_call_burden": 0.2,
+      "variant_id": "v04_capped_direct_risk_top20"
     }
   ],
   "generated_on": "2026-06-25",
   "max_acceptable_selective_burden": 0.2,
   "row_inspection_policy": "aggregate_only_no_full200_failure_ledgers",
+  "selective_review_burden_gate": {
+    "blocked_policy_ids": [
+      "v01_broad_ambiguous",
+      "v02_empty_pending_or_explicit_not_performed",
+      "v03_empty_output_only"
+    ],
+    "ceiling": 0.2,
+    "eligible_policy_ids": [
+      "v04_capped_direct_risk_top20"
+    ],
+    "selected_policy_id": "v04_capped_direct_risk_top20",
+    "status": "passes_design_ceiling",
+    "surface": "dev140_no_call_saved_artifacts"
+  },
   "surface": "current-code v08-shape full-200 Investigations",
   "variants": [
     {
@@ -200,6 +260,52 @@
       "rule_family": "selective_llm_verifier_v02_plus_pending_test_suppression",
       "selective_call_burden": 0.51,
       "variant_id": "selective_verifier_v02_empty_pending_no"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 8
+      },
+      "call_failures": 0,
+      "calls_per_letter": 0.48,
+      "changed_rows": 7,
+      "evidence_validity_rate": 1.0,
+      "label": "Selective verifier v03 empty-output-only + pending-test suppression",
+      "metrics": {
+        "f1": 0.8660968660968662,
+        "fn": 31,
+        "fp": 16,
+        "precision": 0.9047619047619048,
+        "recall": 0.8306010928961749,
+        "tp": 152
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 96,
+      "rule_family": "selective_llm_verifier_v03_empty_output_only",
+      "selective_call_burden": 0.48,
+      "variant_id": "selective_verifier_v03_empty_output_only"
+    },
+    {
+      "action_counts": {
+        "drop_pending_or_planned_investigation": 2
+      },
+      "call_failures": 0,
+      "calls_per_letter": 0.2,
+      "changed_rows": 5,
+      "evidence_validity_rate": 1.0,
+      "label": "Selective verifier v04 capped direct-risk top 20% + pending-test suppression",
+      "metrics": {
+        "f1": 0.8654970760233919,
+        "fn": 35,
+        "fp": 11,
+        "precision": 0.9308176100628931,
+        "recall": 0.8087431693989071,
+        "tp": 148
+      },
+      "parse_schema_failures": 0,
+      "routed_letters": 40,
+      "rule_family": "selective_llm_verifier_v04_capped_direct_risk_top20",
+      "selective_call_burden": 0.2,
+      "variant_id": "selective_verifier_v04_capped_direct_risk_top20"
     }
   ]
 }

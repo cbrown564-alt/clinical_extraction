@@ -1,0 +1,441 @@
+{
+  "artifact_kind": "exectv2_self_consistency",
+  "assembly_artifacts": [
+    "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r1_temp0p3_20260625_assembly.jsonl",
+    "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r2_temp0p5_20260625_assembly.jsonl",
+    "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_assembly.jsonl",
+    "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r4_temp1p0_20260625_assembly.jsonl"
+  ],
+  "candidate_id": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator",
+  "claim_boundary": "Selected GPT-4.1-mini lean-candidate self-consistency panel. Final readout is aggregate-only; saved JSONL artifacts preserve provenance but are not a full-200 row-level failure-analysis ledger.",
+  "families": [
+    "Diagnosis",
+    "SeizureFrequency",
+    "Prescription",
+    "Investigations"
+  ],
+  "family_cell_count": 560,
+  "generated_on": "2026-06-25",
+  "interpretation": "Exact family-cell agreement is 0.8857 with mean semantic entropy 0.1905. The strongest agreement bucket is 4/4 with correctness 0.7925. Raw producer outputs vary across repeats, so stable clinical-headline cells should be read as decision stability rather than cache reuse. Interpret high agreement as reliability only where the majority-correctness curve also stays high; unanimous-but-wrong cells are the ExECTv2 analogue of Gan's confident residual.",
+  "majority_correctness": {
+    "agreement_accuracy_curve": [
+      {
+        "accuracy": 0.7925,
+        "cells": 453,
+        "correct_majority_cells": 359,
+        "majority_top_k": "4/4"
+      },
+      {
+        "accuracy": 0.3529,
+        "cells": 68,
+        "correct_majority_cells": 24,
+        "majority_top_k": "3/4"
+      },
+      {
+        "accuracy": 0.4444,
+        "cells": 36,
+        "correct_majority_cells": 16,
+        "majority_top_k": "2/4"
+      },
+      {
+        "accuracy": 0.3333,
+        "cells": 3,
+        "correct_majority_cells": 1,
+        "majority_top_k": "1/4"
+      }
+    ]
+  },
+  "model": "openai/gpt-4.1-mini",
+  "pairwise_agreement": {
+    "by_family": [
+      {
+        "cell_count": 840,
+        "exact_family_cell_agreement_rate": 0.8155,
+        "family": "Diagnosis",
+        "mean_pairwise_jaccard": 0.9107
+      },
+      {
+        "cell_count": 840,
+        "exact_family_cell_agreement_rate": 0.8333,
+        "family": "SeizureFrequency",
+        "mean_pairwise_jaccard": 0.8911
+      },
+      {
+        "cell_count": 840,
+        "exact_family_cell_agreement_rate": 1.0,
+        "family": "Prescription",
+        "mean_pairwise_jaccard": 1.0
+      },
+      {
+        "cell_count": 840,
+        "exact_family_cell_agreement_rate": 0.894,
+        "family": "Investigations",
+        "mean_pairwise_jaccard": 0.9119
+      }
+    ],
+    "cell_count": 3360,
+    "exact_family_cell_agreement_rate": 0.8857,
+    "mean_pairwise_jaccard": 0.9284,
+    "pairwise_comparisons": 6
+  },
+  "panel_id": "entropy_dev140_temps",
+  "producer_artifacts": {
+    "diagnosis_decomposer": [
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r1_temp0p3_20260625_diagnosis_decomposer.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r2_temp0p5_20260625_diagnosis_decomposer.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_diagnosis_decomposer.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r4_temp1p0_20260625_diagnosis_decomposer.jsonl"
+    ],
+    "structured_key_family_event_ledger": [
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r1_temp0p3_20260625_structured.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r2_temp0p5_20260625_structured.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_structured.jsonl",
+      "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r4_temp1p0_20260625_structured.jsonl"
+    ]
+  },
+  "producer_raw_output_variation": {
+    "diagnosis_decomposer": {
+      "mean_unique_raw_outputs_per_row": 3.75,
+      "producer": "diagnosis_decomposer",
+      "rows_compared": 140,
+      "rows_with_raw_output_variation": 130
+    },
+    "structured_key_family_event_ledger": {
+      "mean_unique_raw_outputs_per_row": 3.95,
+      "producer": "structured_key_family_event_ledger",
+      "rows_compared": 140,
+      "rows_with_raw_output_variation": 139
+    }
+  },
+  "repeat_count": 4,
+  "row_inspection_policy": "aggregate_only_no_failure_ledger",
+  "rows": 140,
+  "run_health": [
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r1_temp0p3_20260625_assembly.jsonl",
+      "call_failures": 0,
+      "evidence_invalid_mentions": 0,
+      "evidence_validity_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 988,
+      "rows": 140
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r2_temp0p5_20260625_assembly.jsonl",
+      "call_failures": 0,
+      "evidence_invalid_mentions": 0,
+      "evidence_validity_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 984,
+      "rows": 140
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_assembly.jsonl",
+      "call_failures": 0,
+      "evidence_invalid_mentions": 0,
+      "evidence_validity_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 979,
+      "rows": 140
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r4_temp1p0_20260625_assembly.jsonl",
+      "call_failures": 0,
+      "evidence_invalid_mentions": 0,
+      "evidence_validity_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 974,
+      "rows": 140
+    }
+  ],
+  "score_summary": [
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r1_temp0p3_20260625_assembly.jsonl",
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.8573,
+          "fn": 44,
+          "fp": 36,
+          "gold_count": 288,
+          "precision": 0.8676,
+          "precision_tp": 236,
+          "pred_count": 272,
+          "recall": 0.8472,
+          "recall_tp": 244,
+          "shortfall_to_target": 0.0427,
+          "tp": 244
+        },
+        "Investigations": {
+          "f1": 0.8347,
+          "fn": 23,
+          "fp": 17,
+          "gold_count": 124,
+          "precision": 0.8559,
+          "pred_count": 118,
+          "recall": 0.8145,
+          "shortfall_to_target": 0.0653,
+          "tp": 101
+        },
+        "Prescription": {
+          "f1": 0.8895,
+          "fn": 20,
+          "fp": 21,
+          "gold_count": 185,
+          "precision": 0.8871,
+          "pred_count": 186,
+          "recall": 0.8919,
+          "shortfall_to_target": 0.0105,
+          "tp": 165
+        },
+        "SeizureFrequency": {
+          "f1": 0.7645,
+          "fn": 34,
+          "fp": 51,
+          "gold_count": 172,
+          "precision": 0.7302,
+          "pred_count": 189,
+          "recall": 0.8023,
+          "shortfall_to_target": 0.1355,
+          "tp": 138
+        }
+      },
+      "overall": {
+        "f1": 0.8396,
+        "fn": 121,
+        "fp": 125,
+        "gold_count": 769,
+        "precision": 0.8366,
+        "precision_tp": 640,
+        "pred_count": 765,
+        "recall": 0.8427,
+        "recall_tp": 648,
+        "tp": 648
+      }
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r2_temp0p5_20260625_assembly.jsonl",
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.8561,
+          "fn": 41,
+          "fp": 41,
+          "gold_count": 288,
+          "precision": 0.8546,
+          "precision_tp": 241,
+          "pred_count": 282,
+          "recall": 0.8576,
+          "recall_tp": 247,
+          "shortfall_to_target": 0.0439,
+          "tp": 247
+        },
+        "Investigations": {
+          "f1": 0.8487,
+          "fn": 23,
+          "fp": 13,
+          "gold_count": 124,
+          "precision": 0.886,
+          "pred_count": 114,
+          "recall": 0.8145,
+          "shortfall_to_target": 0.0513,
+          "tp": 101
+        },
+        "Prescription": {
+          "f1": 0.8895,
+          "fn": 20,
+          "fp": 21,
+          "gold_count": 185,
+          "precision": 0.8871,
+          "pred_count": 186,
+          "recall": 0.8919,
+          "shortfall_to_target": 0.0105,
+          "tp": 165
+        },
+        "SeizureFrequency": {
+          "f1": 0.7654,
+          "fn": 35,
+          "fp": 49,
+          "gold_count": 172,
+          "precision": 0.7366,
+          "pred_count": 186,
+          "recall": 0.7965,
+          "shortfall_to_target": 0.1346,
+          "tp": 137
+        }
+      },
+      "overall": {
+        "f1": 0.8419,
+        "fn": 119,
+        "fp": 124,
+        "gold_count": 769,
+        "precision": 0.8385,
+        "precision_tp": 644,
+        "pred_count": 768,
+        "recall": 0.8453,
+        "recall_tp": 650,
+        "tp": 650
+      }
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r3_temp0p7_20260625_assembly.jsonl",
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.8345,
+          "fn": 47,
+          "fp": 47,
+          "gold_count": 288,
+          "precision": 0.8321,
+          "precision_tp": 233,
+          "pred_count": 280,
+          "recall": 0.8368,
+          "recall_tp": 241,
+          "shortfall_to_target": 0.0655,
+          "tp": 241
+        },
+        "Investigations": {
+          "f1": 0.8305,
+          "fn": 26,
+          "fp": 14,
+          "gold_count": 124,
+          "precision": 0.875,
+          "pred_count": 112,
+          "recall": 0.7903,
+          "shortfall_to_target": 0.0695,
+          "tp": 98
+        },
+        "Prescription": {
+          "f1": 0.8895,
+          "fn": 20,
+          "fp": 21,
+          "gold_count": 185,
+          "precision": 0.8871,
+          "pred_count": 186,
+          "recall": 0.8919,
+          "shortfall_to_target": 0.0105,
+          "tp": 165
+        },
+        "SeizureFrequency": {
+          "f1": 0.7799,
+          "fn": 32,
+          "fp": 47,
+          "gold_count": 172,
+          "precision": 0.7487,
+          "pred_count": 187,
+          "recall": 0.814,
+          "shortfall_to_target": 0.1201,
+          "tp": 140
+        }
+      },
+      "overall": {
+        "f1": 0.8344,
+        "fn": 125,
+        "fp": 129,
+        "gold_count": 769,
+        "precision": 0.8314,
+        "precision_tp": 636,
+        "pred_count": 765,
+        "recall": 0.8375,
+        "recall_tp": 644,
+        "tp": 644
+      }
+    },
+    {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r4_temp1p0_20260625_assembly.jsonl",
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.8341,
+          "fn": 43,
+          "fp": 52,
+          "gold_count": 288,
+          "precision": 0.8182,
+          "precision_tp": 234,
+          "pred_count": 286,
+          "recall": 0.8507,
+          "recall_tp": 245,
+          "shortfall_to_target": 0.0659,
+          "tp": 245
+        },
+        "Investigations": {
+          "f1": 0.8155,
+          "fn": 29,
+          "fp": 14,
+          "gold_count": 124,
+          "precision": 0.8716,
+          "pred_count": 109,
+          "recall": 0.7661,
+          "shortfall_to_target": 0.0845,
+          "tp": 95
+        },
+        "Prescription": {
+          "f1": 0.8895,
+          "fn": 20,
+          "fp": 21,
+          "gold_count": 185,
+          "precision": 0.8871,
+          "pred_count": 186,
+          "recall": 0.8919,
+          "shortfall_to_target": 0.0105,
+          "tp": 165
+        },
+        "SeizureFrequency": {
+          "f1": 0.7684,
+          "fn": 36,
+          "fp": 46,
+          "gold_count": 172,
+          "precision": 0.7473,
+          "pred_count": 182,
+          "recall": 0.7907,
+          "shortfall_to_target": 0.1316,
+          "tp": 136
+        }
+      },
+      "overall": {
+        "f1": 0.8296,
+        "fn": 128,
+        "fp": 133,
+        "gold_count": 769,
+        "precision": 0.8257,
+        "precision_tp": 630,
+        "pred_count": 763,
+        "recall": 0.8336,
+        "recall_tp": 641,
+        "tp": 641
+      }
+    }
+  ],
+  "semantic_entropy": {
+    "by_family": [
+      {
+        "cell_count": 140,
+        "family": "Diagnosis",
+        "mean_entropy": 0.3069,
+        "nonzero_entropy_cells": 42
+      },
+      {
+        "cell_count": 140,
+        "family": "SeizureFrequency",
+        "mean_entropy": 0.2792,
+        "nonzero_entropy_cells": 39
+      },
+      {
+        "cell_count": 140,
+        "family": "Prescription",
+        "mean_entropy": 0.0,
+        "nonzero_entropy_cells": 0
+      },
+      {
+        "cell_count": 140,
+        "family": "Investigations",
+        "mean_entropy": 0.1757,
+        "nonzero_entropy_cells": 26
+      }
+    ],
+    "mean_entropy": 0.1905,
+    "nonzero_entropy_cells": 107
+  },
+  "temperatures": [
+    0.3,
+    0.5,
+    0.7,
+    1.0
+  ]
+}

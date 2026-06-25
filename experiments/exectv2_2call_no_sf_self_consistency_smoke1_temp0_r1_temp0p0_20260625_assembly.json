@@ -1,0 +1,1184 @@
+{
+  "candidate_name": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+  "changed_row_accounting": {
+    "versus_v042_default_quarantine": {
+      "by_indicator": {
+        "Diagnosis": {
+          "categories": {
+            "assertion_or_negation_change": 1,
+            "hierarchy_reconciliation_or_duplicate_collapse": 1
+          },
+          "changed_rows": 1
+        },
+        "Investigations": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Prescription": {
+          "categories": {
+            "model_output": 1
+          },
+          "changed_rows": 1
+        },
+        "SeizureFrequency": {
+          "categories": {
+            "active_rate": 1
+          },
+          "changed_rows": 1
+        }
+      },
+      "details": [
+        {
+          "categories": [
+            "assertion_or_negation_change",
+            "hierarchy_reconciliation_or_duplicate_collapse"
+          ],
+          "indicator": "Diagnosis",
+          "letter_id": "EA0001",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0014547",
+                "CUIPhrase": "symptomatic structural focal epilepsy",
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "diagnosis_decomposer_direct",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic, structural right temporal lobe epilepsy",
+              "text": "symptomatic structural focal epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0751495",
+                "CUIPhrase": "focal-seizures",
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "diagnosis_decomposer_direct",
+              "entity": "Diagnosis",
+              "evidence": "seizure type and frequency: focal seizures with loss of awareness(Unusual smell) approximately 2 to 3 per month.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0751495",
+                "CUIPhrase": "focal-seizures",
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "diagnosis_decomposer_direct",
+              "entity": "Diagnosis",
+              "evidence": "He continues to have what he calls \u201cabsences\u201d which are focal seizures.",
+              "text": "focal seizures"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "Certainty": "5",
+                "DiagCategory": "Epilepsy",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "",
+              "entity": "Diagnosis",
+              "evidence": "Diagnosis: symptomatic, structural right temporal lobe epilepsy",
+              "text": "symptomatic, structural right temporal lobe epilepsy"
+            },
+            {
+              "attributes": {
+                "CUI": "C0751495",
+                "CUIPhrase": "focal-seizures",
+                "Certainty": "5",
+                "DiagCategory": "MultipleSeizures",
+                "Negation": "Affirmed"
+              },
+              "component_owner": "",
+              "entity": "Diagnosis",
+              "evidence": "seizure type and frequency: focal seizures with loss of awareness(Unusual smell) approximately 2 to 3 per month.",
+              "text": "focal seizures"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "active_rate"
+          ],
+          "indicator": "SeizureFrequency",
+          "letter_id": "EA0001",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0751495",
+                "CUIPhrase": "focal seizures",
+                "Negation": "Affirmed",
+                "NumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Month",
+                "UpperNumberOfSeizures": "3"
+              },
+              "component_owner": "single_gpt_structured_sf_direct+deterministic_union_arbitration",
+              "entity": "SeizureFrequency",
+              "evidence": "seizure type and frequency: focal seizures with loss of awareness(Unusual smell) approximately 2 to 3 per month.",
+              "text": "focal seizures"
+            },
+            {
+              "attributes": {
+                "CUI": "C0270834",
+                "CUIPhrase": "focal seizures with loss of awareness",
+                "LowerNumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Month",
+                "UpperNumberOfSeizures": "3"
+              },
+              "component_owner": "single_gpt_structured_sf_direct+deterministic_union_arbitration",
+              "entity": "SeizureFrequency",
+              "evidence": "focal seizures with loss of awareness",
+              "text": "focal seizures with loss of awareness"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0751495",
+                "CUIPhrase": "focal seizures",
+                "Negation": "Affirmed",
+                "NumberOfSeizures": "2",
+                "NumberOfTimePeriods": "1",
+                "TimePeriod": "Month",
+                "UpperNumberOfSeizures": "3"
+              },
+              "component_owner": "",
+              "entity": "SeizureFrequency",
+              "evidence": "seizure type and frequency: focal seizures with loss of awareness(Unusual smell) approximately 2 to 3 per month.",
+              "text": "focal seizures"
+            }
+          ]
+        },
+        {
+          "categories": [
+            "model_output"
+          ],
+          "indicator": "Prescription",
+          "letter_id": "EA0001",
+          "new_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0064636",
+                "CUIPhrase": "lamotrigine",
+                "DoseUnit": "mg",
+                "DrugDose": "75",
+                "DrugName": "lamotrigine",
+                "Frequency": "2"
+              },
+              "component_owner": "deterministic_prescription_repair_v03",
+              "entity": "Prescription",
+              "evidence": "lamotrigine 75 mg twice a day (to increase as stated below)",
+              "text": "lamotrigine 75 mg twice a day"
+            }
+          ],
+          "old_mentions": [
+            {
+              "attributes": {
+                "CUI": "C0064636",
+                "CUIPhrase": "lamotrigine",
+                "DoseUnit": "mg",
+                "DrugDose": "75",
+                "DrugName": "lamotrigine",
+                "Frequency": "2"
+              },
+              "component_owner": "",
+              "entity": "Prescription",
+              "evidence": "Current antiepileptic medication: lamotrigine 75 mg twice a day (to increase as stated below)",
+              "text": "lamotrigine 75 mg twice a day"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "claim_boundary": "Self-consistency repeat for selected GPT-4.1-mini 2-call no-SF-adjudicator candidate. Structured ledger and Diagnosis decomposer are live repeat surfaces; SF/Rx/Inv and final assembly are no-call deterministic rebuilds.",
+  "fact_origin_accounting": {
+    "by_lane": {
+      "Diagnosis": {
+        "dictionary_normalized": {
+          "target_model_generated": 3
+        },
+        "evidence_valid": {
+          "target_model_generated": 3
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 3
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 3
+        },
+        "source_scored": {
+          "target_model_generated": 3
+        }
+      },
+      "Investigations": {
+        "dictionary_normalized": {
+          "target_model_generated": 1
+        },
+        "evidence_valid": {
+          "target_model_generated": 1
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 1
+        },
+        "source_scored": {
+          "target_model_generated": 1
+        }
+      },
+      "Prescription": {
+        "dictionary_normalized": {
+          "target_model_generated": 1
+        },
+        "evidence_valid": {
+          "target_model_generated": 1
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 1
+        },
+        "source_scored": {
+          "target_model_generated": 1
+        }
+      },
+      "SeizureFrequency": {
+        "dictionary_normalized": {
+          "target_model_generated": 2
+        },
+        "evidence_valid": {
+          "target_model_generated": 2
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 2
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 2
+        },
+        "source_scored": {
+          "target_model_generated": 2
+        }
+      }
+    },
+    "by_surface": {
+      "dictionary_normalized": {
+        "target_model_generated": 7
+      },
+      "evidence_valid": {
+        "target_model_generated": 7
+      },
+      "protocol_model_preserving_canonical": {
+        "target_model_generated": 7
+      },
+      "residual_benchmark_added": {
+        "target_model_generated": 7
+      },
+      "source_scored": {
+        "target_model_generated": 7
+      }
+    }
+  },
+  "finding_views": [
+    "raw_candidate",
+    "evidence_valid",
+    "clinical_headline",
+    "fidelity_companion",
+    "benchmark_cui"
+  ],
+  "gate_decision": {
+    "checks": [
+      {
+        "detail": "delta vs v0.42 control +0.1786; floor -0.0100",
+        "name": "Prescription control regression",
+        "passed": true
+      },
+      {
+        "detail": "delta vs v0.42 control +0.1385; floor -0.0100",
+        "name": "Investigations control regression",
+        "passed": true
+      },
+      {
+        "detail": "0.4000; must beat 0.6693 and tie/beat 0.7127",
+        "name": "Diagnosis headline",
+        "passed": false
+      },
+      {
+        "detail": "0.4000; baseline 0.6693",
+        "name": "Diagnosis concept_negation",
+        "passed": false
+      },
+      {
+        "detail": "0.6667; must beat 0.5572 and tie/beat 0.6321",
+        "name": "SeizureFrequency headline",
+        "passed": true
+      },
+      {
+        "detail": "0.6667; baseline 0.2887",
+        "name": "SeizureFrequency active_rate_fidelity",
+        "passed": true
+      },
+      {
+        "detail": "1 changed rows",
+        "name": "Prescription changed-row control",
+        "passed": false
+      },
+      {
+        "detail": "0 changed rows",
+        "name": "Investigations changed-row control",
+        "passed": true
+      }
+    ],
+    "decision": "do-not-promote"
+  },
+  "generated_on": "2026-06-25",
+  "input_artifacts": {
+    "diagnosis_decomposer": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_diagnosis_decomposer.jsonl",
+    "focused_comparator": "",
+    "prescription_deterministic_repair": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_prescription_deterministic_repair_v03.jsonl",
+    "sf_structured_union": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_sf_union_arbitration.jsonl",
+    "structured_key_family_event_ledger": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_structured.jsonl"
+  },
+  "lane_diagnostics": {
+    "Diagnosis": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 3,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 3,
+      "scored_mentions": 3
+    },
+    "Investigations": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 1,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 1,
+      "scored_mentions": 1
+    },
+    "Prescription": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 1,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 1,
+      "scored_mentions": 1
+    },
+    "SeizureFrequency": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 2,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 2,
+      "scored_mentions": 2
+    }
+  },
+  "lane_sources": {
+    "Diagnosis": {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_diagnosis_decomposer.jsonl",
+      "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+      "ownership_label": "diagnosis_decomposer_direct",
+      "source_lane": "diagnosis_decomposer_direct"
+    },
+    "Investigations": {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_structured.jsonl",
+      "lens": "investigations_result_v01",
+      "ownership_label": "single_gpt_structured_direct_investigations",
+      "source_lane": "single_gpt_structured_direct_investigations"
+    },
+    "Prescription": {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_prescription_deterministic_repair_v03.jsonl",
+      "lens": "prescription_regimen_v01",
+      "ownership_label": "deterministic_prescription_repair_v03",
+      "source_lane": "focused_prescription_deterministic_repair_v03"
+    },
+    "SeizureFrequency": {
+      "artifact": "experiments/exectv2_2call_no_sf_self_consistency_smoke1_temp0_r1_temp0p0_20260625_sf_union_arbitration.jsonl",
+      "lens": "sf_state_union_arbitration_v08",
+      "ownership_label": "single_gpt_structured_sf_direct+deterministic_union_arbitration",
+      "source_lane": "structured_direct_sf_union_no_adjudicator"
+    }
+  },
+  "pipeline_family": "exectv2_gpt41mini_simplification_frontier",
+  "report_title": "ExECTv2 Focused-Lane Component-Evidence Replay",
+  "row_count": 1,
+  "score_ladder": {
+    "benchmark": {
+      "after_cui_projection": 0.5714,
+      "by_indicator_raw": {
+        "Diagnosis": 0.2857,
+        "Investigations": 1.0,
+        "Prescription": 1.0,
+        "SeizureFrequency": 0.6667
+      },
+      "raw": 0.5714
+    },
+    "cui_projection_companion": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.4,
+          "fn": 2,
+          "fp": 1,
+          "gold_count": 3,
+          "precision": 0.5,
+          "precision_tp": 1,
+          "pred_count": 2,
+          "recall": 0.3333,
+          "recall_tp": 1,
+          "shortfall_to_target": 0.5,
+          "tp": 1
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "SeizureFrequency": {
+          "f1": 0.6667,
+          "fn": 0,
+          "fp": 1,
+          "gold_count": 1,
+          "precision": 0.5,
+          "pred_count": 2,
+          "recall": 1.0,
+          "shortfall_to_target": 0.2333,
+          "tp": 1
+        }
+      },
+      "overall": {
+        "f1": 0.6667,
+        "fn": 2,
+        "fp": 2,
+        "gold_count": 6,
+        "precision": 0.6667,
+        "precision_tp": 4,
+        "pred_count": 6,
+        "recall": 0.6667,
+        "recall_tp": 4,
+        "tp": 4
+      }
+    },
+    "evidence_valid_score": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.4,
+          "fn": 2,
+          "fp": 1,
+          "gold_count": 3,
+          "precision": 0.5,
+          "precision_tp": 1,
+          "pred_count": 2,
+          "recall": 0.3333,
+          "recall_tp": 1,
+          "shortfall_to_target": 0.5,
+          "tp": 1
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "SeizureFrequency": {
+          "f1": 0.6667,
+          "fn": 0,
+          "fp": 1,
+          "gold_count": 1,
+          "precision": 0.5,
+          "pred_count": 2,
+          "recall": 1.0,
+          "shortfall_to_target": 0.2333,
+          "tp": 1
+        }
+      },
+      "overall": {
+        "f1": 0.6667,
+        "fn": 2,
+        "fp": 2,
+        "gold_count": 6,
+        "precision": 0.6667,
+        "precision_tp": 4,
+        "pred_count": 6,
+        "recall": 0.6667,
+        "recall_tp": 4,
+        "tp": 4
+      }
+    },
+    "fidelity_companions": {
+      "Diagnosis": {
+        "concept_negation": {
+          "f1": 0.4,
+          "fidelity_gap": 0.0,
+          "headline_f1": 0.4
+        }
+      },
+      "SeizureFrequency": {
+        "active_rate_fidelity": {
+          "f1": 0.6667,
+          "fidelity_gap": 0.0,
+          "headline_f1": 0.6667
+        }
+      }
+    },
+    "headline_target": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.4,
+          "fn": 2,
+          "fp": 1,
+          "gold_count": 3,
+          "precision": 0.5,
+          "precision_tp": 1,
+          "pred_count": 2,
+          "recall": 0.3333,
+          "recall_tp": 1,
+          "shortfall_to_target": 0.5,
+          "tp": 1
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "SeizureFrequency": {
+          "f1": 0.6667,
+          "fn": 0,
+          "fp": 1,
+          "gold_count": 1,
+          "precision": 0.5,
+          "pred_count": 2,
+          "recall": 1.0,
+          "shortfall_to_target": 0.2333,
+          "tp": 1
+        }
+      },
+      "overall": {
+        "f1": 0.6667,
+        "fn": 2,
+        "fp": 2,
+        "gold_count": 6,
+        "precision": 0.6667,
+        "precision_tp": 4,
+        "pred_count": 6,
+        "recall": 0.6667,
+        "recall_tp": 4,
+        "tp": 4
+      }
+    },
+    "materialized_surfaces": {
+      "dictionary_normalized": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "overall": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        }
+      },
+      "evidence_valid": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "overall": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        }
+      },
+      "protocol_model_preserving_canonical": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "overall": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        }
+      },
+      "residual_benchmark_added": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "overall": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        }
+      },
+      "source_scored": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "overall": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        }
+      }
+    },
+    "raw_lane_score": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 0.4,
+          "fn": 2,
+          "fp": 1,
+          "gold_count": 3,
+          "precision": 0.5,
+          "precision_tp": 1,
+          "pred_count": 2,
+          "recall": 0.3333,
+          "recall_tp": 1,
+          "shortfall_to_target": 0.5,
+          "tp": 1
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 1,
+          "precision": 1.0,
+          "pred_count": 1,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 1
+        },
+        "SeizureFrequency": {
+          "f1": 0.6667,
+          "fn": 0,
+          "fp": 1,
+          "gold_count": 1,
+          "precision": 0.5,
+          "pred_count": 2,
+          "recall": 1.0,
+          "shortfall_to_target": 0.2333,
+          "tp": 1
+        }
+      },
+      "overall": {
+        "f1": 0.6667,
+        "fn": 2,
+        "fp": 2,
+        "gold_count": 6,
+        "precision": 0.6667,
+        "precision_tp": 4,
+        "pred_count": 6,
+        "recall": 0.6667,
+        "recall_tp": 4,
+        "tp": 4
+      }
+    }
+  },
+  "split": "smoke1_temp0",
+  "stage": "smoke1_temp01",
+  "structural_replay": {
+    "lens_count": 4,
+    "producer_count": 4,
+    "source_row_counts": {
+      "diagnosis_decomposer": 1,
+      "prescription_deterministic_repair": 1,
+      "sf_structured_union": 1,
+      "structured_key_family_event_ledger": 1
+    }
+  },
+  "target_report": {
+    "adr": "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md",
+    "best_by_indicator": {
+      "Diagnosis": {
+        "candidate": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+        "f1": 0.4,
+        "precision": 0.5,
+        "recall": 0.3333,
+        "shortfall_to_target": 0.5
+      },
+      "Investigations": {
+        "candidate": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "shortfall_to_target": 0.0
+      },
+      "Prescription": {
+        "candidate": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "shortfall_to_target": 0.0
+      },
+      "SeizureFrequency": {
+        "candidate": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+        "f1": 0.6667,
+        "precision": 0.5,
+        "recall": 1.0,
+        "shortfall_to_target": 0.2333
+      }
+    },
+    "candidates": [
+      {
+        "blocking_indicators": [
+          "Diagnosis",
+          "SeizureFrequency"
+        ],
+        "error_analysis": {
+          "per_indicator": {
+            "Diagnosis": {
+              "candidate_miss": 2,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 1
+            },
+            "Investigations": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            },
+            "Prescription": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            },
+            "SeizureFrequency": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 1
+            }
+          }
+        },
+        "fidelity_companions": {
+          "Diagnosis": {
+            "companion": "concept_negation",
+            "companion_f1": 0.4,
+            "fidelity_gap": 0.0,
+            "forgives": "Negation (negated vs affirmed)",
+            "headline_f1": 0.4
+          },
+          "SeizureFrequency": {
+            "companion": "active_rate_fidelity",
+            "companion_f1": 0.6667,
+            "fidelity_gap": 0.0,
+            "forgives": "rate magnitude among active states",
+            "headline_f1": 0.6667
+          }
+        },
+        "headline_scores": {
+          "Diagnosis": {
+            "f1": 0.4,
+            "fn": 2,
+            "fp": 1,
+            "gold_count": 3,
+            "precision": 0.5,
+            "precision_tp": 1,
+            "pred_count": 2,
+            "recall": 0.3333,
+            "recall_tp": 1,
+            "shortfall_to_target": 0.5,
+            "tp": 1
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 1,
+            "precision": 1.0,
+            "pred_count": 1,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 1
+          },
+          "SeizureFrequency": {
+            "f1": 0.6667,
+            "fn": 0,
+            "fp": 1,
+            "gold_count": 1,
+            "precision": 0.5,
+            "pred_count": 2,
+            "recall": 1.0,
+            "shortfall_to_target": 0.2333,
+            "tp": 1
+          }
+        },
+        "meets_all_targets": false,
+        "name": "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator_smoke1_temp0_r1_temp0p0",
+        "overall_target_score": {
+          "f1": 0.6667,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 6,
+          "precision": 0.6667,
+          "precision_tp": 4,
+          "pred_count": 6,
+          "recall": 0.6667,
+          "recall_tp": 4,
+          "tp": 4
+        },
+        "ownership": "component_attributed_full200_simplification_replay"
+      }
+    ],
+    "headline_score_policies": {
+      "Diagnosis": "projected clinical-fact concept_only score after deterministic Diagnosis normalization/projection; scored as projected core facts per letter",
+      "Investigations": "clinical_headline modality/performed/result score after deterministic investigation normalization/projection",
+      "Prescription": "clinical_headline regimen score after deterministic medication normalization/projection",
+      "SeizureFrequency": "projected seizure-state clinical_headline score after deterministic frequency-state normalization/projection"
+    },
+    "pipeline_family": "exectv2_adr0030_target_indicator_report",
+    "row_count": 1,
+    "scope_note": "ADR 0030 surface only: Diagnosis, SeizureFrequency, Prescription, and Investigations. Non-target ExECT families are intentionally omitted.",
+    "source_generated_on": "",
+    "source_pipeline_family": "exectv2_finding_assembly_views",
+    "split": "",
+    "stage": "dev1",
+    "target_f1": 0.9,
+    "target_indicators": [
+      "Diagnosis",
+      "SeizureFrequency",
+      "Prescription",
+      "Investigations"
+    ]
+  }
+}
