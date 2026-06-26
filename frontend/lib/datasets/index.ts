@@ -17,3 +17,16 @@ export {
   surfaceHref,
 } from "./url";
 export { useActiveDataset, useDatasetNavigation } from "./useDataset";
+export {
+  exectv2RuntimeAdapter,
+  gan2026RuntimeAdapter,
+  getRuntimeAdapter,
+  useRunCatalog,
+  useRunSelection,
+} from "./runtime";
+export type {
+  DatasetRuntimeAdapter,
+  DatasetSurfaceComponents,
+  RunCatalogState,
+  RunSelectionState,
+} from "./runtime";
