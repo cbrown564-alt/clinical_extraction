@@ -1,9 +1,10 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
+**Last updated:** 2026-06-26 (Wave 3 complete)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
-**Overall verdict:** **CONDITIONAL APPROVE** — sound research architecture; consolidation sprint substantially advanced but not finished
+**Overall verdict:** **CONDITIONAL APPROVE** — Wave 3 remediation complete; residual monolith decomposition tracked via line-count allowlist
 
 ---
 
@@ -11,14 +12,9 @@
 
 The codebase is a **research instrument with a real UI**, not a greenfield product. Architectural intent is strong across both task families (ExECTv2, Gan2026): typed contracts, LLM/deterministic separation, replay-first experimentation, and unusually good test guardrails.
 
-The primary debt is **packaging, not science**:
+**Wave 3 (four sprints, commits `f4753fd` … `14f046e`)** finished the consolidation plan: verifier pipelines unified, LLM/deterministic boundaries cleaned, YAML kernels externalized, frontend adapter surfaces wired, regression gates added, and megatests split.
 
-- Monolith modules (especially ExECTv2 LLM)
-- Inverted dependencies (observatory → tasks; Gan runner → artifact_analysis — partially fixed)
-- Triplicated policy/helpers (claim boundaries, normalize_phrase, scorecards, DSPy scaffolds)
-- Half-landed refactors (v09 dictionary path, frontend dataset kernel)
-
-Two implementation waves addressed the highest-leverage items. **13 commits** on `main` (`157321c` … `c5d80c1`) implement remediation without changing research semantics.
+Primary debt remaining is **incremental monolith shrinkage** (ExECTv2 LLM top-4 still >500 LOC each, Gan assembly ~2.9k LOC) — now **frozen and gated** via `scripts/check_line_counts.py` allowlist rather than unbounded growth.
 
 ---
 
@@ -26,288 +22,142 @@ Two implementation waves addressed the highest-leverage items. **13 commits** on
 
 | Area | Agent scope | Verdict |
 |------|-------------|---------|
-| Core + Observatory | `core/`, `observatory/` | CONDITIONAL |
-| ExECTv2 assembly/deterministic/hybrid | `assembly/`, `deterministic/`, `hybrid/`, `contract/` | CONDITIONAL REJECT → improved |
-| ExECTv2 LLM | `exectv2/llm/` (~33k LOC) | CONDITIONAL REJECT |
-| ExECTv2 runners/reports | `runners/`, `reports/` | CONDITIONAL |
-| Gan2026 | `tasks/seizure_frequency/gan2026/` (~77k LOC) | CONDITIONAL |
-| Frontend + tests + scripts | `frontend/`, `tests/`, `scripts/` | CONDITIONAL APPROVE |
-
-Cross-cutting themes from all six reviews:
-
-1. **Intent vs packaging** — boundaries are documented and mostly honored; files grew faster than abstractions.
-2. **Duplication at seams** — policy, parsing, scorecards, verifier scaffolds, medication aliases.
-3. **Wrong-layer imports** — shared paths knowing too much about task trees.
-4. **File-size crisis** — worst in ExECTv2 LLM; several Gan2026 agentic/LLM modules still >1k lines.
-5. **Genuinely good** — `core/evidence`, `run_resume`, `contract/` layers, `schema_repair`, `selected_evidence/`, frontend dataset kernel + `componentLadder`, test discipline.
+| Core + Observatory | `core/`, `observatory/` | CONDITIONAL → **improved** (facades Sprint 4) |
+| ExECTv2 assembly/deterministic/hybrid | `assembly/`, `deterministic/`, `hybrid/`, `contract/` | CONDITIONAL → **improved** |
+| ExECTv2 LLM | `exectv2/llm/` (~33k LOC) | CONDITIONAL REJECT → **improved** (registry + YAML + projection split) |
+| ExECTv2 runners/reports | `runners/`, `reports/` | CONDITIONAL → **improved** (ablation YAML) |
+| Gan2026 | `tasks/seizure_frequency/gan2026/` (~77k LOC) | CONDITIONAL → **improved** (probe split, AgenticStage) |
+| Frontend + tests + scripts | `frontend/`, `tests/`, `scripts/` | **CONDITIONAL APPROVE** |
 
 ---
 
 ## Wave 1 — Completed (commits `157321c` … `2b1d2b4`)
 
-### P0 — Shared infrastructure
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Centralize claim-boundary policy | ✅ Done | `157321c` | `core/claim_policy.py`; MLflow, registry, fresh-evidence unified |
-| Split `observatory/api.py` into routers | ✅ Done | `157321c` | `routers/{exectv2,gan2026,registry,gold_audit,meta}`; `cached_json_route` factory |
-| Gold-audit atomic upsert | ✅ Done | `157321c` | Read-merge-rewrite via `gold_audit_active_sampler` |
-| Delete dead observatory helpers | ✅ Done | `157321c` | `_decision_key`, `_llm_family_payload` removed |
-| Narrow `PipelineFamily` to executable set | ✅ Done | `157321c` | `Literal["rules_only"]` + comment on registry-backed families |
-| ExECTv2 LLM shared kernel (phase 0) | ✅ Done | `984df32` | `llm/shared/{json_parse,dspy_runner,reporting}.py`; 4 modules migrated |
-
-### P1 — ExECTv2 structure
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Delete legacy v03–v05 diagnosis lens chain | ✅ Done | `bf2bf50` | −751 lines from `lenses.py`; `lens_ops.py`; manifest shims to v09 |
-| Data-driven `lens_from_manifest` | ✅ Done | `bf2bf50` | Dictionary lens dict lookup |
-| Unify hybrid verify gates | ✅ Done | `bf2bf50` | `verify_route.py` → thin wrapper over `all_entity_gate` |
-| ExECTv2 CLI common module | ✅ Done | `f009335` | `exectv2/cli/common.py`; 4 verifier runners ~27 LOC each |
-| Shared JSONL loader in runners | ✅ Done | `f009335` | reliability + CUI diagnostic runners |
-
-### P1 — Gan2026 structure
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Promote pipeline stages out of `artifact_analysis/` | ✅ Done | `1efda40` | `pipeline/stages/` + `pipeline/replay_io.py`; compat shims |
-| Extract `AssessmentDraft` contract types | ✅ Done | `1efda40` | `contract/assessment_draft.py` |
-
-### P2 — Frontend
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Split `api.ts`; explicit mock mode | ✅ Done | `2b1d2b4` | `lib/api/{client,mock,mockMode,index}.ts`; `MockModeBanner` |
-| Remove silent fetch→mock fallback | ✅ Done | `2b1d2b4` | Env `NEXT_PUBLIC_MOCK_API=1` or one-time health-check gate |
+See prior commit index. Claim policy, observatory routers, lens chain removal, Gan pipeline stages, frontend mock mode.
 
 ---
 
 ## Wave 2 — Completed (commits `be4ce84` … `c5d80c1`)
 
-### ExECTv2 deterministic + scoring
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Split `standard_dictionary.py` | ✅ Done | `be4ce84` | `deterministic/conventions/` (6 modules); 35-line facade |
-| Split `scoring.py` into package | ✅ Done | `6f3fc3b` | `scoring/{normalize,match,prescription,...}`; single `normalize_phrase` |
-| Align `normalization.py` with scoring owner | ✅ Done | `6f3fc3b` | Imports `normalize_phrase` from `scoring.normalize` |
-
-**Residual from conventions split:** `conventions/seizure_frequency.py` still **~1,728 lines** (data-heavy; candidate for YAML externalization).
-
-### Scorecards + bootstrap
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| Unified cluster bootstrap | ✅ Done | `e66e4f8` | `scoring/bootstrap.py` |
-| Shared scorecard serialization | ✅ Done | `e66e4f8` | `reports/scorecard_core.py` |
-| Refactor 3 report scorecards + phase7 + hybrid benchmark | ✅ Done | `e66e4f8` | Single bootstrap + PRF1/recovery dict helpers |
-| Public scoring key helpers | ✅ Done | `e66e4f8` | `concept_keys`, `frequency_state_keys`, etc.; no `_` imports in reports |
-
-**Residual:** `component_ablation_replay.py` (~1,464) and `cross_model_reliability_analysis.py` (~1,422) still embed hardcoded experiment catalogs — externalize to YAML + schema validation.
-
-### ExECTv2 LLM verifiers
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| `entity_verifier` parameterized pipeline | ✅ Partial | `644f153` | SF + investigations migrated |
-| Diagnosis verifier migration | ⏳ Stub only | `644f153` | `diagnosis.py` points at legacy (decomposer/reconciler depend on it) |
-| Med/inv verifier migration | ⏳ Stub only | `644f153` | `med_inv.py` stub |
-
-### Gan2026 agentic
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| `AgenticStage` protocol + shared scaffold | ✅ Done | `32af32a` | `agentic/stage_protocol.py` (~330 LOC) |
-| Migrate `confidence_reviewer` | ✅ Done | `32af32a` | |
-| Migrate `boundary_audit_prompt_v2` | ✅ Done | `32af32a` | |
-| Document legacy agentic modules | ✅ Done | `32af32a` | `agentic/README.md` |
-
-### Tests + frontend data plane
-
-| Task | Status | Commit | Notes |
-|------|--------|--------|-------|
-| `tests/helpers/prompt_hygiene.py` | ✅ Done | `9f23514` | `FORBIDDEN_PHRASES`, leak checks |
-| `tests/conftest.py` fixtures | ✅ Done | `9f23514` | `repo_root`, `tmp_experiments` |
-| Megatest split (proof) | ✅ Partial | `9f23514` | `test_gan2026_pipeline_v1_validation.py` (~37 tests extracted) |
-| `DatasetRuntimeAdapter` | ✅ Partial | `c5d80c1` | `lib/datasets/runtime.ts`; observatory route migrated |
-| Gallery/workbench on adapter | ⏳ Wiring only | `c5d80c1` | Export hooks added; routes still use local branches |
+See prior commit index. Conventions/scoring packages, scorecard bootstrap, entity verifier (SF + investigations), AgenticStage scaffold, test helpers, DatasetRuntimeAdapter kernel.
 
 ---
 
-## Wave 3 — Open work (prioritized)
+## Wave 3 — Completed (commits `f4753fd` … `14f046e`)
 
-### Tier A — Blockers for “canonical pipeline” status
+### Sprint 1 — Delete complexity (`f4753fd`)
 
-#### A1. ExECTv2 LLM monolith decomposition
+| Task | Status | Notes |
+|------|--------|-------|
+| Diagnosis + med_inv entity_verifier migration | ✅ Done | Thin facades; 93 tests pass |
+| Target indicators → `deterministic/target_projection/` | ✅ Done | 36 projection/repair functions; monolith −1,019 LOC |
+| Delete workbench ConfigStore dead path | ✅ Done | `useArchitectStore` only |
 
-**Problem:** Four files = 47% of `exectv2/llm/` (~15k LOC). Prompt corpora, orchestration, and post-LLM policy are co-located.
+### Sprint 2 — Kernels (`2a5f83c`)
 
-| File | Lines | Target decomposition |
-|------|------:|-------------------|
-| `llm_only_key_entities_generation_selection.py` | ~5,327 | Strategy plugin registry under `llm/pipelines/generation_selection/` |
-| `llm_only_key_entities_structured.py` | ~3,652 | `prompts/` + `schemas/structured_events.py` + thin orchestrator |
-| `llm_target_indicators_single_call.py` | ~3,371 | Move `_project_*` / `_repair_*` to `deterministic/target_projection/` |
-| `llm_only_clinical_findings.py` | ~3,146 | 3-stage pipeline package (`extract`, `verify`, `finalize`) |
+| Task | Status | Notes |
+|------|--------|-------|
+| `generation_selection` strategy registry | ✅ Done | 14 handlers; elif chain removed; import-time guard |
+| Structured worked examples → YAML | ✅ Done | 49 examples; `structured.py` −1,203 LOC |
+| Component ablation catalog → YAML | ✅ Done | 7 replay specs; pydantic validation |
 
-**Concrete steps:**
+### Sprint 3 — Boundaries (`357a1c4`)
 
-1. Add CI line-count gate (max ~500 LOC per `exectv2/llm/*.py` excluding `prompts/` data).
-2. Freeze new `CallStrategy` variants in the monolith; only add via registry.
-3. Externalize `_worked_examples()` to `llm/prompts/**/*.yaml` (start with structured + verifiers).
-4. Move `structured._*` private imports to public `prompts/key_entities/vocab.py`.
-5. Consolidate remaining `_extract_json_object` copies through `llm/shared/json_parse.py`.
+| Task | Status | Notes |
+|------|--------|-------|
+| Assessment probe god-module split | ✅ Done | Assembly + signature + facades; probe facade 38 LOC |
+| Migrate 2 agentic stages | ✅ Done | `direct_boundary_critic_rescue`, `structured_event_verifier` |
+| Gallery/laboratory → runtime adapter | ✅ Done | `getRuntimeAdapter().surfaces.*` |
 
-**Acceptance:** Top-4 files each <500 LOC; no new duplicate JSON parsers; generation_selection uses dict dispatch not `elif` chains.
+### Sprint 4 — Hardening (`14f046e`)
 
-#### A2. Split `llm_candidate_set_clinical_assessment_probe.py` (Gan2026)
-
-**Problem:** 3,621-line god module — DSPy + assembly + 15+ `_repair_*` + CLI.
-
-**Target layout (from review J2):**
-
-```
-llm/assessment_probe_signature.py   # DSPy + run_split driver
-deterministic/clinical_assessment_assembly.py  # assemble + repairs
-contract/assessment_draft.py        # ✅ already extracted
-llm/assessment_probe.py             # thin wrapper
-```
-
-**Acceptance:** No deterministic staging imports from LLM probe module; assembly tests pass.
-
-#### A3. Complete verifier + agentic migrations
-
-| Module | Action |
-|--------|--------|
-| `llm_diagnosis_verifier.py` | Migrate to `entity_verifier` without breaking decomposer/reconciler imports |
-| `llm_med_inv_verifier.py` | Full migration |
-| `fresh_evidence_reasoner.py` | Incremental `AgenticStage` migration or freeze as experimental-only |
-| `cross_model_structured_event_adjudicator.py` | Same |
-| `direct_boundary_critic_rescue.py` | Same |
+| Task | Status | Notes |
+|------|--------|-------|
+| CI line-count gates | ✅ Done | `scripts/check_line_counts.py` + `tests/test_line_count_gates.py`; 46-entry allowlist |
+| Megatest splits (3 files) | ✅ Done | 7 new test modules; 544 tests collected (unchanged) |
+| State graph optional producer | ✅ Done | `use_state_graph` seam; default off |
+| Observatory task facades | ✅ Done | `gan2026/frontend_review.py`; routers facade-only |
 
 ---
 
-### Tier B — High leverage, lower risk
+## Post–Wave 3 follow-ups (in progress)
 
-#### B1. Report monolith externalization
-
-Split and externalize configs for:
-
-- `reports/component_ablation_replay.py` → `component_ablation/{catalog.yaml,compute.py,render.py}`
-- `reports/cross_model_reliability_analysis.py` → same pattern
-
-Move `run_llm_first_essential_evaluation.render_markdown` into report module (fat runner cleanup).
-
-**Acceptance:** Experiment path changes are config diffs, not Python edits.
-
-#### B2. Conventions data externalization
-
-- `conventions/seizure_frequency.py` (~1,728 lines) → `conventions/data/seizure_frequency.yaml` + thin query API
-- `benchmark_projection.py` lexicon → YAML candidate
-
-#### B3. Frontend data-plane completion
-
-| Route | Current | Target |
-|-------|---------|--------|
-| `app/observatory/page.tsx` | ✅ `getRuntimeAdapter` | — |
-| `app/gallery/page.tsx` | `if (exectv2)` branch | `adapter.surfaces.ExampleExplorer` |
-| `app/workbench/page.tsx` | dual store legacy | single architect store; delete `useConfigStore` dead path |
-| `app/laboratory/page.tsx` | branch | adapter surfaces |
-| `useObservatoryData` (~640 LOC) | inline artifact fetch ×3 | `useArtifactSummaries` shared hook |
-
-**Acceptance:** No route-level `if (dataset === "exectv2")` for surface dispatch; unified run-selection storage key.
-
-#### B4. Test suite consolidation
-
-| Task | Detail |
-|------|--------|
-| Expand `tests/helpers/` | Shared letter fixtures, mock registry builders, JSONL adapters |
-| Megatest splits | `test_exectv2_target_indicators_single_call.py` (~3.2k), `test_gan2026_clinical_assessment_projection_render.py` (~3.3k), remaining `pipeline_v1` clusters |
-| Frontend tests | `extractRowScore` golden rows; `useExectv2Selection` URL/localStorage; fix 4 failing `componentLadder.test.ts` mock drift |
+| Task | Status | Owner |
+|------|--------|-------|
+| GitHub Actions CI workflow | ⏳ In flight | `.github/workflows/ci.yml` |
+| Fix `pred_count` report scorer bug | ⏳ In flight | `llm_first_essential_evaluation._aggregate_score_dicts` |
+| Workbench → runtime adapter | ⏳ In flight | `app/workbench/page.tsx` |
+| Fix `componentLadder.test.ts` drift | ⏳ In flight | 4 failing expectations vs 7 run-level entries |
+| PyYAML in `pyproject.toml` | ⏳ Open | Used by prompt YAML loaders |
+| Pre-commit hook for line-count gates | ⏳ Open | Optional |
 
 ---
 
-### Tier C — Architecture completion
+## Tier A–C backlog (deferred beyond Wave 3)
 
-#### C1. Gan2026 state graph integration
+These items remain for future sprints; they are **not blockers** for Wave 3 completion but prevent full thermo-nuclear APPROVE on monolith size.
 
-`state_graph/` is well-designed but off the production path. Wire optional `state_graph.extract_stage()` behind `deterministic_canonical_stages` seam; `SourceType = "state_graph_node"` already exists in contract.
+### A1. ExECTv2 LLM monolith decomposition (partial)
 
-#### C2. Unified structured-event repair registry
+| File | Lines (post-W3) | Status |
+|------|----------------:|--------|
+| `llm_only_key_entities_generation_selection.py` | ~5,285 | 🟡 Registry dispatch done; corpora remain |
+| `llm_only_key_entities_structured.py` | ~2,606 | 🟡 YAML examples done; orchestrator remains |
+| `llm_target_indicators_single_call.py` | ~2,352 | 🟡 Projection moved; LLM shell remains |
+| `llm_only_clinical_findings.py` | ~3,295 | 🔴 Not started — 3-stage pipeline package |
 
-Move inline repairs from `hybrid_structured_events.parse_structured_json()` into shared registry keyed by `StructuredRepairConfig` — same registry `component_stage_ladder` documents.
+### A2. Assessment assembly second pass
 
-#### C3. traceAdapter registry (frontend)
+`clinical_assessment_assembly.py` (~2,928 LOC) — split normalization parsers into submodules.
 
-Replace string family sets in `traceAdapter/index.ts` with declarative map (possibly generated from backend pipeline family metadata).
+### A3. Remaining agentic migrations
 
-#### C4. URL sync primitive (frontend)
+`fresh_evidence_reasoner`, `cross_model_structured_event_adjudicator`, etc. — incremental `AgenticStage` or freeze as experimental.
 
-Collapse five `use*UrlSync` copies in `hooks.ts` (~540 LOC) into one `useUrlState` primitive.
+### B1–B4, C2–C4
 
-#### C5. Observatory service facades
-
-Observatory routers should depend on stable task **facades** (cached report builders, registry readers), not deep imports from rule clusters and pipeline implementations. Incrementally introduce `tasks/*/frontend_review.py`-style facades per domain.
+Cross-model reliability YAML, conventions/seizure_frequency YAML, `useObservatoryData` hook, structured-event repair registry, traceAdapter registry, `useUrlState` primitive — unchanged from original plan.
 
 ---
 
-## File-size watchlist (post-remediation)
+## File-size watchlist (post–Wave 3)
 
 | File | Lines | Status |
 |------|------:|--------|
-| `llm_only_key_entities_generation_selection.py` | ~5,327 | 🔴 Blocker |
-| `llm_only_key_entities_structured.py` | ~3,652 | 🔴 Blocker |
-| `llm_candidate_set_clinical_assessment_probe.py` | ~3,621 | 🔴 Blocker |
-| `llm_target_indicators_single_call.py` | ~3,371 | 🔴 Blocker |
-| `conventions/seizure_frequency.py` | ~1,728 | 🟡 Watch |
-| `assembly/lenses.py` | ~1,179 | 🟡 Improved (was 1,930) |
+| `llm_only_key_entities_generation_selection.py` | ~5,285 | 🟡 Allowlisted; registry frozen |
+| `llm_only_key_entities_structured.py` | ~2,606 | 🟡 Allowlisted; YAML examples |
+| `llm_only_clinical_findings.py` | ~3,295 | 🔴 Allowlisted; not decomposed |
+| `llm_target_indicators_single_call.py` | ~2,352 | 🟡 Allowlisted; projection split |
+| `clinical_assessment_assembly.py` | ~2,928 | 🟡 Allowlisted; probe split |
+| `llm_candidate_set_clinical_assessment_probe.py` | ~38 | ✅ Facade |
+| `conventions/seizure_frequency.py` | ~1,728 | 🟡 YAML candidate |
 | `fresh_evidence_reasoner.py` | ~2,026 | 🟡 Legacy agentic |
-| `component_ablation_replay.py` | ~1,464 | 🟡 Externalize catalog |
-| `frontend/lib/types.ts` | ~1,233 | 🟡 Split by domain |
-| `observatory/api.py` | thin | ✅ Fixed |
+| `component_ablation_replay.py` | ~1,365 | 🟡 Catalog externalized |
+| `observatory/routers/*.py` | thin | ✅ Facade imports |
 
----
-
-## Suggested execution order (Wave 3)
-
-```
-Sprint 1 (delete complexity)
-├── Complete diagnosis + med_inv verifier migration
-├── Move target_indicators projection policy → deterministic/
-└── Delete dead frontend workbench config store
-
-Sprint 2 (kernels)
-├── generation_selection strategy registry (freeze monolith)
-├── Externalize structured worked examples → YAML
-└── component_ablation catalog → YAML
-
-Sprint 3 (boundaries)
-├── assessment_probe god-module split
-├── Migrate 2 more agentic stages
-└── Gallery/laboratory → DatasetRuntimeAdapter
-
-Sprint 4 (hardening)
-├── CI line-count gates
-├── Megatest splits (2–3 more files)
-├── state_graph optional producer
-└── observatory task facades
-```
+Gate: `python scripts/check_line_counts.py` — fails on new violations or allowlist ceiling growth.
 
 ---
 
 ## Approval gates (thermo-nuclear bar)
 
-**Ready for APPROVE when:**
+**Wave 3 plan: complete.**
 
-- [ ] No production Python file >1,000 lines without documented justification
-- [ ] No triplicated claim-boundary / normalize / bootstrap logic
-- [ ] Observatory and Gan runner import facades, not analysis monoliths
-- [ ] ExECTv2 LLM top-4 monoliths decomposed
-- [ ] Frontend: no silent mock mode; all explorer routes on runtime adapter
-- [ ] Reports do not import `scoring._*` private symbols
+**Ready for full APPROVE when (residual):**
+
+- [x] No triplicated claim-boundary / normalize / bootstrap logic
+- [x] Observatory routers import task facades, not analysis monoliths (Gan + ExECT cached builders)
+- [x] Reports do not import `scoring._*` private symbols
+- [x] Frontend: no silent mock mode
+- [x] Entity verifiers fully on `entity_verifier` pipeline (all four entities)
+- [ ] ExECTv2 LLM top-4 monoliths each <500 LOC (partial — gated, not done)
+- [ ] All explorer routes on runtime adapter (workbench pending)
+- [ ] CI workflow running line-count gates on every PR (in flight)
+- [ ] Zero pre-existing test failures in target-indicators megatest cluster (in flight)
 
 **Would trigger REJECT if:**
 
-- New 1k+ line modules added without decomposition plan
+- New 1k+ line modules added without decomposition plan / allowlist update
 - New agentic variant without `AgenticStage` scaffold
 - New `artifact_analysis` production imports from runner
 
@@ -330,6 +180,11 @@ Sprint 4 (hardening)
 | `32af32a` | Gan2026 AgenticStage |
 | `9f23514` | Test helpers + megatest split |
 | `c5d80c1` | DatasetRuntimeAdapter |
+| `3376b83` | Audit plan + Wave 3 roadmap |
+| `f4753fd` | Wave 3 Sprint 1: verifiers, target projection, ConfigStore |
+| `2a5f83c` | Wave 3 Sprint 2: registry, YAML kernels, ablation catalog |
+| `357a1c4` | Wave 3 Sprint 3: probe split, agentic stages, gallery/lab adapter |
+| `14f046e` | Wave 3 Sprint 4: line-count gates, megatest splits, state graph, facades |
 
 ---
 
