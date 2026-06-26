@@ -1,7 +1,7 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
-**Last updated:** 2026-06-26 (post-review remediation Waves A + B complete)  
+**Last updated:** 2026-06-26 (Wave C Sprint 3: P1-1 design spike complete)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
 **Overall verdict:** **CONDITIONAL APPROVE** — major layer inversions fixed and largest Gan/runtime monoliths decomposed; ExECTv2 LLM top-4 and report cluster remain gated debt
@@ -95,7 +95,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | `contract/drug_lexicon.py` single source | ✅ Done | `75eefba` |
 | `contract/repair.py` — `repair_attributes`, `check_evidence` | ✅ Done | hybrid off `llm_only_single_pass` |
 | Assembly → reports inversion fix | ✅ Done | `scoring/reporting.py` facade |
-| Collapse SF repair stacks into data-driven surface registry | 🔴 Open | Multi-week; highest conceptual debt |
+| Collapse SF repair stacks into data-driven surface registry | 🟡 Spike done | Design: `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md`; implementation Phases 0–5 |
 | Split `all_entities.py` per-entity modules | 🔴 Open | |
 | Refactor `lenses.py` to thin convention adapters | 🔴 Open | |
 | Merge or relocate `target_projection/` (LLM-only consumer) | 🔴 Open | |
@@ -273,7 +273,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 
 | ID | Task | Area | Notes |
 |----|------|------|-------|
-| P1-1 | Merge SF repair stacks (rules + conventions + target_projection) | ExECTv2 det | Highest conceptual debt; needs design spike |
+| P1-1 | Merge SF repair stacks (rules + conventions + target_projection) | ExECTv2 det | ✅ Design spike complete (`exectv2_sf_repair_stack_consolidation_design_2026-06-26.md`); implement Phases 0–5 |
 | P1-2 | Split `all_entities.py` + thin `lenses.py` | ExECTv2 det | Unblocks convention layer honesty |
 | P1-3 | Diagnosis verifier chain → single pipeline | ExECTv2 LLM | ~2.6k LOC parallel story |
 | P1-4 | Move `llm_sf_*` deterministic modules out of `llm/` | ExECTv2 LLM | Layer hygiene |
@@ -301,7 +301,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | P3-1 | Migrate legacy agentic monoliths one-by-one via `run_driver` | Start with `fresh_evidence_reasoner` (2,016 LOC) |
 | P3-2 | `entity_verifier` content → YAML per entity | diagnosis 929, sf 851, med_inv 705 LOC |
 | P3-3 | Family-conditioned shared scaffold | ~2.2k LOC cluster |
-| P3-4 | `conventions/seizure_frequency.py` table-driven rewrite | 1,728 LOC |
+| P3-4 | `conventions/seizure_frequency.py` table-driven rewrite | Superseded by P1-1 Phase 2 registry migration |
 | P3-5 | `createComponentImpactSurface` factory | Frontend laboratory dedup |
 | P3-6 | Continue megatest splits | `test_gan2026_normalize`, `test_exectv2_deterministic_sf`, etc. |
 
@@ -371,7 +371,7 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 
 **Sprint 1 (1 week):** P0-1, P0-3, P0-4, P0-6, P0-7 — YAML corpora start, report scaffold, CI depth  
 **Sprint 2 (1–2 weeks):** P0-2, P0-5, P1-6 — clinical_findings package, Gan hybrid extract, report monolith headroom  
-**Sprint 3 (2–4 weeks):** P1-1 design spike + P1-2 — SF stack consolidation design, all_entities split  
+**Sprint 3 (2–4 weeks):** ~~P1-1 design spike~~ ✅ + P1-2 + P1-1 Phase 0 parity harness — SF registry shadow tests, all_entities split  
 **Sprint 4 (ongoing):** P1-5, P2-1, P3-* — Gan runner/agentic, artifact_analysis quarantine, incremental migrations
 
 ---
@@ -380,5 +380,5 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 
 - Review skill: `.claude/skills/thermo-nuclear-code-quality-review/SKILL.md`
 - Line-count gate: `scripts/check_line_counts.py`, `tests/test_line_count_gates.py`
-- Related plans: `docs/plans/repo_simplification_plan_2026-06-22.md`, `docs/plans/exectv2_frontend_dataset_integration_implementation_plan_2026-06-22.md`
+- Related plans: `docs/plans/repo_simplification_plan_2026-06-22.md`, `docs/plans/exectv2_frontend_dataset_integration_implementation_plan_2026-06-22.md`, `docs/plans/exectv2_sf_repair_stack_consolidation_design_2026-06-26.md` (P1-1)
 - Prior context: `PROJECT_STATUS.md`, `CONTEXT.md`
