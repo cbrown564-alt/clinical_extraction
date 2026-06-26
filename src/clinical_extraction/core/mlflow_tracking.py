@@ -23,6 +23,8 @@ MLFLOW_STRICT_ENV = "CLINICAL_EXTRACTION_MLFLOW_STRICT"
 MLFLOW_TRACKING_URI_ENV = "MLFLOW_TRACKING_URI"
 MLFLOW_ALLOW_FILE_STORE_ENV = "MLFLOW_ALLOW_FILE_STORE"
 MLFLOW_PARENT_RUN_TAG = "mlflow.parentRunId"
+REGISTRY_RUN_ID_TAG = "registry_run_id"
+COMPARISON_ID_TAG = "comparison_id"
 
 ParamValue = str | int | float | bool | None
 MetricValue = int | float
@@ -67,10 +69,55 @@ def configure_mlflow_from_env(repo_root: Path) -> None:
     mlflow.set_tracking_uri(tracking_uri)
 
 
+def find_existing_mlflow_run_id(
+    mlflow: Any,
+    *,
+    experiment_name: str,
+    tag_key: str,
+    tag_value: str,
+) -> str | None:
+    """Return the newest MLflow run id matching a registry or comparison key."""
+
+    escaped = _escape_mlflow_filter_value(tag_value)
+    if tag_key == REGISTRY_RUN_ID_TAG:
+        filter_string = (
+            f"tags.{REGISTRY_RUN_ID_TAG} = '{escaped}' "
+            f"OR params.{REGISTRY_RUN_ID_TAG} = '{escaped}'"
+        )
+    else:
+        filter_string = f"tags.{tag_key} = '{escaped}'"
+    runs = mlflow.search_runs(
+        experiment_names=[experiment_name],
+        filter_string=filter_string,
+        order_by=["start_time DESC"],
+        max_results=1,
+    )
+    if runs.empty:
+        return None
+    return str(runs.iloc[0]["run_id"])
+
+
+def lookup_keys_for_payload(payload: MlflowRunPayload) -> tuple[tuple[str, str], ...]:
+    """Return stable lookup keys used to find an existing mirrored MLflow run."""
+
+    keys: list[tuple[str, str]] = []
+    registry_run_id = payload.params.get(REGISTRY_RUN_ID_TAG)
+    if registry_run_id is not None:
+        keys.append((REGISTRY_RUN_ID_TAG, _stringify(registry_run_id)))
+    comparison_id = payload.tags.get(COMPARISON_ID_TAG)
+    if comparison_id is not None:
+        keys.append((COMPARISON_ID_TAG, _stringify(comparison_id)))
+    return tuple(keys)
+
+
 def mirror_payload_to_mlflow(
     payload: MlflowRunPayload, *, repo_root: Path | None = None
 ) -> str | None:
     """Mirror one payload to MLflow and return the MLflow run id when created.
+
+    When a prior mirrored run exists for the same ``registry_run_id`` or
+    ``comparison_id``, reuse that run and refresh tags, metrics, and artifacts.
+    MLflow params remain immutable, so they are logged only on first create.
 
     MLflow is optional. Missing MLflow, disabled mirroring, or non-strict logging
     failures return ``None`` after logging a concise message. Set
@@ -89,18 +136,33 @@ def mirror_payload_to_mlflow(
         configure_mlflow_from_env(root)
         mlflow = _load_mlflow()
         mlflow.set_experiment(payload.experiment_name)
-        tags = normalized_tags(payload)
-        if payload.parent_run_id:
-            tags[MLFLOW_PARENT_RUN_TAG] = payload.parent_run_id
+        tags = _payload_tags(payload)
+        existing_run_id = _find_existing_run_id(mlflow, payload)
+        metrics = normalized_metrics(payload)
+        artifact_paths = safe_artifact_paths(payload, repo_root=root)
+
+        if existing_run_id is not None:
+            LOGGER.info(
+                "Reusing existing MLflow run %s for experiment %s",
+                existing_run_id,
+                payload.experiment_name,
+            )
+            with mlflow.start_run(run_id=existing_run_id):
+                for key, value in tags.items():
+                    mlflow.set_tag(key, value)
+                if metrics:
+                    mlflow.log_metrics(metrics)
+                for artifact_path in artifact_paths:
+                    mlflow.log_artifact(str(artifact_path))
+                return existing_run_id
 
         with mlflow.start_run(run_name=payload.run_name, tags=tags) as active_run:
             params = normalized_params(payload)
-            metrics = normalized_metrics(payload)
             if params:
                 mlflow.log_params(params)
             if metrics:
                 mlflow.log_metrics(metrics)
-            for artifact_path in safe_artifact_paths(payload, repo_root=root):
+            for artifact_path in artifact_paths:
                 mlflow.log_artifact(str(artifact_path))
             return str(active_run.info.run_id)
     except Exception:
@@ -158,6 +220,7 @@ def registry_entry_to_mlflow_payload(
         if _is_metric_value(value)
     }
     tags: dict[str, TagValue] = {
+        REGISTRY_RUN_ID_TAG: str(entry.run_id),
         "claim_status": _claim_status_from_decision(decision, comparison_role),
         "claim_boundary": claim_boundary or _claim_boundary_for_split(split),
         "row_inspection_policy": row_inspection_policy or _row_inspection_policy_for_split(split),
@@ -232,6 +295,33 @@ def safe_artifact_paths(payload: MlflowRunPayload, *, repo_root: Path) -> tuple[
             continue
         safe_paths.append(resolved)
     return tuple(safe_paths)
+
+
+def _payload_tags(payload: MlflowRunPayload) -> dict[str, str]:
+    tags = normalized_tags(payload)
+    registry_run_id = payload.params.get(REGISTRY_RUN_ID_TAG)
+    if registry_run_id is not None:
+        tags[REGISTRY_RUN_ID_TAG] = _stringify(registry_run_id)
+    if payload.parent_run_id:
+        tags[MLFLOW_PARENT_RUN_TAG] = payload.parent_run_id
+    return tags
+
+
+def _find_existing_run_id(mlflow: Any, payload: MlflowRunPayload) -> str | None:
+    for tag_key, tag_value in lookup_keys_for_payload(payload):
+        existing = find_existing_mlflow_run_id(
+            mlflow,
+            experiment_name=payload.experiment_name,
+            tag_key=tag_key,
+            tag_value=tag_value,
+        )
+        if existing is not None:
+            return existing
+    return None
+
+
+def _escape_mlflow_filter_value(value: str) -> str:
+    return value.replace("'", "\\'")
 
 
 def _load_mlflow() -> Any:
