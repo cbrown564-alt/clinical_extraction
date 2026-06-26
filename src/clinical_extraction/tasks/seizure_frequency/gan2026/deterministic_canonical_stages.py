@@ -60,14 +60,31 @@ def extract_stage(
     *,
     source_row_index: int,
     ablation_config: AblationConfig | None = None,
+    use_state_graph: bool = False,
 ) -> tuple[tuple[RawCandidate, ...], CandidateSet, tuple[CandidateEvent, ...]]:
     """Extract: raw note text -> evidence-anchored `CandidateSet`/`CandidateEvent`s.
 
-    Wraps `_extract_candidates` (rule-family extraction, with the existing
-    `NO_REFERENCE` fallback when nothing is found), `deterministic_candidate_set_from_raw`
-    (raw candidates -> `CandidateSet`), and `_candidate_event` (locate each
-    candidate's evidence span and assign an `event_id`) — unchanged.
+    When ``use_state_graph`` is True, delegates to the clinical frequency state
+    graph harvester and materializes candidates with
+    ``source_type="state_graph_node"``. Default False preserves the existing
+    pipeline_v1 rule-family extraction path unchanged.
+
+    Otherwise wraps `_extract_candidates` (rule-family extraction, with the
+    existing `NO_REFERENCE` fallback when nothing is found),
+    `deterministic_candidate_set_from_raw` (raw candidates -> `CandidateSet`),
+    and `_candidate_event` (locate each candidate's evidence span and assign an
+    `event_id`) — unchanged.
     """
+    if use_state_graph:
+        from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph.extract import (
+            extract_stage as state_graph_extract_stage,
+        )
+
+        return state_graph_extract_stage(
+            note_text,
+            source_row_index=source_row_index,
+        )
+
     ablation_config = ablation_config or AblationConfig()
     raw_candidates = _extract_candidates(note_text, ablation_config)
     if not raw_candidates:

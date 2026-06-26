@@ -41,6 +41,13 @@ from .validation import (
     validate_node,
 )
 from .resolve import GraphLabelResolution, resolve_label
+from .extract import (
+    extract_stage,
+    extracted_candidate_from_state_graph_node,
+    materialize_state_graph_extract,
+    raw_candidate_from_state_graph_node,
+    state_graph_candidate_set_from_graph,
+)
 from .projection import GanGraphProjection, ProjectionPolicy, project_graph_to_gan
 from .coverage import (
     AtomicClaimViabilitySummary,
@@ -88,11 +95,16 @@ __all__ = [
     "classify_evidence_shape",
     "derive_edges",
     "dual_validate_graph",
+    "extract_stage",
+    "extracted_candidate_from_state_graph_node",
     "graph_invariance_signature",
     "graph_node_labels",
+    "materialize_state_graph_extract",
+    "raw_candidate_from_state_graph_node",
     "ontology_coverage_summary",
     "oracle_coverage_summary",
     "project_graph_to_gan",
     "resolve_label",
+    "state_graph_candidate_set_from_graph",
     "validate_node",
 ]

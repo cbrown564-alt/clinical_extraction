@@ -26,14 +26,10 @@ from clinical_extraction.observatory.models import (
     TagErrorRequest,
     classify_hidden_families,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
-    cached_gan_reliability_scorecard_json,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.component_stage_ladder import (  # noqa: E501
+from clinical_extraction.tasks.seizure_frequency.gan2026.frontend_review import (
     cached_component_stage_ladder_json,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.component_transition_examples import (  # noqa: E501
     cached_component_transitions_json as cached_gan_component_transitions_json,
+    cached_gan_reliability_scorecard_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
