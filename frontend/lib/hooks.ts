@@ -17,8 +17,8 @@ import {
   runAblation,
   fetchPrompts,
 } from "./api";
-import type { RunNoteResponse, PipelineFamily, AblationConfigPayload, TraceStage, ActiveStage } from "./types";
-import { useConfigStore, useUiStore, useArchitectStore } from "./stores";
+import type { RunNoteResponse, AblationConfigPayload, TraceStage } from "./types";
+import { useArchitectStore } from "./stores";
 
 export function useHealth() {
   return useQuery({
@@ -135,92 +135,6 @@ export function useRunAblation(
     staleTime: Infinity, // deterministic result never goes stale
     gcTime: 1000 * 60 * 60 * 24, // keep in cache for 24h
   });
-}
-
-// ── URL sync for the old workbench (ConfigStore) ──
-
-export function useWorkbenchUrlSync() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const {
-    pipeline,
-    noteText,
-    split,
-    sourceRowIndex,
-    ablationConfig,
-    comparePipeline,
-    compareAblationConfig,
-    setPipeline,
-    setNoteText,
-    setSplit,
-    setSourceRowIndex,
-    setAblationConfig,
-    setComparePipeline,
-    setCompareAblationConfig,
-  } = useConfigStore();
-  const { activeStage, goldOverlay, showDiff, setActiveStage, toggleGoldOverlay, toggleShowDiff } =
-    useUiStore();
-
-  // Restore from URL on mount
-  useEffect(() => {
-    const p = searchParams.get("pipeline") as PipelineFamily | null;
-    const cp = searchParams.get("comparePipeline") as PipelineFamily | null;
-    const splitParam = searchParams.get("split");
-    const rowParam = searchParams.get("row");
-    const noteParam = searchParams.get("note");
-    const ablationParam = searchParams.get("ablation");
-    const compareAblationParam = searchParams.get("compareAblation");
-    const stageParam = searchParams.get("stage") as ActiveStage | null;
-    const goldParam = searchParams.get("gold");
-    const diffParam = searchParams.get("diff");
-
-    if (p) setPipeline(p);
-    if (cp) setComparePipeline(cp);
-    if (splitParam) setSplit(splitParam);
-    if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
-    if (noteParam) setNoteText(decodeURIComponent(noteParam));
-    if (ablationParam) setAblationConfig(deserializeAblation(ablationParam));
-    if (compareAblationParam)
-      setCompareAblationConfig(deserializeAblation(compareAblationParam));
-    if (stageParam) setActiveStage(stageParam);
-    if (goldParam === "1") toggleGoldOverlay();
-    if (diffParam === "1") toggleShowDiff();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Sync to URL when state changes
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (pipeline && pipeline !== "rules_only") params.set("pipeline", pipeline);
-    if (comparePipeline && comparePipeline !== "rules_only")
-      params.set("comparePipeline", comparePipeline);
-    if (split) params.set("split", split);
-    if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
-    if (noteText) params.set("note", encodeURIComponent(noteText));
-    const ablationStr = serializeAblation(ablationConfig);
-    if (ablationStr) params.set("ablation", ablationStr);
-    const compareAblationStr = serializeAblation(compareAblationConfig);
-    if (compareAblationStr) params.set("compareAblation", compareAblationStr);
-    if (activeStage && activeStage !== "extract") params.set("stage", activeStage);
-    if (goldOverlay) params.set("gold", "1");
-    if (showDiff) params.set("diff", "1");
-
-    const newUrl = `${pathname}?${params.toString()}`;
-    router.replace(newUrl, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    pipeline,
-    comparePipeline,
-    split,
-    sourceRowIndex,
-    noteText,
-    ablationConfig,
-    compareAblationConfig,
-    activeStage,
-    goldOverlay,
-    showDiff,
-  ]);
 }
 
 const LEGACY_FAMILY_DEFAULT_RUN: Record<string, string> = {
