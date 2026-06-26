@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 from fastapi import APIRouter, Request
 
-from clinical_extraction.observatory.helpers import git_metadata
+from clinical_extraction.observatory.git import git_metadata
 
 router = APIRouter(tags=["meta"])
 

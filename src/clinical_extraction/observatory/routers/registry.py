@@ -6,14 +6,13 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
-from clinical_extraction.observatory.helpers import (
+from clinical_extraction.observatory.gan2026 import (
     build_pipeline_families,
     load_artifact_content,
     registry_entry,
-    relative_to_root,
-    safe_repo_path,
     select_artifact_paths,
 )
+from clinical_extraction.observatory.helpers import relative_to_root, safe_repo_path
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_split_manifest
 from clinical_extraction.core.registry import (
     load_run_registry,
