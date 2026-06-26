@@ -16,7 +16,6 @@ import json
 import math
 import re
 from collections import Counter, defaultdict
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +26,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
     TARGET_INDICATORS,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability import (
+    ReliabilityRun,
+    load_active_llm_only_runs,
+    load_rich_schema_runs,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
@@ -40,109 +44,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 
 FAMILIES: tuple[str, ...] = tuple(TARGET_INDICATORS)
 
-
-@dataclass(frozen=True)
-class ReliabilityRun:
-    candidate: str
-    model_label: str
-    rows_path: Path
-    summary_path: Path | None = None
-    surface_id: str = "rich_schema_reliability"
-    role: str = ""
-    claim_boundary: str = ""
-
-
-RICH_SCHEMA_RUNS: tuple[ReliabilityRun, ...] = (
-    ReliabilityRun(
-        candidate="exectv2_holistic_finding_assembly_v08_dev140",
-        model_label="GPT-4.1-mini-family lanes",
-        summary_path=Path("experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json"),
-        rows_path=Path("experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"),
-        role="performance control",
-        claim_boundary="dev140 rich-schema holistic finding assembly",
-    ),
-    ReliabilityRun(
-        candidate="exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-        model_label="GPT-4.1-mini-family lanes",
-        summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json"
-        ),
-        rows_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
-        ),
-        role="simplicity control",
-        claim_boundary="dev140 rich-schema partial hybrid simplification",
-    ),
-    ReliabilityRun(
-        candidate="exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-        model_label="DeepSeek chat",
-        summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
-        ),
-        rows_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
-        ),
-        role="hosted non-GPT diagnostic",
-        claim_boundary="diagnostic same-raw DeepSeek v0910 through v0916 dictionary dev140",
-    ),
-    ReliabilityRun(
-        candidate="exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-        model_label="Qwen 3.6 35B",
-        summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
-        ),
-        rows_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
-        ),
-        role="local-model diagnostic",
-        claim_boundary="local Qwen compact dev140 standard-dictionary residual repair",
-    ),
-)
-
-ACTIVE_LLM_ONLY_RUNS: tuple[ReliabilityRun, ...] = (
-    ReliabilityRun(
-        candidate="decision_table_sf_inv_gpt41mini_dev140",
-        model_label="GPT-4.1-mini",
-        rows_path=Path(
-            "experiments/"
-            "exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_"
-            "per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl"
-        ),
-        surface_id="active_llm_only",
-        role="active LLM-only control",
-        claim_boundary="dev140 de-duplicated clinical-fact clinical_headline",
-    ),
-    ReliabilityRun(
-        candidate="decision_table_sf_inv_deepseek_chat_dev140",
-        model_label="DeepSeek chat",
-        rows_path=Path(
-            "experiments/"
-            "exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_"
-            "per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl"
-        ),
-        surface_id="active_llm_only",
-        role="latest DeepSeek LLM-only transfer",
-        claim_boundary="dev140 de-duplicated clinical-fact clinical_headline",
-    ),
-    ReliabilityRun(
-        candidate="decision_table_sf_inv_qwen36_side11435_dev140",
-        model_label="Qwen 3.6 35B",
-        rows_path=Path(
-            "experiments/"
-            "exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_"
-            "per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl"
-        ),
-        surface_id="active_llm_only",
-        role="latest Qwen LLM-only transfer",
-        claim_boundary="dev140 de-duplicated clinical-fact clinical_headline",
-    ),
-)
+RICH_SCHEMA_RUNS: tuple[ReliabilityRun, ...] = load_rich_schema_runs()
+ACTIVE_LLM_ONLY_RUNS: tuple[ReliabilityRun, ...] = load_active_llm_only_runs()
 
 _FAMILY_BASE_RISK = {
     "Diagnosis": 0.22,
