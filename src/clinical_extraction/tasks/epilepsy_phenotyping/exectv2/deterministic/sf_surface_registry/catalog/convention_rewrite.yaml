@@ -1,0 +1,165 @@
+rules:
+- rule_id: collapse_equal_seizure_count_range
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: collapse_equal_time_period_range
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: collapse_lower_zero_to_exact_zero_count
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: drop_per_month_spurious_month_date
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_absence_like_dated_occurrence_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_absence_phrase_to_unknown_absences
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_absence_seizures_to_absences
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_absences_to_typical_absences
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_anaphoric_focal_motor_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_anaphoric_named_to_generic_seizures
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_anaphoric_these_seizures_to_generic
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_cluster_of_3_to_seizure_cluster
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_epileptic_seizures_to_generic_seizures
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_every_3_to_4_weeks_timeperiod
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_every_range_phrase_to_generic_seizures
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_exact_count_over_months_operand_format
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_exact_every_weeks_operand_format
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_focal_to_bilateral_last_event_to_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_focal_under_control_to_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_frequent_seizures_phrase_to_unknown_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_fsaw_last_event_to_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_ftb_last_event_to_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_generic_rate_phrase_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_generic_seizure_free_to_state_concept
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_gtcs_active_without_count_to_active_rate
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_last_seizure_phrase_to_generic_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_no_further_seizures_to_generic_seizures
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_no_seizures_phrase_to_generic_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_one_focal_motor_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_one_seizure_phrase_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_pronoun_rate_to_generic_seizures
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_recent_last_seizure_to_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_seizures_free_typo_to_generic
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_selected_no_further_gtc_to_named_seizure_free
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_single_seizure_phrase_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_teenage_last_seizures_to_generic
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_tonic_chronic_to_tonic_clonic_sf
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_typical_absences_since_last_clinic_to_same
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_typo_gtc_to_cui
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_up_to_range_lower_zero
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
+- rule_id: rewrite_up_to_seizure_free_to_unknown_state
+  phases:
+  - rewrite
+  source_stack: conventions/seizure_frequency.py
