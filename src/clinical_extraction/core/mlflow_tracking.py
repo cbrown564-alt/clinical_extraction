@@ -21,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
 MLFLOW_DISABLED_ENV = "CLINICAL_EXTRACTION_MLFLOW_DISABLED"
 MLFLOW_STRICT_ENV = "CLINICAL_EXTRACTION_MLFLOW_STRICT"
 MLFLOW_TRACKING_URI_ENV = "MLFLOW_TRACKING_URI"
+MLFLOW_ALLOW_FILE_STORE_ENV = "MLFLOW_ALLOW_FILE_STORE"
 MLFLOW_PARENT_RUN_TAG = "mlflow.parentRunId"
 
 ParamValue = str | int | float | bool | None
@@ -62,6 +63,7 @@ def configure_mlflow_from_env(repo_root: Path) -> None:
     tracking_uri = os.getenv(MLFLOW_TRACKING_URI_ENV)
     if not tracking_uri:
         tracking_uri = f"file:{(repo_root.resolve() / 'mlruns').as_posix()}"
+        os.environ.setdefault(MLFLOW_ALLOW_FILE_STORE_ENV, "true")
     mlflow.set_tracking_uri(tracking_uri)
 
 

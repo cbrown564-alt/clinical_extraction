@@ -108,12 +108,29 @@ def test_configure_mlflow_uses_repo_local_tracking_uri(
 ) -> None:
     fake = _FakeMlflow()
     monkeypatch.delenv("MLFLOW_TRACKING_URI", raising=False)
+    monkeypatch.delenv("MLFLOW_ALLOW_FILE_STORE", raising=False)
     monkeypatch.setattr(mlflow_tracking, "mlflow_available", lambda: True)
     monkeypatch.setattr(mlflow_tracking, "_load_mlflow", lambda: fake)
 
     configure_mlflow_from_env(tmp_path)
 
     assert fake.tracking_uri == f"file:{(tmp_path.resolve() / 'mlruns').as_posix()}"
+    assert "MLFLOW_ALLOW_FILE_STORE" in fake.env_snapshot
+
+
+def test_configure_mlflow_does_not_override_explicit_tracking_uri(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    fake = _FakeMlflow()
+    monkeypatch.setenv("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db")
+    monkeypatch.delenv("MLFLOW_ALLOW_FILE_STORE", raising=False)
+    monkeypatch.setattr(mlflow_tracking, "mlflow_available", lambda: True)
+    monkeypatch.setattr(mlflow_tracking, "_load_mlflow", lambda: fake)
+
+    configure_mlflow_from_env(tmp_path)
+
+    assert fake.tracking_uri == "sqlite:///mlflow.db"
+    assert "MLFLOW_ALLOW_FILE_STORE" not in fake.env_snapshot
 
 
 def test_mirror_payload_logs_safe_metadata_and_artifacts(
@@ -196,9 +213,13 @@ class _FakeMlflow:
         self.params: dict = {}
         self.metrics: dict = {}
         self.artifacts: list[str] = []
+        self.env_snapshot: dict[str, str] = {}
 
     def set_tracking_uri(self, uri: str) -> None:
+        import os
+
         self.tracking_uri = uri
+        self.env_snapshot = dict(os.environ)
 
     def set_experiment(self, name: str) -> None:
         self.experiment_name = name
