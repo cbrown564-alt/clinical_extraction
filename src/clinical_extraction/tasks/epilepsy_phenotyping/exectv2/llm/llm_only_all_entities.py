@@ -35,11 +35,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     _coerce_payload,
-    _extract_json_object,
     _has_blocking_parse_issue,
     check_evidence,
     repair_attributes,
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
@@ -312,7 +314,7 @@ def _worked_examples() -> list[dict[str, Any]]:
 
 def parse_extraction_json(raw_output: str) -> tuple[ExtractionRecord | None, list[str]]:
     try:
-        payload = json.loads(_extract_json_object(raw_output))
+        payload = json.loads(extract_json_object(raw_output))
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 

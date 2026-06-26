@@ -8,10 +8,8 @@ scoring. It does not select candidates or derive clinical facts from the note.
 
 from __future__ import annotations
 
-import ast
 import json
 import re
-import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -58,6 +56,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     write_jsonl_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.dspy_runner import (
+    emit_run_checkpoint,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    loads_json_or_literal,
+)
 
 PROMPT_VERSION = "exectv2_llm_only_sf_clinical_findings_v0.19"
 PIPELINE_FAMILY = "exectv2_llm_only_clinical_findings"
@@ -2207,7 +2211,7 @@ def parse_clinical_findings_json(
 ) -> tuple[ClinicalFindingsRecord | None, list[str]]:
     """Parse and schema-validate one model output string."""
 
-    payload, load_errors = _loads_json_or_literal(raw_output)
+    payload, load_errors = loads_json_or_literal(raw_output)
     if payload is None:
         return None, load_errors
 
@@ -2252,7 +2256,7 @@ def parse_verification_decisions_json(
 ) -> tuple[VerificationDecisionList | None, list[str]]:
     """Parse and schema-validate one verifier output string."""
 
-    payload, load_errors = _loads_json_or_literal(raw_output)
+    payload, load_errors = loads_json_or_literal(raw_output)
     if payload is None:
         return None, load_errors
     payload, coerce_notes = _coerce_verification_payload(payload)
@@ -2340,31 +2344,6 @@ def apply_verification_decisions(
         warnings.append(f"verification_added: text={extra.text!r}")
 
     return final_findings, warnings
-
-
-def _extract_json_object(raw: str) -> str:
-    text = raw.strip()
-    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
-    if fenced:
-        return fenced.group(1)
-    first = text.find("{")
-    last = text.rfind("}")
-    if first != -1 and last != -1 and last > first:
-        return text[first : last + 1]
-    return text
-
-
-def _loads_json_or_literal(raw: str) -> tuple[Any | None, list[str]]:
-    """Load model output as JSON, with a Python-literal fallback for quote drift."""
-
-    text = _extract_json_object(raw)
-    try:
-        return json.loads(text), []
-    except json.JSONDecodeError as json_exc:
-        try:
-            return ast.literal_eval(text), ["coerced_python_literal_to_json"]
-        except (SyntaxError, ValueError):
-            return None, [f"invalid_json: {json_exc.msg}"]
 
 
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:
@@ -3298,28 +3277,19 @@ def _emit_checkpoint(
     model: str,
     mode: str,
 ) -> None:
-    summary = summarize_rows(rows)
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(
-            rows,
-            {
-                "pipeline_family": PIPELINE_FAMILY,
-                "prompt_version": PROMPT_VERSION,
-                "split": split,
-                "model": model,
-                "mode": mode,
-                "summary": summary,
-            },
-            report_path,
-            jsonl_path=jsonl_path,
-        )
-    progress = {
-        "processed": len(rows),
-        "total": total,
-        "call_failures": summary.get("call_failures", 0),
-        "parse_failures": summary.get("parse_failures", 0),
-        "n_mentions_scored": summary.get("n_mentions_scored", 0),
-    }
-    print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
+    emit_run_checkpoint(
+        rows,
+        total=total,
+        jsonl_path=jsonl_path,
+        report_path=report_path,
+        metadata={
+            "pipeline_family": PIPELINE_FAMILY,
+            "prompt_version": PROMPT_VERSION,
+            "split": split,
+            "model": model,
+            "mode": mode,
+        },
+        summarize_rows=summarize_rows,
+        write_jsonl=write_jsonl,
+        write_report=write_report,
+    )
