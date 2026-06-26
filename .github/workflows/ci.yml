@@ -100,6 +100,9 @@ jobs:
       - name: Enforce production line-count limits
         run: python scripts/check_line_counts.py
 
+      - name: Enforce artifact_analysis import quarantine
+        run: python scripts/check_artifact_analysis_imports.py
+
       - name: Pytest — line-count gate behavior
         run: python -m pytest tests/test_line_count_gates.py -q
 
