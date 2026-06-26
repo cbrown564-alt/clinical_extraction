@@ -7,11 +7,13 @@ from pydantic import BaseModel
 
 from clinical_extraction.core.scoring import PRF1, multiset_prf1, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    canonicalize_medication_name,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
     PHRASE_ONLY,
     _letters_by_id,
     benchmark_config_for,
-    canonicalize_medication_name,
     score_entity,
     semantic_config_for,
 )

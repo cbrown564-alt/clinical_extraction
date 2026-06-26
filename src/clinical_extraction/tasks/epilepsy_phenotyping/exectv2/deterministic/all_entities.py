@@ -61,17 +61,18 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
     SEIZURE_FREQUENCY.name,
 )
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    DRUG_SURFACE_ALIASES, resolve_drug_surface,
+)
+
 _OWNER_PREFIX = "deterministic"
 _MEDICATION_LEXICON = PRESCRIPTION_CONCEPT_BY_PHRASE
-_MEDICATION_EXTRA_SURFACE_ALIASES = {
-    "lamtorigine": "lamotrigine",
-}
 _MEDICATION_PATTERN = re.compile(
     r"\b("
     + "|".join(
         re.escape(name)
         for name in sorted(
-            [*PRESCRIPTION_SURFACE_FORMS, *_MEDICATION_EXTRA_SURFACE_ALIASES],
+            [*PRESCRIPTION_SURFACE_FORMS, *DRUG_SURFACE_ALIASES],
             key=len,
             reverse=True,
         )
@@ -598,7 +599,7 @@ def _extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
         if _is_parenthetical_alias(text, match):
             continue
         surface = match.group(1)
-        entry = _MEDICATION_LEXICON[_canonical_medication_surface(surface)]
+        entry = _MEDICATION_LEXICON[resolve_drug_surface(surface)]
         evidence = _prescription_context(text, match, medication_matches[index + 1 :])
         if not _is_prescription_context(text, match, evidence):
             continue
@@ -826,11 +827,6 @@ def _is_prescription_context(text: str, match: re.Match[str], evidence: str) -> 
     if planned_increment and not active_left:
         return False
     return True
-
-
-def _canonical_medication_surface(surface: str) -> str:
-    normalized = normalize_phrase(surface)
-    return _MEDICATION_EXTRA_SURFACE_ALIASES.get(normalized, normalized)
 
 
 def _active_after_negative_context(text: str) -> bool:

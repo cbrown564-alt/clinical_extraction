@@ -26,6 +26,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    resolve_drug_surface,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
     assign_cui,
 )
@@ -569,7 +572,7 @@ _PATIENT_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
 def prescription_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark medication concept for ``phrase`` if known."""
 
-    return PRESCRIPTION_CONCEPT_BY_PHRASE.get(normalize_phrase(phrase))
+    return PRESCRIPTION_CONCEPT_BY_PHRASE.get(resolve_drug_surface(phrase))
 
 
 def diagnosis_concept(phrase: str) -> BenchmarkConcept | None:

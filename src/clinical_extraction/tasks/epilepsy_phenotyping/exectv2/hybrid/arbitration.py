@@ -56,7 +56,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
     _attribute_vocabulary,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.repair import (
     check_evidence,
     repair_attributes,
 )
@@ -327,12 +327,12 @@ def build_prompt_input(
 def parse_arbitration_json(
     raw_output: str,
 ) -> tuple[list[ArbitratedMention], list[str]]:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-        _extract_json_object,
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+        extract_json_object,
     )
 
     try:
-        payload = json.loads(_extract_json_object(raw_output))
+        payload = json.loads(extract_json_object(raw_output))
     except json.JSONDecodeError as exc:
         return [], [f"invalid_json: {exc.msg}"]
     mentions_raw = payload.get("mentions") if isinstance(payload, dict) else None
@@ -387,7 +387,7 @@ def gate_and_project(
     for entity, ms in by_entity.items():
         spec: EntitySpec = ENTITY_REGISTRY[entity]
         # Reuse MentionRecord-shaped objects for the substring evidence check.
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.repair import (
             MentionRecord,
         )
 

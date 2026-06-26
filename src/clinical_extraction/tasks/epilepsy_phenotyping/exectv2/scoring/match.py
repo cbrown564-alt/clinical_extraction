@@ -29,26 +29,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize im
 # match can drop it from this set.
 DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES
 
-_MEDICATION_NAME_ALIASES: dict[str, str] = {
-    "brivetiracetam": "brivaracetam",
-    "brivitiracetam": "brivaracetam",
-    "carbamazapine": "carbamazepine",
-    "carbmazapine": "carbamazepine",
-    "epilim": "sodium-valproate",
-    "epilim-chrono": "sodium-valproate",
-    "eplim": "sodium-valproate",
-    "episenta": "sodium-valproate",
-    "eslicarbazepineacetate": "eslicarbazepine",
-    "keppra": "levetiracetam",
-    "lamictal": "lamotrigine",
-    "phenobarbitone": "phenobarbital",
-    "sodiumvalproate": "sodium-valproate",
-    "tegretaol": "carbamazepine",
-    "tegretol": "carbamazepine",
-    "zobisamide": "zonisamide",
-    "zonismaide": "zonisamide",
-}
-
 _PRESCRIPTION_ENTITY = "Prescription"
 
 # Families whose clinical_headline key list applies `dict.fromkeys` and therefore
@@ -192,13 +172,6 @@ def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEAT
         )
     )
     return (annotation.entity, phrase, attributes)
-
-
-def canonicalize_medication_name(value: str) -> str:
-    """Normalize medication spelling/brand variants for clinical component scoring."""
-
-    normalized = normalize_phrase(value).replace(" ", "-")
-    return _MEDICATION_NAME_ALIASES.get(normalized, normalized)
 
 
 def score_concept_identity(

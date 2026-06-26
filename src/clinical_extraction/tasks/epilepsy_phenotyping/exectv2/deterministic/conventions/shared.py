@@ -4,24 +4,16 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    DRUG_SURFACE_ALIASES,
+    resolve_drug_surface,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     PRESCRIPTION_CONCEPT_BY_PHRASE,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     normalize_phrase,
 )
-
-#: Surface spellings that are not in the benchmark lexicon but map to a known
-#: generic. Mirrors ``all_entities._MEDICATION_EXTRA_SURFACE_ALIASES``.
-DRUG_SURFACE_ALIASES: dict[str, str] = {
-    "buccal midazolam": "midazolam",
-    "epilpim chrono": "sodium valproate",
-    "epilpim chrono (sodium valproate)": "sodium valproate",
-    "sodiumvalproate": "sodium valproate",
-    "eplim chrono": "sodium valproate",
-    "lamtorigine": "lamotrigine",
-    "tegretol retard": "carbamazepine",
-}
 
 #: Canonical dose units. Variants collapse to one of these.
 _DOSE_UNIT_RE = re.compile(
@@ -156,8 +148,7 @@ _PRESCRIPTION_RESIDUAL_TARGET_KEYS: frozenset[tuple[str, str, str, str, str]] = 
 def normalize_drug_name(surface: str) -> str | None:
     """Return the canonical generic drug name for a surface mention, if known."""
 
-    key = normalize_phrase(surface)
-    key = DRUG_SURFACE_ALIASES.get(key, key)
+    key = resolve_drug_surface(surface)
     concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(key)
     return concept.canonical if concept is not None else None
 
