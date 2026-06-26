@@ -59,7 +59,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 
 from ..contract.prediction import to_exect_letter
 from ..deterministic.normalizer import normalize_count, normalize_month, normalize_unit
-from ..llm.llm_only_single_pass import _extract_json_object, repair_attributes
+from ..contract.repair import repair_attributes
+from ..llm.shared.json_parse import extract_json_object
 from .candidate_set import (
     SFCandidate,
     build_candidate_set,
@@ -343,7 +344,7 @@ def parse_assessment_json(
     raw_output: str,
 ) -> tuple[AssessmentRecord | None, list[str]]:
     """Parse and schema-validate one assessment output string."""
-    payload, load_note = _loads_lenient(_extract_json_object(raw_output))
+    payload, load_note = _loads_lenient(extract_json_object(raw_output))
     if payload is None:
         return None, [load_note or "invalid_json: unparseable"]
 

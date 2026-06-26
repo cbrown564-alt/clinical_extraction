@@ -1,6 +1,9 @@
 """ExECTv2 mention scoring: match keys, entity PRF1, and clinical-recovery components."""
 
 from clinical_extraction.core.scoring import multiset_prf1, prf1_from_counts
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    canonicalize_medication_name,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.investigations import (
     InvestigationsComponentScores,
     _investigation_component_keys,
@@ -28,7 +31,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
     _letters_by_id,
     benchmark_config_for,
     benchmark_ignore_for,
-    canonicalize_medication_name,
     clinical_headline_unit_keys,
     headline_duplicate_tags,
     match_key,
