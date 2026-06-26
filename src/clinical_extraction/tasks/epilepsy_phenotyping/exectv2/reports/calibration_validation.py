@@ -8,14 +8,13 @@ identifiers, examples, evidence, rationales, or residual ledgers.
 
 from __future__ import annotations
 
-import subprocess
-from datetime import date
 from pathlib import Path
 from typing import Any
 
 from . import cross_model_reliability_analysis as reliability
+from . import validation_audit_scaffold as scaffold
 
-REPO_ROOT = reliability.REPO_ROOT
+REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
     "docs/experiments/exectv2/reliability/"
     "exectv2_calibration_validation_audit_2026-06-25.md"
@@ -23,13 +22,7 @@ REPORT_PATH = Path(
 
 _PROTOCOL_DEV_ECE_BASELINE = 0.1456
 _FULL200_ARTIFACT: dict[str, str] = {
-    "path": (
-        "experiments/"
-        "exectv2_holistic_finding_assembly_v08_full200_currentcode_"
-        "gpt41mini_20260624.jsonl"
-    ),
-    "surface": "current-code v08-shape rich-schema holistic assembly",
-    "eligibility": "eligible",
+    **scaffold.FULL200_ARTIFACT,
     "reason": (
         "Accepted for aggregate-only validation of the frozen dev140 grouped "
         "calibration scoring rule on the current-code v08-shaped rich-schema "
@@ -50,26 +43,24 @@ def build_calibration_validation_audit(
     }
     dev_cells = list(reliability._iter_reliability_cells(dev_rows))
     dev_proxy = reliability._calibration_proxy(dev_cells)
-    artifact = _artifact_inventory(repo_root)
+    artifact = scaffold.artifact_inventory_single(repo_root, _FULL200_ARTIFACT)[0]
     validation = (
         _validation_readout(repo_root, dev_cells, artifact)
         if artifact["eligible"]
         else None
     )
-    promotion_decision = (
-        _promotion_decision(validation) if validation else "not_promoted"
-    )
+    promotion_gates = _promotion_gates(validation)
+    promotion_decision = scaffold.promotion_decision_from_gates(promotion_gates)
     return {
-        "audit_kind": "exectv2_calibration_aggregate_validation",
-        "generated_on": date.today().isoformat(),
-        "surface": "rich-schema holistic assembly reliability scorecard",
-        "scorer": "headline_target family-cell correctness",
-        "split": "full-200 aggregate-only validation requested",
-        "code_hash": _git_head(repo_root),
-        "row_inspection_boundary": (
-            "Aggregate calibration metrics and artifact inventory only; no row "
-            "identifiers, note text, gold labels, predictions, evidence spans, "
-            "rationales, or selected failure examples are emitted."
+        **scaffold.audit_envelope(
+            audit_kind="exectv2_calibration_aggregate_validation",
+            repo_root=repo_root,
+            scorer="headline_target family-cell correctness",
+            row_inspection_boundary=(
+                "Aggregate calibration metrics and artifact inventory only; no row "
+                "identifiers, note text, gold labels, predictions, evidence spans, "
+                "rationales, or selected failure examples are emitted."
+            ),
         ),
         "candidate_definition": {
             "model_type": "grouped_logistic_scoring_rule",
@@ -85,23 +76,16 @@ def build_calibration_validation_audit(
         "artifact_inventory": [artifact],
         "eligible_validation_artifacts": 1 if artifact["eligible"] else 0,
         "validation_readout": validation,
-        "stop_rule_outcome": {
-            "status": (
-                "completed_current_code_surface_validation"
-                if validation
-                else "blocked_no_same_surface_full200_artifact"
-            ),
-            "validation_run_executed": bool(validation),
-            "promotion_decision": promotion_decision,
-            "reason": (
+        "stop_rule_outcome": scaffold.stop_rule_outcome(
+            validation=validation,
+            promotion_decision=promotion_decision,
+            promoted_reason=(
                 "The frozen dev140 calibration scoring rule passes all "
                 "predeclared aggregate validation gates on the accepted "
                 "current-code v08-shaped full-200 artifact."
-                if promotion_decision == "promoted"
-                else "No eligible aggregate validation artifact was available."
             ),
-        },
-        "promotion_gates": _promotion_gates(validation),
+        ),
+        "promotion_gates": promotion_gates,
         "next_action": (
             "Upgrade scorecard calibration coverage above dev-only status while "
             "keeping the claim limited to aggregate full-200 validation, not "
@@ -119,45 +103,31 @@ def render_markdown(audit: dict[str, Any]) -> str:
     """Render a paper-facing Markdown audit without row-level details."""
 
     candidate = audit["candidate_definition"]
-    lines = [
-        "# ExECTv2 Calibration Validation Audit",
-        "",
-        f"Date: {audit['generated_on']}",
-        "",
-        "Status: aggregate-only calibration validation and stop-rule readout.",
-        "",
-        "## Preflight",
-        "",
-        f"- Surface: {audit['surface']}",
-        f"- Scorer: `{audit['scorer']}`",
-        f"- Split: `{audit['split']}`",
-        f"- Code hash: `{audit['code_hash']}`",
-        f"- Row-inspection boundary: {audit['row_inspection_boundary']}",
-        "",
-        "## Frozen Calibration Candidate",
-        "",
-        f"- Model type: `{candidate['model_type']}`",
-        f"- Training surface: {candidate['training_surface']}",
-        f"- Development cells: {candidate['dev_cells']}",
-        f"- Dev cross-validated ECE: {candidate['dev_cross_validated_ece']:.4f}",
-        f"- Dev cross-validated Brier: {candidate['dev_cross_validated_brier']:.4f}",
-        (
-            "- Protocol ECE baseline for promotion: "
-            f"{candidate['protocol_dev_ece_baseline']:.4f}"
+    lines = scaffold.render_preflight_section(
+        audit,
+        title="# ExECTv2 Calibration Validation Audit",
+        status_line=(
+            "Status: aggregate-only calibration validation and stop-rule readout."
         ),
-        f"- Feature set: `{', '.join(candidate['feature_set'])}`",
-        "",
-        "## Validation Artifact Inventory",
-        "",
-        "| Artifact | Rows | Surface | Eligibility | Reason |",
-        "| --- | ---: | --- | --- | --- |",
-    ]
-    for item in audit["artifact_inventory"]:
-        eligibility = "eligible" if item["eligible"] else "ineligible"
-        lines.append(
-            f"| `{item['path']}` | {item['rows']} | {item['surface']} | "
-            f"{eligibility} | {item['reason']} |"
-        )
+    )
+    lines.extend(
+        [
+            "",
+            "## Frozen Calibration Candidate",
+            "",
+            f"- Model type: `{candidate['model_type']}`",
+            f"- Training surface: {candidate['training_surface']}",
+            f"- Development cells: {candidate['dev_cells']}",
+            f"- Dev cross-validated ECE: {candidate['dev_cross_validated_ece']:.4f}",
+            f"- Dev cross-validated Brier: {candidate['dev_cross_validated_brier']:.4f}",
+            (
+                "- Protocol ECE baseline for promotion: "
+                f"{candidate['protocol_dev_ece_baseline']:.4f}"
+            ),
+            f"- Feature set: `{', '.join(candidate['feature_set'])}`",
+        ]
+    )
+    lines.extend(scaffold.render_artifact_inventory_section(audit["artifact_inventory"]))
 
     validation = audit.get("validation_readout")
     if validation:
@@ -228,37 +198,9 @@ def render_markdown(audit: dict[str, Any]) -> str:
                 f"{row['bin_count']} |"
             )
 
-    stop = audit["stop_rule_outcome"]
-    lines.extend(
-        [
-            "",
-            "## Stop-Rule Outcome",
-            "",
-            f"- Status: `{stop['status']}`",
-            f"- Validation run executed: `{stop['validation_run_executed']}`",
-            f"- Promotion decision: `{stop['promotion_decision']}`",
-            f"- Reason: {stop['reason']}",
-            "",
-            "## Promotion Gates",
-            "",
-            "| Gate | Outcome | Note |",
-            "| --- | --- | --- |",
-        ]
-    )
-    for gate in audit["promotion_gates"]:
-        lines.append(f"| {gate['gate']} | {gate['outcome']} | {gate['note']} |")
-
-    lines.extend(
-        [
-            "",
-            "## Result",
-            "",
-            _result_paragraph(audit),
-            "",
-            f"Next action: {audit['next_action']}",
-            "",
-        ]
-    )
+    lines.extend(scaffold.render_stop_rule_outcome_section(audit))
+    lines.extend(scaffold.render_promotion_gates_section(audit))
+    lines.extend(scaffold.render_report_footer(audit, _result_paragraph(audit)))
     return "\n".join(lines)
 
 
@@ -267,23 +209,12 @@ def write_report(
     repo_root: Path = REPO_ROOT,
     report_path: Path = REPORT_PATH,
 ) -> Path:
-    audit = build_calibration_validation_audit(repo_root=repo_root)
-    out_path = repo_root / report_path
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_markdown(audit), encoding="utf-8")
-    return out_path
-
-
-def _artifact_inventory(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / _FULL200_ARTIFACT["path"]
-    return {
-        "path": _FULL200_ARTIFACT["path"],
-        "exists": path.exists(),
-        "rows": _count_jsonl_rows(path) if path.exists() else 0,
-        "surface": _FULL200_ARTIFACT["surface"],
-        "eligible": path.exists() and _FULL200_ARTIFACT["eligibility"] == "eligible",
-        "reason": _FULL200_ARTIFACT["reason"],
-    }
+    return scaffold.write_validation_report(
+        build_audit=build_calibration_validation_audit,
+        render_markdown=render_markdown,
+        repo_root=repo_root,
+        report_path=report_path,
+    )
 
 
 def _validation_readout(
@@ -315,7 +246,7 @@ def _validation_readout(
         "artifact_path": artifact["path"],
         "rows": len(rows),
         "eligible_cells": len(scored),
-        "overall_accuracy": _round_rate(
+        "overall_accuracy": scaffold.round_rate(
             sum(1 for row in scored if bool(row["correct"])),
             len(scored),
         ),
@@ -380,85 +311,81 @@ def _validation_cells(
 
 
 def _promotion_gates(validation: dict[str, Any] | None) -> list[dict[str, str]]:
+    blocked_note = "No same-surface full-200 aggregate artifact is available."
     if validation is None:
         return [
-            {
-                "gate": "ECE improves over protocol dev-only proxy baseline",
-                "outcome": "not_evaluable",
-                "note": "No same-surface full-200 aggregate artifact is available.",
-            },
-            {
-                "gate": "Brier improves over constant base-rate comparator",
-                "outcome": "not_evaluable",
-                "note": "No same-surface full-200 aggregate artifact is available.",
-            },
-            {
-                "gate": "At least four populated reliability bins",
-                "outcome": "not_evaluable",
-                "note": "No same-surface full-200 aggregate artifact is available.",
-            },
-            {
-                "gate": "No adjacent-bin reversal larger than 0.10",
-                "outcome": "not_evaluable",
-                "note": "No same-surface full-200 aggregate artifact is available.",
-            },
-            {
-                "gate": "Per-family ECE reported for all four families",
-                "outcome": "not_evaluable",
-                "note": "No same-surface full-200 aggregate artifact is available.",
-            },
+            scaffold.gate(
+                "ECE improves over protocol dev-only proxy baseline",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "Brier improves over constant base-rate comparator",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "At least four populated reliability bins",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "No adjacent-bin reversal larger than 0.10",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "Per-family ECE reported for all four families",
+                "not_evaluable",
+                blocked_note,
+            ),
         ]
 
     families = {row["family"] for row in validation["per_family"]}
     return [
-        {
-            "gate": "ECE improves over protocol dev-only proxy baseline",
-            "outcome": "pass"
+        scaffold.gate(
+            "ECE improves over protocol dev-only proxy baseline",
+            "pass"
             if float(validation["expected_calibration_error"])
             < _PROTOCOL_DEV_ECE_BASELINE
             else "fail",
-            "note": (
+            (
                 f"Validation ECE {validation['expected_calibration_error']:.4f}; "
                 f"baseline {_PROTOCOL_DEV_ECE_BASELINE:.4f}."
             ),
-        },
-        {
-            "gate": "Brier improves over constant base-rate comparator",
-            "outcome": "pass"
+        ),
+        scaffold.gate(
+            "Brier improves over constant base-rate comparator",
+            "pass"
             if float(validation["brier_score"])
             < float(validation["constant_base_rate_brier_score"])
             else "fail",
-            "note": (
+            (
                 f"Validation Brier {validation['brier_score']:.4f}; constant "
                 f"base-rate {validation['constant_base_rate_brier_score']:.4f}."
             ),
-        },
-        {
-            "gate": "At least four populated reliability bins",
-            "outcome": "pass" if len(validation["bins"]) >= 4 else "fail",
-            "note": f"Populated bins: {len(validation['bins'])}.",
-        },
-        {
-            "gate": "No adjacent-bin reversal larger than 0.10",
-            "outcome": "pass"
+        ),
+        scaffold.gate(
+            "At least four populated reliability bins",
+            "pass" if len(validation["bins"]) >= 4 else "fail",
+            f"Populated bins: {len(validation['bins'])}.",
+        ),
+        scaffold.gate(
+            "No adjacent-bin reversal larger than 0.10",
+            "pass"
             if float(validation["max_adjacent_bin_reversal"]) <= 0.10
             else "fail",
-            "note": (
+            (
                 "Maximum adjacent-bin reversal is "
                 f"{validation['max_adjacent_bin_reversal']:.4f}."
             ),
-        },
-        {
-            "gate": "Per-family ECE reported for all four families",
-            "outcome": "pass" if families == set(reliability.FAMILIES) else "fail",
-            "note": f"Families reported: {', '.join(sorted(families))}.",
-        },
+        ),
+        scaffold.gate(
+            "Per-family ECE reported for all four families",
+            "pass" if families == set(reliability.FAMILIES) else "fail",
+            f"Families reported: {', '.join(sorted(families))}.",
+        ),
     ]
-
-
-def _promotion_decision(validation: dict[str, Any]) -> str:
-    gates = _promotion_gates(validation)
-    return "promoted" if all(gate["outcome"] == "pass" for gate in gates) else "not_promoted"
 
 
 def _result_paragraph(audit: dict[str, Any]) -> str:
@@ -477,35 +404,6 @@ def _result_paragraph(audit: dict[str, Any]) -> str:
         f"Brier {validation['brier_score']:.4f}, five populated bins, and "
         "per-family ECE reported for every scored family."
     )
-
-
-def _round_rate(numerator: int, denominator: int) -> float:
-    return round(numerator / denominator, 4) if denominator else 0.0
-
-
-def _count_jsonl_rows(path: Path) -> int:
-    with path.open(encoding="utf-8") as handle:
-        return sum(1 for line in handle if line.strip())
-
-
-def _git_head(repo_root: Path) -> str:
-    try:
-        head = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"],
-            cwd=repo_root,
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-        dirty = subprocess.run(
-            ["git", "diff", "--quiet"],
-            cwd=repo_root,
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode != 0
-    except (OSError, subprocess.SubprocessError):
-        return "unavailable"
-    return f"{head}+dirty" if dirty else head
 
 
 def main() -> None:

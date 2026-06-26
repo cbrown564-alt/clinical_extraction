@@ -12,29 +12,22 @@ from __future__ import annotations
 
 import json
 import re
-import subprocess
 from collections.abc import Mapping, Sequence
-from datetime import date
 from pathlib import Path
 from typing import Any
 
 from . import cross_model_reliability_analysis as reliability
 from . import robustness_panels
+from . import validation_audit_scaffold as scaffold
 
-REPO_ROOT = reliability.REPO_ROOT
+REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
     "docs/experiments/exectv2/reliability/"
     "exectv2_robustness_validation_audit_2026-06-25.md"
 )
 
 _FULL200_ARTIFACT: dict[str, str] = {
-    "path": (
-        "experiments/"
-        "exectv2_holistic_finding_assembly_v08_full200_currentcode_"
-        "gpt41mini_20260624.jsonl"
-    ),
-    "surface": "current-code v08-shape rich-schema holistic assembly",
-    "eligibility": "eligible",
+    **scaffold.FULL200_ARTIFACT,
     "reason": (
         "Accepted for aggregate-only validation of the frozen robustness "
         "taxonomy on the current-code v08-shaped rich-schema holistic assembly "
@@ -74,20 +67,20 @@ def build_robustness_validation_audit(
     """Return the aggregate-only robustness validation package."""
 
     preflight = robustness_panels.build_robustness_panel_payload(include_case_text=False)
-    artifact = _artifact_inventory(repo_root)
+    artifact = scaffold.artifact_inventory_single(repo_root, _FULL200_ARTIFACT)[0]
     validation = _validation_readout(repo_root, artifact) if artifact["eligible"] else None
-    promotion_decision = _promotion_decision(preflight, validation)
+    promotion_gates = _promotion_gates(preflight, validation)
+    promotion_decision = scaffold.promotion_decision_from_gates(promotion_gates)
     return {
-        "audit_kind": "exectv2_robustness_aggregate_validation",
-        "generated_on": date.today().isoformat(),
-        "surface": "rich-schema holistic assembly reliability scorecard",
-        "scorer": "headline_target clinical-recovery family cells",
-        "split": "full-200 aggregate-only validation requested",
-        "code_hash": _git_head(repo_root),
-        "row_inspection_boundary": (
-            "Aggregate hard-slice metrics and artifact inventory only; no row "
-            "identifiers, note text, gold labels, predictions, evidence spans, "
-            "rationales, or selected failure examples are emitted."
+        **scaffold.audit_envelope(
+            audit_kind="exectv2_robustness_aggregate_validation",
+            repo_root=repo_root,
+            scorer="headline_target clinical-recovery family cells",
+            row_inspection_boundary=(
+                "Aggregate hard-slice metrics and artifact inventory only; no row "
+                "identifiers, note text, gold labels, predictions, evidence spans, "
+                "rationales, or selected failure examples are emitted."
+            ),
         ),
         "candidate_definition": {
             "candidate": "exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini",
@@ -111,24 +104,17 @@ def build_robustness_validation_audit(
         "artifact_inventory": [artifact],
         "eligible_validation_artifacts": 1 if artifact["eligible"] else 0,
         "validation_readout": validation,
-        "stop_rule_outcome": {
-            "status": (
-                "completed_current_code_surface_validation"
-                if validation
-                else "blocked_no_same_surface_full200_artifact"
-            ),
-            "validation_run_executed": bool(validation),
-            "promotion_decision": promotion_decision,
-            "reason": (
+        "stop_rule_outcome": scaffold.stop_rule_outcome(
+            validation=validation,
+            promotion_decision=promotion_decision,
+            promoted_reason=(
                 "The frozen robustness taxonomy and accepted current-code "
                 "full-200 artifact pass the aggregate reporting gates. Evidence "
                 "paraphrase/deletion remain adversarial fixture stress evidence, "
                 "not naturally observed full-200 hard-slice failures."
-                if promotion_decision == "promoted"
-                else "No eligible aggregate validation artifact was available."
             ),
-        },
-        "promotion_gates": _promotion_gates(preflight, validation),
+        ),
+        "promotion_gates": promotion_gates,
         "next_action": (
             "Refresh the reliability scorecard to mark robustness as aggregate "
             "full-200 hard-slice validation evidence while keeping adversarial "
@@ -146,20 +132,15 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
     """Render a paper-facing Markdown audit without row-level details."""
 
     candidate = audit["candidate_definition"]
-    lines = [
-        "# ExECTv2 Robustness Validation Audit",
-        "",
-        f"Date: {audit['generated_on']}",
-        "",
-        "Status: aggregate-only robustness validation and stop-rule readout.",
-        "",
-        "## Preflight",
-        "",
-        f"- Surface: {audit['surface']}",
-        f"- Scorer: `{audit['scorer']}`",
-        f"- Split: `{audit['split']}`",
-        f"- Code hash: `{audit['code_hash']}`",
-        f"- Row-inspection boundary: {audit['row_inspection_boundary']}",
+    lines = scaffold.render_preflight_section(
+        audit,
+        title="# ExECTv2 Robustness Validation Audit",
+        status_line=(
+            "Status: aggregate-only robustness validation and stop-rule readout."
+        ),
+    )
+    lines.extend(
+        [
         "",
         "## Frozen Robustness Candidate",
         "",
@@ -176,28 +157,15 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
         "",
         "| Perturbation family | Fixture count |",
         "| --- | ---: |",
-    ]
+        ]
+    )
     for family in robustness_panels.MINIMUM_PERTURBATION_FAMILIES:
         lines.append(
             f"| `{family}` | "
             f"{candidate['preflight_by_perturbation_family'].get(family, 0)} |"
         )
 
-    lines.extend(
-        [
-            "",
-            "## Validation Artifact Inventory",
-            "",
-            "| Artifact | Rows | Surface | Eligibility | Reason |",
-            "| --- | ---: | --- | --- | --- |",
-        ]
-    )
-    for item in audit["artifact_inventory"]:
-        eligibility = "eligible" if item["eligible"] else "ineligible"
-        lines.append(
-            f"| `{item['path']}` | {item['rows']} | {item['surface']} | "
-            f"{eligibility} | {item['reason']} |"
-        )
+    lines.extend(scaffold.render_artifact_inventory_section(audit["artifact_inventory"]))
 
     validation = audit.get("validation_readout")
     if validation:
@@ -241,10 +209,10 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
             ]
         )
         for row in validation["by_perturbation_family"]:
-            f1 = _format_optional_float(row["score"]["f1"])
-            delta = _format_optional_float(row["delta_vs_overall"]["f1"])
-            schema = _format_optional_float(row["schema_validity_rate"])
-            evidence = _format_optional_float(row["evidence_validity_rate"])
+            f1 = scaffold.format_optional_float(row["score"]["f1"])
+            delta = scaffold.format_optional_float(row["delta_vs_overall"]["f1"])
+            schema = scaffold.format_optional_float(row["schema_validity_rate"])
+            evidence = scaffold.format_optional_float(row["evidence_validity_rate"])
             lines.append(
                 f"| `{row['perturbation_family']}` | {row['cells']} | "
                 f"{row['primary_family']} | {f1} | {delta} | {schema} | {evidence} |"
@@ -269,37 +237,9 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
                 f"{row['delta_vs_family_overall']['f1']:.4f} |"
             )
 
-    stop = audit["stop_rule_outcome"]
-    lines.extend(
-        [
-            "",
-            "## Stop-Rule Outcome",
-            "",
-            f"- Status: `{stop['status']}`",
-            f"- Validation run executed: `{stop['validation_run_executed']}`",
-            f"- Promotion decision: `{stop['promotion_decision']}`",
-            f"- Reason: {stop['reason']}",
-            "",
-            "## Promotion Gates",
-            "",
-            "| Gate | Outcome | Note |",
-            "| --- | --- | --- |",
-        ]
-    )
-    for gate in audit["promotion_gates"]:
-        lines.append(f"| {gate['gate']} | {gate['outcome']} | {gate['note']} |")
-
-    lines.extend(
-        [
-            "",
-            "## Result",
-            "",
-            _result_paragraph(audit),
-            "",
-            f"Next action: {audit['next_action']}",
-            "",
-        ]
-    )
+    lines.extend(scaffold.render_stop_rule_outcome_section(audit))
+    lines.extend(scaffold.render_promotion_gates_section(audit))
+    lines.extend(scaffold.render_report_footer(audit, _result_paragraph(audit)))
     return "\n".join(lines)
 
 
@@ -308,23 +248,12 @@ def write_report(
     repo_root: Path = REPO_ROOT,
     report_path: Path = REPORT_PATH,
 ) -> Path:
-    audit = build_robustness_validation_audit(repo_root=repo_root)
-    out_path = repo_root / report_path
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_markdown(audit), encoding="utf-8")
-    return out_path
-
-
-def _artifact_inventory(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / _FULL200_ARTIFACT["path"]
-    return {
-        "path": _FULL200_ARTIFACT["path"],
-        "exists": path.exists(),
-        "rows": _count_jsonl_rows(path) if path.exists() else 0,
-        "surface": _FULL200_ARTIFACT["surface"],
-        "eligible": path.exists() and _FULL200_ARTIFACT["eligibility"] == "eligible",
-        "reason": _FULL200_ARTIFACT["reason"],
-    }
+    return scaffold.write_validation_report(
+        build_audit=build_robustness_validation_audit,
+        render_markdown=render_markdown,
+        repo_root=repo_root,
+        report_path=report_path,
+    )
 
 
 def _validation_readout(repo_root: Path, artifact: Mapping[str, Any]) -> dict[str, Any]:
@@ -460,8 +389,8 @@ def _validity_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 evidence_empty += 1
     return {
         "predicted_mentions": mention_count,
-        "schema_validity_rate": _round_rate(len(rows) - schema_invalid_rows, len(rows)),
-        "evidence_validity_rate": _round_rate(
+        "schema_validity_rate": scaffold.round_rate(len(rows) - schema_invalid_rows, len(rows)),
+        "evidence_validity_rate": scaffold.round_rate(
             mention_count - evidence_invalid - evidence_empty,
             mention_count,
         ),
@@ -538,8 +467,8 @@ def _cell_validity_rates(cells: Sequence[Mapping[str, Any]]) -> dict[str, float 
         for cell in cells
     )
     return {
-        "schema_validity_rate": _round_rate(len(cells) - parse_failures, len(cells)),
-        "evidence_validity_rate": _round_rate(mentions - evidence_issues, mentions),
+        "schema_validity_rate": scaffold.round_rate(len(cells) - parse_failures, len(cells)),
+        "evidence_validity_rate": scaffold.round_rate(mentions - evidence_issues, mentions),
     }
 
 
@@ -561,23 +490,23 @@ def _promotion_gates(
 ) -> list[dict[str, str]]:
     if validation is None:
         return [
-            _gate("Frozen panel run completed once", "not_evaluable", "No eligible artifact."),
-            _gate(
+            scaffold.gate("Frozen panel run completed once", "not_evaluable", "No eligible artifact."),
+            scaffold.gate(
                 "Minimum perturbation taxonomy covered",
                 "not_evaluable",
                 "No eligible artifact.",
             ),
-            _gate(
+            scaffold.gate(
                 "Overall and per-family score deltas reported",
                 "not_evaluable",
                 "No eligible artifact.",
             ),
-            _gate(
+            scaffold.gate(
                 "Schema and evidence validity reported",
                 "not_evaluable",
                 "No eligible artifact.",
             ),
-            _gate(
+            scaffold.gate(
                 "Aggregate-only row-inspection boundary preserved",
                 "not_evaluable",
                 "No eligible artifact.",
@@ -604,12 +533,12 @@ def _promotion_gates(
         for family in ("evidence_paraphrase", "evidence_deletion")
     )
     return [
-        _gate(
+        scaffold.gate(
             "Frozen panel run completed once",
             "pass",
             "Accepted current-code full-200 artifact was read once for aggregate metrics.",
         ),
-        _gate(
+        scaffold.gate(
             "Minimum perturbation taxonomy covered",
             "pass" if minimum_preflight and natural_core and evidence_stress_preflight else "fail",
             (
@@ -618,12 +547,12 @@ def _promotion_gates(
                 "are covered by the frozen adversarial fixture preflight."
             ),
         ),
-        _gate(
+        scaffold.gate(
             "Overall and per-family score deltas reported",
             "pass" if validation["hard_slice_cells"] > 0 and validation["by_family"] else "fail",
             f"Hard-slice cells reported: {validation['hard_slice_cells']}.",
         ),
-        _gate(
+        scaffold.gate(
             "Schema and evidence validity reported",
             "pass",
             (
@@ -631,20 +560,12 @@ def _promotion_gates(
                 f"evidence validity {validation['evidence_validity_rate']:.4f}."
             ),
         ),
-        _gate(
+        scaffold.gate(
             "Aggregate-only row-inspection boundary preserved",
             "pass",
             "Report emits counts and scores only, with no row-level examples or identifiers.",
         ),
     ]
-
-
-def _promotion_decision(
-    preflight: Mapping[str, Any],
-    validation: Mapping[str, Any] | None,
-) -> str:
-    gates = _promotion_gates(preflight, validation)
-    return "promoted" if all(gate["outcome"] == "pass" for gate in gates) else "not_promoted"
 
 
 def _result_paragraph(audit: Mapping[str, Any]) -> str:
@@ -666,10 +587,6 @@ def _result_paragraph(audit: Mapping[str, Any]) -> str:
     )
 
 
-def _gate(gate: str, outcome: str, note: str) -> dict[str, str]:
-    return {"gate": gate, "outcome": outcome, "note": note}
-
-
 def _primary_family_for_perturbation(perturbation_family: str) -> str:
     if perturbation_family.startswith("sf_"):
         return "SeizureFrequency"
@@ -680,39 +597,6 @@ def _primary_family_for_perturbation(perturbation_family: str) -> str:
     if perturbation_family.startswith("diagnosis_"):
         return "Diagnosis"
     return "cross-family evidence stress"
-
-
-def _format_optional_float(value: float | None) -> str:
-    return "n/a" if value is None else f"{value:.4f}"
-
-
-def _round_rate(numerator: int, denominator: int) -> float:
-    return round(numerator / denominator, 4) if denominator else 0.0
-
-
-def _count_jsonl_rows(path: Path) -> int:
-    with path.open(encoding="utf-8") as handle:
-        return sum(1 for line in handle if line.strip())
-
-
-def _git_head(repo_root: Path) -> str:
-    try:
-        head = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"],
-            cwd=repo_root,
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-        dirty = subprocess.run(
-            ["git", "diff", "--quiet"],
-            cwd=repo_root,
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode != 0
-    except (OSError, subprocess.SubprocessError):
-        return "unavailable"
-    return f"{head}+dirty" if dirty else head
 
 
 def main() -> None:

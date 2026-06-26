@@ -8,14 +8,14 @@ selected failures from full-200 artifacts.
 
 from __future__ import annotations
 
-import subprocess
-from datetime import date
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 from . import cross_model_reliability_analysis as reliability
+from . import validation_audit_scaffold as scaffold
 
-REPO_ROOT = reliability.REPO_ROOT
+REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
     "docs/experiments/exectv2/reliability/"
     "exectv2_review_routing_validation_audit_2026-06-24.md"
@@ -23,13 +23,7 @@ REPORT_PATH = Path(
 
 _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
     {
-        "path": (
-            "experiments/"
-            "exectv2_holistic_finding_assembly_v08_full200_currentcode_"
-            "gpt41mini_20260624.jsonl"
-        ),
-        "surface": "current-code v08-shape rich-schema holistic assembly",
-        "eligibility": "eligible",
+        **scaffold.FULL200_ARTIFACT,
         "reason": (
             "Accepted for a one-shot aggregate validation of the current-code "
             "v08-shaped rich-schema holistic assembly surface. This is not "
@@ -94,28 +88,32 @@ def build_review_routing_validation_audit(
     }
     high_recall = operating_points["high_recall_predeclared"]
     balanced = operating_points["balanced_dev_candidate"]
-    inventory = _artifact_inventory(repo_root)
+    inventory = scaffold.artifact_inventory_multi(repo_root, _FULL200_CANDIDATES)
     eligible = [item for item in inventory if item["eligible"]]
     validation = _validation_readout(repo_root, eligible[0]) if eligible else None
-    promotion_decision = (
-        _promotion_decision(validation) if validation else "not_promoted"
-    )
-    stop_status = (
-        "completed_current_code_surface_validation"
-        if eligible
-        else "blocked_no_same_surface_full200_artifact"
+    promotion_gates = _promotion_gates(high_recall, balanced, validation)
+    promotion_decision = scaffold.promotion_decision_from_gates(promotion_gates)
+    blocked_reason = (
+        "No full-200 artifact matches the frozen rich-schema holistic "
+        "assembly reliability surface, so applying the dev routing "
+        "candidate would blend surfaces."
+        if validation is None
+        else (
+            "The current-code v08-shaped full-200 artifact was accepted as "
+            "an aggregate-only validation surface, but the lower-burden dev "
+            "candidate did not preserve a lower review burden on validation."
+        )
     )
     return {
-        "audit_kind": "exectv2_review_routing_aggregate_validation",
-        "generated_on": date.today().isoformat(),
-        "surface": "rich-schema holistic assembly reliability scorecard",
-        "scorer": "headline_target family-cell correctness",
-        "split": "full-200 aggregate-only validation requested",
-        "code_hash": _git_head(repo_root),
-        "row_inspection_boundary": (
-            "Aggregate metrics and artifact inventory only; no row identifiers, "
-            "note text, gold labels, predictions, evidence spans, rationales, "
-            "or selected failure examples are emitted."
+        **scaffold.audit_envelope(
+            audit_kind="exectv2_review_routing_aggregate_validation",
+            repo_root=repo_root,
+            scorer="headline_target family-cell correctness",
+            row_inspection_boundary=(
+                "Aggregate metrics and artifact inventory only; no row identifiers, "
+                "note text, gold labels, predictions, evidence spans, rationales, "
+                "or selected failure examples are emitted."
+            ),
         ),
         "candidate_operating_points": [
             _candidate_summary(high_recall),
@@ -124,23 +122,16 @@ def build_review_routing_validation_audit(
         "artifact_inventory": inventory,
         "eligible_validation_artifacts": len(eligible),
         "validation_readout": validation,
-        "stop_rule_outcome": {
-            "status": stop_status,
-            "validation_run_executed": bool(eligible),
-            "promotion_decision": promotion_decision,
-            "reason": (
-                "No full-200 artifact matches the frozen rich-schema holistic "
-                "assembly reliability surface, so applying the dev routing "
-                "candidate would blend surfaces."
-            )
-            if validation is None
-            else (
-                "The current-code v08-shaped full-200 artifact was accepted as "
-                "an aggregate-only validation surface, but the lower-burden dev "
-                "candidate did not preserve a lower review burden on validation."
+        "stop_rule_outcome": scaffold.stop_rule_outcome(
+            validation=validation,
+            promotion_decision=promotion_decision,
+            promoted_reason=(
+                "The lower-burden review-routing candidate passes all predeclared "
+                "aggregate validation gates on the accepted current-code surface."
             ),
-        },
-        "promotion_gates": _promotion_gates(high_recall, balanced, validation),
+            blocked_reason=blocked_reason,
+        ),
+        "promotion_gates": promotion_gates,
         "next_action": (
             "Freeze and generate a same-surface full-200 rich-schema holistic "
             "assembly artifact, then run the validation once with this report "
@@ -156,33 +147,29 @@ def build_review_routing_validation_audit(
     }
 
 
-def render_markdown(audit: dict[str, Any]) -> str:
+def render_markdown(audit: Mapping[str, Any]) -> str:
     """Render a paper-facing Markdown audit without row-level details."""
 
-    lines = [
-        "# ExECTv2 Review-Routing Validation Audit",
-        "",
-        f"Date: {audit['generated_on']}",
-        "",
-        "Status: aggregate-only validation preflight and stop-rule readout. "
-        "No promotion claim is made.",
-        "",
-        "## Preflight",
-        "",
-        f"- Surface: {audit['surface']}",
-        f"- Scorer: `{audit['scorer']}`",
-        f"- Split: `{audit['split']}`",
-        f"- Code hash: `{audit['code_hash']}`",
-        f"- Row-inspection boundary: {audit['row_inspection_boundary']}",
-        "",
-        "## Frozen Candidate Operating Points",
-        "",
-        (
-            "| Candidate | Dev status | Eligible cells | Reviewed | Burden | "
-            "Error cells | Caught | Catch | False alarms | False alarms / caught error |"
+    lines = scaffold.render_preflight_section(
+        audit,
+        title="# ExECTv2 Review-Routing Validation Audit",
+        status_line=(
+            "Status: aggregate-only validation preflight and stop-rule readout. "
+            "No promotion claim is made."
         ),
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ]
+    )
+    lines.extend(
+        [
+            "",
+            "## Frozen Candidate Operating Points",
+            "",
+            (
+                "| Candidate | Dev status | Eligible cells | Reviewed | Burden | "
+                "Error cells | Caught | Catch | False alarms | False alarms / caught error |"
+            ),
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for row in audit["candidate_operating_points"]:
         lines.append(
             f"| {row['label']} | {row['validation_status']} | "
@@ -192,24 +179,10 @@ def render_markdown(audit: dict[str, Any]) -> str:
             f"{row['false_alarm_cells']} | {row['false_alarms_per_caught_error']:.4f} |"
         )
 
-    lines.extend(
-        [
-            "",
-            "## Validation Artifact Inventory",
-            "",
-            "| Artifact | Rows | Surface | Eligibility | Reason |",
-            "| --- | ---: | --- | --- | --- |",
-        ]
-    )
-    for item in audit["artifact_inventory"]:
-        eligibility = "eligible" if item["eligible"] else "ineligible"
-        lines.append(
-            f"| `{item['path']}` | {item['rows']} | {item['surface']} | "
-            f"{eligibility} | {item['reason']} |"
-        )
+    lines.extend(scaffold.render_artifact_inventory_section(audit["artifact_inventory"]))
 
-    if audit.get("validation_readout"):
-        validation = audit["validation_readout"]
+    validation = audit.get("validation_readout")
+    if validation:
         lines.extend(
             [
                 "",
@@ -255,37 +228,9 @@ def render_markdown(audit: dict[str, Any]) -> str:
                 f"{row['review_burden']:.4f} | {row['catch_rate']:.4f} |"
             )
 
-    stop = audit["stop_rule_outcome"]
-    lines.extend(
-        [
-            "",
-            "## Stop-Rule Outcome",
-            "",
-            f"- Status: `{stop['status']}`",
-            f"- Validation run executed: `{stop['validation_run_executed']}`",
-            f"- Promotion decision: `{stop['promotion_decision']}`",
-            f"- Reason: {stop['reason']}",
-            "",
-            "## Promotion Gates",
-            "",
-            "| Gate | Outcome | Note |",
-            "| --- | --- | --- |",
-        ]
-    )
-    for gate in audit["promotion_gates"]:
-        lines.append(f"| {gate['gate']} | {gate['outcome']} | {gate['note']} |")
-
-    lines.extend(
-        [
-            "",
-            "## Result",
-            "",
-            _result_paragraph(audit),
-            "",
-            f"Next action: {audit['next_action']}",
-            "",
-        ]
-    )
+    lines.extend(scaffold.render_stop_rule_outcome_section(audit))
+    lines.extend(scaffold.render_promotion_gates_section(audit))
+    lines.extend(scaffold.render_report_footer(audit, _result_paragraph(audit)))
     return "\n".join(lines)
 
 
@@ -294,33 +239,17 @@ def write_report(
     repo_root: Path = REPO_ROOT,
     report_path: Path = REPORT_PATH,
 ) -> Path:
-    audit = build_review_routing_validation_audit(repo_root=repo_root)
-    out_path = repo_root / report_path
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_markdown(audit), encoding="utf-8")
-    return out_path
-
-
-def _artifact_inventory(repo_root: Path) -> list[dict[str, Any]]:
-    rows = []
-    for item in _FULL200_CANDIDATES:
-        path = repo_root / item["path"]
-        rows.append(
-            {
-                "path": item["path"],
-                "exists": path.exists(),
-                "rows": _count_jsonl_rows(path) if path.exists() else 0,
-                "surface": item["surface"],
-                "eligible": path.exists() and item["eligibility"] == "eligible",
-                "reason": item["reason"],
-            }
-        )
-    return rows
+    return scaffold.write_validation_report(
+        build_audit=build_review_routing_validation_audit,
+        render_markdown=render_markdown,
+        repo_root=repo_root,
+        report_path=report_path,
+    )
 
 
 def _validation_readout(
     repo_root: Path,
-    artifact: dict[str, Any],
+    artifact: Mapping[str, Any],
 ) -> dict[str, Any]:
     rows = reliability._load_jsonl(repo_root / artifact["path"])
     cells = _validation_cells(rows)
@@ -424,10 +353,10 @@ def _aggregate_operating_point(
                 "operating_point": label,
                 "family": family,
                 **counts,
-                "review_burden": _round_rate(
+                "review_burden": scaffold.round_rate(
                     counts["reviewed_cells"], counts["eligible_cells"]
                 ),
-                "catch_rate": _round_rate(
+                "catch_rate": scaffold.round_rate(
                     counts["caught_error_cells"], counts["total_error_cells"]
                 ),
             }
@@ -438,10 +367,10 @@ def _aggregate_operating_point(
         "label": label,
         "eligible_cells": len(cells),
         "reviewed_cells": reviewed,
-        "review_burden": _round_rate(reviewed, len(cells)),
+        "review_burden": scaffold.round_rate(reviewed, len(cells)),
         "total_error_cells": total_errors,
         "caught_error_cells": caught,
-        "catch_rate": _round_rate(caught, total_errors),
+        "catch_rate": scaffold.round_rate(caught, total_errors),
         "false_alarm_cells": false_alarm,
         "missed_error_cells": total_errors - caught,
         "false_alarms_per_caught_error": round(false_alarm / caught, 4)
@@ -476,35 +405,34 @@ def _promotion_gates(
     balanced: dict[str, Any],
     validation: dict[str, Any] | None,
 ) -> list[dict[str, str]]:
+    blocked_note = "No same-surface full-200 aggregate artifact is available."
     if validation is None:
-        blocked = "not_evaluable"
-        reason = "No same-surface full-200 aggregate artifact is available."
         return [
-            {
-                "gate": "Review burden at least 0.15 absolute below high-recall burden",
-                "outcome": blocked,
-                "note": reason,
-            },
-            {
-                "gate": "Overall error catch at least 0.80",
-                "outcome": blocked,
-                "note": reason,
-            },
-            {
-                "gate": "Per-family eligible/error/caught/missed/false-alarm metrics",
-                "outcome": blocked,
-                "note": reason,
-            },
-            {
-                "gate": "No family with at least ten error cells below 0.70 catch",
-                "outcome": blocked,
-                "note": reason,
-            },
-            {
-                "gate": "False alarms per caught error lower than high-recall policy",
-                "outcome": blocked,
-                "note": reason,
-            },
+            scaffold.gate(
+                "Review burden at least 0.15 absolute below high-recall burden",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "Overall error catch at least 0.80",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "Per-family eligible/error/caught/missed/false-alarm metrics",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "No family with at least ten error cells below 0.70 catch",
+                "not_evaluable",
+                blocked_note,
+            ),
+            scaffold.gate(
+                "False alarms per caught error lower than high-recall policy",
+                "not_evaluable",
+                blocked_note,
+            ),
         ]
 
     validation_points = {row["id"]: row for row in validation["operating_points"]}
@@ -521,36 +449,36 @@ def _promotion_gates(
     )
     family_floor_pass = _family_catch_floor_pass(validation, "Balanced dev candidate")
     return [
-        {
-            "gate": "Review burden at least 0.15 absolute below high-recall burden",
-            "outcome": "pass" if burden_delta >= 0.15 else "fail",
-            "note": f"Validation burden delta is {burden_delta:.4f}.",
-        },
-        {
-            "gate": "Overall error catch at least 0.80",
-            "outcome": "pass"
+        scaffold.gate(
+            "Review burden at least 0.15 absolute below high-recall burden",
+            "pass" if burden_delta >= 0.15 else "fail",
+            f"Validation burden delta is {burden_delta:.4f}.",
+        ),
+        scaffold.gate(
+            "Overall error catch at least 0.80",
+            "pass"
             if float(validation_balanced["catch_rate"]) >= 0.80
             else "fail",
-            "note": f"Validation catch is {validation_balanced['catch_rate']:.4f}.",
-        },
-        {
-            "gate": "Per-family eligible/error/caught/missed/false-alarm metrics",
-            "outcome": "pass",
-            "note": "Per-family aggregate metrics are reported without row-level details.",
-        },
-        {
-            "gate": "No family with at least ten error cells below 0.70 catch",
-            "outcome": "pass" if family_floor_pass else "fail",
-            "note": "Balanced candidate family catch floor evaluated on aggregate counts.",
-        },
-        {
-            "gate": "False alarms per caught error lower than high-recall policy",
-            "outcome": "pass" if balanced_cost < high_cost else "fail",
-            "note": (
+            f"Validation catch is {validation_balanced['catch_rate']:.4f}.",
+        ),
+        scaffold.gate(
+            "Per-family eligible/error/caught/missed/false-alarm metrics",
+            "pass",
+            "Per-family aggregate metrics are reported without row-level details.",
+        ),
+        scaffold.gate(
+            "No family with at least ten error cells below 0.70 catch",
+            "pass" if family_floor_pass else "fail",
+            "Balanced candidate family catch floor evaluated on aggregate counts.",
+        ),
+        scaffold.gate(
+            "False alarms per caught error lower than high-recall policy",
+            "pass" if balanced_cost < high_cost else "fail",
+            (
                 f"Validation high-recall cost {high_cost:.4f}; "
                 f"balanced cost {balanced_cost:.4f}."
             ),
-        },
+        ),
     ]
 
 
@@ -564,12 +492,7 @@ def _family_catch_floor_pass(validation: dict[str, Any], operating_point: str) -
     return all(float(row["catch_rate"]) >= 0.70 for row in rows)
 
 
-def _promotion_decision(validation: dict[str, Any]) -> str:
-    gates = _promotion_gates({}, {}, validation)
-    return "promoted" if all(gate["outcome"] == "pass" for gate in gates) else "not_promoted"
-
-
-def _result_paragraph(audit: dict[str, Any]) -> str:
+def _result_paragraph(audit: Mapping[str, Any]) -> str:
     if not audit.get("validation_readout"):
         return (
             "The lower-burden review-routing candidate is not promoted. The dev140 "
@@ -583,35 +506,6 @@ def _result_paragraph(audit: dict[str, Any]) -> str:
         "rose to the high-recall policy level instead of meeting the predeclared "
         "lower-burden gate."
     )
-
-
-def _round_rate(numerator: int, denominator: int) -> float:
-    return round(numerator / denominator, 4) if denominator else 0.0
-
-
-def _count_jsonl_rows(path: Path) -> int:
-    with path.open(encoding="utf-8") as handle:
-        return sum(1 for line in handle if line.strip())
-
-
-def _git_head(repo_root: Path) -> str:
-    try:
-        head = subprocess.check_output(
-            ["git", "rev-parse", "--short", "HEAD"],
-            cwd=repo_root,
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-        dirty = subprocess.run(
-            ["git", "diff", "--quiet"],
-            cwd=repo_root,
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode != 0
-    except (OSError, subprocess.SubprocessError):
-        return "unavailable"
-    return f"{head}+dirty" if dirty else head
 
 
 def main() -> None:
