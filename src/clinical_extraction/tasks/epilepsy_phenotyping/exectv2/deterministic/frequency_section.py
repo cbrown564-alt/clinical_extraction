@@ -16,7 +16,9 @@ from ..contract.prediction import PredictedMention
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
-from .rules.anchor import SEIZURE_TYPE_ANCHOR_RULE
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    SEIZURE_TYPE_ANCHOR_RULE,
+)
 
 _SECTION_HEADER = re.compile(r"\bseizure\s+type\s+and\s+frequency\s*:\s*", re.IGNORECASE)
 _STOP_HEADER = re.compile(

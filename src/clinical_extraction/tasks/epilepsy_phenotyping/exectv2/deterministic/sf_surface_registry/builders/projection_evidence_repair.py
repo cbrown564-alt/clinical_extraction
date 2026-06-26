@@ -1,4 +1,4 @@
-"""Evidence repair policy for target-indicator extraction."""
+"""SF projection builders migrated from ``target_projection/evidence_repair.py``."""
 
 from __future__ import annotations
 
@@ -9,14 +9,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_phrase,
 )
 
-from .constants import ASYMMETRIC_DOSING
-from .policy import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import ASYMMETRIC_DOSING
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.policy import (
     ProjectionFamilySwitches,
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from .shared import clean_number, local_evidence_context
-from .types import MentionT
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import clean_number, local_evidence_context
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import MentionT
 
 def repair_case_only_evidence(
     mentions: Sequence[MentionT],

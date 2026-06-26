@@ -31,6 +31,14 @@ _RULE_INDEX_PATH = _REPO_ROOT / "docs" / "plans" / "sf_surface_rule_index.yaml"
 _PHASE2_MAX_PYTHON_LINES = 850
 _PHASE2_MAX_YAML_LINES = 1500
 _MAX_CATALOG_FILE_LINES = 250
+_MAX_TARGET_PROJECTION_SF_LOC = 800
+_TARGET_PROJECTION_SF_MODULES = (
+    "policy.py",
+    "constants.py",
+    "shared.py",
+    "types.py",
+    "__init__.py",
+)
 
 STANDARD_DICTIONARY_SF_REWRITE_CASES: tuple[RewriteCase, ...] = (
     RewriteCase(
@@ -160,6 +168,70 @@ def test_rule_index_has_disjoint_stack_namespaces() -> None:
     assert extract.isdisjoint(convention)
     assert extract.isdisjoint(projection)
     assert convention.isdisjoint(projection)
+
+
+def test_target_projection_sf_modules_line_count_gate() -> None:
+    tp_root = _REGISTRY_ROOT.parent / "target_projection"
+    total = sum(_count_lines(tp_root / name) for name in _TARGET_PROJECTION_SF_MODULES)
+    assert total <= _MAX_TARGET_PROJECTION_SF_LOC, (
+        f"target_projection SF modules LOC {total} exceeds {_MAX_TARGET_PROJECTION_SF_LOC}"
+    )
+
+
+def test_p1_v09_dev140_sf_scores_match_frozen_baseline() -> None:
+    """Live no-call replay: SF headline + active_rate_fidelity unchanged vs frozen v09."""
+
+    from pathlib import Path
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+        all_entities as _all_entities,  # noqa: F401
+    )
+
+    repo = _REPO_ROOT
+    frozen_path = (
+        repo
+        / "experiments/_archive/exectv2_richschema_iterations"
+        / "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json"
+    )
+    structured_archive = (
+        repo
+        / "experiments/_archive/exectv2_richschema_iterations"
+        / "exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.jsonl"
+    )
+    if not frozen_path.exists() or not structured_archive.exists():
+        pytest.skip("archived v09 dev140 artifacts not available")
+
+    import json
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
+        ProducerManifest,
+        load_finding_assembly_manifest,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline import (
+        build_finding_assembly,
+    )
+
+    frozen = json.loads(frozen_path.read_text(encoding="utf-8"))["score_ladder"]
+    manifest = load_finding_assembly_manifest(
+        repo
+        / "configs/exectv2/finding_assembly"
+        / "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml"
+    )
+    structured = manifest.producers["key_entities_structured_v09"]
+    if not structured.artifact.exists():
+        structured = ProducerManifest(**{**structured.__dict__, "artifact": structured_archive})
+        manifest = type(manifest)(
+            **{
+                **manifest.__dict__,
+                "producers": {**manifest.producers, "key_entities_structured_v09": structured},
+            }
+        )
+    run = build_finding_assembly(manifest, generated_on="2026-06-26")
+    ladder = run.report["score_ladder"]
+    sf_headline = ladder["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
+    sf_fidelity = ladder["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
+    assert sf_headline == frozen["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
+    assert sf_fidelity == frozen["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
 
 
 def test_registry_package_line_count_gate() -> None:

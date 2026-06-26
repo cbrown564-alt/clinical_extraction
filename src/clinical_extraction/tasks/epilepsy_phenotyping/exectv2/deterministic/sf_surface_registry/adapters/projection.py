@@ -1,4 +1,4 @@
-"""Projection-phase adapter — delegates to legacy Stack C target_projection."""
+"""Projection-phase adapter — Stack C facade over registry builders + policy."""
 
 from __future__ import annotations
 
@@ -9,13 +9,7 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
-    ASYMMETRIC_DOSING,
-    CONTROLLED_ON_DOSE,
-    EVERY_N_PERIODS,
-    EVERY_N_TO_M_PERIODS,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.cross_entity import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
     project_context_parent_epilepsy,
     project_controlled_context_to_infrequent_state,
     project_diagnosis_context_to_sf_states,
@@ -29,10 +23,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target
     project_returned_context_to_increased_state,
     project_sf_context_to_focal_diagnosis,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.evidence_repair import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
     frequency_from_prescription_source,
     repair_case_only_evidence,
     repair_prescription_attrs_from_text,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_sf_state import (
+    project_diagnosis_text_from_evidence,
+    project_sf_state_from_evidence,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
+    ASYMMETRIC_DOSING,
+    CONTROLLED_ON_DOSE,
+    EVERY_N_PERIODS,
+    EVERY_N_TO_M_PERIODS,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.investigations import (
     project_eeg_context_to_mri_normal,
@@ -44,10 +48,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target
     effective_target_projection_family_switches,
     is_projection_family_enabled,
     quarantined_projection_family_warning,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.sf_state import (
-    project_diagnosis_text_from_evidence,
-    project_sf_state_from_evidence,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import (
     clean_number,

@@ -37,46 +37,45 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rule_m
     DEFAULT_ABLATION,
     ExtractionContext,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.anchor import (
-    ANCHOR_RULES,
-    SEIZURE_FREE_ANCHOR_RULE,
-    SEIZURE_TYPE_ANCHOR_RULE,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
-    CHANGE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
     ADVERBIAL_RULE,
+    ANCHOR_RULES,
     ARTICLE_SEIZURE_COUNT_RULE,
     BETWEEN_RANGE_PER_PERIOD_RULE,
+    CHANGE_RULES,
+    CONTROL_PHRASE_RULE,
     COUNT_IN_LAST_PERIOD_RULE,
     COUNT_PER_FORTNIGHT_RULE,
     COUNT_PER_PERIOD_RULE,
+    DATE_MONTH_RULE,
+    DATE_MY_RULE,
+    DECREASED_RULE,
     EVERY_N_PERIODS_RULE,
     EVERY_PERIOD_RULE,
     HEADER_CONTINUATION_RATE_RULE,
+    INCREASED_RULE,
+    LAST_EVENT_AGO_RULE,
+    LAST_EVENT_DATE_RULE,
+    LAST_SEIZURE_DATE_RULE,
     N_TIMES_PER_PERIOD_RULE,
+    NO_HAD_DURATION_RULE,
     PERIOD_RANGE_RULE,
+    PIT_SINCE_RULE,
+    PIT_STANDALONE_DURING_RULE,
+    RANGE_EVERY_PERIOD_RULE,
     RANGE_OF_SEIZURE_TERMS_RULE,
     RANGE_OVER_PERIOD_RULE,
     RANGE_PER_PERIOD_RULE,
     RATE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
-    CONTROL_PHRASE_RULE,
-    NO_HAD_DURATION_RULE,
+    SAME_RULE,
+    SEIZURE_FREE_ANCHOR_RULE,
     SEIZURE_FREE_RULES,
-    SF_BARE_RULE,
-    SF_WITH_DURATION_RULE,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
-    DATE_MY_RULE,
-    LAST_EVENT_DATE_RULE,
-    LAST_SEIZURE_DATE_RULE,
-    PIT_SINCE_RULE,
-    PIT_STANDALONE_DURING_RULE,
     SEIZURE_TERM_MONTH_YEAR_RULE,
     SEIZURE_TERM_YEAR_RULE,
+    SEIZURE_TYPE_ANCHOR_RULE,
+    SEVERAL_TIMES_PER_PERIOD_RULE,
+    SF_BARE_RULE,
+    SF_WITH_DURATION_RULE,
     TEMPORAL_RULES,
 )
 
@@ -174,10 +173,6 @@ def test_period_range_every_three_to_four_weeks() -> None:
 
 
 def test_range_every_period() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
-        RANGE_EVERY_PERIOD_RULE,
-    )
-
     results = _apply(RANGE_EVERY_PERIOD_RULE, "Generalised tonic clonic seizures 1 to 2 every month.")
     assert len(results) == 1
     attrs = results[0].attributes
@@ -224,10 +219,6 @@ def test_count_per_fortnight() -> None:
 
 
 def test_several_times_per_period() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
-        SEVERAL_TIMES_PER_PERIOD_RULE,
-    )
-
     results = _apply(SEVERAL_TIMES_PER_PERIOD_RULE, "The absences happen several times a day.")
     assert len(results) == 1
     attrs = results[0].attributes
@@ -381,27 +372,18 @@ def test_sf_bare_suppresses_driving_interval() -> None:
 
 
 def test_change_decreased() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
-        DECREASED_RULE,
-    )
     results = _apply(DECREASED_RULE, "Seizure frequency has decreased since starting medication.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Decreased"
 
 
 def test_change_increased() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
-        INCREASED_RULE,
-    )
     results = _apply(INCREASED_RULE, "Seizure frequency has increased over the past month.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Increased"
 
 
 def test_change_same() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
-        SAME_RULE,
-    )
     results = _apply(SAME_RULE, "Seizure frequency remains unchanged.")
     assert results
     assert results[0].attributes["FrequencyChange"] == "Same"
@@ -478,10 +460,6 @@ def test_date_month_year_with_comma() -> None:
 
 
 def test_date_month_forward_seizure_context() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
-        DATE_MONTH_RULE,
-    )
-
     results = _apply(DATE_MONTH_RULE, "In March she had 2 to 3 of her focal seizures.")
     assert results
     assert results[0].attributes["MonthDate"] == "3"
@@ -489,10 +467,6 @@ def test_date_month_forward_seizure_context() -> None:
 
 
 def test_date_month_since_last_month_name() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
-        DATE_MONTH_RULE,
-    )
-
     results = _apply(DATE_MONTH_RULE, "Since last October she had 4 generalised tonic clonic seizures.")
     assert results
     assert results[0].attributes["MonthDate"] == "10"
@@ -586,10 +560,6 @@ def test_last_one_christmas_day_year_zero_since() -> None:
 
 
 def test_last_event_ago_zero_period() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
-        LAST_EVENT_AGO_RULE,
-    )
-
     results = _apply(LAST_EVENT_AGO_RULE, "Focal seizures with altered awareness, last event 3 years ago.")
     assert results
     c = results[0]

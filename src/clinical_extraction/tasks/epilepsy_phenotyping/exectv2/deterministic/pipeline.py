@@ -45,11 +45,14 @@ from .frequency_section import frequency_section_mentions
 from .lexicon import assign_cui
 from .overlap import resolve_overlapping_anchors, resolve_overlapping_attributes
 from .rule_metadata import DEFAULT_ABLATION, AblationConfig, ExtractionContext
-from .rules.anchor import ANCHOR_RULES
-from .rules.change import CHANGE_RULES
-from .rules.rate import RATE_RULES
-from .rules.seizure_free import SEIZURE_FREE_RULES
-from .rules.temporal import TEMPORAL_RULES
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    ANCHOR_RULES,
+    CHANGE_RULES,
+    RATE_RULES,
+    SEIZURE_FREE_RULES,
+    SEIZURE_TYPE_ANCHOR_RULE,
+    TEMPORAL_RULES,
+)
 from .statement_parser import statement_mentions
 
 

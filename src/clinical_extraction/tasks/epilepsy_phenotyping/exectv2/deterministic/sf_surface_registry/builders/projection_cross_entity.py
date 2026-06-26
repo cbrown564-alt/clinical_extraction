@@ -1,4 +1,4 @@
-"""Cross-entity mention projection for target indicators."""
+"""SF projection builders migrated from ``target_projection/cross_entity.py``."""
 
 from __future__ import annotations
 
@@ -11,20 +11,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_phrase,
 )
 
-from .constants import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
     CONTROLLED_ON_DOSE,
     EVERY_N_TO_M_PERIODS,
     REMOTE_LAST_SEIZURES_IN_TEENS,
     SF_STATE_ATTRIBUTES,
     YEAR_IN_TEXT,
 )
-from .policy import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.policy import (
     ProjectionFamilySwitches,
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from .shared import local_evidence_context, period_to_canonical
-from .types import MentionLike
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import local_evidence_context, period_to_canonical
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import MentionLike
 
 def project_dropped_sf_to_diagnosis(
     text: str,
