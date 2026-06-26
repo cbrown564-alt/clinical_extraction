@@ -47,7 +47,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import random
 import subprocess
 import sys
 from collections.abc import Sequence
@@ -82,6 +81,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     multiset_prf1,
     prf1_from_counts,
     score_entity,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.bootstrap import (
+    bootstrap_cluster_metrics_ci,
 )
 
 # Published SF cell (Fonferko-Shadrach 2024, Table 1) — the audit target.
@@ -193,35 +195,6 @@ def _aggregate(records: Sequence[_LetterRecord]) -> tuple[float, float]:
         prf1_from_counts(it_tp, it_fp, it_fn).f1,
         prf1_from_counts(l_tp, l_fp, l_fn).f1,
     )
-
-
-def _bootstrap_ci(
-    records: Sequence[_LetterRecord],
-    n_samples: int = BOOTSTRAP_SAMPLES,
-    seed: int = BOOTSTRAP_SEED,
-) -> dict[str, tuple[float, float]]:
-    """Percentile bootstrap CI over letters for per-item and per-letter F1."""
-    rng = random.Random(seed)
-    k = len(records)
-    per_item: list[float] = []
-    per_letter: list[float] = []
-    for _ in range(n_samples):
-        sample = [records[rng.randrange(k)] for _ in range(k)]
-        pi, pl = _aggregate(sample)
-        per_item.append(pi)
-        per_letter.append(pl)
-    per_item.sort()
-    per_letter.sort()
-
-    def ci(values: list[float]) -> tuple[float, float]:
-        lo = values[int(0.025 * len(values))]
-        hi = values[int(0.975 * len(values)) - 1]
-        return round(lo, 4), round(hi, 4)
-
-    return {"per_item": ci(per_item), "per_letter": ci(per_letter)}
-
-
-# ── scoring across the three configs ──────────────────────────────────────────
 
 
 def _score_all(
@@ -702,7 +675,15 @@ def main() -> None:
                     file=sys.stderr,
                 )
 
-    ci = _bootstrap_ci(_letter_records(gold_letters, pred_letters, SF_BENCHMARK))
+    ci = bootstrap_cluster_metrics_ci(
+        _letter_records(gold_letters, pred_letters, SF_BENCHMARK),
+        {
+            "per_item": lambda sample: _aggregate(sample)[0],
+            "per_letter": lambda sample: _aggregate(sample)[1],
+        },
+        reps=BOOTSTRAP_SAMPLES,
+        seed=BOOTSTRAP_SEED,
+    )
     dev_ref = _dev_reference(arch_key, args.model, args.registry)
 
     md = render_audit_markdown(

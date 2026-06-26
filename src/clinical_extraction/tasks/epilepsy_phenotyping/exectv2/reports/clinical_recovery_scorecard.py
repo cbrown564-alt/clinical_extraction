@@ -39,9 +39,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_syn
     DEFAULT_RUN_INDEX_PATH,
     register_run,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.scorecard_core import (
+    aggregate_recovery,
+    overall_to_dict,
+    prf1_to_dict,
+    recovery_to_dict,
+    score_to_dict,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
-    ClinicalRecoveryPRF1,
     benchmark_config_for,
     score_concept_identity,
     score_frequency_state,
@@ -130,15 +136,17 @@ def build_scorecard(
         "headline_entities": list(HEADLINE_ENTITIES),
         "coverage_diagnostic_entities": [PATIENT_HISTORY.name],
         "active_entities": list(ACTIVE_DETERMINISTIC_ENTITIES),
-        "overall_clinical_recovery": _recovery_to_dict(
-            _aggregate_recovery(headline_scores.values())
+        "overall_clinical_recovery": recovery_to_dict(
+            aggregate_recovery(headline_scores.values())
         ),
         "headline_scores": {
             entity: _headline_score_to_dict(score)
             for entity, score in headline_scores.items()
         },
         "patient_history_coverage": {
-            "source_near_overlap": _prf1_to_dict(patient_history.overall.overlap),
+            "source_near_overlap": prf1_to_dict(
+                patient_history.overall.overlap, include_counts=True
+            ),
             "attribute_agreement_rate": round(
                 patient_history.overall.attribute_agreement_rate,
                 4,
@@ -147,7 +155,8 @@ def build_scorecard(
             "attribute_agreement_total": patient_history.overall.attribute_agreement_total,
         },
         "artifact_projection_scores": {
-            name: _overall_to_dict(score) for name, score in projection_scores.items()
+            name: overall_to_dict(score, include_counts=True)
+            for name, score in projection_scores.items()
         },
     }
 
@@ -220,123 +229,23 @@ def _headline_scores(
 def _headline_score_to_dict(score: Mapping[str, Any]) -> dict[str, Any]:
     out = {
         "headline_kind": score["headline_kind"],
-        "headline": _score_to_dict(score["headline"]),
+        "headline": score_to_dict(score["headline"]),
     }
     if "components" in score:
         out["components"] = _model_scores_to_dict(score["components"])
     if "projection" in score:
         out["projection"] = _model_scores_to_dict(score["projection"])
     if "concept_only" in score:
-        out["concept_only"] = _score_to_dict(score["concept_only"])
-        out["concept_negation"] = _score_to_dict(score["concept_negation"])
-        out["concept_assertion"] = _score_to_dict(score["concept_assertion"])
+        out["concept_only"] = score_to_dict(score["concept_only"])
+        out["concept_negation"] = score_to_dict(score["concept_negation"])
+        out["concept_assertion"] = score_to_dict(score["concept_assertion"])
     return out
-
-
-def _aggregate_recovery(scores: Sequence[Mapping[str, Any]]) -> ClinicalRecoveryPRF1:
-    precision_tp = recall_tp = pred_count = gold_count = 0
-    for score in scores:
-        headline = score["headline"]
-        recovery = _as_recovery(headline)
-        precision_tp += recovery.precision_tp
-        recall_tp += recovery.recall_tp
-        pred_count += recovery.pred_count
-        gold_count += recovery.gold_count
-    return _recovery_from_counts(
-        precision_tp=precision_tp,
-        recall_tp=recall_tp,
-        pred_count=pred_count,
-        gold_count=gold_count,
-    )
-
-
-def _as_recovery(score: Any) -> ClinicalRecoveryPRF1:
-    if isinstance(score, ClinicalRecoveryPRF1):
-        return score
-    return _recovery_from_counts(
-        precision_tp=score.tp,
-        recall_tp=score.tp,
-        pred_count=score.tp + score.fp,
-        gold_count=score.tp + score.fn,
-    )
-
-
-def _recovery_from_counts(
-    *,
-    precision_tp: int,
-    recall_tp: int,
-    pred_count: int,
-    gold_count: int,
-) -> ClinicalRecoveryPRF1:
-    precision = precision_tp / pred_count if pred_count else 0.0
-    recall = recall_tp / gold_count if gold_count else 0.0
-    f1 = (2 * precision * recall / (precision + recall)) if precision + recall else 0.0
-    return ClinicalRecoveryPRF1(
-        tp=recall_tp,
-        precision_tp=precision_tp,
-        recall_tp=recall_tp,
-        fp=max(0, pred_count - precision_tp),
-        fn=max(0, gold_count - recall_tp),
-        pred_count=pred_count,
-        gold_count=gold_count,
-        precision=precision,
-        recall=recall,
-        f1=f1,
-    )
 
 
 def _model_scores_to_dict(model: Any) -> dict[str, Any]:
     return {
-        name: _score_to_dict(getattr(model, name))
+        name: score_to_dict(getattr(model, name))
         for name in type(model).model_fields
-    }
-
-
-def _score_to_dict(score: Any) -> dict[str, Any]:
-    if isinstance(score, ClinicalRecoveryPRF1):
-        return _recovery_to_dict(score)
-    return _prf1_to_dict(score)
-
-
-def _recovery_to_dict(score: ClinicalRecoveryPRF1) -> dict[str, Any]:
-    return {
-        "precision": round(score.precision, 4),
-        "recall": round(score.recall, 4),
-        "f1": round(score.f1, 4),
-        "tp": score.tp,
-        "precision_tp": score.precision_tp,
-        "recall_tp": score.recall_tp,
-        "fp": score.fp,
-        "fn": score.fn,
-        "pred_count": score.pred_count,
-        "gold_count": score.gold_count,
-    }
-
-
-def _prf1_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "precision": round(score.precision, 4),
-        "recall": round(score.recall, 4),
-        "f1": round(score.f1, 4),
-        "tp": score.tp,
-        "fp": score.fp,
-        "fn": score.fn,
-        "pred_count": score.tp + score.fp,
-        "gold_count": score.tp + score.fn,
-    }
-
-
-def _overall_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "per_item": _prf1_to_dict(score.per_item),
-        "per_letter": _prf1_to_dict(score.per_letter),
-        "per_entity": {
-            entity: {
-                "per_item": _prf1_to_dict(entity_score.per_item),
-                "per_letter": _prf1_to_dict(entity_score.per_letter),
-            }
-            for entity, entity_score in score.per_entity.items()
-        },
     }
 
 

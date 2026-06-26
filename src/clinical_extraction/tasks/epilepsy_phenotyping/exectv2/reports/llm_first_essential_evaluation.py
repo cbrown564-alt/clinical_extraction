@@ -58,10 +58,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cui_projecti
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     MatchConfig,
-    _concept_keys,
-    _frequency_state_keys,
-    _investigation_component_keys,
-    _prescription_component_keys,
+    concept_keys,
+    frequency_state_keys,
+    investigation_component_keys,
+    prescription_component_keys,
     benchmark_config_for,
     benchmark_ignore_for,
     match_key,
@@ -1098,30 +1098,30 @@ def _primary_row_key_sets(
     """
 
     if family == PRESCRIPTION.name:
-        gold_keys = _prescription_component_keys(
+        gold_keys = prescription_component_keys(
             gold.entities(family),
             "clinical_headline",
             gold.note_text,
         )
-        pred_keys = _prescription_component_keys(
+        pred_keys = prescription_component_keys(
             pred.entities(family),
             "clinical_headline",
             pred.note_text,
         )
         return gold_keys, pred_keys, pred_keys
     if family == SEIZURE_FREQUENCY.name:
-        gold_keys = _frequency_state_keys(gold.entities(family), "clinical_headline")
-        pred_keys = _frequency_state_keys(pred.entities(family), "clinical_headline")
+        gold_keys = frequency_state_keys(gold.entities(family), "clinical_headline")
+        pred_keys = frequency_state_keys(pred.entities(family), "clinical_headline")
         return gold_keys, pred_keys, pred_keys
     if family == INVESTIGATIONS.name:
-        gold_keys = _investigation_component_keys(gold.entities(family), "clinical_headline")
-        pred_keys = _investigation_component_keys(pred.entities(family), "clinical_headline")
+        gold_keys = investigation_component_keys(gold.entities(family), "clinical_headline")
+        pred_keys = investigation_component_keys(pred.entities(family), "clinical_headline")
         return gold_keys, pred_keys, pred_keys
     if family in _ESSENTIAL_ATOMIC_CONCEPT_ONLY:
         return (
-            _concept_keys(gold.entities(family), family, "concept"),
-            _concept_keys(pred.entities(family), family, "concept"),
-            _concept_keys(pred.annotations, family, "concept"),
+            concept_keys(gold.entities(family), family, "concept"),
+            concept_keys(pred.entities(family), family, "concept"),
+            concept_keys(pred.annotations, family, "concept"),
         )
     raise ValueError(f"Unsupported essential family {family!r}")
 
