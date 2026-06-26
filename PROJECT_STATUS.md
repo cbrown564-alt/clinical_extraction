@@ -50,10 +50,8 @@ Current evidence stack:
 
 ### Next
 
-- Draft the ExECTv2 results section from
-  `docs/research/exectv2_results_section_scaffold_2026-06-25.md` once the main
-  architecture/performance table is frozen; keep reliability and component-impact
-  subsections separate.
+- Turn the LaTeX figure scaffold into a real architecture figure, add literature
+  citations, and decide which of the eight results tables move to appendix.
 - If the Gan consensus/fresh path is revisited for tuning or redesign, start
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
@@ -71,16 +69,16 @@ Current evidence stack:
 
 ### Done Recently
 
-- 2026-06-26: Completed ExECTv2 component-off full200 aggregate-only replay
-  under the frozen predeclaration (`9` rows; no model calls or row-level
-  inspection). Stop-rule outcome is all-positive limited component-impact
-  evidence: dictionary `+0.0186` to `+0.0290`, residual semantic lens `+0.0098`
-  to `+0.0117`, headline projection `+0.0302` to `+0.0350`. Updated
-  predeclaration, ablation plan, and results scaffold Component Impact
-  subsection.
-- 2026-06-26: Completed ExECTv2 component-off planning, dev140 one-component-off
-  readout (`16` rows, `4` summaries), YAML configs/tests, and the full-200
-  aggregate-only predeclaration for dictionary, semantic lens, and projection.
+- 2026-06-26: Folded `docs/research/paper_manuscript_2026-06-26.md` Section 4
+  into the IEEE LaTeX draft with methods, figure scaffold, results tables,
+  discussion, limitations, and compiled PDF output.
+- 2026-06-26: Integrated the ExECTv2 results draft into the paper manuscript as
+  Section 4.2, added Gan 2026 Section 4.1 with frozen holdout tables and
+  consensus/fresh Gate 4 cross-references, and fixed table numbering.
+- 2026-06-26: Completed ExECTv2 component-off planning, dev140 replay (`16`
+  rows), and full200 frozen aggregate-only replay (`9` rows; no row inspection).
+  Full200 deltas were positive for dictionary, residual semantic lens, and
+  headline projection.
 - 2026-06-26: Completed Qwen repair v02 same-core evidence (`0.8319` dev140;
   `0.8197` full-200; `0` call/parse failures in both repaired assemblies).
 - 2026-06-26: Completed Gan consensus/fresh v0.9 gates and exact aggregate-only

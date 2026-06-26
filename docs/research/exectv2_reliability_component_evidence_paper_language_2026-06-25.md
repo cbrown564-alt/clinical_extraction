@@ -118,11 +118,12 @@ For simplification:
 
 ## Open Paper Work
 
-1. Convert this claim block into the ExECTv2 results section after the main
-   architecture/performance table is frozen.
+1. ~~Convert this claim block into the ExECTv2 results section after the main
+   architecture/performance table is frozen~~ — completed in
+   `docs/research/exectv2_results_section_draft_2026-06-26.md`.
 2. ~~Add a separate Component Impact subsection that uses only replayable
    component-off or stage-ladder evidence~~ — drafted in
    `docs/research/exectv2_results_section_scaffold_2026-06-25.md` using dev140 and
-   full-200 component-off readouts.
+   full-200 component-off readouts; folded into the results draft.
 3. Keep future holdout/external reliability claims behind a fresh predeclaration
    naming the scorer, split, row-inspection boundary, and stop rule.

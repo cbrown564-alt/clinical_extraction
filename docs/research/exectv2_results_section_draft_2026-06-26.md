@@ -1,50 +1,54 @@
-# ExECTv2 Results-Section Scaffold
+# ExECTv2 Results Section (Manuscript Draft)
 
-Date: 2026-06-25
+Date: 2026-06-26
 
-Status: manuscript scaffold from resolved ExECTv2 reliability and same-core
-evidence. This is not a new experiment and does not authorize any full-200 or
-holdout row-level inspection.
+Status: integrated into `docs/research/paper_manuscript_2026-06-26.md` as
+Section 4.2 with fixed numbering (Tables 4–8) and Gan cross-references. This
+standalone draft remains the ExECTv2 source slice; it does not authorize
+full-200 or holdout row-level inspection.
 
 Primary sources:
 
+- `docs/research/exectv2_results_section_scaffold_2026-06-25.md`
 - `docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md`
-- `docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_dev140_2026-06-25.md`
-- `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_output_contract_audit_2026-06-25.md`
-- `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`
-- `docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md`
-- `docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md`
-- `docs/experiments/exectv2/reliability/exectv2_robustness_validation_audit_2026-06-25.md`
-- `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`
+- `docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md`
+- `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md`
+- `experiments/exectv2_component_off_replay_full200_20260626.md`
 
 ## Claim Boundary
 
-ExECTv2 results should be presented as de-duplicated clinical-fact recovery
-under the `clinical_headline` view. Strict benchmark/CUI reproduction remains a
-diagnostic and comparability surface, not the headline optimization target.
+ExECTv2 results are reported as de-duplicated clinical-fact recovery under the
+`clinical_headline` view. Strict benchmark and CUI-oriented scores remain
+diagnostic comparability surfaces, not the headline optimization target. The
+reliability scorecard and component-impact analyses are reported in separate
+subsections and must not be merged into causal component claims.
 
-The reliability scorecard is trust evidence for fixed systems under declared
-inspection boundaries. It is separate from component-impact evidence, which
-requires component-off replay, ablation, or same-input stage-ladder deltas.
+---
 
-## Results Text Scaffold
+## 4.2 ExECTv2 Clinical-Fact Recovery
 
-### Clinical-Recovery Performance
+Integrated in `docs/research/paper_manuscript_2026-06-26.md`. Cross-references
+Section 4.1 for the SeizureFrequency bridge and the shared three-model swap
+families.
 
-The selected ExECTv2 clinical-finding assembly is evaluated primarily by
+### 4.2.1 Architecture and Clinical-Headline Performance
+
+We evaluate the selected ExECTv2 clinical-finding assembly primarily by
 de-duplicated clinical-headline recovery rather than strict full-schema
 annotation reproduction. On the aggregate full-200 current-code audit, the
 verifier-backed GPT-4.1-mini v08-shaped architecture scored `0.8502` overall
 clinical-headline F1, with family scores of Diagnosis `0.8321`,
 SeizureFrequency `0.7850`, Prescription `0.8926`, and Investigations `0.9213`.
-The accepted lean candidate, `exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`,
-reduced the full-200 call profile to `400` calls while preserving the governing
+The accepted lean candidate,
+`exectv2_gpt41mini_simplification_2call_no_sf_adjudicator`, reduced the
+full-200 call profile to `400` calls while preserving the governing
 cost-performance gates: `0.8356` overall and `0.7525` SeizureFrequency F1.
 
-Strict benchmark and CUI-oriented outputs should be reported only as secondary
-diagnostics that measure compatibility with the original annotation surface.
-They should not be described as the primary ExECTv2 success criterion or
-directly compared with clinical-headline recovery.
+Strict benchmark and CUI-oriented outputs measure compatibility with the
+original annotation surface. They are reported only as secondary diagnostics and
+are not described as the primary ExECTv2 success criterion.
+
+**Table 4. ExECTv2 architecture comparison on full-200 aggregate `clinical_headline`.**
 
 | System/view | Surface | Overall | Diagnosis | SeizureFrequency | Prescription | Investigations | Claim use |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
@@ -52,39 +56,52 @@ directly compared with clinical-headline recovery.
 | No-verifier ablation | full-200 aggregate, `clinical_headline` | 0.8431 | 0.8410 | 0.7850 | 0.8926 | 0.8563 | Component-role comparison; Investigations verifier remains useful. |
 | Accepted lean 2-call no-SF-adjudicator | full-200 aggregate, `clinical_headline` | 0.8356 | 0.8397 | 0.7525 | 0.8926 | 0.8563 | Cost-performance frontier; not proof the removed SF adjudicator has zero utility. |
 
-### Same-Core Model-Swap Evidence
+### 4.2.2 Same-Core Model Swap
 
-Using the frozen `exectv2_2call_no_sf_adjudicator_model_swap` core on dev140,
-DeepSeek chat, GPT-4.1-mini, and Qwen 3.6 35B were compared under the same
-component graph and `clinical_headline` scorer. DeepSeek produced the strongest
-dev140 aggregate score, GPT-4.1-mini remained operationally clean, and Qwen
-remained diagnostic because its output-contract failures prevented operational
-promotion.
+Using the frozen `exectv2_2call_no_sf_adjudicator_model_swap` core, DeepSeek
+chat, GPT-4.1-mini, and Qwen 3.6 35B were compared under the same component
+graph and `clinical_headline` scorer. On dev140, DeepSeek produced the
+strongest aggregate score, GPT-4.1-mini remained operationally clean, and the
+unrepaired Qwen row remained diagnostic because output-contract failures blocked
+operational promotion. Qwen repair v02 later passed the predeclared dev140 and
+full-200 aggregate gates with `0` call/parse failures in both assemblies,
+providing same-core model-family evidence below the GPT-4.1-mini and DeepSeek
+operational rows.
 
-| Candidate | Model | Surface | Overall | Diagnosis | SeizureFrequency | Prescription | Investigations | Operational caveat |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `exectv2_2call_no_sf_adjudicator_deepseek_dev140` | DeepSeek chat | dev140 `clinical_headline` | 0.8596 | 0.8845 | 0.7658 | 0.8895 | 0.8966 | One parse/schema failure; include in next full-200 predeclaration only after freezing aggregate-only rules. |
-| `exectv2_2call_no_sf_adjudicator_gpt41mini_dev140` | GPT-4.1-mini | dev140 `clinical_headline` | 0.8396 | 0.8573 | 0.7645 | 0.8895 | 0.8347 | Operationally clean dev140 row. |
-| `exectv2_2call_no_sf_adjudicator_qwen36_dev140` | Qwen 3.6 35B | dev140 `clinical_headline` | 0.8018 | 0.8027 | 0.6919 | 0.8895 | 0.8354 | Diagnostic only: one call failure and twelve parse/schema failures from Qwen-specific output-contract drift. |
+**Table 5. Same-core model swap on dev140 `clinical_headline`.**
 
-Recommended wording:
+| Candidate | Model | Overall | Diagnosis | SeizureFrequency | Prescription | Investigations | Operational caveat |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `exectv2_2call_no_sf_adjudicator_deepseek_dev140` | DeepSeek chat | 0.8596 | 0.8845 | 0.7658 | 0.8895 | 0.8966 | One parse/schema failure. |
+| `exectv2_2call_no_sf_adjudicator_gpt41mini_dev140` | GPT-4.1-mini | 0.8396 | 0.8573 | 0.7645 | 0.8895 | 0.8347 | Operationally clean dev140 row. |
+| `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140` | Qwen 3.6 35B repair v02 | 0.8319 | 0.8473 | 0.7182 | 0.8895 | 0.8755 | Passes repair gates; model-family evidence, not operational promotion over GPT/DeepSeek. |
+| `exectv2_2call_no_sf_adjudicator_qwen36_dev140` | Qwen 3.6 35B (unrepaired) | 0.8018 | 0.8027 | 0.6919 | 0.8895 | 0.8354 | Diagnostic only: one call failure and twelve parse/schema failures. |
+
+**Table 6. Same-core model swap on full-200 aggregate `clinical_headline`.**
+
+| Candidate | Model | Overall | Diagnosis | SeizureFrequency | Prescription | Investigations | Call/parse failures | Min evidence rate |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: |
+| `exectv2_2call_no_sf_adjudicator_deepseek_full200` | DeepSeek chat | 0.8566 | 0.8708 | 0.7602 | 0.8926 | 0.9091 | 0 / 1 | 1.0000 |
+| `exectv2_2call_no_sf_adjudicator_gpt41mini_full200` | GPT-4.1-mini | 0.8356 | 0.8397 | 0.7525 | 0.8926 | 0.8563 | 0 / 0 | 1.0000 |
+| `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200` | Qwen 3.6 35B repair v02 | 0.8197 | 0.8307 | 0.7020 | 0.8926 | 0.8503 | 0 / 0 | 1.0000 |
 
 > The same-core model-swap study suggests that the ExECTv2 component graph is
 > not GPT-4.1-mini-specific: DeepSeek reached `0.8596` and GPT-4.1-mini reached
-> `0.8396` clinical-headline F1 on dev140 under the frozen core. Qwen is retained
-> as a diagnostic comparison only because output-contract failures, not clinical
-> score alone, block operational promotion.
+> `0.8396` clinical-headline F1 on dev140 under the frozen core, with full-200
+> aggregate rows of `0.8566` and `0.8356` respectively. Qwen repair v02 provides
+> additional same-core model-family evidence (`0.8319` dev140; `0.8197`
+> full-200) after output-contract repair, but remains below the operational
+> GPT-4.1-mini and DeepSeek rows. The unrepaired Qwen dev140 row is retained as
+> a diagnostic comparator only.
 
-Do not describe Qwen as an operational candidate for the next full-200 run
-unless a separately predeclared Qwen-specific repair passes dev140 on the frozen
-core.
+### 4.2.3 Reliability Scorecard
 
-### Reliability Scorecard
+The reliability scorecard follows the main performance tables and tests whether
+the selected ExECTv2 system behaves faithfully under fixed scoring and
+inspection boundaries. Current evidence supports aggregate full-200 reliability
+claims with no holdout or deployment-probability claim.
 
-The reliability scorecard should follow the main performance table, not replace
-it. The current evidence supports an aggregate full-200 reliability claim under
-a frozen row-inspection boundary, with no holdout or deployment-probability
-claim.
+**Table 7. ExECTv2 reliability scorecard (aggregate full-200 under frozen row-inspection boundary).**
 
 | Reliability dimension | Current evidence | Manuscript claim |
 | --- | --- | --- |
@@ -95,8 +112,6 @@ claim.
 | Consistency | Selected lean candidate has hard50 temp-0 exact agreement `0.9217` and dev140 varying-temperature exact agreement `0.8857`. | Live-repeat consistency evidence, not holdout consistency. |
 | Component role | Investigations verifier plus deterministic suppression remains strongest at `0.9213`; deterministic replacement is not ready. | Rules are useful verification/suppression aids, not validated replacements for the verifier-backed path. |
 
-Recommended wording:
-
 > The reliability scorecard tests whether the selected ExECTv2 system behaves
 > faithfully under fixed scoring and inspection boundaries. Calibration and
 > robustness have predeclared aggregate full-200 evidence; review routing has a
@@ -105,18 +120,18 @@ Recommended wording:
 > candidate. These results support trust in the fixed architecture but are not
 > holdout performance claims and are not component-causal ablation evidence.
 
-### Component Impact
+### 4.2.4 Component Impact
 
-Component Impact is reported separately from the reliability scorecard. Claims
+Component impact is reported separately from the reliability scorecard. Claims
 are limited to aggregate replay deltas under a fixed scorer, split, and
-inspection boundary.
-
-Dev140 one-component-off replay (`16` rows) and full-200 aggregate-only replay
-(`9` rows) support limited component-impact language for dictionary
-normalization, residual semantic recovery, and headline projection on
+inspection boundary. Dev140 one-component-off replay (`16` rows) and full-200
+aggregate-only replay (`9` rows) support limited component-impact language for
+dictionary normalization, residual semantic recovery, and headline projection on
 `clinical_headline`. Evidence validation was structurally inert on the dev140
 single-lane holistic replays and was not escalated to full-200 under the frozen
 protocol.
+
+**Table 8. Component-off aggregate deltas on `clinical_headline`.**
 
 | Component | Type | Split | Overall delta range | Main family signal | Claim boundary |
 | --- | --- | --- | ---: | --- | --- |
@@ -131,8 +146,6 @@ The no-verifier full-200 ablation and Investigations rule ablation remain
 separate component-role comparisons. They should not be blended with the
 layer-ladder component-off readouts above.
 
-Recommended wording:
-
 > Component-impact claims are reserved for ablations and same-input replay
 > deltas under a declared scorer and inspection boundary. Dictionary,
 > residual-semantic, and headline-projection layers show positive aggregate
@@ -144,7 +157,7 @@ Recommended wording:
 ## Do Not Use As Claims
 
 - ExECTv2 reliability is holdout-validated.
-- Qwen is an operationally promoted same-core candidate.
+- Qwen is an operationally promoted same-core candidate above GPT-4.1-mini or DeepSeek.
 - The calibration rule is deployment-ready.
 - A low-burden review-routing policy is validated.
 - Strict benchmark/CUI reproduction is the headline ExECTv2 success criterion.
@@ -153,7 +166,6 @@ Recommended wording:
 
 ## Next Manuscript Step
 
-Completed 2026-06-26 in `docs/research/paper_manuscript_2026-06-26.md` (Section
-4.2), with Gan Section 4.1 and fixed table numbering. The ExECTv2 source slice
-remains at `docs/research/exectv2_results_section_draft_2026-06-26.md`. Next:
-fold Section 4 into the full paper LaTeX draft.
+Completed 2026-06-26 in `docs/research/paper_manuscript_2026-06-26.md` as
+Section 4.2 with Gan cross-references in Sections 4.1.3 and 4.2.2. Next: fold
+Section 4 into the full paper LaTeX draft.
