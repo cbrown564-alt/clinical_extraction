@@ -71,9 +71,14 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         640,
         "Wave C-S5: generation_selection decomposed; response parse/coerce cohesive unit",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_structured.py": AllowlistEntry(
-        2606,
-        "A1/Wave3-S2: externalize worked examples to prompts/**/*.yaml + thin orchestrator",
+    # key_entities_structured decomposed (Wave C-S5): facade now 85 LOC (no entry).
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders.py": AllowlistEntry(
+        815,
+        "Wave C-S5: structured decomposed; full + qwen_compact prompt builders cohesive unit",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py": AllowlistEntry(
+        588,
+        "Wave C-S5: structured decomposed; run_split + report assembly cohesive unit",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_clinical_findings.py": AllowlistEntry(
         80,
@@ -92,8 +97,8 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         "Wave C-S2: clinical_findings run_split orchestration + reporting",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_target_indicators_single_call.py": AllowlistEntry(
-        2352,
-        "A1/Wave3-S1: move _project_* / _repair_* to deterministic/target_projection/",
+        2239,
+        "A1/Wave3-S1: mostly code (6 prompt strings); decompose into pipelines/ package like generation_selection",
     ),
     # --- Other ExECTv2 LLM >500 LOC ---
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_acceptance_gate.py": AllowlistEntry(
