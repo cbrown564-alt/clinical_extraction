@@ -17,7 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
-from tests.test_exectv2_llm_only_sf import FORBIDDEN_PHRASES
+from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES
 
 _NOTE = (
     "Diagnosis: focal epilepsy. "
