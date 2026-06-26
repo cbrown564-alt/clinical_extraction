@@ -6,13 +6,16 @@ import pytest
 
 from clinical_extraction.core import mlflow_registry_sync
 from clinical_extraction.core.mlflow_registry_sync import (
+    BACKFILL_SCOPES,
     build_mlflow_comparison_sync_plan,
     build_registry_mlflow_sync_plan,
     build_run_sync_plan,
+    filter_registry_entries,
     infer_dataset,
     infer_task,
     render_comparison_sync_plan,
     render_sync_plan,
+    resolve_backfill_filters,
     sync_comparison_plan_to_mlflow,
 )
 from clinical_extraction.core.mlflow_tracking import MlflowRunPayload
@@ -173,6 +176,84 @@ def test_registry_sync_task_and_dataset_inference() -> None:
     assert infer_dataset(exect) == "ExECTv2 (2025)"
     assert infer_task(gan) == "gan2026"
     assert infer_dataset(gan) == "Gan (2026)"
+
+
+def test_resolve_backfill_filters_uses_paper_facing_defaults() -> None:
+    scope, since_date, roles = resolve_backfill_filters(backfill_scope="paper_facing")
+
+    assert scope == BACKFILL_SCOPES["paper_facing"]
+    assert since_date == "2026-06-24"
+    assert roles == BACKFILL_SCOPES["paper_facing"].registry_roles
+
+
+def test_filter_registry_entries_matches_any_registry_role() -> None:
+    paper = RunRegistryEntry(
+        run_id="paper",
+        artifact_paths=("experiments/paper.md",),
+        date="2026-06-26",
+        pipeline_family="analysis",
+        split="validation",
+        row_count=0,
+        model="none",
+        model_role="analysis",
+        mode="analysis",
+        replay_status="analysis_only",
+        decision="historical",
+        registry_roles=("component_ladder",),
+    )
+    diagnostic = RunRegistryEntry(
+        run_id="diagnostic",
+        artifact_paths=("experiments/diagnostic.md",),
+        date="2026-06-26",
+        pipeline_family="analysis",
+        split="validation",
+        row_count=0,
+        model="none",
+        model_role="analysis",
+        mode="analysis",
+        replay_status="analysis_only",
+        decision="historical",
+        registry_roles=("negative_attribution",),
+    )
+
+    selected = filter_registry_entries(
+        [paper, diagnostic],
+        registry_roles=BACKFILL_SCOPES["paper_facing"].registry_roles,
+    )
+
+    assert [entry.run_id for entry in selected] == ["paper"]
+
+
+def test_registry_mlflow_sync_plan_backfill_scope_renders_metadata(tmp_path: Path) -> None:
+    artifact = tmp_path / "experiments" / "paper.md"
+    artifact.parent.mkdir()
+    artifact.write_text("# Paper\n", encoding="utf-8")
+    entry = RunRegistryEntry(
+        run_id="gan2026_gate",
+        artifact_paths=("experiments/paper.md",),
+        date="2026-06-26",
+        pipeline_family="analysis",
+        split="validation",
+        row_count=0,
+        model="none",
+        model_role="analysis",
+        mode="analysis",
+        replay_status="analysis_only",
+        decision="historical",
+        registry_roles=("component_ladder",),
+    )
+
+    plan = build_registry_mlflow_sync_plan(
+        [entry],
+        repo_root=tmp_path,
+        backfill_scope="paper_facing",
+    )
+    rendered = render_sync_plan(plan)
+
+    assert plan.backfill_scope == "paper_facing"
+    assert plan.since_date == "2026-06-24"
+    assert "component_ladder" in plan.registry_roles
+    assert "Backfill scope: paper_facing" in rendered
 
 
 def test_comparison_sync_plan_groups_same_core_children(tmp_path: Path) -> None:
