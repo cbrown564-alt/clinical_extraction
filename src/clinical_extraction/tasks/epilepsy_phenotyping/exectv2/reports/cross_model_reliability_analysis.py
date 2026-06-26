@@ -15,10 +15,27 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.calibration import (
+    brier_score,
     calibration_proxy,
+    calibration_summary_for_family,
+    expected_calibration_error,
+    fit_logistic_scoring_rule,
+    max_adjacent_bin_reversal,
+    predict_logistic_probability,
+    reliability_bins,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.cells import (
     iter_reliability_cells,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+    aggregate_scores,
+    review_triggers,
+    risk_features,
+    risk_score,
+    row_family_score,
+    row_has_call_error,
+    row_parse_error_count,
+    score_dict,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.consistency import (
     active_llm_only_readout,
@@ -27,7 +44,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
     ACTIVE_LLM_ONLY_RUNS,
+    FAMILIES,
     RICH_SCHEMA_RUNS,
+    _CALIBRATION_FEATURES,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import (
     REPO_ROOT,
@@ -48,9 +67,27 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     ReliabilityRun,
 )
 
-# Back-compat for tests that monkeypatch module-level run tuples.
+# Back-compat for tests and validation reports that import private helpers.
 _deterministic_replay_stability = deterministic_replay_stability
 _same_prompt_consistency = same_prompt_consistency
+_load_jsonl = load_jsonl
+_iter_reliability_cells = iter_reliability_cells
+_calibration_proxy = calibration_proxy
+_fit_logistic_scoring_rule = fit_logistic_scoring_rule
+_reliability_bins = reliability_bins
+_expected_calibration_error = expected_calibration_error
+_brier_score = brier_score
+_max_adjacent_bin_reversal = max_adjacent_bin_reversal
+_calibration_summary_for_family = calibration_summary_for_family
+_predict_logistic_probability = predict_logistic_probability
+_row_family_score = row_family_score
+_risk_features = risk_features
+_risk_score = risk_score
+_review_triggers = review_triggers
+_score_dict = score_dict
+_row_has_call_error = row_has_call_error
+_row_parse_error_count = row_parse_error_count
+_aggregate_scores = aggregate_scores
 
 __all__ = (
     "ACTIVE_LLM_ONLY_RUNS",
