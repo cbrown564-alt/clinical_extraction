@@ -14,6 +14,7 @@ from datetime import date
 from pathlib import Path
 from typing import Literal
 
+from clinical_extraction.core.claim_policy import restricted_surface_for_registry_entry
 from clinical_extraction.core.mlflow_tracking import (
     MlflowRunPayload,
     mirror_payload_to_mlflow,
@@ -404,7 +405,7 @@ def build_run_sync_plan(
         classify_artifact(
             path,
             repo_root=repo_root,
-            restricted_surface=_restricted_surface(entry),
+            restricted_surface=restricted_surface_for_registry_entry(entry),
             include_large_artifacts=include_large_artifacts,
         )
         for path in entry.artifact_paths
@@ -741,11 +742,6 @@ def _run_sync_plan_to_payload(
         ),
         parent_run_id=parent_run_id,
     )
-
-
-def _restricted_surface(entry: RunRegistryEntry) -> bool:
-    split = entry.split.lower()
-    return "full200" in split or "test" in split or "holdout" in split
 
 
 def _parse_since_date(value: str | None) -> date | None:

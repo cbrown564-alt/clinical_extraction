@@ -1,0 +1,1 @@
+"""Observatory FastAPI routers."""

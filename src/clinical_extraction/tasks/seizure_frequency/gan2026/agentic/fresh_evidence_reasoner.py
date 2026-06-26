@@ -20,6 +20,7 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from clinical_extraction.core.claim_policy import fresh_evidence_claim_boundary_for_split
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     cross_model_structured_event_adjudicator as cross_model_base,
@@ -348,7 +349,7 @@ def run_split(
                 "made, is a fresh model-owned interpretation from exact raw-note "
                 "evidence. Deterministic top labels are not shown or used."
             ),
-            "claim_boundary": _claim_boundary_for_split(split),
+            "claim_boundary": fresh_evidence_claim_boundary_for_split(split),
             "dspy_cache": dspy_cache,
         }
     )
@@ -1338,19 +1339,6 @@ def write_report(
             f"{'yes' if row.get('evidence_valid') else 'no'} | {notes} |"
         )
     write_markdown_report(path, lines)
-
-
-def _claim_boundary_for_split(split: str) -> str:
-    if split == "test":
-        return (
-            "frozen aggregate-only V12 test450 audit; first readout is aggregate "
-            "Purist/Pragmatic and health metrics only; no row-level test inspection, "
-            "post-test tuning, or benchmark-comparable claim without separate review"
-        )
-    return (
-        "validation-development V12 fresh-evidence reasoner; no holdout use, "
-        "no row-level test inspection, and no benchmark claim"
-    )
 
 
 def _redact_holdout_summary(summary: dict[str, Any]) -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from clinical_extraction.core.claim_policy import fresh_evidence_claim_boundary_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     fresh_evidence_reasoner,
 )
@@ -1255,7 +1256,7 @@ def _report_metadata(*, split: str) -> dict:
         "mode": "live",
         "model": "openai/gpt-4.1",
         "prompt_version": "gan2026_fresh_evidence_reasoner_v0_4",
-        "claim_boundary": fresh_evidence_reasoner._claim_boundary_for_split(split),
+        "claim_boundary": fresh_evidence_claim_boundary_for_split(split),
         "summary": {
             "rows": 1,
             "prediction_bearing_rows": 1,
