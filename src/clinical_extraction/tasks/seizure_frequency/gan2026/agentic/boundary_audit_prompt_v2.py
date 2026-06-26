@@ -1,19 +1,36 @@
-"""D1 boundary-audit prompt v2 panel for Gan 2026 agentic hard-slice work."""
+"""D1 boundary-audit prompt v2 panel for Gan 2026 agentic hard-slice work.
+
+Migrated to :mod:`stage_protocol` (prompt builder + decision schema + postprocess policy
++ thin ``run_split``).
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
 import dspy
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
+    AgenticStage,
+    ParsedStageResponse,
+    build_markdown_report_skeleton,
+    build_stage_metadata,
+    configure_dspy_for_stage,
+    emit_progress_checkpoint,
+    extract_json_object,
+    has_blocking_parse_issue,
+    has_repair_note,
+    parse_response,
+    write_stage_jsonl,
+    write_stage_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
     read_boundary_guide,
 )
@@ -31,24 +48,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
-    write_jsonl_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
     map_purist,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
-    _extract_json_object,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
-from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
-    repair_prediction_label_with_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
-    write_markdown_report,
 )
 
 PROMPT_VERSION = "gan2026_agentic_boundary_audit_prompt_v2"
@@ -104,6 +107,43 @@ class BoundaryAuditDecisionRecord(BaseModel):
     rationale: str
 
 
+class BoundaryAuditStage(AgenticStage[BoundaryAuditDecisionRecord]):
+    """D1 boundary-audit prompt builder + parse/postprocess policy."""
+
+    @property
+    def prompt_version(self) -> str:
+        return PROMPT_VERSION
+
+    def build_prompt_input(
+        self,
+        record: GanFrequencyRecord,
+        *,
+        guide_results: Sequence[Mapping[str, Any]] | None = None,
+        **_: object,
+    ) -> str:
+        guides = list(guide_results) if guide_results is not None else _fixed_boundary_guides()
+        return _build_prompt_input(record, guide_results=guides)
+
+    def parse_response(
+        self,
+        raw_output: str,
+        **_: object,
+    ) -> ParsedStageResponse[BoundaryAuditDecisionRecord]:
+        parsed = parse_response(
+            raw_output,
+            decision_model=BoundaryAuditDecisionRecord,
+            payload_filter=_filter_audit_payload,
+            shape_repair=_repair_audit_payload_shape,
+            label_repair="with_evidence",
+            evidence_field="evidence",
+            require_scorable_label=True,
+        )
+        return parsed
+
+
+STAGE = BoundaryAuditStage()
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -126,14 +166,12 @@ def run_split(
     """Run D1 over the predeclared validation micro-panel."""
 
     if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
+        configure_dspy_for_stage(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            cache=dspy_cache,
+            api_base=api_base,
         )
     reuse_raw_outputs = reuse_raw_outputs or {}
     reference_labels = _reference_labels(reference_rows)
@@ -218,8 +256,8 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         call_failures += int(row.get("call_error") is not None)
         reused_raw_outputs += int(bool(row.get("reused_raw_output")))
         decision_records += int(row.get("decision_record") is not None)
-        parse_failures += int(_has_blocking_parse_issue(row.get("parse_errors")))
-        schema_or_label_repairs += int(_has_repair_note(row.get("parse_errors")))
+        parse_failures += int(has_blocking_parse_issue(row.get("parse_errors")))
+        schema_or_label_repairs += int(has_repair_note(row.get("parse_errors")))
         evidence_exact += int(bool(row.get("evidence_valid")))
         boundary_demotion_count += int(
             _introduces_boundary_demotion(
@@ -352,7 +390,7 @@ def gate_interpretation(
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    write_jsonl_rows(rows, path)
+    write_stage_jsonl(rows, path)
 
 
 def write_report(
@@ -366,83 +404,72 @@ def write_report(
     gate = dict(metadata.get("gate") or {})
     surface = str(metadata.get("surface", "panel"))
     surface_label = "Hard50" if surface == "hard50" else "Panel"
-    lines = [
-        f"# Gan 2026 Agentic Boundary Audit Prompt V2 {surface_label}",
-        "",
-        f"Date: {metadata.get('date', 'unknown')}",
-        "",
-        "## Experiment Unit",
-        "",
-        f"- Work class: D1 validation {surface} boundary-audit prompt.",
-        f"- Rows: {summary.get('rows', 0)}",
-        f"- Condition: `{CONDITION}`",
-        f"- Reference condition: `{REFERENCE_CONDITION}`",
-        "- Split: `validation`, manifest `gan2026_split_v1`.",
-        f"- Surface: predeclared D1 `{surface}`.",
-        f"- Mode: `{metadata.get('mode')}`",
-        f"- Model: `{metadata.get('model')}`",
-        f"- Prompt version: `{metadata.get('prompt_version')}`",
-        f"- JSONL artifact: `{jsonl_path}`",
-        "- Parser context: disabled; fixed boundary-guide set used for every row.",
-        "",
-        "## Summary",
-        "",
-        f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
-        f"- Decision records: {summary.get('decision_records', 0)}",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Reused raw outputs: {summary.get('reused_raw_outputs', 0)}",
-        f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
-        f"- Schema/label repair rows: {summary.get('schema_or_label_repair_rows', 0)}",
-        f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        f"- Purist: {summary.get('purist_correct', 0)}/{summary.get('rows', 0)}",
-        f"- Pragmatic: {summary.get('pragmatic_correct', 0)}/{summary.get('rows', 0)}",
-        f"- Wins vs reference: {summary.get('wins_vs_reference', 0)}",
-        f"- Losses vs reference: {summary.get('losses_vs_reference', 0)}",
-        f"- Changed labels vs reference: {summary.get('changed_labels_vs_reference', 0)}",
-        f"- Changed-label precision: {summary.get('changed_label_precision')}",
-        f"- Boundary demotions: {summary.get('boundary_demotion_count', 0)}",
-        (
-            "- E2 loss sentinel regressions: "
-            f"{summary.get('e2_loss_sentinel_regressions', 0)}"
-        ),
-        (
-            "- Cluster-burden preservation count: "
-            f"{summary.get('cluster_burden_preservation_count', 0)}"
-        ),
-        "",
-        "## Gate",
-        "",
-        f"- Status: `{gate.get('status')}`",
-        f"- Interpretation: {gate.get('interpretation')}",
-        "",
-        "## Claim Boundary",
-        "",
-        str(metadata.get("claim_boundary", "")),
-        "",
-        "## Rows",
-        "",
-        (
+    lines = build_markdown_report_skeleton(
+        title=f"Gan 2026 Agentic Boundary Audit Prompt V2 {surface_label}",
+        metadata=metadata,
+        summary=summary,
+        gate=gate,
+        jsonl_path=jsonl_path,
+        experiment_unit_lines=[
+            f"- Work class: D1 validation {surface} boundary-audit prompt.",
+            f"- Rows: {summary.get('rows', 0)}",
+            f"- Condition: `{CONDITION}`",
+            f"- Reference condition: `{REFERENCE_CONDITION}`",
+            "- Split: `validation`, manifest `gan2026_split_v1`.",
+            f"- Surface: predeclared D1 `{surface}`.",
+            f"- Mode: `{metadata.get('mode')}`",
+            f"- Model: `{metadata.get('model')}`",
+            f"- Prompt version: `{metadata.get('prompt_version')}`",
+            "- Parser context: disabled; fixed boundary-guide set used for every row.",
+        ],
+        summary_lines=[
+            f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
+            f"- Decision records: {summary.get('decision_records', 0)}",
+            f"- Call failures: {summary.get('call_failures', 0)}",
+            f"- Reused raw outputs: {summary.get('reused_raw_outputs', 0)}",
+            f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
+            f"- Schema/label repair rows: {summary.get('schema_or_label_repair_rows', 0)}",
+            f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
+            f"- Purist: {summary.get('purist_correct', 0)}/{summary.get('rows', 0)}",
+            f"- Pragmatic: {summary.get('pragmatic_correct', 0)}/{summary.get('rows', 0)}",
+            f"- Wins vs reference: {summary.get('wins_vs_reference', 0)}",
+            f"- Losses vs reference: {summary.get('losses_vs_reference', 0)}",
+            f"- Changed labels vs reference: {summary.get('changed_labels_vs_reference', 0)}",
+            f"- Changed-label precision: {summary.get('changed_label_precision')}",
+            f"- Boundary demotions: {summary.get('boundary_demotion_count', 0)}",
+            (
+                "- E2 loss sentinel regressions: "
+                f"{summary.get('e2_loss_sentinel_regressions', 0)}"
+            ),
+            (
+                "- Cluster-burden preservation count: "
+                f"{summary.get('cluster_burden_preservation_count', 0)}"
+            ),
+        ],
+        row_table_header=(
             "| Row | Final | Raw final | Reference | Gold | Purist | "
             "Reference Purist | Evidence exact | Notes |"
         ),
-        "| ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for row in rows:
-        comparison = dict(row.get("comparison") or {})
-        reference_comparison = dict(row.get("reference_comparison") or {})
-        decision = dict(row.get("decision_record") or {})
-        notes = "; ".join(str(error) for error in row.get("parse_errors") or [])
-        if row.get("call_error"):
-            notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
-        lines.append(
-            f"| {row.get('source_row_index')} | `{decision.get('final_label')}` | "
-            f"`{row.get('raw_model_final_label')}` | `{row.get('reference_label')}` | "
-            f"`{dict(row.get('reference') or {}).get('gold_label')}` | "
-            f"{'yes' if comparison.get('purist_correct') else 'no'} | "
-            f"{'yes' if reference_comparison.get('purist_correct') else 'no'} | "
-            f"{'yes' if row.get('evidence_valid') else 'no'} | {notes} |"
-        )
-    write_markdown_report(path, lines)
+        row_table_rows=[_report_row_line(row) for row in rows],
+    )
+    write_stage_markdown_report(path, lines)
+
+
+def _report_row_line(row: Mapping[str, Any]) -> str:
+    comparison = dict(row.get("comparison") or {})
+    reference_comparison = dict(row.get("reference_comparison") or {})
+    decision = dict(row.get("decision_record") or {})
+    notes = "; ".join(str(error) for error in row.get("parse_errors") or [])
+    if row.get("call_error"):
+        notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
+    return (
+        f"| {row.get('source_row_index')} | `{decision.get('final_label')}` | "
+        f"`{row.get('raw_model_final_label')}` | `{row.get('reference_label')}` | "
+        f"`{dict(row.get('reference') or {}).get('gold_label')}` | "
+        f"{'yes' if comparison.get('purist_correct') else 'no'} | "
+        f"{'yes' if reference_comparison.get('purist_correct') else 'no'} | "
+        f"{'yes' if row.get('evidence_valid') else 'no'} | {notes} |"
+    )
 
 
 def _build_row(
@@ -660,33 +687,10 @@ def _run_model_call(
 def parse_audit_decision_json(
     raw_output: str,
 ) -> tuple[BoundaryAuditDecisionRecord | None, list[str]]:
-    errors: list[str] = []
-    try:
-        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
-        )
-    except json.JSONDecodeError as exc:
-        return None, [f"invalid_json: {exc.msg}"]
-    errors.extend(dialect_notes)
-    payload = _filter_audit_payload(repair_decision_payload(raw_payload))
-    payload, audit_repair_notes = _repair_audit_payload_shape(payload)
-    errors.extend(audit_repair_notes)
-    try:
-        decision = BoundaryAuditDecisionRecord.model_validate(payload)
-    except ValidationError as exc:
-        return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
-    repaired_label = repair_prediction_label_with_evidence(
-        decision.final_label,
-        decision.evidence,
-    )
-    if repaired_label != decision.final_label:
-        errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
-        decision = decision.model_copy(update={"final_label": repaired_label})
-    try:
-        label_to_frequency_record(decision.final_label)
-    except ValueError as exc:
-        errors.append(f"unscorable_final_label: {exc}")
-    return decision, errors
+    parsed = STAGE.parse_response(raw_output)
+    if parsed.decision is None:
+        return None, parsed.parse_errors
+    return parsed.decision, parsed.parse_errors
 
 
 def _filter_audit_payload(payload: Any) -> Any:
@@ -798,7 +802,7 @@ def _reference_labels(reference_rows: Sequence[Mapping[str, Any]]) -> dict[int, 
 def _extract_raw_model_final_label(raw_output: str) -> str | None:
     try:
         payload, _dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except Exception:
         return None
@@ -807,28 +811,6 @@ def _extract_raw_model_final_label(raw_output: str) -> str | None:
         return None
     final_label = repaired_payload.get("final_label")
     return str(final_label) if final_label is not None else None
-
-
-def _has_blocking_parse_issue(errors: Any) -> bool:
-    return any(
-        str(error).startswith(
-            (
-                "invalid_json:",
-                "schema_validation_error:",
-                "unscorable_final_label:",
-                "not_run",
-            )
-        )
-        for error in errors or []
-    )
-
-
-def _has_repair_note(errors: Any) -> bool:
-    return any(
-        str(error).startswith(("final_label_repaired:", "json_dialect_repaired:"))
-        or str(error).startswith("audit_field_shape_repaired:")
-        for error in errors or []
-    )
 
 
 def _label_kind(label: str | None) -> str:
@@ -884,24 +866,21 @@ def _metadata(
     dspy_cache: bool,
     api_base: str | None,
 ) -> dict[str, Any]:
-    metadata = build_run_metadata(
-        mode=mode,
+    return build_stage_metadata(
+        records,
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
+        mode=mode,
         prompt_version=PROMPT_VERSION,
-        dspy_version=getattr(dspy, "__version__", "unknown"),
-        split=split,
-        split_manifest=split_manifest,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
-    )
-    metadata.update(
-        {
+        extra={
             "artifact_kind": "gan2026_agentic_boundary_audit_prompt_v2_panel",
             "pipeline_family": "agentic_boundary_audit_prompt_v2",
             "pipeline_version": "gan2026_agentic_d1_boundary_audit_prompt_v2",
-            "dspy_cache": dspy_cache,
             "panel_source_row_indices": list(PANEL_SOURCE_ROW_INDICES),
             "e2_loss_sentinels": sorted(E2_LOSS_SENTINELS),
             "fixed_boundary_guide_ids": list(FIXED_BOUNDARY_GUIDE_IDS),
@@ -910,9 +889,8 @@ def _metadata(
                 "disabled as prompt context, no holdout use, no row-level test "
                 "inspection, and no benchmark claim"
             ),
-        }
+        },
     )
-    return metadata
 
 
 def _emit_progress_checkpoint(
@@ -923,31 +901,19 @@ def _emit_progress_checkpoint(
     jsonl_path: Path | None,
     report_path: Path | None,
 ) -> None:
-    metadata["summary"] = summarize_rows(rows)
     surface = metadata.get("surface", "panel")
-    metadata["gate"] = gate_interpretation(
-        metadata["summary"],
-        surface="hard50" if surface == "hard50" else "panel",
-    )
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
-    print(
-        json.dumps(
-            {
-                "processed": len(rows),
-                "total": total,
-                "call_failures": metadata["summary"]["call_failures"],
-                "parse_or_validation_failures": metadata["summary"][
-                    "parse_or_validation_failures"
-                ],
-                "purist_correct": metadata["summary"]["purist_correct"],
-            },
-            sort_keys=True,
+    emit_progress_checkpoint(
+        rows,
+        metadata,
+        total=total,
+        summarize_rows=summarize_rows,
+        gate_interpretation=lambda summary: gate_interpretation(
+            summary,
+            surface="hard50" if surface == "hard50" else "panel",
         ),
-        file=sys.stderr,
-        flush=True,
+        jsonl_path=jsonl_path,
+        report_path=report_path,
+        write_report=write_report,
     )
 
 
