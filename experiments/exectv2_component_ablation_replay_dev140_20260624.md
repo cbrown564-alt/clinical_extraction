@@ -1,6 +1,6 @@
 # ExECTv2 Layered Component Impact Replay
 
-- Generated: `2026-06-24`
+- Generated: `2026-06-26`
 - JSON: `experiments/exectv2_component_ablation_replay_dev140_20260624.json`
 - JSONL: `experiments/exectv2_component_ablation_replay_dev140_20260624.jsonl`
 - Claim boundary: dev140 replay-only aggregate component-impact ladder

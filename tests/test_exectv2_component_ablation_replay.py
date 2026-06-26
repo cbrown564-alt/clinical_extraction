@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from clinical_extraction.observatory.api import create_app
@@ -76,11 +77,124 @@ def test_component_ablation_replay_exposes_meaningful_layer_deltas() -> None:
     assert qwen_impacts["headline_projection"]["family_deltas"]["SeizureFrequency"] == 0.1942
 
 
+def test_component_off_replay_configs_cover_named_dev140_component_removals() -> None:
+    payload = component_ablation_replay.build_component_ablation_payload()
+
+    configs = component_ablation_replay.build_component_off_replay_configs(payload)
+
+    assert len(configs) == 16
+    assert {config["component_id"] for config in configs} == {
+        "evidence_validation",
+        "standard_dictionary",
+        "residual_semantic_lens",
+        "headline_projection",
+    }
+    assert {config["row_inspection_policy"] for config in configs} == {"aggregate_only"}
+    assert {config["allow_model_calls"] for config in configs} == {False}
+
+    first = next(
+        config
+        for config in configs
+        if config["baseline_run_id"] == "exectv2_holistic_finding_assembly_v08_dev140"
+        and config["component_id"] == "standard_dictionary"
+    )
+    assert first["artifact_kind"] == "exectv2_component_off_replay_config"
+    assert first["prediction_bearing_status"] == "conditional"
+    assert first["split"] == "dev140"
+    assert first["scorer_view"] == "clinical_headline"
+    assert first["baseline_surface"] == "dictionary_normalized"
+    assert first["component_off_surface"] == "evidence_valid"
+    assert first["baseline_aggregate_score"]["overall"]["f1"] == 0.8697
+    assert first["component_off_aggregate_score"]["overall"]["f1"] == 0.8308
+    assert first["overall_delta"] == -0.0389
+    assert first["overall_component_contribution_delta"] == 0.0389
+    assert first["family_component_contribution_deltas"]["Diagnosis"] == 0.1042
+    assert "schema_validity" in first["validity_rates"]
+    assert "evidence_validity" in first["validity_rates"]
+
+    component_ablation_replay.validate_component_off_replay_configs(configs)
+    malformed = dict(first)
+    malformed.pop("component_id")
+    with pytest.raises(ValueError, match="component_id"):
+        component_ablation_replay.validate_component_off_replay_configs([malformed])
+
+
+def test_component_off_readout_payload_reports_named_dev140_ablations() -> None:
+    payload = component_ablation_replay.build_component_off_readout_payload()
+
+    assert payload["artifact_kind"] == "exectv2_component_off_readout_set"
+    assert payload["split"] == "dev140"
+    assert payload["scorer_view"] == "clinical_headline"
+    assert payload["row_inspection_policy"] == "aggregate_only"
+    assert payload["allow_model_calls"] is False
+    assert len(payload["ablations"]) == 16
+    assert len(payload["component_summaries"]) == 4
+    assert payload["claim_boundary"] == (
+        "dev140 replay-only one-component-off aggregate component-impact readout; "
+        "separate from reliability scorecard"
+    )
+
+    evidence = next(
+        summary
+        for summary in payload["component_summaries"]
+        if summary["component_id"] == "evidence_validation"
+    )
+    assert "structurally inert" in evidence["claim_use"]
+    assert all(
+        row["overall_component_contribution_delta"] == 0.0 for row in evidence["rows"]
+    )
+
+    dictionary = next(
+        summary
+        for summary in payload["component_summaries"]
+        if summary["component_id"] == "standard_dictionary"
+    )
+    assert "Dictionary normalization" in dictionary["claim_use"]
+
+
+def test_component_off_readout_outputs_contract_artifacts(tmp_path: Path) -> None:
+    payload = component_ablation_replay.build_component_ablation_payload()
+    json_path = tmp_path / "component_off.json"
+    jsonl_path = tmp_path / "component_off.jsonl"
+    md_path = tmp_path / "component_off.md"
+
+    paths = component_ablation_replay.write_component_off_readout_artifacts(
+        payload,
+        json_path=json_path,
+        jsonl_path=jsonl_path,
+        md_path=md_path,
+        ladder_json=tmp_path / "ladder.json",
+    )
+
+    assert paths == {
+        "component_off_json": json_path,
+        "component_off_jsonl": jsonl_path,
+        "component_off_markdown": md_path,
+    }
+    readout = json.loads(json_path.read_text(encoding="utf-8"))
+    lines = [
+        json.loads(line)
+        for line in jsonl_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(lines) == 16
+    assert all(
+        line["artifact_kind"] == "exectv2_component_off_replay_config" for line in lines
+    )
+    markdown = md_path.read_text(encoding="utf-8")
+    assert "Aggregate Component-Off Table" in markdown
+    assert "reliability scorecard" in markdown
+    assert "evidence_validation" in markdown
+
+
 def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) -> None:
     json_path = tmp_path / "ablation.json"
     jsonl_path = tmp_path / "ablation.jsonl"
     md_path = tmp_path / "ablation.md"
     config_dir = tmp_path / "configs"
+    component_off_json = tmp_path / "component_off.json"
+    component_off_jsonl = tmp_path / "component_off.jsonl"
+    component_off_md = tmp_path / "component_off.md"
 
     paths = component_ablation_replay.write_component_ablation_artifacts(
         json_path=json_path,
@@ -88,6 +202,9 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
         md_path=md_path,
         config_dir=config_dir,
         frontend_path=None,
+        component_off_json_path=component_off_json,
+        component_off_jsonl_path=component_off_jsonl,
+        component_off_md_path=component_off_md,
     )
 
     assert paths == {
@@ -95,6 +212,9 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
         "jsonl": jsonl_path,
         "markdown": md_path,
         "configs": config_dir,
+        "component_off_json": component_off_json,
+        "component_off_jsonl": component_off_jsonl,
+        "component_off_markdown": component_off_md,
     }
     payload = json.loads(json_path.read_text(encoding="utf-8"))
     lines = [
@@ -111,7 +231,8 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
     assert "No model calls" in markdown
     assert "Final assembly" not in markdown
     assert "Residual semantic" in markdown
-    assert len(list(config_dir.glob("*.yaml"))) == 24
+    assert len(list(config_dir.glob("*__layer_*.yaml"))) == 24
+    assert len(list(config_dir.glob("*__component_off_*.yaml"))) == 16
 
 
 def test_committed_component_ablation_artifact_matches_builder_contract() -> None:

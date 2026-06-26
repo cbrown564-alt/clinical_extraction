@@ -1,0 +1,146 @@
+artifact_kind: exectv2_component_off_replay_config
+dataset: exectv2
+ablation_id: exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140__without_residual_semantic_lens
+baseline_run_id: exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140
+component_off_run_id: exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140__without_residual_semantic_lens
+split: dev140
+row_count: 140
+scorer_view: clinical_headline
+scorer_version: exectv2_component_ablation_replay_v20260626
+component_id: residual_semantic_lens
+component_boundary: residual_semantic_added
+component_type: semantic_lens
+component_portability_category: benchmark_format
+prediction_bearing_status: yes
+baseline_surface: residual_semantic_added
+component_off_surface: dictionary_normalized
+source_artifacts:
+  - experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json
+  - experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl
+baseline_aggregate_score:
+  overall:
+    precision: 0.8476
+    recall: 0.8659
+    f1: 0.8567
+    tp: 691
+    fp: 121
+    fn: 107
+    pred_count: 794
+    gold_count: 798
+    precision_tp: 673
+    recall_tp: 691
+  families:
+    Diagnosis:
+      precision: 0.8475
+      recall: 0.8653
+      f1: 0.8563
+      tp: 257
+      fp: 43
+      fn: 40
+      pred_count: 282
+      gold_count: 297
+      precision_tp: 239
+      recall_tp: 257
+    SeizureFrequency:
+      precision: 0.6739
+      recall: 0.7209
+      f1: 0.6966
+      tp: 124
+      fp: 60
+      fn: 48
+      pred_count: 184
+      gold_count: 172
+    Prescription:
+      precision: 0.9113
+      recall: 0.9585
+      f1: 0.9343
+      tp: 185
+      fp: 18
+      fn: 8
+      pred_count: 203
+      gold_count: 193
+    Investigations:
+      precision: 1.0
+      recall: 0.9191
+      f1: 0.9579
+      tp: 125
+      fp: 0
+      fn: 11
+      pred_count: 125
+      gold_count: 136
+component_off_aggregate_score:
+  overall:
+    precision: 0.8537
+    recall: 0.6729
+    f1: 0.7526
+    tp: 537
+    fp: 86
+    fn: 261
+    pred_count: 588
+    gold_count: 798
+    precision_tp: 502
+    recall_tp: 537
+  families:
+    Diagnosis:
+      precision: 0.8703
+      recall: 0.6599
+      f1: 0.7506
+      tp: 196
+      fp: 24
+      fn: 101
+      pred_count: 185
+      gold_count: 297
+      precision_tp: 161
+      recall_tp: 196
+    SeizureFrequency:
+      precision: 0.6288
+      recall: 0.4826
+      f1: 0.5461
+      tp: 83
+      fp: 49
+      fn: 89
+      pred_count: 132
+      gold_count: 172
+    Prescription:
+      precision: 0.929
+      recall: 0.8808
+      f1: 0.9043
+      tp: 170
+      fp: 13
+      fn: 23
+      pred_count: 183
+      gold_count: 193
+    Investigations:
+      precision: 1.0
+      recall: 0.6471
+      f1: 0.7857
+      tp: 88
+      fp: 0
+      fn: 48
+      pred_count: 88
+      gold_count: 136
+overall_delta: -0.1041
+overall_component_contribution_delta: 0.1041
+family_component_contribution_deltas:
+  Diagnosis: 0.1057
+  SeizureFrequency: 0.1505
+  Prescription: 0.03
+  Investigations: 0.1722
+family_component_off_deltas:
+  Diagnosis: -0.1057
+  SeizureFrequency: -0.1505
+  Prescription: -0.03
+  Investigations: -0.1722
+validity_rates:
+  schema_validity: not_recorded_in_source_summary
+  evidence_validity: not_recorded_in_source_summary
+operational_counts:
+  call_failures: not_recorded_in_source_summary
+  parse_failures: not_recorded_in_source_summary
+  abstentions: not_recorded_in_source_summary
+  missing_outputs: not_recorded_in_source_summary
+row_inspection_policy: aggregate_only
+allow_model_calls: false
+allow_post_run_tuning: false
+claim_boundary: "dev140 replay-only one-component-off aggregate component-impact config"
+stop_rule: "config-only pre-readout contract; no model calls, row-level failure inspection, or post-run tuning authorized"

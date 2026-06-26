@@ -29,23 +29,24 @@ The current evidence stack is:
   `0.9037` catch); robustness hard-slice F1 `0.8336` across `414` eligible
   family cells; Investigations deterministic replacement is not ready
   (`0.9213` remains strongest with verifier + deterministic suppression).
-- ExECTv2 component-off ablations now have a planning boundary at
-  `docs/research/exectv2_component_off_reliability_ablation_plan_2026-06-26.md`:
-  dev140/validation replay first, full-200 only by fresh aggregate-only
-  predeclaration, and no row-level inspection.
+- ExECTv2 dev140 one-component-off readout is complete at
+  `experiments/exectv2_component_off_replay_dev140_20260626.{json,jsonl,md}`:
+  `16` replay-only rows across four saved architectures on `clinical_headline`.
+  Evidence validation is structurally inert (`0.0000` overall on all four);
+  dictionary, residual semantic lens, and headline projection show the largest
+  deltas on Qwen/DeepSeek diagnostic runs (dictionary up to `+0.1120`, semantic
+  lens `+0.1041`, projection `+0.0446` overall). Reported separately from the
+  reliability scorecard; no row-level inspection.
 - Gan 2026 v0.7 DeepSeek Reasoner holdout aggregate is final: test450 `346/450`
   Purist, `365/450` Pragmatic, `0` call failures; no row-level test inspection
   or post-test tuning is authorized.
-- Gan consensus/fresh v0.9 validation gates passed before holdout: Gate 1
-  selected Purist `733/750`, Pragmatic `735/750`, changed-label precision
-  `0.7347`; Gate 2 had `24/24` desired-action matches and `0`
-  correct-to-wrong.
-- Gan consensus/fresh v0.9 constrained Gate 4 failed promotion
-  (`348/450` Purist, `7` correct-to-wrong, precision `0.5909`), while the
-  exact-source aggregate-only Gate 4 passed for the frozen source set only
-  (`359/450` Purist, `+16` versus deterministic, `5` correct-to-wrong,
-  precision `0.6000`). Neither result authorizes post-test tuning or row-level
-  locked-test inspection.
+- Gan consensus/fresh v0.9 validation gates passed before holdout (Gate 1
+  `733/750` Purist, `735/750` Pragmatic; Gate 2 `24/24` desired actions), but
+  constrained Gate 4 failed promotion (`348/450` Purist, `7`
+  correct-to-wrong, precision `0.5909`). Exact-source aggregate-only Gate 4
+  passed only for the frozen source set (`359/450` Purist, `+16` versus
+  deterministic, `5` correct-to-wrong, precision `0.6000`) and cannot drive
+  locked-test tuning.
 
 The same-core full-200 audit followed
 `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`.
@@ -66,6 +67,8 @@ aggregate readout.
 
 ### Now
 
+- Decide from the dev140 aggregate component-off readout only whether any
+  component warrants a separate full-200 aggregate-only predeclaration.
 - Preserve the Gan consensus/fresh v0.9 constrained Gate 4 result as
   final-evaluation evidence only; do not tune selector gates, prompts, source artifacts,
   deterministic rules, normalization, scorer, or model choice from it.
@@ -79,9 +82,6 @@ aggregate readout.
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
   debugging or tuning.
-- Implement the first ExECTv2 dev140/validation component-off replay configs
-  from the 2026-06-26 plan; do not advance to full-200 without a fresh
-  aggregate-only predeclaration.
 - Keep repo cleanup and Investigations cost work deferred.
 
 ### Blocked
@@ -99,13 +99,19 @@ aggregate readout.
 
 ### Done Recently
 
+- 2026-06-26: Completed ExECTv2 dev140 one-component-off aggregate readout
+  (`16` replay-only rows, `4` component summaries) at
+  `experiments/exectv2_component_off_replay_dev140_20260626.{json,jsonl,md}`,
+  with named configs under `configs/exectv2/ablations/` and contract tests for
+  payload validation and artifact emission; kept separate from the reliability
+  scorecard.
+- 2026-06-26: Generated first ExECTv2 dev140 one-component-off replay configs
+  (`16` YAML contracts across four saved architectures) and added contract
+  tests that reject missing component identity, prediction-bearing status,
+  split/scorer boundary, aggregate deltas, validity slots, or inspection policy.
 - 2026-06-26: Completed ExECTv2 component-off reliability ablation planning;
   scorecard evidence stays separated from named same-input component deltas, and
   any full-200 audit needs a fresh aggregate-only predeclaration.
-- 2026-06-26: Advanced MLflow local observability and registry hygiene: doctor,
-  runbook, registry sync/reuse, scoped backfill ADR 0036, parent/child same-core
-  mirroring, and controlled registry roles; registry/report artifacts remain
-  the claim-of-record.
 - 2026-06-26: Completed Qwen repair v02 dev140 and full-200 aggregate-only
   same-core evidence (`0.8319` dev140; `0.8197` full-200; `0` call/parse
   failures in both repaired assemblies).
@@ -113,8 +119,8 @@ aggregate readout.
   Gate 4 failed-promotion readout, exact-source replay generation, exact Gate 3,
   and user-authorized exact aggregate-only Gate 4 pass; all locked-test results
   remain frozen and no row-level tuning is authorized.
-- 2026-06-26: Completed registry exhaustive-review actions and current
-  ExECTv2/Gan artifact indexing, including regenerated `experiments/RUN_INDEX.md`
+- 2026-06-26: Completed MLflow/registry observability, scoped backfill ADR 0036,
+  current ExECTv2/Gan artifact indexing, regenerated `experiments/RUN_INDEX.md`,
   and surfaced paper-facing reliability/component rows.
 - 2026-06-25: Completed same-core full-200 aggregate audit, same-core dev140/Qwen
   repair v01-v02, paper/results scaffolding, reliability validations,

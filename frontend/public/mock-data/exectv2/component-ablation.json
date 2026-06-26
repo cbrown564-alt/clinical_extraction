@@ -1,7 +1,7 @@
 {
   "artifact_kind": "exectv2_component_ablation_set",
   "dataset": "exectv2",
-  "generated_on": "2026-06-24",
+  "generated_on": "2026-06-26",
   "row_inspection_policy": "aggregate_only",
   "allow_model_calls": false,
   "allow_post_run_tuning": false,
@@ -67,7 +67,7 @@
     {
       "artifact_kind": "exectv2_component_architecture_ladder",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "label": "v08 dev140 control",
       "model": "openai/gpt-4.1-mini",
@@ -535,7 +535,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "raw_lane_candidates",
           "layer_label": "Raw lane candidates",
@@ -614,7 +614,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "source_scored",
           "layer_label": "Source-scored mentions",
@@ -750,7 +750,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "evidence_valid",
           "layer_label": "Evidence-valid mentions",
@@ -886,7 +886,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "dictionary_normalized",
           "layer_label": "Dictionary normalized",
@@ -1022,7 +1022,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "residual_semantic_added",
           "layer_label": "Residual semantic additions",
@@ -1158,7 +1158,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
@@ -1302,7 +1302,7 @@
     {
       "artifact_kind": "exectv2_component_architecture_ladder",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "label": "v09 partial hybrid simplification",
       "model": "openai/gpt-4.1-mini",
@@ -1770,7 +1770,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "raw_lane_candidates",
           "layer_label": "Raw lane candidates",
@@ -1849,7 +1849,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "source_scored",
           "layer_label": "Source-scored mentions",
@@ -1985,7 +1985,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "evidence_valid",
           "layer_label": "Evidence-valid mentions",
@@ -2121,7 +2121,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "dictionary_normalized",
           "layer_label": "Dictionary normalized",
@@ -2257,7 +2257,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "residual_semantic_added",
           "layer_label": "Residual semantic additions",
@@ -2393,7 +2393,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
@@ -2537,7 +2537,7 @@
     {
       "artifact_kind": "exectv2_component_architecture_ladder",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "label": "DeepSeek v0.9.16 dev140 diagnostic",
       "model": "deepseek/deepseek-chat",
@@ -3005,7 +3005,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "raw_lane_candidates",
           "layer_label": "Raw lane candidates",
@@ -3084,7 +3084,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "source_scored",
           "layer_label": "Source-scored mentions",
@@ -3220,7 +3220,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "evidence_valid",
           "layer_label": "Evidence-valid mentions",
@@ -3356,7 +3356,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "dictionary_normalized",
           "layer_label": "Dictionary normalized",
@@ -3492,7 +3492,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "residual_semantic_added",
           "layer_label": "Residual semantic additions",
@@ -3628,7 +3628,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
@@ -3772,7 +3772,7 @@
     {
       "artifact_kind": "exectv2_component_architecture_ladder",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "label": "Qwen v0.9.22 dev140 diagnostic",
       "model": "ollama_chat/qwen3.6:35b",
@@ -4240,7 +4240,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "raw_lane_candidates",
           "layer_label": "Raw lane candidates",
@@ -4319,7 +4319,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "source_scored",
           "layer_label": "Source-scored mentions",
@@ -4455,7 +4455,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "evidence_valid",
           "layer_label": "Evidence-valid mentions",
@@ -4591,7 +4591,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "dictionary_normalized",
           "layer_label": "Dictionary normalized",
@@ -4727,7 +4727,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "residual_semantic_added",
           "layer_label": "Residual semantic additions",
@@ -4863,7 +4863,7 @@
         {
           "artifact_kind": "exectv2_component_layer_impact",
           "dataset": "exectv2",
-          "generated_on": "2026-06-24",
+          "generated_on": "2026-06-26",
           "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "layer_id": "headline_projection",
           "layer_label": "Headline projection",
@@ -5009,7 +5009,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "raw_lane_candidates",
       "layer_label": "Raw lane candidates",
@@ -5088,7 +5088,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "source_scored",
       "layer_label": "Source-scored mentions",
@@ -5224,7 +5224,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "evidence_valid",
       "layer_label": "Evidence-valid mentions",
@@ -5360,7 +5360,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "dictionary_normalized",
       "layer_label": "Dictionary normalized",
@@ -5496,7 +5496,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "residual_semantic_added",
       "layer_label": "Residual semantic additions",
@@ -5632,7 +5632,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
@@ -5768,7 +5768,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "raw_lane_candidates",
       "layer_label": "Raw lane candidates",
@@ -5847,7 +5847,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "source_scored",
       "layer_label": "Source-scored mentions",
@@ -5983,7 +5983,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "evidence_valid",
       "layer_label": "Evidence-valid mentions",
@@ -6119,7 +6119,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "dictionary_normalized",
       "layer_label": "Dictionary normalized",
@@ -6255,7 +6255,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "residual_semantic_added",
       "layer_label": "Residual semantic additions",
@@ -6391,7 +6391,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
@@ -6527,7 +6527,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "raw_lane_candidates",
       "layer_label": "Raw lane candidates",
@@ -6606,7 +6606,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "source_scored",
       "layer_label": "Source-scored mentions",
@@ -6742,7 +6742,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "evidence_valid",
       "layer_label": "Evidence-valid mentions",
@@ -6878,7 +6878,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "dictionary_normalized",
       "layer_label": "Dictionary normalized",
@@ -7014,7 +7014,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "residual_semantic_added",
       "layer_label": "Residual semantic additions",
@@ -7150,7 +7150,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
@@ -7286,7 +7286,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "raw_lane_candidates",
       "layer_label": "Raw lane candidates",
@@ -7365,7 +7365,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "source_scored",
       "layer_label": "Source-scored mentions",
@@ -7501,7 +7501,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "evidence_valid",
       "layer_label": "Evidence-valid mentions",
@@ -7637,7 +7637,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "dictionary_normalized",
       "layer_label": "Dictionary normalized",
@@ -7773,7 +7773,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "residual_semantic_added",
       "layer_label": "Residual semantic additions",
@@ -7909,7 +7909,7 @@
     {
       "artifact_kind": "exectv2_component_layer_impact",
       "dataset": "exectv2",
-      "generated_on": "2026-06-24",
+      "generated_on": "2026-06-26",
       "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
       "layer_id": "headline_projection",
       "layer_label": "Headline projection",
