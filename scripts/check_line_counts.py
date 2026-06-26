@@ -162,10 +162,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1554,
         "Wave2/B1: externalize experiment catalog to YAML",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/reports/llm_first_essential_evaluation.py": AllowlistEntry(
-        1375,
-        "ExECTv2 reports: llm_first evaluation — pending report package split",
-    ),
     # --- Gan2026 >1k LOC ---
     "tasks/seizure_frequency/gan2026/agentic/boundary_audit_prompt_v2.py": AllowlistEntry(
         1014,
