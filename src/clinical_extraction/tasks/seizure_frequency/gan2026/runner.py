@@ -19,16 +19,16 @@ from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026 import (
     deterministic_canonical_stages as canonical_stages,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_projection_render as projection_render,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_projection_score as projection_score,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_verification_decision as verification_decision,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_verification_route as verification_route,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
@@ -46,6 +46,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
     RuleGroup,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (
+    AssessmentDraft,
+    AssessmentDraftBurden,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_clinical_assessment_probe as assessment_probe,
@@ -180,7 +184,7 @@ class Gan2026PipelineRunner:
                 if group not in self.config.ablation_config.enabled_groups
             } | set(self.config.ablation_config.disabled_rule_ids)
 
-            draft = assessment_probe.AssessmentDraft(
+            draft = AssessmentDraft(
                 assessment_kind=selected_candidate.candidate_kind,
                 primary_candidate_ids=[selected_candidate.candidate_id],
                 supporting_candidate_ids=[
@@ -188,7 +192,7 @@ class Gan2026PipelineRunner:
                     for idx, c in enumerate(candidate_set.candidates)
                     if idx != selected_index
                 ],
-                normalized_burden=assessment_probe.AssessmentDraftBurden(
+                normalized_burden=AssessmentDraftBurden(
                     source_normalized_phrase=final_selection.evidence
                 ),
                 assessment_summary=final_selection.rationale,

@@ -15,16 +15,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_projection_render as projection_render,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_projection_score as projection_score,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_verification_decision as verification_decision,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
     clinical_assessment_verification_route as verification_route,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
