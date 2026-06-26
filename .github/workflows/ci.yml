@@ -1,0 +1,38 @@
+# Wave 3 Sprint 4 — thermo-nuclear code quality gates (line-count + focused pytest).
+#
+# Extend later: add a second job or step after the gates pass, e.g.
+#   pytest -q
+# or a curated fast subset:
+#   pytest tests/test_gan2026_pipeline_v1.py tests/test_exectv2_contract.py -q
+# Full suite can be slow; keep line-count gates on every PR and run the broad
+# suite on main/nightly if needed.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  line-count-gates:
+    name: Line-count gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project (dev extras)
+        run: pip install -e ".[dev]"
+
+      - name: Enforce production line-count limits
+        run: python scripts/check_line_counts.py
+
+      - name: Pytest — line-count gate behavior
+        run: python -m pytest tests/test_line_count_gates.py -q
