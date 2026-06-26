@@ -40,6 +40,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     run_all9_on_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.benchmark_constants import (
+    PAPER_OVERALL_PER_ITEM,
+    PAPER_OVERALL_PER_LETTER,
+    PAPER_PER_ITEM_F1,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_sync import (
     DEFAULT_RUN_INDEX_PATH,
     register_run,
@@ -53,7 +58,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_overall,
     semantic_config_for,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
 )
 
@@ -85,21 +90,6 @@ KEY_FAMILY_DEFAULTS: dict[str, tuple[Path, str]] = {
     ),
 }
 KEY_FAMILIES: tuple[str, ...] = tuple(KEY_FAMILY_DEFAULTS)
-
-# Published ExECTv2 (Fonferko-Shadrach 2024) per-item F1 cells and overall.
-PAPER_PER_ITEM_F1: dict[str, float] = {
-    "BirthHistory": 0.97,
-    "Diagnosis": 0.85,
-    "EpilepsyCause": 0.90,
-    "Investigations": 0.95,
-    "Onset": 0.96,
-    "PatientHistory": 0.78,
-    "Prescription": 0.87,
-    "SeizureFrequency": 0.66,
-    "WhenDiagnosed": 0.91,
-}
-PAPER_OVERALL_PER_ITEM = 0.87
-PAPER_OVERALL_PER_LETTER = 0.90
 
 _VALID_CONFIDENCE = {"low", "medium", "high"}
 

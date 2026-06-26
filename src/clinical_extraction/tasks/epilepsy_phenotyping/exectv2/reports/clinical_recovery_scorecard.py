@@ -58,7 +58,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     semantic_config_for,
     source_near_diagnostic,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
 )
 

@@ -27,6 +27,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from collections.abc import Hashable, Sequence
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -86,73 +87,30 @@ _GUIDELINE_CERTAINTY_ENTITIES = frozenset(
     }
 )
 _GUIDELINE_NEGATION_ENTITIES = _GUIDELINE_CERTAINTY_ENTITIES
-_GUIDELINE_CERTAINTY_TRIGGERS: tuple[tuple[str, str], ...] = tuple(
-    sorted(
-        {
-            "ruled out": "1",
-            "doubt": "2",
-            "improbable": "2",
-            "not convincingly": "2",
-            "remote": "2",
-            "unclear": "2",
-            "unsure": "2",
-            "??": "2",
-            "doubtful": "2",
-            "not convinced": "2",
-            "not likely": "2",
-            "remote possibility": "2",
-            "unlikely": "2",
-            "unusual": "2",
-            "considered": "3",
-            "describes himself": "3",
-            "?": "3",
-            "could be": "3",
-            "further clarification": "3",
-            "investigate her along the lines": "3",
-            "markers": "3",
-            "might": "3",
-            "possible": "3",
-            "possibility": "3",
-            "potentially": "3",
-            "potential": "3",
-            "to be sure": "3",
-            "to see if": "3",
-            "to see whether": "3",
-            "to be confirmed": "3",
-            "to know whether": "3",
-            "this or that": "3",
-            "uncertain": "3",
-            "further investigation": "3",
-            "not conclusive": "4",
-            "suspicious": "4",
-            "suspect": "4",
-            "suggestive": "4",
-            "sound like": "4",
-            "supports": "4",
-            "suspected": "4",
-            "suspicion": "4",
-            "i think": "4",
-            "is in keeping with": "4",
-            "point more towards": "4",
-            "probable": "4",
-            "probably": "4",
-            "compatible with": "4",
-            "impression is": "4",
-            "likely": "4",
-            "point towards": "4",
-            "supportive of": "4",
-            "treated as": "4",
-            "consistent with": "5",
-            "is conclusive": "5",
-            "are dealing with": "5",
-            "certain": "5",
-            "definite": "5",
-            "in keeping with": "5",
-        }.items(),
-        key=lambda item: len(item[0]),
-        reverse=True,
-    )
+_GUIDELINE_CERTAINTY_TRIGGERS_PATH = (
+    Path(__file__).resolve().parent / "data" / "guideline_certainty_triggers.yaml"
 )
+
+
+@lru_cache(maxsize=1)
+def _load_guideline_certainty_triggers() -> tuple[tuple[str, str], ...]:
+    text = _GUIDELINE_CERTAINTY_TRIGGERS_PATH.read_text(encoding="utf-8")
+    try:
+        import yaml  # type: ignore[import-untyped]
+    except ImportError as exc:  # pragma: no cover - PyYAML is a repo dependency
+        raise ValueError(
+            f"{_GUIDELINE_CERTAINTY_TRIGGERS_PATH} requires PyYAML but it is unavailable"
+        ) from exc
+    payload = yaml.safe_load(text)
+    if not isinstance(payload, dict):
+        raise ValueError(f"{_GUIDELINE_CERTAINTY_TRIGGERS_PATH} did not contain a mapping")
+    triggers = payload.get("triggers")
+    if not isinstance(triggers, dict):
+        raise ValueError(
+            f"{_GUIDELINE_CERTAINTY_TRIGGERS_PATH} missing top-level 'triggers' mapping"
+        )
+    items = [(str(trigger), str(level)) for trigger, level in triggers.items()]
+    return tuple(sorted(items, key=lambda item: len(item[0]), reverse=True))
 _FEBRILE_HISTORY = re.compile(r"\bfebrile\s+(?:seizures?|convulsions?)\b", re.IGNORECASE)
 _NEGATED_FEBRILE_HISTORY = re.compile(
     r"\b(?:no|not|never|denies?|denied|without)\b.{0,60}\bfebrile\s+"
@@ -412,7 +370,7 @@ def project_guideline_certainty_negation(
 
     if entity in _GUIDELINE_CERTAINTY_ENTITIES and _CERTAINTY not in projected:
         projected[_CERTAINTY] = "5"
-        for trigger, level in _GUIDELINE_CERTAINTY_TRIGGERS:
+        for trigger, level in _load_guideline_certainty_triggers():
             if _contains_guideline_trigger(normalized_context, trigger):
                 projected[_CERTAINTY] = level
                 break

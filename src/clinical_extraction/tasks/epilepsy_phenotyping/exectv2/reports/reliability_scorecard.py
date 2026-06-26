@@ -27,6 +27,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.benchmark_constants import (
+    FREEZE_TARGET_PER_ITEM,
+    FREEZE_TARGET_PER_LETTER,
+    PUBLISHED_PER_ENTITY_ITEM_F1,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     MatchConfig,
     benchmark_config_for,
@@ -39,13 +44,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.bootstrap im
 )
 
 ENTITY_NAMES: tuple[str, ...] = tuple(spec.name for spec in ALL_ENTITIES)
-FREEZE_TARGET_PER_ITEM = 0.87
-FREEZE_TARGET_PER_LETTER = 0.90
-PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
-    "BirthHistory": 0.97, "Diagnosis": 0.85, "EpilepsyCause": 0.90,
-    "Investigations": 0.95, "Onset": 0.96, "PatientHistory": 0.78,
-    "Prescription": 0.87, "SeizureFrequency": 0.66, "WhenDiagnosed": 0.91,
-}
 
 
 def _single_letters(row: dict[str, Any]) -> tuple[ExectLetter, ExectLetter]:
