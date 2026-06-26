@@ -900,10 +900,13 @@ def _score_for_primary(entity: str, scorecard: dict[str, Any]) -> dict[str, Any]
 def _aggregate_score_dicts(scores: Sequence[dict[str, Any]]) -> dict[str, Any]:
     precision_tp = recall_tp = pred_count = gold_count = 0
     for score in scores:
-        precision_tp += int(score.get("precision_tp", score["tp"]))
-        recall_tp += int(score.get("recall_tp", score["tp"]))
-        pred_count += int(score["pred_count"])
-        gold_count += int(score["gold_count"])
+        tp = int(score.get("tp", 0))
+        precision_tp += int(score.get("precision_tp", tp))
+        recall_tp += int(score.get("recall_tp", tp))
+        pred_default = tp + int(score.get("fp", 0))
+        gold_default = tp + int(score.get("fn", 0))
+        pred_count += int(score.get("pred_count", pred_default))
+        gold_count += int(score.get("gold_count", gold_default))
     precision = precision_tp / pred_count if pred_count else 0.0
     recall = recall_tp / gold_count if gold_count else 0.0
     f1 = (2 * precision * recall / (precision + recall)) if precision + recall else 0.0

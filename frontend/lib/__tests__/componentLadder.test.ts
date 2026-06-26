@@ -31,18 +31,30 @@ const exectv2Payload = JSON.parse(
   )
 ) as Exectv2ComponentAblationResponse;
 
+const GAN_HYBRID_GPT41_RUN =
+  "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07";
+const GAN_LLM_ONLY_GPT41_RUN =
+  "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07";
+
 describe("adaptGan2026Ladder", () => {
   const ladder = adaptGan2026Ladder(payload);
 
   it("maps the payload onto the shared ComponentLadder shape", () => {
     expect(ladder.dataset).toBe("gan2026");
     expect(ladder.metricLabel).toBe("Purist accuracy");
-    expect(ladder.architectures).toHaveLength(3);
+    // One control ladder plus three model runs per architecture family.
+    expect(ladder.architectures).toHaveLength(7);
+    expect(ladder.architectures.filter((a) => a.id.includes("hybrid_structured_events"))).toHaveLength(
+      3
+    );
+    expect(
+      ladder.architectures.filter((a) => a.id.includes("llm_only_canonical_pipeline"))
+    ).toHaveLength(3);
     expect(ladder.categories.map((c) => c.shortLabel)).toContain("Wk");
   });
 
   it("renders hybrid_structured_events as a real four-stage ladder, not one bar", () => {
-    const arch = ladder.architectures.find((a) => a.id === "hybrid_structured_events");
+    const arch = ladder.architectures.find((a) => a.id === GAN_HYBRID_GPT41_RUN);
     expect(arch).toBeDefined();
     expect(arch!.stages).toHaveLength(4);
     expect(arch!.stages[0].isBaseline).toBe(true);
@@ -57,7 +69,7 @@ describe("adaptGan2026Ladder", () => {
   });
 
   it("resolves Gan stage component types to descriptor tones", () => {
-    const arch = ladder.architectures.find((a) => a.id === "hybrid_structured_events")!;
+    const arch = ladder.architectures.find((a) => a.id === GAN_HYBRID_GPT41_RUN)!;
     const byType = Object.fromEntries(arch.stages.map((s) => [s.componentType, s.tone]));
     expect(byType["llm_assessment"]).toBe("llm");
     expect(byType["normalize"]).toBe("deterministic");
@@ -66,7 +78,7 @@ describe("adaptGan2026Ladder", () => {
   });
 
   it("keeps the llm_only config as an honest two-stage label-repair ladder", () => {
-    const arch = ladder.architectures.find((a) => a.id === "llm_only_canonical_pipeline")!;
+    const arch = ladder.architectures.find((a) => a.id === GAN_LLM_ONLY_GPT41_RUN)!;
     expect(arch.stages.map((s) => s.id)).toEqual(["model_label", "label_repair"]);
     expect(arch.stages[1].deltaFromPrevious).toBeGreaterThan(0.05);
   });

@@ -8,10 +8,9 @@ import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
-import { useActiveDataset } from "@/lib/datasets/useDataset";
+import { useActiveDataset, getRuntimeAdapter } from "@/lib/datasets";
 import { gan2026Dataset } from "@/lib/datasets/gan2026";
 import { SurfaceHeader, SurfaceLayout, SurfaceLink, ExplorerBody } from "@/components/surface";
-import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 
 function PatientNoteMeta() {
   const trace = useArchitectStore((s) => s.trace);
@@ -89,8 +88,8 @@ function WorkbenchInner() {
 
 function WorkbenchRoute() {
   const dataset = useActiveDataset();
-  if (dataset === "exectv2") return <Exectv2ExampleExplorer />;
-  return <WorkbenchInner />;
+  const ExampleExplorer = getRuntimeAdapter(dataset).surfaces.ExampleExplorer;
+  return <ExampleExplorer />;
 }
 
 export { WorkbenchInner as GanExampleExplorer };
