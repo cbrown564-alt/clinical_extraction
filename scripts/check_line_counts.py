@@ -203,10 +203,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1118,
         "Gan2026 artifact_analysis: ablation harness — move to experiments/",
     ),
-    "tasks/seizure_frequency/gan2026/deterministic/clinical_assessment_assembly.py": AllowlistEntry(
-        2928,
-        "Gan2026 deterministic: clinical_assessment_assembly — split rule clusters",
-    ),
     "tasks/seizure_frequency/gan2026/deterministic/rules/cluster.py": AllowlistEntry(
         1321,
         "Gan2026 deterministic rules: cluster — candidate for package split",
@@ -235,9 +231,9 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1098,
         "Gan2026 LLM: direct labeler — pending decomposition",
     ),
-    "tasks/seizure_frequency/gan2026/pipeline/stages/clinical_assessment_projection_render.py": AllowlistEntry(
-        1373,
-        "Gan2026 pipeline: projection render stage — split from assembly",
+    "tasks/seizure_frequency/gan2026/pipeline/stages/evidence_gating.py": AllowlistEntry(
+        550,
+        "Gan2026 pipeline: projection render evidence gating heuristics",
     ),
     "tasks/seizure_frequency/gan2026/runner.py": AllowlistEntry(
         1103,
