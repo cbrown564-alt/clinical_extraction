@@ -1,6 +1,5 @@
-import type { GoldAuditDecision, GoldAuditRow } from "./types";
+import type { GoldAuditDecision, GoldAuditRow } from "../types";
 
-const API_BASE = "/api";
 const STORAGE_DECISIONS_KEY = "mock-gold-audit-decisions";
 
 type MockGoldAuditRow = Pick<GoldAuditRow, "source_row_index"> & {
@@ -12,7 +11,7 @@ type MockRowsPayload = {
   decisions?: GoldAuditDecision[];
 };
 
-async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
+export async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   // If it's a POST to decide, persist in localStorage and return success payload
   if (path === "/gold-audit/decide" && init?.method === "POST" && init.body) {
     const decision = JSON.parse(init.body as string) as GoldAuditDecision;
@@ -38,16 +37,16 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   if (path === "/run/note" && init?.method === "POST" && init.body) {
     const params = JSON.parse(init.body as string);
     const sri = params.source_row_index;
-    
+
     // Check if we have precomputed run results for this source_row_index
     const precomputedIndices = [10, 40, 79, 103, 128, 156, 180, 182, 187, 190, 198, 212, 218, 243, 278];
     if (sri && precomputedIndices.includes(Number(sri))) {
       const runRes = await fetch(`/mock-data/run-note/validation/${sri}.json`);
       if (runRes.ok) {
-        return await runRes.json() as T;
+        return (await runRes.json()) as T;
       }
     }
-    
+
     // Fallback dynamic generation for run note
     const goldLabel = params.gold_label || "4 per day";
     const goldRef = params.gold_reference || "four per day";
@@ -59,7 +58,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
         output: {
           final_value: goldLabel,
           rationale: "Selected the highest normalized current frequency candidate (Simulated).",
-          evidence: goldRef
+          evidence: goldRef,
         },
         diagnostics: {
           candidate_events: [
@@ -76,9 +75,9 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
               match_groups: {
                 count: "four",
                 denominator: null,
-                unit: "day"
-              }
-            }
+                unit: "day",
+              },
+            },
           ],
           normalized_events: [
             {
@@ -86,8 +85,8 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
               normalized_label: goldLabel,
               semantic_kind: "frequency",
               monthly_frequency: 120.0,
-              validation_errors: []
-            }
+              validation_errors: [],
+            },
           ],
           final_selection: {
             final_label: goldLabel,
@@ -96,11 +95,11 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
             rationale: "Selected the highest normalized current frequency candidate (Simulated).",
             evidence: goldRef,
             monthly_frequency: 120.0,
-            validation_errors: []
+            validation_errors: [],
           },
-          evidence_valid: true
-        }
-      }
+          evidence_valid: true,
+        },
+      },
     } as unknown as T;
   }
 
@@ -114,7 +113,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     const accuracy = Math.max(0.6, 0.93 - disabledCount * 0.05);
     const mockIndices = [10, 40, 79, 103, 128, 156, 180, 182, 187, 190, 198, 212, 218, 243, 278];
     const commonLabels = ["4 per day", "1 per week", "2 to 3 per month", "seizure free for 6 month", "unknown"];
-    
+
     const rows = mockIndices.map((sri, idx) => {
       const gold = commonLabels[idx % commonLabels.length];
       const isCorrect = idx % 10 !== 0 && (disabledCount === 0 || idx % 4 !== 0);
@@ -127,7 +126,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
         purist_gold_category: "seizure_freq_more1week_less1day",
         pragmatic_predicted_category: isCorrect ? "seizure_frequent" : "seizure_freq_unknown",
         pragmatic_gold_category: "seizure_frequent",
-        evidence_valid: true
+        evidence_valid: true,
       };
     });
 
@@ -143,28 +142,28 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
           f1: accuracy,
           precision: accuracy,
           recall: accuracy,
-          per_label: {}
+          per_label: {},
         },
         pragmatic: {
           accuracy,
           f1: accuracy,
           precision: accuracy,
           recall: accuracy,
-          per_label: {}
-        }
+          per_label: {},
+        },
       },
-      rows
+      rows,
     } as unknown as T;
   }
 
   // Handle /gold-audit/next
   if (path.startsWith("/gold-audit/next")) {
-    const rowsRes = await fetchMockData<import("./types").GoldAuditRowsResponse>("/gold-audit/rows", init);
+    const rowsRes = await fetchMockData<import("../types").GoldAuditRowsResponse>("/gold-audit/rows", init);
     const nextRow = rowsRes.rows.find((r) => !r.has_decision) || null;
     return {
       split: "validation",
       row: nextRow,
-      message: nextRow ? undefined : "All rows adjudicated!"
+      message: nextRow ? undefined : "All rows adjudicated!",
     } as unknown as T;
   }
 
@@ -215,27 +214,33 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
           slice_name: "candidate_generation_rescue",
           component_focus: "candidate generation",
           membership_rule: "Atlas row is Purist-wrong and first_failure_owner is candidate_generation.",
-          primary_metric: "Candidate-recall rescue rate before final-label promotion; final policy keeps the deterministic safety floor unless a rescue is predeclared and ablated."
+          primary_metric:
+            "Candidate-recall rescue rate before final-label promotion; final policy keeps the deterministic safety floor unless a rescue is predeclared and ablated.",
         },
         {
           slice_name: "candidate_generation_unknown_seizure_free_boundary",
           component_focus: "candidate generation",
-          membership_rule: "Atlas row is Purist-wrong, first_failure_owner is candidate_generation, and hidden_families includes unknown_boundary or seizure_free_duration.",
-          primary_metric: "Boundary-state recall without converting uncertain seizure-free language into a prediction-bearing deterministic repair."
+          membership_rule:
+            "Atlas row is Purist-wrong, first_failure_owner is candidate_generation, and hidden_families includes unknown_boundary or seizure_free_duration.",
+          primary_metric:
+            "Boundary-state recall without converting uncertain seizure-free language into a prediction-bearing deterministic repair.",
         },
         {
           slice_name: "projection_arbitration",
           component_focus: "graph/final projection",
           membership_rule: "Atlas row is Purist-wrong and first_failure_owner is projection or final_projection.",
-          primary_metric: "Projection-variant correction precision, mechanical-correct to projected-wrong regressions, and selected-evidence/source trace validity."
+          primary_metric:
+            "Projection-variant correction precision, mechanical-correct to projected-wrong regressions, and selected-evidence/source trace validity.",
         },
         {
           slice_name: "projection_unknown_seizure_free_arbitration",
           component_focus: "graph/final projection",
-          membership_rule: "Atlas row is Purist-wrong, first_failure_owner is projection or final_projection, and hidden_families includes unknown_boundary, seizure_free_duration, or current_vs_historical.",
-          primary_metric: "Unknown/seizure-free/current-vs-historical arbitration precision with no broad validation retuning."
-        }
-      ]
+          membership_rule:
+            "Atlas row is Purist-wrong, first_failure_owner is projection or final_projection, and hidden_families includes unknown_boundary, seizure_free_duration, or current_vs_historical.",
+          primary_metric:
+            "Unknown/seizure-free/current-vs-historical arbitration precision with no broad validation retuning.",
+        },
+      ],
     } as unknown as T;
   } else if (path === "/health") {
     return { status: "ok" } as unknown as T;
@@ -247,7 +252,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   if (!res.ok) {
     throw new Error(`Failed to load mock data from ${mockPath}: ${res.statusText}`);
   }
-  
+
   const data = (await res.json()) as MockRowsPayload;
 
   // Merge localStorage decisions for mock mode
@@ -266,7 +271,7 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
     const saved = localStorage.getItem(STORAGE_DECISIONS_KEY);
     const localDecisions = saved ? (JSON.parse(saved) as GoldAuditDecision[]) : [];
     const localIndices = new Set(localDecisions.map((d) => Number(d.source_row_index)));
-    
+
     if (data.rows) {
       data.rows = data.rows.map((row) => {
         const hasDecision = localIndices.has(Number(row.source_row_index));
@@ -280,190 +285,4 @@ async function fetchMockData<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return data as T;
-}
-
-async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  try {
-    const res = await fetch(`${API_BASE}${path}`, {
-      headers: { "Content-Type": "application/json" },
-      ...init,
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => "Unknown error");
-      throw new Error(`HTTP ${res.status}: ${text}`);
-    }
-    return await res.json() as Promise<T>;
-  } catch (error) {
-    console.warn(`API request to ${path} failed:`, error, `. Falling back to mock data...`);
-    return await fetchMockData<T>(path, init);
-  }
-}
-
-export function runNote(params: {
-  note_text: string;
-  pipeline?: string;
-  source_row_index?: number;
-  gold_label?: string;
-  gold_reference?: string;
-  ablation_config?: import("./types").AblationConfigPayload;
-}) {
-  return fetchJson<import("./types").RunNoteResponse>("/run/note", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
-}
-
-export function fetchRules() {
-  return fetchJson<import("./types").RulesResponse>("/rules");
-}
-
-export function fetchHealth() {
-  return fetchJson<{ status: string }>("/health");
-}
-
-export function fetchRecords(split: string) {
-  return fetchJson<import("./types").SplitRecordsResponse>(`/records/${split}`);
-}
-
-export function fetchRecord(split: string, sourceRowIndex: number) {
-  return fetchJson<import("./types").FullRecordResponse>(
-    `/records/${split}/${sourceRowIndex}`
-  );
-}
-
-export function fetchPipelineFamilies() {
-  return fetchJson<import("./types").PipelineFamiliesResponse>(
-    "/pipeline-families"
-  );
-}
-
-export function fetchRegistry() {
-  return fetchJson<import("./types").RegistryResponse>("/registry");
-}
-
-export function fetchArtifact(runId: string, artifactPath?: string, limit?: number) {
-  const params = new URLSearchParams();
-  if (artifactPath) params.set("artifact_path", artifactPath);
-  if (limit !== undefined) params.set("limit", String(limit));
-  const query = params.toString();
-  return fetchJson<import("./types").ArtifactResponse>(
-    `/artifacts/${runId}${query ? "?" + query : ""}`
-  );
-}
-
-export function fetchExectv2Runs() {
-  return fetchJson<import("./types").Exectv2RunsResponse>("/exectv2/runs");
-}
-
-export function fetchExectv2ReliabilityScorecard() {
-  return fetchJson<import("./types").Exectv2ReliabilityScorecardResponse>(
-    "/exectv2/reliability-scorecard"
-  );
-}
-
-export function fetchExectv2ComponentAblation() {
-  return fetchJson<import("./types").Exectv2ComponentAblationResponse>(
-    "/exectv2/component-ablation"
-  );
-}
-
-export function fetchExectv2ComponentTransitions() {
-  return fetchJson<import("./types").Exectv2ComponentTransitionsResponse>(
-    "/exectv2/component-transitions"
-  );
-}
-
-export function fetchGan2026ComponentAblation() {
-  return fetchJson<import("./types").Gan2026ComponentAblationResponse>(
-    "/gan2026/component-ablation"
-  );
-}
-
-export function fetchGan2026ComponentTransitions() {
-  return fetchJson<import("./types").Gan2026ComponentTransitionsResponse>(
-    "/gan2026/component-transitions"
-  );
-}
-
-export function fetchReliabilityScorecard(dataset: import("./types").ClinicalTask) {
-  const path =
-    dataset === "exectv2"
-      ? "/exectv2/reliability-scorecard"
-      : "/gan2026/reliability-scorecard";
-  return fetchJson<import("./types").ReliabilityScorecardResponse>(path);
-}
-
-export function runAblation(params: {
-  split: string;
-  pipeline?: string;
-  limit?: number;
-  ablation_config?: import("./types").AblationConfigPayload;
-}) {
-  return fetchJson<import("./types").RunAblationResponse>("/run/ablation", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
-}
-
-export function fetchPrompts() {
-  return fetchJson<import("./types").PromptsResponse>("/prompts");
-}
-
-export function fetchGoldAuditRows(split: string = "validation") {
-  return fetchJson<import("./types").GoldAuditRowsResponse>(
-    `/gold-audit/rows?split=${encodeURIComponent(split)}`
-  );
-}
-
-export function fetchGoldAuditDecisions(split?: string) {
-  const qs = split ? `?split=${encodeURIComponent(split)}` : "";
-  return fetchJson<import("./types").GoldAuditDecisionsResponse>(`/gold-audit/decisions${qs}`);
-}
-
-export function postGoldAuditDecision(decision: import("./types").GoldAuditDecision) {
-  return fetchJson<import("./types").GoldAuditDecisionResponse>("/gold-audit/decide", {
-    method: "POST",
-    body: JSON.stringify(decision),
-  });
-}
-
-export function fetchGoldAuditNext(split: string = "validation") {
-  return fetchJson<import("./types").GoldAuditNextResponse>(
-    `/gold-audit/next?split=${encodeURIComponent(split)}`
-  );
-}
-
-export function fetchPromptTemplate(moduleName: string) {
-  return fetchJson<import("./types").PromptTemplateResponse>(`/prompts/${moduleName}/template`);
-}
-
-export function tagError(params: {
-  gold_category: string;
-  predicted_category: string;
-  purist_correct?: boolean;
-  pragmatic_correct?: boolean;
-}) {
-  return fetchJson<import("./types").TagErrorResponse>("/tag-error", {
-    method: "POST",
-    body: JSON.stringify(params),
-  });
-}
-
-export function fetchErrorTaxonomySchema() {
-  return fetchJson<import("./types").ErrorTaxonomySchemaResponse>("/error-taxonomy/schema");
-}
-
-export function fetchHardSliceDefinitions() {
-  return fetchJson<import("./types").HardSliceDefinitionsResponse>("/hard-slices/definitions");
-}
-
-export function fetchHardSliceMembership(rows: unknown[]) {
-  return fetchJson<import("./types").HardSliceMembershipResponse>("/hard-slices/membership", {
-    method: "POST",
-    body: JSON.stringify({ rows }),
-  });
-}
-
-export function fetchMeta() {
-  return fetchJson<import("./types").MetaResponse>("/meta");
 }
