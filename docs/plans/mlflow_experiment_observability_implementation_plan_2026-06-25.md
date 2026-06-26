@@ -437,7 +437,7 @@ runners.
 Status: dry-run planning path complete as of 2026-06-26. The first real
 parent/child write path is complete for the same-core dev140 group. Existing-run
 lookup by `registry_run_id` and `comparison_id` is implemented as of 2026-06-26
-via ADR 0035; broader backfill remains explicitly scoped and non-canonical.
+via ADR 0035; broader backfill scope is explicit and non-canonical via ADR 0036.
 
 Add a CLI or script:
 
@@ -823,6 +823,8 @@ The implementation is useful when:
 
 1. Should MLflow sync backfill all existing registry entries, or only entries
    from 2026-06-24 onward where reliability/model-swap work became central?
+   **Resolved in ADR 0036:** default broader backfill is `paper_facing`
+   (role-filtered since 2026-06-24); wider scopes are explicit operator choices.
 2. Should local MLflow artifacts copy raw JSONL files, or should pointer
    artifacts be the default forever?
 3. What exact threshold makes a raw trace "safe enough" for dev-only ExECTv2

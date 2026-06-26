@@ -14,6 +14,7 @@ Primary source artifacts:
 - `docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md`
 - `docs/experiments/exectv2/reliability/exectv2_gpt41mini_2call_no_sf_adjudicator_deterministic_rule_roles_2026-06-24.md`
 - `docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md`
+- `docs/research/exectv2_component_off_reliability_ablation_plan_2026-06-26.md`
 
 ## Purpose
 
@@ -120,6 +121,7 @@ For simplification:
 1. Convert this claim block into the ExECTv2 results section after the main
    architecture/performance table is frozen.
 2. Add a separate Component Impact subsection that uses only replayable
-   component-off or stage-ladder evidence.
+   component-off or stage-ladder evidence, following
+   `docs/research/exectv2_component_off_reliability_ablation_plan_2026-06-26.md`.
 3. Keep future holdout/external reliability claims behind a fresh predeclaration
    naming the scorer, split, row-inspection boundary, and stop rule.

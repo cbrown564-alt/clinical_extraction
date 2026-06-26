@@ -11,7 +11,9 @@ Canonical research evidence remains:
 - `experiments/RUN_INDEX.md`;
 - `PROJECT_STATUS.md` when a durable decision changes.
 
-See `docs/decisions/0034-mlflow-is-optional-observability.md` and
+See `docs/decisions/0034-mlflow-is-optional-observability.md`,
+`docs/decisions/0035-mlflow-sync-reuses-existing-runs.md`,
+`docs/decisions/0036-mlflow-registry-backfill-scope.md`, and
 `docs/plans/mlflow_experiment_observability_implementation_plan_2026-06-25.md`.
 
 ## Install
@@ -71,6 +73,35 @@ $env:MLFLOW_ALLOW_FILE_STORE = "true"
 
 The sync command plans and optionally mirrors registry rows. Registry writes
 happen elsewhere; sync only reads `experiments/registry.jsonl`.
+
+Preflight:
+
+```powershell
+clinical-extraction-mlflow-doctor
+```
+
+Broader backfill scope is explicit and non-canonical. See
+`docs/decisions/0036-mlflow-registry-backfill-scope.md`.
+
+| Scope | Command |
+| --- | --- |
+| Same-core dev140 group | `clinical-extraction-mlflow-sync --same-core-dev140-group --sync` |
+| Default broader backfill | `clinical-extraction-mlflow-sync --backfill-scope paper_facing --sync` |
+| Reliability slice | `clinical-extraction-mlflow-sync --backfill-scope reliability_slice --sync` |
+| All rows since 2026-06-24 | `clinical-extraction-mlflow-sync --backfill-scope all_since_2026_06_24 --sync` |
+| Full registry | `clinical-extraction-mlflow-sync --backfill-scope full_registry --sync` |
+
+Dry-run the default broader backfill before mirroring:
+
+```powershell
+clinical-extraction-mlflow-sync --backfill-scope paper_facing
+```
+
+Override role filters explicitly:
+
+```powershell
+clinical-extraction-mlflow-sync --backfill-scope paper_facing --registry-role holdout_anchor
+```
 
 Dry-run a recent slice:
 

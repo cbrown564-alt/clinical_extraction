@@ -23,6 +23,8 @@ from clinical_extraction.core.mlflow_tracking import (
     registry_entry_to_mlflow_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    REGISTRY_ROLES,
+    RegistryRole,
     RunRegistryEntry,
     load_run_registry,
 )
@@ -45,6 +47,67 @@ SAME_CORE_DEV140_PARENT_ARTIFACTS = (
     "docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_dev140_2026-06-25.md",
     "experiments/exectv2_same_core_model_swap_dev140_20260625.json",
 )
+BackfillScopeName = Literal[
+    "same_core_dev140",
+    "paper_facing",
+    "reliability_slice",
+    "all_since_2026_06_24",
+    "full_registry",
+]
+
+
+@dataclass(frozen=True)
+class BackfillScope:
+    """Operator-facing MLflow backfill selection."""
+
+    name: BackfillScopeName
+    since_date: str | None
+    registry_roles: frozenset[RegistryRole] | None
+    description: str
+
+
+BACKFILL_SCOPES: dict[BackfillScopeName, BackfillScope] = {
+    "same_core_dev140": BackfillScope(
+        name="same_core_dev140",
+        since_date=None,
+        registry_roles=None,
+        description="ExECTv2 same-core dev140 parent/child comparison group only.",
+    ),
+    "paper_facing": BackfillScope(
+        name="paper_facing",
+        since_date="2026-06-24",
+        registry_roles=frozenset(
+            (
+                "architecture_comparator",
+                "reliability_scorecard",
+                "component_ladder",
+                "holdout_anchor",
+            )
+        ),
+        description=(
+            "Paper-facing reliability, architecture, component, and holdout-anchor "
+            "rows since 2026-06-24."
+        ),
+    ),
+    "reliability_slice": BackfillScope(
+        name="reliability_slice",
+        since_date="2026-06-24",
+        registry_roles=frozenset(("architecture_comparator", "reliability_scorecard")),
+        description="Reliability scorecards and architecture comparators since 2026-06-24.",
+    ),
+    "all_since_2026_06_24": BackfillScope(
+        name="all_since_2026_06_24",
+        since_date="2026-06-24",
+        registry_roles=None,
+        description="All registry rows on or after 2026-06-24.",
+    ),
+    "full_registry": BackfillScope(
+        name="full_registry",
+        since_date=None,
+        registry_roles=None,
+        description="Entire experiments/registry.jsonl. Explicit opt-in only.",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -80,6 +143,9 @@ class RegistryMlflowSyncPlan:
     dry_run: bool
     selected_run_count: int
     runs: tuple[MlflowRunSyncPlan, ...]
+    backfill_scope: str | None = None
+    since_date: str | None = None
+    registry_roles: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -116,11 +182,23 @@ def build_registry_mlflow_sync_plan(
     run_index_path: Path = DEFAULT_RUN_INDEX_PATH,
     since_date: str | None = None,
     run_ids: Iterable[str] = (),
+    registry_roles: Iterable[RegistryRole] = (),
+    backfill_scope: BackfillScopeName | None = None,
     include_large_artifacts: bool = False,
 ) -> RegistryMlflowSyncPlan:
     """Build a dry-run MLflow sync plan from typed registry entries."""
 
-    selected = filter_registry_entries(entries, since_date=since_date, run_ids=run_ids)
+    resolved_scope, resolved_since_date, resolved_roles = resolve_backfill_filters(
+        backfill_scope=backfill_scope,
+        since_date=since_date,
+        registry_roles=registry_roles,
+    )
+    selected = filter_registry_entries(
+        entries,
+        since_date=resolved_since_date,
+        run_ids=run_ids,
+        registry_roles=resolved_roles,
+    )
     runs = tuple(
         build_run_sync_plan(
             entry,
@@ -135,6 +213,9 @@ def build_registry_mlflow_sync_plan(
         dry_run=True,
         selected_run_count=len(runs),
         runs=runs,
+        backfill_scope=resolved_scope.name if resolved_scope is not None else None,
+        since_date=resolved_since_date,
+        registry_roles=tuple(resolved_roles or ()),
     )
 
 
@@ -257,13 +338,42 @@ def sync_comparison_plan_to_mlflow(
     )
 
 
+def resolve_backfill_filters(
+    *,
+    backfill_scope: BackfillScopeName | None = None,
+    since_date: str | None = None,
+    registry_roles: Iterable[RegistryRole] = (),
+) -> tuple[BackfillScope | None, str | None, frozenset[RegistryRole] | None]:
+    """Resolve operator scope presets into concrete sync filters."""
+
+    scope = BACKFILL_SCOPES[backfill_scope] if backfill_scope is not None else None
+    resolved_since_date = since_date if since_date is not None else (
+        scope.since_date if scope is not None else None
+    )
+    role_list = tuple(registry_roles)
+    if role_list:
+        unknown = sorted(set(role_list) - set(REGISTRY_ROLES))
+        if unknown:
+            allowed = ", ".join(sorted(REGISTRY_ROLES))
+            raise ValueError(
+                f"unknown registry role(s): {', '.join(unknown)}; allowed: {allowed}"
+            )
+        resolved_roles = frozenset(role_list)
+    elif scope is not None and scope.registry_roles is not None:
+        resolved_roles = scope.registry_roles
+    else:
+        resolved_roles = None
+    return scope, resolved_since_date, resolved_roles
+
+
 def filter_registry_entries(
     entries: Sequence[RunRegistryEntry],
     *,
     since_date: str | None = None,
     run_ids: Iterable[str] = (),
+    registry_roles: frozenset[RegistryRole] | None = None,
 ) -> list[RunRegistryEntry]:
-    """Return registry entries selected by run id and/or ISO date."""
+    """Return registry entries selected by run id, date, and/or registry role."""
 
     run_id_set = set(run_ids)
     threshold = _parse_since_date(since_date)
@@ -273,6 +383,10 @@ def filter_registry_entries(
             continue
         if threshold is not None and date.fromisoformat(entry.date) < threshold:
             continue
+        if registry_roles is not None:
+            entry_roles = frozenset(entry.registry_roles)
+            if not entry_roles.intersection(registry_roles):
+                continue
         selected.append(entry)
     return selected
 
@@ -413,8 +527,14 @@ def render_sync_plan(plan: RegistryMlflowSyncPlan) -> str:
         f"Registry: {plan.registry_path}",
         f"Run index: {plan.run_index_path}",
         f"Runs selected: {plan.selected_run_count}",
-        "",
     ]
+    if plan.backfill_scope is not None:
+        lines.append(f"Backfill scope: {plan.backfill_scope}")
+    if plan.since_date is not None:
+        lines.append(f"Since date: {plan.since_date}")
+    if plan.registry_roles:
+        lines.append(f"Registry roles: {', '.join(plan.registry_roles)}")
+    lines.append("")
     for run in plan.runs:
         lines.append(f"- {run.registry_run_id}")
         lines.append(f"  experiment: {run.experiment_name}")
@@ -492,6 +612,18 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--since-date", help="Only include registry rows on or after YYYY-MM-DD")
     parser.add_argument("--run-id", action="append", default=[], help="Registry run id to include")
     parser.add_argument(
+        "--backfill-scope",
+        choices=tuple(BACKFILL_SCOPES),
+        help="Operator-facing backfill preset; see docs/decisions/0036-mlflow-registry-backfill-scope.md",
+    )
+    parser.add_argument(
+        "--registry-role",
+        action="append",
+        default=[],
+        choices=sorted(REGISTRY_ROLES),
+        help="Override scope role filter; entry must match at least one listed role",
+    )
+    parser.add_argument(
         "--same-core-dev140-group",
         action="store_true",
         help="Mirror the ExECTv2 same-core dev140 model-swap comparison as a parent/child group",
@@ -520,7 +652,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     registry_path = _resolve_under_repo(args.registry, repo_root=repo_root)
     run_index_path = _resolve_under_repo(args.run_index, repo_root=repo_root)
     entries = load_run_registry(registry_path)
-    if args.same_core_dev140_group:
+    if args.same_core_dev140_group or args.backfill_scope == "same_core_dev140":
         plan = build_mlflow_comparison_sync_plan(
             entries,
             repo_root=repo_root,
@@ -538,6 +670,8 @@ def main(argv: Sequence[str] | None = None) -> None:
             run_index_path=run_index_path,
             since_date=args.since_date,
             run_ids=args.run_id,
+            registry_roles=args.registry_role,
+            backfill_scope=args.backfill_scope,
             include_large_artifacts=args.include_large_artifacts,
         )
         plan = replace(plan, dry_run=not args.sync)
