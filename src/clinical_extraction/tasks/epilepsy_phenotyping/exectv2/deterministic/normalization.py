@@ -7,6 +7,9 @@ from collections import Counter
 from collections.abc import Hashable, Iterable, Mapping
 from dataclasses import dataclass
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
+    normalize_phrase,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -144,13 +147,6 @@ class ClinicalConcept:
     @property
     def assertion_key(self) -> Hashable:
         return (self.entity, self.concept, self.assertion)
-
-
-def normalize_phrase(text: str) -> str:
-    """Normalize an annotated phrase for clinical concept matching."""
-
-    lowered = str(text).translate(_QUOTES).replace("-", " ").lower()
-    return _WHITESPACE.sub(" ", lowered).strip()
 
 
 def canonicalize_concept(text: str) -> str:
