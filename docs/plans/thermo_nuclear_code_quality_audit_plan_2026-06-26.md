@@ -1,7 +1,7 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
-**Last updated:** 2026-06-26 (Wave C Sprint 3: P1-1 Phases 0–5 complete)  
+**Last updated:** 2026-06-26 (Wave C Sprint 4: P1-1 line-count gate restored + backlog reconciled to repo reality)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
 **Overall verdict:** **CONDITIONAL APPROVE** — major layer inversions fixed and largest Gan/runtime monoliths decomposed; ExECTv2 LLM top-4 and report cluster remain gated debt
@@ -259,15 +259,15 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 
 ### P0 — Next sprint (high leverage, bounded)
 
-| ID | Task | Area | Effort | Rationale |
-|----|------|------|--------|-----------|
-| P0-1 | YAML corpora: `generation_selection` decision tables + `qwen_compact` | ExECTv2 LLM | M | −500–800 LOC from monolith; diff-friendly prompts |
-| P0-2 | `pipelines/clinical_findings/` 3-stage package | ExECTv2 LLM | L | 3,295 LOC file; clearest undecomposed target |
-| P0-3 | `validation_audit_scaffold.py` + wire 3 validation reports | Reports | S | Deletes ~450 LOC duplication |
-| P0-4 | `cross_model_reliability` → `catalog.yaml` | Reports | S | Room under 1,554 ceiling |
-| P0-5 | Route hybrid extraction through `canonical_stages.extract_stage` | Gan2026 | S | Eliminates behavioral drift |
-| P0-6 | Extend line-count gate to `tests/**` ≤800 (frozen allowlist) | CI | S | Prevents megatest regression |
-| P0-7 | Pytest fast subset in CI | CI | S | Catches backend regressions |
+| ID | Task | Area | Status |
+|----|------|------|--------|
+| P0-1 | YAML corpora: `generation_selection` decision tables + `qwen_compact` | ExECTv2 LLM | 🔴 Open — −500–800 LOC from 4,134 monolith |
+| P0-2 | `pipelines/clinical_findings/` 3-stage package | ExECTv2 LLM | ✅ Done — facade 45 LOC; package extract/verify/finalize/projection/runner (sub-files allowlisted) |
+| P0-3 | `validation_audit_scaffold.py` + wire 3 validation reports | Reports | 🔴 Open |
+| P0-4 | `cross_model_reliability` → `catalog.yaml` | Reports | ✅ Done — `reports/reliability/` pkg + `catalog.yaml`; facade 153 LOC |
+| P0-5 | Route hybrid extraction through `canonical_stages.extract_stage` | Gan2026 | 🔴 Open |
+| P0-6 | Extend line-count gate to `tests/**` ≤800 (frozen allowlist) | CI | ✅ Done — `TESTS_ALLOWLIST` in `check_line_counts.py` + gate test |
+| P0-7 | Pytest fast subset in CI | CI | ✅ Done — `backend-fast-tests` job in `ci.yml` |
 
 ### P1 — Structural (multi-sprint)
 
@@ -278,7 +278,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | P1-3 | Diagnosis verifier chain → single pipeline | ExECTv2 LLM | ~2.6k LOC parallel story |
 | P1-4 | Move `llm_sf_*` deterministic modules out of `llm/` | ExECTv2 LLM | Layer hygiene |
 | P1-5 | Decompose `runner.py` + `agentic/run_driver.py` | Gan2026 | Stop AgenticStage ceremony without shrink |
-| P1-6 | Split `cross_model_reliability` + `component_ablation_replay` | Reports | Both at allowlist ceiling |
+| P1-6 | Split `cross_model_reliability` + `component_ablation_replay` | Reports | ✅ Done — both → catalog-driven packages (`reliability/` 153, `component_ablation/` 110) |
 | P1-7 | Slice `useObservatoryData` to adapters | Frontend | 640 LOC god-hook |
 | P1-8 | Observatory Pydantic response models | Observatory | API contract clarity |
 
@@ -311,14 +311,14 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 
 | File | LOC | Status |
 |------|----:|--------|
-| `llm_only_key_entities_generation_selection.py` | 4,134 | 🟡 Allowlisted 4,134; strategies inverted; builders remain |
-| `llm_only_clinical_findings.py` | 3,295 | 🔴 Allowlisted; 3-stage split not started |
-| `llm_only_key_entities_structured.py` | 2,605 | 🟡 Allowlisted; partial YAML |
+| `llm_only_key_entities_generation_selection.py` | 4,134 | 🟡 Allowlisted; strategies inverted; builders + decision tables remain (P0-1) |
+| `llm_only_clinical_findings.py` (facade) | **45** | ✅ Split into `pipelines/clinical_findings/` |
+| `llm_only_key_entities_structured.py` | 2,606 | 🟡 Allowlisted; partial YAML |
 | `llm_target_indicators_single_call.py` | 2,352 | 🟡 Allowlisted; projection split done |
-| `cross_model_reliability_analysis.py` | 1,554 | 🟡 At ceiling |
-| `component_ablation_replay.py` | 1,474 | 🟡 At ceiling |
-| `conventions/seizure_frequency.py` | ~1,728 | 🟡 Parallel SF stack |
-| `runner.py` (Gan2026) | 1,103 | 🟡 Allowlisted |
+| `cross_model_reliability_analysis.py` (facade) | **153** | ✅ Split into `reliability/` + catalog.yaml |
+| `component_ablation_replay.py` (facade) | **110** | ✅ Split into `component_ablation/` + catalog.yaml |
+| `conventions/seizure_frequency.py` | **(deleted)** | ✅ Consolidated into `sf_surface_registry` |
+| `runner.py` (Gan2026) | 1,103 | 🟡 Allowlisted (P1-5) |
 | `fresh_evidence_reasoner.py` | ~2,016 | 🟡 Legacy agentic |
 | `clinical_assessment_assembly.py` | **139** | ✅ Decomposed |
 | `gallery/page.tsx` | **26** | ✅ Thin shell |
@@ -349,13 +349,13 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 
 ### Still required for full APPROVE
 
-- [ ] ExECTv2 LLM top-4 each **<500 LOC** (currently 2,352–4,134)
-- [x] SF repair stacks: canonical `sf_surface_registry` established (Phases 0–5); shared patterns + unique rule index; legacy stacks are thin facades with deprecation shims. **Shim removal** pending one release cycle + import audit.
-- [ ] Report allowlisted monoliths shrunk with headroom (not at ceiling)
+- [ ] ExECTv2 LLM **3 monoliths** each <500 LOC — `generation_selection` 4,134, `key_entities_structured` 2,606, `target_indicators_single_call` 2,352 (`clinical_findings` ✅ split)
+- [x] SF repair stacks: canonical `sf_surface_registry` (Phases 0–5); shared patterns + unique rule index; legacy `_legacy_impl` split below gate (Sprint 4). **Shim removal** pending one release cycle + import audit.
+- [x] Report allowlisted monoliths shrunk with headroom — `cross_model_reliability` 1,554→153 + `reliability/` pkg; `component_ablation_replay` 1,474→110 + `component_ablation/` pkg (all files <500)
 - [ ] Gan `runner.py` decomposed; hybrid uses canonical extract
-- [ ] `artifact_analysis/` quarantined from production paths
-- [ ] Test tier line-count gate + pytest subset in CI
-- [ ] Zero report modules with `main()` (policy enforced)
+- [ ] `artifact_analysis/` quarantined from production paths (`frontend_review.py`, `llm/assessment_probe_signature.py` still import it)
+- [x] Test tier line-count gate (`tests/**` ≤800) + fast pytest subset in CI
+- [ ] Zero report modules with `main()` (policy enforced) — 14 modules remain
 
 ### Would trigger REJECT
 
