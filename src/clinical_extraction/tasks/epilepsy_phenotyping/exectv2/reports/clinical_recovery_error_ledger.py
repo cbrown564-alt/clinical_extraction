@@ -36,23 +36,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     ClinicalRecoveryPRF1,
+    concept_keys,
+    frequency_state_keys,
+    investigation_component_keys,
     normalize_phrase,
+    prescription_component_key,
     score_concept_identity,
     score_frequency_state,
     score_investigations_components,
     score_prescription_components,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    _concept_keys as concept_keys,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    _frequency_state_keys as frequency_state_keys,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    _investigation_component_keys as investigation_component_keys,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    _prescription_component_key as prescription_component_key,
 )
 
 KEY_ENTITIES: tuple[str, ...] = (

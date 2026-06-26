@@ -44,6 +44,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_syn
     DEFAULT_RUN_INDEX_PATH,
     register_run,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.scorecard_core import (
+    prf1_to_dict,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -189,17 +192,6 @@ def build_merged_predictions(
     return merged, metadata
 
 
-def _prf1_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "precision": round(score.precision, 4),
-        "recall": round(score.recall, 4),
-        "f1": round(score.f1, 4),
-        "tp": score.tp,
-        "fp": score.fp,
-        "fn": score.fn,
-    }
-
-
 def build_scorecard(
     gold_letters: Sequence[ExectLetter],
     predictions: Sequence[PredictedLetter],
@@ -221,8 +213,8 @@ def build_scorecard(
     benchmark = scores["benchmark"]
     per_entity_benchmark = {
         entity: {
-            "per_item": _prf1_to_dict(score.per_item),
-            "per_letter": _prf1_to_dict(score.per_letter),
+            "per_item": prf1_to_dict(score.per_item),
+            "per_letter": prf1_to_dict(score.per_letter),
             "paper_per_item_f1": PAPER_PER_ITEM_F1.get(entity),
             "delta_vs_paper_item": round(score.per_item.f1 - PAPER_PER_ITEM_F1[entity], 4)
             if entity in PAPER_PER_ITEM_F1
@@ -248,8 +240,8 @@ def build_scorecard(
         "mention_counts": metadata["mention_counts"],
         "scores": {
             name: {
-                "per_item": _prf1_to_dict(score.per_item),
-                "per_letter": _prf1_to_dict(score.per_letter),
+                "per_item": prf1_to_dict(score.per_item),
+                "per_letter": prf1_to_dict(score.per_letter),
             }
             for name, score in scores.items()
         },

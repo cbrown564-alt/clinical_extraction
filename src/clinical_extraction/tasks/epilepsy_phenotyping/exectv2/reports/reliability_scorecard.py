@@ -11,9 +11,7 @@ the holdout.
 
 from __future__ import annotations
 
-import random
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
 from typing import Any
 
 from clinical_extraction.core.scoring import PRF1
@@ -35,6 +33,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_overall,
     semantic_config_for,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.bootstrap import (
+    BootstrapCI,
+    bootstrap_f1_ci,
+)
 
 ENTITY_NAMES: tuple[str, ...] = tuple(spec.name for spec in ALL_ENTITIES)
 FREEZE_TARGET_PER_ITEM = 0.87
@@ -44,14 +46,6 @@ PUBLISHED_PER_ENTITY_ITEM_F1: dict[str, float] = {
     "Investigations": 0.95, "Onset": 0.96, "PatientHistory": 0.78,
     "Prescription": 0.87, "SeizureFrequency": 0.66, "WhenDiagnosed": 0.91,
 }
-
-
-@dataclass(frozen=True)
-class BootstrapCI:
-    point: float
-    lower: float
-    upper: float
-    reps: int
 
 
 def _single_letters(row: dict[str, Any]) -> tuple[ExectLetter, ExectLetter]:
@@ -96,39 +90,6 @@ def _per_letter_counts(
         prf: PRF1 = overall.per_item if level == "item" else overall.per_letter
         counts.append((prf.tp, prf.fp, prf.fn))
     return counts
-
-
-def _f1(tp: int, fp: int, fn: int) -> float:
-    denom = 2 * tp + fp + fn
-    return (2 * tp / denom) if denom else 0.0
-
-
-def bootstrap_f1_ci(
-    counts: Sequence[tuple[int, int, int]],
-    *,
-    reps: int = 1000,
-    seed: int = 12345,
-    alpha: float = 0.05,
-) -> BootstrapCI:
-    """Cluster (per-letter) bootstrap CI for a micro-averaged F1."""
-    n = len(counts)
-    point = _f1(*(sum(c[i] for c in counts) for i in range(3)))
-    if n == 0:
-        return BootstrapCI(point=point, lower=0.0, upper=0.0, reps=reps)
-    rng = random.Random(seed)
-    samples: list[float] = []
-    for _ in range(reps):
-        tp = fp = fn = 0
-        for _ in range(n):
-            c = counts[rng.randrange(n)]
-            tp += c[0]
-            fp += c[1]
-            fn += c[2]
-        samples.append(_f1(tp, fp, fn))
-    samples.sort()
-    lo = samples[int((alpha / 2) * reps)]
-    hi = samples[min(reps - 1, int((1 - alpha / 2) * reps))]
-    return BootstrapCI(point=round(point, 4), lower=round(lo, 4), upper=round(hi, 4), reps=reps)
 
 
 def build_scorecard(

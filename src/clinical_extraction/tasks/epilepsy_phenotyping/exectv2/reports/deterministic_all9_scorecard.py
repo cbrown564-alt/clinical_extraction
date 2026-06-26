@@ -32,6 +32,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.registry_syn
     DEFAULT_RUN_INDEX_PATH,
     register_run,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.scorecard_core import (
+    overall_to_dict,
+    prf1_to_dict,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -128,7 +132,7 @@ def build_scorecard(
         "routing_count": 0,
         "schema_repairs": 0,
         "validation": validation,
-        "scores": {name: _overall_to_dict(score) for name, score in scores.items()},
+        "scores": {name: overall_to_dict(score) for name, score in scores.items()},
         "prescription_component_scores": _prescription_components_to_dict(
             prescription_components
         ),
@@ -204,39 +208,14 @@ def _validation_summary(
     }
 
 
-def _overall_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "per_item": _prf1_to_dict(score.per_item),
-        "per_letter": _prf1_to_dict(score.per_letter),
-        "per_entity": {
-            entity: {
-                "per_item": _prf1_to_dict(entity_score.per_item),
-                "per_letter": _prf1_to_dict(entity_score.per_letter),
-            }
-            for entity, entity_score in score.per_entity.items()
-        },
-    }
-
-
-def _prf1_to_dict(score: Any) -> dict[str, Any]:
-    return {
-        "precision": round(score.precision, 4),
-        "recall": round(score.recall, 4),
-        "f1": round(score.f1, 4),
-        "tp": score.tp,
-        "fp": score.fp,
-        "fn": score.fn,
-    }
-
-
 def _prescription_components_to_dict(score: Any) -> dict[str, Any]:
     names = (PRESCRIPTION_CLINICAL_HEADLINE, *PRESCRIPTION_DIAGNOSTIC_ORDER)
-    return {name: _prf1_to_dict(getattr(score, name)) for name in names}
+    return {name: prf1_to_dict(getattr(score, name)) for name in names}
 
 
 def _prescription_projection_to_dict(score: Any) -> dict[str, Any]:
     return {
-        name: _prf1_to_dict(getattr(score, name))
+        name: prf1_to_dict(getattr(score, name))
         for name in PRESCRIPTION_BENCHMARK_PROJECTION_ORDER
     }
 
