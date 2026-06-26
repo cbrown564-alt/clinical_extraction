@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26  
 **Task:** Wave C Sprint 3 **P1-1** (thermo-nuclear audit backlog)  
-**Status:** Phase 3 complete — projection catalog + adapter wired; quarantine derived from registry; LLM post-process imports slimmed to 5 adapter symbols  
+**Status:** Phase 4 complete — extraction metadata in `catalog/extract.yaml`; `RATE_RULES` assembled via `adapters/extraction`  
 **Author:** Agent design pass on current `main`
 
 ---
@@ -418,13 +418,27 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ### Phase 4 — Extraction alignment (optional, 2–3 sprints)
 
-- [ ] Migrate `RuleSpec` metadata (not builders) from `rules/` into `catalog/extract.yaml`.
-- [ ] Generate `RATE_RULES`, `TEMPORAL_RULES`, etc. from registry via `adapters/extraction.py`.
-- [ ] Split `rate.py` (1,072 LOC) into generated catalog + thin builder module.
+- [x] Migrate `RuleSpec` metadata (not builders) from `rules/` into `catalog/extract.yaml`.
+- [x] Generate `RATE_RULES`, `TEMPORAL_RULES`, etc. from registry via `adapters/extraction.py`.
+- [x] Split `rate.py` (1,072 LOC) into generated catalog + thin builder module.
 
-**Exit:** `rules/rate.py` <500 LOC; `test_exectv2_deterministic_sf.py` green.
+**Exit:** `rules/rate.py` <500 LOC; `test_exectv2_deterministic_sf.py` green. **Met (2026-06-26)** — `rate.py` is a 23-line facade; builders live in `rules/rate_builders.py` (~647 LOC); megatest 102/102 green.
 
-**Defer rationale:** Extraction stack is the most mature and heavily tested; highest risk for F1 regression. Phases 0–3 deliver most drift reduction with lower risk.
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `sf_surface_registry/catalog/extract.yaml` | 47 Stack A extract rule metadata entries (group, portability, description, provenance, examples, builder, exclude) |
+| `sf_surface_registry/extract_catalog.py` | Loader for extract-phase catalog entries |
+| `sf_surface_registry/adapters/extraction.py` | Assembles `RuleSpec` lists from catalog + `*_EXTRACT_IMPLS` builder registries |
+| `rules/rate_builders.py` | Rate-expression patterns/builders + `RATE_EXTRACT_IMPLS` |
+| `rules/extract_impl_types.py` | `ExtractRuleImpl` dataclass |
+| `rules/extract_reexports.py` | Lazy backward-compatible re-exports for named rules |
+| `scripts/generate_extract_catalog.py` | Regenerates `extract.yaml` from live RuleSpecs (pre-migration source) |
+| `scripts/apply_phase4_extract_migration.py` | One-shot migration driver (checkout → generate → strip → facade) |
+| `tests/test_exectv2_sf_surface_registry.py` | Extract adapter parity checks; registry LOC gate bumped for Phase 4 |
+
+**Defer rationale (original):** Extraction stack is the most mature and heavily tested; highest risk for F1 regression. Phases 0–3 deliver most drift reduction with lower risk. Phase 4 landed with shadow metadata parity tests and unchanged megatest behavior.
 
 ### Phase 5 — Cleanup & approval gate (1 sprint)
 
@@ -441,7 +455,7 @@ Adapters preserve **existing function signatures** during migration so `assembly
 | `sf_surface_registry/README.md` | Public API, migration status, rule-index regeneration |
 | `sf_surface_registry/adapters/convention.py` | Full Stack B facade (delegates to legacy until Phase 2) |
 | `sf_surface_registry/adapters/projection.py` | Stack C `apply_all` facade + `projection_patterns` (LLM post-process wired) |
-| `sf_surface_registry/adapters/extraction.py` | Stack A placeholder (`PERIOD_UNIT`; Phase 4 pending) |
+| `sf_surface_registry/adapters/extraction.py` | Stack A RuleSpec assembly from `catalog/extract.yaml` + builder registries |
 | `conventions/seizure_frequency.py` | Module docstring: deprecated → registry adapter |
 | `target_projection/__init__.py` | Module docstring: deprecated → registry adapter |
 | `rules/rate.py` | Docstring notes `PERIOD_UNIT` canonical owner is registry |

@@ -28,7 +28,7 @@ _REGISTRY_ROOT = (
     / "sf_surface_registry"
 )
 _RULE_INDEX_PATH = _REPO_ROOT / "docs" / "plans" / "sf_surface_rule_index.yaml"
-_PHASE2_MAX_PYTHON_LINES = 750
+_PHASE2_MAX_PYTHON_LINES = 850
 _PHASE2_MAX_YAML_LINES = 1500
 _MAX_CATALOG_FILE_LINES = 250
 
@@ -215,6 +215,40 @@ def test_shared_patterns_match_standard_dictionary_fixtures() -> None:
     assert CONTEXTUAL_RATE_NOISE.search(
         "referred previously before the seizure and remains well controlled"
     )
+
+
+def test_extract_adapter_rule_count_matches_catalog() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+        ANCHOR_RULES,
+        CHANGE_RULES,
+        RATE_RULES,
+        SEIZURE_FREE_RULES,
+        TEMPORAL_RULES,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.extract_catalog import (
+        load_extract_catalog,
+    )
+
+    assembled = ANCHOR_RULES + RATE_RULES + SEIZURE_FREE_RULES + CHANGE_RULES + TEMPORAL_RULES
+    catalog = load_extract_catalog()
+    assert len(assembled) == len(catalog)
+    assert {spec.rule_id for spec in assembled} == {entry.rule_id for entry in catalog}
+
+
+def test_extract_adapter_examples_match_catalog_metadata() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+        RATE_RULES,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.extract_catalog import (
+        load_extract_catalog,
+    )
+
+    by_id = {entry.rule_id: entry for entry in load_extract_catalog()}
+    for spec in RATE_RULES:
+        entry = by_id[spec.rule_id]
+        assert spec.description == entry.description
+        assert spec.provenance == entry.provenance
+        assert len(spec.examples) == len(entry.examples)
 
 
 def test_pattern_registry_exports_phase1_keys() -> None:

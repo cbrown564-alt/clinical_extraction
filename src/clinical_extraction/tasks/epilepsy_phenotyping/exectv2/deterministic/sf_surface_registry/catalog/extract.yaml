@@ -1,0 +1,978 @@
+rules:
+- rule_id: anchor.seizure_type_phrase
+  phases:
+  - extract
+  rule_set: anchor
+  order: 0
+  group: anchor_phrase
+  portability: clinical_epilepsy
+  description: 'Seizure-type / event-description noun phrase: optional clinical descriptor(s)
+    + seizure noun + optional ''with loss/altered of awareness'' suffix.'
+  builder: _build_seizure_type_anchor
+  source_stack: rules/anchor.py
+  examples:
+  - text: focal seizures with loss of awareness approximately 2 to 3 per month.
+    expected_evidence: focal seizures with loss of awareness
+  - text: She has generalised tonic clonic seizures occurring twice weekly.
+    expected_evidence: generalised tonic clonic seizures
+  - text: Secondary generalised seizures since the last clinic appointment.
+    expected_evidence: Secondary generalised seizures
+  - text: Myoclonic jerks have become more frequent.
+    expected_evidence: Myoclonic jerks
+  - text: No change in seizures over the last year.
+    expected_evidence: seizures
+  provenance: 'Anchor phrase: seizure-type noun phrase. Generalizes to Phase 6 Diagnosis-style
+    entity detection.'
+- rule_id: anchor.seizure_free_phrase
+  phases:
+  - extract
+  rule_set: anchor
+  order: 1
+  group: anchor_phrase
+  portability: clinical_epilepsy
+  description: Bare 'seizure free' / 'seizure-free' as its own anchor phrase.
+  builder: _build_seizure_free_anchor
+  source_stack: rules/anchor.py
+  examples:
+  - text: She has been seizure-free for 7 months.
+    expected_evidence: seizure-free
+  - text: He is currently seizure free.
+    expected_evidence: seizure free
+  provenance: 'Anchor phrase: gold sometimes annotates bare ''seizure-free'' as SeizureFrequency.text
+    with duration folded into attributes.'
+- rule_id: rate.range_per_n_periods
+  phases:
+  - extract
+  rule_set: rate
+  order: 0
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower-upper per N periods — range count over multiple periods.
+  builder: _build_range_per_n_periods
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She experiences 3-9 episodes per 3 months.
+    expected_evidence: 3-9 episodes per 3 months
+    expected_attributes:
+      LowerNumberOfSeizures: '3'
+      UpperNumberOfSeizures: '9'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Month
+  provenance: Portable SF multi-period range rate.
+- rule_id: rate.range_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 1
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower-upper per period — range count in one period.
+  builder: _build_range_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: 'Seizure type and frequency: 2-5 per month.'
+    expected_evidence: 2-5 per month
+    expected_attributes:
+      LowerNumberOfSeizures: '2'
+      UpperNumberOfSeizures: '5'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Month
+  provenance: Portable SF range rate expression.
+- rule_id: rate.range_to_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 2
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower to upper per period — range with 'to' in one period.
+  builder: _build_range_to_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: 'Focal onset seizures: 1 to 3 per week.'
+    expected_evidence: 1 to 3 per week
+    expected_attributes:
+      LowerNumberOfSeizures: '1'
+      UpperNumberOfSeizures: '3'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  provenance: Portable SF range-to rate expression.
+- rule_id: rate.between_range_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 3
+  group: rate_expressions
+  portability: seizure_frequency
+  description: '''between lower and upper per period'' — range count in one period.'
+  builder: _build_between_range_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She is having between 3 and 4 seizures per week.
+    expected_evidence: between 3 and 4 seizures per week
+    expected_attributes:
+      LowerNumberOfSeizures: '3'
+      UpperNumberOfSeizures: '4'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  provenance: ExECTv2 narrative range variant observed in dev residual errors.
+- rule_id: rate.range_of_seizure_terms
+  phases:
+  - extract
+  rule_set: rate
+  order: 4
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower to upper of <seizure terms> — range count without an explicit
+    period.
+  builder: _build_range_of_seizure_terms
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: In March she had 2 to 3 of her focal seizures.
+    expected_evidence: 2 to 3 of her focal seizures
+    expected_attributes:
+      LowerNumberOfSeizures: '2'
+      UpperNumberOfSeizures: '3'
+  provenance: Guideline range count variant observed in dev letter EA0002.
+- rule_id: rate.count_per_n_periods
+  phases:
+  - extract
+  rule_set: rate
+  order: 5
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N per M periods — exact count over multiple periods.
+  builder: _build_count_per_n_periods
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She has 3 seizures per 2 months.
+    expected_evidence: 3 seizures per 2 months
+    expected_attributes:
+      NumberOfSeizures: '3'
+      NumberOfTimePeriods: '2'
+      TimePeriod: Month
+  provenance: Portable SF multi-period rate.
+- rule_id: rate.count_in_last_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 6
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N events in/over the last M period — historical count with Since.
+  builder: _build_count_in_last_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She had 3 seizures in the last month.
+    expected_evidence: 3 seizures in the last month
+    expected_attributes:
+      NumberOfSeizures: '3'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Month
+      TimeSince_or_TimeOfEvent: Since
+  - text: He reported 5 episodes over the past 3 months.
+    expected_evidence: 5 episodes over the past 3 months
+    expected_attributes:
+      NumberOfSeizures: '5'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Month
+      TimeSince_or_TimeOfEvent: Since
+  provenance: Portable SF historical count expression.
+- rule_id: rate.range_over_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 7
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower-upper events over N periods — range count spread over a period.
+  builder: _build_range_over_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She had around 10-15 of these seizures over 2 days.
+    expected_evidence: 10-15 of these seizures over 2 days
+    expected_attributes:
+      LowerNumberOfSeizures: '10'
+      UpperNumberOfSeizures: '15'
+      NumberOfTimePeriods: '2'
+      TimePeriod: Day
+  provenance: ExECTv2 cluster-count range variant observed in dev residual errors.
+- rule_id: rate.count_over_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 8
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N over M periods — count spread over a period (no last/past).
+  builder: _build_count_over_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She had 5 seizures over 3 months.
+    expected_evidence: 5 seizures over 3 months
+    expected_attributes:
+      NumberOfSeizures: '5'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Month
+  provenance: Portable SF count-over-period expression.
+- rule_id: rate.count_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 9
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N per/a/each/every period — exact seizure count in one period.
+  builder: _build_count_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: 'Seizure type and frequency: 3 per month.'
+    expected_evidence: 3 per month
+    expected_attributes:
+      NumberOfSeizures: '3'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Month
+  - text: Patient experiences 2 episodes a week.
+    expected_evidence: 2 episodes a week
+    expected_attributes:
+      NumberOfSeizures: '2'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  provenance: Portable SF rate expression.
+  exclude:
+  - _is_medication_dose_context
+- rule_id: rate.count_per_fortnight
+  phases:
+  - extract
+  rule_set: rate
+  order: 10
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N per fortnight — exact count over two weeks.
+  builder: _build_count_per_fortnight
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: Focal seizures with altered awareness approximately 1 per fortnight.
+    expected_evidence: 1 per fortnight
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '2'
+      TimePeriod: Week
+  provenance: ExECTv2 gold maps fortnight to NumberOfTimePeriods=2, TimePeriod=Week.
+  exclude:
+  - _is_medication_dose_context
+- rule_id: rate.header_continuation_rate
+  phases:
+  - extract
+  rule_set: rate
+  order: 11
+  group: rate_expressions
+  portability: seizure_frequency
+  description: Header/list seizure anchor followed on the next line by an exact rate.
+  builder: _build_header_continuation_rate
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: "focal seizures with altered awareness (right arm movement)\n\t\t1 per week"
+    expected_evidence: "focal seizures with altered awareness (right arm movement)\n\
+      \t\t1 per week"
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  provenance: Frequency-section continuation lines observed in dev letter EA0054.
+  exclude:
+  - _is_medication_dose_context
+- rule_id: rate.n_times_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 12
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N times per/a/each period — explicit 'times' construction.
+  builder: _build_n_times_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: He has seizures 3 times per week.
+    expected_evidence: 3 times per week
+    expected_attributes:
+      NumberOfSeizures: '3'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  - text: Episodes occur twice a month.
+    expected_evidence: twice a month
+    expected_attributes:
+      NumberOfSeizures: '2'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Month
+  provenance: Portable SF times-per-period expression.
+  exclude:
+  - _is_medication_dose_context
+- rule_id: rate.range_every_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 13
+  group: rate_expressions
+  portability: seizure_frequency
+  description: lower-upper every period — range count in one period.
+  builder: _build_range_every_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: Generalised tonic clonic seizures 1 to 2 every month.
+    expected_evidence: 1 to 2 every month
+    expected_attributes:
+      LowerNumberOfSeizures: '1'
+      UpperNumberOfSeizures: '2'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Month
+  provenance: Portable SF range cadence variant observed in header lists.
+- rule_id: rate.period_range
+  phases:
+  - extract
+  rule_set: rate
+  order: 14
+  group: rate_expressions
+  portability: seizure_frequency
+  description: One event every lower-upper periods, e.g. every 3 to 4 weeks.
+  builder: _build_period_range
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She has seizures every 3 to 4 weeks.
+    expected_evidence: every 3 to 4 weeks
+    expected_attributes:
+      NumberOfSeizures: '1'
+      LowerNumberOfTimePeriods: '3'
+      UpperNumberOfTimePeriods: '4'
+      TimePeriod: Week
+  provenance: Guideline v9 period-range frequency expression.
+- rule_id: rate.every_n_periods
+  phases:
+  - extract
+  rule_set: rate
+  order: 15
+  group: rate_expressions
+  portability: seizure_frequency
+  description: One event every N periods, e.g. every 3 weeks.
+  builder: _build_every_n_periods
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: Focal seizures occur every 3 weeks.
+    expected_evidence: every 3 weeks
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Week
+  - text: Convulsive seizure approximately every five years.
+    expected_evidence: every five years
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '5'
+      TimePeriod: Year
+  provenance: Guideline v9 period frequency expression; dev errors EA0008/EA0039.
+  exclude:
+  - _adverbial_outside_seizure_context
+- rule_id: rate.every_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 16
+  group: rate_expressions
+  portability: seizure_frequency
+  description: One event every period, e.g. every year.
+  builder: _build_every_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: Secondary generalised seizures, they happen about every year.
+    expected_evidence: every year
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Year
+  provenance: Pronoun cadence variant in dev letters, e.g. 'they happen every year'.
+  exclude:
+  - _adverbial_outside_seizure_context
+- rule_id: rate.several_times_per_period
+  phases:
+  - extract
+  rule_set: rate
+  order: 17
+  group: rate_expressions
+  portability: seizure_frequency
+  description: '''several times a/per period'' → approximate count 2 in one period.'
+  builder: _build_several_times_per_period
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: The absences happen several times a day.
+    expected_evidence: several times a day
+    expected_attributes:
+      NumberOfSeizures: '2'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Day
+  provenance: ExECTv2 projection maps 'several times' to NumberOfSeizures=2.
+- rule_id: rate.adverbial
+  phases:
+  - extract
+  rule_set: rate
+  order: 18
+  group: rate_expressions
+  portability: seizure_frequency
+  description: 'Adverbial frequency: daily/weekly/monthly/fortnightly, optionally
+    with multiplier.'
+  builder: _build_adverbial
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: She experiences absence seizures daily.
+    expected_evidence: daily
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Day
+  - text: 'Tonic-clonic seizures: twice weekly.'
+    expected_evidence: twice weekly
+    expected_attributes:
+      NumberOfSeizures: '2'
+      NumberOfTimePeriods: '1'
+      TimePeriod: Week
+  - text: Cluster events occur fortnightly.
+    expected_evidence: fortnightly
+    expected_attributes:
+      NumberOfSeizures: '1'
+      NumberOfTimePeriods: '2'
+      TimePeriod: Week
+  provenance: Portable SF adverbial frequency.
+  exclude:
+  - _is_medication_dose_context
+  - _adverbial_outside_seizure_context
+- rule_id: rate.bare_count
+  phases:
+  - extract
+  rule_set: rate
+  order: 19
+  group: rate_expressions
+  portability: seizure_frequency
+  description: N <seizure noun> with no period — bare seizure count.
+  builder: _build_bare_count
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: He had 5 seizures in May.
+    expected_evidence: 5 seizures
+    expected_attributes:
+      NumberOfSeizures: '5'
+  - text: She had 3 focal seizures since her last clinic.
+    expected_evidence: 3 focal seizures
+    expected_attributes:
+      NumberOfSeizures: '3'
+  provenance: Supplies NumberOfSeizures for temporal SF mentions.
+  exclude:
+  - _is_medication_dose_context
+  - _is_range_continuation
+- rule_id: rate.article_seizure_count
+  phases:
+  - extract
+  rule_set: rate
+  order: 20
+  group: rate_expressions
+  portability: seizure_frequency
+  description: 'Indefinite article count before a seizure noun: a/an seizure type.'
+  builder: _build_article_count
+  source_stack: rules/rate_builders.py
+  examples:
+  - text: He had a generalised tonic clonic seizure last week.
+    expected_evidence: a generalised tonic clonic seizure
+    expected_attributes:
+      NumberOfSeizures: '1'
+  provenance: Portable count expression; needed when a dated event uses an article.
+- rule_id: sf.duration
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 0
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: Seizure-free with an explicit duration.
+  builder: _build_sf_with_duration
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: She has been seizure free for 3 months.
+    expected_evidence: seizure free for 3 months
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Month
+  - text: Patient is seizure-free for 2 years.
+    expected_evidence: seizure-free for 2 years
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '2'
+      TimePeriod: Year
+  provenance: Adapted from Gan2026 seizure-free rules.
+  exclude:
+  - _is_seizure_free_distractor_context
+- rule_id: sf.zero_count
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 1
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: 'Explicit zero-count expression: ''0 seizures'' or ''zero seizures''.'
+  builder: _build_zero_count
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: She reports 0 seizures this period.
+    expected_evidence: 0 seizures
+    expected_attributes:
+      NumberOfSeizures: '0'
+  provenance: Explicit zero-count SF encoding.
+- rule_id: sf.no_seizures_duration
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 2
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: '''No seizures'' with optional duration or ''further'' qualifier.'
+  builder: _build_no_seizures_duration
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: There have been no seizures for 6 months.
+    expected_evidence: no seizures for 6 months
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '6'
+      TimePeriod: Month
+  - text: No further episodes reported since the last clinic.
+    expected_evidence: no further episodes
+    expected_attributes:
+      NumberOfSeizures: '0'
+  provenance: Adapted from Gan2026 no-event rules.
+  exclude:
+  - _is_nonclinical_zero_context
+- rule_id: sf.no_had_duration
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 3
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: '''has not had <seizure type> for N periods'' and pronoun variants.'
+  builder: _build_no_had_duration
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: He has not had one of his bigger focal to bilateral convulsive seizure for
+      three years now.
+    expected_evidence: has not had one of his bigger focal to bilateral convulsive
+      seizure for three years
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Year
+  provenance: Clinical zero-duration statements in ExECTv2 narrative follow-up.
+- rule_id: sf.control_phrase
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 4
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: Standard clinical control phrases encoding seizure freedom.
+  builder: _build_control_phrase
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: She demonstrates complete seizure control on current medication.
+    expected_evidence: complete seizure control
+    expected_attributes:
+      NumberOfSeizures: '0'
+  - text: Seizure freedom maintained since starting lamotrigine.
+    expected_evidence: Seizure freedom maintained
+    expected_attributes:
+      NumberOfSeizures: '0'
+  - text: She has not had any further seizures.
+    expected_evidence: has not had any further seizures
+    expected_attributes:
+      NumberOfSeizures: '0'
+  - text: The focal seizures are completely under control.
+    expected_evidence: focal seizures are completely under control
+    expected_attributes:
+      NumberOfSeizures: '0'
+  provenance: Adapted from Gan2026 current-control-phrase rules.
+  exclude:
+  - _is_nonclinical_zero_context
+- rule_id: sf.bare
+  phases:
+  - extract
+  rule_set: seizure_free
+  order: 5
+  group: seizure_free
+  portability: clinical_epilepsy
+  description: Bare seizure-free assertion without duration.
+  builder: _build_sf_bare
+  source_stack: rules/seizure_free.py
+  examples:
+  - text: He is currently seizure free.
+    expected_evidence: seizure free
+    expected_attributes:
+      NumberOfSeizures: '0'
+  - text: The required seizure-free period for driving is 12 months.
+    anti_example: true
+    note: Administrative required-period mention, not a clinical assertion.
+  provenance: Adapted from Gan2026 seizure-free rules.
+  exclude:
+  - _is_sf_bare_distractor
+  - _is_seizure_free_distractor_context
+- rule_id: change.decreased
+  phases:
+  - extract
+  rule_set: change
+  order: 0
+  group: frequency_change
+  portability: clinical_epilepsy
+  description: Seizure frequency decreased / improved / reduced.
+  builder: _build_decreased
+  source_stack: rules/change.py
+  examples:
+  - text: Seizure frequency has decreased since starting lamotrigine.
+    expected_evidence: Seizure frequency has decreased
+    expected_attributes:
+      FrequencyChange: Decreased
+  - text: There has been a reduction in seizure frequency.
+    expected_evidence: reduction in seizure frequency
+    expected_attributes:
+      FrequencyChange: Decreased
+  provenance: Clinical epilepsy FrequencyChange=Decreased patterns.
+- rule_id: change.increased
+  phases:
+  - extract
+  rule_set: change
+  order: 1
+  group: frequency_change
+  portability: clinical_epilepsy
+  description: Seizure frequency increased / worsened.
+  builder: _build_increased
+  source_stack: rules/change.py
+  examples:
+  - text: Seizure frequency has increased over the past 3 months.
+    expected_evidence: Seizure frequency has increased
+    expected_attributes:
+      FrequencyChange: Increased
+  provenance: Clinical epilepsy FrequencyChange=Increased patterns.
+- rule_id: change.same
+  phases:
+  - extract
+  rule_set: change
+  order: 2
+  group: frequency_change
+  portability: clinical_epilepsy
+  description: Seizure frequency unchanged / same / stable.
+  builder: _build_same
+  source_stack: rules/change.py
+  examples:
+  - text: Seizure frequency remains unchanged.
+    expected_evidence: Seizure frequency remains unchanged
+    expected_attributes:
+      FrequencyChange: Same
+  - text: No change in seizure frequency noted.
+    expected_evidence: No change in seizure frequency
+    expected_attributes:
+      FrequencyChange: Same
+  provenance: Clinical epilepsy FrequencyChange=Same patterns.
+- rule_id: change.infrequent
+  phases:
+  - extract
+  rule_set: change
+  order: 3
+  group: frequency_change
+  portability: clinical_epilepsy
+  description: Seizures described as infrequent.
+  builder: _build_infrequent
+  source_stack: rules/change.py
+  examples:
+  - text: Infrequent focal seizures noted in the review period.
+    expected_evidence: Infrequent focal seizures
+    expected_attributes:
+      FrequencyChange: Infrequent
+  provenance: Clinical epilepsy FrequencyChange=Infrequent patterns.
+- rule_id: change.frequent
+  phases:
+  - extract
+  rule_set: change
+  order: 4
+  group: frequency_change
+  portability: clinical_epilepsy
+  description: Seizures described as frequent / high frequency.
+  builder: _build_frequent
+  source_stack: rules/change.py
+  examples:
+  - text: Frequent tonic-clonic seizures are reported.
+    expected_evidence: Frequent tonic-clonic seizures
+    expected_attributes:
+      FrequencyChange: Frequent
+  provenance: Clinical epilepsy FrequencyChange=Frequent patterns.
+- rule_id: temporal.last_seizure_date
+  phases:
+  - extract
+  rule_set: temporal
+  order: 0
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''last seizure [was] in/on <date>'' → NumberOfSeizures=0 + Since +
+    date.'
+  builder: _build_last_seizure_date
+  source_stack: rules/temporal.py
+  examples:
+  - text: Her last seizure was in September 2012.
+    expected_attributes:
+      NumberOfSeizures: '0'
+      MonthDate: '9'
+      YearDate: '2012'
+      TimeSince_or_TimeOfEvent: Since
+  provenance: 'Guideline Ex6/L247-L249: last seizure in <date> = 0 Since.'
+- rule_id: temporal.last_event_date
+  phases:
+  - extract
+  rule_set: temporal
+  order: 1
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''last event/one <date>'' → NumberOfSeizures=0 + Since + date.'
+  builder: _build_last_event_date
+  source_stack: rules/temporal.py
+  examples:
+  - text: Focal to bilateral convulsive seizures, last event October 2019.
+    expected_attributes:
+      NumberOfSeizures: '0'
+      MonthDate: '10'
+      YearDate: '2019'
+      TimeSince_or_TimeOfEvent: Since
+  - text: Convulsive seizures, last event around Christmas 2017.
+    expected_attributes:
+      NumberOfSeizures: '0'
+      MonthDate: '12'
+      YearDate: '2017'
+      TimeSince_or_TimeOfEvent: Since
+  provenance: Header/list variant of guideline Ex6 last-seizure date semantics.
+  exclude:
+  - _outside_seizure_context
+- rule_id: temporal.last_seizure_ago
+  phases:
+  - extract
+  rule_set: temporal
+  order: 2
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''last seizure was N <period> ago'' → 0 + period, no TimeSince.'
+  builder: _build_last_seizure_ago
+  source_stack: rules/temporal.py
+  examples:
+  - text: His last generalised seizure was 5 years ago.
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '5'
+      TimePeriod: Year
+  provenance: 'Guideline Ex3 (L237): period-ago carries no TimeSince.'
+- rule_id: temporal.last_event_ago
+  phases:
+  - extract
+  rule_set: temporal
+  order: 3
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''last event/one was N <period> ago'' → 0 + period, no TimeSince.'
+  builder: _build_last_event_ago
+  source_stack: rules/temporal.py
+  examples:
+  - text: Focal seizures with altered awareness, last event 3 years ago.
+    expected_attributes:
+      NumberOfSeizures: '0'
+      NumberOfTimePeriods: '3'
+      TimePeriod: Year
+  provenance: Header/list variant of guideline Ex3 period-ago last-event semantics.
+- rule_id: temporal.seizure_term_month_year
+  phases:
+  - extract
+  rule_set: temporal
+  order: 4
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: Optional count + seizure term + bare month/year, e.g. 'seizures August
+    2014'.
+  builder: _build_seizure_term_month_year
+  source_stack: rules/temporal.py
+  examples:
+  - text: Focal to bilateral convulsive seizures August 2014.
+    expected_attributes:
+      NumberOfSeizures: '1'
+      MonthDate: '8'
+      YearDate: '2014'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Header/list shorthand in ExECTv2 dev letters, e.g. EA0054.
+  exclude:
+  - _is_event_history_label
+- rule_id: temporal.seizure_term_year
+  phases:
+  - extract
+  rule_set: temporal
+  order: 5
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: Optional count + seizure term + bare year, e.g. '2 seizures 2014'.
+  builder: _build_seizure_term_year
+  source_stack: rules/temporal.py
+  examples:
+  - text: 2 generalised tonic clonic seizures 2014.
+    expected_attributes:
+      NumberOfSeizures: '2'
+      YearDate: '2014'
+      TimeSince_or_TimeOfEvent: During
+  - text: absence like seizures 2014.
+    expected_attributes:
+      NumberOfSeizures: '1'
+      YearDate: '2014'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Header/list shorthand in ExECTv2 dev letters, e.g. EA0006.
+  exclude:
+  - _is_event_history_label
+- rule_id: temporal.christmas_since
+  phases:
+  - extract
+  rule_set: temporal
+  order: 6
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''since/before/after Christmas [<year>]'' → MonthDate=12 (+YearDate)
+    + Since.'
+  builder: _build_christmas
+  source_stack: rules/temporal.py
+  examples:
+  - text: He has been seizure free since before Christmas.
+    expected_attributes:
+      MonthDate: '12'
+      TimeSince_or_TimeOfEvent: Since
+  - text: She has had no seizures since Christmas 2015.
+    expected_attributes:
+      MonthDate: '12'
+      YearDate: '2015'
+      TimeSince_or_TimeOfEvent: Since
+  provenance: 'Gold convention: Christmas read as December (EA0088/EA0093).'
+  exclude:
+  - _outside_seizure_context
+- rule_id: temporal.point_in_time_since
+  phases:
+  - extract
+  rule_set: temporal
+  order: 7
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: '''since <point-in-time>'' → PointInTime + TimeSince=Since.'
+  builder: _build_pit_since
+  source_stack: rules/temporal.py
+  examples:
+  - text: She had two seizures since last being seen.
+    expected_attributes:
+      PointInTime: LastClinic
+      TimeSince_or_TimeOfEvent: Since
+  - text: Since starting lamotrigine his seizure frequency has improved.
+    expected_attributes:
+      PointInTime: DrugChange
+      TimeSince_or_TimeOfEvent: Since
+  - text: He has had no seizures since his surgery.
+    expected_attributes:
+      PointInTime: Surgery
+      TimeSince_or_TimeOfEvent: Since
+  provenance: Guideline v9 Ex4/Ex5 (L239/L243); List 4 points in time.
+  exclude:
+  - _outside_pit_seizure_context
+- rule_id: temporal.point_in_time_standalone_during
+  phases:
+  - extract
+  rule_set: temporal
+  order: 8
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: Standalone point-in-time trigger in seizure context -> During.
+  builder: _build_pit_standalone_during
+  source_stack: rules/temporal.py
+  examples:
+  - text: He had a generalised tonic clonic seizure last week.
+    expected_attributes:
+      PointInTime: Last_Week
+      TimeSince_or_TimeOfEvent: During
+  provenance: Guideline point-in-time vocabulary for dated frequency statements.
+  exclude:
+  - _outside_pit_seizure_context
+- rule_id: temporal.date_day_month_year
+  phases:
+  - extract
+  rule_set: temporal
+  order: 9
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: <prep> <day> <month> <year> → DayDate/MonthDate/YearDate + TimeSince.
+  builder: _build_date_dmy
+  source_stack: rules/temporal.py
+  examples:
+  - text: Her last event was on 15 March 2018.
+    expected_attributes:
+      DayDate: '15'
+      MonthDate: '3'
+      YearDate: '2018'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Guideline Appendix date features (L1003-L1007).
+  exclude:
+  - _outside_seizure_context
+- rule_id: temporal.date_month_year
+  phases:
+  - extract
+  rule_set: temporal
+  order: 10
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: <prep> <month> <year> → MonthDate/YearDate + TimeSince.
+  builder: _build_date_my
+  source_stack: rules/temporal.py
+  examples:
+  - text: He had 3 seizures in March 2014.
+    expected_attributes:
+      MonthDate: '3'
+      YearDate: '2014'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Guideline Appendix date features.
+  exclude:
+  - _outside_seizure_context
+- rule_id: temporal.date_month
+  phases:
+  - extract
+  rule_set: temporal
+  order: 11
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: <prep> <month> (no year) → MonthDate + TimeSince.
+  builder: _build_date_month
+  source_stack: rules/temporal.py
+  examples:
+  - text: He had 5 seizures in May, but none since.
+    expected_attributes:
+      MonthDate: '5'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Guideline Ex1 (L233).
+  exclude:
+  - _outside_seizure_context
+- rule_id: temporal.date_year
+  phases:
+  - extract
+  rule_set: temporal
+  order: 12
+  group: temporal_anchor
+  portability: clinical_epilepsy
+  description: <prep> <year> → YearDate + TimeSince.
+  builder: _build_date_year
+  source_stack: rules/temporal.py
+  examples:
+  - text: She had 2 seizures in 2014.
+    expected_attributes:
+      YearDate: '2014'
+      TimeSince_or_TimeOfEvent: During
+  provenance: Guideline Appendix date features.
+  exclude:
+  - _outside_seizure_context

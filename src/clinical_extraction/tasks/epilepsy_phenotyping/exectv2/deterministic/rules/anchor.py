@@ -23,9 +23,7 @@ from ..normalizer import clean_span
 from ..rule_metadata import (
     ExtractionContext,
     Portability,
-    RuleExample,
     RuleGroup,
-    RuleSpec,
 )
 
 # ---------------------------------------------------------------------------
@@ -75,46 +73,6 @@ def _build_seizure_type_anchor(match: re.Match[str], _ctx: ExtractionContext) ->
     )
 
 
-SEIZURE_TYPE_ANCHOR_RULE = RuleSpec(
-    rule_id="anchor.seizure_type_phrase",
-    group=RuleGroup.ANCHOR_PHRASE,
-    portability=Portability.CLINICAL_EPILEPSY,
-    description=(
-        "Seizure-type / event-description noun phrase: optional clinical "
-        "descriptor(s) + seizure noun + optional 'with loss/altered of "
-        "awareness' suffix."
-    ),
-    pattern=re.compile(
-        rf"\b(?:cluster\s+of\s+)?(?:(?:{_DESCRIPTOR})[\s-]+){{0,3}}"
-        rf"(?:{_SF_ANCHOR_TERMS}){_AWARENESS_SUFFIX}",
-        re.IGNORECASE,
-    ),
-    build=_build_seizure_type_anchor,
-    examples=(
-        RuleExample(
-            text="focal seizures with loss of awareness approximately 2 to 3 per month.",
-            expected_evidence="focal seizures with loss of awareness",
-        ),
-        RuleExample(
-            text="She has generalised tonic clonic seizures occurring twice weekly.",
-            expected_evidence="generalised tonic clonic seizures",
-        ),
-        RuleExample(
-            text="Secondary generalised seizures since the last clinic appointment.",
-            expected_evidence="Secondary generalised seizures",
-        ),
-        RuleExample(
-            text="Myoclonic jerks have become more frequent.",
-            expected_evidence="Myoclonic jerks",
-        ),
-        RuleExample(
-            text="No change in seizures over the last year.",
-            expected_evidence="seizures",
-        ),
-    ),
-    provenance="Anchor phrase: seizure-type noun phrase. Generalizes to Phase 6 "
-    "Diagnosis-style entity detection.",
-)
 
 
 # ---------------------------------------------------------------------------
@@ -131,31 +89,20 @@ def _build_seizure_free_anchor(match: re.Match[str], _ctx: ExtractionContext) ->
         rule_group=RuleGroup.ANCHOR_PHRASE,
         portability=Portability.CLINICAL_EPILEPSY,
     )
+# RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
+# Assembled via sf_surface_registry/adapters/extraction.py
+
+from .extract_impl_types import ExtractRuleImpl
+
+ANCHOR_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
+    'anchor.seizure_type_phrase': ExtractRuleImpl(re.compile('\\b(?:cluster\\s+of\\s+)?(?:(?:secondary\\s+generalised|secondary\\s+generalized|generalised\\s+tonic[\\s-]clonic|generalized\\s+tonic[\\s-]clonic|focal\\s+to\\s+bilateral|focal\\s+motor|partial\\s+motor|frontal\\s+lobe|dyscognitive|focal|generalised|generalized|tonic[\\s-]clonic|tonic|clonic|myoclonic|atonic|absence(?:[\\s-]like)?|non[\\s-]?convulsive|convulsive|complex\\s+partial|simple\\s+partial|partial|bilateral|nocturnal|drop)[\\s-]+){0,3}(?:seizures?|absences?|jerks?|convulsions?)(?:\\s+with\\s+(?:loss|altered|impaired)\\s+(?:of\\s+)?awareness)?', re.IGNORECASE), _build_seizure_type_anchor),
+    'anchor.seizure_free_phrase': ExtractRuleImpl(re.compile('\\bseizure(?:[-‐-―\\s])free\\b', re.IGNORECASE), _build_seizure_free_anchor),
+}
 
 
-SEIZURE_FREE_ANCHOR_RULE = RuleSpec(
-    rule_id="anchor.seizure_free_phrase",
-    group=RuleGroup.ANCHOR_PHRASE,
-    portability=Portability.CLINICAL_EPILEPSY,
-    description="Bare 'seizure free' / 'seizure-free' as its own anchor phrase.",
-    pattern=re.compile(r"\bseizure(?:[-‐-―\s])free\b", re.IGNORECASE),
-    build=_build_seizure_free_anchor,
-    examples=(
-        RuleExample(
-            text="She has been seizure-free for 7 months.",
-            expected_evidence="seizure-free",
-        ),
-        RuleExample(
-            text="He is currently seizure free.",
-            expected_evidence="seizure free",
-        ),
-    ),
-    provenance="Anchor phrase: gold sometimes annotates bare 'seizure-free' as "
-    "SeizureFrequency.text with duration folded into attributes.",
-)
+def __getattr__(name: str):
+    if name.startswith("__") and name.endswith("__"):
+        raise AttributeError(name)
+    from .extract_reexports import extract_reexport
 
-
-ANCHOR_RULES: list[RuleSpec] = [
-    SEIZURE_TYPE_ANCHOR_RULE,
-    SEIZURE_FREE_ANCHOR_RULE,
-]
+    return extract_reexport(name)
