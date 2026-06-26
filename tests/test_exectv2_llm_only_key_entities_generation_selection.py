@@ -1459,3 +1459,12 @@ def test_prompt_only_qwen_pool_group_adjudication_records_group_prompt(
     assert "Call strategy: `qwen_pool_group_adjudication`" in report_path.read_text(
         encoding="utf-8"
     )
+
+
+def test_call_strategy_registry_covers_all_literals() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection import (
+        CALL_STRATEGIES,
+        STRATEGY_REGISTRY,
+    )
+
+    assert frozenset(STRATEGY_REGISTRY) == frozenset(CALL_STRATEGIES)

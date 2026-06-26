@@ -22,49 +22,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection import (
+    STRATEGY_REGISTRY,
+    StrategyContext,
+    StrategyPrograms,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
+    DEDUP_FACT_FAMILIES,
+    DECISION_TABLE_FAMILIES,
+    CallStrategy,
+    DedupFactFamily,
+    PromptProfile,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 PROMPT_VERSION = "exectv2_llm_only_key_entities_generation_selection_v0.5"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_generation_selection"
 COMPONENT_OWNER = "qwen_llm_only_generation_selection"
 FACT_ORIGIN = "target_model_generated"
-PromptProfile = Literal[
-    "compact",
-    "full_examples",
-    "decision_table",
-    "decision_table_sf_inv",
-]
-CallStrategy = Literal[
-    "two_stage",
-    "single_call_dedup_facts",
-    "single_call_dedup_facts_per_family",
-    "single_call_inventory",
-    "single_call_mentions",
-    "single_call_per_entity_mentions",
-    "single_call_typed_mentions",
-    "single_call_mention_ids",
-    "single_call_render_ids",
-    "single_call_clean_render_ids",
-    "single_call_per_entity_clean_render_ids",
-    "qwen_pool_adjudication",
-    "qwen_pool_entity_adjudication",
-    "qwen_pool_group_adjudication",
-]
-DedupFactFamily = Literal[
-    "diagnosis",
-    "seizure_frequency",
-    "prescription",
-    "investigation",
-]
-DEDUP_FACT_FAMILIES: tuple[DedupFactFamily, ...] = (
-    "diagnosis",
-    "seizure_frequency",
-    "prescription",
-    "investigation",
-)
-DECISION_TABLE_FAMILIES: frozenset[DedupFactFamily] = frozenset(
-    {"seizure_frequency", "investigation"}
-)
 
 _ARCHITECTURE = {
     "name": "llm_only_generation_then_llm_selection",
@@ -3366,12 +3341,14 @@ def run_split(
     call_strategy: CallStrategy = "two_stage",
     pool_mentions_by_letter: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    program = QwenGenerationSelectionExtractor()
-    inventory_program = QwenSingleCallInventoryExtractor()
-    mention_program = QwenSingleCallMentionExtractor()
-    mention_id_program = QwenSingleCallMentionIdExtractor()
-    dedup_facts_program = QwenSingleCallDedupFactsExtractor()
-    pool_program = QwenPoolAdjudicationExtractor()
+    programs = StrategyPrograms(
+        two_stage=QwenGenerationSelectionExtractor(),
+        inventory=QwenSingleCallInventoryExtractor(),
+        mention=QwenSingleCallMentionExtractor(),
+        mention_id=QwenSingleCallMentionIdExtractor(),
+        dedup_facts=QwenSingleCallDedupFactsExtractor(),
+        pool=QwenPoolAdjudicationExtractor(),
+    )
     if mode == "live":
         dspy.configure(
             lm=build_dspy_lm(
@@ -3393,436 +3370,30 @@ def run_split(
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
 
+    strategy_handler = STRATEGY_REGISTRY[call_strategy]
+
     for letter in todo:
-        if call_strategy == "single_call_dedup_facts":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_dedup_facts_letter(
-                letter,
+        outcome = strategy_handler(
+            StrategyContext(
+                letter=letter,
                 mode=mode,
                 prompt_profile=prompt_profile,
-                program=dedup_facts_program,
-            )
-            row = row_from_final_dedup_facts(
-                letter,
-                DedupClinicalFactsRecord.model_validate(
-                    {"clinical_facts": inventory_details["clinical_facts_final"]}
-                ),
+                programs=programs,
                 split=split,
                 model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                generation_parse_errors=generation_parse_errors,
+                pool_mentions_by_letter=pool_mentions_by_letter,
             )
-        elif call_strategy == "single_call_dedup_facts_per_family":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_dedup_facts_per_family_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=dedup_facts_program,
-            )
-            row = row_from_final_dedup_facts(
-                letter,
-                DedupClinicalFactsRecord.model_validate(
-                    {"clinical_facts": inventory_details["clinical_facts_final"]}
-                ),
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                generation_parse_errors=generation_parse_errors,
-            )
-        elif call_strategy == "qwen_pool_group_adjudication":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_qwen_pool_group_adjudication_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=pool_program,
-                model_generated_mentions=(
-                    list((pool_mentions_by_letter or {}).get(letter.letter_id, []))
-                ),
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "qwen_pool_entity_adjudication":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_qwen_pool_entity_adjudication_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=pool_program,
-                model_generated_mentions=(
-                    list((pool_mentions_by_letter or {}).get(letter.letter_id, []))
-                ),
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "qwen_pool_adjudication":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_qwen_pool_adjudication_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=pool_program,
-                model_generated_mentions=(
-                    list((pool_mentions_by_letter or {}).get(letter.letter_id, []))
-                ),
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_render_ids":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_render_ids_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_id_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_clean_render_ids":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_clean_render_ids_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_id_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_per_entity_clean_render_ids":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_per_entity_clean_render_ids_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_id_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_per_entity_mentions":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_per_entity_mentions_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_typed_mentions":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_typed_mentions_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_mention_ids":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_mention_ids_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_id_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_mentions":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_mentions_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=mention_program,
-            )
-            row = row_from_final_mentions(
-                letter,
-                inventory_details["structured_mentions_final"],
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        elif call_strategy == "single_call_inventory":
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_single_call_inventory_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=inventory_program,
-            )
-            row = row_from_final_record(
-                letter,
-                final_record,
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
-        else:
-            (
-                generation_prompt_input_json,
-                selection_prompt_input_json,
-                raw_generation_output,
-                raw_selection_output,
-                generation_call_error,
-                selection_call_error,
-                generation_parse_errors,
-                selection_parse_errors,
-                first_pass_record,
-                final_record,
-                inventory_details,
-            ) = _run_two_stage_letter(
-                letter,
-                mode=mode,
-                prompt_profile=prompt_profile,
-                program=program,
-            )
-            row = row_from_final_record(
-                letter,
-                final_record,
-                split=split,
-                model=model,
-                mode=mode,
-                raw_generation_output=raw_generation_output,
-                raw_selection_output=raw_selection_output,
-                generation_parse_errors=generation_parse_errors,
-                selection_parse_errors=selection_parse_errors,
-            )
+        )
+        row = outcome.row
+        generation_prompt_input_json = outcome.generation_prompt_input_json
+        selection_prompt_input_json = outcome.selection_prompt_input_json
+        generation_call_error = outcome.generation_call_error
+        selection_call_error = outcome.selection_call_error
+        generation_parse_errors = outcome.generation_parse_errors
+        selection_parse_errors = outcome.selection_parse_errors
+        first_pass_record = outcome.first_pass_record
+        final_record = outcome.final_record
+        inventory_details = outcome.inventory_details
         row.update(
             {
                 "prompt_profile": prompt_profile,
