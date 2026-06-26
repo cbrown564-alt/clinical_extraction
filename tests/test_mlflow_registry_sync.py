@@ -13,10 +13,9 @@ from clinical_extraction.core.mlflow_registry_sync import (
     filter_registry_entries,
     infer_dataset,
     infer_task,
-    render_comparison_sync_plan,
     render_sync_plan,
     resolve_backfill_filters,
-    sync_comparison_plan_to_mlflow,
+    sync_plan_to_mlflow,
 )
 from clinical_extraction.core.mlflow_tracking import MlflowRunPayload
 from clinical_extraction.core.registry import (
@@ -288,17 +287,18 @@ def test_comparison_sync_plan_groups_same_core_children(tmp_path: Path) -> None:
         child_run_ids=(gpt.run_id, qwen_repair.run_id),
         parent_artifact_paths=("docs/same_core.md",),
     )
-    rendered = render_comparison_sync_plan(plan)
+    rendered = render_sync_plan(plan)
 
-    assert plan.parent_tags["same_core_comparison"] == "true"
-    assert plan.parent_tags["claim_boundary"] == "dev_only"
-    assert plan.parent_tags["row_inspection_policy"] == "allowed"
-    assert plan.parent_metrics["best_clinical_headline_f1"] == 0.8396
-    assert plan.parent_metrics["child_run_count"] == 2.0
-    assert plan.child_runs[0].registry_run_id == gpt.run_id
-    assert plan.child_runs[1].registry_run_id == qwen_repair.run_id
-    assert plan.child_runs[0].artifacts[0].action == "log_artifact"
-    assert plan.child_runs[0].artifacts[1].action == "pointer_only"
+    assert plan.parent is not None
+    assert plan.parent.tags["same_core_comparison"] == "true"
+    assert plan.parent.tags["claim_boundary"] == "dev_only"
+    assert plan.parent.tags["row_inspection_policy"] == "allowed"
+    assert plan.parent.metrics["best_clinical_headline_f1"] == 0.8396
+    assert plan.parent.metrics["child_run_count"] == 2.0
+    assert plan.runs[0].registry_run_id == gpt.run_id
+    assert plan.runs[1].registry_run_id == qwen_repair.run_id
+    assert plan.runs[0].artifacts[0].action == "log_artifact"
+    assert plan.runs[0].artifacts[1].action == "pointer_only"
     assert "child exectv2_2call_no_sf_adjudicator_gpt41mini_dev140" in rendered
 
 
@@ -336,7 +336,7 @@ def test_comparison_sync_creates_parent_then_children(
 
     monkeypatch.setattr(mlflow_registry_sync, "mirror_payload_to_mlflow", fake_mirror)
 
-    result = sync_comparison_plan_to_mlflow(plan, repo_root=tmp_path)
+    result = sync_plan_to_mlflow(plan, repo_root=tmp_path)
 
     assert result.parent_run_id == "parent-id"
     assert result.mirrored_run_ids == {
