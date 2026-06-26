@@ -94,6 +94,7 @@ class PipelineConfiguration(BaseModel):
 
     architecture: PipelineArchitecture
     ablation_config: AblationConfig = AblationConfig()
+    use_state_graph_extract: bool = False
     dspy_cache: bool = True
     model: str = "openai/gpt-4.1-mini"
     temperature: float = 0.0
@@ -228,6 +229,7 @@ class Gan2026PipelineRunner:
                 item.note_text,
                 source_row_index=item.source_row_index or 1,
                 ablation_config=self.config.ablation_config,
+                use_state_graph=self.config.use_state_graph_extract,
             )
 
             normalized_events = canonical_stages.normalize_stage(

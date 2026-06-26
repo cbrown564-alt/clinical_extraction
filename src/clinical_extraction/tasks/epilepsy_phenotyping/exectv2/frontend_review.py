@@ -566,3 +566,23 @@ def cached_exectv2_runs_payload() -> dict[str, Any]:
 def cached_exectv2_runs_json() -> str:
     """Process-cached serialized payload — the multi-MB body is encoded once."""
     return json.dumps(cached_exectv2_runs_payload(), ensure_ascii=False)
+
+
+# Re-exports for observatory cached report routes (stable facade surface).
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (  # noqa: E402,E501
+    cached_component_ablation_json,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_transition_examples import (  # noqa: E402,E501
+    cached_component_transitions_json,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (  # noqa: E402
+    cached_reliability_scorecard_json,
+)
+
+__all__ = [
+    "cached_component_ablation_json",
+    "cached_component_transitions_json",
+    "cached_exectv2_runs_json",
+    "cached_exectv2_runs_payload",
+    "cached_reliability_scorecard_json",
+]

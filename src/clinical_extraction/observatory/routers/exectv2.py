@@ -6,15 +6,9 @@ from fastapi import APIRouter
 
 from clinical_extraction.observatory.cached_routes import cached_json_route
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import (
-    cached_exectv2_runs_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (  # noqa: E501
     cached_component_ablation_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_transition_examples import (  # noqa: E501
     cached_component_transitions_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
+    cached_exectv2_runs_json,
     cached_reliability_scorecard_json,
 )
 
