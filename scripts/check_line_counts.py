@@ -57,7 +57,7 @@ class AllowlistEntry:
 ALLOWLIST: dict[str, AllowlistEntry] = {
     # --- ExECTv2 LLM top-4 blockers (A1) ---
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_generation_selection.py": AllowlistEntry(
-        5285,
+        4134,
         "A1/Wave3-S1: decompose into llm/pipelines/generation_selection/ strategy registry",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_structured.py": AllowlistEntry(
