@@ -9,6 +9,8 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,fit,positioning}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -53,7 +55,12 @@ statements require temporal anchoring, seizure-free duration handling, current
 versus historical selection, and benchmark-compatible normalization, while
 broader phenotyping requires the same infrastructure to recover diagnosis,
 medication, investigation, and seizure-frequency facts without collapsing into a
-single task-specific rule stack.
+single task-specific rule stack. Prior epilepsy NLP systems have shown both the
+value of broad clinic-letter extraction and the persistent difficulty of
+seizure-frequency concepts \cite{fonferko2019exect,fonferko2024annotation},
+while recent seizure-frequency work emphasizes pretrained models, LLM
+fine-tuning, and synthetic but task-faithful supervision
+\cite{xie2022seizure,abeysinghe2025leveraging,holgate2025fine,gan2026synthetic}.
 
 This paper studies a modular extraction design in which deterministic rules and
 large language model (LLM) components are explicit, testable parts of the
@@ -70,20 +77,27 @@ Prior epilepsy natural language processing work includes broad phenotyping
 systems and narrow seizure-frequency extraction systems. Recent LLM-based
 clinical extraction work has improved coverage and flexibility, but can obscure
 the role of deterministic preprocessing, schema repair, normalization, and
-post-processing. The present draft positions deterministic rules as controlled
-variables rather than incidental implementation detail, and treats reliability
-audits and component-impact replays as separate manuscript objects.
+post-processing \cite{abeysinghe2025leveraging,holgate2025fine}. The present
+draft positions deterministic rules as controlled variables rather than
+incidental implementation detail, and treats reliability audits and
+component-impact replays as separate manuscript objects. This emphasis is
+aligned with evidence-grounded seizure-frequency supervision in recent
+synthetic-letter work, but extends the reporting discipline to component
+boundaries and aggregate replay evidence \cite{gan2026synthetic}.
 
 \section{Methods}
 
 \subsection{Tasks and Evaluation Surfaces}
 
-Gan 2026 is used as the deep seizure-frequency task. Development follows a
+Gan 2026 is used as the deep seizure-frequency task \cite{gan2026synthetic}.
+Development follows a
 locked split protocol: validation rows are used for development, while
 \code{test450} is reserved for frozen final aggregate evaluation. Test-set
 row-level failure inspection is not used for development or tuning.
 
-ExECTv2 is used as the broad phenotyping task. The headline surface is
+ExECTv2 is used as the broad phenotyping task, building on the ExECT lineage of
+epilepsy clinic-letter extraction and the later synthetic-letter annotation
+resource \cite{fonferko2019exect,fonferko2024annotation}. The headline surface is
 de-duplicated \code{clinical\_headline} recovery across Diagnosis,
 SeizureFrequency, Prescription, and Investigations. Strict benchmark and
 CUI-oriented outputs are retained as diagnostic compatibility surfaces, not as
@@ -108,19 +122,54 @@ grounded, calibrated, robust, consistent, and operationally replayable.
 Component-impact analysis is reserved for ablations or same-input replays that
 measure a named component's score contribution.
 
-\begin{figure}[tbp]
+\begin{figure*}[tbp]
 \centering
-\fbox{\begin{minipage}{0.92\columnwidth}
-\small
-\textbf{Evidence layout.} Model-mediated extraction, deterministic
-normalization, evidence validation, scoring views, reliability audits, and
-component-off replays are reported as distinct layers. Gan 2026 provides the
-deep seizure-frequency stress test; ExECTv2 tests transfer to broad
-clinical-fact recovery.
-\end{minipage}}
-\caption{Manuscript figure scaffold for the two-task modular-evidence design.}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum width=2.8cm, minimum height=0.86cm, fill=white},
+  task/.style={box, fill=blue!7},
+  llm/.style={box, fill=green!8},
+  rule/.style={box, fill=orange!10},
+  view/.style={box, fill=purple!7},
+  audit/.style={box, fill=gray!10},
+  arrow/.style={-{Latex[length=2mm]}, line width=0.35pt},
+  dashedarrow/.style={-{Latex[length=2mm]}, dashed, line width=0.35pt}
+]
+\node[task] (gan) {Gan 2026\\deep seizure-frequency};
+\node[task, below=0.55cm of gan] (exect) {ExECTv2\\broad clinical facts};
+
+\node[llm, right=1.0cm of gan] (ganllm) {LLM event\\or label selection};
+\node[llm, right=1.0cm of exect] (exectllm) {LLM candidate\\producers};
+
+\node[rule, right=1.0cm of ganllm] (ganrules) {Deterministic\\normalize/project/render};
+\node[rule, right=1.0cm of exectllm] (exectrules) {Entity lenses\\and projection};
+
+\node[view, right=1.0cm of ganrules] (ganviews) {Purist / pragmatic\\benchmark views};
+\node[view, right=1.0cm of exectrules] (exectviews) {Clinical-headline\\and diagnostic views};
+
+\node[audit, right=1.0cm of ganviews] (ganclaims) {Frozen aggregate\\holdout evidence};
+\node[audit, right=1.0cm of exectviews] (exectclaims) {Reliability and\\component impact};
+
+\draw[arrow] (gan) -- (ganllm);
+\draw[arrow] (ganllm) -- (ganrules);
+\draw[arrow] (ganrules) -- (ganviews);
+\draw[arrow] (ganviews) -- (ganclaims);
+
+\draw[arrow] (exect) -- (exectllm);
+\draw[arrow] (exectllm) -- (exectrules);
+\draw[arrow] (exectrules) -- (exectviews);
+\draw[arrow] (exectviews) -- (exectclaims);
+
+\draw[dashedarrow] (ganrules.south) -- node[right, align=left, font=\tiny]{portable temporal\\and SF logic} (exectrules.north);
+\draw[dashedarrow] (ganviews.south) -- node[right, align=left, font=\tiny]{same reporting\\boundary discipline} (exectviews.north);
+
+\node[draw, rounded corners=3pt, fit=(gan)(ganclaims), inner sep=5pt, label={[font=\scriptsize]above:Deep task}] {};
+\node[draw, rounded corners=3pt, fit=(exect)(exectclaims), inner sep=5pt, label={[font=\scriptsize]below:Broad task}] {};
+\end{tikzpicture}}
+\caption{Two-task modular evidence architecture. Gan 2026 stresses temporal seizure-frequency extraction under frozen aggregate holdout rules; ExECTv2 reuses the same separation of model-mediated candidates, deterministic clinical logic, scoring views, and reliability/component-impact evidence for broad clinical-fact recovery.}
 \label{fig:evidence-layout}
-\end{figure}
+\end{figure*}
 
 \section{Results}
 
@@ -143,24 +192,8 @@ deterministic code owns normalization, projection, and scoring. The deterministi
 canonical pipeline led validation after de-overfitting but showed the largest
 validation-to-holdout drop on the frozen \code{test450} audit, supporting the
 portability warning that high validation score from rules alone is incomplete
-generalization evidence.
-
-\begin{table*}[tbp]
-\caption{Gan 2026 Three-Way Comparison on Validation750 (\code{gpt-4.1-mini})}
-\label{tab:gan-validation}
-\centering
-\scriptsize
-\begin{tabular}{lrrrl}
-\toprule
-Architecture & Rendered & Purist & Pragmatic & Reading \\
-\midrule
-\code{deterministic\_canonical\_pipeline} & 741/750 & 673/741 (0.908) & 681/741 (0.919) & High validation score; large holdout drop. \\
-\code{hybrid} & 597/750 & 526/597 (0.881) & 545/597 (0.913) & Strong rendered accuracy; too many null/routed rows. \\
-\code{hybrid\_structured\_events} & 748/750 & 661/748 (0.884) & 679/748 (0.908) & Best LLM-using validation coverage/accuracy balance. \\
-\code{llm\_only\_canonical\_pipeline} & 750/750 & 582/750 (0.776) & 614/750 (0.819) & Comparator; below hybrid structured events. \\
-\bottomrule
-\end{tabular}
-\end{table*}
+generalization evidence. The validation750 table is retained as supporting
+development evidence in Appendix Table~\ref{tab:gan-validation}.
 
 \begin{table*}[tbp]
 \caption{Gan 2026 Frozen \code{test450} Aggregate Audit (\code{gpt-4.1-mini})}
@@ -193,21 +226,9 @@ aggregate audits completed under predeclared Gate 4 protocols. The
 constrained-source audit failed promotion bars; the exact-source audit passed
 promotion bars. Neither audit authorizes post-test tuning or row-level failure
 inspection.
-
-\begin{table*}[tbp]
-\caption{Gan 2026 Consensus/Fresh v0.9 Frozen Gate 4 Aggregate Audits (\code{test450})}
-\label{tab:gan-gate4}
-\centering
-\scriptsize
-\begin{tabular}{llrrrl}
-\toprule
-Audit & Source symmetry & Selected Purist & Net gain & Changed precision & Gate outcome \\
-\midrule
-Constrained & constrained & 348/450 (0.7733) & +19 & 0.5909 & Failed; final-evaluation evidence only. \\
-Exact-source & exact & 359/450 (0.7978) & +16 & 0.6000 & Passed; frozen exact selector holdout. \\
-\bottomrule
-\end{tabular}
-\end{table*}
+The audit rows are appendix evidence because they are late-cycle selector
+diagnostics rather than the promoted operational architecture
+(Appendix Table~\ref{tab:gan-gate4}).
 
 Gan holdout-facing claims are limited to aggregate \code{test450} numbers under
 frozen protocols. Validation750 rows are development evidence. The
@@ -269,40 +290,10 @@ produced the strongest aggregate score, GPT-4.1-mini remained operationally
 clean, and the unrepaired Qwen row remained diagnostic because output-contract
 failures blocked operational promotion. Qwen repair v02 later passed the
 predeclared dev140 and full-200 aggregate gates with zero call/parse failures in
-both assemblies.
-
-\begin{table*}[tbp]
-\caption{Same-Core Model Swap on Dev140 \code{clinical\_headline}}
-\label{tab:exectv2-model-swap-dev}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrl}
-\toprule
-Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Operational caveat \\
-\midrule
-DeepSeek chat & 0.8596 & 0.8845 & 0.7658 & 0.8895 & 0.8966 & One parse/schema failure. \\
-GPT-4.1-mini & 0.8396 & 0.8573 & 0.7645 & 0.8895 & 0.8347 & Operationally clean. \\
-Qwen 3.6 35B repair v02 & 0.8319 & 0.8473 & 0.7182 & 0.8895 & 0.8755 & Passes repair gates. \\
-Qwen 3.6 35B unrepaired & 0.8018 & 0.8027 & 0.6919 & 0.8895 & 0.8354 & Diagnostic only. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\begin{table*}[tbp]
-\caption{Same-Core Model Swap on Full-200 Aggregate \code{clinical\_headline}}
-\label{tab:exectv2-model-swap-full}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrr}
-\toprule
-Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Call/parse failures \\
-\midrule
-DeepSeek chat & 0.8566 & 0.8708 & 0.7602 & 0.8926 & 0.9091 & 0 / 1 \\
-GPT-4.1-mini & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & 0 / 0 \\
-Qwen 3.6 35B repair v02 & 0.8197 & 0.8307 & 0.7020 & 0.8926 & 0.8503 & 0 / 0 \\
-\bottomrule
-\end{tabular}
-\end{table*}
+both assemblies. Detailed model-swap rows move to the appendix because they
+support model-family robustness rather than the central architecture comparison
+(Appendix Tables~\ref{tab:exectv2-model-swap-dev} and
+\ref{tab:exectv2-model-swap-full}).
 
 The same-core model-swap study suggests that the ExECTv2 component graph is not
 GPT-4.1-mini-specific. DeepSeek reached 0.8596 and GPT-4.1-mini reached 0.8396
@@ -410,14 +401,6 @@ benchmark win claim. Calibration and review-routing results are not deployment
 readiness claims, and Qwen repair v02 is model-family evidence rather than an
 operational promotion over GPT-4.1-mini or DeepSeek.
 
-\subsection{Next Manuscript Work}
-
-The next paper pass should convert Figure~\ref{fig:evidence-layout} into a
-publication-quality architecture schematic, add source-backed literature
-citations, tighten the Methods section around dataset construction and scoring,
-and decide whether the eight results tables should remain in the main text or
-be split between main text and appendix.
-
 \section{Conclusion}
 
 Across deep seizure-frequency extraction and broad epilepsy-letter phenotyping,
@@ -428,15 +411,117 @@ structured events are the strongest frozen Gan 2026 close-off candidate, and
 ExECTv2 achieves strong de-duplicated clinical-headline recovery with separate
 reliability and component-impact evidence.
 
+\appendices
+\section{Supporting Result Tables}
+
+The main text keeps four result tables: the Gan 2026 frozen aggregate audit,
+the ExECTv2 architecture comparison, the ExECTv2 reliability scorecard, and the
+ExECTv2 component-impact table. The remaining four tables are supporting
+evidence: validation development context, late-cycle selector diagnostics, and
+same-core model-family robustness.
+
+\begin{table*}[tbp]
+\caption{Gan 2026 Three-Way Comparison on Validation750 (\code{gpt-4.1-mini})}
+\label{tab:gan-validation}
+\centering
+\scriptsize
+\begin{tabular}{lrrrl}
+\toprule
+Architecture & Rendered & Purist & Pragmatic & Reading \\
+\midrule
+\code{deterministic\_canonical\_pipeline} & 741/750 & 673/741 (0.908) & 681/741 (0.919) & High validation score; large holdout drop. \\
+\code{hybrid} & 597/750 & 526/597 (0.881) & 545/597 (0.913) & Strong rendered accuracy; too many null/routed rows. \\
+\code{hybrid\_structured\_events} & 748/750 & 661/748 (0.884) & 679/748 (0.908) & Best LLM-using validation coverage/accuracy balance. \\
+\code{llm\_only\_canonical\_pipeline} & 750/750 & 582/750 (0.776) & 614/750 (0.819) & Comparator; below hybrid structured events. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{Gan 2026 Consensus/Fresh v0.9 Frozen Gate 4 Aggregate Audits (\code{test450})}
+\label{tab:gan-gate4}
+\centering
+\scriptsize
+\begin{tabular}{llrrrl}
+\toprule
+Audit & Source symmetry & Selected Purist & Net gain & Changed precision & Gate outcome \\
+\midrule
+Constrained & constrained & 348/450 (0.7733) & +19 & 0.5909 & Failed; final-evaluation evidence only. \\
+Exact-source & exact & 359/450 (0.7978) & +16 & 0.6000 & Passed; frozen exact selector holdout. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{Same-Core Model Swap on Dev140 \code{clinical\_headline}}
+\label{tab:exectv2-model-swap-dev}
+\centering
+\scriptsize
+\begin{tabular}{lrrrrrl}
+\toprule
+Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Operational caveat \\
+\midrule
+DeepSeek chat & 0.8596 & 0.8845 & 0.7658 & 0.8895 & 0.8966 & One parse/schema failure. \\
+GPT-4.1-mini & 0.8396 & 0.8573 & 0.7645 & 0.8895 & 0.8347 & Operationally clean. \\
+Qwen 3.6 35B repair v02 & 0.8319 & 0.8473 & 0.7182 & 0.8895 & 0.8755 & Passes repair gates. \\
+Qwen 3.6 35B unrepaired & 0.8018 & 0.8027 & 0.6919 & 0.8895 & 0.8354 & Diagnostic only. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[tbp]
+\caption{Same-Core Model Swap on Full-200 Aggregate \code{clinical\_headline}}
+\label{tab:exectv2-model-swap-full}
+\centering
+\scriptsize
+\begin{tabular}{lrrrrrr}
+\toprule
+Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Call/parse failures \\
+\midrule
+DeepSeek chat & 0.8566 & 0.8708 & 0.7602 & 0.8926 & 0.9091 & 0 / 1 \\
+GPT-4.1-mini & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & 0 / 0 \\
+Qwen 3.6 35B repair v02 & 0.8197 & 0.8307 & 0.7020 & 0.8926 & 0.8503 & 0 / 0 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \section*{Acknowledgment}
 
 Acknowledgments omitted for draft.
 
 \begin{thebibliography}{00}
-\bibitem{gan2026} Gan 2026 seizure-frequency extraction corpus and internal
-split protocol, project manuscript draft.
-\bibitem{exectv2} ExECTv2 clinical-fact recovery annotations and internal
-clinical-headline scoring protocol, project manuscript draft.
+\bibitem{fonferko2019exect} B. Fonferko-Shadrach, A. S. Lacey, A. Roberts,
+S. Thompson, D. V. Ford, R. A. Lyons, M. I. Rees, and W. O. Pickrell, ``Using
+natural language processing to extract structured epilepsy data from
+unstructured clinic letters: development and validation of the ExECT
+(extraction of epilepsy clinical text) system,'' \emph{BMJ Open}, vol. 9,
+no. 4, e023232, 2019, doi: 10.1136/bmjopen-2018-023232.
+
+\bibitem{fonferko2024annotation} B. Fonferko-Shadrach \emph{et al.},
+``Annotation of epilepsy clinic letters for natural language processing,''
+\emph{Journal of Biomedical Semantics}, vol. 15, no. 17, 2024, doi:
+10.1186/s13326-024-00316-z.
+
+\bibitem{xie2022seizure} K. Xie \emph{et al.}, ``Extracting seizure frequency
+from epilepsy clinic notes: a machine reading approach to natural language
+processing,'' \emph{Journal of the American Medical Informatics Association},
+vol. 29, no. 5, pp. 873--881, 2022, doi: 10.1093/jamia/ocac018.
+
+\bibitem{abeysinghe2025leveraging} R. Abeysinghe, S. Tao, S. D. Lhatoo,
+G.-Q. Zhang, and L. Cui, ``Leveraging pretrained language models for seizure
+frequency extraction from epilepsy evaluation reports,'' \emph{npj Digital
+Medicine}, 2025, doi: 10.1038/s41746-025-01592-4.
+
+\bibitem{holgate2025fine} B. Holgate, J. Davies, S. Fang, J. Winston,
+J. Teo, and M. Richardson, ``Fine-tuning LLMs to extract epilepsy seizure
+frequency data from health records,'' in \emph{Proc. 24th Workshop on
+Biomedical Language Processing}, Vienna, Austria, 2025, pp. 44--55, doi:
+10.18653/v1/2025.bionlp-1.5.
+
+\bibitem{gan2026synthetic} Y. Gan, S. H. Barlow, B. Holgate, J. Davies,
+J. T. Teo, J. S. Winston, and M. P. Richardson, ``Reproducible synthetic
+clinical letters for seizure frequency information extraction,'' arXiv:
+2603.11407, 2026.
 \end{thebibliography}
 
 \end{document}

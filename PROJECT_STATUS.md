@@ -47,11 +47,11 @@ Current evidence stack:
 - Preserve Gan consensus/fresh v0.9 constrained Gate 4 and exact-source Gate 4 as
   frozen aggregate evidence; do not tune gates, prompts, artifacts, rules,
   normalization, scorer, or model choice from them.
+- Tighten the IEEE draft Methods around dataset construction, scoring surfaces,
+  and inspection boundaries after the figure/citation/table-placement pass.
 
 ### Next
 
-- Turn the LaTeX figure scaffold into a real architecture figure, add literature
-  citations, and decide which of the eight results tables move to appendix.
 - If the Gan consensus/fresh path is revisited for tuning or redesign, start
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
@@ -69,6 +69,10 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-06-26: Replaced the IEEE LaTeX figure scaffold with a TikZ two-task
+  modular evidence schematic, added source-backed epilepsy NLP/LLM citations,
+  and moved four supporting results tables to appendix while keeping the
+  compiled PDF current.
 - 2026-06-26: Folded `docs/research/paper_manuscript_2026-06-26.md` Section 4
   into the IEEE LaTeX draft with methods, figure scaffold, results tables,
   discussion, limitations, and compiled PDF output.
