@@ -22,6 +22,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection import (
     STRATEGY_REGISTRY,
     StrategyContext,
@@ -1978,7 +1981,7 @@ def parse_generation_selection_json(
 ) -> tuple[StructuredGenerationSelectionRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2014,7 +2017,7 @@ def parse_generation_selection_mentions_json(
 ) -> tuple[StructuredMentionSelectionRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2077,7 +2080,7 @@ def parse_generation_selection_typed_mentions_json(
 ) -> tuple[StructuredMentionSelectionRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2155,7 +2158,7 @@ def parse_generation_selection_mention_ids_json(
 ) -> tuple[StructuredMentionIdSelectionRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2189,7 +2192,7 @@ def parse_generation_selection_clean_render_ids_json(
 ) -> tuple[StructuredMentionIdSelectionRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2222,7 +2225,7 @@ def parse_dedup_clinical_facts_json(
 ) -> tuple[DedupClinicalFactsRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2249,7 +2252,7 @@ def parse_qwen_pool_adjudication_json(
 ) -> tuple[StructuredPoolAdjudicationRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -2281,7 +2284,7 @@ def parse_qwen_pool_group_adjudication_json(
 ) -> tuple[StructuredPoolGroupAdjudicationRecord | None, list[str]]:
     try:
         payload, dialect_notes = structured.parse_json_payload_with_schema_repair(
-            structured._extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
@@ -3565,85 +3568,6 @@ def write_report(
     lines.extend(structured._clinical_recovery_lines(summary.get("clinical_recovery", {})))
     lines.extend(structured._diagnostic_ladder_lines(summary.get("diagnostic_ladder", {})))
     path.write_text("\n".join(lines), encoding="utf-8")
-
-
-def _run_two_stage_letter(
-    letter: ExectLetter,
-    *,
-    mode: Literal["live", "prompt-only"],
-    prompt_profile: PromptProfile,
-    program: QwenGenerationSelectionExtractor,
-) -> tuple[
-    str,
-    str,
-    str,
-    str,
-    str | None,
-    str | None,
-    list[str],
-    list[str],
-    structured.StructuredExtractionRecord,
-    structured.StructuredExtractionRecord,
-    dict[str, Any],
-]:
-    generation_prompt_input_json = build_generation_prompt_input(
-        letter,
-        prompt_profile=prompt_profile,
-    )
-    raw_generation_output = ""
-    generation_call_error: str | None = None
-    if mode == "live":
-        try:
-            generation_prediction = program(generation_prompt_input_json)
-            raw_generation_output = str(generation_prediction.extraction_json)
-        except Exception as exc:  # pragma: no cover
-            generation_call_error = f"{type(exc).__name__}: {exc}"
-
-    generation_record, generation_parse_errors = (
-        parse_events_json(raw_generation_output)
-        if raw_generation_output
-        else (None, ["not_run"])
-    )
-    first_pass_record = generation_record or structured.StructuredExtractionRecord()
-
-    selection_prompt_input_json = build_selection_prompt_input(
-        letter,
-        first_pass_record,
-        prompt_profile=prompt_profile,
-    )
-    raw_selection_output = ""
-    selection_call_error: str | None = None
-    if mode == "live":
-        try:
-            selection_prediction = program(selection_prompt_input_json)
-            raw_selection_output = str(selection_prediction.extraction_json)
-        except Exception as exc:  # pragma: no cover
-            selection_call_error = f"{type(exc).__name__}: {exc}"
-
-    final_record, selection_parse_errors = (
-        parse_events_json(raw_selection_output)
-        if raw_selection_output
-        else (None, ["not_run"])
-    )
-    return (
-        generation_prompt_input_json,
-        selection_prompt_input_json,
-        raw_generation_output,
-        raw_selection_output,
-        generation_call_error,
-        selection_call_error,
-        generation_parse_errors,
-        selection_parse_errors,
-        first_pass_record,
-        final_record or structured.StructuredExtractionRecord(),
-        {
-            "inventory_prompt_input_json": "",
-            "raw_inventory_output": "",
-            "inventory_call_error": None,
-            "inventory_parse_errors": [],
-            "inventory_selection_summary": [],
-        },
-    )
 
 
 def _run_qwen_pool_adjudication_letter(
