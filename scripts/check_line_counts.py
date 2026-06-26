@@ -70,8 +70,20 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         "A1/Wave3-S2: externalize worked examples to prompts/**/*.yaml + thin orchestrator",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_clinical_findings.py": AllowlistEntry(
-        3295,
-        "A1: split into 3-stage pipeline package (extract, verify, finalize)",
+        80,
+        "Wave C-S2: thin facade over pipelines/clinical_findings/ 3-stage package",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/extract.py": AllowlistEntry(
+        1300,
+        "Wave C-S2: clinical_findings stage 1 — extraction prompts + parse/coerce",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/verify.py": AllowlistEntry(
+        700,
+        "Wave C-S2: clinical_findings stage 2 — verification prompts + decisions",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/runner.py": AllowlistEntry(
+        600,
+        "Wave C-S2: clinical_findings run_split orchestration + reporting",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_target_indicators_single_call.py": AllowlistEntry(
         2352,
