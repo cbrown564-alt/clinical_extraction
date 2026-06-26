@@ -57,9 +57,7 @@ def test_component_ablation_replay_exposes_meaningful_layer_deltas() -> None:
 
     v08_impacts = {
         str(impact["layer_id"]): impact
-        for impact in architectures["exectv2_holistic_finding_assembly_v08_dev140"][
-            "layer_impacts"
-        ]
+        for impact in architectures["exectv2_holistic_finding_assembly_v08_dev140"]["layer_impacts"]
     }
     qwen_impacts = {
         str(impact["layer_id"]): impact
@@ -140,9 +138,7 @@ def test_component_off_readout_payload_reports_named_dev140_ablations() -> None:
         if summary["component_id"] == "evidence_validation"
     )
     assert "structurally inert" in evidence["claim_use"]
-    assert all(
-        row["overall_component_contribution_delta"] == 0.0 for row in evidence["rows"]
-    )
+    assert all(row["overall_component_contribution_delta"] == 0.0 for row in evidence["rows"])
 
     dictionary = next(
         summary
@@ -150,6 +146,79 @@ def test_component_off_readout_payload_reports_named_dev140_ablations() -> None:
         if summary["component_id"] == "standard_dictionary"
     )
     assert "Dictionary normalization" in dictionary["claim_use"]
+
+
+def test_full200_component_off_readout_uses_frozen_component_set() -> None:
+    payload = component_ablation_replay.build_full200_component_off_readout_payload(
+        code_hash="test-hash",
+        worktree_state="clean",
+    )
+
+    assert payload["artifact_kind"] == "exectv2_component_off_full200_readout_set"
+    assert payload["split"] == "full200"
+    assert payload["row_count"] == 200
+    assert payload["code_hash"] == "test-hash"
+    assert payload["worktree_state"] == "clean"
+    assert payload["row_inspection_boundary"] == (
+        "aggregate_only_no_full200_or_holdout_row_level_inspection"
+    )
+    assert {row["status"] for row in payload["preflight"]} == {"pass"}
+    assert len(payload["ablations"]) == 9
+    assert {row["component_id"] for row in payload["ablations"]} == {
+        "standard_dictionary",
+        "residual_semantic_lens",
+        "headline_projection",
+    }
+    assert "evidence_validation" not in {row["component_id"] for row in payload["ablations"]}
+
+    deepseek_projection = next(
+        row
+        for row in payload["ablations"]
+        if row["baseline_run_id"] == "exectv2_2call_no_sf_adjudicator_deepseek_full200"
+        and row["component_id"] == "headline_projection"
+    )
+    assert deepseek_projection["baseline_aggregate_score"]["overall"]["f1"] == 0.8566
+    assert deepseek_projection["operational_counts"]["parse_failures"] == 1
+    assert deepseek_projection["validity_rates"]["schema_validity"] == 0.9988
+
+
+def test_full200_component_off_readout_outputs_contract_artifacts(
+    tmp_path: Path,
+) -> None:
+    json_path = tmp_path / "full200_component_off.json"
+    jsonl_path = tmp_path / "full200_component_off.jsonl"
+    md_path = tmp_path / "full200_component_off.md"
+
+    paths = component_ablation_replay.write_full200_component_off_readout_artifacts(
+        json_path=json_path,
+        jsonl_path=jsonl_path,
+        md_path=md_path,
+        generated_on="2026-06-26",
+        code_hash="test-hash",
+        worktree_state="clean",
+    )
+
+    assert paths == {
+        "component_off_json": json_path,
+        "component_off_jsonl": jsonl_path,
+        "component_off_markdown": md_path,
+    }
+    readout = json.loads(json_path.read_text(encoding="utf-8"))
+    lines = [
+        json.loads(line)
+        for line in jsonl_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    markdown = md_path.read_text(encoding="utf-8")
+
+    assert readout["predeclaration_path"].endswith(
+        "exectv2_component_off_full200_predeclaration_2026-06-26.md"
+    )
+    assert len(lines) == 9
+    assert "Aggregate Component-Off Table" in markdown
+    assert "Component Impact evidence only" in markdown
+    assert "Reliability Scorecard" in markdown
+    assert "evidence_validation" not in markdown
 
 
 def test_component_off_readout_outputs_contract_artifacts(tmp_path: Path) -> None:
@@ -171,16 +240,13 @@ def test_component_off_readout_outputs_contract_artifacts(tmp_path: Path) -> Non
         "component_off_jsonl": jsonl_path,
         "component_off_markdown": md_path,
     }
-    readout = json.loads(json_path.read_text(encoding="utf-8"))
     lines = [
         json.loads(line)
         for line in jsonl_path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
     assert len(lines) == 16
-    assert all(
-        line["artifact_kind"] == "exectv2_component_off_replay_config" for line in lines
-    )
+    assert all(line["artifact_kind"] == "exectv2_component_off_replay_config" for line in lines)
     markdown = md_path.read_text(encoding="utf-8")
     assert "Aggregate Component-Off Table" in markdown
     assert "reliability scorecard" in markdown
@@ -223,10 +289,7 @@ def test_component_ablation_replay_outputs_contract_artifacts(tmp_path: Path) ->
         if line.strip()
     ]
     assert len(lines) == len(payload["architectures"]) == 4
-    assert all(
-        line["artifact_kind"] == "exectv2_component_architecture_ladder"
-        for line in lines
-    )
+    assert all(line["artifact_kind"] == "exectv2_component_architecture_ladder" for line in lines)
     markdown = md_path.read_text(encoding="utf-8")
     assert "No model calls" in markdown
     assert "Final assembly" not in markdown

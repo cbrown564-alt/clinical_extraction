@@ -40,14 +40,30 @@ COMPONENT_OFF_READOUT_STOP_RULE = (
     "aggregate readout only; no model calls, row-level failure inspection, "
     "or post-run tuning authorized"
 )
-DEFAULT_COMPONENT_OFF_JSON = Path(
-    "experiments/exectv2_component_off_replay_dev140_20260626.json"
+FULL200_COMPONENT_OFF_CLAIM_BOUNDARY = (
+    "full-200 aggregate-only component-impact replay under the frozen "
+    "2026-06-26 predeclaration; separate from reliability scorecard evidence"
 )
-DEFAULT_COMPONENT_OFF_JSONL = Path(
-    "experiments/exectv2_component_off_replay_dev140_20260626.jsonl"
+FULL200_COMPONENT_OFF_STOP_RULE = (
+    "report null, negative, and positive aggregate deltas as final component-impact "
+    "evidence; no model calls, row-level full-200 inspection, or tuning authorized"
 )
-DEFAULT_COMPONENT_OFF_MD = Path(
-    "experiments/exectv2_component_off_replay_dev140_20260626.md"
+FULL200_ROW_INSPECTION_BOUNDARY = "aggregate_only_no_full200_or_holdout_row_level_inspection"
+FULL200_COMPONENT_OFF_PREDECLARATION = Path(
+    "docs/experiments/exectv2/reliability/"
+    "exectv2_component_off_full200_predeclaration_2026-06-26.md"
+)
+DEFAULT_COMPONENT_OFF_JSON = Path("experiments/exectv2_component_off_replay_dev140_20260626.json")
+DEFAULT_COMPONENT_OFF_JSONL = Path("experiments/exectv2_component_off_replay_dev140_20260626.jsonl")
+DEFAULT_COMPONENT_OFF_MD = Path("experiments/exectv2_component_off_replay_dev140_20260626.md")
+DEFAULT_FULL200_COMPONENT_OFF_JSON = Path(
+    "experiments/exectv2_component_off_replay_full200_20260626.json"
+)
+DEFAULT_FULL200_COMPONENT_OFF_JSONL = Path(
+    "experiments/exectv2_component_off_replay_full200_20260626.jsonl"
+)
+DEFAULT_FULL200_COMPONENT_OFF_MD = Path(
+    "experiments/exectv2_component_off_replay_full200_20260626.md"
 )
 
 
@@ -150,6 +166,55 @@ DEFAULT_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (
         model="ollama_chat/qwen3.6:35b",
         decision="diagnostic",
         architecture_family="single_gpt_reparse",
+    ),
+)
+
+
+DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (
+    ComponentImpactReplaySpec(
+        run_id="exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+        label="GPT-4.1-mini same-core full200",
+        source_summary_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json"
+        ),
+        source_jsonl_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl"
+        ),
+        model="openai/gpt-4.1-mini",
+        decision="same_core_model_swap",
+        architecture_family="two_call_no_sf_adjudicator",
+        split="full200",
+        row_count=200,
+    ),
+    ComponentImpactReplaySpec(
+        run_id="exectv2_2call_no_sf_adjudicator_deepseek_full200",
+        label="DeepSeek same-core full200",
+        source_summary_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json"
+        ),
+        source_jsonl_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl"
+        ),
+        model="deepseek/deepseek-chat",
+        decision="same_core_model_swap",
+        architecture_family="two_call_no_sf_adjudicator",
+        split="full200",
+        row_count=200,
+    ),
+    ComponentImpactReplaySpec(
+        run_id="exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+        label="Qwen repair v02 same-core full200",
+        source_summary_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json"
+        ),
+        source_jsonl_path=Path(
+            "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
+        ),
+        model="ollama_chat/qwen3.6:35b",
+        decision="same_core_model_swap",
+        architecture_family="two_call_no_sf_adjudicator",
+        split="full200",
+        row_count=200,
     ),
 )
 
@@ -259,6 +324,14 @@ COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = (
 )
 
 
+FULL200_COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = tuple(
+    definition
+    for definition in COMPONENT_OFF_DEFINITIONS
+    if definition.component_id
+    in {"standard_dictionary", "residual_semantic_lens", "headline_projection"}
+)
+
+
 REQUIRED_COMPONENT_OFF_CONFIG_FIELDS = (
     "artifact_kind",
     "ablation_id",
@@ -291,15 +364,20 @@ def build_component_ablation_payload(
     specs: tuple[ComponentImpactReplaySpec, ...] = DEFAULT_REPLAY_SPECS,
     *,
     generated_on: str = DEFAULT_GENERATED_ON,
+    claim_boundary: str = CLAIM_BOUNDARY,
+    include_telemetry: bool = False,
 ) -> dict[str, Any]:
     architectures = [
-        build_architecture_layer_ladder(spec, generated_on=generated_on)
+        build_architecture_layer_ladder(
+            spec,
+            generated_on=generated_on,
+            claim_boundary=claim_boundary,
+            include_telemetry=include_telemetry,
+        )
         for spec in specs
     ]
     impact_rows = [
-        impact
-        for architecture in architectures
-        for impact in architecture["layer_impacts"]
+        impact for architecture in architectures for impact in architecture["layer_impacts"]
     ]
     return {
         "artifact_kind": "exectv2_component_ablation_set",
@@ -308,7 +386,7 @@ def build_component_ablation_payload(
         "row_inspection_policy": "aggregate_only",
         "allow_model_calls": False,
         "allow_post_run_tuning": False,
-        "claim_boundary": CLAIM_BOUNDARY,
+        "claim_boundary": claim_boundary,
         "provenance_policy": PROVENANCE_POLICY,
         "layers": [layer.__dict__ for layer in LAYER_DEFINITIONS],
         "architectures": architectures,
@@ -318,14 +396,23 @@ def build_component_ablation_payload(
 
 def build_component_off_replay_configs(
     payload: dict[str, Any] | None = None,
+    *,
+    definitions: tuple[ComponentOffDefinition, ...] = COMPONENT_OFF_DEFINITIONS,
+    claim_boundary: str = COMPONENT_OFF_CLAIM_BOUNDARY,
+    stop_rule: str = COMPONENT_OFF_STOP_RULE,
 ) -> list[dict[str, Any]]:
     """Build named one-component-off replay configs from saved dev140 surfaces."""
 
     source_payload = payload or build_component_ablation_payload()
     configs = [
-        _component_off_replay_config(architecture, definition)
+        _component_off_replay_config(
+            architecture,
+            definition,
+            claim_boundary=claim_boundary,
+            stop_rule=stop_rule,
+        )
         for architecture in source_payload["architectures"]
-        for definition in COMPONENT_OFF_DEFINITIONS
+        for definition in definitions
     ]
     validate_component_off_replay_configs(configs)
     return configs
@@ -335,9 +422,7 @@ def build_component_off_readout_payload(
     payload: dict[str, Any] | None = None,
     *,
     generated_on: str = DEFAULT_GENERATED_ON,
-    ladder_json: Path = Path(
-        "experiments/exectv2_component_ablation_replay_dev140_20260624.json"
-    ),
+    ladder_json: Path = Path("experiments/exectv2_component_ablation_replay_dev140_20260624.json"),
 ) -> dict[str, Any]:
     """Build the aggregate one-component-off readout from saved dev140 surfaces."""
 
@@ -363,6 +448,83 @@ def build_component_off_readout_payload(
         "claim_boundary": COMPONENT_OFF_READOUT_CLAIM_BOUNDARY,
         "stop_rule": COMPONENT_OFF_READOUT_STOP_RULE,
         "ladder_json": ladder_json.as_posix(),
+        "ablations": ablations,
+        "component_summaries": component_summaries,
+    }
+
+
+def build_full200_component_off_readout_payload(
+    specs: tuple[ComponentImpactReplaySpec, ...] = DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS,
+    *,
+    generated_on: str = DEFAULT_GENERATED_ON,
+    code_hash: str = "not_recorded",
+    worktree_state: str = "not_recorded",
+    predeclaration_path: Path = FULL200_COMPONENT_OFF_PREDECLARATION,
+) -> dict[str, Any]:
+    """Build the frozen full-200 aggregate component-off readout.
+
+    This reads only summary JSON artifacts and excludes row-level full-200 JSONL
+    inspection by construction.
+    """
+
+    preflight_rows = [_full200_preflight(spec, FULL200_COMPONENT_OFF_DEFINITIONS) for spec in specs]
+    eligible_specs = [
+        spec
+        for spec, preflight in zip(specs, preflight_rows, strict=True)
+        if preflight["status"] == "pass"
+    ]
+    source_payload = build_component_ablation_payload(
+        tuple(eligible_specs),
+        generated_on=generated_on,
+        claim_boundary=FULL200_COMPONENT_OFF_CLAIM_BOUNDARY,
+        include_telemetry=True,
+    )
+    ablations = build_component_off_replay_configs(
+        source_payload,
+        definitions=FULL200_COMPONENT_OFF_DEFINITIONS,
+        claim_boundary=FULL200_COMPONENT_OFF_CLAIM_BOUNDARY,
+        stop_rule=FULL200_COMPONENT_OFF_STOP_RULE,
+    )
+    component_summaries = [
+        _component_off_summary(component_id, ablations)
+        for component_id in _ordered_component_ids(ablations)
+    ]
+    return {
+        "artifact_kind": "exectv2_component_off_full200_readout_set",
+        "dataset": "exectv2",
+        "generated_on": generated_on,
+        "split": "full200",
+        "row_count": 200,
+        "scorer_view": "clinical_headline",
+        "scorer_version": "exectv2_component_ablation_replay_v20260626",
+        "primary_surface": "clinical_headline",
+        "predeclaration_path": predeclaration_path.as_posix(),
+        "code_hash": code_hash,
+        "worktree_state": worktree_state,
+        "row_inspection_policy": "aggregate_only",
+        "row_inspection_boundary": FULL200_ROW_INSPECTION_BOUNDARY,
+        "allow_model_calls": False,
+        "allow_post_run_tuning": False,
+        "claim_boundary": FULL200_COMPONENT_OFF_CLAIM_BOUNDARY,
+        "stop_rule": FULL200_COMPONENT_OFF_STOP_RULE,
+        "stop_rule_outcome": _full200_stop_rule_outcome(ablations),
+        "selected_components": [
+            {
+                "component_id": definition.component_id,
+                "component_type": definition.component_type,
+                "component_portability_category": (definition.component_portability_category),
+                "prediction_bearing_status": definition.prediction_bearing_status,
+                "baseline_surface": definition.baseline_surface,
+                "component_off_surface": definition.component_off_surface,
+            }
+            for definition in FULL200_COMPONENT_OFF_DEFINITIONS
+        ],
+        "preflight": preflight_rows,
+        "source_artifacts": [
+            artifact
+            for architecture in source_payload["architectures"]
+            for artifact in architecture["source_artifacts"]
+        ],
         "ablations": ablations,
         "component_summaries": component_summaries,
     }
@@ -403,20 +565,21 @@ def build_architecture_layer_ladder(
     spec: ComponentImpactReplaySpec,
     *,
     generated_on: str = DEFAULT_GENERATED_ON,
+    claim_boundary: str = CLAIM_BOUNDARY,
+    include_telemetry: bool = False,
 ) -> dict[str, Any]:
     summary = _load_summary(spec.source_summary_path)
     layers = [
-        _layer_score(summary, layer)
-        for layer in LAYER_DEFINITIONS
-        if _has_layer(summary, layer)
+        _layer_score(summary, layer) for layer in LAYER_DEFINITIONS if _has_layer(summary, layer)
     ]
     layer_impacts = _layer_impacts(
         run_id=spec.run_id,
         layers=layers,
         generated_on=generated_on,
+        claim_boundary=claim_boundary,
     )
     final_layer = layers[-1]
-    return {
+    architecture = {
         "artifact_kind": "exectv2_component_architecture_ladder",
         "dataset": "exectv2",
         "generated_on": generated_on,
@@ -434,27 +597,28 @@ def build_architecture_layer_ladder(
             spec.source_summary_path.as_posix(),
             spec.source_jsonl_path.as_posix(),
         ],
-        "claim_boundary": CLAIM_BOUNDARY,
+        "claim_boundary": claim_boundary,
         "row_inspection_policy": "aggregate_only",
     }
+    if include_telemetry and isinstance(summary.get("lane_diagnostics"), dict):
+        architecture.update(
+            {
+                "validity_rates": _aggregate_validity_rates(summary, spec.row_count),
+                "operational_counts": _aggregate_operational_counts(summary),
+                "deterministic_action_counts": _deterministic_action_counts(summary),
+            }
+        )
+    return architecture
 
 
 def write_component_ablation_artifacts(
     specs: tuple[ComponentImpactReplaySpec, ...] = DEFAULT_REPLAY_SPECS,
     *,
-    json_path: Path = Path(
-        "experiments/exectv2_component_ablation_replay_dev140_20260624.json"
-    ),
-    jsonl_path: Path = Path(
-        "experiments/exectv2_component_ablation_replay_dev140_20260624.jsonl"
-    ),
-    md_path: Path = Path(
-        "experiments/exectv2_component_ablation_replay_dev140_20260624.md"
-    ),
+    json_path: Path = Path("experiments/exectv2_component_ablation_replay_dev140_20260624.json"),
+    jsonl_path: Path = Path("experiments/exectv2_component_ablation_replay_dev140_20260624.jsonl"),
+    md_path: Path = Path("experiments/exectv2_component_ablation_replay_dev140_20260624.md"),
     config_dir: Path = Path("configs/exectv2/ablations"),
-    frontend_path: Path | None = Path(
-        "frontend/public/mock-data/exectv2/component-ablation.json"
-    ),
+    frontend_path: Path | None = Path("frontend/public/mock-data/exectv2/component-ablation.json"),
     component_off_json_path: Path = DEFAULT_COMPONENT_OFF_JSON,
     component_off_jsonl_path: Path = DEFAULT_COMPONENT_OFF_JSONL,
     component_off_md_path: Path = DEFAULT_COMPONENT_OFF_MD,
@@ -542,9 +706,7 @@ def write_component_off_readout_artifacts(
     jsonl_path: Path = DEFAULT_COMPONENT_OFF_JSONL,
     md_path: Path = DEFAULT_COMPONENT_OFF_MD,
     generated_on: str = DEFAULT_GENERATED_ON,
-    ladder_json: Path = Path(
-        "experiments/exectv2_component_ablation_replay_dev140_20260624.json"
-    ),
+    ladder_json: Path = Path("experiments/exectv2_component_ablation_replay_dev140_20260624.json"),
 ) -> dict[str, Path]:
     readout = build_component_off_readout_payload(
         payload,
@@ -563,14 +725,53 @@ def write_component_off_readout_artifacts(
         encoding="utf-8",
     )
     (REPO_ROOT / jsonl_path).write_text(
-        "\n".join(
-            json.dumps(ablation, ensure_ascii=False) for ablation in readout["ablations"]
-        )
+        "\n".join(json.dumps(ablation, ensure_ascii=False) for ablation in readout["ablations"])
         + "\n",
         encoding="utf-8",
     )
     (REPO_ROOT / md_path).write_text(
         render_component_off_readout_markdown(
+            readout,
+            json_path=json_path,
+            jsonl_path=jsonl_path,
+        ),
+        encoding="utf-8",
+    )
+    return resolved
+
+
+def write_full200_component_off_readout_artifacts(
+    *,
+    json_path: Path = DEFAULT_FULL200_COMPONENT_OFF_JSON,
+    jsonl_path: Path = DEFAULT_FULL200_COMPONENT_OFF_JSONL,
+    md_path: Path = DEFAULT_FULL200_COMPONENT_OFF_MD,
+    generated_on: str = DEFAULT_GENERATED_ON,
+    code_hash: str = "not_recorded",
+    worktree_state: str = "not_recorded",
+) -> dict[str, Path]:
+    readout = build_full200_component_off_readout_payload(
+        generated_on=generated_on,
+        code_hash=code_hash,
+        worktree_state=worktree_state,
+    )
+    resolved = {
+        "component_off_json": json_path,
+        "component_off_jsonl": jsonl_path,
+        "component_off_markdown": md_path,
+    }
+    for path in (json_path, jsonl_path, md_path):
+        (REPO_ROOT / path).parent.mkdir(parents=True, exist_ok=True)
+    (REPO_ROOT / json_path).write_text(
+        json.dumps(readout, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    (REPO_ROOT / jsonl_path).write_text(
+        "\n".join(json.dumps(ablation, ensure_ascii=False) for ablation in readout["ablations"])
+        + "\n",
+        encoding="utf-8",
+    )
+    (REPO_ROOT / md_path).write_text(
+        render_full200_component_off_readout_markdown(
             readout,
             json_path=json_path,
             jsonl_path=jsonl_path,
@@ -606,8 +807,7 @@ def render_component_ablation_markdown(
     ]
     for architecture in payload["architectures"]:
         scores = {
-            layer["layer_id"]: layer["scores"]["overall"]["f1"]
-            for layer in architecture["layers"]
+            layer["layer_id"]: layer["scores"]["overall"]["f1"] for layer in architecture["layers"]
         }
         lines.append(
             f"| `{architecture['run_id']}` | {architecture['decision']} | "
@@ -757,6 +957,130 @@ def render_component_off_readout_markdown(
     return "\n".join(lines)
 
 
+def render_full200_component_off_readout_markdown(
+    payload: dict[str, Any],
+    *,
+    json_path: Path,
+    jsonl_path: Path,
+) -> str:
+    lines = [
+        "# ExECTv2 One-Component-Off Aggregate Readout (full200)",
+        "",
+        f"- Generated: `{payload['generated_on']}`",
+        f"- JSON: `{json_path.as_posix()}`",
+        f"- JSONL: `{jsonl_path.as_posix()}`",
+        f"- Predeclaration: `{payload['predeclaration_path']}`",
+        f"- Code hash at execution: `{payload['code_hash']}`",
+        f"- Worktree state at execution: `{payload['worktree_state']}`",
+        f"- Claim boundary: {payload['claim_boundary']}",
+        f"- Row inspection boundary: `{payload['row_inspection_boundary']}`",
+        "- No model calls; replay is computed from saved full200 summary artifacts.",
+        "- Component Impact evidence only, not Reliability Scorecard evidence.",
+        f"- Stop-rule outcome: `{payload['stop_rule_outcome']}`",
+        "",
+        "## Preflight",
+        "",
+        "| Source family | Status | Split | Rows | Surfaces | Telemetry |",
+        "| --- | --- | --- | ---: | --- | --- |",
+    ]
+    for row in payload["preflight"]:
+        lines.append(
+            f"| `{row['run_id']}` | `{row['status']}` | `{row['split']}` | "
+            f"{row['row_count']} | {row['surface_status']} | "
+            f"{row['telemetry_status']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Selected Components",
+            "",
+            "| Component | Type | Portability | Prediction-bearing | Baseline | Off |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for component in payload["selected_components"]:
+        lines.append(
+            f"| `{component['component_id']}` | `{component['component_type']}` | "
+            f"`{component['component_portability_category']}` | "
+            f"`{component['prediction_bearing_status']}` | "
+            f"`{component['baseline_surface']}` | "
+            f"`{component['component_off_surface']}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Aggregate Component-Off Table",
+            "",
+            (
+                "| Source family | Component | Baseline F1 | Component-off F1 | "
+                "Contribution delta | Diagnosis | SF | Rx | Inv |"
+            ),
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for ablation in payload["ablations"]:
+        baseline_f1 = ablation["baseline_aggregate_score"]["overall"]["f1"]
+        off_f1 = ablation["component_off_aggregate_score"]["overall"]["f1"]
+        deltas = ablation["family_component_contribution_deltas"]
+        lines.append(
+            f"| `{ablation['baseline_run_id']}` | {ablation['component_id']} | "
+            f"{baseline_f1:.4f} | {off_f1:.4f} | "
+            f"{ablation['overall_component_contribution_delta']:+.4f} | "
+            f"{deltas['Diagnosis']:+.4f} | "
+            f"{deltas['SeizureFrequency']:+.4f} | "
+            f"{deltas['Prescription']:+.4f} | "
+            f"{deltas['Investigations']:+.4f} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Validity And Operations",
+            "",
+            (
+                "| Source family | Schema validity | Evidence validity | Calls failed | "
+                "Parse/schema failures | Invalid evidence dropped |"
+            ),
+            "| --- | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    seen: set[str] = set()
+    for ablation in payload["ablations"]:
+        run_id = str(ablation["baseline_run_id"])
+        if run_id in seen:
+            continue
+        seen.add(run_id)
+        validity = ablation["validity_rates"]
+        counts = ablation["operational_counts"]
+        lines.append(
+            f"| `{run_id}` | {validity['schema_validity']:.4f} | "
+            f"{validity['evidence_validity']:.4f} | "
+            f"{counts['call_failures']} | {counts['parse_failures']} | "
+            f"{counts['evidence_invalid_dropped']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Interpretation Boundary",
+            "",
+            (
+                "Contribution delta is baseline minus component-off on the declared "
+                "`clinical_headline` scorer. Positive deltas mean removing the "
+                "component lowered aggregate F1 on this source family; null or "
+                "negative deltas remain valid component-impact evidence and stop "
+                "the audit without tuning."
+            ),
+            "",
+            (
+                "These rows are full200 aggregate Component Impact evidence only. "
+                "They are not holdout results, strict benchmark claims, or "
+                "Reliability Scorecard promotion evidence."
+            ),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def render_component_off_replay_config(config: dict[str, Any]) -> str:
     """Render a deterministic YAML-like config without requiring YAML at runtime."""
 
@@ -791,12 +1115,8 @@ def _component_off_summary(
         "rows": [
             {
                 "baseline_run_id": row["baseline_run_id"],
-                "overall_component_contribution_delta": row[
-                    "overall_component_contribution_delta"
-                ],
-                "family_component_contribution_deltas": row[
-                    "family_component_contribution_deltas"
-                ],
+                "overall_component_contribution_delta": row["overall_component_contribution_delta"],
+                "family_component_contribution_deltas": row["family_component_contribution_deltas"],
             }
             for row in rows
         ],
@@ -807,9 +1127,7 @@ def _component_claim_use(
     component_id: str,
     rows: list[dict[str, Any]],
 ) -> str:
-    overall_deltas = [
-        float(row["overall_component_contribution_delta"]) for row in rows
-    ]
+    overall_deltas = [float(row["overall_component_contribution_delta"]) for row in rows]
     if all(delta == 0.0 for delta in overall_deltas):
         if component_id == "evidence_validation":
             return (
@@ -826,9 +1144,7 @@ def _component_claim_use(
 
     max_delta = max(overall_deltas)
     max_row = next(
-        row
-        for row in rows
-        if float(row["overall_component_contribution_delta"]) == max_delta
+        row for row in rows if float(row["overall_component_contribution_delta"]) == max_delta
     )
     family_deltas = max_row["family_component_contribution_deltas"]
     top_family = max(
@@ -870,18 +1186,13 @@ def _component_claim_use(
 def _component_off_replay_config(
     architecture: dict[str, Any],
     definition: ComponentOffDefinition,
+    *,
+    claim_boundary: str,
+    stop_rule: str,
 ) -> dict[str, Any]:
-    layers = {
-        str(layer["layer_id"]): layer
-        for layer in architecture["layers"]
-    }
-    if (
-        definition.baseline_surface not in layers
-        or definition.component_off_surface not in layers
-    ):
-        raise ValueError(
-            f"{architecture['run_id']} lacks surfaces for {definition.component_id}"
-        )
+    layers = {str(layer["layer_id"]): layer for layer in architecture["layers"]}
+    if definition.baseline_surface not in layers or definition.component_off_surface not in layers:
+        raise ValueError(f"{architecture['run_id']} lacks surfaces for {definition.component_id}")
     baseline = layers[definition.baseline_surface]
     component_off = layers[definition.component_off_surface]
     baseline_score = baseline["scores"]
@@ -911,13 +1222,9 @@ def _component_off_replay_config(
     return {
         "artifact_kind": "exectv2_component_off_replay_config",
         "dataset": "exectv2",
-        "ablation_id": (
-            f"{architecture['run_id']}__without_{definition.component_id}"
-        ),
+        "ablation_id": (f"{architecture['run_id']}__without_{definition.component_id}"),
         "baseline_run_id": architecture["run_id"],
-        "component_off_run_id": (
-            f"{architecture['run_id']}__without_{definition.component_id}"
-        ),
+        "component_off_run_id": (f"{architecture['run_id']}__without_{definition.component_id}"),
         "split": architecture["split"],
         "row_count": architecture["row_count"],
         "scorer_view": definition.scorer_view,
@@ -936,22 +1243,161 @@ def _component_off_replay_config(
         "overall_component_contribution_delta": component_delta,
         "family_component_contribution_deltas": family_component_contribution_deltas,
         "family_component_off_deltas": family_component_off_deltas,
-        "validity_rates": {
-            "schema_validity": "not_recorded_in_source_summary",
-            "evidence_validity": "not_recorded_in_source_summary",
-        },
-        "operational_counts": {
-            "call_failures": "not_recorded_in_source_summary",
-            "parse_failures": "not_recorded_in_source_summary",
-            "abstentions": "not_recorded_in_source_summary",
-            "missing_outputs": "not_recorded_in_source_summary",
-        },
+        "validity_rates": architecture.get(
+            "validity_rates",
+            {
+                "schema_validity": "not_recorded_in_source_summary",
+                "evidence_validity": "not_recorded_in_source_summary",
+            },
+        ),
+        "operational_counts": architecture.get(
+            "operational_counts",
+            {
+                "call_failures": "not_recorded_in_source_summary",
+                "parse_failures": "not_recorded_in_source_summary",
+                "abstentions": "not_recorded_in_source_summary",
+                "missing_outputs": "not_recorded_in_source_summary",
+            },
+        ),
+        "deterministic_action_counts": architecture.get(
+            "deterministic_action_counts",
+            {},
+        ),
         "row_inspection_policy": "aggregate_only",
         "allow_model_calls": False,
         "allow_post_run_tuning": False,
-        "claim_boundary": COMPONENT_OFF_CLAIM_BOUNDARY,
-        "stop_rule": COMPONENT_OFF_STOP_RULE,
+        "claim_boundary": claim_boundary,
+        "stop_rule": stop_rule,
     }
+
+
+def _full200_preflight(
+    spec: ComponentImpactReplaySpec,
+    definitions: tuple[ComponentOffDefinition, ...],
+) -> dict[str, Any]:
+    summary_path = REPO_ROOT / spec.source_summary_path
+    jsonl_path = REPO_ROOT / spec.source_jsonl_path
+    row: dict[str, Any] = {
+        "run_id": spec.run_id,
+        "source_summary_path": spec.source_summary_path.as_posix(),
+        "source_jsonl_path": spec.source_jsonl_path.as_posix(),
+        "status": "pass",
+        "split": "missing",
+        "row_count": 0,
+        "surface_status": "missing",
+        "telemetry_status": "missing",
+        "model_calls_disabled": True,
+        "row_inspection_boundary": FULL200_ROW_INSPECTION_BOUNDARY,
+        "issues": [],
+    }
+    if not summary_path.exists():
+        row["status"] = "preflight_null"
+        row["issues"].append("missing_summary_json")
+        return row
+    if not jsonl_path.exists():
+        row["status"] = "preflight_null"
+        row["issues"].append("missing_source_jsonl")
+    summary = _load_summary(spec.source_summary_path)
+    row["split"] = summary.get("split", "missing")
+    row["row_count"] = int(summary.get("row_count", 0) or 0)
+    if row["split"] != "full200":
+        row["status"] = "preflight_null"
+        row["issues"].append("split_not_full200")
+    if row["row_count"] != 200:
+        row["status"] = "preflight_null"
+        row["issues"].append("row_count_not_200")
+    missing_surfaces = []
+    for definition in definitions:
+        for surface in (definition.baseline_surface, definition.component_off_surface):
+            if not _has_declared_surface(summary, surface):
+                missing_surfaces.append(surface)
+    if missing_surfaces:
+        row["status"] = "preflight_null"
+        row["issues"].append("missing_surfaces:" + ",".join(sorted(set(missing_surfaces))))
+    else:
+        row["surface_status"] = "pass"
+    lane_diagnostics = summary.get("lane_diagnostics", {})
+    telemetry_fields = {
+        "call_failures",
+        "parse_schema_failures",
+        "evidence_invalid_dropped",
+        "exact_evidence_rate",
+    }
+    telemetry_ok = bool(lane_diagnostics) and all(
+        isinstance(stats, dict) and telemetry_fields.issubset(stats)
+        for stats in lane_diagnostics.values()
+    )
+    if telemetry_ok:
+        row["telemetry_status"] = "pass"
+    else:
+        row["status"] = "preflight_null"
+        row["issues"].append("missing_lane_diagnostics")
+    return row
+
+
+def _aggregate_validity_rates(
+    summary: dict[str, Any],
+    expected_row_count: int,
+) -> dict[str, Any]:
+    diagnostics = _lane_diagnostic_values(summary)
+    raw_mentions = sum(int(row.get("raw_mentions", 0)) for row in diagnostics)
+    evidence_invalid = sum(int(row.get("evidence_invalid_dropped", 0)) for row in diagnostics)
+    parse_failures = sum(int(row.get("parse_schema_failures", 0)) for row in diagnostics)
+    family_cells = max(expected_row_count * len(TARGET_INDICATORS), 1)
+    return {
+        "schema_validity": _round_rate(family_cells - parse_failures, family_cells),
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": _round_rate(raw_mentions - evidence_invalid, raw_mentions),
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": min(
+            [float(row.get("exact_evidence_rate", 0.0)) for row in diagnostics] or [1.0]
+        ),
+    }
+
+
+def _aggregate_operational_counts(summary: dict[str, Any]) -> dict[str, Any]:
+    diagnostics = _lane_diagnostic_values(summary)
+    return {
+        "call_failures": sum(int(row.get("call_failures", 0)) for row in diagnostics),
+        "parse_failures": sum(int(row.get("parse_schema_failures", 0)) for row in diagnostics),
+        "evidence_invalid_dropped": sum(
+            int(row.get("evidence_invalid_dropped", 0)) for row in diagnostics
+        ),
+        "raw_mentions": sum(int(row.get("raw_mentions", 0)) for row in diagnostics),
+        "scored_mentions": sum(int(row.get("scored_mentions", 0)) for row in diagnostics),
+        "exact_evidence_mentions": sum(
+            int(row.get("exact_evidence_mentions", 0)) for row in diagnostics
+        ),
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary",
+    }
+
+
+def _deterministic_action_counts(summary: dict[str, Any]) -> dict[str, Any]:
+    fact_origin = summary.get("fact_origin_accounting", {})
+    if not isinstance(fact_origin, dict):
+        return {}
+    by_surface = fact_origin.get("by_surface", {})
+    return dict(by_surface) if isinstance(by_surface, dict) else {}
+
+
+def _lane_diagnostic_values(summary: dict[str, Any]) -> list[dict[str, Any]]:
+    diagnostics = summary.get("lane_diagnostics", {})
+    if not isinstance(diagnostics, dict):
+        return []
+    return [dict(row) for row in diagnostics.values() if isinstance(row, dict)]
+
+
+def _round_rate(numerator: int, denominator: int) -> float:
+    if denominator <= 0:
+        return 1.0
+    return round(float(numerator) / float(denominator), 4)
+
+
+def _full200_stop_rule_outcome(ablations: list[dict[str, Any]]) -> str:
+    if any(float(row["overall_component_contribution_delta"]) <= 0.0 for row in ablations):
+        return "non_positive_delta_observed_stop_no_tuning"
+    return "all_selected_component_deltas_positive_limited_claim"
 
 
 def _yaml_lines(key: str, value: Any, *, indent: int = 0) -> list[str]:
@@ -967,9 +1413,7 @@ def _yaml_lines(key: str, value: Any, *, indent: int = 0) -> list[str]:
             if isinstance(item, dict):
                 lines.append(f"{prefix}  -")
                 for child_key, child_value in item.items():
-                    lines.extend(
-                        _yaml_lines(str(child_key), child_value, indent=indent + 4)
-                    )
+                    lines.extend(_yaml_lines(str(child_key), child_value, indent=indent + 4))
             else:
                 lines.append(f"{prefix}  - {_yaml_scalar(item)}")
         return lines
@@ -1001,6 +1445,16 @@ def _has_layer(summary: dict[str, Any], layer: LayerDefinition) -> bool:
     return layer.surface_key in summary.get("score_ladder", {}).get("materialized_surfaces", {})
 
 
+def _has_declared_surface(summary: dict[str, Any], surface_id: str) -> bool:
+    layer = next(
+        (definition for definition in LAYER_DEFINITIONS if definition.layer_id == surface_id),
+        None,
+    )
+    if layer is None:
+        return False
+    return _has_layer(summary, layer)
+
+
 def _layer_score(summary: dict[str, Any], layer: LayerDefinition) -> dict[str, Any]:
     if layer.score_source == "score_ladder":
         score = summary["score_ladder"][layer.surface_key]
@@ -1022,6 +1476,7 @@ def _layer_impacts(
     run_id: str,
     layers: list[dict[str, Any]],
     generated_on: str,
+    claim_boundary: str,
 ) -> list[dict[str, Any]]:
     impacts: list[dict[str, Any]] = []
     for index, layer in enumerate(layers):
@@ -1059,7 +1514,7 @@ def _layer_impacts(
                 "family_deltas": family_deltas,
                 "current_score": current_scores,
                 "previous_score": previous_scores,
-                "claim_boundary": CLAIM_BOUNDARY,
+                "claim_boundary": claim_boundary,
                 "row_inspection_policy": "aggregate_only",
             }
         )
@@ -1070,8 +1525,7 @@ def _surface_scores(surface: dict[str, Any]) -> dict[str, Any]:
     return {
         "overall": _score_counts(surface["overall"]),
         "families": {
-            family: _score_counts(surface["by_indicator"][family])
-            for family in TARGET_INDICATORS
+            family: _score_counts(surface["by_indicator"][family]) for family in TARGET_INDICATORS
         },
     }
 
