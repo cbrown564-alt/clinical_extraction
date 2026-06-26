@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.claim_policy import fresh_evidence_claim_boundary_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     fresh_evidence_reasoner,
 )
@@ -688,7 +689,7 @@ def _synthetic_output_contract_metadata(summary: Mapping[str, Any]) -> dict[str,
         "mode": "live",
         "model": EXPECTED_MODEL,
         "prompt_version": EXPECTED_PROMPT_VERSION,
-        "claim_boundary": fresh_evidence_reasoner._claim_boundary_for_split("test"),
+        "claim_boundary": fresh_evidence_claim_boundary_for_split("test"),
         "summary": dict(summary),
         "gate": {"status": "preflight", "interpretation": "synthetic contract check"},
     }

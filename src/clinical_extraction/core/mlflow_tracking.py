@@ -16,6 +16,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.claim_policy import (
+    claim_boundary_for_split,
+    restricted_surface_for_split,
+)
+
 LOGGER = logging.getLogger(__name__)
 
 MLFLOW_DISABLED_ENV = "CLINICAL_EXTRACTION_MLFLOW_DISABLED"
@@ -222,13 +227,13 @@ def registry_entry_to_mlflow_payload(
     tags: dict[str, TagValue] = {
         REGISTRY_RUN_ID_TAG: str(entry.run_id),
         "claim_status": _claim_status_from_decision(decision, comparison_role),
-        "claim_boundary": claim_boundary or _claim_boundary_for_split(split),
+        "claim_boundary": claim_boundary or claim_boundary_for_split(split),
         "row_inspection_policy": row_inspection_policy or _row_inspection_policy_for_split(split),
         "raw_trace_policy": raw_trace_policy,
         "artifact_policy": artifact_policy,
         "component_ownership": _component_ownership(pipeline_family, architecture_family),
         "registry_canonical": True,
-        "restricted_surface": _restricted_surface(split),
+        "restricted_surface": restricted_surface_for_split(split),
         "operational_candidate": comparison_role != "diagnostic",
     }
     if evidence_validity:
@@ -364,19 +369,6 @@ def _claim_status_from_decision(decision: str, comparison_role: Any) -> str:
     return "diagnostic"
 
 
-def _claim_boundary_for_split(split: str) -> str:
-    lower = split.lower()
-    if "full200" in lower:
-        return "full200_aggregate_only"
-    if "test" in lower or "holdout" in lower:
-        return "locked_holdout_aggregate"
-    if "validation" in lower:
-        return "validation_development"
-    if "dev" in lower:
-        return "dev_only"
-    return "analysis_only"
-
-
 def _row_inspection_policy_for_split(split: str) -> str:
     lower = split.lower()
     if "full200" in lower or "test" in lower or "holdout" in lower:
@@ -384,11 +376,6 @@ def _row_inspection_policy_for_split(split: str) -> str:
     if "dev" in lower or "validation" in lower:
         return "allowed"
     return "not_applicable"
-
-
-def _restricted_surface(split: str) -> bool:
-    lower = split.lower()
-    return "full200" in lower or "test" in lower or "holdout" in lower
 
 
 def _component_ownership(pipeline_family: str, architecture_family: Any) -> str:
