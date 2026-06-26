@@ -60,6 +60,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 
 PROMPT_VERSION = "gan2026_candidate_set_clinical_assessment_probe_v5"
 PIPELINE_FAMILY = "llm_candidate_set_clinical_assessment_probe"
+COMPONENT_OWNER = "llm_candidate_set_clinical_assessment"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_candidate_set_clinical_assessment_probe_validation25_gpt41mini_v0_2026-06-05.jsonl"
 )
@@ -549,6 +550,7 @@ def run_split(
         assessment, assembly_errors = assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
+            component_owner=COMPONENT_OWNER,
         )
         row = {
             "source_row_index": record.source_row_index,

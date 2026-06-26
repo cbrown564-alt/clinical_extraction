@@ -185,6 +185,7 @@ def evidence_trace_check_stage(
         clinical_assessment, _ = assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
+            component_owner="deterministic_canonical_pipeline",
             disabled_ablation_switches=disabled_ablation_switches,
         )
     except Exception:
