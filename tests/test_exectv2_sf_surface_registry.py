@@ -28,8 +28,9 @@ _REGISTRY_ROOT = (
     / "sf_surface_registry"
 )
 _RULE_INDEX_PATH = _REPO_ROOT / "docs" / "plans" / "sf_surface_rule_index.yaml"
-_PHASE0_MAX_PYTHON_LINES = 350
-_PHASE0_MAX_YAML_LINES = 350
+_PHASE2_MAX_PYTHON_LINES = 750
+_PHASE2_MAX_YAML_LINES = 1500
+_MAX_CATALOG_FILE_LINES = 250
 
 STANDARD_DICTIONARY_SF_REWRITE_CASES: tuple[RewriteCase, ...] = (
     RewriteCase(
@@ -132,7 +133,7 @@ def _count_lines(path: Path) -> int:
 def _registry_python_line_count() -> int:
     total = 0
     for path in sorted(_REGISTRY_ROOT.rglob("*.py")):
-        if path.name == "builders.py" or "__pycache__" in path.parts:
+        if path.name == "builders.py" or "builders" in path.parts or "__pycache__" in path.parts:
             continue
         total += _count_lines(path)
     return total
@@ -164,12 +165,19 @@ def test_rule_index_has_disjoint_stack_namespaces() -> None:
 def test_registry_package_line_count_gate() -> None:
     python_lines = _registry_python_line_count()
     yaml_lines = _registry_yaml_line_count()
-    assert python_lines <= _PHASE0_MAX_PYTHON_LINES, (
-        f"sf_surface_registry Python LOC {python_lines} exceeds {_PHASE0_MAX_PYTHON_LINES}"
+    assert python_lines <= _PHASE2_MAX_PYTHON_LINES, (
+        f"sf_surface_registry Python LOC {python_lines} exceeds {_PHASE2_MAX_PYTHON_LINES}"
     )
-    assert yaml_lines <= _PHASE0_MAX_YAML_LINES, (
-        f"sf_surface_registry YAML LOC {yaml_lines} exceeds {_PHASE0_MAX_YAML_LINES}"
+    assert yaml_lines <= _PHASE2_MAX_YAML_LINES, (
+        f"sf_surface_registry YAML LOC {yaml_lines} exceeds {_PHASE2_MAX_YAML_LINES}"
     )
+    for path in sorted((_REGISTRY_ROOT / "catalog").glob("*.yaml")):
+        if path.name == "extract.yaml":
+            continue
+        file_lines = _count_lines(path)
+        assert file_lines <= _MAX_CATALOG_FILE_LINES, (
+            f"{path.name} has {file_lines} lines; catalog files must stay ≤{_MAX_CATALOG_FILE_LINES}"
+        )
 
 
 @pytest.mark.parametrize("case", STANDARD_DICTIONARY_SF_REWRITE_CASES, ids=lambda c: c.name)

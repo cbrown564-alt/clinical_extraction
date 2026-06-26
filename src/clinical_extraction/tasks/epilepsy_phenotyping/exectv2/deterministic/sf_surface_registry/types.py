@@ -29,6 +29,7 @@ class SurfaceRule(BaseModel):
     portability: Portability | None = None
     quarantine_family: str | None = None
     pattern_id: str | None = None
+    builder: str | None = None
     source_stack: str | None = None
 
     model_config = {"frozen": True}

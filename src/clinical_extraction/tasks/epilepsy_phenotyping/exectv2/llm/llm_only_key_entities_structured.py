@@ -44,6 +44,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
+    residual_candidates_adapter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import extract_json_object
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     check_evidence, raw_output_from_adapter_parse_error, repair_attributes,
@@ -1036,7 +1039,7 @@ def high_priority_evidence_ledger_for_letter(letter: ExectLetter) -> list[dict[s
             anchor_hint=text,
             lane_hint="diagnosis_assertion",
         )
-    for text, evidence, _attrs in sd.sf_residual_additions(letter.note_text):
+    for text, evidence, _attrs in residual_candidates_adapter(letter.note_text):
         add(
             family="seizure_frequency",
             evidence=evidence,

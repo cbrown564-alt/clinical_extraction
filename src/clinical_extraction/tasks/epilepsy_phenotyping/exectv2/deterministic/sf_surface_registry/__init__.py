@@ -1,4 +1,8 @@
-"""Canonical SF surface registry (P1-1 Phase 0)."""
+"""Canonical SF surface registry (P1-1 Phase 0–5).
+
+One typed catalog of SeizureFrequency clinical surfaces. Phase adapters live
+under ``adapters/``; see ``README.md`` for migration status and public API.
+"""
 
 from __future__ import annotations
 

@@ -6,8 +6,6 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from ..adapters.convention import apply_rewrite
-
 
 @dataclass(frozen=True)
 class RewriteCase:
@@ -36,14 +34,15 @@ def compare_rewrite_outputs(
     evidence: str,
     attributes: Mapping[str, Any],
 ) -> ShadowDiff:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.standard_dictionary import (
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders._legacy_impl import (
         sf_convention_rewrite as legacy_sf_convention_rewrite,
     )
+    from ..adapters.convention import apply_rewrite_adapter
 
     legacy_result = legacy_sf_convention_rewrite(
         text, evidence=evidence, attributes=attributes
     )
-    registry_result = apply_rewrite(text, evidence=evidence, attributes=attributes)
+    registry_result = apply_rewrite_adapter(text, evidence=evidence, attributes=attributes)
     return ShadowDiff(
         case_name="inline",
         legacy=legacy_result,
