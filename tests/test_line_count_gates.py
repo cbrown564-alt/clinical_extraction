@@ -1,4 +1,4 @@
-"""Pytest wrapper for production line-count gates (Wave 3 Sprint 4)."""
+"""Pytest wrapper for production and tests line-count gates (Wave 3 Sprint 4 / Wave C Sprint 1)."""
 
 from __future__ import annotations
 
@@ -15,9 +15,13 @@ from check_line_counts import (  # noqa: E402
     ALLOWLIST,
     EXECTV2_LLM_MAX_LINES,
     SRC_MAX_LINES,
+    TESTS_ALLOWLIST,
+    TESTS_MAX_LINES,
     check_line_counts,
+    check_tests_line_counts,
     is_exectv2_llm_production,
     src_root,
+    tests_root as get_tests_root,
 )
 
 
@@ -81,8 +85,47 @@ def test_allowlisted_monolith_growth_is_caught(tmp_path: Path) -> None:
     [
         ("exectv2_llm", EXECTV2_LLM_MAX_LINES),
         ("src", SRC_MAX_LINES),
+        ("tests", TESTS_MAX_LINES),
     ],
 )
 def test_gate_limits_documented(limit_name: str, limit_value: int) -> None:
     assert limit_value > 0
-    assert limit_name in {"exectv2_llm", "src"}
+    assert limit_name in {"exectv2_llm", "src", "tests"}
+
+
+def test_tests_tree_passes_line_count_gates(repo_root: Path) -> None:
+    violations = check_tests_line_counts(get_tests_root(repo_root))
+    assert violations == [], "\n".join(v.format() for v in violations)
+
+
+def test_tests_allowlist_paths_exist_under_tests(repo_root: Path) -> None:
+    tree_root = get_tests_root(repo_root)
+    missing = [rel for rel in TESTS_ALLOWLIST if not (tree_root / rel).is_file()]
+    assert missing == [], f"stale tests allowlist entries: {missing}"
+
+
+def test_new_test_file_over_800_is_caught(tmp_path: Path) -> None:
+    """A new 900-line module under tests/ must fail without allowlisting."""
+    tree_root = tmp_path / "tests"
+    target = tree_root / "test_new_megatest_candidate.py"
+    target.parent.mkdir(parents=True)
+    target.write_text("\n".join(["# stub"] * 900), encoding="utf-8")
+
+    violations = check_tests_line_counts(tree_root)
+    assert len(violations) == 1
+    violation = violations[0]
+    assert violation.kind == "new"
+    assert violation.line_count == 900
+    assert violation.triggered_rules == (f"tests≤{TESTS_MAX_LINES}",)
+
+
+def test_allowlisted_megatest_growth_is_caught(tmp_path: Path) -> None:
+    rel = "test_gan2026_pipeline_v1_extraction.py"
+    entry = TESTS_ALLOWLIST[rel]
+    tree_root = tmp_path / "tests"
+    target = tree_root / rel
+    target.parent.mkdir(parents=True)
+    target.write_text("\n".join(["# legacy"] * (entry.max_lines + 1)), encoding="utf-8")
+
+    violations = check_tests_line_counts(tree_root)
+    assert any(v.kind == "growth" and v.rel_path == rel for v in violations)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CI line-count gates to prevent monolith regression (Wave 3 Sprint 4).
+"""CI line-count gates to prevent monolith regression (Wave 3 Sprint 4 / Wave C Sprint 1).
 
 Gate rules
 ----------
@@ -8,7 +8,10 @@ Gate rules
    line count including blanks and comments).
 
 2. **Production source tier** — any ``*.py`` under ``src/clinical_extraction/`` must be
-   **≤ 1,000 lines** unless documented in the allowlist below.
+   **≤ 1,000 lines** unless documented in ``ALLOWLIST`` below.
+
+3. **Tests tier** (P0-6) — any ``*.py`` under ``tests/`` must be **≤ 800 lines**
+   unless documented in ``TESTS_ALLOWLIST`` below.
 
 Allowlist policy (day-1 rollout)
 --------------------------------
@@ -19,8 +22,8 @@ current line count. The gate **fails on**:
 - **Growth** — an allowlisted file grows beyond its documented ceiling.
 
 Shrinking an allowlisted file is always permitted. To add a new allowlisted
-monolith, extend ``ALLOWLIST`` with a justification string referencing the
-decomposition plan (see ``docs/plans/thermo_nuclear_code_quality_audit_plan_2026-06-26.md``).
+monolith, extend the relevant allowlist with a justification string referencing
+the decomposition plan (see ``docs/plans/thermo_nuclear_code_quality_audit_plan_2026-06-26.md``).
 
 How to run
 ----------
@@ -41,8 +44,10 @@ from pathlib import Path
 
 EXECTV2_LLM_MAX_LINES = 500
 SRC_MAX_LINES = 1000
+TESTS_MAX_LINES = 800
 
 SRC_PACKAGE = "src/clinical_extraction"
+TESTS_DIR = "tests"
 
 
 @dataclass(frozen=True)
@@ -237,6 +242,94 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     ),
 }
 
+# Paths are posix-relative to ``tests/``.
+TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
+    "test_gan2026_pipeline_v1_extraction.py": AllowlistEntry(
+        2069,
+        "P0-6/Wave-C-S1: megatest — split into fixtures + per-stage cases",
+    ),
+    "test_exectv2_v09_dictionary_lenses.py": AllowlistEntry(
+        1749,
+        "P0-6/Wave-C-S1: megatest — extract lens table fixtures",
+    ),
+    "test_exectv2_target_indicators_single_call_seizure_frequency.py": AllowlistEntry(
+        1723,
+        "P0-6/Wave-C-S1: megatest — split SF indicator scenarios",
+    ),
+    "test_gan2026_hybrid_structured_events.py": AllowlistEntry(
+        1607,
+        "P0-6/Wave-C-S1: megatest — split hybrid event repair cases",
+    ),
+    "test_gan2026_llm_candidate_set_clinical_assessment_probe.py": AllowlistEntry(
+        1541,
+        "P0-6/Wave-C-S1: megatest — split candidate-set probe panels",
+    ),
+    "test_exectv2_llm_only_key_entities_generation_selection.py": AllowlistEntry(
+        1470,
+        "P0-6/Wave-C-S1: megatest — split generation/selection strategy cases",
+    ),
+    "test_gan2026_clinical_assessment_projection_render_repairs.py": AllowlistEntry(
+        1449,
+        "P0-6/Wave-C-S1: megatest — split projection render repair cases",
+    ),
+    "test_exectv2_scoring.py": AllowlistEntry(
+        1401,
+        "P0-6/Wave-C-S1: megatest — split scoring scenario tables",
+    ),
+    "test_gan2026_fresh_evidence_reasoner.py": AllowlistEntry(
+        1302,
+        "P0-6/Wave-C-S1: megatest — split fresh-evidence reasoner panels",
+    ),
+    "test_exectv2_deterministic_sf.py": AllowlistEntry(
+        1262,
+        "P0-6/Wave-C-S1: megatest — split deterministic SF rule cases",
+    ),
+    "test_gan2026_llm_pipeline_cli.py": AllowlistEntry(
+        1179,
+        "P0-6/Wave-C-S1: megatest — split CLI integration scenarios",
+    ),
+    "test_exectv2_llm_only_key_entities_structured.py": AllowlistEntry(
+        1178,
+        "P0-6/Wave-C-S1: megatest — split structured key-entity cases",
+    ),
+    "test_exectv2_llm_only_clinical_findings.py": AllowlistEntry(
+        1159,
+        "P0-6/Wave-C-S1: megatest — split clinical findings pipeline cases",
+    ),
+    "test_gan2026_consensus_fresh_agreement_selector.py": AllowlistEntry(
+        1062,
+        "P0-6/Wave-C-S1: megatest — split consensus selector panels",
+    ),
+    "test_gan2026_normalize.py": AllowlistEntry(
+        1032,
+        "P0-6/Wave-C-S1: megatest — split normalize rule tables",
+    ),
+    "test_gan2026_clinical_assessment_projection_render_instrumentation.py": AllowlistEntry(
+        1013,
+        "P0-6/Wave-C-S1: megatest — split projection render instrumentation",
+    ),
+    "test_exectv2_target_indicators_single_call_diagnosis.py": AllowlistEntry(
+        948,
+        "P0-6/Wave-C-S1: megatest — split diagnosis indicator scenarios",
+    ),
+    "test_gan2026_pipeline_v1.py": AllowlistEntry(
+        889,
+        "P0-6/Wave-C-S1: megatest — split pipeline v1 integration cases",
+    ),
+    "test_exectv2_clinical_finding_assembly.py": AllowlistEntry(
+        830,
+        "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases",
+    ),
+    "test_gan2026_clinical_assessment_projection_render.py": AllowlistEntry(
+        824,
+        "P0-6/Wave-C-S1: megatest — split projection render cases",
+    ),
+    "test_exectv2_deterministic_all9.py": AllowlistEntry(
+        816,
+        "P0-6/Wave-C-S1: megatest — split all9 deterministic rule cases",
+    ),
+}
+
 
 @dataclass(frozen=True)
 class LineCountViolation:
@@ -266,6 +359,11 @@ def src_root(root: Path | None = None) -> Path:
     return base / "src" / "clinical_extraction"
 
 
+def tests_root(root: Path | None = None) -> Path:
+    base = repo_root() if root is None else root
+    return base / TESTS_DIR
+
+
 def is_exectv2_llm_production(rel_path: str) -> bool:
     return "exectv2/llm/" in rel_path and "/prompts/" not in rel_path
 
@@ -274,14 +372,18 @@ def count_lines(path: Path) -> int:
     return len(path.read_text(encoding="utf-8").splitlines())
 
 
-def iter_production_python_files(package_root: Path) -> list[tuple[str, Path]]:
+def iter_python_files(tree_root: Path) -> list[tuple[str, Path]]:
     files: list[tuple[str, Path]] = []
-    for path in sorted(package_root.rglob("*.py")):
+    for path in sorted(tree_root.rglob("*.py")):
         if "__pycache__" in path.parts:
             continue
-        rel = path.relative_to(package_root).as_posix()
+        rel = path.relative_to(tree_root).as_posix()
         files.append((rel, path))
     return files
+
+
+def iter_production_python_files(package_root: Path) -> list[tuple[str, Path]]:
+    return iter_python_files(package_root)
 
 
 def check_line_counts(package_root: Path | None = None) -> list[LineCountViolation]:
@@ -331,8 +433,49 @@ def check_line_counts(package_root: Path | None = None) -> list[LineCountViolati
     return violations
 
 
+def check_tests_line_counts(tests_dir: Path | None = None) -> list[LineCountViolation]:
+    """Return violations for the tests tree (empty list = pass)."""
+    root = tests_root() if tests_dir is None else tests_dir
+    violations: list[LineCountViolation] = []
+
+    for rel_path, path in iter_python_files(root):
+        line_count = count_lines(path)
+        entry = TESTS_ALLOWLIST.get(rel_path)
+
+        if line_count <= TESTS_MAX_LINES:
+            continue
+
+        if entry is not None and line_count <= entry.max_lines:
+            continue
+
+        if entry is None:
+            violations.append(
+                LineCountViolation(
+                    rel_path=rel_path,
+                    line_count=line_count,
+                    triggered_rules=(f"tests≤{TESTS_MAX_LINES}",),
+                    kind="new",
+                    ceiling=None,
+                    justification=None,
+                )
+            )
+        else:
+            violations.append(
+                LineCountViolation(
+                    rel_path=rel_path,
+                    line_count=line_count,
+                    triggered_rules=(f"tests≤{TESTS_MAX_LINES}",),
+                    kind="growth",
+                    ceiling=entry.max_lines,
+                    justification=entry.justification,
+                )
+            )
+
+    return violations
+
+
 def main() -> int:
-    violations = check_line_counts()
+    violations = check_line_counts() + check_tests_line_counts()
     if not violations:
         print("line-count gates: OK")
         return 0
