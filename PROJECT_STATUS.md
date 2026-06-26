@@ -72,11 +72,11 @@ Current evidence stack:
 
 ### Done Recently
 
-- 2026-06-26: Repo cleanup closed — inventoried generated/local state, pruned the
-  active experiment surface (`experiments/README.md`,
-  `experiments/archive/ARCHIVE_INDEX.md`), verified `.gitignore` and documented
-  regeneration (`docs/REGENERATION.md`), and refreshed resumption pointers
-  (`README.md`, `CONTEXT.md`).
+- 2026-06-26: Repo cleanup closed — pass 1 archived `438` superseded notes; pass 2
+  archived `1012` registry-filtered/unregistered iteration notes (`104` root
+  `.md` remain active). Indexes: `experiments/README.md`,
+  `experiments/archive/ARCHIVE_INDEX.md`, `docs/REGENERATION.md`,
+  `docs/experiments/FROZEN_EVIDENCE_MANIFEST_2026-06-26.md`.
 - 2026-06-26: Paper scaffold and Section 4 integration — IEEE TikZ figure,
   methods/results tables, appendix move, and manuscript Section 4 folded into
   LaTeX with compiled PDF.
