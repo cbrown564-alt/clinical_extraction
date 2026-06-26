@@ -334,13 +334,3 @@ def write_component_transitions_artifacts(
         (REPO_ROOT / frontend_path).write_text(serialized, encoding="utf-8")
         resolved["frontend"] = frontend_path
     return resolved
-
-
-def main() -> None:
-    paths = write_component_transitions_artifacts(generated_on=date.today().isoformat())
-    for label, path in paths.items():
-        print(f"Wrote {label}: {path}")
-
-
-if __name__ == "__main__":
-    main()

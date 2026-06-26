@@ -36,7 +36,7 @@ architecture planning, projection-gap accounting, and deciding where GPT-first
 and hybrid work should focus next. **Note:** the cited artifact files and their
 registry entry predate the 2026-06-17 Finding 3 fix and still show the pre-fix
 PatientHistory numbers; regenerate with
-`python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.deterministic_all9_scorecard`
+`python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cli.deterministic_all9_scorecard`
 to refresh them. The numbers in this note are the post-fix values.
 
 ## Bottom Line

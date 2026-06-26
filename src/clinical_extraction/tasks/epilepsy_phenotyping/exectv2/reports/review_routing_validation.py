@@ -506,12 +506,3 @@ def _result_paragraph(audit: Mapping[str, Any]) -> str:
         "rose to the high-recall policy level instead of meeting the predeclared "
         "lower-burden gate."
     )
-
-
-def main() -> None:
-    path = write_report()
-    print(path.relative_to(REPO_ROOT).as_posix())
-
-
-if __name__ == "__main__":
-    main()

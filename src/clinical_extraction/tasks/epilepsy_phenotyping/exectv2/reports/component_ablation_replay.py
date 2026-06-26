@@ -12,7 +12,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.artifacts import (
     build_architecture_layer_ladder,
     cached_component_ablation_json,
@@ -98,13 +97,3 @@ def build_component_ablation_payload(
         "architectures": architectures,
         "ablations": impact_rows,
     }
-
-
-def main() -> None:
-    paths = write_component_ablation_artifacts()
-    for label, path in paths.items():
-        print(f"{label}: {path}")
-
-
-if __name__ == "__main__":
-    main()

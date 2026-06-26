@@ -404,12 +404,3 @@ def _result_paragraph(audit: dict[str, Any]) -> str:
         f"Brier {validation['brier_score']:.4f}, five populated bins, and "
         "per-family ECE reported for every scored family."
     )
-
-
-def main() -> None:
-    path = write_report()
-    print(path.relative_to(REPO_ROOT).as_posix())
-
-
-if __name__ == "__main__":
-    main()

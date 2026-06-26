@@ -597,12 +597,3 @@ def _primary_family_for_perturbation(perturbation_family: str) -> str:
     if perturbation_family.startswith("diagnosis_"):
         return "Diagnosis"
     return "cross-family evidence stress"
-
-
-def main() -> None:
-    path = write_report()
-    print(path.relative_to(REPO_ROOT).as_posix())
-
-
-if __name__ == "__main__":
-    main()
