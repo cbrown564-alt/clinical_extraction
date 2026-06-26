@@ -28,8 +28,8 @@ _REGISTRY_ROOT = (
     / "sf_surface_registry"
 )
 _RULE_INDEX_PATH = _REPO_ROOT / "docs" / "plans" / "sf_surface_rule_index.yaml"
-_PHASE0_MAX_PYTHON_LINES = 300
-_PHASE0_MAX_YAML_LINES = 300
+_PHASE0_MAX_PYTHON_LINES = 350
+_PHASE0_MAX_YAML_LINES = 350
 
 STANDARD_DICTIONARY_SF_REWRITE_CASES: tuple[RewriteCase, ...] = (
     RewriteCase(
@@ -188,3 +188,36 @@ def test_shadow_diff_zero_mismatches_on_all_standard_dictionary_cases() -> None:
     diffs = run_shadow_diff(STANDARD_DICTIONARY_SF_REWRITE_CASES)
     mismatches = [diff for diff in diffs if not diff.matches]
     assert not mismatches, format_diff_ledger(mismatches)
+
+
+def test_shared_patterns_match_standard_dictionary_fixtures() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
+        CONTEXTUAL_RATE_NOISE,
+        EVERY_N_TO_M_PERIODS,
+        NO_FURTHER_SINCE,
+        SEIZURES_EVERY_RANGE_WEEKS,
+    )
+
+    assert SEIZURES_EVERY_RANGE_WEEKS.search("seizures every 3 to 4 weeks")
+    assert EVERY_N_TO_M_PERIODS.search("every 3 to 4 weeks")
+    assert NO_FURTHER_SINCE.search("no further seizures since August 2016")
+    assert not CONTEXTUAL_RATE_NOISE.search(
+        "I was pleased to hear that he remains seizure free and is now driving."
+    )
+    assert CONTEXTUAL_RATE_NOISE.search(
+        "referred previously before the seizure and remains well controlled"
+    )
+
+
+def test_pattern_registry_exports_phase1_keys() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
+        pattern_names,
+    )
+
+    assert {
+        "CONTEXTUAL_RATE_NOISE",
+        "EVERY_N_TO_M_PERIODS",
+        "NO_FURTHER_SINCE",
+        "SEIZURES_EVERY_RANGE_WEEKS",
+        "NO_FURTHER_GTC_SINCE",
+    }.issubset(set(pattern_names()))

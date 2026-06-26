@@ -4,6 +4,10 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
+    EVERY_N_TO_M_PERIODS,
+)
+
 QUARANTINED_TARGET_PROJECTION_FAMILIES = frozenset(
     {
         "projected_diagnosis_context_to_remote_last_seizures_state",
@@ -94,11 +98,6 @@ SEVERAL_SINCE_LAST_CLINIC = re.compile(
 )
 EVERY_N_PERIODS = re.compile(
     r"\bevery\s+(?P<n>\d+)\s+(?P<period>days?|weeks?|months?|years?)\b",
-    re.IGNORECASE,
-)
-EVERY_N_TO_M_PERIODS = re.compile(
-    r"\bevery\s+(?P<lower>\d+)\s*(?:-|to)\s*(?P<upper>\d+)\s+"
-    r"(?P<period>days?|weeks?|months?|years?)\b",
     re.IGNORECASE,
 )
 CONTROLLED_ON_DOSE = re.compile(

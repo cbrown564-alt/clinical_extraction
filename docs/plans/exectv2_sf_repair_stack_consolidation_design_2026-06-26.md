@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26  
 **Task:** Wave C Sprint 3 **P1-1** (thermo-nuclear audit backlog)  
-**Status:** Phase 0 complete — parity harness + rule index landed; production still on legacy stacks  
+**Status:** Phase 1 complete — shared `patterns.yaml` wired into Stacks B/C (+ Stack A fragment); production behavior unchanged  
 **Author:** Agent design pass on current `main`
 
 ---
@@ -357,11 +357,21 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ### Phase 1 — Extract shared patterns (1 sprint)
 
-- [ ] Move duplicated regex fragments to `patterns.yaml` (`EVERY_RANGE`, `NO_FURTHER_SINCE`, `CONTEXTUAL_RATE_NOISE`, GTC family).
-- [ ] Update Stack B + Stack C to import compiled patterns from registry (behavior-neutral refactor).
-- [ ] Leave Stack A `rules/` importing shared fragments only — no RuleSpec migration yet.
+- [x] Move duplicated regex fragments to `patterns.yaml` (`EVERY_RANGE`, `NO_FURTHER_SINCE`, `CONTEXTUAL_RATE_NOISE`, GTC family).
+- [x] Update Stack B + Stack C to import compiled patterns from registry (behavior-neutral refactor).
+- [x] Leave Stack A `rules/` importing shared fragments only — no RuleSpec migration yet.
 
-**Exit:** `pytest tests/test_exectv2_standard_dictionary.py` + target-indicator replay subset unchanged.
+**Exit:** `pytest tests/test_exectv2_standard_dictionary.py` + target-indicator replay subset unchanged. **Met** — SF dictionary + `test_target_single_call_adapter_projects_every_n_to_m_periods_to_one_event_rate` + `test_period_range_every_three_to_four_weeks`.
+
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `sf_surface_registry/patterns.yaml` | Canonical `EVERY_N_TO_M_PERIODS`, `SEIZURES_EVERY_RANGE_WEEKS`, `NO_FURTHER_SINCE`, `CONTEXTUAL_RATE_NOISE`, GTC family |
+| `sf_surface_registry/patterns.py` | YAML → compiled `re.Pattern` loader + module exports |
+| `conventions/seizure_frequency.py` | Imports 11 shared patterns (removed duplicate inline regex) |
+| `target_projection/constants.py` | `EVERY_N_TO_M_PERIODS` from registry |
+| `rules/rate.py` | `PERIOD_RANGE_RULE` uses `PERIOD_UNIT` fragment |
 
 ### Phase 2 — Convention catalog (2 sprints)
 
