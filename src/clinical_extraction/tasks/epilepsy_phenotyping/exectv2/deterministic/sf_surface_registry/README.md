@@ -15,7 +15,7 @@ deprecation shims; new code should import from here.
 | `sf_surface_registry.patterns` | Compiled regex + token fragments from `patterns.yaml` |
 | `sf_surface_registry.adapters.convention` | Stack B facade: `apply_rewrite`, `is_sf_convention_noise`, `sf_residual_additions` |
 | `sf_surface_registry.adapters.projection` | Stack C facade (SF subset; delegates to `target_projection` until Phase 3) |
-| `sf_surface_registry.adapters.extraction` | Stack A placeholder (`PERIOD_UNIT` fragment; full migration Phase 4) |
+| `sf_surface_registry.adapters.extraction` | Stack A facade: `RATE_RULES`, `ANCHOR_RULES`, `rule_by_id` from `catalog/extract.yaml` |
 | `sf_surface_registry.parity.shadow_diff` | Shadow parity harness (Stack B rewrite vs registry adapter) |
 
 ### Preferred imports (2026-06-26)
@@ -58,9 +58,9 @@ replay confirms zero external imports.
 |-------|-------|--------|
 | 0 | Parity harness, rule index, catalog stubs | ✅ Complete |
 | 1 | `patterns.yaml` shared by Stacks A/B/C | ✅ Complete |
-| 2 | Convention rewrite → catalog + adapter loop | ⏳ Pending |
-| 3 | Projection catalog; policy from registry | ⏳ Pending |
-| 4 | Extraction RuleSpec metadata → catalog | ⏳ Pending (optional) |
+| 2 | Convention rewrite → catalog + adapter loop | ✅ Complete |
+| 3 | Projection catalog; policy from registry | ✅ Complete |
+| 4 | Extraction RuleSpec metadata → catalog | ✅ Complete |
 | 5 | Deprecation shims, approval gate docs | ✅ Complete |
 
 ## Regenerating the rule index
