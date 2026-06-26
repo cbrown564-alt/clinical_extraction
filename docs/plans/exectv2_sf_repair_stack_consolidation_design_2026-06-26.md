@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26  
 **Task:** Wave C Sprint 3 **P1-1** (thermo-nuclear audit backlog)  
-**Status:** Design spike complete — no implementation in this change  
+**Status:** Phase 0 complete — parity harness + rule index landed; production still on legacy stacks  
 **Author:** Agent design pass on current `main`
 
 ---
@@ -338,12 +338,22 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ### Phase 0 — Parity harness (1 sprint, no production switch)
 
-- [ ] Add `sf_surface_registry/parity/` shadow runner comparing Stack B rewrite outputs against registry adapter on all `test_exectv2_standard_dictionary.py` cases.
-- [ ] Inventory all `rule_id` strings across three stacks → `docs/plans/sf_surface_rule_index.yaml` (generated, checked in).
-- [ ] Add CI test: no duplicate `rule_id` across catalog files.
-- [ ] Line-count gate: registry package ≤300 LOC Python + YAML tables (exclude `builders.py`).
+- [x] Add `sf_surface_registry/parity/` shadow runner comparing Stack B rewrite outputs against registry adapter on all `test_exectv2_standard_dictionary.py` cases.
+- [x] Inventory all `rule_id` strings across three stacks → `docs/plans/sf_surface_rule_index.yaml` (generated, checked in).
+- [x] Add CI test: no duplicate `rule_id` across catalog files.
+- [x] Line-count gate: registry package ≤300 LOC Python + YAML tables (exclude `builders.py`).
 
-**Exit:** Shadow diff 0 mismatches on convention rewrite tests.
+**Exit:** Shadow diff 0 mismatches on convention rewrite tests. **Met** — see `tests/test_exectv2_sf_surface_registry.py`.
+
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `deterministic/sf_surface_registry/` | Phase-0 package: types, catalog loader, convention adapter (delegates to legacy), parity harness |
+| `deterministic/sf_surface_registry/catalog/convention_rewrite.yaml` | 41 Stack B rewrite `rule_id` stubs (`phase: rewrite`) |
+| `docs/plans/sf_surface_rule_index.yaml` | Generated index: 47 extract + 41 convention + 47 projection rule IDs (135 unique) |
+| `scripts/generate_sf_surface_rule_index.py` | Regenerates index + convention catalog from live stacks |
+| `tests/test_exectv2_sf_surface_registry.py` | Duplicate-ID gate, line-count gate, shadow parity on 8 SF rewrite fixtures |
 
 ### Phase 1 — Extract shared patterns (1 sprint)
 
@@ -405,7 +415,7 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ## Explicit non-goals
 
-1. **Implementing the registry in this spike** — design and phasing only.
+1. **Implementing the registry in this spike** — design and phasing only; **Phase 0 harness** now landed (shadow-read, no production switch).
 2. **Merging Gan2026 SF rules** (`tasks/seizure_frequency/gan2026/deterministic/rules/`) — separate task family; different gold schema.
 3. **Consolidating `llm_sf_state_projection` / `llm_sf_unknown_suppression`** — tracked as P1-4 (layer hygiene); may *register* rules in Phase 4+ but not in initial merge.
 4. **Changing LLM prompts** (generation_selection SF state instructions, clinical_findings lanes) — registry is deterministic-only.
@@ -427,7 +437,7 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ## Success criteria (P1-1 implementation complete)
 
-- [ ] One checked-in rule index with unique `rule_id` namespace across phases.
+- [x] One checked-in rule index with unique `rule_id` namespace across phases.
 - [ ] `conventions/seizure_frequency.py` ≤500 LOC (facade over registry).
 - [ ] `target_projection/` SF modules ≤800 LOC combined; policy derived from registry.
 - [ ] `llm_target_indicators_single_call.py` imports ≤5 symbols from projection adapter.
