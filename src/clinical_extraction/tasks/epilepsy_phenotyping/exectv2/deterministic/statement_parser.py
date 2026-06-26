@@ -15,7 +15,9 @@ from .frequency_section import _last_event_date_attrs, _rate_attrs
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
-from .rules.anchor import SEIZURE_TYPE_ANCHOR_RULE
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    SEIZURE_TYPE_ANCHOR_RULE,
+)
 
 _SENTENCE = re.compile(r"[^.!?\n]+(?:[.!?]|\n|$)")
 _PRONOUN_CONTINUATION = re.compile(

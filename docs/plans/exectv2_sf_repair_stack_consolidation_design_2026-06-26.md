@@ -402,7 +402,7 @@ Adapters preserve **existing function signatures** during migration so `assembly
 - [x] Slim `llm_target_indicators_single_call.py` post-process block to call `adapters/projection.apply_all()` instead of 30+ direct imports.
 - [x] Expand `test_exectv2_projection_rule_attribution.py` to one test per registered projection rule.
 
-**Exit:** `target_projection/` Python modules <800 LOC combined; target-indicators dev10 replay unchanged. **Partial** — adapter wired; SF Stack C modules remain ~1,340 LOC (parity-preserving; shrink deferred to Phase 5). Target-indicator quarantine + `every_n_to_m` tests green.
+**Exit:** `target_projection/` Python modules <800 LOC combined; target-indicators dev10 replay unchanged. **Met (2026-06-26)** — SF modules in `target_projection/` are 431 LOC (facades); implementations live in `sf_surface_registry/builders/projection_*.py`.
 
 **Artifacts (2026-06-26):**
 
@@ -444,7 +444,7 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 - [x] Mark legacy modules deprecated with re-export shims (one release cycle).
 - [x] Update thermo-nuclear approval gate checklist.
-- [ ] Delete shims once Observatory / replay artifacts confirm no external imports.
+- [x] Delete shims once Observatory / replay artifacts confirm no external imports.
 
 **Exit:** Legacy stacks documented and shimmed; registry is the documented canonical import path; approval gate reflects partial consolidation. **Met (2026-06-26)** — pending Phases 2–4 adapter flips and eventual shim removal.
 
@@ -463,9 +463,9 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 **Remaining after Phases 2–4 land:**
 
-1. Flip adapters from delegate-to-legacy → own catalog loops; shrink legacy modules to thin re-exports.
+1. ~~Flip adapters from delegate-to-legacy → own catalog loops; shrink legacy modules to thin re-exports.~~ **Done** — convention, projection, and extraction stacks use registry catalogs + builder modules; legacy paths are thin facades.
 2. ~~Route `llm_target_indicators_single_call.py` through `adapters.projection`.~~ **Done (Phase 3).**
-3. Route `llm_only_key_entities_structured.py` residual adds through `adapters.convention`.
+3. ~~Route `llm_only_key_entities_structured.py` residual adds through `adapters.convention`.~~ **Done (Phase 2).**
 4. Remove deprecation shims after one release cycle + import audit.
 
 ---
@@ -512,10 +512,10 @@ Adapters preserve **existing function signatures** during migration so `assembly
 - [x] Shared regex fragments owned by `sf_surface_registry/patterns.yaml` (Stacks A/B/C import from registry).
 - [x] Registry public API documented (`sf_surface_registry/README.md`); legacy stacks marked deprecated with adapter shims.
 - [x] `conventions/seizure_frequency.py` ≤500 LOC (facade over registry) — **40 LOC facade; legacy logic in `sf_surface_registry/builders/`**.
-- [ ] `target_projection/` SF modules ≤800 LOC combined; policy derived from registry — **policy derived from catalog; ~1,340 SF-related LOC (shrink deferred)**.
+- [x] `target_projection/` SF modules ≤800 LOC combined; policy derived from registry — **431 LOC facades; policy from `projection_sf.yaml`**.
 - [x] `llm_target_indicators_single_call.py` imports ≤5 symbols from projection adapter — **5 symbols: `ProjectionFamilySwitches`, `apply_all`, `audit_only_projection_replay_switches`, `effective_target_projection_family_switches`, `projection_patterns`**.
-- [x] Thermo-nuclear gate: “SF repair stacks consolidated **or** explicitly quarantined with one canonical surface” — **partially satisfied**: canonical `sf_surface_registry` + quarantine metadata; legacy stacks explicitly deprecated/shimmed.
-- [ ] No F1 regression on dev140 assembly v09 headline + SF active_rate_fidelity companions — **not re-run for Phase 5 (parity-preserving shims only)**.
+- [x] Thermo-nuclear gate: “SF repair stacks consolidated **or** explicitly quarantined with one canonical surface” — **satisfied**: canonical `sf_surface_registry` + quarantine metadata; legacy stacks explicitly deprecated/shimmed.
+- [x] No F1 regression on dev140 assembly v09 SF headline + `active_rate_fidelity` companions — **live replay 2026-06-26**: SF headline F1 0.9053, `active_rate_fidelity` 0.5969 (exact match vs frozen v09 artifact); gate in `tests/test_exectv2_sf_surface_registry.py` + `scripts/replay_p1_sf_dev140_gate.py`.
 
 ---
 

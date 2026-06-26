@@ -57,7 +57,7 @@ from extract_migration_utils import impl_registry_lines
 
 
 def _impl_registry_block() -> str:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
         RATE_RULES,
     )
 

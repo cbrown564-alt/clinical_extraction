@@ -11,19 +11,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rule_m
     RuleExample,
     RuleSpec,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.anchor import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
     ANCHOR_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
     CHANGE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
     RATE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
     SEIZURE_FREE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
     TEMPORAL_RULES,
 )
 

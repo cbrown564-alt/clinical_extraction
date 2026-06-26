@@ -253,9 +253,3 @@ SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
 }
 
 
-def __getattr__(name: str):
-    if name.startswith("__") and name.endswith("__"):
-        raise AttributeError(name)
-    from .extract_reexports import extract_reexport
-
-    return extract_reexport(name)

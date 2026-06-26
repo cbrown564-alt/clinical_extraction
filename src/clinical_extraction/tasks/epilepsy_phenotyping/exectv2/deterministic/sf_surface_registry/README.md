@@ -40,17 +40,18 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
 )
 ```
 
-### Deprecated import paths (shimmed one release cycle)
+### Removed legacy import paths
 
-| Legacy path | Migrate to |
-|-------------|------------|
+Shims were removed after Observatory / replay confirmed no external imports.
+Use the registry adapters directly:
+
+| Former path | Use instead |
+|-------------|-------------|
 | `conventions.seizure_frequency` | `sf_surface_registry.adapters.convention` |
 | `standard_dictionary.sf_*` (SF only) | `sf_surface_registry.adapters.convention` |
 | `target_projection` (SF projection) | `sf_surface_registry.adapters.projection` |
+| `rules.*` named rule re-exports | `sf_surface_registry.adapters.extraction` |
 | Inline duplicate regex in stacks A/B/C | `sf_surface_registry.patterns` |
-
-Legacy modules are **not deleted** until Phases 2–4 complete and Observatory
-replay confirms zero external imports.
 
 ## Migration status
 
@@ -61,7 +62,7 @@ replay confirms zero external imports.
 | 2 | Convention rewrite → catalog + adapter loop | ✅ Complete |
 | 3 | Projection catalog; policy from registry | ✅ Complete |
 | 4 | Extraction RuleSpec metadata → catalog | ✅ Complete |
-| 5 | Deprecation shims, approval gate docs | ✅ Complete |
+| 5 | Shim removal, approval gate docs | ✅ Complete |
 
 ## Regenerating the rule index
 

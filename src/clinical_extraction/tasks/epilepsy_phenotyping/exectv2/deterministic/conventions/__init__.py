@@ -27,7 +27,7 @@ from .prescription import (
     prescription_residual_additions,
     split_daily_dose_regimen,
 )
-from .seizure_frequency import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
     is_sf_convention_noise,
     sf_convention_rewrite,
     sf_residual_additions,

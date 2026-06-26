@@ -98,11 +98,3 @@ ANCHOR_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     'anchor.seizure_type_phrase': ExtractRuleImpl(re.compile('\\b(?:cluster\\s+of\\s+)?(?:(?:secondary\\s+generalised|secondary\\s+generalized|generalised\\s+tonic[\\s-]clonic|generalized\\s+tonic[\\s-]clonic|focal\\s+to\\s+bilateral|focal\\s+motor|partial\\s+motor|frontal\\s+lobe|dyscognitive|focal|generalised|generalized|tonic[\\s-]clonic|tonic|clonic|myoclonic|atonic|absence(?:[\\s-]like)?|non[\\s-]?convulsive|convulsive|complex\\s+partial|simple\\s+partial|partial|bilateral|nocturnal|drop)[\\s-]+){0,3}(?:seizures?|absences?|jerks?|convulsions?)(?:\\s+with\\s+(?:loss|altered|impaired)\\s+(?:of\\s+)?awareness)?', re.IGNORECASE), _build_seizure_type_anchor),
     'anchor.seizure_free_phrase': ExtractRuleImpl(re.compile('\\bseizure(?:[-‐-―\\s])free\\b', re.IGNORECASE), _build_seizure_free_anchor),
 }
-
-
-def __getattr__(name: str):
-    if name.startswith("__") and name.endswith("__"):
-        raise AttributeError(name)
-    from .extract_reexports import extract_reexport
-
-    return extract_reexport(name)

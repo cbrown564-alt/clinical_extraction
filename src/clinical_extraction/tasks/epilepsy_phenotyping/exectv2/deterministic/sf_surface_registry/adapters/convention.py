@@ -34,3 +34,18 @@ def residual_candidates_adapter(note_text: str) -> list[tuple[str, str, dict[str
     """Registry-backed residual-add facade."""
 
     return residual_candidates(note_text)
+
+
+# Public aliases matching the historical ``conventions.seizure_frequency`` API.
+sf_convention_rewrite = apply_rewrite_adapter
+is_sf_convention_noise = is_noise_adapter
+sf_residual_additions = residual_candidates_adapter
+
+__all__ = [
+    "apply_rewrite_adapter",
+    "is_noise_adapter",
+    "is_sf_convention_noise",
+    "residual_candidates_adapter",
+    "sf_convention_rewrite",
+    "sf_residual_additions",
+]

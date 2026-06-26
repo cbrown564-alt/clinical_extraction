@@ -1,4 +1,4 @@
-"""Seizure-frequency and diagnosis text projection from evidence."""
+"""SF projection builders migrated from ``target_projection/sf_state.py``."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_phrase,
 )
 
-from .constants import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
     EVERY_N_PERIODS,
     EVERY_N_TO_M_PERIODS,
     GENERIC_YEARLY_SEIZURE_RATE,
@@ -20,12 +20,12 @@ from .constants import (
     VAGUE_YEARLY_SEIZURE_RATE,
     YEAR_IN_TEXT,
 )
-from .policy import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.policy import (
     ProjectionFamilySwitches,
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from .shared import period_to_canonical
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import period_to_canonical
 
 def project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
     source = normalize_phrase(f"{text} {evidence}")

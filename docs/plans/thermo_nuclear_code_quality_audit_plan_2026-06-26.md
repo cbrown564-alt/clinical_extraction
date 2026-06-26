@@ -1,7 +1,7 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
-**Last updated:** 2026-06-26 (Wave C Sprint 3: P1-1 Phases 0–1 + Phase 5 cleanup landed)  
+**Last updated:** 2026-06-26 (Wave C Sprint 3: P1-1 Phases 0–5 complete)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
 **Overall verdict:** **CONDITIONAL APPROVE** — major layer inversions fixed and largest Gan/runtime monoliths decomposed; ExECTv2 LLM top-4 and report cluster remain gated debt
@@ -30,7 +30,7 @@ The codebase is a **research instrument with a real UI**. Architectural intent i
 | Reports | `llm_first` at gate violation; runner owned render | `reports/llm_first/` package; 72 LOC facade |
 | Frontend | Gallery 1,005 LOC; `lib` imported from `app/` | Gallery 26 LOC; Gan surfaces in `components/gan2026/`; CI build/test/lint |
 
-**Primary debt remaining:** ExECTv2 LLM top-4 still 2.3k–4.1k LOC each; report cluster (~17k LOC) still has 3 allowlisted monoliths at ceiling; Gan `runner.py` (1,103 LOC) and `artifact_analysis/` (~24k LOC) unaddressed; SF repair stacks have canonical registry (Phases 0–1, 5) but legacy implementation modules await Phases 2–4 adapter migration.
+**Primary debt remaining:** ExECTv2 LLM top-4 still 2.3k–4.1k LOC each; report cluster (~17k LOC) still has 3 allowlisted monoliths at ceiling; Gan `runner.py` (1,103 LOC) and `artifact_analysis/` (~24k LOC) unaddressed; SF repair stacks consolidated into `sf_surface_registry` (Phases 0–5 complete) with legacy facades pending shim removal after one release cycle.
 
 Gate: `python scripts/check_line_counts.py` — **OK** on current `main`.
 
@@ -95,7 +95,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | `contract/drug_lexicon.py` single source | ✅ Done | `75eefba` |
 | `contract/repair.py` — `repair_attributes`, `check_evidence` | ✅ Done | hybrid off `llm_only_single_pass` |
 | Assembly → reports inversion fix | ✅ Done | `scoring/reporting.py` facade |
-| Collapse SF repair stacks into data-driven surface registry | 🟡 Phases 0–1 + 5 done | Registry + patterns.yaml + deprecation shims; Phases 2–4 adapter migration open — `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md` |
+| Collapse SF repair stacks into data-driven surface registry | ✅ Done | Phases 0–5 — `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md`; dev140 SF F1 gate green |
 | Split `all_entities.py` per-entity modules | 🔴 Open | |
 | Refactor `lenses.py` to thin convention adapters | 🔴 Open | |
 | Merge or relocate `target_projection/` (LLM-only consumer) | 🟡 Shimmed | Deprecated → `sf_surface_registry.adapters.projection`; Phase 3 catalog migration pending |
@@ -273,7 +273,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 
 | ID | Task | Area | Notes |
 |----|------|------|-------|
-| P1-1 | Merge SF repair stacks (rules + conventions + target_projection) | ExECTv2 det | 🟡 Phases 0–1 + 5 done; Phases 2–4 open — `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md` |
+| P1-1 | Merge SF repair stacks (rules + conventions + target_projection) | ExECTv2 det | ✅ Phases 0–5 complete — `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md` |
 | P1-2 | Split `all_entities.py` + thin `lenses.py` | ExECTv2 det | Unblocks convention layer honesty |
 | P1-3 | Diagnosis verifier chain → single pipeline | ExECTv2 LLM | ~2.6k LOC parallel story |
 | P1-4 | Move `llm_sf_*` deterministic modules out of `llm/` | ExECTv2 LLM | Layer hygiene |
@@ -350,7 +350,7 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 ### Still required for full APPROVE
 
 - [ ] ExECTv2 LLM top-4 each **<500 LOC** (currently 2,352–4,134)
-- [x] SF repair stacks: canonical `sf_surface_registry` established (Phases 0–1, 5); shared patterns + unique rule index owned by registry; legacy stacks (`conventions/seizure_frequency.py`, `target_projection/`, `rules/`) explicitly deprecated with adapter shims. **Full consolidation** (LOC targets, adapter-owned logic, projection import reduction) pending Phases 2–4.
+- [x] SF repair stacks: canonical `sf_surface_registry` established (Phases 0–5); shared patterns + unique rule index; legacy stacks are thin facades with deprecation shims. **Shim removal** pending one release cycle + import audit.
 - [ ] Report allowlisted monoliths shrunk with headroom (not at ceiling)
 - [ ] Gan `runner.py` decomposed; hybrid uses canonical extract
 - [ ] `artifact_analysis/` quarantined from production paths
