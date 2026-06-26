@@ -20,6 +20,9 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.cli.common import (
+    load_jsonl_rows,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ALL_ENTITIES,
 )
@@ -35,25 +38,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cui_projecti
 ENTITY_NAMES: tuple[str, ...] = tuple(spec.name for spec in ALL_ENTITIES)
 
 
-def _letters_from_jsonl(path: Path, key: str) -> list[ExectLetter]:
+def _letters_from_rows(rows: list[dict], key: str) -> list[ExectLetter]:
     letters: list[ExectLetter] = []
-    with path.open(encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if not line:
-                continue
-            row = json.loads(line)
-            annotations = tuple(
-                ExectAnnotation(
-                    entity=str(m["entity"]),
-                    text=str(m["text"]),
-                    attributes={str(k): str(v) for k, v in (m.get("attributes") or {}).items()},
-                )
-                for m in (row.get(key) or [])
+    for row in rows:
+        annotations = tuple(
+            ExectAnnotation(
+                entity=str(m["entity"]),
+                text=str(m["text"]),
+                attributes={str(k): str(v) for k, v in (m.get("attributes") or {}).items()},
             )
-            letters.append(
-                ExectLetter(letter_id=row["letter_id"], note_text="", annotations=annotations)
-            )
+            for m in (row.get(key) or [])
+        )
+        letters.append(
+            ExectLetter(letter_id=row["letter_id"], note_text="", annotations=annotations)
+        )
     return letters
 
 
@@ -64,8 +62,9 @@ def main() -> None:
     parser.add_argument("--out-json", type=Path, default=None)
     args = parser.parse_args()
 
-    gold = _letters_from_jsonl(args.in_jsonl, "gold_mentions")
-    pred = _letters_from_jsonl(args.in_jsonl, "predicted_mentions")
+    rows = load_jsonl_rows(args.in_jsonl)
+    gold = _letters_from_rows(rows, "gold_mentions")
+    pred = _letters_from_rows(rows, "predicted_mentions")
     diagnostic = cui_projection_diagnostic(gold, pred, ENTITY_NAMES)
 
     out_md = args.out_md or args.in_jsonl.with_name(
