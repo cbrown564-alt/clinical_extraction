@@ -1,4 +1,9 @@
-"""Regex constants for target-indicator projection and evidence repair."""
+"""Regex constants for target-indicator projection and evidence repair.
+
+``EVERY_N_TO_M_PERIODS`` is re-exported from ``sf_surface_registry.patterns``
+(canonical owner since P1-1 Phase 1). Quarantine metadata lives in
+``sf_surface_registry/catalog/projection_sf.yaml``; ``policy.py`` reads the catalog.
+"""
 
 from __future__ import annotations
 
@@ -8,22 +13,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
     EVERY_N_TO_M_PERIODS,
 )
 
-QUARANTINED_TARGET_PROJECTION_FAMILIES = frozenset(
-    {
-        "projected_diagnosis_context_to_remote_last_seizures_state",
-        "projected_diagnosis_context_to_controlled_sf_state",
-        "projected_diagnosis_context_to_frequent_myoclonic_jerks",
-        "projected_infrequent_context_state",
-        "projected_four_since_last_clinic",
-        "projected_several_since_last_clinic",
-        "repaired_since_last_clinic_count_evidence",
-        "repaired_last_event_evidence",
-        "projected_christmas_point_to_month_date",
-    }
+from .policy import (
+    QUARANTINED_TARGET_PROJECTION_FAMILIES,
+    TARGET_PROJECTION_AUDIT_REPLAY_SWITCHES,
 )
-TARGET_PROJECTION_AUDIT_REPLAY_SWITCHES = {
-    family: True for family in sorted(QUARANTINED_TARGET_PROJECTION_FAMILIES)
-}
 DIAGNOSIS_ALLOWED_CORE = re.compile(
     r"\b(epilep\w*|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
     r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",

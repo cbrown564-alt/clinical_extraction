@@ -1,4 +1,18 @@
-"""Deterministic projection and evidence-repair policy for target indicators."""
+"""Deterministic projection and evidence-repair policy for target indicators (Stack C).
+
+.. deprecated::
+    Prefer ``sf_surface_registry.adapters.projection`` for new SF-related imports.
+    Shared regex patterns live in ``sf_surface_registry.patterns`` (Phase 1).
+    This package remains the authoritative projection implementation until Phase 3
+    registers rules in ``catalog/projection_sf.yaml`` and derives quarantine policy
+    from the registry; it will become thin re-export shims for one release cycle
+    after ``adapters.projection`` owns the facade.
+
+Non-SF projection (EEG/MRI investigations, prescription repair) may later move to
+a sibling ``target_projection_registry``; see design doc non-goals.
+
+See ``sf_surface_registry/README.md`` for migration status.
+"""
 
 from __future__ import annotations
 

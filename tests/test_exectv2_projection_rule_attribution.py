@@ -5,6 +5,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.projection_r
     parse_rule_warning,
     render_projection_rule_sidecar_markdown,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.catalog import (
+    projection_sf_rule_ids,
+    quarantined_projection_families,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.types import (
+    SurfacePhase,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry import (
+    rules_for_phase,
+)
 
 
 def test_projection_rule_registry_uses_required_portability_categories() -> None:
@@ -130,3 +140,59 @@ def test_projection_rule_sidecar_counts_same_raw_corrections_and_fidelity_effect
     markdown = render_projection_rule_sidecar_markdown(sidecar)
     assert "projected_four_since_last_clinic" in markdown
     assert "Wrong-to-correct" in markdown
+
+
+def test_projection_sf_catalog_registers_all_seizure_frequency_rules() -> None:
+    registered = projection_sf_rule_ids()
+    catalog_project = {
+        rule.rule_id
+        for rule in rules_for_phase(SurfacePhase.PROJECT)
+        if rule.rule_id in registered
+    }
+    catalog_evidence = {
+        rule.rule_id
+        for rule in rules_for_phase(SurfacePhase.EVIDENCE_REPAIR)
+        if rule.rule_id in registered
+    }
+
+    assert registered == catalog_project | catalog_evidence
+    assert len(registered) == 31
+
+
+def test_quarantined_projection_families_match_attribution_registry() -> None:
+    attribution_quarantined = {
+        rule_id
+        for rule_id, spec in PROJECTION_RULE_REGISTRY.items()
+        if not spec.enabled_by_default
+    }
+    registry_quarantined = quarantined_projection_families()
+
+    assert registry_quarantined == {
+        rule_id
+        for rule_id in attribution_quarantined
+        if rule_id in projection_sf_rule_ids()
+    }
+    assert registry_quarantined == frozenset(
+        {
+            "projected_christmas_point_to_month_date",
+            "projected_diagnosis_context_to_controlled_sf_state",
+            "projected_diagnosis_context_to_frequent_myoclonic_jerks",
+            "projected_diagnosis_context_to_remote_last_seizures_state",
+            "projected_four_since_last_clinic",
+            "projected_infrequent_context_state",
+            "projected_several_since_last_clinic",
+            "repaired_last_event_evidence",
+            "repaired_since_last_clinic_count_evidence",
+        }
+    )
+
+
+def test_each_projection_sf_rule_has_catalog_entry() -> None:
+    all_catalog_ids = {rule.rule_id for rule in rules_for_phase(SurfacePhase.PROJECT)} | {
+        rule.rule_id for rule in rules_for_phase(SurfacePhase.EVIDENCE_REPAIR)
+    }
+    for rule_id in sorted(projection_sf_rule_ids()):
+        assert rule_id in all_catalog_ids
+        spec = PROJECTION_RULE_REGISTRY.get(rule_id)
+        if spec is not None:
+            assert spec.entity == "SeizureFrequency"
