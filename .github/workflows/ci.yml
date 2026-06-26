@@ -1,11 +1,11 @@
-# Wave 3 Sprint 4 — thermo-nuclear code quality gates (line-count + focused pytest).
+# Wave C Sprint 1 — thermo-nuclear code quality gates + fast backend pytest.
 #
-# Extend later: add a second job or step after the gates pass, e.g.
-#   pytest -q
-# or a curated fast subset:
-#   pytest tests/test_gan2026_pipeline_v1.py tests/test_exectv2_contract.py -q
-# Full suite can be slow; keep line-count gates on every PR and run the broad
-# suite on main/nightly if needed.
+# backend-fast-tests: curated contract/unit subset (~145 tests, <1 min locally).
+#   - ExECTv2 prediction schema drift guard + data loaders
+#   - Gan2026 core pipeline v1 behavior
+#   - Small shared scoring, labels, entry-point, and contract tests
+# line-count-gates: production LOC limits + gate-behavior pytest (separate).
+# Full suite is too slow for every PR; run broadly on main/nightly if needed.
 
 name: CI
 
@@ -102,3 +102,34 @@ jobs:
 
       - name: Pytest — line-count gate behavior
         run: python -m pytest tests/test_line_count_gates.py -q
+
+  backend-fast-tests:
+    name: Backend fast tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install project (dev extras)
+        run: pip install -e ".[dev]"
+
+      # Curated fast subset: contract guards, core Gan2026 pipeline, small unit
+      # tests. Excludes line-count gates (line-count-gates job), LLM replay
+      # fixtures, and megatest modules (>800 LOC).
+      - name: Pytest — fast backend subset
+        run: |
+          python -m pytest \
+            tests/test_exectv2_contract.py \
+            tests/test_gan2026_pipeline_v1.py \
+            tests/test_core_scoring.py \
+            tests/test_project_entry_points.py \
+            tests/test_gan2026_labels.py \
+            tests/test_gan2026_clinical_assessment_contract.py \
+            tests/test_gan2026_candidate_set_contract.py \
+            tests/test_exectv2_data.py \
+            -q
