@@ -9,8 +9,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     ReliabilityRun,
 )
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import (
+    REPO_ROOT,
+)
+
 __all__ = (
     "DEFAULT_CATALOG_PATH",
+    "REPO_ROOT",
     "ReliabilityRun",
     "load_active_llm_only_runs",
     "load_rich_schema_runs",
