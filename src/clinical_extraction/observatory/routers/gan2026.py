@@ -7,16 +7,16 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 
 from clinical_extraction.observatory.cached_routes import cached_json_route
-from clinical_extraction.observatory.helpers import (
+from clinical_extraction.observatory.gan2026 import (
     all_rule_specs,
     classify_error,
     load_split_records,
     prompt_payload,
     prompt_template_payload,
     request_record,
-    require_supported_pipeline,
     rule_payload,
 )
+from clinical_extraction.observatory.helpers import require_supported_pipeline
 from clinical_extraction.observatory.models import (
     ATLAS_HARD_SLICE_DEFINITIONS,
     HardSliceMembershipRequest,

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Literal
 
 from clinical_extraction.core.claim_policy import restricted_surface_for_registry_entry
+from clinical_extraction.core.paths import discover_repo_root, resolve_under_root
 from clinical_extraction.core.mlflow_tracking import (
     MlflowRunPayload,
     mirror_payload_to_mlflow,
@@ -650,8 +651,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     repo_root = _repo_root()
-    registry_path = _resolve_under_repo(args.registry, repo_root=repo_root)
-    run_index_path = _resolve_under_repo(args.run_index, repo_root=repo_root)
+    registry_path = resolve_under_root(repo_root, args.registry)
+    run_index_path = resolve_under_root(repo_root, args.run_index)
     entries = load_run_registry(registry_path)
     if args.same_core_dev140_group or args.backfill_scope == "same_core_dev140":
         plan = build_mlflow_comparison_sync_plan(
@@ -753,16 +754,8 @@ def _parse_since_date(value: str | None) -> date | None:
         raise ValueError("--since-date must use YYYY-MM-DD format") from exc
 
 
-def _resolve_under_repo(path: Path, *, repo_root: Path) -> Path:
-    return path if path.is_absolute() else repo_root / path
-
-
 def _repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for parent in (here, *here.parents):
-        if (parent / "pyproject.toml").exists():
-            return parent
-    raise RuntimeError("Could not locate repository root")
+    return discover_repo_root(start=Path(__file__), include_cwd=False)
 
 
 if __name__ == "__main__":

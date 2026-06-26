@@ -19,6 +19,7 @@ from clinical_extraction.core.mlflow_tracking import (
     MLFLOW_TRACKING_URI_ENV,
     mlflow_available,
 )
+from clinical_extraction.core.paths import discover_repo_root, resolve_under_root
 
 DEFAULT_REGISTRY_PATH = Path("experiments") / "registry.jsonl"
 DEFAULT_MLRUNS_DIR = Path("mlruns")
@@ -55,8 +56,8 @@ def build_doctor_report(
     """Collect MLflow install/config/status without mutating tracking state."""
 
     root = repo_root.resolve()
-    resolved_registry = _resolve_under_repo(registry_path, repo_root=root)
-    resolved_mlruns = _resolve_under_repo(mlruns_dir, repo_root=root)
+    resolved_registry = resolve_under_root(root, registry_path)
+    resolved_mlruns = resolve_under_root(root, mlruns_dir)
     tracking_uri, tracking_uri_source = _resolve_tracking_uri(resolved_mlruns)
     warnings = _build_warnings(
         root=root,
@@ -284,16 +285,8 @@ def _directory_size_bytes(path: Path) -> int:
     return total
 
 
-def _resolve_under_repo(path: Path, *, repo_root: Path) -> Path:
-    return path if path.is_absolute() else repo_root / path
-
-
 def _repo_root() -> Path:
-    here = Path(__file__).resolve()
-    for parent in (here, *here.parents):
-        if (parent / "pyproject.toml").exists():
-            return parent
-    raise RuntimeError("Could not locate repository root")
+    return discover_repo_root(start=Path(__file__), include_cwd=False)
 
 
 if __name__ == "__main__":
