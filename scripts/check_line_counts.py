@@ -61,9 +61,15 @@ class AllowlistEntry:
 # Paths are posix-relative to ``src/clinical_extraction/``.
 ALLOWLIST: dict[str, AllowlistEntry] = {
     # --- ExECTv2 LLM top-4 blockers (A1) ---
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_generation_selection.py": AllowlistEntry(
-        4134,
-        "A1/Wave3-S1: decompose into llm/pipelines/generation_selection/ strategy registry",
+    # generation_selection decomposed (Wave C-S5): facade now 94 LOC (no entry);
+    # cohesive package submodules over the 500 LLM tier are allowlisted below.
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_generation_selection/prompt_builders.py": AllowlistEntry(
+        1282,
+        "Wave C-S5: generation_selection decomposed; build_*_prompt_payload cohesive unit — further split candidate",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_generation_selection/parsing.py": AllowlistEntry(
+        640,
+        "Wave C-S5: generation_selection decomposed; response parse/coerce cohesive unit",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_structured.py": AllowlistEntry(
         2606,

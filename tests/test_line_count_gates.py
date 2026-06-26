@@ -69,7 +69,9 @@ def test_prompts_subtree_exempt_from_exectv2_llm_gate(tmp_path: Path) -> None:
 
 
 def test_allowlisted_monolith_growth_is_caught(tmp_path: Path) -> None:
-    rel = "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_key_entities_generation_selection.py"
+    # Use any current allowlist entry rather than hardcoding a path (paths churn
+    # as monoliths are decomposed and their entries removed).
+    rel = next(iter(ALLOWLIST))
     entry = ALLOWLIST[rel]
     package_root = tmp_path / "src" / "clinical_extraction"
     target = package_root / rel
