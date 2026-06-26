@@ -159,10 +159,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1179,
         "Wave1: lens assembly — data-driven lens_from_manifest; further split deferred",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities.py": AllowlistEntry(
-        1455,
-        "ExECTv2 deterministic: all_entities rule cluster — candidate for package split",
-    ),
     "tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/seizure_frequency.py": AllowlistEntry(
         1728,
         "B2: externalize to conventions/data/seizure_frequency.yaml",
