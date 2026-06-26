@@ -159,22 +159,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1179,
         "Wave1: lens assembly — data-driven lens_from_manifest; further split deferred",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/seizure_frequency.py": AllowlistEntry(
-        1728,
-        "B2: externalize to conventions/data/seizure_frequency.yaml",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/deterministic/rules/rate.py": AllowlistEntry(
-        1203,
-        "ExECTv2 deterministic: rate rules — candidate for package split",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/reports/component_ablation_replay.py": AllowlistEntry(
-        1474,
-        "Wave2/B1: externalize experiment catalog to YAML",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/reports/cross_model_reliability_analysis.py": AllowlistEntry(
-        1554,
-        "Wave2/B1: externalize experiment catalog to YAML",
-    ),
     # --- Gan2026 >1k LOC ---
     "tasks/seizure_frequency/gan2026/agentic/boundary_audit_prompt_v2.py": AllowlistEntry(
         1014,
