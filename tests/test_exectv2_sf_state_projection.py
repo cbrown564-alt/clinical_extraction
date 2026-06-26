@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_state_projection as projection,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_state_projection as projection,
 )
 
 
