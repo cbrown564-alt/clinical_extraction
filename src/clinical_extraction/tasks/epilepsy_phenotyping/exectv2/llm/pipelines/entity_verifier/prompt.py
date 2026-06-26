@@ -28,6 +28,13 @@ def attribute_vocabulary(entity_name: str) -> dict[str, Any]:
     return attrs
 
 
+def attribute_vocabulary_for_config(config: VerifierConfig) -> dict[str, Any]:
+    entity_names = config.draft_entity_names or (config.entity_name,)
+    if len(entity_names) > 1:
+        return {entity: attribute_vocabulary(entity) for entity in entity_names}
+    return attribute_vocabulary(config.entity_name)
+
+
 def build_prompt_input(
     letter: ExectLetter,
     draft_mentions: Sequence[Mapping[str, Any]],
@@ -38,7 +45,7 @@ def build_prompt_input(
         "task": config.task_text,
         "output_schema": dict(config.output_schema),
         config.draft_field_name: list(draft_mentions),
-        "attribute_vocabulary": attribute_vocabulary(config.entity_name),
+        "attribute_vocabulary": attribute_vocabulary_for_config(config),
         "clinical_rules": config.clinical_rules(),
         "worked_examples": config.worked_examples(),
         "letter_id": letter.letter_id,
