@@ -51,39 +51,39 @@ systems, reliability, component ablation
 
 Clinical extraction systems must often trade breadth, depth, auditability, and
 portability. Epilepsy letters make the tension concrete: seizure-frequency
-statements require temporal anchoring, seizure-free duration handling, current
-versus historical selection, and benchmark-compatible normalization, while
-broader phenotyping requires the same infrastructure to recover diagnosis,
+statements require temporal anchoring, seizure-free handling,
+current-versus-historical selection, and benchmark-compatible normalization,
+while phenotyping requires the same infrastructure to recover diagnosis,
 medication, investigation, and seizure-frequency facts without collapsing into a
-single task-specific rule stack. Prior epilepsy NLP systems have shown both the
-value of broad clinic-letter extraction and the persistent difficulty of
-seizure-frequency concepts \cite{fonferko2019exect,fonferko2024annotation},
-while recent seizure-frequency work emphasizes pretrained models, LLM
-fine-tuning, and synthetic but task-faithful supervision
+task-specific rule stack. Prior epilepsy NLP has shown both the value of broad
+clinic-letter extraction and the persistent difficulty of seizure-frequency
+concepts \cite{fonferko2019exect,fonferko2024annotation}, while recent work
+emphasizes pretrained models, LLM fine-tuning, and synthetic but task-faithful
+supervision
 \cite{xie2022seizure,abeysinghe2025leveraging,holgate2025fine,gan2026synthetic}.
 
 This paper studies a modular extraction design in which deterministic rules and
 large language model (LLM) components are explicit, testable parts of the
-scientific object. We evaluate the architecture on a deep single-concept task
-(Gan 2026 seizure-frequency extraction) and a broad multi-entity task
-(ExECTv2 clinical-fact recovery). The central claim is not that any one model or
-rule set is universally optimal, but that explicit component boundaries make it
-possible to report performance, reliability, and component impact without
-blending incompatible evidence surfaces.
+scientific object, evaluated on a deep single-concept task (Gan 2026
+seizure-frequency extraction) and a broad multi-entity task (ExECTv2
+clinical-fact recovery). The central claim is not that any one model or rule set
+is universally optimal, but that explicit component boundaries let us report
+performance, reliability, and component impact without blending incompatible
+evidence surfaces.
 
 \section{Related Work}
 
-Prior epilepsy natural language processing work includes broad phenotyping
-systems and narrow seizure-frequency extraction systems. Recent LLM-based
-clinical extraction work has improved coverage and flexibility, but can obscure
-the role of deterministic preprocessing, schema repair, normalization, and
-post-processing \cite{abeysinghe2025leveraging,holgate2025fine}. The present
-draft positions deterministic rules as controlled variables rather than
-incidental implementation detail, and treats reliability audits and
-component-impact replays as separate manuscript objects. This emphasis is
-aligned with evidence-grounded seizure-frequency supervision in recent
-synthetic-letter work, but extends the reporting discipline to component
-boundaries and aggregate replay evidence \cite{gan2026synthetic}.
+Prior epilepsy natural language processing includes broad phenotyping systems
+and narrow seizure-frequency extraction systems. Recent LLM-based clinical
+extraction has improved coverage and flexibility, but can obscure the role of
+deterministic preprocessing, schema repair, normalization, and post-processing
+\cite{abeysinghe2025leveraging,holgate2025fine}. We instead position
+deterministic rules as controlled variables rather than incidental
+implementation detail, and treat reliability audits and component-impact replays
+as separate manuscript objects. This emphasis aligns with evidence-grounded
+seizure-frequency supervision in recent synthetic-letter work, extending its
+reporting discipline to component boundaries and aggregate replay evidence
+\cite{gan2026synthetic}.
 
 \section{Methods}
 
@@ -121,22 +121,24 @@ and scoring views.
 
 \subsection{Inspection Boundaries and Claim Classes}
 
-Each result row carries an inspection boundary. Gan validation artifacts may be
-used for development and row-level error analysis; Gan locked-test artifacts are
-aggregate final-evaluation evidence only unless a separate post-hoc analysis
-protocol is declared. ExECTv2 dev140 artifacts may support row-level development
-and model-swap diagnostics; full-200 aggregate artifacts in this draft authorize
-only aggregate reliability and component-impact reads. They do not authorize
-full-200 row-level failure tuning.
+Each result row carries an inspection boundary. Gan validation artifacts support
+development and row-level error analysis; Gan locked-test artifacts are aggregate
+final-evaluation evidence only unless a separate post-hoc protocol is declared.
+ExECTv2 dev140 artifacts support row-level development and model-swap
+diagnostics; full-200 aggregate artifacts authorize only aggregate reliability
+and component-impact reads, not full-200 row-level failure tuning.
 
-We distinguish four evidence types throughout the paper. Architecture
-comparison describes aggregate task performance under a fixed scorer. Frozen
-holdout evidence reports locked evaluation outputs without authorizing
-post-hoc tuning. Reliability scorecards test whether a fixed system is
-grounded, calibrated, robust, consistent, and operationally replayable.
-Component-impact analysis is reserved for ablations or same-input replays that
-measure a named component's score contribution under the declared scorer, split,
-and inspection boundary.
+We distinguish four evidence types throughout. Architecture comparison describes
+aggregate task performance under a fixed scorer. Frozen holdout evidence reports
+locked evaluation outputs without authorizing post-hoc tuning. Reliability
+scorecards test whether a fixed system is grounded, calibrated, robust,
+consistent, and operationally replayable. Component-impact analysis is reserved
+for ablations or same-input replays that measure a named component's score
+contribution under the declared scorer, split, and inspection boundary.
+Appendix Table~\ref{tab:artifact-provenance} records the source artifacts and
+claim boundary for the main result families so that frozen aggregate evidence,
+development evidence, reliability evidence, and component-impact evidence remain
+traceable and non-interchangeable.
 
 \begin{figure*}[tbp]
 \centering
@@ -399,13 +401,13 @@ whether the same design discipline scales to broader clinical-fact recovery,
 where \code{clinical\_headline} provides the headline surface and strict
 benchmark/CUI outputs remain diagnostic.
 
-The most important reporting constraint is the separation of reliability and
+The most important reporting constraint is the separation of reliability from
 component impact. Reliability scorecards say whether a fixed architecture is
 grounded, calibrated, robust, consistent, and replayable under the declared
-surface. They do not prove that an individual component caused the observed
-performance. Component-impact claims require ablations or same-input replays,
-and in this draft remain bounded to the declared scorer, split, and inspection
-policy.
+surface; they do not prove that an individual component caused the observed
+performance. That causal question is reserved for the ablations and same-input
+replays of the component-impact analysis, bounded to the declared scorer, split,
+and inspection policy.
 
 \subsection{Limitations}
 
@@ -428,6 +430,28 @@ ExECTv2 achieves strong de-duplicated clinical-headline recovery with separate
 reliability and component-impact evidence.
 
 \appendices
+\section{Artifact Provenance and Claim Boundaries}
+
+\begin{table*}[tbp]
+\caption{Manuscript Result Provenance and Claim Boundaries}
+\label{tab:artifact-provenance}
+\centering
+\tiny
+\begin{tabular}{p{0.15\textwidth}p{0.22\textwidth}p{0.36\textwidth}p{0.17\textwidth}}
+\toprule
+Result family & Manuscript use & Source artifact anchor & Boundary \\
+\midrule
+Gan validation architecture comparison & Appendix development context for the three-way comparison. & \url{docs/research/paper_manuscript_2026-06-26.md}; Gan close-off synthesis artifacts listed there. & Validation development evidence; not a frozen holdout claim. \\
+Gan frozen architecture audit & Main frozen \code{test450} comparison table. & \url{experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md} & One-shot locked-test aggregate audit; no row-level test tuning. \\
+Gan consensus/fresh Gate 4 audits & Appendix late-cycle selector diagnostics. & \url{experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26.md}; \url{experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md} & Frozen aggregate evidence only; constrained row failed, exact-source row passed within its source set. \\
+ExECTv2 architecture and lean frontier & Main \code{clinical\_headline} architecture table. & \url{docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md}; \url{docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md} & Full-200 aggregate architecture evidence; no full-200 row-level development claim. \\
+ExECTv2 same-core model swap & Appendix model-family robustness tables. & \url{docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md} & Same-core aggregate model-family evidence; Qwen repair v02 is not operational promotion over GPT-4.1-mini or DeepSeek. \\
+ExECTv2 reliability scorecard & Main reliability table and trust-language paragraph. & \url{docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_robustness_validation_audit_2026-06-25.md} & Reliability evidence for a fixed architecture; not holdout validation or component-causal proof. \\
+ExECTv2 component impact & Main component-impact table. & \url{experiments/exectv2_component_off_replay_full200_20260626.md}; \url{docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md} & Replay-only component-impact evidence under the declared scorer and aggregate-only boundary. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \section{Supporting Result Tables}
 
 The main text keeps four result tables: the Gan 2026 frozen aggregate audit,

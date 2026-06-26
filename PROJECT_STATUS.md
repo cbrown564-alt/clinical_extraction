@@ -46,9 +46,10 @@ Current evidence stack:
 
 ### Now
 
-- Resume paper/results sprint from
-  `docs/research/paper_manuscript_2026-06-26.md`; keep IEEE LaTeX, appendix
-  tables, and frozen aggregate citations aligned with inspection boundaries.
+- Final manuscript consistency pass on the IEEE draft: read end-to-end and
+  confirm every reported number, family score, and claim-boundary phrase matches
+  the provenance-anchored source artifacts (Appendix Table I) and stays
+  consistent across abstract, results, and discussion.
 
 ### Next
 
@@ -72,6 +73,14 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-06-26: IEEE manuscript prose compression — tightened Introduction, Related
+  Work, Methods (inspection-boundary paragraph folded), and Discussion prose
+  without changing any number, table, or claim boundary; recompiled cleanly
+  (5 pages, no undefined refs).
+- 2026-06-26: IEEE manuscript provenance pass — added Appendix Table I linking
+  result families to source artifacts and claim boundaries, added a Methods
+  pointer, and recompiled
+  `literature/IEEE/IEEE-conference-template-062824/IEEE-conference-template-062824.pdf`.
 - 2026-06-26: Repo cleanup closed — pass 1 archived `438` superseded notes; pass 2
   archived `1012` registry-filtered/unregistered iteration notes (`104` root
   `.md` remain active). Indexes: `experiments/README.md`,
