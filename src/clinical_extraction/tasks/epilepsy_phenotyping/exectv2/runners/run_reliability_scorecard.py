@@ -18,6 +18,9 @@ import argparse
 import json
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.cli.common import (
+    load_jsonl_rows,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import (
     all_entity_assessment as hybrid,
 )
@@ -25,16 +28,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability_
     build_scorecard,
     render_markdown,
 )
-
-
-def _load_rows(path: Path) -> list[dict]:
-    rows = []
-    with path.open(encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if line:
-                rows.append(json.loads(line))
-    return rows
 
 
 def main() -> None:
@@ -47,7 +40,7 @@ def main() -> None:
     parser.add_argument("--out-json", type=Path, default=None)
     args = parser.parse_args()
 
-    rows = _load_rows(args.in_jsonl)
+    rows = load_jsonl_rows(args.in_jsonl)
     augment_rules = bool(rows and rows[0].get("augment_rules"))
     summary = hybrid.summarize_rows(rows)
     scorecard = build_scorecard(
