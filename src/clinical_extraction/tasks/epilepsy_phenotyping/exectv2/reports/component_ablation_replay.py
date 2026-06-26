@@ -108,114 +108,14 @@ class ComponentOffDefinition:
     scorer_version: str = "exectv2_component_ablation_replay_v20260626"
 
 
-DEFAULT_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (
-    ComponentImpactReplaySpec(
-        run_id="exectv2_holistic_finding_assembly_v08_dev140",
-        label="v08 dev140 control",
-        source_summary_path=Path(
-            "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"
-        ),
-        model="openai/gpt-4.1-mini",
-        decision="control",
-        architecture_family="holistic_finding_assembly",
-    ),
-    ComponentImpactReplaySpec(
-        run_id="exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
-        label="v09 partial hybrid simplification",
-        source_summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
-        ),
-        model="openai/gpt-4.1-mini",
-        decision="simplification",
-        architecture_family="partial_hybrid",
-    ),
-    ComponentImpactReplaySpec(
-        run_id="exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-        label="DeepSeek v0.9.16 dev140 diagnostic",
-        source_summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
-        ),
-        model="deepseek/deepseek-chat",
-        decision="diagnostic",
-        architecture_family="single_gpt_reparse",
-    ),
-    ComponentImpactReplaySpec(
-        run_id="exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-        label="Qwen v0.9.22 dev140 diagnostic",
-        source_summary_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/_archive/exectv2_richschema_iterations/"
-            "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
-        ),
-        model="ollama_chat/qwen3.6:35b",
-        decision="diagnostic",
-        architecture_family="single_gpt_reparse",
-    ),
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.loader import (
+    load_full200_specs,
+    load_replay_specs,
 )
 
-
+DEFAULT_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = load_replay_specs()
 DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (
-    ComponentImpactReplaySpec(
-        run_id="exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
-        label="GPT-4.1-mini same-core full200",
-        source_summary_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl"
-        ),
-        model="openai/gpt-4.1-mini",
-        decision="same_core_model_swap",
-        architecture_family="two_call_no_sf_adjudicator",
-        split="full200",
-        row_count=200,
-    ),
-    ComponentImpactReplaySpec(
-        run_id="exectv2_2call_no_sf_adjudicator_deepseek_full200",
-        label="DeepSeek same-core full200",
-        source_summary_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl"
-        ),
-        model="deepseek/deepseek-chat",
-        decision="same_core_model_swap",
-        architecture_family="two_call_no_sf_adjudicator",
-        split="full200",
-        row_count=200,
-    ),
-    ComponentImpactReplaySpec(
-        run_id="exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
-        label="Qwen repair v02 same-core full200",
-        source_summary_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json"
-        ),
-        source_jsonl_path=Path(
-            "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
-        ),
-        model="ollama_chat/qwen3.6:35b",
-        decision="same_core_model_swap",
-        architecture_family="two_call_no_sf_adjudicator",
-        split="full200",
-        row_count=200,
-    ),
+    load_full200_specs()
 )
 
 
