@@ -96,9 +96,14 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         600,
         "Wave C-S2: clinical_findings run_split orchestration + reporting",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_target_indicators_single_call.py": AllowlistEntry(
-        2239,
-        "A1/Wave3-S1: mostly code (6 prompt strings); decompose into pipelines/ package like generation_selection",
+    # target_indicators_single_call decomposed (Wave C-S5): facade now 80 LOC (no entry).
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/target_indicators_single_call/projection_helpers.py": AllowlistEntry(
+        880,
+        "Wave C-S5: target_indicators decomposed; projection/repair leaf helpers (DAG) cohesive unit",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/target_indicators_single_call/prompt_builders.py": AllowlistEntry(
+        527,
+        "Wave C-S5: target_indicators decomposed; prompt builders cohesive unit",
     ),
     # --- Other ExECTv2 LLM >500 LOC ---
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_acceptance_gate.py": AllowlistEntry(
