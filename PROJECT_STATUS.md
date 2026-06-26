@@ -24,9 +24,11 @@ Current evidence stack:
   F1 `0.8336` across `414` cells; Investigations deterministic replacement is
   not ready (`0.9213` remains strongest with verifier + suppression).
 - Component Impact: dev140 one-component-off readout has `16` replay-only rows;
-  evidence validation `0.0000`; dictionary up to `+0.1120`, residual semantic
-  lens `+0.1041`, projection `+0.0446`. Full-200 component-off predeclaration:
-  `docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md`.
+  full200 aggregate-only replay has `9` rows across GPT-4.1-mini, DeepSeek, and
+  Qwen repair v02. Full200 deltas are positive for dictionary (`+0.0186` to
+  `+0.0290`), residual semantic lens (`+0.0098` to `+0.0117`), and headline
+  projection (`+0.0302` to `+0.0350`); report:
+  `experiments/exectv2_component_off_replay_full200_20260626.md`.
 - Gan holdout evidence is frozen: v0.7 test450 `346/450` Purist, `365/450`
   Pragmatic; consensus/fresh constrained Gate 4 failed (`348/450`, precision
   `0.5909`), while exact-source Gate 4 passed only as frozen aggregate evidence
@@ -48,9 +50,10 @@ Current evidence stack:
 
 ### Next
 
-- Execute ExECTv2 component-off full-200 aggregate replay only if needed, under
-  `docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md`;
-  no model calls, row-level full-200 inspection, or tuning are authorized.
+- Draft the ExECTv2 results section from
+  `docs/research/exectv2_results_section_scaffold_2026-06-25.md` once the main
+  architecture/performance table is frozen; keep reliability and component-impact
+  subsections separate.
 - If the Gan consensus/fresh path is revisited for tuning or redesign, start
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
@@ -68,6 +71,13 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-06-26: Completed ExECTv2 component-off full200 aggregate-only replay
+  under the frozen predeclaration (`9` rows; no model calls or row-level
+  inspection). Stop-rule outcome is all-positive limited component-impact
+  evidence: dictionary `+0.0186` to `+0.0290`, residual semantic lens `+0.0098`
+  to `+0.0117`, headline projection `+0.0302` to `+0.0350`. Updated
+  predeclaration, ablation plan, and results scaffold Component Impact
+  subsection.
 - 2026-06-26: Completed ExECTv2 component-off planning, dev140 one-component-off
   readout (`16` rows, `4` summaries), YAML configs/tests, and the full-200
   aggregate-only predeclaration for dictionary, semantic lens, and projection.

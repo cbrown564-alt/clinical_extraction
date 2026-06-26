@@ -1,8 +1,10 @@
 # ExECTv2 Component-Off Full-200 Aggregate Predeclaration
 
 - Date: `2026-06-26`
-- Status: frozen predeclaration; execution not started
+- Status: completed 2026-06-26; aggregate-only replay executed once under this protocol
 - Code hash at drafting: `84d6d18`
+- Code hash at execution: see `experiments/exectv2_component_off_replay_full200_20260626.md`
+- Final report: `experiments/exectv2_component_off_replay_full200_20260626.{json,jsonl,md}`
 - Dev140 decision source: `experiments/exectv2_component_off_replay_dev140_20260626.{json,jsonl,md}`
 - Planning source: `docs/research/exectv2_component_off_reliability_ablation_plan_2026-06-26.md`
 - Primary surface: `clinical_headline`

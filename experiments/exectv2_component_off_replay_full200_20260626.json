@@ -1,0 +1,1941 @@
+{
+  "artifact_kind": "exectv2_component_off_full200_readout_set",
+  "dataset": "exectv2",
+  "generated_on": "2026-06-26",
+  "split": "full200",
+  "row_count": 200,
+  "scorer_view": "clinical_headline",
+  "scorer_version": "exectv2_component_ablation_replay_v20260626",
+  "primary_surface": "clinical_headline",
+  "predeclaration_path": "docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md",
+  "code_hash": "ff5c609",
+  "worktree_state": "dirty: M PROJECT_STATUS.md;  M src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/component_ablation_replay.py;  M tests/test_exectv2_component_ablation_replay.py; ?? experiments/exectv2_component_off_replay_full200_20260626.json; ?? experiments/exectv2_component_off_replay_full200_20260626.jsonl; ?? experiments/exectv2_component_off_replay_full200_20260626.md; ?? scripts/build_exectv2_component_off_full200_replay.py",
+  "row_inspection_policy": "aggregate_only",
+  "row_inspection_boundary": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+  "allow_model_calls": false,
+  "allow_post_run_tuning": false,
+  "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+  "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized",
+  "stop_rule_outcome": "all_selected_component_deltas_positive_limited_claim",
+  "selected_components": [
+    {
+      "component_id": "standard_dictionary",
+      "component_type": "dictionary",
+      "component_portability_category": "clinical_epilepsy",
+      "prediction_bearing_status": "conditional",
+      "baseline_surface": "dictionary_normalized",
+      "component_off_surface": "evidence_valid"
+    },
+    {
+      "component_id": "residual_semantic_lens",
+      "component_type": "semantic_lens",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "yes",
+      "baseline_surface": "residual_semantic_added",
+      "component_off_surface": "dictionary_normalized"
+    },
+    {
+      "component_id": "headline_projection",
+      "component_type": "deterministic_projection",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "no",
+      "baseline_surface": "headline_projection",
+      "component_off_surface": "residual_semantic_added"
+    }
+  ],
+  "preflight": [
+    {
+      "run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "source_summary_path": "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+      "source_jsonl_path": "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl",
+      "status": "pass",
+      "split": "full200",
+      "row_count": 200,
+      "surface_status": "pass",
+      "telemetry_status": "pass",
+      "model_calls_disabled": true,
+      "row_inspection_boundary": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+      "issues": []
+    },
+    {
+      "run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "source_summary_path": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+      "source_jsonl_path": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl",
+      "status": "pass",
+      "split": "full200",
+      "row_count": 200,
+      "surface_status": "pass",
+      "telemetry_status": "pass",
+      "model_calls_disabled": true,
+      "row_inspection_boundary": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+      "issues": []
+    },
+    {
+      "run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "source_summary_path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+      "source_jsonl_path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl",
+      "status": "pass",
+      "split": "full200",
+      "row_count": 200,
+      "surface_status": "pass",
+      "telemetry_status": "pass",
+      "model_calls_disabled": true,
+      "row_inspection_boundary": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+      "issues": []
+    }
+  ],
+  "source_artifacts": [
+    "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+    "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl",
+    "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+    "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl",
+    "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+    "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
+  ],
+  "ablations": [
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_standard_dictionary",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_standard_dictionary",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "standard_dictionary",
+      "component_boundary": "dictionary_normalized",
+      "component_type": "dictionary",
+      "component_portability_category": "clinical_epilepsy",
+      "prediction_bearing_status": "conditional",
+      "baseline_surface": "dictionary_normalized",
+      "component_off_surface": "evidence_valid",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.803,
+          "recall": 0.7816,
+          "f1": 0.7922,
+          "tp": 877,
+          "fp": 213,
+          "fn": 245,
+          "pred_count": 1081,
+          "gold_count": 1122,
+          "precision_tp": 868,
+          "recall_tp": 877
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8413,
+            "recall": 0.7786,
+            "f1": 0.8087,
+            "tp": 327,
+            "fp": 60,
+            "fn": 93,
+            "pred_count": 378,
+            "gold_count": 420,
+            "precision_tp": 318,
+            "recall_tp": 327
+          },
+          "SeizureFrequency": {
+            "precision": 0.5884,
+            "recall": 0.6599,
+            "f1": 0.6221,
+            "tp": 163,
+            "fp": 114,
+            "fn": 84,
+            "pred_count": 277,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.7746,
+          "recall": 0.7727,
+          "f1": 0.7736,
+          "tp": 867,
+          "fp": 250,
+          "fn": 255,
+          "pred_count": 1109,
+          "gold_count": 1122,
+          "precision_tp": 859,
+          "recall_tp": 867
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.7611,
+            "recall": 0.7548,
+            "f1": 0.7579,
+            "tp": 317,
+            "fp": 97,
+            "fn": 103,
+            "pred_count": 406,
+            "gold_count": 420,
+            "precision_tp": 309,
+            "recall_tp": 317
+          },
+          "SeizureFrequency": {
+            "precision": 0.5884,
+            "recall": 0.6599,
+            "f1": 0.6221,
+            "tp": 163,
+            "fp": 114,
+            "fn": 84,
+            "pred_count": 277,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0186,
+      "overall_component_contribution_delta": 0.0186,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0508,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.0508,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1404,
+        "scored_mentions": 1357,
+        "exact_evidence_mentions": 1357,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1330
+        },
+        "evidence_valid": {
+          "target_model_generated": 1404
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1404
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 27,
+          "target_model_generated": 1330
+        },
+        "source_scored": {
+          "target_model_generated": 1404
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_residual_semantic_lens",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_residual_semantic_lens",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "residual_semantic_lens",
+      "component_boundary": "residual_semantic_added",
+      "component_type": "semantic_lens",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "yes",
+      "baseline_surface": "residual_semantic_added",
+      "component_off_surface": "dictionary_normalized",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.8056,
+          "recall": 0.8021,
+          "f1": 0.8039,
+          "tp": 900,
+          "fp": 215,
+          "fn": 222,
+          "pred_count": 1106,
+          "gold_count": 1122,
+          "precision_tp": 891,
+          "recall_tp": 900
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8462,
+            "recall": 0.8333,
+            "f1": 0.8397,
+            "tp": 350,
+            "fp": 62,
+            "fn": 70,
+            "pred_count": 403,
+            "gold_count": 420,
+            "precision_tp": 341,
+            "recall_tp": 350
+          },
+          "SeizureFrequency": {
+            "precision": 0.5884,
+            "recall": 0.6599,
+            "f1": 0.6221,
+            "tp": 163,
+            "fp": 114,
+            "fn": 84,
+            "pred_count": 277,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.803,
+          "recall": 0.7816,
+          "f1": 0.7922,
+          "tp": 877,
+          "fp": 213,
+          "fn": 245,
+          "pred_count": 1081,
+          "gold_count": 1122,
+          "precision_tp": 868,
+          "recall_tp": 877
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8413,
+            "recall": 0.7786,
+            "f1": 0.8087,
+            "tp": 327,
+            "fp": 60,
+            "fn": 93,
+            "pred_count": 378,
+            "gold_count": 420,
+            "precision_tp": 318,
+            "recall_tp": 327
+          },
+          "SeizureFrequency": {
+            "precision": 0.5884,
+            "recall": 0.6599,
+            "f1": 0.6221,
+            "tp": 163,
+            "fp": 114,
+            "fn": 84,
+            "pred_count": 277,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0117,
+      "overall_component_contribution_delta": 0.0117,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.031,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.031,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1404,
+        "scored_mentions": 1357,
+        "exact_evidence_mentions": 1357,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1330
+        },
+        "evidence_valid": {
+          "target_model_generated": 1404
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1404
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 27,
+          "target_model_generated": 1330
+        },
+        "source_scored": {
+          "target_model_generated": 1404
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_headline_projection",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200__without_headline_projection",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "headline_projection",
+      "component_boundary": "headline_projection",
+      "component_type": "deterministic_projection",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "no",
+      "baseline_surface": "headline_projection",
+      "component_off_surface": "residual_semantic_added",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.8441,
+          "recall": 0.8272,
+          "f1": 0.8356,
+          "tp": 924,
+          "fp": 169,
+          "fn": 193,
+          "pred_count": 1084,
+          "gold_count": 1117,
+          "precision_tp": 915,
+          "recall_tp": 924
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8462,
+            "recall": 0.8333,
+            "f1": 0.8397,
+            "tp": 350,
+            "fp": 62,
+            "fn": 70,
+            "pred_count": 403,
+            "gold_count": 420,
+            "precision_tp": 341,
+            "recall_tp": 350
+          },
+          "SeizureFrequency": {
+            "precision": 0.7333,
+            "recall": 0.7727,
+            "f1": 0.7525,
+            "tp": 187,
+            "fp": 68,
+            "fn": 55,
+            "pred_count": 255,
+            "gold_count": 242
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.8056,
+          "recall": 0.8021,
+          "f1": 0.8039,
+          "tp": 900,
+          "fp": 215,
+          "fn": 222,
+          "pred_count": 1106,
+          "gold_count": 1122,
+          "precision_tp": 891,
+          "recall_tp": 900
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8462,
+            "recall": 0.8333,
+            "f1": 0.8397,
+            "tp": 350,
+            "fp": 62,
+            "fn": 70,
+            "pred_count": 403,
+            "gold_count": 420,
+            "precision_tp": 341,
+            "recall_tp": 350
+          },
+          "SeizureFrequency": {
+            "precision": 0.5884,
+            "recall": 0.6599,
+            "f1": 0.6221,
+            "tp": 163,
+            "fp": 114,
+            "fn": 84,
+            "pred_count": 277,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.9241,
+            "recall": 0.7978,
+            "f1": 0.8563,
+            "tp": 146,
+            "fp": 12,
+            "fn": 37,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0317,
+      "overall_component_contribution_delta": 0.0317,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": 0.1304,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": -0.1304,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1404,
+        "scored_mentions": 1357,
+        "exact_evidence_mentions": 1357,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1330
+        },
+        "evidence_valid": {
+          "target_model_generated": 1404
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1404
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 27,
+          "target_model_generated": 1330
+        },
+        "source_scored": {
+          "target_model_generated": 1404
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_standard_dictionary",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_standard_dictionary",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "standard_dictionary",
+      "component_boundary": "dictionary_normalized",
+      "component_type": "dictionary",
+      "component_portability_category": "clinical_epilepsy",
+      "prediction_bearing_status": "conditional",
+      "baseline_surface": "dictionary_normalized",
+      "component_off_surface": "evidence_valid",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.8091,
+          "recall": 0.8128,
+          "f1": 0.811,
+          "tp": 912,
+          "fp": 214,
+          "fn": 210,
+          "pred_count": 1121,
+          "gold_count": 1122,
+          "precision_tp": 907,
+          "recall_tp": 912
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8557,
+            "recall": 0.831,
+            "f1": 0.8432,
+            "tp": 349,
+            "fp": 58,
+            "fn": 71,
+            "pred_count": 402,
+            "gold_count": 420,
+            "precision_tp": 344,
+            "recall_tp": 349
+          },
+          "SeizureFrequency": {
+            "precision": 0.57,
+            "recall": 0.6761,
+            "f1": 0.6185,
+            "tp": 167,
+            "fp": 126,
+            "fn": 80,
+            "pred_count": 293,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.7758,
+          "recall": 0.8004,
+          "f1": 0.7879,
+          "tp": 898,
+          "fp": 258,
+          "fn": 224,
+          "pred_count": 1151,
+          "gold_count": 1122,
+          "precision_tp": 893,
+          "recall_tp": 898
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.7639,
+            "recall": 0.7976,
+            "f1": 0.7804,
+            "tp": 335,
+            "fp": 102,
+            "fn": 85,
+            "pred_count": 432,
+            "gold_count": 420,
+            "precision_tp": 330,
+            "recall_tp": 335
+          },
+          "SeizureFrequency": {
+            "precision": 0.57,
+            "recall": 0.6761,
+            "f1": 0.6185,
+            "tp": 167,
+            "fp": 126,
+            "fn": 80,
+            "pred_count": 293,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0231,
+      "overall_component_contribution_delta": 0.0231,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0628,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.0628,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 0.9988,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 1,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1460,
+        "scored_mentions": 1419,
+        "exact_evidence_mentions": 1419,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1397
+        },
+        "evidence_valid": {
+          "target_model_generated": 1455
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1455
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 22,
+          "target_model_generated": 1397
+        },
+        "source_scored": {
+          "target_model_generated": 1455
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_residual_semantic_lens",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_residual_semantic_lens",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "residual_semantic_lens",
+      "component_boundary": "residual_semantic_added",
+      "component_type": "semantic_lens",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "yes",
+      "baseline_surface": "residual_semantic_added",
+      "component_off_surface": "dictionary_normalized",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.8119,
+          "recall": 0.8316,
+          "f1": 0.8216,
+          "tp": 933,
+          "fp": 215,
+          "fn": 189,
+          "pred_count": 1143,
+          "gold_count": 1122,
+          "precision_tp": 928,
+          "recall_tp": 933
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8608,
+            "recall": 0.881,
+            "f1": 0.8708,
+            "tp": 370,
+            "fp": 59,
+            "fn": 50,
+            "pred_count": 424,
+            "gold_count": 420,
+            "precision_tp": 365,
+            "recall_tp": 370
+          },
+          "SeizureFrequency": {
+            "precision": 0.57,
+            "recall": 0.6761,
+            "f1": 0.6185,
+            "tp": 167,
+            "fp": 126,
+            "fn": 80,
+            "pred_count": 293,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.8091,
+          "recall": 0.8128,
+          "f1": 0.811,
+          "tp": 912,
+          "fp": 214,
+          "fn": 210,
+          "pred_count": 1121,
+          "gold_count": 1122,
+          "precision_tp": 907,
+          "recall_tp": 912
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8557,
+            "recall": 0.831,
+            "f1": 0.8432,
+            "tp": 349,
+            "fp": 58,
+            "fn": 71,
+            "pred_count": 402,
+            "gold_count": 420,
+            "precision_tp": 344,
+            "recall_tp": 349
+          },
+          "SeizureFrequency": {
+            "precision": 0.57,
+            "recall": 0.6761,
+            "f1": 0.6185,
+            "tp": 167,
+            "fp": 126,
+            "fn": 80,
+            "pred_count": 293,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0106,
+      "overall_component_contribution_delta": 0.0106,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0276,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.0276,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 0.9988,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 1,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1460,
+        "scored_mentions": 1419,
+        "exact_evidence_mentions": 1419,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1397
+        },
+        "evidence_valid": {
+          "target_model_generated": 1455
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1455
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 22,
+          "target_model_generated": 1397
+        },
+        "source_scored": {
+          "target_model_generated": 1455
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_headline_projection",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200__without_headline_projection",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "headline_projection",
+      "component_boundary": "headline_projection",
+      "component_type": "deterministic_projection",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "no",
+      "baseline_surface": "headline_projection",
+      "component_off_surface": "residual_semantic_added",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_deepseek_full200_20260625.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.8528,
+          "recall": 0.8603,
+          "f1": 0.8566,
+          "tp": 961,
+          "fp": 165,
+          "fn": 156,
+          "pred_count": 1121,
+          "gold_count": 1117,
+          "precision_tp": 956,
+          "recall_tp": 961
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8608,
+            "recall": 0.881,
+            "f1": 0.8708,
+            "tp": 370,
+            "fp": 59,
+            "fn": 50,
+            "pred_count": 424,
+            "gold_count": 420,
+            "precision_tp": 365,
+            "recall_tp": 370
+          },
+          "SeizureFrequency": {
+            "precision": 0.7196,
+            "recall": 0.8058,
+            "f1": 0.7602,
+            "tp": 195,
+            "fp": 76,
+            "fn": 47,
+            "pred_count": 271,
+            "gold_count": 242
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.8119,
+          "recall": 0.8316,
+          "f1": 0.8216,
+          "tp": 933,
+          "fp": 215,
+          "fn": 189,
+          "pred_count": 1143,
+          "gold_count": 1122,
+          "precision_tp": 928,
+          "recall_tp": 933
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8608,
+            "recall": 0.881,
+            "f1": 0.8708,
+            "tp": 370,
+            "fp": 59,
+            "fn": 50,
+            "pred_count": 424,
+            "gold_count": 420,
+            "precision_tp": 365,
+            "recall_tp": 370
+          },
+          "SeizureFrequency": {
+            "precision": 0.57,
+            "recall": 0.6761,
+            "f1": 0.6185,
+            "tp": 167,
+            "fp": 126,
+            "fn": 80,
+            "pred_count": 293,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.981,
+            "recall": 0.847,
+            "f1": 0.9091,
+            "tp": 155,
+            "fp": 3,
+            "fn": 28,
+            "pred_count": 158,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.035,
+      "overall_component_contribution_delta": 0.035,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": 0.1417,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": -0.1417,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 0.9988,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 1,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1460,
+        "scored_mentions": 1419,
+        "exact_evidence_mentions": 1419,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1397
+        },
+        "evidence_valid": {
+          "target_model_generated": 1455
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1455
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 22,
+          "target_model_generated": 1397
+        },
+        "source_scored": {
+          "target_model_generated": 1455
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_standard_dictionary",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_standard_dictionary",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "standard_dictionary",
+      "component_boundary": "dictionary_normalized",
+      "component_type": "dictionary",
+      "component_portability_category": "clinical_epilepsy",
+      "prediction_bearing_status": "conditional",
+      "baseline_surface": "dictionary_normalized",
+      "component_off_surface": "evidence_valid",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.7642,
+          "recall": 0.7959,
+          "f1": 0.7797,
+          "tp": 893,
+          "fp": 270,
+          "fn": 229,
+          "pred_count": 1145,
+          "gold_count": 1122,
+          "precision_tp": 875,
+          "recall_tp": 893
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8076,
+            "recall": 0.8024,
+            "f1": 0.805,
+            "tp": 337,
+            "fp": 76,
+            "fn": 83,
+            "pred_count": 395,
+            "gold_count": 420,
+            "precision_tp": 319,
+            "recall_tp": 337
+          },
+          "SeizureFrequency": {
+            "precision": 0.5361,
+            "recall": 0.6316,
+            "f1": 0.5799,
+            "tp": 156,
+            "fp": 135,
+            "fn": 91,
+            "pred_count": 291,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.7237,
+          "recall": 0.7799,
+          "f1": 0.7507,
+          "tp": 875,
+          "fp": 326,
+          "fn": 247,
+          "pred_count": 1180,
+          "gold_count": 1122,
+          "precision_tp": 854,
+          "recall_tp": 875
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.693,
+            "recall": 0.7595,
+            "f1": 0.7248,
+            "tp": 319,
+            "fp": 132,
+            "fn": 101,
+            "pred_count": 430,
+            "gold_count": 420,
+            "precision_tp": 298,
+            "recall_tp": 319
+          },
+          "SeizureFrequency": {
+            "precision": 0.5361,
+            "recall": 0.6316,
+            "f1": 0.5799,
+            "tp": 156,
+            "fp": 135,
+            "fn": 91,
+            "pred_count": 291,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.029,
+      "overall_component_contribution_delta": 0.029,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0802,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.0802,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1442,
+        "scored_mentions": 1399,
+        "exact_evidence_mentions": 1399,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1378
+        },
+        "evidence_valid": {
+          "target_model_generated": 1441
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1441
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 21,
+          "target_model_generated": 1378
+        },
+        "source_scored": {
+          "target_model_generated": 1441
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_residual_semantic_lens",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_residual_semantic_lens",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "residual_semantic_lens",
+      "component_boundary": "residual_semantic_added",
+      "component_type": "semantic_lens",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "yes",
+      "baseline_surface": "residual_semantic_added",
+      "component_off_surface": "dictionary_normalized",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.7674,
+          "recall": 0.8128,
+          "f1": 0.7895,
+          "tp": 912,
+          "fp": 271,
+          "fn": 210,
+          "pred_count": 1165,
+          "gold_count": 1122,
+          "precision_tp": 894,
+          "recall_tp": 912
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8145,
+            "recall": 0.8476,
+            "f1": 0.8307,
+            "tp": 356,
+            "fp": 77,
+            "fn": 64,
+            "pred_count": 415,
+            "gold_count": 420,
+            "precision_tp": 338,
+            "recall_tp": 356
+          },
+          "SeizureFrequency": {
+            "precision": 0.5361,
+            "recall": 0.6316,
+            "f1": 0.5799,
+            "tp": 156,
+            "fp": 135,
+            "fn": 91,
+            "pred_count": 291,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.7642,
+          "recall": 0.7959,
+          "f1": 0.7797,
+          "tp": 893,
+          "fp": 270,
+          "fn": 229,
+          "pred_count": 1145,
+          "gold_count": 1122,
+          "precision_tp": 875,
+          "recall_tp": 893
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8076,
+            "recall": 0.8024,
+            "f1": 0.805,
+            "tp": 337,
+            "fp": 76,
+            "fn": 83,
+            "pred_count": 395,
+            "gold_count": 420,
+            "precision_tp": 319,
+            "recall_tp": 337
+          },
+          "SeizureFrequency": {
+            "precision": 0.5361,
+            "recall": 0.6316,
+            "f1": 0.5799,
+            "tp": 156,
+            "fp": 135,
+            "fn": 91,
+            "pred_count": 291,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0098,
+      "overall_component_contribution_delta": 0.0098,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0257,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": -0.0257,
+        "SeizureFrequency": 0.0,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1442,
+        "scored_mentions": 1399,
+        "exact_evidence_mentions": 1399,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1378
+        },
+        "evidence_valid": {
+          "target_model_generated": 1441
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1441
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 21,
+          "target_model_generated": 1378
+        },
+        "source_scored": {
+          "target_model_generated": 1441
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    },
+    {
+      "artifact_kind": "exectv2_component_off_replay_config",
+      "dataset": "exectv2",
+      "ablation_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_headline_projection",
+      "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "component_off_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200__without_headline_projection",
+      "split": "full200",
+      "row_count": 200,
+      "scorer_view": "clinical_headline",
+      "scorer_version": "exectv2_component_ablation_replay_v20260626",
+      "component_id": "headline_projection",
+      "component_boundary": "headline_projection",
+      "component_type": "deterministic_projection",
+      "component_portability_category": "benchmark_format",
+      "prediction_bearing_status": "no",
+      "baseline_surface": "headline_projection",
+      "component_off_surface": "residual_semantic_added",
+      "source_artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+        "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl"
+      ],
+      "baseline_aggregate_score": {
+        "overall": {
+          "precision": 0.803,
+          "recall": 0.8371,
+          "f1": 0.8197,
+          "tp": 935,
+          "fp": 225,
+          "fn": 182,
+          "pred_count": 1142,
+          "gold_count": 1117,
+          "precision_tp": 917,
+          "recall_tp": 935
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8145,
+            "recall": 0.8476,
+            "f1": 0.8307,
+            "tp": 356,
+            "fp": 77,
+            "fn": 64,
+            "pred_count": 415,
+            "gold_count": 420,
+            "precision_tp": 338,
+            "recall_tp": 356
+          },
+          "SeizureFrequency": {
+            "precision": 0.6679,
+            "recall": 0.7397,
+            "f1": 0.702,
+            "tp": 179,
+            "fp": 89,
+            "fn": 63,
+            "pred_count": 268,
+            "gold_count": 242
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "component_off_aggregate_score": {
+        "overall": {
+          "precision": 0.7674,
+          "recall": 0.8128,
+          "f1": 0.7895,
+          "tp": 912,
+          "fp": 271,
+          "fn": 210,
+          "pred_count": 1165,
+          "gold_count": 1122,
+          "precision_tp": 894,
+          "recall_tp": 912
+        },
+        "families": {
+          "Diagnosis": {
+            "precision": 0.8145,
+            "recall": 0.8476,
+            "f1": 0.8307,
+            "tp": 356,
+            "fp": 77,
+            "fn": 64,
+            "pred_count": 415,
+            "gold_count": 420,
+            "precision_tp": 338,
+            "recall_tp": 356
+          },
+          "SeizureFrequency": {
+            "precision": 0.5361,
+            "recall": 0.6316,
+            "f1": 0.5799,
+            "tp": 156,
+            "fp": 135,
+            "fn": 91,
+            "pred_count": 291,
+            "gold_count": 247
+          },
+          "Prescription": {
+            "precision": 0.8993,
+            "recall": 0.886,
+            "f1": 0.8926,
+            "tp": 241,
+            "fp": 27,
+            "fn": 31,
+            "pred_count": 268,
+            "gold_count": 272
+          },
+          "Investigations": {
+            "precision": 0.8325,
+            "recall": 0.8689,
+            "f1": 0.8503,
+            "tp": 159,
+            "fp": 32,
+            "fn": 24,
+            "pred_count": 191,
+            "gold_count": 183
+          }
+        }
+      },
+      "overall_delta": -0.0302,
+      "overall_component_contribution_delta": 0.0302,
+      "family_component_contribution_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": 0.1221,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "family_component_off_deltas": {
+        "Diagnosis": 0.0,
+        "SeizureFrequency": -0.1221,
+        "Prescription": 0.0,
+        "Investigations": 0.0
+      },
+      "validity_rates": {
+        "schema_validity": 1.0,
+        "schema_validity_basis": "family_lane_parse_schema_failures",
+        "evidence_validity": 1.0,
+        "evidence_validity_basis": "raw_mentions_minus_evidence_invalid_dropped",
+        "minimum_exact_evidence_rate": 1.0
+      },
+      "operational_counts": {
+        "call_failures": 0,
+        "parse_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "raw_mentions": 1442,
+        "scored_mentions": 1399,
+        "exact_evidence_mentions": 1399,
+        "abstentions": "not_recorded_in_source_summary",
+        "missing_outputs": "not_recorded_in_source_summary"
+      },
+      "deterministic_action_counts": {
+        "dictionary_normalized": {
+          "target_model_generated": 1378
+        },
+        "evidence_valid": {
+          "target_model_generated": 1441
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 1441
+        },
+        "residual_benchmark_added": {
+          "post_model_rescue": 21,
+          "target_model_generated": 1378
+        },
+        "source_scored": {
+          "target_model_generated": 1441
+        }
+      },
+      "row_inspection_policy": "aggregate_only",
+      "allow_model_calls": false,
+      "allow_post_run_tuning": false,
+      "claim_boundary": "full-200 aggregate-only component-impact replay under the frozen 2026-06-26 predeclaration; separate from reliability scorecard evidence",
+      "stop_rule": "report null, negative, and positive aggregate deltas as final component-impact evidence; no model calls, row-level full-200 inspection, or tuning authorized"
+    }
+  ],
+  "component_summaries": [
+    {
+      "component_id": "standard_dictionary",
+      "component_type": "dictionary",
+      "prediction_bearing_status": "conditional",
+      "claim_use": "Dictionary normalization contributes benchmark-format recovery on dev140, most visibly on `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200` (overall +0.0290, mainly Diagnosis +0.0802). Report as conditional dictionary impact on the declared scorer, not as proof that dictionaries are globally required.",
+      "rows": [
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+          "overall_component_contribution_delta": 0.0186,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0508,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+          "overall_component_contribution_delta": 0.0231,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0628,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+          "overall_component_contribution_delta": 0.029,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0802,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "component_id": "residual_semantic_lens",
+      "component_type": "semantic_lens",
+      "prediction_bearing_status": "yes",
+      "claim_use": "Residual semantic recovery is prediction-bearing on dev140: removing the lens lowers clinical_headline by up to +0.0117 on `exectv2_2call_no_sf_adjudicator_gpt41mini_full200` with the largest family effect on Diagnosis (+0.0310). This is component-impact evidence for semantic add/drop/replace layers, not a reliability-scorecard claim.",
+      "rows": [
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+          "overall_component_contribution_delta": 0.0117,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.031,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+          "overall_component_contribution_delta": 0.0106,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0276,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+          "overall_component_contribution_delta": 0.0098,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0257,
+            "SeizureFrequency": 0.0,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "component_id": "headline_projection",
+      "component_type": "deterministic_projection",
+      "prediction_bearing_status": "no",
+      "claim_use": "Headline projection is a deterministic format layer on dev140: removing it lowers clinical_headline by up to +0.0350 on `exectv2_2call_no_sf_adjudicator_deepseek_full200`, concentrated in SeizureFrequency (+0.1417). Treat this as projection/format contribution separate from semantic fact changes.",
+      "rows": [
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+          "overall_component_contribution_delta": 0.0317,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0,
+            "SeizureFrequency": 0.1304,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+          "overall_component_contribution_delta": 0.035,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0,
+            "SeizureFrequency": 0.1417,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        },
+        {
+          "baseline_run_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+          "overall_component_contribution_delta": 0.0302,
+          "family_component_contribution_deltas": {
+            "Diagnosis": 0.0,
+            "SeizureFrequency": 0.1221,
+            "Prescription": 0.0,
+            "Investigations": 0.0
+          }
+        }
+      ]
+    }
+  ]
+}

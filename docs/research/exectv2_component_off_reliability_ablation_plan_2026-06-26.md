@@ -117,6 +117,25 @@ authorize model calls, row-level full-200 failure inspection, prompt/parser/
 scorer/threshold/deterministic-rule/model-choice tuning, or Reliability
 Scorecard promotion language.
 
+## Full-200 Execution Outcome
+
+Executed on 2026-06-26 under the frozen predeclaration:
+`experiments/exectv2_component_off_replay_full200_20260626.{json,jsonl,md}`.
+
+- `9` aggregate replay rows across GPT-4.1-mini, DeepSeek, and Qwen repair v02
+  same-core full-200 source families;
+- all three preflight checks passed (`split=full200`, `row_count=200`,
+  `clinical_headline`, no model calls);
+- stop-rule outcome: `all_selected_component_deltas_positive_limited_claim`;
+- full-200 contribution delta ranges: dictionary `+0.0186` to `+0.0290`,
+  residual semantic lens `+0.0098` to `+0.0117`, headline projection
+  `+0.0302` to `+0.0350`.
+
+These rows remain Component Impact evidence only. They are not holdout results,
+strict benchmark claims, or Reliability Scorecard promotion evidence. No further
+full-200 component-off replay is authorized for this component set without a
+fresh predeclaration.
+
 ## Reporting Language
 
 Preferred wording:

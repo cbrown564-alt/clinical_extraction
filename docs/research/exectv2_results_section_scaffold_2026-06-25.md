@@ -105,19 +105,41 @@ Recommended wording:
 > candidate. These results support trust in the fixed architecture but are not
 > holdout performance claims and are not component-causal ablation evidence.
 
-### Component-Evidence Boundary
+### Component Impact
 
-Component Impact should be a separate subsection. It may cite the no-verifier
-full-200 ablation, the Investigations rule ablation, and replay-only
-component-impact artifacts, but it should not use the reliability scorecard as
-proof that a single component caused the observed performance.
+Component Impact is reported separately from the reliability scorecard. Claims
+are limited to aggregate replay deltas under a fixed scorer, split, and
+inspection boundary.
+
+Dev140 one-component-off replay (`16` rows) and full-200 aggregate-only replay
+(`9` rows) support limited component-impact language for dictionary
+normalization, residual semantic recovery, and headline projection on
+`clinical_headline`. Evidence validation was structurally inert on the dev140
+single-lane holistic replays and was not escalated to full-200 under the frozen
+protocol.
+
+| Component | Type | Split | Overall delta range | Main family signal | Claim boundary |
+| --- | --- | --- | ---: | --- | --- |
+| `standard_dictionary` | `dictionary` | dev140 | `+0.0389` to `+0.1120` | Diagnosis up to `+0.1397`; SeizureFrequency up to `+0.1728` | Conditional dictionary/benchmark-format recovery on the declared scorer. |
+| `standard_dictionary` | `dictionary` | full200 | `+0.0186` to `+0.0290` | Diagnosis up to `+0.0802` | Same-core full-200 component-impact evidence only; not a holdout claim. |
+| `residual_semantic_lens` | `semantic_lens` | dev140 | `+0.0175` to `+0.1041` | Investigations up to `+0.1722` | Prediction-bearing semantic add/drop/replace contribution. |
+| `residual_semantic_lens` | `semantic_lens` | full200 | `+0.0098` to `+0.0117` | Diagnosis up to `+0.0310` | Full-200 aggregate replay only; no row-level inspection. |
+| `headline_projection` | `deterministic_projection` | dev140 | `+0.0283` to `+0.0446` | SeizureFrequency up to `+0.2031` | Deterministic projection/format contribution. |
+| `headline_projection` | `deterministic_projection` | full200 | `+0.0302` to `+0.0350` | SeizureFrequency up to `+0.1417` | Format layer only; separated from semantic fact changes. |
+
+The no-verifier full-200 ablation and Investigations rule ablation remain
+separate component-role comparisons. They should not be blended with the
+layer-ladder component-off readouts above.
 
 Recommended wording:
 
 > Component-impact claims are reserved for ablations and same-input replay
-> deltas. The reliability scorecard is intentionally reported separately because
-> it measures trust properties of a fixed architecture rather than causal score
-> contribution from individual components.
+> deltas under a declared scorer and inspection boundary. Dictionary,
+> residual-semantic, and headline-projection layers show positive aggregate
+> deltas on dev140 and full-200 replay, but these results do not prove any
+> component is globally required. The reliability scorecard remains separate
+> because it measures trust properties of a fixed architecture rather than
+> causal score contribution from individual components.
 
 ## Do Not Use As Claims
 
@@ -131,7 +153,8 @@ Recommended wording:
 
 ## Next Manuscript Step
 
-After the same-core full-200 aggregate-only predeclaration is drafted and, if
-authorized, executed, update this scaffold by either replacing the dev140
-same-core table with the frozen aggregate result or explicitly labeling the
-dev140 table as model-swap development evidence.
+The same-core full-200 aggregate table and the component-off full-200 readout
+are now frozen in this scaffold. The next manuscript step is to fold the
+reliability scorecard and component-impact subsections into the main results
+draft once the architecture/performance table is frozen, without merging trust
+evidence into component-causal claims.
