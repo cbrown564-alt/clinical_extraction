@@ -24,11 +24,9 @@ import {
 import Link from "next/link";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import { useGalleryUrlSync } from "@/lib/hooks";
-import { useActiveDataset } from "@/lib/datasets/useDataset";
+import { useActiveDataset, getRuntimeAdapter } from "@/lib/datasets";
 import { gan2026Dataset } from "@/lib/datasets/gan2026";
 import { SurfaceHeader, SurfaceLayout } from "@/components/surface";
-import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
-import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import type { RowScore, RunSummary } from "@/lib/types";
 import {
   type EnrichedRow,
@@ -984,8 +982,8 @@ function GalleryInner() {
 
 function GalleryRoute() {
   const dataset = useActiveDataset();
-  if (dataset === "exectv2") return <Exectv2ErrorGallery />;
-  return <GalleryInner />;
+  const ErrorGallery = getRuntimeAdapter(dataset).surfaces.ErrorGallery;
+  return <ErrorGallery />;
 }
 
 export { GalleryInner as GanErrorGallery };

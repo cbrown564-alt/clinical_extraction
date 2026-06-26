@@ -1,14 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
-import { useActiveDataset } from "@/lib/datasets";
-import GanComponentImpact from "@/components/laboratory/GanComponentImpact";
-import Exectv2ComponentImpact from "@/components/exectv2/Exectv2ComponentImpact";
+import { useActiveDataset, getRuntimeAdapter } from "@/lib/datasets";
 
 function LaboratoryRoute() {
   const dataset = useActiveDataset();
-  if (dataset === "exectv2") return <Exectv2ComponentImpact />;
-  return <GanComponentImpact />;
+  const ComponentImpact = getRuntimeAdapter(dataset).surfaces.ComponentImpact;
+  return <ComponentImpact />;
 }
 
 export default function LaboratoryPage() {

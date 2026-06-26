@@ -1,19 +1,38 @@
-"""D2 direct-plus-boundary-critic rescue-only runner for Gan 2026 hard slices."""
+"""D2 direct-plus-boundary-critic rescue-only runner for Gan 2026 hard slices.
+
+Migrated to :mod:`stage_protocol` (prompt builders + decision schemas + postprocess
+policy + thin ``run_split``).
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
 import dspy
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
+    AgenticStage,
+    DEFAULT_BLOCKING_PARSE_PREFIXES,
+    DEFAULT_REPAIR_NOTE_PREFIXES,
+    ParsedStageResponse,
+    build_markdown_report_skeleton,
+    build_stage_metadata,
+    configure_dspy_for_stage,
+    emit_progress_checkpoint,
+    extract_json_object,
+    has_blocking_parse_issue,
+    has_repair_note,
+    parse_response,
+    write_stage_jsonl,
+    write_stage_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
     read_boundary_guide,
 )
@@ -31,10 +50,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
-    write_jsonl_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
@@ -42,16 +57,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
     LlmOnlyDirectLabelerDecisionRecord,
-    _extract_json_object,
     parse_decision_json,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
-    write_markdown_report,
 )
 
 PROMPT_VERSION = "gan2026_agentic_direct_boundary_critic_rescue_v1"
@@ -160,6 +170,117 @@ class DspyBoundaryCriticCaller(dspy.Module):
         return self.predict(prompt_input_json=prompt_input_json)
 
 
+_CRITIC_BLOCKING_PREFIXES: tuple[str, ...] = (
+    *DEFAULT_BLOCKING_PARSE_PREFIXES,
+    "unscorable_proposed_final_label:",
+)
+_CRITIC_REPAIR_PREFIXES: tuple[str, ...] = (
+    *DEFAULT_REPAIR_NOTE_PREFIXES,
+    "proposed_final_label_repaired:",
+)
+
+
+class DirectDecisionStage(AgenticStage[DirectDecisionRecord]):
+    """D2 direct no-tool prompt builder + parse policy."""
+
+    @property
+    def prompt_version(self) -> str:
+        return PROMPT_VERSION
+
+    def build_prompt_input(self, record: GanFrequencyRecord, **_: object) -> str:
+        return _build_direct_prompt_input(record)
+
+    def parse_response(
+        self,
+        raw_output: str,
+        **_: object,
+    ) -> ParsedStageResponse[DirectDecisionRecord]:
+        decision, errors = parse_decision_json(raw_output)
+        return ParsedStageResponse(decision, parse_errors=errors)
+
+
+class BoundaryCriticStage(AgenticStage[BoundaryCriticDecisionRecord]):
+    """D2 boundary critic prompt builder + parse/postprocess policy."""
+
+    @property
+    def prompt_version(self) -> str:
+        return PROMPT_VERSION
+
+    def build_prompt_input(
+        self,
+        record: GanFrequencyRecord,
+        *,
+        direct_call: Mapping[str, Any],
+        guide_results: Sequence[Mapping[str, Any]],
+        **_: object,
+    ) -> str:
+        return _build_critic_prompt_input(
+            record,
+            direct_call=direct_call,
+            guide_results=guide_results,
+        )
+
+    def parse_response(
+        self,
+        raw_output: str,
+        **_: object,
+    ) -> ParsedStageResponse[BoundaryCriticDecisionRecord]:
+        parsed = parse_response(
+            raw_output,
+            decision_model=BoundaryCriticDecisionRecord,
+            payload_filter=_filter_critic_payload,
+            shape_repair=_repair_critic_payload_shape,
+            label_field="proposed_final_label",
+            evidence_field="evidence",
+            label_repair="none",
+            require_scorable_label=False,
+        )
+        if parsed.decision is None:
+            return parsed
+        decision, repair_notes = self.postprocess_decision(parsed.decision)
+        return ParsedStageResponse(
+            decision,
+            parse_errors=[*parsed.parse_errors, *repair_notes],
+            format_repair_events=parsed.format_repair_events,
+            raw_final_label=parsed.raw_final_label,
+        )
+
+    def postprocess_decision(
+        self,
+        decision: BoundaryCriticDecisionRecord,
+        *,
+        note_text: str = "",
+        **_: object,
+    ) -> tuple[BoundaryCriticDecisionRecord, list[str]]:
+        del note_text
+        errors: list[str] = []
+        if not decision.proposed_final_label:
+            return decision, errors
+        format_label = repair_prediction_label_format_preserving(decision.proposed_final_label)
+        if _label_kind(format_label) in {"seizure_free", "unknown", "no_reference"}:
+            repaired_label = format_label
+        else:
+            repaired_label = repair_prediction_label_with_evidence(
+                decision.proposed_final_label,
+                decision.evidence,
+            )
+        if repaired_label != decision.proposed_final_label:
+            errors.append(
+                "proposed_final_label_repaired: "
+                f"{decision.proposed_final_label!r} -> {repaired_label!r}"
+            )
+            decision = decision.model_copy(update={"proposed_final_label": repaired_label})
+        try:
+            label_to_frequency_record(decision.proposed_final_label)
+        except ValueError as exc:
+            errors.append(f"unscorable_proposed_final_label: {exc}")
+        return decision, errors
+
+
+DIRECT_STAGE = DirectDecisionStage()
+CRITIC_STAGE = BoundaryCriticStage()
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -182,14 +303,12 @@ def run_split(
     """Run D2 over the predeclared panel or fixed validation hard50 slice."""
 
     if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
+        configure_dspy_for_stage(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            cache=dspy_cache,
+            api_base=api_base,
         )
     reuse_raw_outputs = reuse_raw_outputs or {}
     reference_labels = _reference_labels(reference_rows)
@@ -297,10 +416,30 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         reused_raw_outputs += int(bool(critic_call.get("reused_raw_output")))
         direct_decision_records += int(direct_call.get("decision_record") is not None)
         critic_decision_records += int(critic_call.get("decision_record") is not None)
-        parse_failures += int(_has_blocking_parse_issue(direct_call.get("parse_errors")))
-        parse_failures += int(_has_blocking_parse_issue(critic_call.get("parse_errors")))
-        repair_rows += int(_has_repair_note(direct_call.get("parse_errors")))
-        repair_rows += int(_has_repair_note(critic_call.get("parse_errors")))
+        parse_failures += int(
+            has_blocking_parse_issue(
+                direct_call.get("parse_errors"),
+                blocking_prefixes=_CRITIC_BLOCKING_PREFIXES,
+            )
+        )
+        parse_failures += int(
+            has_blocking_parse_issue(
+                critic_call.get("parse_errors"),
+                blocking_prefixes=_CRITIC_BLOCKING_PREFIXES,
+            )
+        )
+        repair_rows += int(
+            has_repair_note(
+                direct_call.get("parse_errors"),
+                repair_prefixes=_CRITIC_REPAIR_PREFIXES,
+            )
+        )
+        repair_rows += int(
+            has_repair_note(
+                critic_call.get("parse_errors"),
+                repair_prefixes=_CRITIC_REPAIR_PREFIXES,
+            )
+        )
         evidence_exact += int(bool(direct_call.get("evidence_valid")))
         evidence_exact += int(bool(critic_call.get("evidence_valid")))
         accepted_rescue_correct += int(
@@ -500,7 +639,7 @@ def apply_action_policy(
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    write_jsonl_rows(rows, path)
+    write_stage_jsonl(rows, path)
 
 
 def write_report(
@@ -514,135 +653,96 @@ def write_report(
     gate = dict(metadata.get("gate") or {})
     surface = str(metadata.get("surface", "panel"))
     surface_label = "Hard50" if surface == "hard50" else "Panel"
-    lines = [
-        f"# Gan 2026 Agentic Direct Boundary Critic Rescue {surface_label}",
-        "",
-        f"Date: {metadata.get('date', 'unknown')}",
-        "",
-        "## Experiment Unit",
-        "",
-        f"- Work class: D2 validation {surface} direct-plus-boundary-critic rescue-only.",
-        (
-            "- Hypothesis: boundary reasoning is useful as a constrained critic over "
-            "a direct answer, not as a replacement labeler."
-        ),
-        "- Minimal change: one direct no-tool call plus one boundary critic call.",
-        f"- Rows: {summary.get('rows', 0)}",
-        f"- Condition: `{CONDITION}`",
-        f"- Reference condition: `{REFERENCE_CONDITION}`",
-        "- Split: `validation`, manifest `gan2026_split_v1`.",
-        f"- Surface: predeclared D2 `{surface}`.",
-        f"- Mode: `{metadata.get('mode')}`",
-        f"- Model: `{metadata.get('model')}`",
-        f"- Prompt version: `{metadata.get('prompt_version')}`",
-        f"- JSONL artifact: `{jsonl_path}`",
-        "- Parser context: disabled; fixed boundary-guide set used by the critic.",
-        "",
-        "## Summary",
-        "",
-        f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
-        f"- Direct decision records: {summary.get('direct_decision_records', 0)}",
-        f"- Critic decision records: {summary.get('critic_decision_records', 0)}",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Reused raw outputs: {summary.get('reused_raw_outputs', 0)}",
-        f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
-        f"- Schema/label repair rows: {summary.get('schema_or_label_repair_rows', 0)}",
-        f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        f"- Direct Purist: {summary.get('direct_purist_correct', 0)}/{summary.get('rows', 0)}",
-        (
-            "- Raw critic proposed-label Purist: "
-            f"{summary.get('raw_critic_proposed_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        f"- Gated-final Purist: {summary.get('purist_correct', 0)}/{summary.get('rows', 0)}",
-        (
-            "- Gated-final Pragmatic: "
-            f"{summary.get('pragmatic_correct', 0)}/{summary.get('rows', 0)}"
-        ),
-        f"- Wins vs reference: {summary.get('wins_vs_reference', 0)}",
-        f"- Losses vs reference: {summary.get('losses_vs_reference', 0)}",
-        f"- Changed labels vs reference: {summary.get('changed_labels_vs_reference', 0)}",
-        f"- Changed-label precision: {summary.get('changed_label_precision')}",
-        f"- Accepted rescue correct: {summary.get('accepted_rescue_correct', 0)}",
-        f"- Accepted action regressions: {summary.get('accepted_action_regressions', 0)}",
-        f"- Accepted boundary demotions: {summary.get('accepted_boundary_demotions', 0)}",
-        f"- Fallback rate: {summary.get('fallback_rate', 0.0)}",
-        f"- Accepted action counts: `{summary.get('accepted_action_counts', {})}`",
-        f"- Blocked reasons: `{summary.get('blocked_reasons', {})}`",
-        "",
-        "## Gate",
-        "",
-        f"- Status: `{gate.get('status')}`",
-        f"- Interpretation: {gate.get('interpretation')}",
-        "",
-        "## Claim Boundary",
-        "",
-        str(metadata.get("claim_boundary", "")),
-        "",
-        "## Rows",
-        "",
-        (
+    lines = build_markdown_report_skeleton(
+        title=f"Gan 2026 Agentic Direct Boundary Critic Rescue {surface_label}",
+        metadata=metadata,
+        summary=summary,
+        gate=gate,
+        jsonl_path=jsonl_path,
+        experiment_unit_lines=[
+            f"- Work class: D2 validation {surface} direct-plus-boundary-critic rescue-only.",
+            (
+                "- Hypothesis: boundary reasoning is useful as a constrained critic over "
+                "a direct answer, not as a replacement labeler."
+            ),
+            "- Minimal change: one direct no-tool call plus one boundary critic call.",
+            f"- Rows: {summary.get('rows', 0)}",
+            f"- Condition: `{CONDITION}`",
+            f"- Reference condition: `{REFERENCE_CONDITION}`",
+            "- Split: `validation`, manifest `gan2026_split_v1`.",
+            f"- Surface: predeclared D2 `{surface}`.",
+            f"- Mode: `{metadata.get('mode')}`",
+            f"- Model: `{metadata.get('model')}`",
+            f"- Prompt version: `{metadata.get('prompt_version')}`",
+            "- Parser context: disabled; fixed boundary-guide set used by the critic.",
+        ],
+        summary_lines=[
+            f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
+            f"- Direct decision records: {summary.get('direct_decision_records', 0)}",
+            f"- Critic decision records: {summary.get('critic_decision_records', 0)}",
+            f"- Call failures: {summary.get('call_failures', 0)}",
+            f"- Reused raw outputs: {summary.get('reused_raw_outputs', 0)}",
+            f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
+            f"- Schema/label repair rows: {summary.get('schema_or_label_repair_rows', 0)}",
+            f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
+            f"- Direct Purist: {summary.get('direct_purist_correct', 0)}/{summary.get('rows', 0)}",
+            (
+                "- Raw critic proposed-label Purist: "
+                f"{summary.get('raw_critic_proposed_purist_correct', 0)}/"
+                f"{summary.get('rows', 0)}"
+            ),
+            f"- Gated-final Purist: {summary.get('purist_correct', 0)}/{summary.get('rows', 0)}",
+            (
+                "- Gated-final Pragmatic: "
+                f"{summary.get('pragmatic_correct', 0)}/{summary.get('rows', 0)}"
+            ),
+            f"- Wins vs reference: {summary.get('wins_vs_reference', 0)}",
+            f"- Losses vs reference: {summary.get('losses_vs_reference', 0)}",
+            f"- Changed labels vs reference: {summary.get('changed_labels_vs_reference', 0)}",
+            f"- Changed-label precision: {summary.get('changed_label_precision')}",
+            f"- Accepted rescue correct: {summary.get('accepted_rescue_correct', 0)}",
+            f"- Accepted action regressions: {summary.get('accepted_action_regressions', 0)}",
+            f"- Accepted boundary demotions: {summary.get('accepted_boundary_demotions', 0)}",
+            f"- Fallback rate: {summary.get('fallback_rate', 0.0)}",
+            f"- Accepted action counts: `{summary.get('accepted_action_counts', {})}`",
+            f"- Blocked reasons: `{summary.get('blocked_reasons', {})}`",
+        ],
+        row_table_header=(
             "| Row | Direct | Critic proposed | Final | Accepted action | "
             "Reference | Gold | Purist | Direct Purist | Reference Purist | Notes |"
         ),
-        "| ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for row in rows:
-        comparison = dict(row.get("comparison") or {})
-        direct_comparison = dict(row.get("direct_comparison") or {})
-        reference_comparison = dict(row.get("reference_comparison") or {})
-        notes = _row_notes(row)
-        lines.append(
-            f"| {row.get('source_row_index')} | `{row.get('direct_label')}` | "
-            f"`{row.get('raw_critic_proposed_label')}` | `{row.get('final_label')}` | "
-            f"`{row.get('accepted_action')}` | `{row.get('reference_label')}` | "
-            f"`{dict(row.get('reference') or {}).get('gold_label')}` | "
-            f"{'yes' if comparison.get('purist_correct') else 'no'} | "
-            f"{'yes' if direct_comparison.get('purist_correct') else 'no'} | "
-            f"{'yes' if reference_comparison.get('purist_correct') else 'no'} | "
-            f"{notes} |"
-        )
-    write_markdown_report(path, lines)
+        row_table_rows=[_report_row_line(row) for row in rows],
+        row_table_separator=(
+            "| ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+        ),
+    )
+    write_stage_markdown_report(path, lines)
+
+
+def _report_row_line(row: Mapping[str, Any]) -> str:
+    comparison = dict(row.get("comparison") or {})
+    direct_comparison = dict(row.get("direct_comparison") or {})
+    reference_comparison = dict(row.get("reference_comparison") or {})
+    notes = _row_notes(row)
+    return (
+        f"| {row.get('source_row_index')} | `{row.get('direct_label')}` | "
+        f"`{row.get('raw_critic_proposed_label')}` | `{row.get('final_label')}` | "
+        f"`{row.get('accepted_action')}` | `{row.get('reference_label')}` | "
+        f"`{dict(row.get('reference') or {}).get('gold_label')}` | "
+        f"{'yes' if comparison.get('purist_correct') else 'no'} | "
+        f"{'yes' if direct_comparison.get('purist_correct') else 'no'} | "
+        f"{'yes' if reference_comparison.get('purist_correct') else 'no'} | "
+        f"{notes} |"
+    )
 
 
 def parse_critic_decision_json(
     raw_output: str,
 ) -> tuple[BoundaryCriticDecisionRecord | None, list[str]]:
-    errors: list[str] = []
-    try:
-        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
-        )
-    except json.JSONDecodeError as exc:
-        return None, [f"invalid_json: {exc.msg}"]
-    errors.extend(dialect_notes)
-    payload = _filter_critic_payload(repair_decision_payload(raw_payload))
-    payload, shape_notes = _repair_critic_payload_shape(payload)
-    errors.extend(shape_notes)
-    try:
-        decision = BoundaryCriticDecisionRecord.model_validate(payload)
-    except ValidationError as exc:
-        return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
-    if decision.proposed_final_label:
-        format_label = repair_prediction_label_format_preserving(decision.proposed_final_label)
-        if _label_kind(format_label) in {"seizure_free", "unknown", "no_reference"}:
-            repaired_label = format_label
-        else:
-            repaired_label = repair_prediction_label_with_evidence(
-                decision.proposed_final_label,
-                decision.evidence,
-            )
-        if repaired_label != decision.proposed_final_label:
-            errors.append(
-                "proposed_final_label_repaired: "
-                f"{decision.proposed_final_label!r} -> {repaired_label!r}"
-            )
-            decision = decision.model_copy(update={"proposed_final_label": repaired_label})
-        try:
-            label_to_frequency_record(decision.proposed_final_label)
-        except ValueError as exc:
-            errors.append(f"unscorable_proposed_final_label: {exc}")
-    return decision, errors
+    parsed = CRITIC_STAGE.parse_response(raw_output)
+    if parsed.decision is None:
+        return None, parsed.parse_errors
+    return parsed.decision, parsed.parse_errors
 
 
 def _build_row(
@@ -737,7 +837,7 @@ def _execute_direct_call(
     mode: Literal["live", "prompt-only", "reuse"],
     reuse_raw_output: str | None,
 ) -> dict[str, Any]:
-    prompt_input_json = _build_direct_prompt_input(record)
+    prompt_input_json = DIRECT_STAGE.build_prompt_input(record)
     raw_output = reuse_raw_output or ""
     call_error: str | None = None
     if mode == "live" and not raw_output:
@@ -751,9 +851,11 @@ def _execute_direct_call(
             )
         except Exception as exc:  # pragma: no cover - live transport only.
             call_error = f"{type(exc).__name__}: {exc}"
-    decision, parse_errors = (
-        parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
+    parsed = (
+        DIRECT_STAGE.parse_response(raw_output) if raw_output else ParsedStageResponse(None, ["not_run"])
     )
+    decision = parsed.decision
+    parse_errors = parsed.parse_errors
     evidence_valid = (
         evidence_is_substring(record.note_text, decision.evidence)
         if decision and decision.evidence
@@ -790,7 +892,7 @@ def _execute_critic_call(
     mode: Literal["live", "prompt-only", "reuse"],
     reuse_raw_output: str | None,
 ) -> dict[str, Any]:
-    prompt_input_json = _build_critic_prompt_input(
+    prompt_input_json = CRITIC_STAGE.build_prompt_input(
         record,
         direct_call=direct_call,
         guide_results=guide_results,
@@ -808,9 +910,11 @@ def _execute_critic_call(
             )
         except Exception as exc:  # pragma: no cover - live transport only.
             call_error = f"{type(exc).__name__}: {exc}"
-    decision, parse_errors = (
-        parse_critic_decision_json(raw_output) if raw_output else (None, ["not_run"])
+    parsed = (
+        CRITIC_STAGE.parse_response(raw_output) if raw_output else ParsedStageResponse(None, ["not_run"])
     )
+    decision = parsed.decision
+    parse_errors = parsed.parse_errors
     evidence_valid = (
         evidence_is_substring(record.note_text, decision.evidence)
         if decision and decision.evidence
@@ -1191,7 +1295,7 @@ def _reference_labels(reference_rows: Sequence[Mapping[str, Any]]) -> dict[int, 
 def _extract_raw_label_from_direct_output(raw_output: str) -> str | None:
     try:
         payload, _dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except Exception:
         return None
@@ -1205,7 +1309,7 @@ def _extract_raw_label_from_direct_output(raw_output: str) -> str | None:
 def _extract_raw_critic_proposed_label(raw_output: str) -> str | None:
     try:
         payload, _dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
+            extract_json_object(raw_output)
         )
     except Exception:
         return None
@@ -1214,34 +1318,6 @@ def _extract_raw_critic_proposed_label(raw_output: str) -> str | None:
         return None
     final_label = repaired_payload.get("proposed_final_label")
     return str(final_label) if final_label is not None else None
-
-
-def _has_blocking_parse_issue(errors: Any) -> bool:
-    return any(
-        str(error).startswith(
-            (
-                "invalid_json:",
-                "schema_validation_error:",
-                "unscorable_final_label:",
-                "unscorable_proposed_final_label:",
-                "not_run",
-            )
-        )
-        for error in errors or []
-    )
-
-
-def _has_repair_note(errors: Any) -> bool:
-    return any(
-        str(error).startswith(
-            (
-                "final_label_repaired:",
-                "proposed_final_label_repaired:",
-                "json_dialect_repaired:",
-            )
-        )
-        for error in errors or []
-    )
 
 
 def _label_kind(label: str | None) -> str:
@@ -1295,24 +1371,21 @@ def _metadata(
     dspy_cache: bool,
     api_base: str | None,
 ) -> dict[str, Any]:
-    metadata = build_run_metadata(
-        mode=mode,
+    return build_stage_metadata(
+        records,
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
+        mode=mode,
         prompt_version=PROMPT_VERSION,
-        dspy_version=getattr(dspy, "__version__", "unknown"),
-        split=split,
-        split_manifest=split_manifest,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
-    )
-    metadata.update(
-        {
+        extra={
             "artifact_kind": "gan2026_agentic_direct_boundary_critic_rescue_panel",
             "pipeline_family": "agentic_direct_boundary_critic_rescue",
             "pipeline_version": "gan2026_agentic_d2_direct_boundary_critic_rescue_v1",
-            "dspy_cache": dspy_cache,
             "panel_source_row_indices": list(PANEL_SOURCE_ROW_INDICES),
             "fixed_boundary_guide_ids": list(FIXED_BOUNDARY_GUIDE_IDS),
             "claim_boundary": (
@@ -1320,9 +1393,8 @@ def _metadata(
                 "plus boundary critic, parser candidates disabled as prompt context, "
                 "no holdout use, no row-level test inspection, and no benchmark claim"
             ),
-        }
+        },
     )
-    return metadata
 
 
 def _emit_progress_checkpoint(
@@ -1333,34 +1405,25 @@ def _emit_progress_checkpoint(
     jsonl_path: Path | None,
     report_path: Path | None,
 ) -> None:
-    metadata["summary"] = summarize_rows(rows)
     surface = metadata.get("surface", "panel")
-    metadata["gate"] = gate_interpretation(
-        metadata["summary"],
-        surface="hard50" if surface == "hard50" else "panel",
-    )
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
-    print(
-        json.dumps(
-            {
-                "processed": len(rows),
-                "total": total,
-                "call_failures": metadata["summary"]["call_failures"],
-                "parse_or_validation_failures": metadata["summary"][
-                    "parse_or_validation_failures"
-                ],
-                "purist_correct": metadata["summary"]["purist_correct"],
-                "accepted_rescue_correct": metadata["summary"][
-                    "accepted_rescue_correct"
-                ],
-            },
-            sort_keys=True,
+    emit_progress_checkpoint(
+        rows,
+        metadata,
+        total=total,
+        summarize_rows=summarize_rows,
+        gate_interpretation=lambda summary: gate_interpretation(
+            summary,
+            surface="hard50" if surface == "hard50" else "panel",
         ),
-        file=sys.stderr,
-        flush=True,
+        jsonl_path=jsonl_path,
+        report_path=report_path,
+        write_report=write_report,
+        progress_fields=(
+            "call_failures",
+            "parse_or_validation_failures",
+            "purist_correct",
+            "accepted_rescue_correct",
+        ),
     )
 
 

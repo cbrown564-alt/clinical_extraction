@@ -34,8 +34,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.determini
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-    llm_candidate_set_clinical_assessment_probe as assessment_probe,
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (
+    AssessmentDraft,
+    AssessmentDraftBurden,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
+    ClinicalAssessment,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
+    assemble_clinical_assessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateEvent,
@@ -131,7 +138,7 @@ def evidence_trace_check_stage(
     candidate_set: CandidateSet,
     selected_index: int,
     disabled_ablation_switches: set[str] | frozenset[str] | None = None,
-) -> tuple[bool, "assessment_probe.ClinicalAssessment | None"]:
+) -> tuple[bool, ClinicalAssessment | None]:
     """Evidence Trace Check: verbatim evidence-substring check plus a diagnostic-only `ClinicalAssessment` probe.
 
     Wraps the existing `evidence_is_substring` check and the existing
@@ -144,7 +151,7 @@ def evidence_trace_check_stage(
     should not, as part of this staging pass) implement.
     """
     selected_candidate = candidate_set.candidates[selected_index]
-    draft = assessment_probe.AssessmentDraft(
+    draft = AssessmentDraft(
         assessment_kind=selected_candidate.candidate_kind,
         primary_candidate_ids=[selected_candidate.candidate_id],
         supporting_candidate_ids=[
@@ -152,13 +159,13 @@ def evidence_trace_check_stage(
             for idx, candidate in enumerate(candidate_set.candidates)
             if idx != selected_index
         ],
-        normalized_burden=assessment_probe.AssessmentDraftBurden(
+        normalized_burden=AssessmentDraftBurden(
             source_normalized_phrase=final_selection.evidence
         ),
         assessment_summary=final_selection.rationale,
     )
     try:
-        clinical_assessment, _ = assessment_probe.assemble_clinical_assessment(
+        clinical_assessment, _ = assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
             disabled_ablation_switches=disabled_ablation_switches,
