@@ -9,6 +9,18 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     normalize_phrase,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
+    CONTEXTUAL_RATE_NOISE as _SF_CONTEXTUAL_RATE_NOISE_RE,
+    DATED_GTC as _SF_DATED_GTC_RE,
+    GTC_FOUR_LAST_THREE_WEEKS as _SF_GTC_FOUR_LAST_THREE_WEEKS_RE,
+    GTC_FURTHER_SINCE as _SF_GTC_FURTHER_SINCE_RE,
+    GTC_PER_MONTH as _SF_GTC_PER_MONTH_RE,
+    GTC_RANGE_PER_WEEK as _SF_GTC_RANGE_PER_WEEK_RE,
+    GTCS_ACTIVE_WITHOUT_COUNT as _SF_GTCS_ACTIVE_WITHOUT_COUNT_RE,
+    NO_FURTHER_GTC_SINCE as _SF_NO_FURTHER_GTC_SINCE_RE,
+    NO_FURTHER_SINCE as _SF_GENERIC_NO_FURTHER_SINCE_RE,
+    SEIZURES_EVERY_RANGE_WEEKS as _SF_GENERIC_EVERY_RANGE_RE,
+)
 
 _REWRITE_THESE_SEIZURES_RE = re.compile(r"10-15 of these seizures over 2 days", re.IGNORECASE)
 _REWRITE_UP_TO_RANGE_RE = re.compile(r"up to 2 or 3 times per month", re.IGNORECASE)
@@ -30,26 +42,6 @@ _SF_HISTORICAL_COMPARATOR_RE = re.compile(
     r"\blast\s+(?:had\s+a\s+)?seizure\s+before\s+this\b",
     re.IGNORECASE,
 )
-_SF_CONTEXTUAL_RATE_NOISE_RE = re.compile(
-    r"\b(?:"
-    r"free\s+of\s+seizures|dvla|drive\s+until|previously|before\s+the\s+seizure|"
-    r"best\s+period|longest\s+period|up\s+until|first\s+seizure\s+at\s+the\s+age|"
-    r"at\s+the\s+age\s+of\s+\d+|at\s+onset|at\s+the\s+onset|"
-    r"well\s+controlled|reasonably\s+controlled|remain\s+well\s+controlled|"
-    r"uncontrolled|clumsy|low\s+mood|at\s+least\s+three\s+seizures\s+he\s+has\s+epilepsy|"
-    r"not\s+related\s+to\s+sleep\s+or\s+meals|febrile\s+seizures?|"
-    r"mother\s+had\s+epilepsy|family\s+history|"
-    r"up\s+to\s+\w+\s+weeks?\s+seizure\s+free|"
-    r"transient\s+loss\s+of\s+consciousness|as\s+a\s+child\s+he\s+had\s+seizures|"
-    r"helped\s+(?:his|her)\s+seizures|background\s+of\s+frequent\s+seizures|"
-    r"continues\s+to\s+get\s+seizures\s+despite\s+pharmacological\s+treatment"
-    r")\b",
-    re.IGNORECASE,
-)
-_SF_GENERIC_EVERY_RANGE_RE = re.compile(
-    r"\bseizures?\s+every\s+(?P<low>\d+)\s+to\s+(?P<high>\d+)\s+weeks?\b",
-    re.IGNORECASE,
-)
 _SF_GENERIC_PER_MONTH_RANGE_RE = re.compile(
     r"\b(?:currently\s+)?(?:she|he|they)?\s*(?:gets?|has|have)?\s*"
     r"(?:around|about|approximately)?\s*(?P<low>\d+)\s*[-–]\s*(?P<high>\d+)\s+"
@@ -69,12 +61,6 @@ _SF_GENERIC_TOTAL_YEAR_RE = re.compile(
     r"\btotal\s+of\s+(?P<count>\d+)\s+(?:seizures?\s+)?in\s+(?P<year>\d{4})\b",
     re.IGNORECASE,
 )
-_SF_GENERIC_NO_FURTHER_SINCE_RE = re.compile(
-    r"\b(?:has|have|had)\s+not\s+had\s+any\s+further\s+seizures\s+since\b|"
-    r"\bno\s+further\s+seizures\s+since\b|"
-    r"\bno\s+seizures\s+since\b",
-    re.IGNORECASE,
-)
 _SF_BROAD_SEIZURE_FREE_RE = re.compile(
     r"\b(?:has|have|had)\s+been\s+seizure[-\s]+free\s+since\b|"
     r"\bseizure[-\s]+free\s+for\s+more\s+than\s+\w+\s+years?\b|"
@@ -85,28 +71,9 @@ _SF_LAST_SEIZURE_MONTHS_RE = re.compile(
     r"\blast\s+seizure\s+(?:now\s+)?was\s+(?P<months>\d+)\s+months?\s+ago\b",
     re.IGNORECASE,
 )
-_SF_DATED_GTC_RE = re.compile(
-    r"(?P<count>\d+)\s+generalised tonic clonic seizures\s+(?P<year>\d{4})",
-    re.IGNORECASE,
-)
-_SF_GTC_RANGE_PER_WEEK_RE = re.compile(
-    r"\b(?P<low>\d+)\s*[-–]\s*(?P<high>\d+)\s+generalised\s+tonic\s+"
-    r"clonic\s+seizures?\s+per\s+week\b",
-    re.IGNORECASE,
-)
-_SF_GTC_FOUR_LAST_THREE_WEEKS_RE = re.compile(
-    r"\bgeneralised\s+tonic\s+clonic\s+seizures?[\s\S]{0,180}\b"
-    r"had\s+four\s+in\s+the\s+last\s+three\s+weeks\b",
-    re.IGNORECASE,
-)
 _SF_GTC_SINCE_PREVIOUS_RE = re.compile(
     r"\bgeneralised\s+tonic\s+clonic\s+seizures?,\s*"
     r"(?P<count>\d+)\s+since\s+previous\s+appointment\b",
-    re.IGNORECASE,
-)
-_SF_GTC_PER_MONTH_RE = re.compile(
-    r"\b(?P<count>\d+)\s+generali[sz]ed\s+tonic\s+clonic\s+seizures?"
-    r"[^.\n]{0,40}\bper\s+month\b",
     re.IGNORECASE,
 )
 _SF_ABSENCE_LIKE_YEAR_RE = re.compile(
@@ -177,11 +144,6 @@ _SF_RECENT_LAST_SEIZURE_RE = re.compile(
     r"\bsingle\s+seizure\s+some\s+\d+\s+weeks?\s+ago\b",
     re.IGNORECASE,
 )
-_SF_GTCS_ACTIVE_WITHOUT_COUNT_RE = re.compile(
-    r"\b(?:on\s+sunday\s+and\s+monday,\s+he\s+was\s+having|"
-    r"further)\s+generalised\s+tonic\s+clonic\s+seizures\b",
-    re.IGNORECASE,
-)
 _SF_REMAINS_SEIZURE_FREE_RE = re.compile(
     r"\bremains\s+seiz(?:ure|ures|rue)\s+free\b",
     re.IGNORECASE,
@@ -231,10 +193,6 @@ _SF_GTC_ONE_TO_TWO_MONTH_RE = re.compile(
     r"(?P<low>\d+|one)\s+to\s+(?P<high>\d+|two)\s+every\s+month\b",
     re.IGNORECASE,
 )
-_SF_GTC_FURTHER_SINCE_RE = re.compile(
-    r"\bfurther\s+generalised\s+tonic\s+clonic\s+seizures\s+since\b",
-    re.IGNORECASE,
-)
 _SF_FSAW_ONE_PER_WEEK_RE = re.compile(
     r"\bfocal seizures with altered awareness[\s\S]{0,120}\b1 per week\b",
     re.IGNORECASE,
@@ -280,10 +238,6 @@ _SF_GTC_LAST_WEEK_RE = re.compile(
 _SF_GTC_DAY_BURST_RE = re.compile(
     r"\bOn\s+Sunday\s+and\s+Monday,\s+he\s+was\s+having\s+generalised\s+tonic\s+"
     r"clonic\s+seizures\s+in\s+the\s+night\b",
-    re.IGNORECASE,
-)
-_SF_NO_FURTHER_GTC_SINCE_RE = re.compile(
-    r"\bnot had any further generalised tonic clonic seizures since\b",
     re.IGNORECASE,
 )
 _SF_FTB_DATED_EVENTS_RE = re.compile(

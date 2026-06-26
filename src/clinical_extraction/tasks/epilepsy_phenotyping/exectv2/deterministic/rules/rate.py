@@ -30,6 +30,7 @@ from ..rule_metadata import (
     RuleGroup,
     RuleSpec,
 )
+from ..sf_surface_registry.patterns import PERIOD_UNIT
 
 # ---------------------------------------------------------------------------
 # Token fragments
@@ -678,7 +679,7 @@ PERIOD_RANGE_RULE = RuleSpec(
     description="One event every lower-upper periods, e.g. every 3 to 4 weeks.",
     pattern=re.compile(
         rf"\bevery\s+(?P<lower_period>{_DIGIT_OR_WORD})\s+(?:to|or)\s+"
-        rf"(?P<upper_period>{_DIGIT_OR_WORD})\s+(?P<unit>{_UNIT})\b",
+        rf"(?P<upper_period>{_DIGIT_OR_WORD})\s+(?P<unit>{PERIOD_UNIT})\b",
         re.IGNORECASE,
     ),
     build=_build_period_range,
