@@ -12,8 +12,6 @@ exactness, and scores — it never introduces or chooses a clinical fact.
 from __future__ import annotations
 
 import json
-import re
-import sys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -55,8 +53,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
     score_entity,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
-    parse_json_payload_with_schema_repair,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.dspy_runner import (
+    emit_run_checkpoint,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
+    parse_json_payload,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.reporting import (
+    ensure_summary,
+    format_gate_summary_lines,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
@@ -328,9 +334,7 @@ def parse_extraction_json(
     Non-blocking issues (coercions, unknown fields) are noted in errors.
     """
     try:
-        payload, dialect_notes = parse_json_payload_with_schema_repair(
-            _extract_json_object(raw_output)
-        )
+        payload, dialect_notes = parse_json_payload(raw_output, schema_repair=True)
     except json.JSONDecodeError as exc:
         return None, [f"invalid_json: {exc.msg}"]
 
@@ -363,66 +367,7 @@ def raw_output_from_adapter_parse_error(error_text: str) -> str | None:
     return payload or None
 
 
-def _extract_json_object(raw: str) -> str:
-    text = raw.strip()
-    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
-    if fenced:
-        return fenced.group(1)
-    candidates = _balanced_json_candidates(text)
-    preferred_roots = ("clinical_events", "mentions", "decisions")
-    valid: list[tuple[int, str]] = []
-    for index, candidate in enumerate(candidates):
-        try:
-            payload = json.loads(candidate)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(payload, dict) and any(key in payload for key in preferred_roots):
-            valid.append((index, candidate))
-        elif isinstance(payload, list):
-            valid.append((index, candidate))
-    if valid:
-        return valid[-1][1]
-    if candidates:
-        return candidates[-1]
-    return text
-
-
-def _balanced_json_candidates(text: str) -> list[str]:
-    candidates: list[str] = []
-    stack: list[str] = []
-    start: int | None = None
-    in_string = False
-    escaped = False
-    pairs = {"{": "}", "[": "]"}
-    closing = set(pairs.values())
-    for index, char in enumerate(text):
-        if in_string:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                in_string = False
-            continue
-        if char == '"':
-            in_string = True
-            continue
-        if char in pairs:
-            if not stack:
-                start = index
-            stack.append(pairs[char])
-            continue
-        if char not in closing or not stack:
-            continue
-        expected = stack.pop()
-        if char != expected:
-            stack = []
-            start = None
-            continue
-        if not stack and start is not None:
-            candidates.append(text[start : index + 1])
-            start = None
-    return candidates
+_extract_json_object = extract_json_object
 
 
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:
@@ -833,7 +778,7 @@ def write_report(
 ) -> None:
     """Write a concise Markdown run report."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    summary = metadata.get("summary") or summarize_rows(rows)
+    summary = ensure_summary(rows, metadata, summarize_rows)
     scores = summary.get("scores", {})
     lines = [
         "# ExECTv2 LLM-Only Single-Pass — SeizureFrequency",
@@ -845,18 +790,7 @@ def write_report(
         f"- Mode: `{metadata.get('mode')}`",
         f"- Letters: {summary.get('examples', 0)}",
         "",
-        "## Gate Summary",
-        "",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
-        f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
-        f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
-        f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
-        (
-            f"- Evidence validity rate: "
-            f"{summary.get('evidence_validity_rate', 0.0):.4f}"
-        ),
-        "",
+        *format_gate_summary_lines(summary),
         "## Scores",
         "",
     ]
@@ -899,27 +833,18 @@ def _emit_checkpoint(
     model: str,
     mode: str,
 ) -> None:
-    summary = summarize_rows(rows)
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(
-            rows,
-            {
-                "prompt_version": PROMPT_VERSION,
-                "split": split,
-                "model": model,
-                "mode": mode,
-                "summary": summary,
-            },
-            report_path,
-            jsonl_path=jsonl_path,
-        )
-    progress = {
-        "processed": len(rows),
-        "total": total,
-        "call_failures": summary.get("call_failures", 0),
-        "parse_failures": summary.get("parse_failures", 0),
-        "n_mentions_scored": summary.get("n_mentions_scored", 0),
-    }
-    print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
+    emit_run_checkpoint(
+        rows,
+        total=total,
+        jsonl_path=jsonl_path,
+        report_path=report_path,
+        metadata={
+            "prompt_version": PROMPT_VERSION,
+            "split": split,
+            "model": model,
+            "mode": mode,
+        },
+        summarize_rows=summarize_rows,
+        write_jsonl=write_jsonl,
+        write_report=write_report,
+    )

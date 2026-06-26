@@ -40,6 +40,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     repair_attributes,
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 PROMPT_VERSION = "exectv2_hybrid_diagnosis_acceptance_gate_v0.1"
@@ -165,7 +168,7 @@ def parse_decision_json(raw_output: str) -> tuple[dict[str, str], list[str]]:
     if not raw_output.strip():
         return {}, ["not_run"]
     try:
-        payload = json.loads(_extract_json_object(raw_output))
+        payload = json.loads(extract_json_object(raw_output))
     except json.JSONDecodeError as exc:
         return {}, [f"json_decode: {exc}"]
     decisions = payload.get("decisions")
@@ -480,19 +483,6 @@ def _acceptance_rules() -> list[str]:
         ),
         "Return exactly one JSON object. No markdown code fences.",
     ]
-
-
-def _extract_json_object(text: str) -> str:
-    stripped = text.strip()
-    if stripped.startswith("```"):
-        stripped = stripped.strip("`")
-        if stripped.lower().startswith("json"):
-            stripped = stripped[4:].strip()
-    start = stripped.find("{")
-    end = stripped.rfind("}")
-    if start == -1 or end == -1 or end < start:
-        return stripped
-    return stripped[start : end + 1]
 
 
 def _emit_checkpoint(
