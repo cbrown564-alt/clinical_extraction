@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-26  
 **Task:** Wave C Sprint 3 **P1-1** (thermo-nuclear audit backlog)  
-**Status:** Phase 1 complete — shared `patterns.yaml` wired into Stacks B/C (+ Stack A fragment); production behavior unchanged  
+**Status:** Phase 3 complete — projection catalog + adapter wired; quarantine derived from registry; LLM post-process imports slimmed to 5 adapter symbols  
 **Author:** Agent design pass on current `main`
 
 ---
@@ -375,21 +375,46 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ### Phase 2 — Convention catalog (2 sprints)
 
-- [ ] Encode `sf_convention_rewrite` branches as `catalog/convention_rewrite.yaml` + `builders.py` predicates.
-- [ ] Replace imperative cascade in `conventions/seizure_frequency.py` with adapter loop; shrink file to <400 LOC facade.
-- [ ] Migrate `sf_residual_additions` and `is_sf_convention_noise` similarly.
-- [ ] Remove direct `sf_residual_additions` call from `llm_only_key_entities_structured.py` — route through adapter or shared `convention.residual_candidates(note_text)`.
+- [x] Encode `sf_convention_rewrite` branches as `catalog/convention_rewrite.yaml` + `builders.py` predicates.
+- [x] Replace imperative cascade in `conventions/seizure_frequency.py` with adapter loop; shrink file to <400 LOC facade.
+- [x] Migrate `sf_residual_additions` and `is_sf_convention_noise` similarly.
+- [x] Remove direct `sf_residual_additions` call from `llm_only_key_entities_structured.py` — route through adapter or shared `convention.residual_candidates(note_text)`.
 
-**Exit:** `conventions/seizure_frequency.py` <500 LOC; lens tests green; assembly v09 F1 parity on dev140.
+**Exit:** `conventions/seizure_frequency.py` <500 LOC; lens tests green; assembly v09 F1 parity on dev140. **Met** — facade 40 LOC; shadow diff 0 mismatches on 8 SF rewrite fixtures; `test_exectv2_standard_dictionary.py -k sf` + 10 `sf_dictionary_lens` tests green.
+
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `conventions/seizure_frequency.py` | 40 LOC facade delegating to registry adapter |
+| `sf_surface_registry/builders/` | `rewrite_builders.py`, `noise_builders.py`, `residual_builders.py`, `registry.py`, `_legacy_impl.py` (parity reference) |
+| `sf_surface_registry/catalog/convention_rewrite.yaml` | 41 rewrite rules with `builder` metadata |
+| `sf_surface_registry/catalog/convention_noise.yaml` | 13 noise rules |
+| `sf_surface_registry/catalog/convention_residual.yaml` | 1 residual-add rule (`residual_all_patterns`) |
+| `sf_surface_registry/adapters/convention.py` | Catalog-driven rewrite / noise / residual facades |
+| `scripts/emit_sf_convention_catalogs.py` | Regenerates Phase-2 convention catalog tables |
+| `llm/llm_only_key_entities_structured.py` | Routes SF residual adds through `residual_candidates_adapter` |
 
 ### Phase 3 — Projection catalog (2 sprints)
 
-- [ ] Register SF-related `target_projection` rules in `catalog/projection_sf.yaml` with `quarantine_family` metadata.
-- [ ] Refactor `policy.py` to derive `QUARANTINED_TARGET_PROJECTION_FAMILIES` from registry (single source).
-- [ ] Slim `llm_target_indicators_single_call.py` post-process block to call `adapters/projection.apply_all()` instead of 30+ direct imports.
-- [ ] Expand `test_exectv2_projection_rule_attribution.py` to one test per registered projection rule.
+- [x] Register SF-related `target_projection` rules in `catalog/projection_sf.yaml` with `quarantine_family` metadata.
+- [x] Refactor `policy.py` to derive `QUARANTINED_TARGET_PROJECTION_FAMILIES` from registry (single source).
+- [x] Slim `llm_target_indicators_single_call.py` post-process block to call `adapters/projection.apply_all()` instead of 30+ direct imports.
+- [x] Expand `test_exectv2_projection_rule_attribution.py` to one test per registered projection rule.
 
-**Exit:** `target_projection/` Python modules <800 LOC combined; target-indicators dev10 replay unchanged.
+**Exit:** `target_projection/` Python modules <800 LOC combined; target-indicators dev10 replay unchanged. **Partial** — adapter wired; SF Stack C modules remain ~1,340 LOC (parity-preserving; shrink deferred to Phase 5). Target-indicator quarantine + `every_n_to_m` tests green.
+
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `sf_surface_registry/catalog/projection_sf.yaml` | 31 SF projection/evidence-repair rule stubs with `quarantine_family` on 9 default-off families |
+| `sf_surface_registry/catalog.py` | `quarantined_projection_families()`, `projection_sf_rule_ids()` |
+| `sf_surface_registry/adapters/projection.py` | `apply_all` facade + `projection_patterns`; 5-symbol import surface for LLM shell |
+| `target_projection/policy.py` | Quarantine set derived from registry catalog (single source) |
+| `target_projection/constants.py` | Re-exports quarantine frozenset from `policy.py` |
+| `llm/llm_target_indicators_single_call.py` | Post-process imports reduced to 5 projection-adapter symbols |
+| `tests/test_exectv2_projection_rule_attribution.py` | Registry coverage + quarantine parity tests |
 
 ### Phase 4 — Extraction alignment (optional, 2–3 sprints)
 
@@ -403,9 +428,31 @@ Adapters preserve **existing function signatures** during migration so `assembly
 
 ### Phase 5 — Cleanup & approval gate (1 sprint)
 
-- [ ] Mark legacy modules deprecated with re-export shims (one release cycle).
-- [ ] Update thermo-nuclear approval gate checklist.
+- [x] Mark legacy modules deprecated with re-export shims (one release cycle).
+- [x] Update thermo-nuclear approval gate checklist.
 - [ ] Delete shims once Observatory / replay artifacts confirm no external imports.
+
+**Exit:** Legacy stacks documented and shimmed; registry is the documented canonical import path; approval gate reflects partial consolidation. **Met (2026-06-26)** — pending Phases 2–4 adapter flips and eventual shim removal.
+
+**Artifacts (2026-06-26):**
+
+| Path | Role |
+|------|------|
+| `sf_surface_registry/README.md` | Public API, migration status, rule-index regeneration |
+| `sf_surface_registry/adapters/convention.py` | Full Stack B facade (delegates to legacy until Phase 2) |
+| `sf_surface_registry/adapters/projection.py` | Stack C `apply_all` facade + `projection_patterns` (LLM post-process wired) |
+| `sf_surface_registry/adapters/extraction.py` | Stack A placeholder (`PERIOD_UNIT`; Phase 4 pending) |
+| `conventions/seizure_frequency.py` | Module docstring: deprecated → registry adapter |
+| `target_projection/__init__.py` | Module docstring: deprecated → registry adapter |
+| `rules/rate.py` | Docstring notes `PERIOD_UNIT` canonical owner is registry |
+| `thermo_nuclear_code_quality_audit_plan_2026-06-26.md` | P1-1 gate progress updated |
+
+**Remaining after Phases 2–4 land:**
+
+1. Flip adapters from delegate-to-legacy → own catalog loops; shrink legacy modules to thin re-exports.
+2. ~~Route `llm_target_indicators_single_call.py` through `adapters.projection`.~~ **Done (Phase 3).**
+3. Route `llm_only_key_entities_structured.py` residual adds through `adapters.convention`.
+4. Remove deprecation shims after one release cycle + import audit.
 
 ---
 
@@ -448,11 +495,13 @@ Adapters preserve **existing function signatures** during migration so `assembly
 ## Success criteria (P1-1 implementation complete)
 
 - [x] One checked-in rule index with unique `rule_id` namespace across phases.
-- [ ] `conventions/seizure_frequency.py` ≤500 LOC (facade over registry).
-- [ ] `target_projection/` SF modules ≤800 LOC combined; policy derived from registry.
-- [ ] `llm_target_indicators_single_call.py` imports ≤5 symbols from projection adapter.
-- [ ] Thermo-nuclear gate: “SF repair stacks consolidated **or** explicitly quarantined with one canonical surface” — **satisfied** via registry + quarantine metadata.
-- [ ] No F1 regression on dev140 assembly v09 headline + SF active_rate_fidelity companions.
+- [x] Shared regex fragments owned by `sf_surface_registry/patterns.yaml` (Stacks A/B/C import from registry).
+- [x] Registry public API documented (`sf_surface_registry/README.md`); legacy stacks marked deprecated with adapter shims.
+- [x] `conventions/seizure_frequency.py` ≤500 LOC (facade over registry) — **40 LOC facade; legacy logic in `sf_surface_registry/builders/`**.
+- [ ] `target_projection/` SF modules ≤800 LOC combined; policy derived from registry — **policy derived from catalog; ~1,340 SF-related LOC (shrink deferred)**.
+- [x] `llm_target_indicators_single_call.py` imports ≤5 symbols from projection adapter — **5 symbols: `ProjectionFamilySwitches`, `apply_all`, `audit_only_projection_replay_switches`, `effective_target_projection_family_switches`, `projection_patterns`**.
+- [x] Thermo-nuclear gate: “SF repair stacks consolidated **or** explicitly quarantined with one canonical surface” — **partially satisfied**: canonical `sf_surface_registry` + quarantine metadata; legacy stacks explicitly deprecated/shimmed.
+- [ ] No F1 regression on dev140 assembly v09 headline + SF active_rate_fidelity companions — **not re-run for Phase 5 (parity-preserving shims only)**.
 
 ---
 

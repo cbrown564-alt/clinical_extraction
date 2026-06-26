@@ -8,19 +8,11 @@ from pathlib import Path
 
 import yaml
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.anchor import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
     ANCHOR_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
     CHANGE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate import (
     RATE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
     SEIZURE_FREE_RULES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
     TEMPORAL_RULES,
 )
 
@@ -164,8 +156,15 @@ def main() -> None:
         _catalog_payload(rewrite_entries),
         encoding="utf-8",
     )
+    from generate_extract_catalog import build_extract_catalog
+
+    (CATALOG_DIR / "extract.yaml").write_text(
+        yaml.safe_dump(build_extract_catalog(), sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
     print(f"wrote {INDEX_PATH}")
     print(f"wrote {CATALOG_DIR / 'convention_rewrite.yaml'}")
+    print(f"wrote {CATALOG_DIR / 'extract.yaml'}")
 
 
 if __name__ == "__main__":
