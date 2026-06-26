@@ -4,6 +4,9 @@ This is the V4 scaffold from the test-0.85 plan. The model owns an explicit
 verifier action. Deterministic code only renders that model-owned action against
 the saved LLM structured-event artifact, performs format-only label repair where
 needed, validates exact evidence substrings, and scores after the model answer.
+
+Migrated to :mod:`stage_protocol` (prompt builder + decision schema + postprocess
+policy + thin ``run_split``).
 """
 
 from __future__ import annotations
@@ -15,32 +18,31 @@ from pathlib import Path
 from typing import Any, Literal, cast
 
 import dspy
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
+    AgenticStage,
+    ParsedStageResponse,
+    build_markdown_report_skeleton,
+    build_stage_metadata,
+    configure_dspy_for_stage,
+    has_blocking_parse_issue,
+    parse_response,
+    write_stage_jsonl,
+    write_stage_markdown_report,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
-    parse_json_payload_with_schema_repair,
-    repair_decision_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
-    write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving_with_trace,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
-    write_markdown_report,
 )
 
 PROMPT_VERSION = "gan2026_structured_event_verifier_v0_5"
@@ -102,6 +104,40 @@ class ParsedVerifierDecision(BaseModel):
     action_render_events: list[str] = Field(default_factory=list)
 
 
+class StructuredEventVerifierStage(AgenticStage[StructuredEventVerifierDecision]):
+    """V4 verifier prompt builder + raw decision parse policy."""
+
+    @property
+    def prompt_version(self) -> str:
+        return PROMPT_VERSION
+
+    def build_prompt_input(
+        self,
+        record: GanFrequencyRecord,
+        *,
+        structured_event_row: Mapping[str, Any] | None = None,
+        **_: object,
+    ) -> str:
+        return _build_verifier_prompt_input(record, structured_event_row)
+
+    def parse_response(
+        self,
+        raw_output: str,
+        **_: object,
+    ) -> ParsedStageResponse[StructuredEventVerifierDecision]:
+        return parse_response(
+            raw_output,
+            decision_model=StructuredEventVerifierDecision,
+            payload_filter=_filter_verifier_payload,
+            shape_repair=_repair_verifier_decision_shape,
+            label_repair="none",
+            require_scorable_label=False,
+        )
+
+
+STAGE = StructuredEventVerifierStage()
+
+
 def run_split(
     records: Sequence[GanFrequencyRecord],
     *,
@@ -133,33 +169,29 @@ def run_split(
     if structured_event_rows is None:
         structured_event_rows = load_jsonl_rows(source_path)
     if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
+        configure_dspy_for_stage(
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            cache=dspy_cache,
+            api_base=api_base,
         )
 
     structured_rows_by_index = llm_event_reasoner._rows_by_source_index(
         structured_event_rows
     )
-    metadata = build_run_metadata(
-        mode=mode,
+    metadata = build_stage_metadata(
+        records,
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
+        mode=mode,
         prompt_version=PROMPT_VERSION,
-        dspy_version="none",
-        split=split,
-        split_manifest=split_manifest,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
-    )
-    metadata.update(
-        {
+        extra={
             "artifact_kind": "gan2026_structured_event_verifier_trace",
             "pipeline_family": PIPELINE_FAMILY,
             "pipeline_version": PROMPT_VERSION,
@@ -172,8 +204,7 @@ def run_split(
                 "validation-development V4 verifier scaffold; no holdout use, "
                 "no row-level test inspection, and no benchmark claim"
             ),
-            "dspy_cache": dspy_cache,
-        }
+        },
     )
 
     rows: list[dict[str, Any]] = []
@@ -207,6 +238,15 @@ def run_split(
 
 
 def build_prompt_input(
+    record: GanFrequencyRecord,
+    structured_event_row: Mapping[str, Any] | None,
+) -> str:
+    """Build a model-facing verifier payload without IDs, gold, split, or rules top."""
+
+    return STAGE.build_prompt_input(record, structured_event_row=structured_event_row)
+
+
+def _build_verifier_prompt_input(
     record: GanFrequencyRecord,
     structured_event_row: Mapping[str, Any] | None,
 ) -> str:
@@ -399,32 +439,16 @@ def parse_verifier_decision_json(
 ) -> ParsedVerifierDecision:
     """Parse a verifier decision and render the model-owned action."""
 
-    parse_errors: list[str] = []
-    try:
-        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
-            llm_event_reasoner._extract_json_object(raw_output)
-        )
-    except json.JSONDecodeError as exc:
+    parsed = STAGE.parse_response(raw_output)
+    parse_errors: list[str] = list(parsed.parse_errors)
+    raw_verifier_decision = parsed.decision
+    if raw_verifier_decision is None:
         return ParsedVerifierDecision(
             raw_verifier_decision=None,
             raw_common_decision=None,
             format_only_decision=None,
             final_decision=None,
-            parse_errors=[f"invalid_json: {exc.msg}"],
-        )
-    parse_errors.extend(dialect_notes)
-    payload = _filter_verifier_payload(repair_decision_payload(raw_payload))
-    payload, shape_notes = _repair_verifier_decision_shape(payload)
-    parse_errors.extend(shape_notes)
-    try:
-        raw_verifier_decision = StructuredEventVerifierDecision.model_validate(payload)
-    except ValidationError as exc:
-        return ParsedVerifierDecision(
-            raw_verifier_decision=None,
-            raw_common_decision=None,
-            format_only_decision=None,
-            final_decision=None,
-            parse_errors=[*parse_errors, f"schema_validation_error: {exc.errors()[0]['msg']}"],
+            parse_errors=parse_errors,
         )
 
     raw_common_decision = _common_decision_from_verifier(raw_verifier_decision)
@@ -485,7 +509,14 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         summary["model_calls_attempted"] += int(row.get("model_call_attempted") is True)
         summary["call_failures"] += int(row.get("call_error") is not None)
         summary["parse_or_validation_failures"] += int(
-            _has_blocking_parse_issue(row.get("parse_errors"))
+            has_blocking_parse_issue(
+                row.get("parse_errors"),
+                blocking_prefixes=(
+                    "invalid_json:",
+                    "schema_validation_error:",
+                    "action_render_error:",
+                ),
+            )
         )
         summary["action_render_failures"] += int(
             any(
@@ -552,7 +583,7 @@ def gate_interpretation(summary: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
-    write_jsonl_rows(rows, path)
+    write_stage_jsonl(rows, path)
 
 
 def write_report(
@@ -564,87 +595,81 @@ def write_report(
 ) -> None:
     summary = dict(metadata.get("summary") or {})
     gate = dict(metadata.get("gate") or {})
-    lines = [
-        "# Gan 2026 Structured-Event Verifier",
-        "",
-        f"Date: {metadata.get('date', 'unknown')}",
-        "",
-        "This is a validation-development V4 verifier-first structured-event artifact.",
-        "The model chooses an explicit verifier action over saved LLM structured events.",
-        "",
-        "## Experiment Unit",
-        "",
-        "- Work class: V4 verifier-first structured-event correction.",
-        f"- Rows: {summary.get('rows', 0)}",
-        "- Split: `validation`, manifest `gan2026_split_v1`.",
-        f"- Mode: `{metadata.get('mode')}`",
-        f"- Model: `{metadata.get('model')}`",
-        f"- Prompt version: `{metadata.get('prompt_version')}`",
-        f"- Structured-event source: `{metadata.get('structured_event_source_path')}`",
-        f"- JSONL artifact: `{jsonl_path}`",
-        "",
-        "## Summary",
-        "",
-        f"- Prediction-bearing rows: {summary.get('prediction_bearing_rows', 0)}",
-        f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
-        f"- Action-render failures: {summary.get('action_render_failures', 0)}",
-        f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
+    lines = build_markdown_report_skeleton(
+        title="Gan 2026 Structured-Event Verifier",
+        metadata=metadata,
+        summary=summary,
+        gate=gate,
+        jsonl_path=jsonl_path,
+        extra_sections=[
+            "This is a validation-development V4 verifier-first structured-event artifact.",
+            "The model chooses an explicit verifier action over saved LLM structured events.",
+            "",
+        ],
+        experiment_unit_lines=[
+            "- Work class: V4 verifier-first structured-event correction.",
+            f"- Rows: {summary.get('rows', 0)}",
+            "- Split: `validation`, manifest `gan2026_split_v1`.",
+            f"- Mode: `{metadata.get('mode')}`",
+            f"- Model: `{metadata.get('model')}`",
+            f"- Prompt version: `{metadata.get('prompt_version')}`",
+            f"- Structured-event source: `{metadata.get('structured_event_source_path')}`",
+        ],
+        summary_lines=[
+            f"- Prediction-bearing rows: {summary.get('prediction_bearing_rows', 0)}",
+            f"- Model calls attempted: {summary.get('model_calls_attempted', 0)}",
+            f"- Call failures: {summary.get('call_failures', 0)}",
+            f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
+            f"- Action-render failures: {summary.get('action_render_failures', 0)}",
+            f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
+            (
+                f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
+                f"{summary.get('rows', 0)}"
+            ),
+            (
+                f"- Raw model Purist: {summary.get('raw_model_purist_correct', 0)}/"
+                f"{summary.get('rows', 0)}"
+            ),
+            (
+                f"- Format-only Purist: {summary.get('format_only_purist_correct', 0)}/"
+                f"{summary.get('rows', 0)}"
+            ),
+            (
+                f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
+                f"{summary.get('rows', 0)}"
+            ),
+            f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
+            (
+                "- Changed-label precision vs V0: "
+                f"{summary.get('changed_label_precision_vs_v0')}"
+            ),
+            f"- Verifier actions: `{summary.get('verifier_actions', {})}`",
+        ],
+        row_table_header=(
+            "| Row | Action | V0 | Raw | Format-only | Final | Transition | "
+            "Evidence exact | Notes |"
         ),
-        (
-            f"- Raw model Purist: {summary.get('raw_model_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- Format-only Purist: {summary.get('format_only_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
-        f"- Verifier actions: `{summary.get('verifier_actions', {})}`",
-        "",
-        "## Gate",
-        "",
-        f"- Status: `{gate.get('status')}`",
-        f"- Interpretation: {gate.get('interpretation')}",
-        "",
-        "## Claim Boundary",
-        "",
-        str(metadata.get("claim_boundary", "")),
-        "",
-        "## Rows",
-        "",
-        "| Row | Action | V0 | Raw | Format-only | Final | Transition | Evidence exact | Notes |",
-        "| ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
-    for row in rows:
-        layers = dict(row.get("score_layers") or {})
-        verifier_record = dict(row.get("verifier_decision_record") or {})
-        notes = "; ".join(str(error) for error in row.get("parse_errors") or [])
-        if row.get("call_error"):
-            notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
-        lines.append(
-            f"| {row.get('source_row_index')} | "
-            f"`{verifier_record.get('action')}` | "
-            f"`{dict(row.get('v0_reference') or {}).get('final_label')}` | "
-            f"`{dict(layers.get('raw_model') or {}).get('final_label')}` | "
-            f"`{dict(layers.get('format_only') or {}).get('final_label')}` | "
-            f"`{dict(layers.get('final') or {}).get('final_label')}` | "
-            f"`{dict(row.get('transition_vs_v0') or {}).get('purist_transition')}` | "
-            f"{'yes' if row.get('evidence_valid') else 'no'} | {notes} |"
-        )
-    write_markdown_report(path, lines)
+        row_table_rows=[_report_row_line(row) for row in rows],
+    )
+    write_stage_markdown_report(path, lines)
+
+
+def _report_row_line(row: Mapping[str, Any]) -> str:
+    layers = dict(row.get("score_layers") or {})
+    verifier_record = dict(row.get("verifier_decision_record") or {})
+    notes = "; ".join(str(error) for error in row.get("parse_errors") or [])
+    if row.get("call_error"):
+        notes = f"{notes}; {row['call_error']}" if notes else str(row["call_error"])
+    return (
+        f"| {row.get('source_row_index')} | "
+        f"`{verifier_record.get('action')}` | "
+        f"`{dict(row.get('v0_reference') or {}).get('final_label')}` | "
+        f"`{dict(layers.get('raw_model') or {}).get('final_label')}` | "
+        f"`{dict(layers.get('format_only') or {}).get('final_label')}` | "
+        f"`{dict(layers.get('final') or {}).get('final_label')}` | "
+        f"`{dict(row.get('transition_vs_v0') or {}).get('purist_transition')}` | "
+        f"{'yes' if row.get('evidence_valid') else 'no'} | {notes} |"
+    )
 
 
 class StructuredEventVerifierSignature(dspy.Signature):
@@ -1097,15 +1122,13 @@ def _as_optional_str(value: Any) -> str | None:
 
 
 def _has_blocking_parse_issue(errors: Any) -> bool:
-    return any(
-        str(error).startswith(
-            (
-                "invalid_json:",
-                "schema_validation_error:",
-                "action_render_error:",
-            )
-        )
-        for error in (errors or [])
+    return has_blocking_parse_issue(
+        errors,
+        blocking_prefixes=(
+            "invalid_json:",
+            "schema_validation_error:",
+            "action_render_error:",
+        ),
     )
 
 

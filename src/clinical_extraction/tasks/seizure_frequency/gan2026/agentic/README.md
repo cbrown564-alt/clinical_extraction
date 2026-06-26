@@ -14,6 +14,8 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 | --- | --- |
 | `confidence_reviewer.py` | Shadow stage; no split runner (single-row `review()` only) |
 | `boundary_audit_prompt_v2.py` | D1 panel/hard50 runner |
+| `direct_boundary_critic_rescue.py` | D2 direct + boundary critic panel/hard50 runner |
+| `structured_event_verifier.py` | V4 verifier-first structured-event correction |
 
 ## Legacy pattern (inline runner)
 
@@ -21,9 +23,7 @@ These modules still duplicate parse/metadata/report boilerplate and are candidat
 for incremental migration. Do **not** rewrite monoliths (`fresh_evidence_reasoner`,
 `cross_model_structured_event_adjudicator`, etc.) wholesale — migrate one stage at a time.
 
-- `direct_boundary_critic_rescue.py`
 - `llm_event_reasoner.py`
-- `structured_event_verifier.py`
 - `fresh_evidence_reasoner.py`
 - `cross_model_structured_event_adjudicator.py`
 - `cross_model_challenge_adjudicator.py`
