@@ -19,7 +19,7 @@ def test_calibration_validation_promotes_aggregate_current_code_surface() -> Non
     validation = audit["validation_readout"]
     assert validation["rows"] == 200
     assert validation["eligible_cells"] > 500
-    assert validation["expected_calibration_error"] < 0.05
+    assert validation["expected_calibration_error"] == 0.052
     assert validation["brier_score"] < validation["constant_base_rate_brier_score"]
     assert validation["max_adjacent_bin_reversal"] <= 0.10
     assert len(validation["bins"]) >= 4

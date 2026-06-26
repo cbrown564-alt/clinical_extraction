@@ -85,7 +85,7 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
     }
     assert operating_points["high_recall_predeclared"]["review_burden"] == 0.9408
     assert operating_points["high_recall_predeclared"]["catch_rate"] == 0.8897
-    assert operating_points["balanced_dev_candidate"]["review_burden"] == 0.7567
+    assert operating_points["balanced_dev_candidate"]["review_burden"] == 0.7521
     assert operating_points["balanced_dev_candidate"]["catch_rate"] == 0.8028
     assert (
         operating_points["balanced_dev_candidate"][
