@@ -193,7 +193,7 @@ traceable and non-interchangeable.
 
 We evaluate the shared modular architecture on two complementary epilepsy-letter
 tasks: deep seizure-frequency extraction (Section~\ref{sec:gan-results}) and
-broad nine-entity phenotyping (Section~\ref{sec:exectv2-results}). For each
+broad multi-entity phenotyping (Section~\ref{sec:exectv2-results}). For each
 task we report architecture comparison, frozen holdout or aggregate validation
 evidence under declared inspection boundaries, and, where predeclared, separate
 reliability and component-impact readouts.
@@ -220,7 +220,7 @@ development evidence in Appendix Table~\ref{tab:gan-validation}.
 \scriptsize
 \begin{tabular}{lrrrl}
 \toprule
-Architecture & Rendered & Purist & Pragmatic & Claim use \\
+Architecture & Rendered & Purist (of rendered) & Pragmatic (of rendered) & Claim use \\
 \midrule
 \code{deterministic\_canonical\_pipeline} & 450/450 & 329/450 (0.731) & 341/450 (0.758) & Frozen aggregate; validation-to-test gap warning. \\
 \code{hybrid} & 334/450 & 269/334 (0.805) & 281/334 (0.841) & Frozen aggregate; coverage-limited. \\
@@ -467,7 +467,7 @@ same-core model-family robustness.
 \scriptsize
 \begin{tabular}{lrrrl}
 \toprule
-Architecture & Rendered & Purist & Pragmatic & Reading \\
+Architecture & Rendered & Purist (of rendered) & Pragmatic (of rendered) & Reading \\
 \midrule
 \code{deterministic\_canonical\_pipeline} & 741/750 & 673/741 (0.908) & 681/741 (0.919) & High validation score; large holdout drop. \\
 \code{hybrid} & 597/750 & 526/597 (0.881) & 545/597 (0.913) & Strong rendered accuracy; too many null/routed rows. \\

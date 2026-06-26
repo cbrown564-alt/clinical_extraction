@@ -46,10 +46,12 @@ Current evidence stack:
 
 ### Now
 
-- Final manuscript consistency pass on the IEEE draft: read end-to-end and
-  confirm every reported number, family score, and claim-boundary phrase matches
-  the provenance-anchored source artifacts (Appendix Table I) and stays
-  consistent across abstract, results, and discussion.
+- Manuscript consistency pass complete; the IEEE draft is provenance-verified and
+  internally consistent (see Done Recently). The only remaining manuscript items
+  are author-controlled camera-ready fields still showing placeholders
+  (author/affiliation block, acknowledgment) and the two-column last-page balance
+  IEEEtran flags on build — none are development tasks. No open ExECTv2/Gan
+  development task is authorized; forward work is gated under Next/Blocked.
 
 ### Next
 
@@ -73,6 +75,20 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-06-26: IEEE manuscript final consistency pass — verified every reported
+  number, family score, and claim-boundary phrase end-to-end against the Appendix
+  Table I source artifacts (Gan `test450` phase-4 audit; consensus/fresh Gate 4
+  constrained `348/450 +19 0.5909` failed and exact `359/450 +16 0.6000` passed;
+  ExECTv2 v08 full-200 `0.8502`; lean frontier `0.8356`/`0.7525`/`400` calls;
+  calibration ECE `0.0432`/Brier `0.2245`/`0.2387`; robustness `0.8336` hard-slice
+  across `414` cells vs `0.8503`; dev140 and full-200 component-off ranges;
+  same-core model swap). All numbers matched. Two consistency fixes applied:
+  aligned the Results task descriptor to "broad multi-entity phenotyping" (the lone
+  "nine-entity" outlier against the abstract/intro "multi-entity" usage and the
+  Methods/table four-family enumeration), and restored the "(of rendered)"
+  qualifier on the Gan Purist/Pragmatic table headers so the table's `364/448`
+  (`0.812`) reconciles with the prose's `364/450` (`0.809`). Recompiled cleanly
+  (`5` pages, no undefined refs or warnings).
 - 2026-06-26: IEEE manuscript prose compression — tightened Introduction, Related
   Work, Methods (inspection-boundary paragraph folded), and Discussion prose
   without changing any number, table, or claim boundary; recompiled cleanly

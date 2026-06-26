@@ -31,7 +31,7 @@ Primary sources:
 ## 4 Results
 
 We evaluate the shared modular architecture on two complementary epilepsy-letter
-tasks: deep seizure-frequency extraction (Section 4.1) and broad nine-entity
+tasks: deep seizure-frequency extraction (Section 4.1) and broad multi-entity
 phenotyping (Section 4.2). For each task we report architecture comparison,
 frozen holdout or aggregate validation evidence under declared inspection
 boundaries, and—where predeclared—separate reliability and component-impact
