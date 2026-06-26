@@ -1,7 +1,7 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
-**Last updated:** 2026-06-26 (Wave C Sprint 4: P1-1 line-count gate restored + backlog reconciled to repo reality)  
+**Last updated:** 2026-06-26 (Wave C Sprint 5: P1-4 layer hygiene + P2-1 artifact_analysis import gate + gate #7 report main() removal)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
 **Overall verdict:** **CONDITIONAL APPROVE** — major layer inversions fixed and largest Gan/runtime monoliths decomposed; ExECTv2 LLM top-4 and report cluster remain gated debt
@@ -126,7 +126,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Externalize prompt corpora to YAML (decision tables, verifier content, qwen_compact) | 🔴 Open | 1 of ~8 corpora done (structured examples) |
 | `pipelines/clinical_findings/` 3-stage split | 🔴 Open | Biggest single-file drop remaining |
 | Merge diagnosis chain into `entity_verifier` or `diagnosis_verification/` | 🔴 Open | ~2.6k LOC parallel cluster |
-| Move deterministic `llm_sf_*` modules to `deterministic/` | 🔴 Open | |
+| Move deterministic `llm_sf_*` modules to `deterministic/` | ✅ Done | `210ca1c`; `sf_state_projection.py` + `sf_unknown_suppression.py` (zero LLM calls) → `deterministic/` |
 | Split `entity_verifier/*_content.py`; decouple scoring from prompts | 🔴 Open | |
 | Split `llm_target_indicators_single_call.py` LLM shell | 🔴 Open | Projection already in deterministic |
 | `generation_selection` monolith → ~300 LOC (prompt builders + row logic still inside) | 🟡 Partial | −1,075 LOC; builders remain |
@@ -155,7 +155,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Externalize `LAYER_DEFINITIONS` + `COMPONENT_OFF_DEFINITIONS` to YAML | 🔴 Open | `component_ablation_replay` at ceiling |
 | Split `cross_model_reliability_analysis.py` (1,554 LOC) | 🔴 Open | |
 | Split `component_ablation_replay.py` (1,474 LOC) | 🔴 Open | |
-| Ban `main()` in report modules (policy) | 🔴 Open | |
+| Ban `main()` in report modules (policy) | ✅ Done | `30c8055`; 14 mains → `reports/cli/`; `test_reports_no_main.py` enforces zero |
 | Atomic multi-artifact write helper | 🔴 Open | |
 | Thin `run_hybrid_benchmark_overall`, `run_phase7_audit` | 🔴 Open | |
 
@@ -186,7 +186,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Decompose `runner.py` per-architecture modules | 🔴 Open | 1,103 LOC |
 | `agentic/run_driver.py` shared split runner | 🔴 Open | |
 | Migrate legacy agentic monoliths via driver | 🔴 Open | 14+ still inline `run_split` |
-| Quarantine `artifact_analysis/` from production imports | 🔴 Open | |
+| Quarantine `artifact_analysis/` from production imports | 🟡 Frozen | `8a8409a`; import gate freezes 14 importers (no new ones); existing importer removal pending |
 | State graph: promote to hybrid or demote to experiment-only | 🔴 Open | |
 | Split `date_anchor_parsing.py` (789 LOC) if it grows | 🟡 Watch | Under 1k gate |
 
@@ -276,7 +276,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | P1-1 | Merge SF repair stacks (rules + conventions + target_projection) | ExECTv2 det | ✅ Phases 0–5 complete — `exectv2_sf_repair_stack_consolidation_design_2026-06-26.md` |
 | P1-2 | Split `all_entities.py` + thin `lenses.py` | ExECTv2 det | Unblocks convention layer honesty |
 | P1-3 | Diagnosis verifier chain → single pipeline | ExECTv2 LLM | ~2.6k LOC parallel story |
-| P1-4 | Move `llm_sf_*` deterministic modules out of `llm/` | ExECTv2 LLM | Layer hygiene |
+| P1-4 | Move `llm_sf_*` deterministic modules out of `llm/` | ExECTv2 LLM | ✅ Done `210ca1c` — `sf_state_projection` + `sf_unknown_suppression` → `deterministic/` |
 | P1-5 | Decompose `runner.py` + `agentic/run_driver.py` | Gan2026 | Stop AgenticStage ceremony without shrink |
 | P1-6 | Split `cross_model_reliability` + `component_ablation_replay` | Reports | ✅ Done — both → catalog-driven packages (`reliability/` 153, `component_ablation/` 110) |
 | P1-7 | Slice `useObservatoryData` to adapters | Frontend | 640 LOC god-hook |
@@ -286,8 +286,8 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 
 | ID | Task | Area | Notes |
 |----|------|------|-------|
-| P2-1 | Freeze new production imports from `artifact_analysis/` | Gan2026 | 31% of package LOC |
-| P2-2 | Ban `main()` in `reports/` modules | Reports | Stop dumping-ground growth |
+| P2-1 | Freeze new production imports from `artifact_analysis/` | Gan2026 | ✅ Done `8a8409a` — `check_artifact_analysis_imports.py` gate + CI step (14 frozen) |
+| P2-2 | Ban `main()` in `reports/` modules | Reports | ✅ Done `30c8055` — 14 mains → `reports/cli/`; `test_reports_no_main.py` |
 | P2-3 | Atomic artifact write helper for multi-file runners | Runners | |
 | P2-4 | Gold audit dedicated store with atomic upsert | Observatory | |
 | P2-5 | State graph promote-or-demote decision | Gan2026 | Architectural limbo |
@@ -304,6 +304,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | P3-4 | `conventions/seizure_frequency.py` table-driven rewrite | Superseded by P1-1 Phase 2 registry migration |
 | P3-5 | `createComponentImpactSurface` factory | Frontend laboratory dedup |
 | P3-6 | Continue megatest splits | `test_gan2026_normalize`, `test_exectv2_deterministic_sf`, etc. |
+| P3-7 | Triage pre-existing red goldens (independent of audit refactors) | `test_exectv2_standard_dictionary::test_normalize_drug_name…` (lamictal→lamotrigine); `test_exectv2_projection_gap_ledger…` (`projection_misses` 522→505, deterministic output drifted in an earlier cycle — confirm 505 is correct before updating golden) |
 
 ---
 
@@ -353,9 +354,9 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 - [x] SF repair stacks: canonical `sf_surface_registry` (Phases 0–5); shared patterns + unique rule index; legacy `_legacy_impl` split below gate (Sprint 4). **Shim removal** pending one release cycle + import audit.
 - [x] Report allowlisted monoliths shrunk with headroom — `cross_model_reliability` 1,554→153 + `reliability/` pkg; `component_ablation_replay` 1,474→110 + `component_ablation/` pkg (all files <500)
 - [ ] Gan `runner.py` decomposed; hybrid uses canonical extract
-- [ ] `artifact_analysis/` quarantined from production paths (`frontend_review.py`, `llm/assessment_probe_signature.py` still import it)
+- [~] `artifact_analysis/` quarantined from production paths — import gate **freezes** the 14 current importers (no new ones, `8a8409a`); full removal of existing importers (observatory ×2, `frontend_review.py`, `llm/assessment_probe_signature.py`, 10 `experiments/`) pending
 - [x] Test tier line-count gate (`tests/**` ≤800) + fast pytest subset in CI
-- [ ] Zero report modules with `main()` (policy enforced) — 14 modules remain
+- [x] Zero report modules with `main()` (policy enforced) — 14 → `reports/cli/`; `test_reports_no_main.py` enforces (`30c8055`)
 
 ### Would trigger REJECT
 
