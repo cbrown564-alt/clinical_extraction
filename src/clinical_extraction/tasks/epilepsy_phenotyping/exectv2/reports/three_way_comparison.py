@@ -324,33 +324,3 @@ def write_comparison_report(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(markdown, encoding="utf-8")
     return out_path
-
-
-def main() -> None:
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="ExECTv2 three-way (rules/llm_only/hybrid) SF comparison report",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument("--model", default="openai/gpt-4.1-mini")
-    parser.add_argument("--split", default="dev")
-    parser.add_argument(
-        "--registry", default=str(DEFAULT_REGISTRY_PATH), help="registry.jsonl path"
-    )
-    parser.add_argument(
-        "--out", required=True, help="output Markdown path for the comparison report"
-    )
-    args = parser.parse_args()
-
-    path = write_comparison_report(
-        args.model,
-        Path(args.out),
-        registry_path=Path(args.registry),
-        split=args.split,
-    )
-    print(f"Wrote {path}")
-
-
-if __name__ == "__main__":
-    main()

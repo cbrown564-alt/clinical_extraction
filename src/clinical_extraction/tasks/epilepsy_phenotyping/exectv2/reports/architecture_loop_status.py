@@ -8,7 +8,6 @@ supporting/legacy evidence, and why a full-200 audit remains blocked.
 
 from __future__ import annotations
 
-import argparse
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -463,31 +462,3 @@ def _fmt_float(value: float | None) -> str:
 
 def _md(value: str) -> str:
     return value.replace("|", "\\|").replace("\n", " ")
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Render the GPT-first ExECTv2 architecture-loop status report",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY_PATH)
-    parser.add_argument(
-        "--out",
-        type=Path,
-        default=Path("experiments/exectv2_gpt_first_architecture_loop_status_20260617.md"),
-    )
-    parser.add_argument("--model", default=MODEL)
-    parser.add_argument("--split", default="dev")
-    args = parser.parse_args()
-
-    path = write_status_report(
-        args.out,
-        registry_path=args.registry,
-        model=args.model,
-        split=args.split,
-    )
-    print(f"Wrote {path}")
-
-
-if __name__ == "__main__":
-    main()
