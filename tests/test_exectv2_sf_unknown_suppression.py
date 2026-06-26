@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_unknown_suppression as suppression,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_unknown_suppression as suppression,
 )
 
 

@@ -134,10 +134,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1206,
         "A1: SF state adjudicator — migrate to entity_verifier/sf pipeline",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_sf_state_projection.py": AllowlistEntry(
-        767,
-        "A1: SF state projection — pending decomposition",
-    ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_sf_union_arbitration.py": AllowlistEntry(
         515,
         "A1: SF union arbitration — pending decomposition",
