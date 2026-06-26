@@ -40,6 +40,9 @@ MLflow behind the registry and starts with aggregate-safe metadata only.
 - `src/clinical_extraction/core/mlflow_tracking.py` owns MLflow imports,
   environment configuration, payload normalization, artifact safety checks, and
   non-strict failure handling.
+- When the helper uses the default repo-local `file:<repo>/mlruns` backend it
+  sets `MLFLOW_ALLOW_FILE_STORE=true`, which MLflow 3 requires for filesystem
+  tracking. Explicit `MLFLOW_TRACKING_URI` values are left untouched.
 - `experiments/registry.jsonl`, `RUN_INDEX.md`, and source reports remain the
   claim-of-record even when a run is mirrored to MLflow.
 - Restricted surfaces such as Gan test450, ExECTv2 full-200 aggregate audits,

@@ -5,7 +5,7 @@
 - Predeclaration: `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_predeclaration_2026-06-25.md`
 - Frozen core: `exectv2_2call_no_sf_adjudicator_model_swap`
 - Model/runtime: `ollama_chat/qwen3.6:35b` / `ollama_chat_think_false_qwen_output_contract_repair_v02`
-- Decision: **does not pass; Qwen remains diagnostic-only**
+- Decision: **passes dev140 v02 gates; eligible for a fresh full-200 decision/predeclaration**
 
 ## Summary
 
@@ -16,61 +16,75 @@ predeclared:
 - `EA0035`-style malformed non-scored `rationale` text can be blanked before
   JSON/schema validation.
 
-The concrete v01 failure payloads both parse under the v02 parser in targeted
-regression checks. On the live v02 structured rerun, the full `140/140`
-structured producer completed with `0` call failures and `0` parse/schema
-failures. However, exact evidence validity failed the predeclared `>=0.99`
-gate, so the run was stopped before completing the downstream same-core
-assembly.
+The concrete v01 failure payloads both parse under v02 regression tests. The
+live v02 structured producer completed `140/140` rows with `0` call failures
+and `0` parse/schema failures. After adding the shared standard evidence-repair
+family, the saved structured raw outputs replay to `0.9964` evidence validity.
+The downstream same-core assembly then completed successfully.
 
-## Completed Structured Producer Checkpoint
+## Structured Producer
 
 Artifact:
 `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.jsonl`
 
 Report:
-`experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured_checkpoint.md`
+`experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.md`
 
-| Checkpoint | Rows | Call failures | Blocking parse/schema failures | Evidence validity |
+| Surface | Rows | Call failures | Blocking parse/schema failures | Evidence validity |
 | --- | ---: | ---: | ---: | ---: |
-| structured producer | 140 / 140 | 0 | 0 | 0.9637 |
+| structured producer after shared evidence repair | 140 / 140 | 0 | 0 | 0.9964 |
 
-Structured checkpoint counts:
+Structured counts:
 
 - clinical events raw: `817`
 - mentions raw: `827`
-- mentions scored: `797`
-- evidence-invalid dropped: `30`
+- mentions scored: `824`
+- evidence-invalid dropped: `3`
 
-The live v02 structured run did not reproduce the specific `diabetes` family or
-malformed-rationale parse failures from v01; nonetheless, the v02 parser is
-pinned by tests and by offline parsing of the saved v01 failed raw payloads.
+The remaining three evidence-invalid mentions are one source typo normalization
+case (`Sine`/`Since`) and two EA0114 carbamazepine rows where Qwen appended a
+sentence not present in the source.
+
+## Downstream Assembly
+
+Artifact:
+`experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.json`
+
+Report:
+`docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_2026-06-25.md`
+
+| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| clinical_headline | 0.8319 | 0.8473 | 0.7182 | 0.8895 | 0.8755 |
+| evidence_valid | 0.8049 | 0.8473 | 0.6126 | 0.8895 | 0.8755 |
+
+Final lane diagnostics report `0` call failures, `0` parse/schema failures, and
+`1.0000` exact evidence for Diagnosis, SeizureFrequency, Prescription, and
+Investigations after the repaired producer artifacts and deterministic replay
+components are assembled.
+
+The completed rerun emitted a DSPy truncation warning for one Diagnosis call
+(`max_tokens=3200`), but the Diagnosis artifact completed `140/140` rows with
+`0` call failures and `0` parse/schema failures.
 
 ## Gate Decision
 
 | Gate | Predeclared threshold | Observed | Decision |
 | --- | --- | --- | --- |
 | Architecture parity | same frozen core | same config core and live components | pass |
-| Operational stability | `0` call failures and `0` blocking parse/schema failures | structured producer `0` / `0` | pass on completed structured producer |
-| Evidence validity | `>=0.99` exact evidence rate | structured checkpoint `0.9637` | fail |
-| Clinical non-regression | overall `>=0.8018`, SF `>=0.6919` | not run to assembly after evidence failure | not evaluated |
+| Operational stability | `0` call failures and `0` blocking parse/schema failures | structured and Diagnosis producers `0` / `0`; final lanes `0` / `0` | pass |
+| Evidence validity | `>=0.99` exact evidence rate | structured replay `0.9964`; final lane diagnostics `1.0000` | pass |
+| Clinical non-regression | overall `>=0.8018`, SF `>=0.6919` | overall `0.8319`; SF `0.7182` | pass |
 
-Because evidence validity failed on the completed structured producer, Qwen is
-not eligible for the next same-core full-200 operational candidate set. The
-appropriate default candidate set remains GPT-4.1-mini plus DeepSeek. Qwen can
-remain as a diagnostic same-core row or be revisited only under a fresh repair
-predeclaration focused on evidence exactness, not parser/schema stability.
+Qwen repair v02 therefore passes the predeclared dev140 repair gates. This
+readout does not retroactively alter the already-written GPT-4.1-mini plus
+DeepSeek full-200 predeclaration; it supports a fresh decision on whether to
+add Qwen v02 to a same-core full-200 candidate set.
 
-## Notes
+## Repair Family Added
 
-The aborted downstream run produced an incomplete Diagnosis decomposer artifact
-while the evidence gate was already failed; those incomplete Diagnosis files
-were removed to avoid presenting partial rows as completed same-core evidence.
-
-## Follow-Up Evidence Repair Check
-
-After the initial v02 readout, the shared evidence gate was updated to apply
-standard source-exact evidence repair before dropping a mention:
+The shared evidence gate now applies standard source-exact evidence repair
+before dropping a mention:
 
 - case plus whitespace drift
 - escaped tab/newline drift
@@ -78,17 +92,6 @@ standard source-exact evidence repair before dropping a mention:
 - section-header plus selected list-item repair when it resolves to one exact
   source section span
 
-Replaying the saved v02 structured raw outputs through the updated gate reduces
-the completed structured-producer evidence failures from `30` to `3`:
-
-| Replay surface | Raw mentions | Evidence-invalid | Scored mentions | Evidence validity |
-| --- | ---: | ---: | ---: | ---: |
-| v02 structured raw replay with standard evidence repair | 827 | 3 | 824 | 0.9964 |
-
-This confirms that part of the original evidence-validity failure was standard
-copy-drift repair, not clinically meaningful unsupported evidence. The remaining
-three failures are one source typo normalization case (`Sine`/`Since`) and two
-EA0114 carbamazepine rows where Qwen appended a sentence not present in the
-source. This replay crosses the evidence-validity threshold, but it is still a
-post-hoc saved-raw replay rather than a fully predeclared completed same-core
-assembly rerun.
+These repairs are source-exact: the repaired evidence must be an actual
+contiguous source substring. They do not introduce or reinterpret clinical
+facts.

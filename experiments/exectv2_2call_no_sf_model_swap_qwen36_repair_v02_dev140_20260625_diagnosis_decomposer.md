@@ -12,10 +12,10 @@
 
 - Call failures: 0
 - Parse/schema failures: 0
-- Draft Diagnosis mentions: 77
-- Diagnosis spans: 176
-- Mentions raw: 124
-- Mentions scored: 124
+- Draft Diagnosis mentions: 280
+- Diagnosis spans: 775
+- Mentions raw: 437
+- Mentions scored: 437
 - Evidence-invalid dropped: 0
 - Evidence validity rate: 1.0000
 
@@ -23,8 +23,8 @@
 
 | Target F1 | F1 | P | R | TP | FP | FN |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0.80 | 0.753 | 0.693 | 0.824 | 61 | 27 | 13 |
+| 0.80 | 0.691 | 0.687 | 0.694 | 211 | 96 | 93 |
 
 ## Source-Near Diagnostic
 
-- Overlap F1=0.796 R=0.882
+- Overlap F1=0.765 R=0.795

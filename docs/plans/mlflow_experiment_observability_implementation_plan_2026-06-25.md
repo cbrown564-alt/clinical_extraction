@@ -434,9 +434,9 @@ Completion gate:
 Goal: mirror canonical registry entries into MLflow without touching live
 runners.
 
-Status: dry-run planning path complete as of 2026-06-26. Actual MLflow write
-mode, existing-run lookup by `registry_run_id`, and idempotent update behavior
-remain future work.
+Status: dry-run planning path complete as of 2026-06-26. The first real
+parent/child write path is complete for the same-core dev140 group. Existing-run
+lookup by `registry_run_id` and idempotent update behavior remain future work.
 
 Add a CLI or script:
 
@@ -474,6 +474,8 @@ Behavior:
 Completion gate:
 
 - A dry run prints the MLflow experiment/run names and artifact policy. **DONE**
+- The same-core dev140 parent/child group mirrors successfully with the guarded
+  plan path. **DONE**
 - Syncing a small temporary registry in tests creates one run with expected
   params/tags/metrics.
 - Syncing twice is idempotent enough for ordinary use.
@@ -535,12 +537,15 @@ Initial target:
 exectv2_same_core_model_swap_dev140_20260625
 ```
 
+Status: initial target mirrored locally on 2026-06-26 as one parent run with
+GPT-4.1-mini, DeepSeek, Qwen, and Qwen repair-v02 checkpoint children.
+
 Completion gate:
 
 - GPT-4.1-mini, DeepSeek, Qwen, and Qwen repair rows appear as children under a
-  same-core parent run.
+  same-core parent run. **DONE**
 - Parent run tags include `same_core_comparison=true`,
-  `claim_boundary=dev_only`, and `row_inspection_policy=allowed`.
+  `claim_boundary=dev_only`, and `row_inspection_policy=allowed`. **DONE**
 
 ### Phase 5: Runner Metadata Capture
 
@@ -736,6 +741,7 @@ Environment variables:
 | Variable | Meaning |
 | --- | --- |
 | `MLFLOW_TRACKING_URI` | Standard MLflow tracking URI. Defaults to local `file:<repo>/mlruns` when unset. |
+| `MLFLOW_ALLOW_FILE_STORE` | Set automatically to `true` only for the default repo-local file backend required by MLflow 3. |
 | `CLINICAL_EXTRACTION_MLFLOW_DISABLED` | If `1`, skip MLflow logging. |
 | `CLINICAL_EXTRACTION_MLFLOW_STRICT` | If `1`, MLflow logging errors fail the command. Default is non-strict. |
 | `CLINICAL_EXTRACTION_MLFLOW_ARTIFACT_POLICY` | `summary_only`, `selected_artifacts`, or `full_artifacts`. |

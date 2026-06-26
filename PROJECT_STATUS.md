@@ -21,9 +21,10 @@ The 2026-06-25 evidence stack is:
   GPT-4.1-mini `0.8356`; DeepSeek `0.8566` overall and `0.7602` SF, with `1`
   DeepSeek Diagnosis parse/schema failure accepted as a caveat.
 - Same-core dev140 model swap: DeepSeek `0.8596`, GPT-4.1-mini `0.8396`, Qwen
-  `0.8018`, all with `1.0000` exact evidence. Qwen remains diagnostic; repair
-  v02 fixed structured parse/schema failures, and saved-raw evidence repair
-  reduced invalid mentions from `30` to `3` (`0.9964` validity).
+  `0.8018`, all with `1.0000` exact evidence. Qwen repair v02 completed a
+  frozen same-core downstream assembly: overall `0.8319`, SeizureFrequency
+  `0.7182`, `0` call/parse failures, and structured evidence validity `0.9964`;
+  this passes dev140 repair gates but is not a full-200 promotion.
 - Reliability validation: calibration ECE `0.0432`, Brier `0.2245` versus
   `0.2387`; lower-burden review routing failed validation (`0.9661` burden,
   `0.9037` catch); robustness hard-slice F1 `0.8336` across `414` eligible
@@ -54,14 +55,16 @@ aggregate readout.
 
 ### Now
 
-- Mirror the same-core model-swap dev140 comparison as the first real MLflow
-  parent/child group, using the dry-run sync path as the guardrail.
+- Add a short MLflow local runbook/doctor if observability work continues.
 
 ### Next
 
-- If Qwen is revisited, predeclare a fresh same-core repair/assembly rerun using
-  the shared standard evidence-repair family; parser/schema stability is no
-  longer the limiting failure after v02.
+- Decide whether MLflow sync needs existing-run lookup by `registry_run_id`
+  before any broader backfill; the first same-core group is intentionally local
+  observability, not claim-of-record.
+- Decide whether to add Qwen repair v02 to a fresh same-core full-200
+  aggregate-only candidate predeclaration or keep the already-written
+  GPT-4.1-mini plus DeepSeek full-200 plan unchanged.
 - Plan true component-off reliability ablations only after scorecard language is
   stable; reliability is trust evidence, component impact is delta evidence.
 - Keep repo cleanup and Investigations cost work deferred.
@@ -72,26 +75,30 @@ aggregate readout.
   blocked unless separately authorized under a fresh frozen protocol.
 - ExECTv2 full-200/holdout row-level inspection remains blocked; current
   reliability protocols authorize aggregate validation outputs only.
-- Qwen full-200 promotion needs a fresh predeclared dev140 repair/assembly rerun
-  passing operational, evidence-validity, and clinical non-regression gates.
+- Qwen full-200 promotion remains blocked until a fresh aggregate-only full-200
+  predeclaration includes it; v02 has passed dev140 repair gates only.
 - Lower-burden review-routing promotion is blocked by failed aggregate
   validation; any retry needs dev140-only redesign and a fresh predeclaration.
 
 ### Done Recently
 
+- 2026-06-26: Mirrored same-core dev140 as the first MLflow parent/child group
+  and updated the Qwen repair-v02 child in place after full assembly completion;
+  added registry rows, guarded group sync, tests, and MLflow 3 file-store
+  handling.
+- 2026-06-26: Added shared standard evidence repair for Qwen v02, replayed the
+  frozen structured producer to `0.9964` evidence validity, and completed the
+  downstream same-core dev140 assembly: overall `0.8319`, SeizureFrequency
+  `0.7182`, `0` call/parse failures. Qwen v02 passes dev140 repair gates and
+  now needs a separate full-200 inclusion decision.
 - 2026-06-26: Added registry-first MLflow dry-run sync planning:
   `clinical_extraction.core.mlflow_registry_sync`,
   `scripts/sync_registry_to_mlflow.py`, `clinical-extraction-mlflow-sync`, and
   tests. Restricted/full-200 row-level artifacts are pointer-only; MLflow still
   remains optional observability, not the claim-of-record.
-- 2026-06-26: Completed MLflow observability Phase 0-1: ADR 0034, optional
-  `mlops`, local-state ignores, disabled-safe `core/mlflow_tracking.py`, and
-  tests. Registry/report artifacts remain the claim-of-record.
-- 2026-06-26: Registry-driven Gan Explorer/Component Impact surfacing: curated
-  validation-750 comparators (GPT-4.1-mini, DeepSeek, Qwen per hybrid/LLM-only
-  family) via `run_surfacing.py`, explicit `run_id` Explorer selection, reconciled
-  registry curation fields, and regenerated `pipeline-families.json` +
-  `component-ablation.json`.
+- 2026-06-26: Completed MLflow Phase 0-1 and registry-driven Gan
+  Explorer/Component Impact surfacing; registry/report artifacts remain the
+  claim-of-record.
 - 2026-06-25: Completed same-core full-200 aggregate audit, same-core dev140/Qwen
   repair v01-v02, paper/results scaffolding, reliability validations,
   Investigations, and Gan v0.7 holdout aggregate updates.
