@@ -280,21 +280,11 @@ class Gan2026PipelineRunner:
             return PipelineResult(output=output, diagnostics=diagnostics)
 
         elif self.config.architecture == "hybrid":
-            # 1. Extraction (same as deterministic)
-            raw_candidates = _extract_candidates(item.note_text, self.config.ablation_config)
-            if not raw_candidates:
-                raw_candidates = [
-                    RawCandidate(
-                        kind=CandidateKind.NO_REFERENCE,
-                        label="no seizure frequency reference",
-                        evidence=_fallback_evidence(item.note_text),
-                    )
-                ]
-
-            candidate_set = deterministic_candidate_set_from_raw(
-                raw_candidates,
-                note_text=item.note_text,
+            _raw_candidates, candidate_set, _candidate_events = canonical_stages.extract_stage(
+                item.note_text,
                 source_row_index=item.source_row_index or 1,
+                ablation_config=self.config.ablation_config,
+                use_state_graph=self.config.use_state_graph_extract,
             )
 
             self._configure_lm()
