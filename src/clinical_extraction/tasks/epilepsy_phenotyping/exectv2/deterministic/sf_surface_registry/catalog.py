@@ -35,6 +35,7 @@ def _load_catalog_file(path: Path) -> list[SurfaceRule]:
                 rule_id=str(entry["rule_id"]),
                 phases=phases,
                 pattern_id=entry.get("pattern_id"),
+                builder=entry.get("builder"),
                 quarantine_family=entry.get("quarantine_family"),
                 source_stack=entry.get("source_stack"),
             )
@@ -55,3 +56,21 @@ def validate_unique_rule_ids(rules: tuple[SurfaceRule, ...] | None = None) -> No
 
 def rules_for_phase(phase: SurfacePhase) -> tuple[SurfaceRule, ...]:
     return tuple(rule for rule in load_all_catalog_rules() if phase in rule.phases)
+
+
+@lru_cache(maxsize=1)
+def quarantined_projection_families() -> frozenset[str]:
+    """Return quarantine_family values from the projection catalog (single source)."""
+
+    families: set[str] = set()
+    for rule in load_all_catalog_rules():
+        if rule.quarantine_family:
+            families.add(rule.quarantine_family)
+    return frozenset(families)
+
+
+def projection_sf_rule_ids() -> frozenset[str]:
+    """Rule IDs registered under catalog/projection_sf.yaml."""
+
+    path = _CATALOG_DIR / "projection_sf.yaml"
+    return frozenset(rule.rule_id for rule in _load_catalog_file(path))

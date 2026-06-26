@@ -1,0 +1,6 @@
+rules:
+- rule_id: residual_all_patterns
+  phases:
+  - residual_add
+  builder: residual_all_patterns
+  source_stack: sf_surface_registry/builders/_legacy_impl.py
