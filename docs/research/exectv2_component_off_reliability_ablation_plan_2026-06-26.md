@@ -98,6 +98,25 @@ full-200 aggregate-only reliability surfaces.
 5. If a full-200 audit is authorized, write a fresh predeclaration before
    execution and preserve the no-row-level-inspection boundary.
 
+## Full-200 Escalation Decision
+
+Decision recorded on 2026-06-26:
+`docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md`
+freezes a separate full-200 aggregate-only component-off protocol for
+`standard_dictionary`, `residual_semantic_lens`, and `headline_projection`.
+The decision is based only on the dev140 aggregate readout at
+`experiments/exectv2_component_off_replay_dev140_20260626.{json,jsonl,md}`.
+
+`evidence_validation` is not escalated under this protocol because its dev140
+clinical-score delta was `0.0000` overall and by family across the selected
+single-lane holistic replays. That null result remains a grounding-guard check,
+not a global claim that evidence validation is unnecessary.
+
+The full-200 protocol remains aggregate-only and replay-only. It does not
+authorize model calls, row-level full-200 failure inspection, prompt/parser/
+scorer/threshold/deterministic-rule/model-choice tuning, or Reliability
+Scorecard promotion language.
+
 ## Reporting Language
 
 Preferred wording:
