@@ -44,7 +44,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_components,
     semantic_config_for,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
 )
 

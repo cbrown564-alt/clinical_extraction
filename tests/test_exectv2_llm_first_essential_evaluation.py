@@ -21,7 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_es
     project_guideline_certainty_negation,
     row_level_error_ledger,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.run_llm_first_essential_evaluation import (  # noqa: E501
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_readout import (
     llm_first_error_ledger_rows,
     render_error_ledger_markdown,
     render_markdown,
