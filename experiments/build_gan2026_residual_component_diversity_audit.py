@@ -35,7 +35,7 @@ from typing import Any
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,

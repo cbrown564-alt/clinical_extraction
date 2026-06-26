@@ -42,7 +42,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promo
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,

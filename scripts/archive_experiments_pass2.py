@@ -197,7 +197,7 @@ def main() -> None:
 
     registry_updates = update_registry_paths(moves)
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+    from clinical_extraction.core.registry import (
         load_run_registry,
         write_run_registry_markdown,
     )

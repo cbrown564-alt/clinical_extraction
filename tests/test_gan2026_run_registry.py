@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     registry_entry_from_json_record,

@@ -43,7 +43,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,

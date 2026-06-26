@@ -20,7 +20,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.compo
     cached_component_transitions_json,
     cached_component_transitions_payload,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     load_run_registry,
 )
 

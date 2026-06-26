@@ -23,7 +23,7 @@ from clinical_extraction.core.mlflow_tracking import (
     normalized_tags,
     registry_entry_to_mlflow_payload,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     REGISTRY_ROLES,
     RegistryRole,
     RunRegistryEntry,

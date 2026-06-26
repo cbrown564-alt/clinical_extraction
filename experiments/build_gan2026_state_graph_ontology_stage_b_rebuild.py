@@ -27,7 +27,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     load_records_for_split,
     load_split_manifest,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,

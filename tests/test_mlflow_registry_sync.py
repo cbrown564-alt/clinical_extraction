@@ -19,7 +19,7 @@ from clinical_extraction.core.mlflow_registry_sync import (
     sync_comparison_plan_to_mlflow,
 )
 from clinical_extraction.core.mlflow_tracking import MlflowRunPayload
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     RunRegistryEntry,
 )
 
