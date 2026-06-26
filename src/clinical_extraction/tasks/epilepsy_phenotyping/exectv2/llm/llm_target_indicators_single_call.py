@@ -25,38 +25,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection import (
-    ASYMMETRIC_DOSING,
-    CONTROLLED_ON_DOSE,
-    EVERY_N_PERIODS,
-    EVERY_N_TO_M_PERIODS,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.projection import (
     ProjectionFamilySwitches,
+    apply_all,
     audit_only_projection_replay_switches,
-    clean_number,
     effective_target_projection_family_switches,
-    frequency_from_prescription_source,
-    is_projection_family_enabled,
-    local_evidence_context,
-    period_to_canonical,
-    project_context_parent_epilepsy,
-    project_controlled_context_to_infrequent_state,
-    project_diagnosis_context_to_sf_states,
-    project_diagnosis_frequency_header_to_sf,
-    project_diagnosis_header_parent_epilepsy,
-    project_diagnosis_text_from_evidence,
-    project_dated_diagnosis_context_to_sf,
-    project_dropped_sf_to_diagnosis,
-    project_eeg_context_to_mri_normal,
-    project_empty_sf_candidate_to_diagnosis,
-    project_focal_diagnosis_context_to_sf,
-    project_infrequent_context_state,
-    project_mri_context_to_eeg_result,
-    project_returned_context_to_increased_state,
-    project_sf_context_to_focal_diagnosis,
-    project_sf_state_from_evidence,
-    quarantined_projection_family_warning,
-    repair_case_only_evidence,
-    repair_prescription_attrs_from_text,
+    projection_patterns,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
@@ -610,7 +584,7 @@ def to_predicted_letter(
             warnings.append(f"dropped_non_target_entity: {mention.entity!r}")
             continue
         if mention.entity == "SeizureFrequency":
-            focal_diagnosis = project_empty_sf_candidate_to_diagnosis(mention)
+            focal_diagnosis = apply_all.empty_sf_candidate(mention)
             if focal_diagnosis is not None:
                 entity_valid.append(focal_diagnosis)
                 warnings.append(
@@ -626,7 +600,7 @@ def to_predicted_letter(
                 continue
         entity_valid.append(mention)
 
-    evidence_repaired, evidence_repair_warnings = repair_case_only_evidence(
+    evidence_repaired, evidence_repair_warnings = apply_all.repair_evidence(
         entity_valid,
         note_text=note_text,
         projection_family_switches=projection_family_switches,
@@ -667,7 +641,7 @@ def to_predicted_letter(
         )
         warnings.extend(f"{mention.entity}: {warning}" for warning in text_warnings)
         if mention.entity == "SeizureFrequency":
-            text, attrs, state_warnings = project_sf_state_from_evidence(
+            text, attrs, state_warnings = apply_all.project_sf_state(
                 text,
                 attrs,
                 mention.evidence,
@@ -676,7 +650,7 @@ def to_predicted_letter(
             warnings.extend(f"{mention.entity}: {warning}" for warning in state_warnings)
             drop_warning = _sf_state_drop_reason(text, attrs, mention.evidence)
             if drop_warning:
-                projected_diagnosis = project_dropped_sf_to_diagnosis(
+                projected_diagnosis = apply_all.project_dropped_sf(
                     text,
                     mention.evidence,
                     mention,
@@ -700,7 +674,7 @@ def to_predicted_letter(
             component_owner=COMPONENT_OWNER,
         )
         if mention.entity == "Diagnosis" and not _is_allowed_diagnosis_core(text):
-            projected_sf = project_diagnosis_frequency_header_to_sf(
+            projected_sf = apply_all.project_diagnosis_frequency_header(
                 base_mention,
                 note_text,
             )
@@ -759,95 +733,6 @@ def to_predicted_letter(
                 f"Investigations: dropped_unsupported_eeg_confirmation: {text!r}"
             )
             continue
-        expanded_mentions, expansion_warnings = _expand_target_mention(base_mention)
-        warnings.extend(f"{mention.entity}: {warning}" for warning in expansion_warnings)
-        if mention.entity == "Diagnosis":
-            context_parent = project_context_parent_epilepsy(base_mention, note_text)
-            if context_parent is not None:
-                expanded_mentions.append(context_parent)
-                warnings.append("Diagnosis: projected_context_parent_epilepsy")
-            diagnosis_sf_states, diagnosis_sf_state_warnings = (
-                project_diagnosis_context_to_sf_states(
-                    base_mention,
-                    note_text,
-                    projection_family_switches=projection_family_switches,
-                )
-            )
-            if diagnosis_sf_states:
-                expanded_mentions.extend(diagnosis_sf_states)
-            warnings.extend(
-                f"Diagnosis: {warning}" for warning in diagnosis_sf_state_warnings
-            )
-            projected_sf = project_focal_diagnosis_context_to_sf(
-                base_mention,
-                note_text,
-            )
-            if projected_sf is not None:
-                expanded_mentions.append(projected_sf)
-                warnings.append(
-                    "Diagnosis: projected_focal_diagnosis_context_to_sf_state: "
-                    f"{text!r}"
-                )
-            projected_parent = project_diagnosis_header_parent_epilepsy(
-                base_mention,
-                note_text,
-            )
-            if projected_parent is not None:
-                expanded_mentions.append(projected_parent)
-                warnings.append("Diagnosis: projected_header_parent_epilepsy")
-            projected_dated_sf = project_dated_diagnosis_context_to_sf(
-                base_mention,
-                note_text,
-            )
-            if projected_dated_sf is not None:
-                expanded_mentions.append(projected_dated_sf)
-                warnings.append("Diagnosis: projected_dated_diagnosis_context_to_sf")
-        if mention.entity == "SeizureFrequency":
-            projected_diagnosis = project_sf_context_to_focal_diagnosis(
-                base_mention,
-                note_text,
-            )
-            if projected_diagnosis is not None:
-                expanded_mentions.append(projected_diagnosis)
-                warnings.append(
-                    "SeizureFrequency: projected_sf_context_to_focal_diagnosis: "
-                    f"{text!r}"
-                )
-            controlled_state = project_controlled_context_to_infrequent_state(
-                base_mention,
-                note_text,
-            )
-            if controlled_state is not None:
-                expanded_mentions.append(controlled_state)
-                warnings.append(
-                    "SeizureFrequency: projected_controlled_context_to_infrequent_state"
-                )
-            infrequent_state = project_infrequent_context_state(
-                base_mention,
-                note_text,
-            )
-            if infrequent_state is not None:
-                family = "projected_infrequent_context_state"
-                if is_projection_family_enabled(
-                    family,
-                    projection_family_switches,
-                ):
-                    expanded_mentions.append(infrequent_state)
-                    warnings.append(f"SeizureFrequency: {family}")
-                else:
-                    warnings.append(
-                        "SeizureFrequency: "
-                        + quarantined_projection_family_warning(family)
-                    )
-            increased_state = project_returned_context_to_increased_state(
-                base_mention,
-                note_text,
-            )
-            if increased_state is not None:
-                expanded_mentions.append(increased_state)
-                warnings.append(
-                    "SeizureFrequency: projected_returned_context_to_increased_state"
-                )
         if mention.entity == "Investigations" and _is_unsupported_investigation_evidence(
             base_mention
         ):
@@ -855,21 +740,17 @@ def to_predicted_letter(
                 f"Investigations: dropped_unsupported_investigation_evidence: {text!r}"
             )
             continue
-        if mention.entity == "Investigations":
-            projected_mri = project_eeg_context_to_mri_normal(
-                base_mention,
-                note_text,
-            )
-            if projected_mri is not None:
-                expanded_mentions.append(projected_mri)
-                warnings.append("Investigations: projected_eeg_context_to_mri_normal")
-            projected_eeg = project_mri_context_to_eeg_result(
-                base_mention,
-                note_text,
-            )
-            if projected_eeg is not None:
-                expanded_mentions.append(projected_eeg)
-                warnings.append("Investigations: projected_mri_context_to_eeg_result")
+        expanded_mentions, expansion_warnings = _expand_target_mention(base_mention)
+        warnings.extend(f"{mention.entity}: {warning}" for warning in expansion_warnings)
+        expanded_mentions, projection_warnings = apply_all.expand_mention_projections(
+            entity=mention.entity,
+            base_mention=base_mention,
+            expanded_mentions=expanded_mentions,
+            note_text=note_text,
+            text=text,
+            projection_family_switches=projection_family_switches,
+        )
+        warnings.extend(projection_warnings)
         predicted_mentions.extend(expanded_mentions)
     return (
         project_cuis(
@@ -930,12 +811,15 @@ def _normalize_target_attributes(
     normalized = dict(attrs)
     warnings: list[str] = []
     if entity == "Prescription":
-        prescription_warnings = repair_prescription_attrs_from_text(
+        prescription_warnings = apply_all.normalize_prescription_attributes(
             normalized,
-            source=f"{text} {evidence}",
+            text=text,
+            evidence=evidence,
         )
         warnings.extend(prescription_warnings)
-        evidence_frequency = frequency_from_prescription_source(normalize_phrase(evidence))
+        evidence_frequency = apply_all.prescription_frequency_from_evidence(
+            normalize_phrase(evidence)
+        )
         if (
             evidence_frequency
             and normalized.get("Frequency")
@@ -955,7 +839,7 @@ def _normalize_target_attributes(
         dose = normalized.get("DrugDose", "").strip()
         dose_match = re.fullmatch(r"(?P<dose>\d+(?:\.\d+)?)\s*(?:mgs?|mg|grams?|g)?", dose, re.I)
         if dose_match and dose_match.group("dose") != dose:
-            normalized["DrugDose"] = clean_number(dose_match.group("dose"))
+            normalized["DrugDose"] = projection_patterns.clean_number(dose_match.group("dose"))
             warnings.append(f"normalized_drug_dose_number: {dose!r}")
     if entity == "SeizureFrequency":
         for key in (
@@ -977,12 +861,12 @@ def _normalize_target_attributes(
             warnings.append("normalized_since_last_clinic_period")
         if normalized.get("PointInTime", "").strip().lower() == "christmas":
             family = "projected_christmas_point_to_month_date"
-            if is_projection_family_enabled(family, projection_family_switches):
+            if apply_all.is_quarantined_family_enabled(family, projection_family_switches):
                 normalized.pop("PointInTime", None)
                 normalized.setdefault("MonthDate", "12")
                 warnings.append(family)
             else:
-                warnings.append(quarantined_projection_family_warning(family))
+                warnings.append(apply_all.quarantine_warning(family))
         _split_range_attribute(
             normalized,
             source_key="NumberOfSeizures",
@@ -1090,8 +974,8 @@ def _normalize_target_text(
                 f"{_SF_TEXT_ALIASES[normalized]!r}"
             ]
         if re.match(r"^seizures?\s+every\b", normalized) and (
-            EVERY_N_PERIODS.search(normalized)
-            or EVERY_N_TO_M_PERIODS.search(normalized)
+            projection_patterns.EVERY_N_PERIODS.search(normalized)
+            or projection_patterns.EVERY_N_TO_M_PERIODS.search(normalized)
         ):
             return "seizures", [
                 f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"
@@ -1107,7 +991,7 @@ def _normalize_target_text(
         normalized = "epilepsy with generalised tonic clonic seizures alone"
         return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
     normalized = canonicalize_diagnosis_concept(text)
-    normalized = project_diagnosis_text_from_evidence(normalized, evidence)
+    normalized = apply_all.normalize_diagnosis_text(normalized, evidence)
     if normalized and normalized != text:
         return normalized, [f"normalized_diagnosis_text: {text!r} -> {normalized!r}"]
     return text, []
@@ -1251,7 +1135,7 @@ def _is_allowed_sf_anchor(text: str) -> bool:
 def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:
     if mention.entity != "Prescription":
         return False
-    context = local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    context = projection_patterns.local_evidence_context(note_text, mention.evidence, before=96, after=24)
     return bool(_PLANNED_PRESCRIPTION_CONTEXT.search(context))
 
 
@@ -1265,7 +1149,7 @@ def _is_planned_investigation(mention: PredictedMention, note_text: str) -> bool
     )
     if has_result:
         return False
-    context = local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    context = projection_patterns.local_evidence_context(note_text, mention.evidence, before=96, after=24)
     return bool(_PLANNED_INVESTIGATION_CONTEXT.search(context))
 
 
@@ -1327,7 +1211,7 @@ def _is_zero_since_only_diagnosis_context(
     if normalized_text not in {"tonic clonic seizures", "absences"}:
         return False
     context = normalize_phrase(
-        local_evidence_context(note_text, mention.evidence, before=48, after=64)
+        projection_patterns.local_evidence_context(note_text, mention.evidence, before=48, after=64)
     )
     return (
         "not had any further" in context
@@ -1360,7 +1244,10 @@ def _is_frequency_phrase_diagnosis_context(mention: PredictedMention) -> bool:
     if "focal onset" in source:
         return False
     return bool(
-        (EVERY_N_PERIODS.search(source) or EVERY_N_TO_M_PERIODS.search(source))
+        (
+            projection_patterns.EVERY_N_PERIODS.search(source)
+            or projection_patterns.EVERY_N_TO_M_PERIODS.search(source)
+        )
         and re.search(r"\bseizures?\s+every\b", source)
     )
 
@@ -1605,7 +1492,7 @@ def _expand_seizure_frequency_state(
             )
         )
         warnings.append("split_convulsive_zero_state")
-    if mention.attributes.get("NumberOfSeizures") == "0" and CONTROLLED_ON_DOSE.search(
+    if mention.attributes.get("NumberOfSeizures") == "0" and projection_patterns.CONTROLLED_ON_DOSE.search(
         mention.evidence
     ):
         expanded.append(
@@ -1726,11 +1613,11 @@ def _expand_asymmetric_prescription(
     attrs = dict(mention.attributes)
     if attrs.get("DoseUnit") != "mg":
         return [], []
-    match = ASYMMETRIC_DOSING.search(f"{mention.text} {mention.evidence}")
+    match = projection_patterns.ASYMMETRIC_DOSING.search(f"{mention.text} {mention.evidence}")
     if not match:
         return [], []
-    first = clean_number(match.group("first"))
-    second = clean_number(match.group("second"))
+    first = projection_patterns.clean_number(match.group("first"))
+    second = projection_patterns.clean_number(match.group("second"))
     if first == second:
         return [], []
     first_attrs = {**attrs, "DrugDose": first, "Frequency": "1"}
@@ -1782,8 +1669,8 @@ def _split_range_attribute(
     if not match:
         return
     attrs.pop(source_key, None)
-    attrs[lower_key] = clean_number(match.group(1))
-    attrs[upper_key] = clean_number(match.group(2))
+    attrs[lower_key] = projection_patterns.clean_number(match.group(1))
+    attrs[upper_key] = projection_patterns.clean_number(match.group(2))
     warnings.append(
         f"split_range_attribute: {source_key} -> {lower_key}/{upper_key}"
     )

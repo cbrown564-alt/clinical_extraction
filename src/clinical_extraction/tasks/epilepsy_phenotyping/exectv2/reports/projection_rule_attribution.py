@@ -20,8 +20,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
+from clinical_extraction.core.scoring import PRF1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    PRF1,
     score_concept_identity,
     score_entity,
     score_frequency_state,
