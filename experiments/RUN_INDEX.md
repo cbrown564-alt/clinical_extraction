@@ -1874,7 +1874,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: saved raw outputs from hybrid v0.1 validation750.
 - Supersedes: `gan2026_hybrid_adjudicator_v01_validation250_schema_replay_2026-06-01`.
 - Claim language: Revise before holdout; underperformed deterministic top on full validation because adjudicator introduced 24 deterministic-correct regressions against 7 corrections.
-- Artifacts: `experiments/gan2026_arch2_validation750_gpt41mini_v01_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_arch2_validation750_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_arch2_validation750_gpt41mini_v01_schema_replay_2026-06-01.jsonl`, `experiments/archive/gan2026_arch2_smoke_iterations/gan2026_arch2_validation750_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/archive/gan2026_arch2_smoke_iterations/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v01_validation250_schema_replay_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
@@ -1886,7 +1886,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: saved raw outputs from hybrid v0.1 validation250.
 - Superseded by: `gan2026_hybrid_adjudicator_v01_validation750_schema_replay_2026-06-01`.
 - Claim language: Strongest 250-row validation candidate, but deterministic-correct regressions and candidate-recall misses required full failure review before any promotion.
-- Artifacts: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.jsonl`, `experiments/archive/gan2026_arch2_smoke_iterations/gan2026_arch2_validation250_gpt41mini_v01_schema_replay_2026-06-01.md`, `experiments/archive/gan2026_arch2_smoke_iterations/gan2026_arch2_validation250_v01_failure_review_2026-06-01.md`.
 
 ### `gan2026_claim_table_v4_validation250_schema_replay_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
@@ -2145,7 +2145,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Prediction-bearing validation hard50 development run: 200/200 decision records, 0 call failures, 0 parse/schema/label failures. Evidence substring metric not computed for this ablation artifact.
 - Supersedes: `gan2026_agentic_hard50_tool_context_ablation_2026-06-12`.
 - Claim language: Validation-development hard-slice result only. E2 missed the promotion gate by one rescue (4 wins, 2 losses; gate required at least 5 wins and at most 2 losses), so E3 and E4 were not run under the predeclared stop rule.
-- Artifacts: `experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl`, `experiments/archive/exectv2_self_consistency_intermediate_notes/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.md`.
 
 ### `gan2026_agentic_hard50_selective_fallback_replay_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -2548,7 +2548,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: one arbitration call per letter over the union per-entity candidate pool; model `openai/gpt-4.1-mini`.
 - Primary metrics: summary=git_head=291a6c6d19d7, prompt_version=exectv2_arbitration_v0.2, semantic_per_item_f1=0.190 (P0.278 R0.144), benchmark_per_item_f1=0.137, diagnosis_semantic_f1=0.270, parse_failures=0.
 - Claim language: REJECTED as headline. Entity retyping works (named seizure types -> Diagnosis + SF replication) but a single combined call cannot reproduce the recall of nine focused passes -> 0.190 < 0.220 bare union. Regeneration is recall-limited.
-- Artifacts: `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.jsonl`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/exectv2_arbitration_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_arbitration_v02_dev140_gpt41mini_20260618.jsonl`.
 
 ### `exectv2_altitude_proj_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -2556,7 +2556,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: deterministic compound-split + seizure-type entity-norm + affirmed-default attributes; no model; model `projection`.
 - Primary metrics: summary=git_head=291a6c6d19d7, prompt_version=benchmark_altitude_v0.1, semantic_per_item_f1=0.242 (from 0.220 bare union), diagnosis_semantic_f1=0.318 (from 0.243), patienthistory_semantic_f1=0.180, benchmark_per_item_f1=0.181.
 - Claim language: recall-preserving deterministic projection, separate projection credit (never LLM reasoning). Diagnosis +0.075, overall +0.022. Oracle phrase-snap caps F1=0.42; 0.7 on populous entities NOT reachable via projection (PH recall-bound, SF quantification-bound). See docs/research/exectv2_gpt_first_error_analysis_2026-06-18.md.
-- Artifacts: `experiments/exectv2_altitude_proj_dev140_20260618.md`, `experiments/exectv2_altitude_proj_dev140_20260618.jsonl`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/exectv2_altitude_proj_dev140_20260618.md`, `experiments/exectv2_altitude_proj_dev140_20260618.jsonl`.
 
 ### `exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612`
 - Date/split: `2026-06-12`; `full200_overall_audit`; `200` rows.
@@ -2565,7 +2565,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: authorization=full-200 overall read authorized by user 2026-06-12 (Phase 6/7), benchmark_per_item_ci=[0.0, 0.0], benchmark_per_item_f1=0.0, benchmark_per_letter_ci=[0.0, 0.0], benchmark_per_letter_f1=0.0, call_failures=0, evidence_validity_rate=0.9323, git_head=8d7ecfbc101f+dirty, mentions_raw=1492, mentions_scored=1391, parse_failures=0, phrase_only_per_item_f1=0.147, phrase_only_per_letter_f1=0.362, prompt_version=exectv2_llm_only_all_entities_v0.1, semantic_per_item_ci=[0.0711, 0.0985], semantic_per_item_f1=0.0844, semantic_per_letter_ci=[0.2007, 0.2632], semantic_per_letter_f1=0.2317.
 - Evidence validity: frozen audit; exact substring evidence gate recorded in report.
 - Claim language: Phase 7 frozen overall all-entity audit. Semantic overall F1 0.084/0.232; benchmark with-CUI F1 0.000/0.000; locked at git 8d7ecfbc101f+dirty.
-- Artifacts: `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl`, `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.md`.
+- Artifacts: `experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl`, `experiments/archive/gan2026_historical_lineage/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.md`.
 
 ### `exectv2_audit_rules_full200_modelindependent_20260611`
 - Date/split: `2026-06-11`; `full200_audit`; `200` rows.
@@ -2574,7 +2574,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.4725, phrase_only_per_letter_f1=0.6756, prompt_version=n/a (deterministic rules), sf_benchmark_per_item_ci=[0.2538, 0.3879], sf_benchmark_per_item_f1=0.3211, sf_benchmark_per_letter_ci=[0.451, 0.6184], sf_benchmark_per_letter_f1=0.5392, sf_semantic_per_item_f1=0.3211, sf_semantic_per_letter_f1=0.5392.
 - Evidence validity: frozen audit; gates recorded in the audit report.
 - Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.321 (CI 0.254-0.388), per-letter F1 0.539 (CI 0.451-0.618) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
-- Artifacts: `experiments/exectv2_audit_rules_full200_modelindependent_20260611.md`, `experiments/exectv2_audit_rules_full200_modelindependent_20260611.jsonl`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/exectv2_audit_rules_full200_modelindependent_20260611.md`, `experiments/exectv2_audit_rules_full200_modelindependent_20260611.jsonl`.
 
 ### `exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611`
 - Date/split: `2026-06-11`; `full200_audit`; `200` rows.
@@ -2583,7 +2583,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.4627, phrase_only_per_letter_f1=0.6766, prompt_version=exectv2_llm_only_per_entity_v0.2, sf_benchmark_per_item_ci=[0.0, 0.0], sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_ci=[0.0, 0.0], sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.1216, sf_semantic_per_letter_f1=0.2463.
 - Evidence validity: frozen audit; gates recorded in the audit report.
 - Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.000 (CI 0.000-0.000), per-letter F1 0.000 (CI 0.000-0.000) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
-- Artifacts: `experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.jsonl`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_llm_only_per_entity_full200_gpt41mini_20260611.jsonl`.
 
 ### `exectv2_audit_hybrid_full200_gpt41mini_20260611`
 - Date/split: `2026-06-11`; `full200_audit`; `200` rows.
@@ -2592,7 +2592,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: authorization=full-200 read authorized by user 2026-06-11 (Phase 7), call_failures=0, git_head=ab0d8d5cb7aa, parse_failures=0, phrase_only_per_item_f1=0.5482, phrase_only_per_letter_f1=0.7778, prompt_version=exectv2_hybrid_candidate_assessment_v0.2, sf_benchmark_per_item_ci=[0.1924, 0.3008], sf_benchmark_per_item_f1=0.2458, sf_benchmark_per_letter_ci=[0.3874, 0.5462], sf_benchmark_per_letter_f1=0.4696, sf_semantic_per_item_f1=0.2458, sf_semantic_per_letter_f1=0.4696.
 - Evidence validity: frozen audit; gates recorded in the audit report.
 - Claim language: Phase 7 frozen SF audit over all 200 letters (authorized 2026-06-11). Headline sf_benchmark per-item F1 0.246 (CI 0.192-0.301), per-letter F1 0.470 (CI 0.387-0.546) vs published 0.66/0.68. Immutable; locked at git ab0d8d5cb7aa.
-- Artifacts: `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.jsonl`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/exectv2_audit_hybrid_full200_gpt41mini_20260611.md`, `experiments/exectv2_audit_hybrid_full200_gpt41mini_20260611.jsonl`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `50` rows.
@@ -2604,7 +2604,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Reused first 25 raw outputs from the interrupted validation50 checkpoint, then ran rows 26-50 live with DSPy cache enabled.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02`.
 - Claim language: Validation50 passed the v1 output-contract gate, but raw/format-only Purist was only 41/50; escalation to validation250 was diagnostic, not promotional.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_llm_heavy_clinical_frequency_reasoner_validation50_gpt41mini_v1_2026-06-02.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_generalization_audit_2026-06-02`
 - Date/split: `2026-06-02`; `validation+test`; `1200` rows.
@@ -2616,7 +2616,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; validation/test artifacts recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_case_component_stress_2026-06-01`.
 - Claim language: Frozen comparator-only generalization audit. Do not tune v0.2 gates, prompts, candidate generation, or repair policy from locked-test behavior; use the state-graph validation cycle for new development.
-- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_generalization_gap_research_report_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/archive/gan2026_historical_lineage/gan2026_generalization_gap_research_report_2026-06-02.md`.
 
 ### `gan2026_llm_structured_v05_attribution_repair_ladder650_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `650` rows.
@@ -2629,7 +2629,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved raw output source: experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion_2026-06-01.jsonl.
 - Supersedes: `gan2026_llm_structured_v05_full_validation_2026-06-01`.
 - Claim language: Backfilled attribution ladder. Clean attribution ends at 438/650 Purist under frozen clean policy; full 588/650 stack is hybrid deterministic post-processing, not clean LLM-first success.
-- Artifacts: `experiments/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.csv`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.md`, `experiments/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.json`, `experiments/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.md`, `experiments/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.md`, `experiments/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.md`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/gan2026_llm_structured_validation750_v05_repair_audit_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_llm_structured_validation750_v05_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_llm_structured_validation750_v05_basic_split_repair_ablation_2026-06-01.md`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.json`, `experiments/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.csv`, `experiments/archive/gan2026_historical_lineage/gan2026_llm_structured_validation750_v05_strict_format_regression_audit_2026-06-01.md`, `experiments/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_clean_policy_freeze_ladder650_v0_2026-06-01.md`, `experiments/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_grouped_attribution_repair_ladder650_v0_2026-06-01.md`, `experiments/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_combined_attribution_repair_ladder650_v0_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_validation50_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `50` rows.
@@ -2640,7 +2640,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Deterministic candidate evidence 50/50 exact in component ablation; raw/gated adjudicator evidence not independently scored in this artifact.
 - Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
 - Claim language: Validation50 is output-contract clean but the prefix is saturated; 2 deterministic-correct Purist regressions are a row-review note, not enough evidence for a revise decision. Escalate to 250 rows before tuning gates.
-- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.json`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.json`, `experiments/archive/gan2026_historical_lineage/gan2026_hybrid_rules_candidates_llm_adjudicator_validation50_v02_live_component_ablation_2026-06-01.md`.
 
 ### `gan2026_rules_only_v1_test_holdout_2026-05-31`
 - Date/split: `2026-05-31`; `test`; `450` rows.
@@ -2662,7 +2662,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: test_pragmatic=0.7867, test_purist=0.76, validation_pragmatic=0.9387, validation_purist=0.9293.
 - Evidence validity: Report-level deterministic evidence summary.
 - Claim language: Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface.
-- Artifacts: `experiments/gan2026_v1_deterministic_baseline_2026-05-31.md`.
+- Artifacts: `experiments/archive/gan2026_historical_lineage/gan2026_v1_deterministic_baseline_2026-05-31.md`.
 
 ### `gan2026_dspy_adjudicator_devset_v04_2026-05-31`
 - Date/split: `2026-05-31`; `validation_devset`; `16` rows.
@@ -2672,7 +2672,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, parse_failures=0, pragmatic_correct=12, purist_correct=9, row_count=16.
 - Evidence validity: Uses deterministic V1 candidate diagnostics from validation-mined dev set; no locked-test row failures inspected.
 - Claim language: Early validation-only DSPy adjudicator diagnostic. Kept as lineage for later hybrid adjudicator work; not a promoted candidate or benchmark result.
-- Artifacts: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`, `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.md`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.jsonl`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.md`.
+- Artifacts: `experiments/gan2026_v1_prompt_adjudicator_devset_2026-05-31.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_v1_prompt_adjudicator_devset_2026-05-31.md`, `experiments/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_v1_dspy_adjudicator_devset_gpt41mini_v04_2026-05-31.md`.
 
 ## Calibration Measure Val To Test Gap
 

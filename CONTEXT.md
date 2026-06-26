@@ -3,6 +3,13 @@
 This context covers the Gan 2026 seizure-frequency extraction work and its
 evaluation surfaces.
 
+## Repo layout / resumption
+
+- Active experiment surface: `experiments/README.md`
+- Superseded notes archive: `experiments/archive/ARCHIVE_INDEX.md`
+- Regenerating tracked artifacts: `docs/REGENERATION.md`
+- Project control board: `PROJECT_STATUS.md`
+
 ## Language
 
 ### Reliability

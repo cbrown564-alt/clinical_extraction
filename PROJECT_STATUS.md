@@ -7,7 +7,9 @@ Last updated: 2026-06-26
 ExECTv2 is in a reliability/component-evidence phase after the Satellite 13
 LLM-only plateau. `clinical_headline` de-duplicated clinical recovery is the
 headline surface; strict benchmark/CUI results stay diagnostic. Paper-facing
-language and results scaffolding live in `docs/research/`.
+language and results scaffolding live in `docs/research/`. Resume the
+paper/results sprint from `docs/research/paper_manuscript_2026-06-26.md` and the
+IEEE LaTeX draft in `literature/IEEE/IEEE-conference-template-062824/`.
 
 ## Current Read
 
@@ -44,11 +46,9 @@ Current evidence stack:
 
 ### Now
 
-- Preserve Gan consensus/fresh v0.9 constrained Gate 4 and exact-source Gate 4 as
-  frozen aggregate evidence; do not tune gates, prompts, artifacts, rules,
-  normalization, scorer, or model choice from them.
-- Tighten the IEEE draft Methods around dataset construction, scoring surfaces,
-  and inspection boundaries after the figure/citation/table-placement pass.
+- Resume paper/results sprint from
+  `docs/research/paper_manuscript_2026-06-26.md`; keep IEEE LaTeX, appendix
+  tables, and frozen aggregate citations aligned with inspection boundaries.
 
 ### Next
 
@@ -56,7 +56,10 @@ Current evidence stack:
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
   debugging or tuning.
-- Keep repo cleanup and Investigations cost work deferred.
+- Preserve Gan consensus/fresh v0.9 constrained Gate 4 and exact-source Gate 4 as
+  frozen aggregate evidence; do not tune gates, prompts, artifacts, rules,
+  normalization, scorer, or model choice from them.
+- Keep Investigations cost work deferred until a separate predeclaration.
 
 ### Blocked
 
@@ -69,26 +72,21 @@ Current evidence stack:
 
 ### Done Recently
 
-- 2026-06-26: Replaced the IEEE LaTeX figure scaffold with a TikZ two-task
-  modular evidence schematic, added source-backed epilepsy NLP/LLM citations,
-  and moved four supporting results tables to appendix while keeping the
-  compiled PDF current.
-- 2026-06-26: Folded `docs/research/paper_manuscript_2026-06-26.md` Section 4
-  into the IEEE LaTeX draft with methods, figure scaffold, results tables,
-  discussion, limitations, and compiled PDF output.
-- 2026-06-26: Integrated the ExECTv2 results draft into the paper manuscript as
-  Section 4.2, added Gan 2026 Section 4.1 with frozen holdout tables and
-  consensus/fresh Gate 4 cross-references, and fixed table numbering.
-- 2026-06-26: Completed ExECTv2 component-off planning, dev140 replay (`16`
-  rows), and full200 frozen aggregate-only replay (`9` rows; no row inspection).
-  Full200 deltas were positive for dictionary, residual semantic lens, and
-  headline projection.
-- 2026-06-26: Completed Qwen repair v02 same-core evidence (`0.8319` dev140;
-  `0.8197` full-200; `0` call/parse failures in both repaired assemblies).
-- 2026-06-26: Completed Gan consensus/fresh v0.9 gates and exact aggregate-only
-  Gate 4 pass; locked-test results remain frozen.
-- 2026-06-25 to 2026-06-26: Completed same-core full-200/Qwen repair evidence,
-  reliability validations, MLflow/registry indexing, and paper-facing rows.
+- 2026-06-26: Repo cleanup closed — inventoried generated/local state, pruned the
+  active experiment surface (`experiments/README.md`,
+  `experiments/archive/ARCHIVE_INDEX.md`), verified `.gitignore` and documented
+  regeneration (`docs/REGENERATION.md`), and refreshed resumption pointers
+  (`README.md`, `CONTEXT.md`).
+- 2026-06-26: Paper scaffold and Section 4 integration — IEEE TikZ figure,
+  methods/results tables, appendix move, and manuscript Section 4 folded into
+  LaTeX with compiled PDF.
+- 2026-06-26: ExECTv2 component-off full200 replay (`9` rows; positive dictionary,
+  semantic lens, headline projection deltas) and Qwen repair v02 same-core
+  evidence (`0.8197` full-200; `0` call/parse failures).
+- 2026-06-26: Gan consensus/fresh v0.9 gates and exact aggregate-only Gate 4
+  pass; holdout results remain frozen.
+- 2026-06-25 to 2026-06-26: Same-core full-200 model-swap evidence, reliability
+  validations, MLflow/registry indexing.
 
 ## Guardrails
 

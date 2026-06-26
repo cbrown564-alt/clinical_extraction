@@ -40,3 +40,27 @@ logs/
 mlruns/
 mlflow.db
 mlflow.db-*
+
+# Local operational scratch and captured run output (summaries belong in experiments/ or docs/).
+scratch/
+output/
+
+# Run-log captures not matched by experiments/*.log (e.g. *.stderr.log suffix).
+*.stderr.log
+*.stdout.log
+*.err.log
+*.out.log
+/*.log
+
+# LaTeX build artifacts (checked-in .tex and intentional .pdf sources remain tracked).
+*.aux
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+*.toc
+*.nav
+*.snm
+*.vrb
+literature/**/*.log

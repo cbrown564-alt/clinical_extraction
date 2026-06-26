@@ -2,6 +2,30 @@
 
 Store run outputs, metrics, row-level predictions, and experiment notes here.
 
+## Active surface (start here)
+
+Human scan order for the current paper/results sprint:
+
+| Surface | Path |
+| --- | --- |
+| Machine registry (all decisions) | [`RUN_INDEX.md`](RUN_INDEX.md) ← generated from [`registry.jsonl`](registry.jsonl) |
+| ExECTv2 component-off full-200 | [`exectv2_component_off_replay_full200_20260626.md`](exectv2_component_off_replay_full200_20260626.md) |
+| ExECTv2 component-off dev140 | [`exectv2_component_off_replay_dev140_20260626.md`](exectv2_component_off_replay_dev140_20260626.md) |
+| ExECTv2 same-core full-200 | [`docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md`](../docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md) |
+| ExECTv2 reliability validations | [`docs/experiments/exectv2/reliability/`](../docs/experiments/exectv2/reliability/) (robustness, calibration, review routing) |
+| ExECTv2 active scoreboard | [`docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md`](../docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md) |
+| Gan reliability master | [`gan2026_reliability_master_scorecard_2026-06-17.md`](gan2026_reliability_master_scorecard_2026-06-17.md) |
+| Gan frozen holdout (Gate 4 exact) | [`gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md`](gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md) |
+| Paper-facing rows | [`docs/research/`](../docs/research/) (`exectv2_results_section_draft_2026-06-26.md`, `paper_manuscript_2026-06-26.md`) |
+| Canonical closeout index | [`docs/experiments/final_artifact_index_2026-06-22.md`](../docs/experiments/final_artifact_index_2026-06-22.md) |
+
+Superseded iteration notes (checkpoints, pre-v08 lanes, historical Gan lineage)
+live under [`archive/`](archive/) with bucket manifests in
+[`archive/ARCHIVE_INDEX.md`](archive/ARCHIVE_INDEX.md). JSON/JSONL artifacts
+stay in `experiments/` for reproduction even when the human note was archived.
+
+## Registry and layout
+
 Prefer timestamped or named subdirectories. Keep enough metadata to reproduce the run.
 Use `experiments/registry.jsonl` as the durable machine-readable index for
 canonical and high-signal runs. Regenerate `experiments/RUN_INDEX.md` from that

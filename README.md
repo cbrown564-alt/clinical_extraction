@@ -80,6 +80,12 @@ notebooks/                      Living notebooks for loading, extraction, evalua
 tests/                          Focused tests for data contracts and deterministic behavior.
 ```
 
+## Resuming Work
+
+- Active experiment surface: [experiments/README.md](experiments/README.md)
+- Superseded notes archive: [experiments/archive/ARCHIVE_INDEX.md](experiments/archive/ARCHIVE_INDEX.md)
+- Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)
+
 ## Getting Started
 
 Create and activate an environment, then install the package in editable mode:

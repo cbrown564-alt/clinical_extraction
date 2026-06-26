@@ -4,7 +4,7 @@ Date: 2026-06-23
 
 Status: active comparison table for the de-duplicated clinical-fact LLM-only
 workstream. Superseded rich-schema iteration artifacts are archived under
-`experiments/_archive/exectv2_richschema_iterations/`.
+`experiments/archive/` (see `experiments/archive/ARCHIVE_INDEX.md`).
 
 ## Claim Boundary
 

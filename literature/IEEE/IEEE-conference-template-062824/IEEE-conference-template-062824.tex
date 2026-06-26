@@ -87,20 +87,27 @@ boundaries and aggregate replay evidence \cite{gan2026synthetic}.
 
 \section{Methods}
 
-\subsection{Tasks and Evaluation Surfaces}
+\subsection{Dataset Construction and Scoring Surfaces}
 
 Gan 2026 is used as the deep seizure-frequency task \cite{gan2026synthetic}.
-Development follows a
-locked split protocol: validation rows are used for development, while
-\code{test450} is reserved for frozen final aggregate evaluation. Test-set
+The working corpus is the released 1,500-letter synthetic seizure-frequency
+set, partitioned once into train, validation, and locked test manifests. Train
+rows are reserved for optimizer-only procedures, validation rows are the
+development surface, and \code{test450} is reserved for frozen final aggregate
+evaluation. Gan outputs are rendered to the task label grammar and scored under
+the Purist and Pragmatic surfaces. Purist is the stricter final-label surface;
+Pragmatic is a companion read of acceptable clinical-label equivalence. Test-set
 row-level failure inspection is not used for development or tuning.
 
 ExECTv2 is used as the broad phenotyping task, building on the ExECT lineage of
 epilepsy clinic-letter extraction and the later synthetic-letter annotation
-resource \cite{fonferko2019exect,fonferko2024annotation}. The headline surface is
-de-duplicated \code{clinical\_headline} recovery across Diagnosis,
-SeizureFrequency, Prescription, and Investigations. Strict benchmark and
-CUI-oriented outputs are retained as diagnostic compatibility surfaces, not as
+resource \cite{fonferko2019exect,fonferko2024annotation}. The ExECTv2 working
+sets are treated as clinical-letter assemblies with entity-specific annotations
+for Diagnosis, SeizureFrequency, Prescription, and Investigations. The primary
+surface is de-duplicated \code{clinical\_headline} recovery: predictions and
+gold annotations are projected to one clinical-fact view per headline assertion
+before scoring. Strict benchmark and CUI-oriented outputs are retained as
+diagnostic compatibility surfaces with the original annotation contract, not as
 the primary success criterion.
 
 \subsection{Architecture Families}
@@ -112,7 +119,15 @@ scoring. In ExECTv2, a manifest-driven clinical-finding assembly combines
 candidate producers, entity-specific reconciliation lenses, evidence validation,
 and scoring views.
 
-\subsection{Evidence Boundaries}
+\subsection{Inspection Boundaries and Claim Classes}
+
+Each result row carries an inspection boundary. Gan validation artifacts may be
+used for development and row-level error analysis; Gan locked-test artifacts are
+aggregate final-evaluation evidence only unless a separate post-hoc analysis
+protocol is declared. ExECTv2 dev140 artifacts may support row-level development
+and model-swap diagnostics; full-200 aggregate artifacts in this draft authorize
+only aggregate reliability and component-impact reads. They do not authorize
+full-200 row-level failure tuning.
 
 We distinguish four evidence types throughout the paper. Architecture
 comparison describes aggregate task performance under a fixed scorer. Frozen
@@ -120,7 +135,8 @@ holdout evidence reports locked evaluation outputs without authorizing
 post-hoc tuning. Reliability scorecards test whether a fixed system is
 grounded, calibrated, robust, consistent, and operationally replayable.
 Component-impact analysis is reserved for ablations or same-input replays that
-measure a named component's score contribution.
+measure a named component's score contribution under the declared scorer, split,
+and inspection boundary.
 
 \begin{figure*}[tbp]
 \centering
