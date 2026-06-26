@@ -9,8 +9,8 @@ import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer"
 import { useExectv2Runs, useExectv2Selection } from "@/components/exectv2/useExectv2";
 import GanComponentImpact from "@/components/laboratory/GanComponentImpact";
 import ReportBuilder from "@/components/review/ReportBuilder";
-import { GanErrorGallery } from "@/app/gallery/page";
-import { GanExampleExplorer } from "@/app/workbench/page";
+import { GanErrorGallery } from "@/components/gan2026/GanErrorGallery";
+import { GanExampleExplorer } from "@/components/gan2026/GanExampleExplorer";
 import type { Exectv2RunSummary, RegistryEntry } from "@/lib/types";
 import type { DatasetId } from "./types";
 import { useActiveDataset } from "./useDataset";
