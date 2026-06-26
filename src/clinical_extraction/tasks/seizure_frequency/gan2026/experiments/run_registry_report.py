@@ -78,6 +78,9 @@ def _entry_markdown_lines(entry: RunRegistryEntry) -> list[str]:
         ),
         f"- Model role: {entry.model_role}; model `{entry.model}`.",
     ]
+    if entry.registry_roles:
+        roles = ", ".join(f"`{role}`" for role in entry.registry_roles)
+        lines.append(f"- Registry roles: {roles}.")
     if entry.repair_mode:
         lines.append(f"- Repair mode/config: `{entry.repair_mode}`.")
     if metrics:

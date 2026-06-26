@@ -24,7 +24,8 @@ The 2026-06-25 evidence stack is:
   `0.8018`, all with `1.0000` exact evidence. Qwen repair v02 completed a
   frozen same-core downstream assembly: overall `0.8319`, SeizureFrequency
   `0.7182`, `0` call/parse failures, and structured evidence validity `0.9964`;
-  this passes dev140 repair gates but is not a full-200 promotion.
+  this passes dev140 repair gates and is now authorized for a separate
+  same-core full-200 aggregate-only run, but is not yet a full-200 promotion.
 - Reliability validation: calibration ECE `0.0432`, Brier `0.2245` versus
   `0.2387`; lower-burden review routing failed validation (`0.9661` burden,
   `0.9037` catch); robustness hard-slice F1 `0.8336` across `414` eligible
@@ -59,12 +60,14 @@ aggregate readout.
 
 ### Next
 
+- Execute the authorized Qwen repair v02 same-core full-200 aggregate-only run
+  under
+  `docs/experiments/exectv2/reliability/exectv2_qwen_repair_v02_full200_predeclaration_2026-06-26.md`;
+  publish aggregate outputs only and keep any pass/fail decision separate from
+  prompt, parser, deterministic-rule, or scorer tuning.
 - Decide whether MLflow sync needs existing-run lookup by `registry_run_id`
   before any broader backfill; the first same-core group is intentionally local
   observability, not claim-of-record.
-- Decide whether to add Qwen repair v02 to a fresh same-core full-200
-  aggregate-only candidate predeclaration or keep the already-written
-  GPT-4.1-mini plus DeepSeek full-200 plan unchanged.
 - Plan true component-off reliability ablations only after scorecard language is
   stable; reliability is trust evidence, component impact is delta evidence.
 - Keep repo cleanup and Investigations cost work deferred.
@@ -75,13 +78,17 @@ aggregate readout.
   blocked unless separately authorized under a fresh frozen protocol.
 - ExECTv2 full-200/holdout row-level inspection remains blocked; current
   reliability protocols authorize aggregate validation outputs only.
-- Qwen full-200 promotion remains blocked until a fresh aggregate-only full-200
-  predeclaration includes it; v02 has passed dev140 repair gates only.
 - Lower-burden review-routing promotion is blocked by failed aggregate
   validation; any retry needs dev140-only redesign and a fresh predeclaration.
 
 ### Done Recently
 
+- 2026-06-26: Completed registry exhaustive-review actions: backfilled surfaced
+  Qwen Phase 1 metrics, added controlled `registry_roles`, indexed current
+  ExECTv2 aggregate/study artifacts, regenerated `experiments/RUN_INDEX.md`,
+  kept SE v0.6 as unsurfaced model-family variants, and recorded the
+  now-authorized separate Qwen repair v02 full-200 aggregate-only
+  predeclaration.
 - 2026-06-26: Mirrored same-core dev140 as the first MLflow parent/child group
   and updated the Qwen repair-v02 child in place after full assembly completion;
   added registry rows, guarded group sync, tests, and MLflow 3 file-store

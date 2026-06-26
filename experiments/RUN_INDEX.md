@@ -2,103 +2,24 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
-## ExECTv2 Plan 11
-
-### `exectv2_holistic_finding_assembly_v08_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, GPT-4.1-mini Investigations verifier with deterministic pending-test arbitration, and deterministic Prescription regimen repair.
-- Repair mode/config: `deterministic_prescription_repair_v03`; repairs current-regimen parsing after prior-trial language, typo aliases, left-bound regimens, split AM/PM dosing, titration-tail trimming, and future/weight-based suppression.
-- Primary metrics: summary=overall_headline_f1=0.9152, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.9357, investigations_headline_f1=0.9132. All four target families clear `>0.900`.
-- Evidence validity: no live calls; Prescription exact evidence rate 1.0000. Deterministic Prescription repairs are prediction-bearing and category `clinical_epilepsy`.
-- Claim language: Dev-only all-four-family clearance. This is not a benchmark/full-200/holdout claim; the assembly gate still encodes older P/I no-change checks, so family-headline clearance is the active goal criterion.
-- Artifacts: `experiments/exectv2_deterministic_prescription_repair_v03_dev140_20260621.jsonl`, `experiments/exectv2_deterministic_prescription_repair_v03_error_ledger_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_prescription_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v08_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v08_error_ledger_dev140_20260621.md`, `docs/experiments/exectv2/reliability/exectv2_reliability_scorecard_and_phased_plan_2026-06-21.md`.
-
-### `exectv2_holistic_finding_assembly_v07_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, frozen Prescription local-Qwen control, and frozen GPT-4.1-mini Investigations verifier with deterministic pending-test arbitration.
-- Repair mode/config: `exectv2_llm_investigations_arbitration_v02`; drops planned/requested/awaited tests miscast as completed `No` or `Unknown` Investigations mentions.
-- Primary metrics: summary=overall_headline_f1=0.8873, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.8214, investigations_headline_f1=0.9132, investigations_delta_vs_v06=+0.0517.
-- Evidence validity: no live calls; Investigations exact evidence rate 1.0000. Pending-test suppressions are prediction-bearing and stamped by `deterministic_investigations_arbitration`; category `clinical_epilepsy`.
-- Claim language: Dev-only Investigations Phase 1 improvement. Investigations clears the declared `>0.900` assembly family headline; remaining target gap is Prescription.
-- Artifacts: `experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl`, `experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v07_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v07_investigations_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v07_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v07_error_ledger_dev140_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v06_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, SF union arbitration over frozen GPT-4.1-mini route plus deterministic all-entity SF, frozen Prescription/Investigations local-Qwen control.
-- Repair mode/config: `sf_state_union_arbitration_v08`; deterministic union arbitration suppresses source-shortened/non-target/historical/anaphoric SF states and rewrites residual benchmark surface mismatches.
-- Primary metrics: summary=overall_headline_f1=0.8789, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.9053, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, sf_direct_component_f1=0.9263, sf_delta_vs_v05=+0.0985.
-- Evidence validity: no live calls; SF exact evidence rate 1.0000. Semantic SF adds/drops/rewrites are prediction-bearing and stamped by `deterministic_sf_union_arbitration`; suppressions are `seizure_frequency`, residual surface rewrites are `benchmark_format`.
-- Claim language: Dev-only SeizureFrequency Phase 1 improvement. SeizureFrequency clears the declared `>0.900` assembly family headline; active-rate fidelity remains lower (`0.5969`), so this is a type/state headline result, not a complete rate-magnitude solution.
-- Artifacts: `experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl`, `experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v06_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v06_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v06_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v06_sf_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v06_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v06_error_ledger_dev140_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v05_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v05 adds deterministic benchmark-format Diagnosis residual repair after v04 alias repair.
-- Repair mode/config: `diagnosis_heading_recovery_residual_benchmark_v05`; rewrites residual convention phrases, adds exact source-phrase benchmark residual concepts, and drops residual generic/tonic-clonic Diagnosis noise.
-- Primary metrics: summary=overall_headline_f1=0.8576, diagnosis_headline_f1=0.9083, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v04=+0.0782, changed_diagnosis_rows_vs_v04=48.
-- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic adds/drops/rewrites are prediction-bearing and stamped with `deterministic_residual_benchmark_repair` provenance/category `benchmark_format`.
-- Claim language: Dev-only Diagnosis Phase 4 improvement. Diagnosis clears the declared `>0.900` concept-only family headline, but strict assertion ledger remains `0.8127`; not a benchmark/full-200/holdout claim.
-- Artifacts: `experiments/exectv2_holistic_finding_assembly_v05_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v05_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v05_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v05_diagnosis_phase4_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v05_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v05_error_ledger_dev140_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v04_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v04 adds deterministic benchmark-format Diagnosis convention alias repair after v03 cleanup.
-- Repair mode/config: `diagnosis_heading_recovery_convention_alias_v04`; rewrites scored-convention aliases and drops residual non-diagnostic Diagnosis noise.
-- Primary metrics: summary=overall_headline_f1=0.8278, diagnosis_headline_f1=0.8301, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v03=+0.0407, changed_diagnosis_rows_vs_v03=17.
-- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic rewrites are prediction-bearing and stamped with `deterministic_convention_alias_repair` provenance/category `benchmark_format`.
-- Claim language: Dev-only Diagnosis Phase 3 improvement. Still below the `>0.900` family target and not a benchmark/full-200/holdout claim.
-- Artifacts: `experiments/exectv2_holistic_finding_assembly_v04_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v04_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v04_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v04_diagnosis_phase3_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v04_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v04_error_ledger_dev140_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v03_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v03 adds deterministic Diagnosis convention cleanup after v02 heading recovery.
-- Repair mode/config: `diagnosis_heading_recovery_convention_cleanup_v03`; drops narrow standalone symptom/non-diagnostic over-emissions and weak generic epilepsy contexts.
-- Primary metrics: summary=overall_headline_f1=0.8130, diagnosis_headline_f1=0.7894, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v02=+0.0236, changed_diagnosis_rows_vs_v02=21.
-- Evidence validity: no live calls; Diagnosis exact evidence rate 1.0000. Semantic drops are prediction-bearing and stamped with `deterministic_diagnosis_convention_cleanup` provenance/category `clinical_epilepsy`.
-- Claim language: Dev-only Diagnosis Phase 2 improvement. Still far below the `>0.900` family target and not a benchmark/full-200/holdout claim.
-- Artifacts: `experiments/exectv2_holistic_finding_assembly_v03_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v03_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v03_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v03_diagnosis_phase2_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v03_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v03_error_ledger_dev140_20260621.md`.
-
-### `exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621`
-- Date/split: `2026-06-21`; `dev`; `32` residual-enriched panel letters, two variants (`64` live calls).
-- Pipeline: `exectv2_diagnosis_phase2_residual_panel`; mode `live`; replay `live`.
-- Model role: GPT-4.1-mini Diagnosis candidate selector and direct re-reader over v02 residual panel; model `openai/gpt-4.1-mini`.
-- Repair mode/config: `candidate_selector` and `direct_rereader` panel variants; no production promotion.
-- Primary metrics: summary=v02_panel_control_f1=0.709, candidate_selector_f1=0.697, direct_rereader_f1=0.693, call_failures=0, parse_failures=0, evidence_validity=1.000.
-- Evidence validity: exact evidence gate held for all live outputs.
-- Claim language: Negative dev-only diagnostic. Both GPT-4.1-mini variants failed to recover false negatives and added false positives; do not promote without a changed hypothesis.
-- Artifacts: `experiments/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.json`, `experiments/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.jsonl`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_phase2_panel_live_dev32_gpt41mini_20260621.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_phase2_residual_panel_predeclaration_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v02_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; mode `no-call replay`; replay `saved_output_replay`.
-- Model role: frozen Diagnosis producer from `openai/gpt-4.1-mini`, frozen SF GPT-4.1-mini route, frozen Prescription/Investigations local-Qwen control; v02 adds a deterministic `clinical_epilepsy` Diagnosis lens rule for explicit `Diagnosis:` heading `focal epilepsy`.
-- Repair mode/config: `diagnosis_heading_recovery_v02` over holistic finding store; P/SF/I lenses unchanged from v01.
-- Primary metrics: summary=overall_headline_f1=0.8038, diagnosis_headline_f1=0.7658, seizurefrequency_headline_f1=0.8068, prescription_headline_f1=0.8214, investigations_headline_f1=0.8615, diagnosis_delta_vs_v01=+0.0086, changed_diagnosis_rows_vs_v01=10.
-- Evidence validity: no live calls; Diagnosis exact evidence 446/446 scored mentions. Semantic heading addition is prediction-bearing and stamped with `deterministic_heading_recovery` provenance/category `clinical_epilepsy`.
-- Claim language: Dev-only Diagnosis Phase 1 improvement. The accepted rule is narrow and ablation-backed; broader heading insertion and generic/tonic-clonic pruning were rejected. Still far below the `>0.900` family target and not a benchmark/full-200/holdout claim.
-- Artifacts: `experiments/exectv2_holistic_finding_assembly_v02_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v02_dev140_20260621.jsonl`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v02_dev140_20260621.md`, `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v02_diagnosis_phase1_error_analysis_20260621.md`, `experiments/exectv2_holistic_finding_assembly_v02_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v02_error_ledger_dev140_20260621.md`.
-
-### `exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621`
-- Date/split: `2026-06-21`; `dev140`; `140` rows.
-- Pipeline: `exectv2_clinical_recovery_error_ledger`; mode `no-call replay`; replay `analysis_only`.
-- Model role: none; row-level clinical-recovery residual ledger over the frozen v01 holistic assembly.
-- Primary metrics: summary=strict_diagnosis_f1=0.6934, strict_prescription_f1=0.8214, strict_seizurefrequency_f1=0.8068, strict_investigations_f1=0.8615.
-- Evidence validity: analysis over saved v01 JSONL only.
-- Claim language: Baseline row-level error analysis for the renewed `>0.900` family goal. Used to select and ablate Diagnosis Phase 1 interventions.
-- Artifacts: `experiments/exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621.json`, `experiments/exectv2_holistic_finding_assembly_v01_error_ledger_dev140_20260621.md`.
-
 ## Reliability Scorecard
+
+### `exectv2_robustness_validation_audit_2026-06-25`
+- Date/split: `2026-06-25`; `full200_aggregate`; `200` rows.
+- Pipeline: `exectv2_robustness_validation_audit`; mode `aggregate-only robustness validation`; replay `analysis_only`.
+- Model role: Aggregate robustness hard-slice analysis over the current-code v08-shaped full-200 artifact; no live model calls.; model `openai/gpt-4.1-mini`.
+- Registry roles: `reliability_scorecard`.
+- Repair mode/config: `frozen robustness taxonomy from preflight panels`.
+- Primary metrics: call_failures=0, eligible_family_cells=619, evidence_validity=1.0, hard_slice_delta_vs_overall=-0.0167, hard_slice_f1=0.8336, hard_slice_family_cells=414, non_hard_slice_f1=0.8909, overall_f1=0.8503, parse_schema_failures=0, schema_validity=1.0.
+- Evidence validity: Aggregate hard-slice validation only; schema and evidence validity both 1.0000 with no row-level examples or identifiers emitted.
+- Claim language: Promotes the frozen robustness taxonomy as aggregate full-200 hard-slice validation evidence. Evidence paraphrase/deletion remain adversarial fixture stress evidence, not naturally observed full-200 failures.
+- Artifacts: `docs/experiments/exectv2/reliability/exectv2_robustness_validation_audit_2026-06-25.md`, `docs/experiments/exectv2/reliability/exectv2_robustness_panels_preflight_2026-06-25.md`.
 
 ### `gan2026_reliability_scorecard_phase1_2026-06-17`
 - Date/split: `2026-06-17`; `test450`; `450` rows.
 - Pipeline: `reliability_scorecard_phase1`; mode `no-call replay`; replay `analysis_only`.
 - Model role: none; aggregate-only port of P0.2 (risk-coverage) and P0.5 (family parity) to the locked split, scored on the canonical `v0_reference` subject. Two-agent agreement leg only (weaker replay, decision 0018); model `none`.
+- Registry roles: `reliability_scorecard`.
 - Repair mode/config: `reliability_scorecard_v1`.
 - Primary metrics: summary=test_base_error_rate=0.191, agree_only_coverage=0.658, agree_only_selective_risk=0.122, disagree_set_error=0.325, two_agent_failure_auroc=0.648, parity_overall_acc=0.812, band_error_spread=0.199, band_acc_cv=0.082, worst_band=band_submonthly@0.695.
 - Evidence validity: Zero model calls; aggregate-only readout (0 forbidden markers: source_row_index/transition_vs_v0/score_layers absent). Both transforms predeclared and hash-frozen before touching test450 (two_agent_external_risk sha256, classify_boundary_families validation classifier sha256). Per-row correctness read internally for aggregation only; no row-level holdout inspection.
@@ -109,6 +30,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-17`; `validation750+test450`; `1200` rows.
 - Pipeline: `reliability_scorecard_phase0`; mode `no-call replay`; replay `analysis_only`.
 - Model role: none; deterministic re-analysis of frozen artifacts on the canonical `v0_reference` single-SE-mini subject layer (decision 0018). Shared code: `artifact_analysis/reliability_common.py`; model `none`.
+- Registry roles: `reliability_scorecard`.
 - Repair mode/config: `reliability_scorecard_v1`.
 - Primary metrics: summary=subject_purist_val=0.881, subject_purist_test=0.809, faithfulness_val=0.921, faithfulness_test=0.929, faithful_but_wrong_val=80, faithful_but_wrong_test=80, risk_coverage_auc=0.0404, external_score_failure_auroc=0.781, external_confidence_ece=0.080, external_confidence_brier=0.102, robustness_index_v0_5=0.547, robustness_index_v0_6=0.694, robustness_index_v0_7=1.000, band_error_spread=0.078, band_acc_cv=0.032, model_render_failures=0, recoverable_repairs=5483, est_cost_per_1000_notes_usd=1.16, hard50_temp0_unanimous_acc=0.689.
 - Evidence validity: Zero model calls. Every metric re-derived from frozen JSONL/JSON; subject numbers read from `v0_reference`, comparator numbers tagged. test450 touched only via aggregate-safe joins on the saved reasoner artifact. parse_errors are recoverable repairs (not failures); self-consistency leg is temp-0 reproducibility only (varying-temperature P2.1 pending).
@@ -196,6 +118,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-15`; `validation`; `250` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
 - Model role: Stage D promotion gate: rebuilds the resolve_label graph query deterministically from the validation750 v4 claim-table and feeds it as a P2-gated fourth component to the frozen v0.9 selector replay on a predeclared 250-row residual-inclusive slice. No model calls and no holdout rows are read.; model `none`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `state_graph_resolve_label_promotion_gate_v1`.
 - Primary metrics: graph_component_purist_correct=99, graph_mints_correct_for_no_correct=7, graph_mints_correct_for_predeclared_residual=7, no_correct_pool_rows=11, p1_unilateral_correct_to_wrong=147, p2_corroborated_correct_to_wrong=0, p2_corroborated_net_purist_gain=1, p2_corroborated_wrong_to_correct=1, p3_unknown_only_correct_to_wrong=71, predeclared_residual_rows=11, rows=250, v09_selected_purist_correct=238.
 - Evidence validity: Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made.
@@ -242,6 +165,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-13`; `validation`; `750` rows.
 - Pipeline: `agentic_structured_event_consensus`; mode `no_call_replay`; replay `saved_output_replay`.
 - Model role: deterministic tool floor plus structured-event agent unanimity selector; model `panel: deterministic_rules_tool + gpt-4.1-mini + qwen3-235b-a22b + deepseek`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `exact_label_unanimity_over_structured_events`.
 - Primary metrics: baseline_pragmatic_correct=704, baseline_purist_correct=697, changed_label_precision=0.22131147540983606, consensus_pragmatic_correct=713, consensus_purist_correct=708, correct_to_wrong=16, net_purist_gain=11, switched_labels=122, wrong_to_correct=27.
 - Evidence validity: Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring.
@@ -316,15 +240,52 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
-### `exectv2_llm_first_essential_evaluation_dev140_20260618`
-- Date/split: `2026-06-18`; `dev`; `140` rows.
-- Pipeline: `exectv2_llm_first_essential_evaluation`; mode `deterministic`; replay `analysis_only`.
-- Model role: Ownership-aware replay of existing rules_only/llm_first/hybrid artifacts under the plan-11 layer ladder; five-family CUI-free essential headline + CUI-projected companion + certainty/CUI diagnostics + evidence/error summaries. No model calls.; model `(model-independent)`.
-- Repair mode/config: `primary CUI-free gold/predictions; deterministic CUI projected only for companion benchmark/SF diagnostics`.
-- Primary metrics: essential_cui_free_f1_rules_only=0.604, essential_cui_free_f1_llm_first=0.422, essential_cui_free_f1_hybrid=0.550, essential_cui_projected_f1_rules_only=0.613, essential_cui_projected_f1_llm_first=0.422, essential_cui_projected_f1_hybrid=0.566, certainty_only_f1_loss=0.003, cui_only_f1_recovered_by_projection=0.101, cui_projection_in_sample_correctness=0.944, cui_missing_mapping_mentions=365, llm_first_sf_recovery_f1=0.012.
-- Evidence validity: Deterministic scorers over existing prediction artifacts (`exectv2_audit_llm_only_all_entities_full200`, `exectv2_hybrid_all_entities_dev140`) and the generated all-9 baseline; no model calls; gold read from the dev split; llm_first essential emitted evidence exact source-substring 743/743.
-- Claim language: Analysis-only execution of `docs/plans/exectv2/11_llm_first_essential_clinical_evaluation_plan.md`. The corrected primary headline is CUI-free and aggregates only Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, and Investigations; non-essential all-nine families are diagnostic only. Certainty contributes negligible benchmark loss (+0.003 F1), but this remains a diagnostic modal/default audit until explicit annotation-guideline certainty projection rules are implemented. Deterministic CUI projection recovers most of the benchmark-vs-semantic gap in-sample (correctness 0.944) while exposing 365 missing-mapping mentions. The single all-entities LLM pass is not a sufficient llm_first candidate: it recovers Prescription/Investigations/Diagnosis concept details but collapses on SeizureFrequency (0.012) and EpilepsyCause (0.000). Development-surface diagnostic; not a benchmark result.
-- Artifacts: `experiments/exectv2_llm_first_essential_evaluation_dev140_20260618.json`, `docs/experiments/exectv2/key_entities/exectv2_llm_first_essential_evaluation_2026-06-18.md`.
+### `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140`
+- Date/split: `2026-06-25`; `dev`; `140` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
+- Model role: Qwen repair v02 structured key-family and Diagnosis producers; deterministic code owns SF projection/union, Prescription repair, and finding assembly replay.; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `model_family_variant`.
+- Repair mode/config: `qwen_output_contract_repair_v02 plus shared_standard_source_exact_evidence_repair`.
+- Primary metrics: benchmark_cui_overall_f1=0.8049, call_failures=0, clinical_headline_f1=0.8319, diagnosis_f1=0.8473, evidence_valid_overall_f1=0.8049, final_lane_evidence_rate=1.0, investigations_f1=0.8755, parse_schema_failures=0, prescription_changed_rows_vs_v042=127, prescription_f1=0.8895, raw_candidate_overall_f1=0.7668, seizure_frequency_f1=0.7182, structured_evidence_invalid_after_standard_repair=3, structured_evidence_validity_rate_after_standard_repair=0.9964, structured_mentions_raw=827, structured_mentions_scored_after_standard_repair=824.
+- Evidence validity: Structured saved-raw replay with standard source-exact repair: 824/827 scored, 3 invalid, 0.9964 validity. Final assembled lane diagnostics report 1.0000 exact evidence for Diagnosis, SeizureFrequency, Prescription, and Investigations.
+- Cache/reuse source: Live structured and Diagnosis repair-v02 producers plus frozen deterministic same-core replay components; no full-200 or holdout row inspection.
+- Supersedes: `exectv2_2call_no_sf_adjudicator_qwen36_dev140`.
+- Claim language: Qwen repair v02 passes predeclared dev140 repair gates after shared source-exact evidence repair and completed downstream same-core assembly. Clinical-headline F1 is 0.8319 with SF 0.7182 and 0 call/parse failures. This supports a fresh full-200 inclusion decision only; it does not retroactively change the GPT-4.1-mini plus DeepSeek full-200 predeclaration. Fresh Qwen repair v02 full-200 aggregate-only predeclaration recorded 2026-06-26; this does not retroactively alter the GPT-4.1-mini plus DeepSeek full-200 protocol.
+- Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.json`, `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_2026-06-25.md`, `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_dev140_readout_2026-06-25.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_diagnosis_decomposer.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_diagnosis_decomposer.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_structured_direct.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_structured_direct.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_state_projection_combined.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_state_projection_combined.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_unknown_suppression.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_unknown_suppression.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_union_arbitration.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_union_arbitration.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_prescription_deterministic_repair_v03.jsonl`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140.json`, `docs/experiments/exectv2/reliability/exectv2_qwen_repair_v02_full200_predeclaration_2026-06-26.md`.
+
+### `exectv2_2call_no_sf_adjudicator_qwen36_dev140`
+- Date/split: `2026-06-25`; `dev`; `140` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
+- Model role: ExECTv2 same-core structured key-family and Diagnosis extractor; deterministic code owns SF projection/union and Prescription repair.; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `model_family_variant`.
+- Repair mode/config: `qwen_compact_prompt_without_v02_output_contract_repair`.
+- Primary metrics: call_failures=1, clinical_headline_f1=0.8018, diagnosis_f1=0.8027, investigations_f1=0.8354, min_evidence_rate=1.0, parse_schema_failures=12, prescription_f1=0.8895, seizure_frequency_f1=0.6919.
+- Evidence validity: Min exact evidence rate 1.0000 on completed same-core dev140 comparison.
+- Cache/reuse source: Same-core dev140 model-swap assembly with frozen deterministic replay components.
+- Claim language: Diagnostic dev140 same-core model-swap row under the frozen exectv2_2call_no_sf_adjudicator_model_swap core. Qwen trails GPT-4.1-mini and DeepSeek on clinical_headline F1 and carries operational-stability caveats from 1 call failure and 12 parse/schema failures.
+- Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.json`, `experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_dev140_2026-06-25.md`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_dev140.json`.
+
+### `exectv2_2call_no_sf_adjudicator_gpt41mini_dev140`
+- Date/split: `2026-06-25`; `dev`; `140` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
+- Model role: ExECTv2 same-core structured key-family and Diagnosis extractor; deterministic code owns SF projection/union and Prescription repair.; model `openai/gpt-4.1-mini`.
+- Registry roles: `model_family_variant`.
+- Primary metrics: call_failures=0, clinical_headline_f1=0.8396, diagnosis_f1=0.8573, investigations_f1=0.8347, min_evidence_rate=1.0, parse_schema_failures=0, prescription_f1=0.8895, seizure_frequency_f1=0.7645.
+- Evidence validity: Min exact evidence rate 1.0000 on completed same-core dev140 comparison.
+- Cache/reuse source: Same-core dev140 model-swap assembly with frozen deterministic replay components.
+- Claim language: Operational reference row for the dev140 same-core model-swap comparison under the frozen exectv2_2call_no_sf_adjudicator_model_swap core. GPT-4.1-mini is cleaner operationally than DeepSeek/Qwen but trails DeepSeek on clinical_headline F1; not a full-200 or benchmark-win claim.
+- Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.json`, `experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_2026-06-25.md`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140.json`.
+
+### `exectv2_2call_no_sf_adjudicator_deepseek_dev140`
+- Date/split: `2026-06-25`; `dev`; `140` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
+- Model role: ExECTv2 same-core structured key-family and Diagnosis extractor; deterministic code owns SF projection/union and Prescription repair.; model `deepseek/deepseek-chat`.
+- Registry roles: `model_family_variant`.
+- Primary metrics: call_failures=0, clinical_headline_f1=0.8596, diagnosis_f1=0.8845, investigations_f1=0.8966, min_evidence_rate=1.0, parse_schema_failures=1, prescription_f1=0.8895, seizure_frequency_f1=0.7658.
+- Evidence validity: Min exact evidence rate 1.0000 on completed same-core dev140 comparison.
+- Cache/reuse source: Same-core dev140 model-swap assembly with frozen deterministic replay components.
+- Claim language: Diagnostic dev140 same-core model-swap row under the frozen exectv2_2call_no_sf_adjudicator_model_swap core. DeepSeek leads the completed dev140 comparison on clinical_headline F1 (0.8596) but carries an operational caveat from 1 parse/schema failure; not a full-200 or benchmark-win claim.
+- Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.json`, `experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_deepseek_dev140_2026-06-25.md`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_deepseek_dev140.json`.
 
 ### `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -817,6 +778,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-15`; `validation`; `750` rows.
 - Pipeline: `llm_only_direct_labeler`; mode `live`; replay `live`.
 - Model role: LLM-only direct labeler prompt v0.7 (label binding) live on validation750; v0.5 re-parsed baseline; held-out-family CV.; model `openai/gpt-4.1-mini`.
+- Registry roles: `negative_attribution`.
 - Repair mode/config: `v0_7_label_binding`.
 - Primary metrics: aggregate_net_purist_gain=-106, correct_to_wrong_vs_v05=149, gap_robust=False, net_purist_vs_v05=-106, v05_baseline_purist=575, v07_purist=469, wrong_to_correct_vs_v05=43.
 - Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live gpt-4.1-mini, temperature 0. Family CV is within-validation leave-one-boundary-band-out; gap_robust is a promotion-stability estimate, not a test450 number.
@@ -849,6 +811,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-15`; `validation`; `750` rows.
 - Pipeline: `consensus_fresh_agreement_selector`; mode `no-call replay`; replay `saved_output_replay`.
 - Model role: No-call replay of selector v0.9 over saved v0.8 validation selector rows reconstructed into component rows.; model `none`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `selector_v0_9_semantic_equiv_unknown_uncertainty`.
 - Primary metrics: changed_label_precision=0.7347, changed_labels=49, consensus_purist_correct=708, correct_to_wrong=0, deterministic_purist_correct=697, fresh_evidence_purist_correct=682, selected_purist_correct=733, wrong_to_correct=36.
 - Evidence validity: Saved-output validation replay; gold labels are used only for post-hoc scoring. No holdout rows are read.
@@ -1164,24 +1127,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-12`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: Local Qwen LLM structured-events extractor and selector using SE v0.6; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `model_family_variant`.
 - Repair mode/config: `hybrid_full_stack`.
 - Primary metrics: call_failures=0, evidence_valid_rows=581, json_dialect_repairs=746, parse_or_validation_failures=4, pragmatic_accuracy=0.8747, pragmatic_correct=656, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.8507, purist_correct=638, rendered_rows=746, structured_records=746.
 - Evidence validity: 581/750 rows carry an evidence_valid substring-presence trace; 0 call failures; 4 unrendered rows in the combined summary. Qwen still relies heavily on JSON dialect repair.
 - Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live through local Ollama.
 - Supersedes: `gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11`.
-- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Qwen SE v0.6 improves over the Phase 1 validation750 SE result, with 638/746 Purist rendered-correct versus the earlier 624/746 and 656/746 Pragmatic rendered-correct.
+- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Qwen SE v0.6 improves over the Phase 1 validation750 SE result, with 638/746 Purist rendered-correct versus the earlier 624/746 and 656/746 Pragmatic rendered-correct. Curated 2026-06-26 as a best SE v0.6 model-family validation variant; kept unsurfaced so Phase 1 canonical rows are not silently replaced.
 - Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`.
 
 ### `gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM structured-events extractor and selector using SE v0.6; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `deepseek/deepseek-chat`.
+- Registry roles: `model_family_variant`.
 - Repair mode/config: `hybrid_full_stack`.
 - Primary metrics: call_failures=0, evidence_valid_rows=719, parse_or_validation_failures=5, pragmatic_accuracy=0.8613, pragmatic_correct=646, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.8293, purist_correct=622, rendered_rows=745, structured_records=745.
 - Evidence validity: 719/750 rows carry an evidence_valid substring-presence trace; 0 call failures; 5 unrendered rows in the combined summary.
 - Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live.
 - Supersedes: `gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10`.
-- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Compared to the earlier DeepSeek SE Phase 1 validation750 result, v0.6 improves Purist from 609/742 rendered to 622/745 rendered and Pragmatic from 634/742 to 646/745.
+- Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Compared to the earlier DeepSeek SE Phase 1 validation750 result, v0.6 improves Purist from 609/742 rendered to 622/745 rendered and Pragmatic from 634/742 to 646/745. Curated 2026-06-26 as a best SE v0.6 model-family validation variant; kept unsurfaced so Phase 1 canonical rows are not silently replaced.
 - Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`.
 
 ### `gan2026_agentic_pipeline_phase_plan_2026-06-12`
@@ -1318,10 +1283,21 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.md`.
 
+### `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08`
+- Date/split: `2026-06-08`; `validation`; `750` rows.
+- Pipeline: `llm_only_canonical_pipeline`; mode `validation750 replay`; replay `saved_output_replay`.
+- Model role: llm_only architecture comparator; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `architecture_comparator`.
+- Primary metrics: evidence_trace_metric=evidence_text_contained, evidence_trace_valid_rate=0.7653333333333333, evidence_trace_valid_rows=574, null_rows=2, pragmatic_correct_of_rendered=582, pragmatic_correct_rate_of_rendered=0.7780748663101604, purist_correct_of_rendered=544, purist_correct_rate_of_rendered=0.7272727272727273, rendered_rows=748.
+- Evidence validity: Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid.
+- Claim language: Phase 1 three-way architecture comparison data point for Qwen LLM-only canonical pipeline on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+
 ### `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `llm_only_canonical_pipeline`; mode `live`; replay `live`.
 - Model role: LLM-only canonical pipeline -- single DSPy call collapses extract/select/normalize/project/render into one pass; no deterministic CandidateSet or projection stage; model `openai/gpt-4.1-mini`.
+- Registry roles: `architecture_comparator`.
 - Primary metrics: evidence_text_contained_rows=700, null_rows=0, pragmatic_correct_of_rendered=626, purist_correct_of_rendered=581, rendered_rows=750.
 - Evidence validity: 700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote).
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Newest of the six architectures -- the 'purest form' fully-LLM comparator with the deterministic/hybrid clinical-reasoning rule taxonomy embedded as prompt instructions rather than pre/post processing.
@@ -1331,15 +1307,27 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `llm_only_canonical_pipeline`; mode `live`; replay `live`.
 - Model role: LLM-only canonical pipeline -- single DSPy call collapses extract/select/normalize/project/render into one pass; no deterministic CandidateSet or projection stage. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
+- Registry roles: `architecture_comparator`.
 - Primary metrics: call_failures=0, evidence_text_contained_rate=0.925, evidence_text_contained_rows=694, null_rows=0, parse_or_validation_failures=0, pragmatic_accuracy=0.781, pragmatic_correct=586, purist_accuracy=0.753, purist_correct=565, rendered_rows=750.
 - Evidence validity: 694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.md`.
 
+### `gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08`
+- Date/split: `2026-06-08`; `validation`; `750` rows.
+- Pipeline: `hybrid_structured_events`; mode `validation750 replay`; replay `saved_output_replay`.
+- Model role: hybrid architecture comparator; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `architecture_comparator`.
+- Primary metrics: evidence_trace_metric=evidence_valid, evidence_trace_valid_rate=0.748, evidence_trace_valid_rows=561, null_rows=4, pragmatic_correct_of_rendered=646, pragmatic_correct_rate_of_rendered=0.8659517426273459, purist_correct_of_rendered=624, purist_correct_rate_of_rendered=0.8364611260053619, rendered_rows=746.
+- Evidence validity: Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures.
+- Claim language: Phase 1 three-way architecture comparison data point for Qwen SE on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+
 ### `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring; model `openai/gpt-4.1-mini`.
+- Registry roles: `architecture_comparator`.
 - Primary metrics: evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748.
 - Evidence validity: 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
@@ -1349,6 +1337,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-08`; `validation`; `750` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
+- Registry roles: `architecture_comparator`.
 - Primary metrics: call_failures=0, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742.
 - Evidence validity: 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
@@ -1863,6 +1852,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-16`; `validation`; `250` rows.
 - Pipeline: `hybrid_clinical_frequency_state_graph`; mode `no-call replay`; replay `saved_output_replay`.
 - Model role: C7 P2.5 family-gated graph-trust posture. Recomputes dual-validation/resolve deterministically from the frozen Stage D graphs and scores a corroboration-free, forward-observable family gate (withholding graph_kind + no admitted quantified node) against the v0.9 selected baseline, alongside P1/P2/P3. No model calls and no holdout rows are read.; model `none`.
+- Registry roles: `negative_attribution`.
 - Repair mode/config: `state_graph_family_gated_graph_trust_p2_5_v1`.
 - Primary metrics: p2_5_correct_to_wrong=121, p2_5_gap_robust=0, p2_5_genuine_rate_regressions=121, p2_5_harvested_minted_residual=7, p2_5_net_purist_gain=-113, p2_5_overrides=149, p2_5_wrong_to_correct=8, rows=250, v09_selected_purist_correct=238.
 - Evidence validity: Validation-only no-call replay over the frozen Stage D predeclared 250-row residual-inclusive slice. Graphs reused from the Stage D graphs artifact; dual-validation/resolve recomputed deterministically (no model calls). v0.9 components/baseline from the Stage D rows artifact; gold used only for post-hoc Purist scoring and an honest discriminability probe. No holdout rows.
@@ -1908,6 +1898,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-15`; `test`; `450` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
 - Model role: V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; the model may keep the original GPT structured-event final or replace it with a direct label grounded in exact raw-note evidence. Deterministic code limited to prompt assembly, schema/format repair, exact-substring evidence filtering, predeclared safety gates, rendering, and scoring.; model `openai/gpt-4.1`.
+- Registry roles: `holdout_anchor`, `negative_attribution`.
 - Repair mode/config: `format_only_repair_plus_predeclared_safety_gates`.
 - Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.2205, changed_labels_vs_v0=127, correct_to_wrong_vs_v0=42, evidence_exact_substrings=423, final_pragmatic_correct=362, final_purist_correct=351, format_only_pragmatic_correct=357, format_only_purist_correct=349, fresh_evidence_gate_fallbacks=6, fresh_evidence_replace_actions=157, model_calls_attempted=450, net_purist_gain_vs_v0=-14, parse_or_validation_failures=0, pragmatic_accuracy=0.8044, prediction_bearing_rows=449, prompt_version=gan2026_fresh_evidence_reasoner_v0_6, purist_accuracy=0.78, raw_model_pragmatic_correct=357, raw_model_purist_correct=349, rows=450, safety_gate_version=gan2026_fresh_evidence_safety_gate_v0_9, target_purist_correct=383, target_reached=False, v0_pragmatic_correct=381, v0_purist_correct=364, wrong_to_correct_vs_v0=28.
 - Evidence validity: 450/450 rows ran with 0 call failures and 0 parse/schema/label failures; 423/450 final decisions cite exact raw-note evidence substrings after filtering; 449 prediction-bearing rows.
@@ -2155,6 +2146,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-01`; `validation`; `750` rows.
 - Pipeline: `llm_structured_events`; mode `live/cache-first structured v0.5 full-validation completion`; replay `cache_first`.
 - Model role: LLM-first structured event extractor and clinical selector; model `openai/gpt-4.1-mini`.
+- Registry roles: `negative_attribution`, `historical_lineage`.
 - Repair mode/config: `v0.5 structured-event selector plus large deterministic post-LLM repair stack`.
 - Primary metrics: call_failures=0, deterministic_repair_notes=481, exact_selection_evidence_substrings=714, parse_schema_label_issues=0, pragmatic_correct=690, purist_correct=675, row_count=750, structured_records=750.
 - Evidence validity: Exact selection evidence substrings 714/750; evidence exactness does not establish final repaired-label attribution.
@@ -2167,6 +2159,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-01`; `validation`; `750` rows.
 - Pipeline: `llm_first_direct_extractor`; mode `live direct extraction validation ladder through rare full validation`; replay `cache_first`.
 - Model role: LLM-first note-to-label extractor; model `openai/gpt-4.1-mini`.
+- Registry roles: `negative_attribution`, `historical_lineage`.
 - Repair mode/config: `deterministic code limited to label repair, evidence validation, and scoring`.
 - Primary metrics: decision_records=709, exact_evidence_substrings=670, parse_schema_label_issues=41, pragmatic_correct=544, purist_correct=505, row_count=750.
 - Evidence validity: Exact evidence substrings 670/750; 41 parse/schema/label issues.
@@ -2190,6 +2183,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-01`; `validation`; `750` rows.
 - Pipeline: `llm_only_claim_table_selector`; mode `prompt-only`; replay `cache_first`.
 - Model role: LLM-only claim-table selector; model `openai/gpt-4.1-mini`.
+- Registry roles: `negative_attribution`, `historical_lineage`.
 - Repair mode/config: `clean_scorer_facing`.
 - Primary metrics: clean_pragmatic_correct=577, clean_purist_correct=528, row_count=750.
 - Evidence validity: See full-validation interpretation report.
@@ -2215,6 +2209,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-10`; `test`; `450` rows.
 - Pipeline: `phase4_test450_frozen_audit_report`; mode `analysis-only`; replay `analysis_only`.
 - Model role: Analysis-only synthesis: reads the four Phase 4 test450 frozen-audit artifacts (DCP, hybrid v5 with deep-replay via build_unified_pipeline_artifact, SE v0.5, CP v0.5); assembles the shared comparison table plus the hybrid-only routing appendix; makes no hosted LLM calls of its own.; model `openai/gpt-4.1-mini`.
+- Registry roles: `holdout_anchor`, `architecture_comparator`.
 - Primary metrics: architectures_compared=4, deterministic_canonical_pipeline_purist_correct_of_rendered=329, deterministic_canonical_pipeline_purist_rate=0.731, deterministic_canonical_pipeline_rendered_rows=450, hybrid_null_rows=116, hybrid_purist_correct_of_rendered=269, hybrid_purist_rate=0.805, hybrid_rendered_rows=334, hybrid_routed_rows=30, hybrid_structured_events_purist_correct_of_rendered=364, hybrid_structured_events_purist_rate=0.812, hybrid_structured_events_rendered_rows=448, llm_only_canonical_pipeline_purist_correct_of_rendered=326, llm_only_canonical_pipeline_purist_rate=0.724, llm_only_canonical_pipeline_rendered_rows=450, rows_per_architecture=450.
 - Evidence validity: Surfaces, but does not collapse, that evidence-trace metrics are NOT uniform across architectures: DCP and SE report evidence_valid (substring presence), llm_only_canonical_pipeline reports evidence_text_contained, hybrid reports a CandidateSet source-id validity rate from deep-replay.
 - Claim language: Phase 4 frozen test450 aggregate audit report (authorized 2026-06-09, plan Section 6): one-shot frozen aggregate read of the locked test450 split for deterministic_canonical_pipeline, hybrid (v5 prompt, deep-replayed), hybrid_structured_events (v0.5), and llm_only_canonical_pipeline (v0.5); deterministic and llm_only_direct_labeler intentionally excluded (Section 6 rationale). Of-rendered purist/pragmatic accuracy: DCP 0.731/0.758 (450/450 rendered), hybrid 0.805/0.841 (334/450 rendered, 30 routed all abstained), SE 0.812/0.850 (448/450 rendered), CP 0.724/0.769 (450/450 rendered). SE leads on both purist and pragmatic of-rendered accuracy; hybrid is second on accuracy of-rendered but renders the fewest rows (116 null/unscored of 450). No row-level holdout tuning; no re-runs based on these results.
@@ -2263,6 +2258,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-14`; `test`; `450` rows.
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM structured-events extractor and selector using SE v0.6 on the locked test450 split; deterministic code limited to Gan normalization, evidence validation, and scoring/repair after structured model selection.; model `deepseek/deepseek-chat`.
+- Registry roles: `holdout_anchor`.
 - Repair mode/config: `hybrid_full_stack`.
 - Primary metrics: call_failures=0, evidence_valid_rows=440, parse_or_validation_failures=4, pragmatic_accuracy=0.8178, pragmatic_correct=368, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.7867, purist_correct=354, rendered_rows=446, structured_records=446.
 - Evidence validity: 440/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 4 parse/schema/label issues; 446 structured records.
@@ -2385,6 +2381,42 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Claim language: First GPT-first rules_only all-9 substrate. Not freeze-ready; incomplete entity coverage remains explicit in per-entity scores.
 - Artifacts: `experiments/exectv2_deterministic_all9_dev_20260617.json`, `experiments/exectv2_deterministic_all9_dev_20260617.md`.
 
+## Clinical Recovery Reporting
+
+### `exectv2_same_core_model_swap_full200_20260625`
+- Date/split: `2026-06-25`; `full200_aggregate`; `200` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `aggregate-only comparison report`; replay `analysis_only`.
+- Model role: Aggregate-only same-core full-200 comparison for the frozen two-call no-SF-adjudicator architecture.; model `openai/gpt-4.1-mini; deepseek/deepseek-chat`.
+- Registry roles: `architecture_comparator`, `model_family_variant`.
+- Repair mode/config: `exectv2_2call_no_sf_adjudicator_model_swap frozen component graph`.
+- Primary metrics: deepseek_call_failures=0, deepseek_clinical_headline_f1=0.8566, deepseek_diagnosis_f1=0.8708, deepseek_investigations_f1=0.9091, deepseek_parse_schema_failures=1, deepseek_prescription_f1=0.8926, deepseek_seizure_frequency_f1=0.7602, gpt41mini_call_failures=0, gpt41mini_clinical_headline_f1=0.8356, gpt41mini_diagnosis_f1=0.8397, gpt41mini_investigations_f1=0.8563, gpt41mini_parse_schema_failures=0, gpt41mini_prescription_f1=0.8926, gpt41mini_seizure_frequency_f1=0.7525, min_exact_evidence_rate=1.0, model_count=2.
+- Evidence validity: Aggregate-only report: completed rows minimum exact evidence rate 1.0000; DeepSeek accepted with one Diagnosis parse/schema caveat.
+- Cache/reuse source: GPT-4.1-mini full-200 reference plus DeepSeek full-200 same-core run; no full-200 row-level failure analysis.
+- Claim language: Accepted same-core full-200 aggregate validation with schema-stability caveat. Strict benchmark/CUI scores remain diagnostic and no full-200 row-level failure analysis or tuning is authorized.
+- Artifacts: `docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md`, `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`, `experiments/exectv2_same_core_model_swap_full200_20260625.json`, `experiments/exectv2_same_core_model_swap_full200_20260625.jsonl`.
+
+### `exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624`
+- Date/split: `2026-06-24`; `full200_aggregate`; `200` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `authorized full-200 aggregate replay`; replay `saved_output_replay`.
+- Model role: Current-code v08-shaped GPT-4.1-mini holistic finding assembly with focused Diagnosis, SF, Prescription, and Investigations lanes; aggregate-only full-200 audit.; model `openai/gpt-4.1-mini`.
+- Registry roles: `architecture_comparator`, `component_ladder`.
+- Repair mode/config: `diagnosis_heading_recovery_residual_benchmark_v05 + sf_state_union_arbitration_v08 + prescription_regimen_v01 + investigations_result_v01`.
+- Primary metrics: benchmark_cui_overall_f1=0.8191, call_failures=0, clinical_headline_f1=0.8502, diagnosis_f1=0.8321, evidence_valid_overall_f1=0.8191, investigations_f1=0.9213, min_exact_evidence_rate=1.0, parse_schema_failures=0, prescription_f1=0.8926, raw_candidate_overall_f1=0.7908, seizure_frequency_active_rate_fidelity=0.5564, seizure_frequency_f1=0.785.
+- Evidence validity: Aggregate report lens diagnostics show exact evidence rate 1.0000 for every family; no full-200 row-level failure analysis is authorized.
+- Claim language: Authorized full-200 aggregate audit of the current-code v08-shaped surface. It is not byte-identical to archived dev140 v08 and is not a locked-test, benchmark, or row-level tuning claim.
+- Artifacts: `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md`, `experiments/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.json`, `experiments/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.jsonl`.
+
+### `exectv2_v09_single_gpt_simplification_study_dev140_20260621`
+- Date/split: `2026-06-21`; `dev`; `140` rows.
+- Pipeline: `exectv2_holistic_finding_assembly`; mode `dev140 simplification study`; replay `analysis_only`.
+- Model role: v09 single-GPT plus standard-dictionary simplification study and partial-hybrid no-call assembly comparison.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`, `negative_attribution`.
+- Repair mode/config: `standard_dictionary plus v09 partial-hybrid ablation configs`.
+- Primary metrics: gpt_only_dictionary_clinical_headline_f1=0.7552, partial_hybrid_clinical_headline_f1=0.9059, partial_hybrid_diagnosis_f1=0.9083, partial_hybrid_investigations_f1=0.8549, partial_hybrid_prescription_f1=0.9357, partial_hybrid_seizure_frequency_f1=0.9053, v08_dev140_comparator_f1=0.9152.
+- Evidence validity: Dev140-only simplification evidence from the v09 study; no full-200, locked-test, or benchmark claim.
+- Claim language: Single GPT plus standard dictionaries does not clear 0.9 at GPT-4.1-mini; the accepted partial hybrid reaches 0.9059 by keeping focused Diagnosis, SeizureFrequency, and Prescription lanes while simplifying Investigations.
+- Artifacts: `docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_dev140.yaml`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09b_leanhybrid_dev140.yaml`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09h1_presc_sf_dev140.yaml`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09h2_presc_dx_dev140.yaml`, `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09h3_presc_sf_dx_dev140.yaml`.
+
 ## Historical
 
 ### `exectv2_arbitration_v02_dev140_gpt41mini_20260618`
@@ -2467,6 +2499,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-01`; `validation`; `650` rows.
 - Pipeline: `llm_structured_events`; mode `saved-output repair-family attribution ladder over structured v0.5 outputs`; replay `saved_output_replay`.
 - Model role: analysis-only attribution and deterministic repair-family replay; model `none; saved openai/gpt-4.1-mini outputs only`.
+- Registry roles: `negative_attribution`, `historical_lineage`.
 - Repair mode/config: `raw_model_selection + strict_format + frozen_clean_policy + named deterministic semantic repair families`.
 - Primary metrics: clean_policy_purist_correct=438, full_stack_pragmatic_correct=598, full_stack_purist_correct=588, raw_purist_correct=394, row_count=650, selected_evidence_repair_purist_correct=546, strict_format_purist_correct=413.
 - Evidence validity: Saved-output replay keeps exact selection evidence at 619/650 from the audited source; repair-family attribution separates evidence validity from final-label ownership.
@@ -2490,6 +2523,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-05-31`; `test`; `450` rows.
 - Pipeline: `rules_only`; mode `locked-test holdout evaluation of frozen rules_only_v1`; replay `analysis_only`.
 - Model role: deterministic comparator; model `none`.
+- Registry roles: `holdout_anchor`.
 - Repair mode/config: `deterministic_v1; no test-row tuning or row-level text inspection`.
 - Primary metrics: rows=450, test_pragmatic_f1=0.7867, test_purist_f1=0.76, validation_purist_f1_context=0.9293.
 - Evidence validity: Aggregate holdout report; no test row-level debugging allowed.
@@ -2523,19 +2557,9 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-16`; `test`; `450` rows.
 - Pipeline: `llm_only_direct_labeler`; mode `live`; replay `live`.
 - Model role: LLM-only direct-labeler note-to-label extractor (prompt v0.5); deterministic code limited to label repair, evidence validation, and scoring after the model emits the final label.; model `openai/gpt-4.1-mini`.
+- Registry roles: `holdout_anchor`.
 - Repair mode/config: `llm_only_label_repair`.
 - Primary metrics: call_failures=0, decision_records=450, evidence_valid_rows=422, max_tokens=900, parse_or_validation_failures=0, pragmatic_accuracy=0.7867, pragmatic_correct=354, prompt_version=gan2026_llm_only_direct_labeler_v0.5, purist_accuracy=0.7222, purist_correct=325, temperature=0.0, val_to_test_gap_purist=0.0444, validation750_reference_purist_accuracy=0.7667, validation750_reference_purist_correct=575.
 - Evidence validity: USER-AUTHORISED CALIBRATION measurement of the validation->test gap on gpt-4.1-mini, NOT a robustness-certified result. Candidate failed the Cycle 1 robustness battery and is NOT certified; it was run once only to obtain the first-ever mini test450 number. 422/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 0 parse/schema/label failures; 450/450 decision records; all 450 rows split=test with unique source_row_index. No tuning on test, no re-run, no row-level failure inspection.
 - Claim language: First-ever frozen test450 Purist for llm_only direct labeler v0.5 on gpt-4.1-mini. test450 Purist = 325/450 = 0.7222. validation750 reference (mini, v0.5) = 575/750 = 0.7667. val->test gap = +0.0444 (+4.44 pp); -20 rows vs the val-implied 345/450. Prior holdouts (incl. V12 379/450) used full gpt-4.1, not mini, so this is the first mini val->test anchor. Calibration only; does not promote this candidate or change champion/robustness status.
 - Artifacts: `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.jsonl`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.md`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16_record.md`.
-
-## ExECTv2 v09 Single-GPT Simplification Study
-
-### `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621`
-- Date/split: `2026-06-21`; `dev`; `140` rows.
-- Pipeline: `exectv2_holistic_finding_assembly`; no-call assembly replay over a single GPT-4.1-mini structured producer (prompt v0.9) plus frozen v08 focused producers.
-- Config: focused Diagnosis reconciler + v05 convention lens, focused SF union-arbitration, deterministic Prescription all9 repair, GPT-only prompt-owned Investigations (no verifier). Backed by `deterministic/standard_dictionary.py`.
-- Primary metrics (assembly `headline_target`, comparable to v08 0.9152): overall F1 `0.9059` (P 0.9000 R 0.9118; TP 724 FP 80 FN 70); Diagnosis `0.9083`, SeizureFrequency `0.9053`, Prescription `0.9357`, Investigations `0.8549`.
-- Read: leanest config clearing 0.9; drops v08's Investigations verifier + pending-test arbitration stack at -0.006 overall. Pure single-GPT+dictionary alone = `0.7552`; +deterministic prescription = `0.7997`. A single GPT prompt + standard dictionaries does NOT clear 0.9 at gpt-4.1-mini.
-- Evidence validity: dev-only component evidence; assembly gate reports `do-not-promote` (hardwired v0.42-control checks); renewed goal is the 0.900 family headlines. No full-200/locked-test claim. Error ledger uses the real concept-identity scorer.
-- Artifacts: `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml`, `experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.{jsonl,json,md}`, `experiments/exectv2_llm_only_key_entities_structured_v09_dev140_gpt41mini_20260621.{jsonl,md}`, `experiments/exectv2_v09_dev140_error_ledger_20260621.{json,md}`, `docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md`.

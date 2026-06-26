@@ -275,18 +275,29 @@ Use multiple curated sets instead of one overloaded "canonical" label.
 
 ## Concrete Next Actions
 
-1. Reconcile `experiments/registry.jsonl` and `experiments/RUN_INDEX.md`.
-2. Backfill metrics for the two surfaced Qwen Gan rows or replace their seeded
-   minimal entries with the full phase report data.
-3. Add JSONL rows for ExECTv2 v08/v09, robustness full200, and same-core
-   full200 aggregate reports.
-4. Add a registry-level role field or controlled tag for:
+Completion update, 2026-06-26:
+
+1. Done. `experiments/registry.jsonl` is now the source for `experiments/RUN_INDEX.md`;
+   the index was regenerated from the typed registry after backfill.
+2. Done. The two surfaced Qwen Gan Phase 1 rows now carry primary metrics from
+   `gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09`
+   and link the report artifacts.
+3. Done. Added JSONL rows for current ExECTv2 v08 full-200 current-code aggregate,
+   same-core full-200 aggregate, robustness validation, and v09 simplification
+   study evidence.
+4. Done. Added controlled `registry_roles` support with these values:
    `architecture_comparator`, `model_family_variant`, `holdout_anchor`,
    `component_ladder`, `reliability_scorecard`, `negative_attribution`, and
    `historical_lineage`.
-5. Decide whether Qwen SE v0.6 and DeepSeek SE v0.6 should be surfaced as
-   current best validation variants or kept as close-off diagnostics.
-6. Decide whether Qwen repair v02 gets a fresh same-core full-200 aggregate-only
-   predeclaration.
-7. Preserve all locked-test and full200 row-level inspection boundaries; do not
-   mine row-level failures from the holdout/aggregate-only artifacts to tune.
+5. Decided. Qwen SE v0.6 and DeepSeek SE v0.6 are tagged as
+   `model_family_variant` close-off diagnostics and remain
+   `surface_as_architecture=false`; they do not silently replace the Phase 1
+   canonical rows.
+6. Decided and authorized. Qwen repair v02 has a separate same-core full-200
+   aggregate-only predeclaration, now recorded at
+   `docs/experiments/exectv2/reliability/exectv2_qwen_repair_v02_full200_predeclaration_2026-06-26.md`.
+   This does not retroactively alter the GPT-4.1-mini plus DeepSeek full-200
+   protocol.
+7. Preserved. Registry notes and the new Qwen predeclaration keep locked-test and
+   full-200 artifacts aggregate-only; no holdout/full-200 row-level failures are
+   authorized as development or tuning evidence.

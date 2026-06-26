@@ -9,10 +9,10 @@ Observatory API and reconcile script stay aligned.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 from .run_registry import RunRegistryEntry, load_run_registry
-from pathlib import Path
 
 ComparisonRole = Literal["control", "diagnostic"]
 ArchitectureKind = Literal["rules_only", "hybrid", "llm_only"]
@@ -189,12 +189,14 @@ def apply_curation_to_entry(
 
     from dataclasses import replace
 
+    registry_roles = tuple(dict.fromkeys((*entry.registry_roles, "architecture_comparator")))
     return replace(
         entry,
         surface_as_architecture=True,
         display_label=curation.display_label,
         architecture_family=curation.architecture_family,
         comparison_role=curation.comparison_role,
+        registry_roles=registry_roles,
     )
 
 
@@ -223,6 +225,7 @@ def missing_registry_seed(curation: SurfacedRunCuration) -> RunRegistryEntry:
         display_label=curation.display_label,
         architecture_family=curation.architecture_family,
         comparison_role=curation.comparison_role,
+        registry_roles=("architecture_comparator",),
         claim_language_notes=(
             "Registry row seeded by run surfacing reconcile for Explorer/Component Impact."
         ),

@@ -55,9 +55,14 @@ def test_reconcile_registry_seeds_missing_qwen_rows(tmp_path: Path) -> None:
 
     assert by_id[existing.run_id].surface_as_architecture is True
     assert by_id[existing.run_id].display_label == "Hybrid (LLM extract) · GPT-4.1-mini"
-    qwen_id = "gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08"
+    assert by_id[existing.run_id].registry_roles == ("architecture_comparator",)
+    qwen_id = (
+        "gan2026_three_way_comparison_validation750_"
+        "hybrid_structured_events_qwen3635b_2026-06-08"
+    )
     assert qwen_id in by_id
     assert by_id[qwen_id].surface_as_architecture is True
+    assert by_id[qwen_id].registry_roles == ("architecture_comparator",)
 
     registry_path = tmp_path / "registry.jsonl"
     write_run_registry(reconciled, registry_path)

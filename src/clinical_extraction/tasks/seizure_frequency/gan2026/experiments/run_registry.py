@@ -39,6 +39,15 @@ ReplayStatus = Literal[
 
 ComparisonRole = Literal["control", "diagnostic"]
 ArchitectureFamily = Literal["rules_only", "hybrid", "llm_only"]
+RegistryRole = Literal[
+    "architecture_comparator",
+    "model_family_variant",
+    "holdout_anchor",
+    "component_ladder",
+    "reliability_scorecard",
+    "negative_attribution",
+    "historical_lineage",
+]
 
 MetricValue = int | float | str | None | list[int | float | str | None]
 
@@ -73,6 +82,17 @@ REPLAY_STATUSES: frozenset[ReplayStatus] = frozenset(
         "analysis_only",
     )
 )
+REGISTRY_ROLES: frozenset[RegistryRole] = frozenset(
+    (
+        "architecture_comparator",
+        "model_family_variant",
+        "holdout_anchor",
+        "component_ladder",
+        "reliability_scorecard",
+        "negative_attribution",
+        "historical_lineage",
+    )
+)
 
 
 @dataclass(frozen=True)
@@ -101,6 +121,7 @@ class RunRegistryEntry:
     display_label: str | None = None
     architecture_family: ArchitectureFamily | None = None
     comparison_role: ComparisonRole | None = None
+    registry_roles: tuple[RegistryRole, ...] = ()
 
     def to_json_record(self) -> dict[str, Any]:
         """Return a deterministic JSON-compatible registry record."""
@@ -130,6 +151,8 @@ class RunRegistryEntry:
             "architecture_family": self.architecture_family,
             "comparison_role": self.comparison_role,
         }
+        if self.registry_roles:
+            record["registry_roles"] = list(self.registry_roles)
         return record
 
     def validate(self) -> None:
@@ -183,6 +206,7 @@ def registry_entry_from_json_record(record: Mapping[str, Any]) -> RunRegistryEnt
         display_label=_optional_str(record.get("display_label")),
         architecture_family=_optional_architecture_family(record.get("architecture_family")),
         comparison_role=_optional_comparison_role(record.get("comparison_role")),
+        registry_roles=_registry_roles(record.get("registry_roles")),
     )
     entry.validate()
     return entry
@@ -289,6 +313,17 @@ def _optional_comparison_role(value: Any) -> ComparisonRole | None:
     if value not in allowed:
         raise ValueError(f"comparison_role must be one of: {', '.join(sorted(allowed))}")
     return cast(ComparisonRole, value)
+
+
+def _registry_roles(value: Any) -> tuple[RegistryRole, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list | tuple):
+        raise ValueError("registry_roles must be a list of controlled role strings")
+    if not all(isinstance(item, str) and item in REGISTRY_ROLES for item in value):
+        allowed = ", ".join(sorted(REGISTRY_ROLES))
+        raise ValueError(f"registry_roles must contain only: {allowed}")
+    return tuple(cast(RegistryRole, item) for item in value)
 
 
 def _required_int(record: Mapping[str, Any], field_name: str) -> int:
