@@ -43,7 +43,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import (
+from clinical_extraction.core.registry import (
     load_run_registry,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (

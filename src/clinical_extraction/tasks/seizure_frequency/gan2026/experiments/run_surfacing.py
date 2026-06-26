@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from .run_registry import RunRegistryEntry, load_run_registry
+from clinical_extraction.core.registry import RunRegistryEntry, load_run_registry
 
 ComparisonRole = Literal["control", "diagnostic"]
 ArchitectureKind = Literal["rules_only", "hybrid", "llm_only"]
