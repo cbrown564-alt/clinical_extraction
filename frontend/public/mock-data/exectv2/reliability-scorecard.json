@@ -1,6 +1,6 @@
 {
   "dataset": "exectv2",
-  "generated_on": "2026-06-25",
+  "generated_on": "2026-06-26",
   "source_scorecard": "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md",
   "source_cross_model_report": "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md",
   "evidence_set": [
@@ -970,13 +970,13 @@
       "cell_count": 1706,
       "fold_count": 5,
       "bin_count": 5,
-      "expected_calibration_error": 0.0277,
-      "brier_score": 0.1774,
+      "expected_calibration_error": 0.0264,
+      "brier_score": 0.177,
       "constant_base_rate_brier_score": 0.1874,
-      "brier_improvement_vs_base_rate": 0.01,
+      "brier_improvement_vs_base_rate": 0.0104,
       "overall_accuracy": 0.7503,
       "mean_calibrated_confidence": 0.7487,
-      "max_adjacent_bin_reversal": 0.0053,
+      "max_adjacent_bin_reversal": 0.0024,
       "leakage_audit": {
         "surface": "dev140 rich-schema holistic assembly reliability scorecard",
         "group_key": "letter_id",
@@ -992,8 +992,8 @@
         "definition": "External no-call confidence proxy from family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden.",
         "cell_count": 1706,
         "bin_count": 4,
-        "expected_calibration_error": 0.1456,
-        "brier_score": 0.2035,
+        "expected_calibration_error": 0.1451,
+        "brier_score": 0.2031,
         "bins": [
           {
             "bin": "very_high",
@@ -1004,17 +1004,17 @@
           },
           {
             "bin": "high",
-            "cells": 788,
-            "avg_confidence_proxy": 0.6982,
-            "accuracy": 0.8452,
-            "mean_cell_f1": 0.9324
+            "cells": 796,
+            "avg_confidence_proxy": 0.6985,
+            "accuracy": 0.8467,
+            "mean_cell_f1": 0.9331
           },
           {
             "bin": "medium",
-            "cells": 560,
-            "avg_confidence_proxy": 0.573,
-            "accuracy": 0.6446,
-            "mean_cell_f1": 0.8591
+            "cells": 552,
+            "avg_confidence_proxy": 0.5726,
+            "accuracy": 0.6395,
+            "mean_cell_f1": 0.8571
           },
           {
             "bin": "low",
@@ -1029,72 +1029,72 @@
         {
           "bin": "q1",
           "confidence_range": [
-            0.5128,
-            0.6454
+            0.5085,
+            0.6423
           ],
           "cells": 341,
-          "avg_confidence_proxy": 0.6058,
-          "avg_calibrated_confidence": 0.6058,
-          "accuracy": 0.5572,
-          "calibration_gap": -0.0487,
+          "avg_confidence_proxy": 0.6027,
+          "avg_calibrated_confidence": 0.6027,
+          "accuracy": 0.5543,
+          "calibration_gap": -0.0484,
           "ece_contribution": 0.0097,
-          "mean_cell_f1": 0.8673
+          "mean_cell_f1": 0.8644
         },
         {
           "bin": "q2",
           "confidence_range": [
-            0.6458,
-            0.7442
+            0.6423,
+            0.747
           ],
           "cells": 341,
-          "avg_confidence_proxy": 0.7156,
-          "avg_calibrated_confidence": 0.7156,
+          "avg_confidence_proxy": 0.7167,
+          "avg_calibrated_confidence": 0.7167,
           "accuracy": 0.7537,
-          "calibration_gap": 0.038,
-          "ece_contribution": 0.0076,
-          "mean_cell_f1": 0.8945
+          "calibration_gap": 0.0369,
+          "ece_contribution": 0.0074,
+          "mean_cell_f1": 0.8964
         },
         {
           "bin": "q3",
           "confidence_range": [
-            0.7443,
-            0.7978
+            0.7492,
+            0.797
           ],
           "cells": 341,
-          "avg_confidence_proxy": 0.7718,
-          "avg_calibrated_confidence": 0.7718,
+          "avg_confidence_proxy": 0.774,
+          "avg_calibrated_confidence": 0.774,
           "accuracy": 0.7977,
-          "calibration_gap": 0.0258,
-          "ece_contribution": 0.0052,
-          "mean_cell_f1": 0.8895
+          "calibration_gap": 0.0236,
+          "ece_contribution": 0.0047,
+          "mean_cell_f1": 0.889
         },
         {
           "bin": "q4",
           "confidence_range": [
-            0.7978,
+            0.797,
             0.8232
           ],
           "cells": 341,
-          "avg_confidence_proxy": 0.8145,
-          "avg_calibrated_confidence": 0.8145,
+          "avg_confidence_proxy": 0.8148,
+          "avg_calibrated_confidence": 0.8148,
           "accuracy": 0.824,
-          "calibration_gap": 0.0096,
+          "calibration_gap": 0.0093,
           "ece_contribution": 0.0019,
-          "mean_cell_f1": 0.9092
+          "mean_cell_f1": 0.9059
         },
         {
           "bin": "q5",
           "confidence_range": [
             0.8232,
-            0.8544
+            0.8554
           ],
           "cells": 342,
-          "avg_confidence_proxy": 0.8353,
-          "avg_calibrated_confidence": 0.8353,
-          "accuracy": 0.8187,
-          "calibration_gap": -0.0166,
-          "ece_contribution": 0.0033,
-          "mean_cell_f1": 0.8982
+          "avg_confidence_proxy": 0.835,
+          "avg_calibrated_confidence": 0.835,
+          "accuracy": 0.8216,
+          "calibration_gap": -0.0134,
+          "ece_contribution": 0.0027,
+          "mean_cell_f1": 0.903
         }
       ],
       "per_family": [
@@ -1102,9 +1102,9 @@
           "family": "Diagnosis",
           "cells": 520,
           "accuracy": 0.6519,
-          "mean_calibrated_confidence": 0.6614,
-          "expected_calibration_error": 0.0713,
-          "brier_score": 0.2098,
+          "mean_calibrated_confidence": 0.661,
+          "expected_calibration_error": 0.0695,
+          "brier_score": 0.2092,
           "constant_base_rate_brier_score": 0.2368,
           "bin_count": 4
         },
@@ -1112,9 +1112,9 @@
           "family": "SeizureFrequency",
           "cells": 421,
           "accuracy": 0.7363,
-          "mean_calibrated_confidence": 0.7437,
-          "expected_calibration_error": 0.0489,
-          "brier_score": 0.1975,
+          "mean_calibrated_confidence": 0.7436,
+          "expected_calibration_error": 0.0502,
+          "brier_score": 0.1977,
           "constant_base_rate_brier_score": 0.1943,
           "bin_count": 4
         },
@@ -1122,9 +1122,9 @@
           "family": "Prescription",
           "cells": 450,
           "accuracy": 0.8333,
-          "mean_calibrated_confidence": 0.8151,
-          "expected_calibration_error": 0.0656,
-          "brier_score": 0.1373,
+          "mean_calibrated_confidence": 0.8158,
+          "expected_calibration_error": 0.0627,
+          "brier_score": 0.1361,
           "constant_base_rate_brier_score": 0.1459,
           "bin_count": 4
         },
@@ -1133,8 +1133,8 @@
           "cells": 315,
           "accuracy": 0.8127,
           "mean_calibrated_confidence": 0.8045,
-          "expected_calibration_error": 0.0296,
-          "brier_score": 0.1545,
+          "expected_calibration_error": 0.0304,
+          "brier_score": 0.1547,
           "constant_base_rate_brier_score": 0.1561,
           "bin_count": 4
         }
@@ -1181,15 +1181,15 @@
           ],
           "validation_status": "dev replay threshold scan",
           "eligible_cells": 1706,
-          "reviewed_cells": 1247,
-          "review_burden": 0.7309,
+          "reviewed_cells": 1241,
+          "review_burden": 0.7274,
           "total_error_cells": 426,
           "caught_error_cells": 335,
           "catch_rate": 0.7864,
-          "false_alarm_cells": 912,
-          "false_alarm_rate": 0.7314,
+          "false_alarm_cells": 906,
+          "false_alarm_rate": 0.7301,
           "missed_error_cells": 91,
-          "review_burden_delta_vs_high_recall": -0.2099,
+          "review_burden_delta_vs_high_recall": -0.2134,
           "catch_rate_delta_vs_high_recall": -0.1033
         },
         {
@@ -1203,15 +1203,15 @@
           ],
           "validation_status": "dev-tuned candidate; needs frozen validation",
           "eligible_cells": 1706,
-          "reviewed_cells": 1291,
-          "review_burden": 0.7567,
+          "reviewed_cells": 1283,
+          "review_burden": 0.7521,
           "total_error_cells": 426,
           "caught_error_cells": 342,
           "catch_rate": 0.8028,
-          "false_alarm_cells": 949,
-          "false_alarm_rate": 0.7351,
+          "false_alarm_cells": 941,
+          "false_alarm_rate": 0.7334,
           "missed_error_cells": 84,
-          "review_burden_delta_vs_high_recall": -0.1841,
+          "review_burden_delta_vs_high_recall": -0.1887,
           "catch_rate_delta_vs_high_recall": -0.0869
         },
         {
@@ -1225,21 +1225,21 @@
           ],
           "validation_status": "dev-tuned candidate; needs frozen validation",
           "eligible_cells": 1706,
-          "reviewed_cells": 1075,
-          "review_burden": 0.6301,
+          "reviewed_cells": 1069,
+          "review_burden": 0.6266,
           "total_error_cells": 426,
           "caught_error_cells": 320,
           "catch_rate": 0.7512,
-          "false_alarm_cells": 755,
-          "false_alarm_rate": 0.7023,
+          "false_alarm_cells": 749,
+          "false_alarm_rate": 0.7007,
           "missed_error_cells": 106,
-          "review_burden_delta_vs_high_recall": -0.3107,
+          "review_burden_delta_vs_high_recall": -0.3142,
           "catch_rate_delta_vs_high_recall": -0.1385
         }
       ],
       "trigger_counts": {
         "diagnosis_convention_or_assertion_repair": 517,
-        "high_proxy_risk": 835,
+        "high_proxy_risk": 827,
         "investigations_result_state": 235,
         "prescription_current_vs_plan": 440,
         "sf_state_or_rate_fidelity": 404
@@ -1613,9 +1613,9 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.729,
-        "precision": 0.7529,
-        "recall": 0.7065,
+        "clinical_headline_f1": 0.7316,
+        "precision": 0.7557,
+        "recall": 0.7091,
         "strict_benchmark_f1": 0.13,
         "evidence_validity": 0.9694,
         "call_failures": 0,
@@ -1623,7 +1623,7 @@
         "family_f1": {
           "Diagnosis": 0.6809,
           "SeizureFrequency": 0.5556,
-          "Prescription": 0.8512,
+          "Prescription": 0.8616,
           "Investigations": 0.8826
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
@@ -1634,9 +1634,9 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.7448,
-        "precision": 0.7193,
-        "recall": 0.772,
+        "clinical_headline_f1": 0.7472,
+        "precision": 0.7217,
+        "recall": 0.7746,
         "strict_benchmark_f1": 0.128,
         "evidence_validity": 0.9617,
         "call_failures": 0,
@@ -1644,7 +1644,7 @@
         "family_f1": {
           "Diagnosis": 0.6886,
           "SeizureFrequency": 0.6744,
-          "Prescription": 0.7885,
+          "Prescription": 0.7981,
           "Investigations": 0.8981
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
@@ -1655,9 +1655,9 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.6969,
-        "precision": 0.684,
-        "recall": 0.7103,
+        "clinical_headline_f1": 0.6995,
+        "precision": 0.6866,
+        "recall": 0.7128,
         "strict_benchmark_f1": 0.1274,
         "evidence_validity": 0.9418,
         "call_failures": 0,
@@ -1665,7 +1665,7 @@
         "family_f1": {
           "Diagnosis": 0.6426,
           "SeizureFrequency": 0.5623,
-          "Prescription": 0.7951,
+          "Prescription": 0.8049,
           "Investigations": 0.8372
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
