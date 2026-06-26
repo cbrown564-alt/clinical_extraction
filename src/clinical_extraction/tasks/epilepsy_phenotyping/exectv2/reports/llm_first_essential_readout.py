@@ -7,7 +7,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_evaluation import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first import (
     OWNERSHIP_HYBRID,
     OWNERSHIP_LLM_FIRST,
     OWNERSHIP_RULES_ONLY,
@@ -332,7 +332,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "## 1. Essential clinical scorer specification",
         "",
         "The essential clinical scorer is assembled in "
-        "`reports/llm_first_essential_evaluation.py` from the existing "
+        "`reports/llm_first/` from the existing "
         "`clinical_recovery_scorecard.py` / `scoring.py` primitives. It aggregates "
         "only Prescription, SeizureFrequency, Diagnosis, EpilepsyCause, and "
         "Investigations. The primary surface strips CUI from gold and predictions "
