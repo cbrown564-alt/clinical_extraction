@@ -23,6 +23,12 @@ _REPLAY_SPECS = tuple(
     for spec in csl.DEFAULT_ARCHITECTURE_SPECS
     if spec.kind in {"structured_events", "llm_only"}
 )
+GPT41_HYBRID_RUN = (
+    "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07"
+)
+GPT41_LLM_RUN = (
+    "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07"
+)
 
 
 def _spec(run_id: str) -> csl.ArchitectureSpec:
@@ -32,7 +38,7 @@ def _spec(run_id: str) -> csl.ArchitectureSpec:
 def test_predict_cells_frequency_projection_equals_predict() -> None:
     """The refactor invariant: predict() is exactly the cells' monthly frequency."""
 
-    provider = csl.StructuredEventsProvider(_spec("hybrid_structured_events"))
+    provider = csl.StructuredEventsProvider(_spec(GPT41_HYBRID_RUN))
     stage_ids = [stage.stage_id for stage in provider.stages()]
     for index in range(len(stage_ids)):
         disabled = frozenset(stage_ids[index + 1 :])
@@ -90,7 +96,7 @@ def test_examples_are_chosen_deterministically_by_most_change() -> None:
 
 def test_llm_only_floor_to_repair_moves_a_real_label() -> None:
     payload = cte.build_component_transitions_payload(
-        specs=(_spec("llm_only_canonical_pipeline"),)
+        specs=(_spec(GPT41_LLM_RUN),)
     )
     arch = payload["architectures"][0]
     # The most-illustrative LLM-only notes are exactly the ones label repair rescues

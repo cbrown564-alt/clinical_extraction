@@ -22,7 +22,7 @@ def test_reliability_scorecard_payload_parses_final_reports() -> None:
     )
     assert len(payload["dimensions"]) == 10
     assert payload["weak_dimensions"] == []
-    assert len(payload["evidence_set"]) == 4
+    assert len(payload["evidence_set"]) == 7
     assert len(payload["comparison_rows"]) == 4
     assert payload["computed_reliability"]["latest_run_check"]["surfaces"][0][
         "replacement_policy"
@@ -114,7 +114,7 @@ def test_observatory_serves_exectv2_reliability_scorecard() -> None:
     calibration = next(
         item for item in payload["dimensions"] if item["id"] == "calibration"
     )
-    assert calibration["coverage"] == 3
+    assert calibration["coverage"] == 4
     assert payload["evidence_set"][0]["role"] == "Performance control"
     assert payload["computed_reliability"]["active_llm_only_readout"][1][
         "model_label"

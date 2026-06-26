@@ -178,6 +178,7 @@ def test_run_registry_parses_surfacing_fields() -> None:
             "display_label": "Hybrid (LLM extract) · GPT-4.1-mini",
             "architecture_family": "hybrid",
             "comparison_role": "diagnostic",
+            "registry_roles": ["architecture_comparator", "model_family_variant"],
         }
     )
 
@@ -185,6 +186,27 @@ def test_run_registry_parses_surfacing_fields() -> None:
     assert entry.display_label == "Hybrid (LLM extract) · GPT-4.1-mini"
     assert entry.architecture_family == "hybrid"
     assert entry.comparison_role == "diagnostic"
+    assert entry.registry_roles == ("architecture_comparator", "model_family_variant")
+
+
+def test_run_registry_rejects_unknown_registry_role() -> None:
+    with pytest.raises(ValueError, match="registry_roles must contain only"):
+        registry_entry_from_json_record(
+            {
+                "run_id": "bad_role",
+                "artifact_paths": ["experiments/analysis.md"],
+                "date": "2026-06-01",
+                "pipeline_family": "error_analysis",
+                "split": "validation",
+                "row_count": 250,
+                "model": "none",
+                "model_role": "analysis only",
+                "mode": "analysis",
+                "replay_status": "analysis_only",
+                "decision": "historical",
+                "registry_roles": ["maybe"],
+            }
+        )
 
 
 def test_run_registry_renders_decision_grouped_markdown_index(tmp_path: Path) -> None:
@@ -203,6 +225,7 @@ def test_run_registry_renders_decision_grouped_markdown_index(tmp_path: Path) ->
         primary_metrics={"clean_purist_correct": 231, "clean_pragmatic_correct": 238},
         evidence_validity="247/250 selected evidence exact",
         decision="revise",
+        registry_roles=("component_ladder",),
         claim_language_notes="Development diagnostic only.",
     )
     reject = RunRegistryEntry(
@@ -230,6 +253,7 @@ def test_run_registry_renders_decision_grouped_markdown_index(tmp_path: Path) ->
     assert "## Reject" in markdown
     assert "`revise_run`" in markdown
     assert "clean_purist_correct=231" in markdown
+    assert "Registry roles: `component_ladder`" in markdown
     assert "`experiments/revise.jsonl`" in markdown
     assert markdown.index("## Revise") < markdown.index("## Reject")
 
