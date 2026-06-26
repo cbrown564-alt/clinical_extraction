@@ -6,6 +6,11 @@
 import { DATASETS, DEFAULT_DATASET, datasetSupports, getDataset } from "../registry";
 import { parseDatasetId, resolveDatasetId, surfaceHref, DATASET_PARAM } from "../url";
 import { exectv2Dataset } from "../exectv2";
+import {
+  exectv2RuntimeAdapter,
+  gan2026RuntimeAdapter,
+  getRuntimeAdapter,
+} from "../runtime";
 import { deriveLetterErrors, summarizeErrors } from "../adapters/exectv2Errors";
 import { classifyComponentOwner, summarizeComponents } from "../adapters/exectv2Components";
 import type { Exectv2LetterRecord, Exectv2Mention, Exectv2RunSummary } from "../../types";
@@ -72,6 +77,22 @@ describe("dataset url handling", () => {
   it("getDataset falls back to the default for unknown ids", () => {
     // @ts-expect-error intentional invalid id
     expect(getDataset("bogus").id).toBe(DEFAULT_DATASET);
+  });
+});
+
+describe("dataset runtime adapters", () => {
+  it("maps each dataset id to a runtime adapter with four surfaces", () => {
+    expect(getRuntimeAdapter("gan2026")).toBe(gan2026RuntimeAdapter);
+    expect(getRuntimeAdapter("exectv2")).toBe(exectv2RuntimeAdapter);
+
+    for (const adapter of [gan2026RuntimeAdapter, exectv2RuntimeAdapter]) {
+      expect(adapter.surfaces.ErrorGallery).toBeDefined();
+      expect(adapter.surfaces.AggregatePerformance).toBeDefined();
+      expect(adapter.surfaces.ComponentImpact).toBeDefined();
+      expect(adapter.surfaces.ExampleExplorer).toBeDefined();
+      expect(typeof adapter.useRunCatalog).toBe("function");
+      expect(typeof adapter.useRunSelection).toBe("function");
+    }
   });
 });
 

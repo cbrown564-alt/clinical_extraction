@@ -1,14 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
-import ReportBuilder from "@/components/review/ReportBuilder";
-import { useActiveDataset } from "@/lib/datasets";
-import Exectv2AggregatePerformance from "@/components/exectv2/Exectv2AggregatePerformance";
+import { useActiveDataset, getRuntimeAdapter } from "@/lib/datasets";
 
 function ObservatoryRoute() {
   const dataset = useActiveDataset();
-  if (dataset === "exectv2") return <Exectv2AggregatePerformance />;
-  return <ReportBuilder />;
+  const AggregatePerformance = getRuntimeAdapter(dataset).surfaces.AggregatePerformance;
+  return <AggregatePerformance />;
 }
 
 export default function ObservatoryPage() {

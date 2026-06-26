@@ -24,8 +24,10 @@ import {
 import Link from "next/link";
 import { useObservatoryData } from "@/components/observatory/useObservatoryData";
 import { useGalleryUrlSync } from "@/lib/hooks";
-import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
+import { useActiveDataset } from "@/lib/datasets/useDataset";
+import { gan2026Dataset } from "@/lib/datasets/gan2026";
 import { SurfaceHeader, SurfaceLayout } from "@/components/surface";
+import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import Exectv2ErrorGallery from "@/components/exectv2/Exectv2ErrorGallery";
 import type { RowScore, RunSummary } from "@/lib/types";
 import {
@@ -985,6 +987,8 @@ function GalleryRoute() {
   if (dataset === "exectv2") return <Exectv2ErrorGallery />;
   return <GalleryInner />;
 }
+
+export { GalleryInner as GanErrorGallery };
 
 export default function GalleryPage() {
   return (

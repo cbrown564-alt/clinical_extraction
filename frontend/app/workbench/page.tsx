@@ -8,7 +8,8 @@ import { useArchitectUrlSync } from "@/lib/hooks";
 import StageStrip from "@/components/architect/StageStrip";
 import StageInspector from "@/components/architect/StageInspector";
 import ArchitectNoteRenderer from "@/components/architect/ArchitectNoteRenderer";
-import { useActiveDataset, gan2026Dataset } from "@/lib/datasets";
+import { useActiveDataset } from "@/lib/datasets/useDataset";
+import { gan2026Dataset } from "@/lib/datasets/gan2026";
 import { SurfaceHeader, SurfaceLayout, SurfaceLink, ExplorerBody } from "@/components/surface";
 import Exectv2ExampleExplorer from "@/components/exectv2/Exectv2ExampleExplorer";
 
@@ -91,6 +92,8 @@ function WorkbenchRoute() {
   if (dataset === "exectv2") return <Exectv2ExampleExplorer />;
   return <WorkbenchInner />;
 }
+
+export { WorkbenchInner as GanExampleExplorer };
 
 export default function WorkbenchPage() {
   return (
