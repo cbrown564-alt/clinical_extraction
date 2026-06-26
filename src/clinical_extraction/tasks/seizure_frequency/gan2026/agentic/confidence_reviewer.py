@@ -39,6 +39,8 @@ confidence ≥ 0.9, so it complements — does not replace — external corrobor
 Single-shot elicitation at temperature 0 is correct here: this is a point calibration
 probe, not a sampling/consistency probe (the varying-temperature rule scopes to
 self-consistency / semantic entropy only).
+
+Migrated to :mod:`stage_protocol` (prompt builder + decision schema + postprocess policy).
 """
 
 from __future__ import annotations
@@ -48,8 +50,21 @@ import re
 from dataclasses import asdict, dataclass
 
 import dspy
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
+    AgenticStage,
+    DspyCallSpec,
+    ParsedStageResponse,
+    build_isolated_dspy_lm,
+    extract_json_object,
+    make_dspy_predictor,
+    run_dspy_json_call,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 
 CONFIDENCE_REVIEWER_VERSION = "variant_D_decoupled_v1"
 DEFAULT_MODEL = "openai/gpt-4.1-mini"
@@ -90,6 +105,15 @@ class ConfidenceReviewSignature(dspy.Signature):
     )
 
 
+class ConfidenceReviewDecision(BaseModel):
+    """Strict schema for variant-D confidence elicitation."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    probability: int = Field(ge=0, le=100)
+    reason: str | None = None
+
+
 @dataclass(frozen=True)
 class ConfidenceReview:
     """The reviewer's verdict for one row. ``calibrated_confidence`` is P(correct)."""
@@ -103,6 +127,37 @@ class ConfidenceReview:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+
+_DSPY_SPEC = DspyCallSpec(
+    ConfidenceReviewSignature,
+    input_field="prompt_input_json",
+    output_field="elicitation_json",
+)
+
+
+class ConfidenceReviewStage(AgenticStage[ConfidenceReviewDecision]):
+    """Shadow-stage scaffold: prompt + schema + parse policy (no split runner)."""
+
+    @property
+    def prompt_version(self) -> str:
+        return CONFIDENCE_REVIEWER_VERSION
+
+    def build_prompt_input(
+        self,
+        record: GanFrequencyRecord,
+        *,
+        final_label: str | None,
+        final_kind: str | None,
+        **_: object,
+    ) -> str:
+        return build_review_payload(record.note_text, final_label, final_kind)
+
+    def parse_response(self, raw_output: str, **_: object) -> ParsedStageResponse[ConfidenceReviewDecision]:
+        return _parse_confidence_response(raw_output)
+
+
+STAGE = ConfidenceReviewStage()
 
 
 def build_review_payload(note_text: str, final_label: str | None, final_kind: str | None) -> str:
@@ -122,26 +177,27 @@ def build_review_payload(note_text: str, final_label: str | None, final_kind: st
 
 def parse_probability(raw: str) -> tuple[int | None, str | None, str | None]:
     """Return (probability_0_100, reason, error) from the raw model output."""
-    if not raw or not raw.strip():
-        return None, None, "empty_output"
-    match = re.search(r"\{.*\}", raw, re.DOTALL)
-    text = match.group(0) if match else raw
-    try:
-        obj = json.loads(text)
-    except json.JSONDecodeError:
-        digits = re.search(r"\b(\d{1,3})\b", raw)
-        if digits:
-            return _clamp(int(digits.group(1))), None, "regex_int_fallback"
-        return None, None, "parse_failed"
-    prob = obj.get("probability")
-    try:
-        return _clamp(int(round(float(prob)))), obj.get("reason"), None
-    except (TypeError, ValueError):
-        return None, obj.get("reason"), "no_probability_field"
-
-
-def _clamp(value: int) -> int:
-    return max(0, min(100, value))
+    parsed = _parse_confidence_response(raw)
+    if parsed.decision is not None:
+        error = None
+        for note in parsed.parse_errors:
+            if note == "regex_int_fallback":
+                error = note
+                break
+        return parsed.decision.probability, parsed.decision.reason, error
+    error = next(
+        (err for err in parsed.parse_errors if not err.startswith("json_dialect_repaired:")),
+        parsed.parse_errors[0] if parsed.parse_errors else "parse_failed",
+    )
+    reason = None
+    if raw and "reason" in raw:
+        try:
+            obj, _ = parse_json_payload_with_schema_repair(extract_json_object(raw))
+            if isinstance(obj, dict):
+                reason = obj.get("reason")
+        except json.JSONDecodeError:
+            pass
+    return None, reason, error
 
 
 def review_from_raw(raw: str) -> ConfidenceReview:
@@ -167,25 +223,75 @@ class ConfidenceReviewer:
         max_tokens: int = DEFAULT_MAX_TOKENS,
         api_base: str | None = None,
         lm: dspy.LM | None = None,
+        stage: ConfidenceReviewStage | None = None,
     ) -> None:
-        self._lm = lm or build_dspy_lm(
+        self._stage = stage or STAGE
+        self._lm = lm or build_isolated_dspy_lm(
             model,
             temperature=temperature,
             max_tokens=max_tokens,
-            cache=False,
             api_base=api_base,
-            num_retries=2,
-            timeout=60,
         )
-        self._predict = dspy.Predict(ConfidenceReviewSignature)
+        self._predict = make_dspy_predictor(_DSPY_SPEC)
 
     def review(
         self, *, note_text: str, final_label: str | None, final_kind: str | None
     ) -> ConfidenceReview:
         payload = build_review_payload(note_text, final_label, final_kind)
         try:
-            with dspy.context(lm=self._lm):
-                raw = str(self._predict(prompt_input_json=payload).elicitation_json)
+            raw = run_dspy_json_call(
+                self._predict,
+                lm=self._lm,
+                input_field=_DSPY_SPEC.input_field,
+                output_field=_DSPY_SPEC.output_field,
+                prompt_input_json=payload,
+            )
         except Exception as exc:  # pragma: no cover - live API only
             return ConfidenceReview(None, None, None, None, f"{type(exc).__name__}: {exc}")
         return review_from_raw(raw)
+
+
+def _parse_confidence_response(raw: str) -> ParsedStageResponse[ConfidenceReviewDecision]:
+    if not raw or not raw.strip():
+        return ParsedStageResponse(None, parse_errors=["empty_output"])
+    try:
+        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
+            extract_json_object(raw)
+        )
+    except json.JSONDecodeError:
+        digits = re.search(r"\b(\d{1,3})\b", raw)
+        if digits:
+            prob = _clamp(int(digits.group(1)))
+            return ParsedStageResponse(
+                ConfidenceReviewDecision(probability=prob, reason=None),
+                parse_errors=["regex_int_fallback"],
+            )
+        return ParsedStageResponse(None, parse_errors=["parse_failed"])
+
+    parse_errors = list(dialect_notes)
+    if not isinstance(raw_payload, dict):
+        return ParsedStageResponse(None, parse_errors=[*parse_errors, "no_probability_field"])
+    prob_raw = raw_payload.get("probability")
+    try:
+        probability = _clamp(int(round(float(prob_raw))))
+    except (TypeError, ValueError):
+        return ParsedStageResponse(
+            None,
+            parse_errors=[*parse_errors, "no_probability_field"],
+        )
+    reason = raw_payload.get("reason")
+    try:
+        decision = ConfidenceReviewDecision(
+            probability=probability,
+            reason=str(reason) if reason is not None else None,
+        )
+    except ValidationError as exc:
+        return ParsedStageResponse(
+            None,
+            parse_errors=[*parse_errors, f"schema_validation_error: {exc.errors()[0]['msg']}"],
+        )
+    return ParsedStageResponse(decision, parse_errors=parse_errors)
+
+
+def _clamp(value: int) -> int:
+    return max(0, min(100, value))
