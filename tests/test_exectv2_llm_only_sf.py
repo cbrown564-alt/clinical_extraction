@@ -37,6 +37,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     repair_attributes,
     to_predicted_letter,
 )
+from tests.helpers.prompt_hygiene import (
+    collect_signature_text,
+    find_leaked_phrases,
+)
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -53,24 +57,6 @@ _SF_SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY.name]
 
 # ── Prompt hygiene ────────────────────────────────────────────────────────────
 
-FORBIDDEN_PHRASES = (
-    "Decision 000",
-    "decision 000",
-    "deterministic code",
-    "downstream deterministic",
-    "architecture gate",
-    "deterministic candidates",
-    "gold labels",
-    "gold_label",
-    "parser-ready",
-    "scorer-facing",
-    "scoring-facing",
-    "benchmark",
-    "synthetic",
-    "prompt_policy_taxonomy",
-    " -> ",
-)
-
 
 @pytest.mark.parametrize(
     ("name", "builder"),
@@ -82,7 +68,7 @@ FORBIDDEN_PHRASES = (
 def test_prompt_hygiene_no_internal_vocabulary(name: str, builder) -> None:
     payload = builder(_LETTER)
     text = payload if isinstance(payload, str) else json.dumps(payload)
-    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
+    leaked = find_leaked_phrases(text)
     assert leaked == [], f"{name}: leaked internal phrases {leaked}"
 
 
@@ -445,17 +431,6 @@ def test_prompt_versions_are_distinct() -> None:
 # and must comply with the same hygiene rules as build_prompt_input payloads.
 
 
-def _collect_signature_text(sig_class) -> str:
-    """Collect the docstring and all field desc strings from a DSPy Signature."""
-
-    parts = [sig_class.__doc__ or ""]
-    for field_name in sig_class.model_fields:
-        field = sig_class.model_fields[field_name]
-        extra = field.json_schema_extra or {}
-        parts.append(extra.get("desc", ""))
-    return " ".join(parts)
-
-
 @pytest.mark.parametrize(
     ("name", "sig_class"),
     [
@@ -467,8 +442,8 @@ def test_dspy_signature_components_do_not_expose_internal_vocabulary(
     name: str,
     sig_class,
 ) -> None:
-    text = _collect_signature_text(sig_class)
-    leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
+    text = collect_signature_text(sig_class)
+    leaked = find_leaked_phrases(text)
     assert leaked == [], f"{name}: leaked internal phrases {leaked}"
 
 
@@ -484,7 +459,7 @@ def test_dspy_signature_does_not_use_extraction_vocabulary(
     sig_class,
 ) -> None:
     """'extraction instructions' is the specific form the ADR flags as non-compliant."""
-    text = _collect_signature_text(sig_class)
+    text = collect_signature_text(sig_class)
     assert "extraction instructions" not in text, (
         f"{name}: contains forbidden phrase 'extraction instructions' (ADR 0015)"
     )

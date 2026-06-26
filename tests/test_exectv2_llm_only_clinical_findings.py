@@ -30,10 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinica
     project_finding_to_attributes,
     to_predicted_letters,
 )
-from tests.test_exectv2_llm_only_sf import (
-    FORBIDDEN_PHRASES,
-    _collect_signature_text,
-)
+from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES, collect_signature_text
 
 _NOTE = (
     "She has focal seizures with impaired awareness 2 to 3 times per month "
@@ -51,7 +48,7 @@ def test_clinical_findings_prompt_hygiene_no_internal_vocabulary() -> None:
 
 
 def test_clinical_findings_signature_hygiene_no_internal_vocabulary() -> None:
-    text = _collect_signature_text(ExECTv2ClinicalFindingsSFSignature)
+    text = collect_signature_text(ExECTv2ClinicalFindingsSFSignature)
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
     assert leaked == []
 
@@ -175,7 +172,7 @@ def test_prompt_keeps_compact_historical_facts_distinct_from_current_control() -
 
 
 def test_verifier_signature_hygiene_no_internal_vocabulary() -> None:
-    text = _collect_signature_text(ExECTv2ClinicalFindingsVerifierSignature)
+    text = collect_signature_text(ExECTv2ClinicalFindingsVerifierSignature)
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
     assert leaked == []
 
@@ -269,7 +266,7 @@ def test_finalizer_prompt_hygiene_and_contract() -> None:
 
 
 def test_finalizer_signature_hygiene_no_internal_vocabulary() -> None:
-    text = _collect_signature_text(ExECTv2ClinicalFindingsFinalizerSignature)
+    text = collect_signature_text(ExECTv2ClinicalFindingsFinalizerSignature)
     leaked = [phrase for phrase in FORBIDDEN_PHRASES if phrase in text]
     assert leaked == []
 

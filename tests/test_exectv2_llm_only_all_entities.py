@@ -22,7 +22,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_ent
     to_predicted_letter,
     write_report,
 )
-from tests.test_exectv2_llm_only_sf import FORBIDDEN_PHRASES
+from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES
 
 _NOTE = (
     "She has focal epilepsy. Her EEG was abnormal. "
