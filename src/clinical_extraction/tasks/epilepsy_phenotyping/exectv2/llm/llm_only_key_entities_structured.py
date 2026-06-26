@@ -44,13 +44,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import extract_json_object
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    check_evidence, raw_output_from_adapter_parse_error, repair_attributes,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    _extract_json_object,
-    _has_blocking_parse_issue,
-    check_evidence,
-    raw_output_from_adapter_parse_error,
-    repair_attributes,
-    write_jsonl,
+    _has_blocking_parse_issue, write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
@@ -1751,7 +1750,7 @@ def _worked_examples() -> list[dict[str, Any]]:
 def parse_structured_events_json(
     raw_output: str,
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
-    extracted = _extract_json_object(raw_output)
+    extracted = extract_json_object(raw_output)
     try:
         payload, dialect_notes = parse_json_payload_with_schema_repair(
             extracted
