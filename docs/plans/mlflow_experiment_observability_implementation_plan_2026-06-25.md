@@ -436,7 +436,8 @@ runners.
 
 Status: dry-run planning path complete as of 2026-06-26. The first real
 parent/child write path is complete for the same-core dev140 group. Existing-run
-lookup by `registry_run_id` and idempotent update behavior remain future work.
+lookup by `registry_run_id` and `comparison_id` is implemented as of 2026-06-26
+via ADR 0035; broader backfill remains explicitly scoped and non-canonical.
 
 Add a CLI or script:
 

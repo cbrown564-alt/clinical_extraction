@@ -2,7 +2,7 @@
 
 Date: 2026-06-26
 
-Scope: current working-tree `experiments/registry.jsonl` (`227` rows). This review
+Scope: current working-tree `experiments/registry.jsonl` (`232` rows). This review
 answers whether non-canonical rows should be reconsidered because they are better
 model-family prompt variants, useful architecture ladders, holdout anchors, or
 important negative/attribution evidence.
@@ -301,3 +301,16 @@ Completion update, 2026-06-26:
 7. Preserved. Registry notes and the new Qwen predeclaration keep locked-test and
    full-200 artifacts aggregate-only; no holdout/full-200 row-level failures are
    authorized as development or tuning evidence.
+8. Done. Upgraded additional paper-facing role rows without reruns:
+   Gan reliability D gating is now a `reliability_scorecard`; Gan confidence
+   one-vs-two is `reliability_scorecard` plus `component_ladder`; the V12
+   fresh-evidence validation run is `component_ladder` plus
+   `historical_lineage`; the Gan cross-model synthesis is
+   `model_family_variant`; selected ExECTv2 specialist rows are
+   `component_ladder`.
+9. Done. Added a predeclared hard-slice/robustness/test protocol for
+   `gan2026_consensus_fresh_agreement_selector_v0_9` at
+   `docs/experiments/gan2026/frozen_test/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_protocol_2026-06-26.md`.
+   The protocol keeps v0.9 as component-ladder evidence until validation
+   hard-slice, robustness, source-symmetry, and explicitly authorized
+   aggregate-only test gates pass.

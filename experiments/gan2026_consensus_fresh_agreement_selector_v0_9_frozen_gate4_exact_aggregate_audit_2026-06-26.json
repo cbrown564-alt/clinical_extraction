@@ -1,0 +1,94 @@
+{
+  "aggregate": {
+    "changed_label_precision": 0.6,
+    "changed_labels": 35,
+    "consensus_purist_correct": 366,
+    "consensus_purist_rate": 0.8133,
+    "correct_to_correct": 7,
+    "correct_to_wrong": 5,
+    "deterministic_pragmatic_correct": 354,
+    "deterministic_pragmatic_rate": 0.7867,
+    "deterministic_purist_correct": 343,
+    "deterministic_purist_rate": 0.7622,
+    "fresh_evidence_purist_correct": 351,
+    "fresh_evidence_purist_rate": 0.78,
+    "net_purist_gain_vs_deterministic": 16,
+    "rows": 450,
+    "selected_pragmatic_correct": 368,
+    "selected_pragmatic_rate": 0.8178,
+    "selected_purist_correct": 359,
+    "selected_purist_rate": 0.7978,
+    "selector_action_counts": {
+      "accept_consensus_fresh_agreement": 14,
+      "accept_fresh_boundary_rescue": 20,
+      "accept_normalized_equivalent_agreement": 1,
+      "keep_deterministic_baseline": 415
+    },
+    "wrong_to_correct": 21,
+    "wrong_to_wrong": 2
+  },
+  "authorization": "user_authorized_2026-06-26_proceed_after_exact_gate3",
+  "claim_scope": "exact_v0_9_selector_holdout",
+  "component_integrity": {
+    "consensus": {
+      "call_failure_rows": 0,
+      "duplicate_source_rows": 0,
+      "parse_or_repair_note_rows": 0,
+      "path": "experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.jsonl",
+      "rows": 450,
+      "sha256": "ad651d457b04c25611bf78fc262a9ada39416ca93de7fb809794fc6cb9efab59",
+      "unique_source_rows": 450
+    },
+    "deterministic": {
+      "call_failure_rows": 0,
+      "duplicate_source_rows": 0,
+      "parse_or_repair_note_rows": 0,
+      "path": "experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl",
+      "rows": 450,
+      "sha256": "8155612105b462ec126df3aaebe5e81e2d730448babe1fcc3bfa60348e45dbf2",
+      "unique_source_rows": 450
+    },
+    "fresh_evidence": {
+      "call_failure_rows": 0,
+      "duplicate_source_rows": 0,
+      "parse_or_repair_note_rows": 450,
+      "path": "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl",
+      "rows": 450,
+      "sha256": "e317b088bbcdc0a2f668b0e600bccaf17664a5d4ae2e734c0531684e786a1295",
+      "unique_source_rows": 450
+    }
+  },
+  "date": "2026-06-26",
+  "gate3_reference": {
+    "exact_consensus_available": true,
+    "path": "experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_exact_source_symmetry_preflight_2026-06-26.json",
+    "role_parity_ok": true,
+    "scope": "exact_source_symmetry",
+    "sha256": "2f402714057822918aa37cff38a7a103d10b6dee9711eba7e959cd73771dfeac"
+  },
+  "inspection_boundary": {
+    "aggregate_only": true,
+    "forbidden_content_reported": false,
+    "row_level_output_written": false,
+    "test_row_failures_opened_for_development": false
+  },
+  "interpretation": "Exact-source Gate 4 promotion bars pass. Record as an exact v0.9 selector holdout result under the frozen source set. Do not tune from this test result or open row-level failures for development.",
+  "promotion_gate": {
+    "changed_label_precision_at_least_0_60": true,
+    "claim_scope_exact_source": true,
+    "correct_to_wrong_at_most_5": true,
+    "gate_passed": true,
+    "prior_closest_anchor_selected_purist": 348,
+    "selected_at_least_prior_closest_anchor": true,
+    "selected_gain_at_least_10": true,
+    "source_integrity_ok": true,
+    "source_symmetry_exact": true
+  },
+  "run_id": "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26",
+  "selector_policy": "semantic_equiv_unknown_uncertainty_v0_9",
+  "source_artifacts": {
+    "consensus": "experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.jsonl",
+    "deterministic": "experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl",
+    "fresh_evidence": "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
+  }
+}

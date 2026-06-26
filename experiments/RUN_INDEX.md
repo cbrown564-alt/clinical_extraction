@@ -60,6 +60,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-17`; `test`; `450` rows.
 - Pipeline: `reliability_d_gating_test450`; mode `live`; replay `live`.
 - Model role: decoupled variant-D confidence reviewer (`variant_D_decoupled_v1`) over the canonical single-SE-mini `v0_reference` test450 answers (decision 0018); GATES NOTHING in production — simulates an abstention gate; model `openai/gpt-4.1-mini`.
+- Registry roles: `reliability_scorecard`.
 - Primary metrics: summary=base accuracy 364/450 = **0.8089** (Wilson CI 0.770–0.843), base error 0.1911; D failure-AUROC **0.649** (CI 0.581–0.717, > chance). Gating (selective acc · abstention precision vs 0.191 random bar): 95% cov → 0.820 · 0.409; 90% cov → 0.825 · 0.333 (1.74× random, +14.2pp); 80% cov → 0.856 · 0.378; 70% cov → 0.867 · 0.326; 50% cov → 0.880 · 0.262. Selective-accuracy lift positive + monotone.
 - Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; no test tuning; single run. Test-split-integrity preflight passed (450/450 unique, coverage == manifest, v0_reference on all 450); V12 source-symmetry preflight structurally inapplicable to a single-model run (substituted direct integrity check, per house precedent). Subject source-symmetry inherited from the certified v0.4 artifact.
 - Claim language: MEETS the predeclared success criterion — variant-D confidence is a usable abstention/triage gate on the primary single gpt-4.1-mini architecture on the locked holdout (AUROC CI above chance; 90%-cov abstention precision 1.74× random; monotone selective-accuracy lift). But the benefit is MODEST and ATTENUATES from validation (AUROC 0.684→0.649; 90%-cov selective acc 0.905→0.825; abstention precision 2.6×→1.74× random). Absolute lift small (80.9%→82.5% at 90% cov costs 10% coverage) because confident over-reading errors are invisible to any self-signal. Does NOT change champion/label/robustness status; it is a triage knob costing one extra mini call/row.
@@ -107,12 +108,26 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-17`; `test`; `450` rows.
 - Pipeline: `confidence_one_vs_two_call_test450`; mode `live`; replay `live`.
 - Model role: holdout confirmation of the validation paired test — does variant-D's discrimination come from the decoupled call or the prompt wording?; model `openai/gpt-4.1-mini`.
+- Registry roles: `reliability_scorecard`, `component_ladder`.
 - Primary metrics: summary=joint(1-call) failure-AUROC **0.601** (ECE 0.146, Brier 0.197, top-bucket 92.4%); decoupled(2-call) **0.669** (ECE 0.146, Brier 0.190, top-bucket 80.9%); **paired AUROC difference (decoupled − joint) = +0.068, 95% CI [+0.014, +0.132]** (1000 reps; CI EXCLUDES 0). Joint-arm Purist accuracy **0.767** (< SE test baseline 0.809 — priming degrades the extractor on the holdout). Comparators (validation750): joint 0.609, decoupled 0.641, diff CI [−0.032, +0.098].
 - Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; single run; preflight-gated. 0 parse failures either arm; 4 unscorable-gold rows dropped. Internally valid paired comparison (shared joint answer set).
 - Claim language: **The validation H_wording conclusion does NOT replicate on the holdout.** On test450 the decoupled two-call reviewer ranks errors significantly better than the one-call joint signal (paired diff +0.068, CI excludes 0), and folding the priming into the extraction pass costs ~4pp Purist accuracy. Direction (decoupled ≥ joint) was consistent across both splits; validation lacked the gap/power to call it. CORRECTED conclusion: KEEP the two-call decoupled `ConfidenceReviewer` stage — the extra call earns its cost on the holdout; the validation-only "removable" read was a false economy. Retracts the earlier validation-based recommendation. Both signals remain modest (< external 0.781) and gate nothing.
 - Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, ``.
 
 ## Promote
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26`
+- Date/split: `2026-06-26`; `test`; `450` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate4_exact`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call aggregate-only replay of frozen v0.9 selector over exact Gate 3 deterministic rules-tool, three-agent consensus, and fresh-evidence test components.; model `none`.
+- Registry roles: `holdout_anchor`, `component_ladder`.
+- Repair mode/config: `selector_v0_9_exact_source_no_call_replay`.
+- Primary metrics: changed_label_precision=0.6, changed_labels=35, claim_scope=exact_v0_9_selector_holdout, correct_to_wrong=5, deterministic_purist_correct=343, exact_source_symmetry=yes, gate_passed=yes, net_purist_gain_vs_deterministic=16, row_level_output_written=no, selected_pragmatic_correct=368, selected_purist_correct=359, wrong_to_correct=21.
+- Evidence validity: User-authorized frozen aggregate-only locked test450 audit. No row-level failures, rationales, evidence, selected events, or transitions are reported; source symmetry is exact for the documented source set.
+- Cache/reuse source: Exact Gate 3 source set: rules-tool deterministic floor, exact three-agent consensus test450, and V12 fresh-evidence v0.6/safety-v0.9 test450 artifact.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_exact_source_symmetry_preflight_2026-06-26`, `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26`.
+- Claim language: Exact-source Gate 4 promotion bars pass. Record as an exact v0.9 selector holdout result under the frozen source set. Do not tune from this test result or open row-level failures for development.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md`, `experiments/build_gan2026_v09_frozen_gate4_exact_aggregate_audit.py`.
 
 ### `gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `250` rows.
@@ -141,6 +156,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-13`; `validation`; `750` rows.
 - Pipeline: `fresh_evidence_reasoner`; mode `live`; replay `live`.
 - Model role: V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; the model may keep the original GPT structured-event final or replace it with a direct label grounded in exact raw-note evidence.; model `openai/gpt-4.1`.
+- Registry roles: `component_ladder`, `historical_lineage`.
 - Repair mode/config: `format-only label repair, exact-substring evidence filtering, and predeclared safety gates; fallback is only to the original GPT structured-event LLM final, not deterministic top.`.
 - Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.2857, changed_labels_vs_v0=147, correct_to_wrong_vs_v0=22, evidence_exact_substrings=703, final_minus_v0_purist_correct=21, final_pragmatic_correct=698, final_purist_correct=682, format_only_purist_correct=676, fresh_evidence_gate_fallbacks=8, fresh_evidence_replace_actions=182, net_purist_gain_vs_v0=20, parse_or_validation_failures=0, prediction_bearing_rows=749, raw_model_purist_correct=676, rows=750, v0_pragmatic_correct=679, v0_purist_correct=661, wrong_to_correct_vs_v0=42.
 - Evidence validity: 703/750 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures.
@@ -240,6 +256,82 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Revise
 
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_protocol_2026-06-26`
+- Date/split: `2026-06-26`; `validation_hard_slice+robustness+test_planned`; `0` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_protocol`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only frozen hard-slice, robustness, and locked-test protocol for selector v0.9; no model calls and no holdout rows are read.; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `selector_v0_9_protocol_no_new_repair`.
+- Primary metrics: current_validation_correct_to_wrong=0, current_validation_selected_purist_correct=733, hard_slice_gate_required=yes, robustness_gate_required=yes, test_authorization_required=yes, test_rows_read=0.
+- Evidence validity: No new prediction evidence. The protocol freezes selector code and source artifacts, requires hard-slice and robustness gates before test, and forbids test row-level inspection.
+- Cache/reuse source: Existing v0.9 validation replay, synthetic stress, residual audit, and v0.10 repair probe artifacts; no new run.
+- Claim language: Pre-registration only. Keeps v0.9 as component-ladder evidence until hard-slice, robustness, and explicitly authorized aggregate-only test gates pass; does not authorize test or row-level holdout inspection.
+- Artifacts: `docs/experiments/gan2026/frozen_test/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_protocol_2026-06-26.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_2026-06-26`
+- Date/split: `2026-06-26`; `test_preflight_metadata_only`; `450` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate3_source_symmetry_preflight`; mode `analysis-only`; replay `analysis_only`.
+- Model role: analysis-only source-symmetry inventory over frozen deterministic, constrained consensus, fresh-evidence, and structured-event test artifacts; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `none`.
+- Primary metrics: consensus_coverage=450, coverage_ok=yes, deterministic_coverage=450, duplicates_total=0, exact_consensus_available=no, fresh_evidence_coverage=450, gate_passed=yes, gate_scope=constrained_source_symmetry, locked_test_audit_authorized=no, off_manifest_total=0, prompt_hygiene_ok=yes, substrate_count=3.
+- Evidence validity: Metadata-only inventory. Coverage and prompt-key hygiene checked without reporting test labels, correctness, rationales, evidence, selected events, or row-level transitions.
+- Cache/reuse source: Existing frozen test450 component/source artifacts only; no model calls and no selector scoring.
+- Claim language: Gate 3 passes only as constrained source-symmetry: deterministic, available two-agent consensus, fresh-evidence, and GPT/Qwen/DeepSeek source substrates each cover 450/450 manifest rows with 0 duplicates and 0 off-manifest rows. Exact three-agent consensus replay is not present, so any later Gate 4 audit requires explicit user authorization and must be labeled constrained holdout evidence, not an exact v0.9 selector holdout claim.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_2026-06-26.md`, `experiments/build_gan2026_v09_frozen_gate3_source_symmetry_preflight.py`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_exact_source_symmetry_preflight_2026-06-26`
+- Date/split: `2026-06-26`; `test_preflight_metadata_only`; `450` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate3_exact_source_symmetry_preflight`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only exact source-symmetry inventory over deterministic rules-tool floor, exact three-agent consensus, fresh-evidence counterpart, and GPT/Qwen/DeepSeek source substrates.; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `none`.
+- Primary metrics: consensus_coverage=450, coverage_ok=yes, deterministic_coverage=450, duplicates_total=0, fresh_evidence_coverage=450, gate_passed=yes, gate_scope=exact_source_symmetry, locked_test_audit_authorized=no, off_manifest_total=0, prompt_hygiene_ok=yes, role_parity_ok=yes, row_content_boundary_ok=yes.
+- Evidence validity: Metadata-only exact-source inventory. Coverage, role parity, row-content boundary, and prompt-key hygiene checked without reporting test labels, correctness, rationales, evidence, selected events, or row-level transitions.
+- Cache/reuse source: Existing frozen test450 component/source artifacts plus the newly generated exact three-agent consensus component; no model calls and no selector scoring.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_2026-06-26`, `gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26`.
+- Claim language: Exact-source Gate 3 passes and enables only a separately authorized fresh aggregate-only exact-source Gate 4 audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_exact_source_symmetry_preflight_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_exact_source_symmetry_preflight_2026-06-26.md`, `experiments/build_gan2026_v09_frozen_gate3_exact_source_symmetry_preflight.py`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate2_robustness_stress_2026-06-26`
+- Date/split: `2026-06-26`; `synthetic_source_near_validation_only`; `24` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate2`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only Gate 2 robustness/stress panel over hand-specified synthetic/source-near component states using the frozen v0.9 selector; no model calls and no holdout rows are read.; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `selector_v0_9_frozen_gate2_no_new_repair`.
+- Primary metrics: changed_label_precision=1.0, changed_labels=12, cluster_burden_demotions=0, correct_to_wrong=0, desired_action_match_rate=1.0, desired_action_matches=24, deterministic_correct_false_positive_actions=0, families_below_0_80=0, forbidden_no_reference_to_unknown_churn=0, gate_passed=yes, panel_rows=24, selected_pragmatic_correct=24, selected_purist_correct=23, test_rows_read=0, wrong_to_correct=12.
+- Evidence validity: Synthetic/source-near mechanism panel only. Cases exercise all eight predeclared Gate 2 families with positive, deterministic-correct negative-control, and perturbation rows where natural; no locked test rows are read.
+- Cache/reuse source: Hand-specified Gate 2 component states plus frozen selector implementation; no saved test artifacts opened.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate1_hard_slice_audit_2026-06-26`.
+- Claim language: Gate 2 passes as a mechanism test and authorizes only Gate 3 source-symmetry preflight. It remains component-ladder evidence; no test450 audit is authorized until Gate 3 passes and the user explicitly authorizes the frozen aggregate-only holdout audit.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate2_robustness_stress_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate2_robustness_stress_2026-06-26.md`.
+
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate1_hard_slice_audit_2026-06-26`
+- Date/split: `2026-06-26`; `validation`; `750` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate1`; mode `analysis-only`; replay `analysis_only`.
+- Model role: Analysis-only Gate 1 hard-slice audit over frozen v0.9 validation replay and residual audit; no model calls and no holdout rows are read.; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `selector_v0_9_frozen_gate1_no_new_repair`.
+- Primary metrics: band_submonthly_changed_precision=0.2, band_weekly_changed_precision=0.4, changed_label_precision=0.7347, changed_labels=49, correct_to_wrong=0, gate_passed=yes, residual_no_correct_component=11, selected_pragmatic_correct=735, selected_purist_correct=733, test_rows_read=0, wrong_to_correct=36.
+- Evidence validity: Validation-only saved-output hard-slice audit. The replay exposes decision features and fresh-evidence boundary profiles but no explicit source-validity fields; no locked test rows are read.
+- Cache/reuse source: Frozen v0.9 validation replay plus frozen residual component-generation audit from 2026-06-15.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_protocol_2026-06-26`.
+- Claim language: Gate 1 passes but only advances the frozen selector to Gate 2 robustness/stress panels. Low changed-label precision in submonthly and weekly bands remains a portability risk; 11 residual wrong rows are excluded from selector-superiority claims because no current component can produce the gold label. No test450 audit is authorized.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate1_hard_slice_audit_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate1_hard_slice_audit_2026-06-26.md`.
+
+### `gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26`
+- Date/split: `2026-06-26`; `test_component_replay`; `450` rows.
+- Pipeline: `agentic_structured_event_consensus`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call exact three-agent consensus component replay over saved GPT, Qwen, and DeepSeek structured-event test artifacts plus the validation-matched rules-tool floor.; model `none`.
+- Registry roles: `component_ladder`.
+- Repair mode/config: `exact_three_agent_unanimous_label_component_replay`.
+- Primary metrics: accepted_unanimous_exact_label=85, actions_keep_baseline=365, actions_switch_to_consensus=85, consensus_matches_baseline=160, missing_agent_rows=0, no_unanimous_exact_label=205, row_level_correctness_written=no.
+- Evidence validity: Component-freeze artifact only. It writes source_row_index, labels, and consensus decision metadata, but no row-level correctness, failures, evidence, selected events, or transitions.
+- Cache/reuse source: Saved test450 rules-tool baseline plus GPT, Qwen recent-patch, and DeepSeek v0.6 structured-event artifacts.
+- Supersedes: `gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13`.
+- Claim language: Generated to resolve the exact v0.9 source-parity blocker. It is not a Gate 4 result and does not authorize tuning or row-level test review.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.md`, `experiments/build_gan2026_exact_three_agent_consensus_test_replay.py`.
+
 ### `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140`
 - Date/split: `2026-06-25`; `dev`; `140` rows.
 - Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
@@ -250,7 +342,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Structured saved-raw replay with standard source-exact repair: 824/827 scored, 3 invalid, 0.9964 validity. Final assembled lane diagnostics report 1.0000 exact evidence for Diagnosis, SeizureFrequency, Prescription, and Investigations.
 - Cache/reuse source: Live structured and Diagnosis repair-v02 producers plus frozen deterministic same-core replay components; no full-200 or holdout row inspection.
 - Supersedes: `exectv2_2call_no_sf_adjudicator_qwen36_dev140`.
-- Claim language: Qwen repair v02 passes predeclared dev140 repair gates after shared source-exact evidence repair and completed downstream same-core assembly. Clinical-headline F1 is 0.8319 with SF 0.7182 and 0 call/parse failures. This supports a fresh full-200 inclusion decision only; it does not retroactively change the GPT-4.1-mini plus DeepSeek full-200 predeclaration. Fresh Qwen repair v02 full-200 aggregate-only predeclaration recorded 2026-06-26; this does not retroactively alter the GPT-4.1-mini plus DeepSeek full-200 protocol.
+- Claim language: Qwen repair v02 passes predeclared dev140 repair gates after shared source-exact evidence repair and completed downstream same-core assembly. Clinical-headline F1 is 0.8319 with SF 0.7182 and 0 call/parse failures. Full-200 aggregate-only follow-up completed separately on 2026-06-26.
 - Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.json`, `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_2026-06-25.md`, `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_dev140_readout_2026-06-25.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_structured.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_diagnosis_decomposer.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_diagnosis_decomposer.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_structured_direct.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_structured_direct.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_state_projection_combined.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_state_projection_combined.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_unknown_suppression.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_unknown_suppression.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_union_arbitration.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_sf_union_arbitration.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_dev140_20260625_prescription_deterministic_repair_v03.jsonl`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140.json`, `docs/experiments/exectv2/reliability/exectv2_qwen_repair_v02_full200_predeclaration_2026-06-26.md`.
 
 ### `exectv2_2call_no_sf_adjudicator_qwen36_dev140`
@@ -291,6 +383,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_sf_verifier`; mode `live`; replay `native_run_split`.
 - Model role: SeizureFrequency-focused verifier v0.3 over the v0.5 single structured key-entity draft. The model owns normalized SeizureFrequency event text and may keep, delete, edit, or add SF mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
 - Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.3, seizure_frequency_clinical_headline_f1=0.831, seizure_frequency_clinical_headline_precision=0.794, seizure_frequency_clinical_headline_recall=0.871, seizure_frequency_source_near_f1=0.831.
 - Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
@@ -380,6 +473,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_llm_med_inv_verifier`; mode `live`; replay `native_run_split`.
 - Model role: Prescription/Investigations verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Prescription and Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
 - Primary metrics: evidence_validity_rate=0.9792, investigations_f1=0.496, parse_failures=0, prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, prompt_version=exectv2_llm_med_inv_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
@@ -390,6 +484,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_llm_investigations_verifier`; mode `live`; replay `native_run_split`.
 - Model role: Investigations-focused verifier v0.1 over the v0.5 single structured key-entity draft. The model owns revised Investigations mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
 - Primary metrics: evidence_validity_rate=0.9928, investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, parse_failures=0, prompt_version=exectv2_llm_investigations_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
@@ -400,6 +495,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_diagnosis_verifier`; mode `live`; replay `native_run_split`.
 - Model role: Diagnosis-focused verifier v0.5 over the v0.5 single structured key-entity draft. The model owns normalized Diagnosis concept text and may keep, delete, edit, or add Diagnosis mentions; deterministic code only gates schema/evidence, strips model CUI/CUIPhrase, projects CUIs, and scores.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection`.
 - Primary metrics: diagnosis_clinical_headline_f1=0.837, diagnosis_clinical_headline_precision=0.911, diagnosis_clinical_headline_recall=0.774, diagnosis_semantic_item_f1=0.62, diagnosis_source_near_f1=0.84, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_diagnosis_verifier_v0.5.
 - Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
@@ -502,6 +598,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-18`; `dev`; `140` rows.
 - Pipeline: `exectv2_hybrid_sf_state_adjudicator`; mode `live`; replay `native_run_split`.
 - Model role: SeizureFrequency candidate-span state adjudicator v0.5 over the v0.5 single structured key-entity draft. v0.5 specializes seizure-free anchors and adds residual-supported benchmark-format SF CUI projection variants.; model `openai/gpt-4.1-mini`.
+- Registry roles: `component_ladder`.
 - Repair mode/config: `neutral schema repair + benchmark CUI projection only; model-supplied CUI/CUIPhrase stripped before projection; deterministic typed candidate spans and seizure-free anchor guide are attention scaffolding, not predictions`.
 - Primary metrics: active_rate_f1=0.762, candidate_spans=414, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.5, seizure_free_f1=0.781, seizure_frequency_f1=0.721, seizure_frequency_precision=0.71, seizure_frequency_recall=0.733, unknown_f1=0.476.
 - Evidence validity: 0 call failures, 0 parse failures; 193/193 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
@@ -1806,6 +1903,19 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Reject
 
+### `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26`
+- Date/split: `2026-06-26`; `test`; `450` rows.
+- Pipeline: `consensus_fresh_agreement_selector_frozen_gate4`; mode `no-call replay`; replay `saved_output_replay`.
+- Model role: No-call aggregate-only replay of frozen v0.9 selector over Gate 3 constrained deterministic, two-agent consensus, and fresh-evidence test components.; model `none`.
+- Registry roles: `holdout_anchor`, `component_ladder`.
+- Repair mode/config: `selector_v0_9_constrained_no_call_replay`.
+- Primary metrics: changed_label_precision=0.5909, changed_labels=44, claim_scope=constrained_holdout_evidence, correct_to_wrong=7, deterministic_purist_correct=329, exact_source_symmetry=no, gate_passed=no, net_purist_gain_vs_deterministic=19, row_level_output_written=no, selected_pragmatic_correct=358, selected_purist_correct=348, wrong_to_correct=26.
+- Evidence validity: User-authorized frozen aggregate-only locked test450 audit. No row-level failures, rationales, evidence, selected events, or transitions are reported; source symmetry is constrained, not exact.
+- Cache/reuse source: Gate 3 constrained source set: deterministic DCP test450, available two-agent consensus test450, and V12 fresh-evidence v0.6/safety-v0.9 test450 artifact.
+- Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_2026-06-26`.
+- Claim language: Gate 4 numeric bars fail. Record as final-evaluation evidence and return any follow-up to validation-only component-generation work.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26.md`, `experiments/build_gan2026_v09_frozen_gate4_constrained_aggregate_audit.py`.
+
 ### `exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
 - Pipeline: `exectv2_llm_only_per_entity`; mode `live`; replay `native_run_split`.
@@ -2357,6 +2467,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Date/split: `2026-06-09`; `validation`; `750` rows.
 - Pipeline: `cross_model_comparison`; mode `analysis-only`; replay `analysis_only`.
 - Model role: Cross-model synthesis document -- no model calls; reads existing Phase 1 artifacts and computed failure breakdowns.; model `none`.
+- Registry roles: `model_family_variant`.
 - Primary metrics: architectures_compared=6, deepseek_dl_sf_false_pos=56, deepseek_hybrid_rendered=604, deepseek_se_purist_rate=0.821, gpt41mini_dl_unknown_false_pos=59, gpt41mini_hybrid_rendered=589, gpt41mini_se_purist_rate=0.884, models_compared=3, qwen_dl_unknown_false_pos=91, qwen_hybrid_rendered=400, qwen_se_purist_rate=0.836.
 - Evidence validity: Derived from Phase 1 per-row JSONL comparison fields for DL, CP, SE; aggregate numbers from Phase 1 report JSONLs for hybrid and all architectures.
 - Claim language: Cross-model synthesis comparing all three Phase 1 models (gpt-4.1-mini, deepseek-v4-flash, qwen3.6-35b) across all six architecture configurations on validation750. Includes per-row failure category breakdowns for DL, CP, SE (hybrid row-level data not available for deepseek/qwen without deep-replay extraction). Key findings: (1) SE is consistently best across models but gpt-4.1-mini leads by 5-6pp; (2) qwen dominant failure is unknown_false_pos (91 DL vs 59 gpt-4.1-mini) -- reverse of deepseek (highest seizure_free_false_pos: 56 DL); (3) CP guidance block helps gpt-4.1-mini (+2.3pp) but harms qwen (-0.7pp); (4) FM-6 drop-attack selection is gpt-4.1-mini-specific -- qwen and deepseek already correct; (5) qwen hybrid renders only 400/750 rows vs 589/604 for gpt/deepseek; (6) deepseek hybrid routing dominated by rendered_label_supported_but_policy_sensitive (97/123) driven by its SF over-confidence.
@@ -2382,6 +2493,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: `experiments/exectv2_deterministic_all9_dev_20260617.json`, `experiments/exectv2_deterministic_all9_dev_20260617.md`.
 
 ## Clinical Recovery Reporting
+
+### `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200`
+- Date/split: `2026-06-26`; `full200_aggregate`; `200` rows.
+- Pipeline: `exectv2_same_core_model_swap`; mode `live_plus_replay`; replay `live`.
+- Model role: Qwen repair v02 structured key-family and Diagnosis producers; deterministic code owns SF projection/union, Prescription repair, and finding assembly replay.; model `ollama_chat/qwen3.6:35b`.
+- Registry roles: `model_family_variant`.
+- Repair mode/config: `qwen_output_contract_repair_v02 plus shared_standard_source_exact_evidence_repair`.
+- Primary metrics: benchmark_cui_overall_f1=0.4537, call_failures=0, clinical_headline_f1=0.8197, diagnosis_f1=0.8307, evidence_valid_overall_f1=0.7895, final_lane_evidence_rate=1.0, investigations_f1=0.8503, parse_schema_failures=0, prescription_f1=0.8926, seizure_frequency_f1=0.702, structured_evidence_invalid_after_standard_repair=6, structured_evidence_validity_rate_after_standard_repair=0.995, structured_mentions_raw=1197, structured_mentions_scored_after_standard_repair=1191.
+- Evidence validity: Structured saved-raw replay with standard source-exact repair: 1191/1197 scored, 6 invalid, 0.9950 validity. Final assembled lane diagnostics report 1.0000 exact evidence for Diagnosis, SeizureFrequency, Prescription, and Investigations.
+- Cache/reuse source: Live structured and Diagnosis repair-v02 producers plus frozen deterministic same-core replay components; aggregate-only full-200 validation with no row-level failure inspection.
+- Claim language: Separate same-core full-200 aggregate-only Qwen repair v02 row. Clinical-headline F1 is 0.8197 with SF 0.7020, 0 call/parse failures, and structured evidence validity 0.9950. Passes the predeclared full-200 stop rule but trails GPT-4.1-mini (0.8356) and DeepSeek (0.8566). Does not retroactively alter the GPT-4.1-mini plus DeepSeek full-200 protocol; not a strict benchmark or holdout claim.
+- Artifacts: `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json`, `experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.jsonl`, `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_2026-06-26.md`, `docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md`, `docs/experiments/exectv2/reliability/exectv2_qwen_repair_v02_full200_predeclaration_2026-06-26.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_structured.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_structured.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_diagnosis_decomposer.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_diagnosis_decomposer.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_sf_union_arbitration.md`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_sf_union_arbitration.jsonl`, `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_prescription_deterministic_repair_v03.jsonl`, `configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200.json`.
 
 ### `exectv2_same_core_model_swap_full200_20260625`
 - Date/split: `2026-06-25`; `full200_aggregate`; `200` rows.

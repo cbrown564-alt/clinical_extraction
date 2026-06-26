@@ -17,6 +17,7 @@ dependencies = [
   "pandas>=2.2.0",
   "jupyter>=1.0.0",
   "uvicorn>=0.30.0",
+  "mlflow>=3.14.0",
 ]
 
 [project.scripts]
@@ -25,6 +26,7 @@ gan2026-state-graph-diagnostics = "clinical_extraction.tasks.seizure_frequency.g
 gan2026-atlas-hard-slice-diagnostic = "clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.atlas_hard_slice_diagnostic:main"
 clinical-extraction-observatory = "clinical_extraction.observatory.server:main"
 clinical-extraction-mlflow-sync = "clinical_extraction.core.mlflow_registry_sync:main"
+clinical-extraction-mlflow-doctor = "clinical_extraction.core.mlflow_doctor:main"
 
 [project.optional-dependencies]
 dev = [

@@ -1,7 +1,7 @@
 # ExECTv2 Qwen Repair v02 Full-200 Aggregate Predeclaration
 
 - Date: `2026-06-26`
-- Status: authorized aggregate-only run; not executed
+- Status: completed aggregate-only run on `2026-06-26`
 - Candidate id: `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200`
 - Dev140 source: `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140`
 - Architecture core: `exectv2_2call_no_sf_adjudicator_model_swap`
