@@ -17,6 +17,9 @@ import argparse
 import json
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    write_artifact_bundle,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
     load_finding_assembly_manifest,
 )
@@ -72,16 +75,14 @@ def main() -> None:
     run = build_finding_assembly(manifest)
     report = run.report
 
-    for path in (out_jsonl, out_json, out_md):
-        path.parent.mkdir(parents=True, exist_ok=True)
-    out_jsonl.write_text(
-        "\n".join(json.dumps(row, sort_keys=True) for row in run.rows) + "\n",
-        encoding="utf-8",
-    )
-    out_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    out_md.write_text(
-        render_finding_assembly_markdown(report, json_path=out_json, jsonl_path=out_jsonl),
-        encoding="utf-8",
+    write_artifact_bundle(
+        {
+            out_jsonl: "\n".join(json.dumps(row, sort_keys=True) for row in run.rows) + "\n",
+            out_json: json.dumps(report, indent=2, sort_keys=True) + "\n",
+            out_md: render_finding_assembly_markdown(
+                report, json_path=out_json, jsonl_path=out_jsonl
+            ),
+        }
     )
 
     ladder = report["score_ladder"]
