@@ -2,6 +2,27 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
+## Paper-Writing Workstream Artifacts
+
+### `P3c-wall-transfers-manuscript-draft` (2026-06-27)
+
+- **Deliverable**: `docs/research/paper_drafts/wall_transfer_cross_dataset_2026-06-27.md`
+- **Workstream**: P3c — wall-transfers reframe; writing only, no model calls.
+- **Verdict**: draft complete; one section gated `[PENDING PROBE]` pending
+  `exectv2_sf_wall_transfer_probe_2026-06-27.md`.
+- **Key finding**: ExECTv2 SF gap (GPT 0.7525, DeepSeek 0.7602 full-200 aggregate) is
+  structurally parallel to the Gan confident-over-reading wall (P2.1: mean label entropy
+  0.012, `band_unknown` entropy 0.000). The framing converts "SF is our weakest family"
+  into the paper's strongest generalization claim: **a task-bound, not system-bound, ceiling
+  that transfers across datasets and models**. Mechanism confirmation ([PENDING PROBE])
+  requires a forward-observable-feature entropy probe on an ExECTv2 SF slice.
+- **Recommended placement**: capability-first spine §3 (*What generalizes*), subsection 3.2,
+  following the model-swap / model-agnostic subsection.
+- **Orchestrator state**: cycle `P3c-wall-transfers-manuscript-draft` recorded in
+  `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
 ## Reliability Scorecard
 
 ### `exectv2_robustness_validation_audit_2026-06-25`

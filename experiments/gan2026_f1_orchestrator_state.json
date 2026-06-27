@@ -1,6 +1,6 @@
 {
   "schema": "gan2026_f1_orchestrator_state/v1",
-  "updated": "2026-06-16",
+  "updated": "2026-06-27",
   "campaign_status": "CLOSED 2026-06-16 — user accepted 379/450 (0.842) as the honest gpt-4.1-mini ceiling for the V12 hybrid and chose to consolidate. 0.90 not pursued further on mini (C7 structural finding). Synthesis: . Unrefuted future route to >0.90: a stronger/frontier model (changes the mini constraint).",
   "goal": {
     "metric": "micro_f1_purist_eq_accuracy",
@@ -88,6 +88,20 @@
     }
   ],
   "cycles": [
+    {
+      "id": "P3c-wall-transfers-manuscript-draft",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (paper-writing workstream P3c)",
+      "candidate": "writing only — no model calls, no new data",
+      "verdict": "writing complete — [PENDING PROBE] exectv2_sf_wall_transfer_probe required to confirm cross-dataset H0_confident_over_reading",
+      "deliverable": "docs/research/paper_drafts/wall_transfer_cross_dataset_2026-06-27.md",
+      "key_finding": "ExECTv2 SF gap (GPT 0.7525, DeepSeek 0.7602 full-200 aggregate) is structurally parallel to the Gan wall (P2.1: mean label entropy 0.012, band_unknown entropy 0.000). The cross-dataset framing converts SF-is-weakest from an apology into the strongest generalization claim: task-bound, not system-bound ceiling. Mechanism confirmation requires the forward-observable-feature entropy probe on an ExECTv2 SF slice.",
+      "placement": "capability-first spine §3 — What generalizes, subsection 3.2 Wall Transfer",
+      "evidence_validity": "writing-only; cites frozen aggregate full-200 (ExECTv2) and validation-only probe (Gan P2.1); no holdout; [PENDING PROBE] marked throughout for unconfirmed mechanism",
+      "artifacts": [
+        "docs/research/paper_drafts/wall_transfer_cross_dataset_2026-06-27.md"
+      ]
+    },
     {
       "id": "C1-robustness-battery",
       "date": "2026-06-15",
