@@ -1,0 +1,710 @@
+{
+  "artifact_kind": "exectv2_sf_wall_transfer_probe",
+  "generated_on": "2026-06-27",
+  "claim_boundary": "Aggregate-only ExECTv2 SF wall-transfer probe using saved same-core model-swap and self-consistency artifacts. No full-200 or holdout row-level inspection; no new model calls.",
+  "row_inspection_policy": "aggregate_only_no_full200_or_holdout_row_level_inspection",
+  "gan_p21_reference": {
+    "artifact": "experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json",
+    "hypothesis_verdict": "H0_confident_over_reading",
+    "mean_label_entropy_purist": 0.01207518749639422,
+    "residual": {
+      "n": 23,
+      "mean_label_entropy": 0.017636480966502888,
+      "mean_kind_entropy": 0.017636480966502888
+    },
+    "non_residual": {
+      "n": 127,
+      "mean_label_entropy": 0.01106802411204383,
+      "mean_kind_entropy": 0.0
+    }
+  },
+  "family_metrics_table": [
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "model_label": "DeepSeek chat",
+      "family": "Diagnosis",
+      "f1": 0.8845,
+      "precision": 0.8767,
+      "recall": 0.8924,
+      "fp": 36,
+      "fn": 31,
+      "over_emission_rate": 0.1233,
+      "miss_rate": 0.1076
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "model_label": "DeepSeek chat",
+      "family": "SeizureFrequency",
+      "f1": 0.7658,
+      "precision": 0.7277,
+      "recall": 0.8081,
+      "fp": 52,
+      "fn": 33,
+      "over_emission_rate": 0.2723,
+      "miss_rate": 0.1919
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "model_label": "DeepSeek chat",
+      "family": "Prescription",
+      "f1": 0.8895,
+      "precision": 0.8871,
+      "recall": 0.8919,
+      "fp": 21,
+      "fn": 20,
+      "over_emission_rate": 0.1129,
+      "miss_rate": 0.1081
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "model_label": "DeepSeek chat",
+      "family": "Investigations",
+      "f1": 0.8966,
+      "precision": 0.963,
+      "recall": 0.8387,
+      "fp": 4,
+      "fn": 20,
+      "over_emission_rate": 0.037,
+      "miss_rate": 0.1613
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "model_label": "GPT-4.1-mini",
+      "family": "Diagnosis",
+      "f1": 0.8573,
+      "precision": 0.8676,
+      "recall": 0.8472,
+      "fp": 36,
+      "fn": 44,
+      "over_emission_rate": 0.1324,
+      "miss_rate": 0.1528
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "model_label": "GPT-4.1-mini",
+      "family": "SeizureFrequency",
+      "f1": 0.7645,
+      "precision": 0.7302,
+      "recall": 0.8023,
+      "fp": 51,
+      "fn": 34,
+      "over_emission_rate": 0.2698,
+      "miss_rate": 0.1977
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "model_label": "GPT-4.1-mini",
+      "family": "Prescription",
+      "f1": 0.8895,
+      "precision": 0.8871,
+      "recall": 0.8919,
+      "fp": 21,
+      "fn": 20,
+      "over_emission_rate": 0.1129,
+      "miss_rate": 0.1081
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "model_label": "GPT-4.1-mini",
+      "family": "Investigations",
+      "f1": 0.8347,
+      "precision": 0.8559,
+      "recall": 0.8145,
+      "fp": 17,
+      "fn": 23,
+      "over_emission_rate": 0.1441,
+      "miss_rate": 0.1855
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+      "model_label": "Qwen 3.6 35B",
+      "family": "Diagnosis",
+      "f1": 0.8027,
+      "precision": 0.8178,
+      "recall": 0.7882,
+      "fp": 47,
+      "fn": 61,
+      "over_emission_rate": 0.1822,
+      "miss_rate": 0.2118
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+      "model_label": "Qwen 3.6 35B",
+      "family": "SeizureFrequency",
+      "f1": 0.6919,
+      "precision": 0.6465,
+      "recall": 0.7442,
+      "fp": 70,
+      "fn": 44,
+      "over_emission_rate": 0.3535,
+      "miss_rate": 0.2558
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+      "model_label": "Qwen 3.6 35B",
+      "family": "Prescription",
+      "f1": 0.8895,
+      "precision": 0.8871,
+      "recall": 0.8919,
+      "fp": 21,
+      "fn": 20,
+      "over_emission_rate": 0.1129,
+      "miss_rate": 0.1081
+    },
+    {
+      "split": "dev140",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+      "model_label": "Qwen 3.6 35B",
+      "family": "Investigations",
+      "f1": 0.8354,
+      "precision": 0.8761,
+      "recall": 0.7984,
+      "fp": 14,
+      "fn": 25,
+      "over_emission_rate": 0.1239,
+      "miss_rate": 0.2016
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "model_label": "GPT-4.1-mini",
+      "family": "Diagnosis",
+      "f1": 0.8397,
+      "precision": 0.8462,
+      "recall": 0.8333,
+      "fp": 62,
+      "fn": 70,
+      "over_emission_rate": 0.1538,
+      "miss_rate": 0.1667
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "model_label": "GPT-4.1-mini",
+      "family": "SeizureFrequency",
+      "f1": 0.7525,
+      "precision": 0.7333,
+      "recall": 0.7727,
+      "fp": 68,
+      "fn": 55,
+      "over_emission_rate": 0.2667,
+      "miss_rate": 0.2273
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "model_label": "GPT-4.1-mini",
+      "family": "Prescription",
+      "f1": 0.8926,
+      "precision": 0.8993,
+      "recall": 0.886,
+      "fp": 27,
+      "fn": 31,
+      "over_emission_rate": 0.1007,
+      "miss_rate": 0.114
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_gpt41mini_full200",
+      "model_label": "GPT-4.1-mini",
+      "family": "Investigations",
+      "f1": 0.8563,
+      "precision": 0.9241,
+      "recall": 0.7978,
+      "fp": 12,
+      "fn": 37,
+      "over_emission_rate": 0.0759,
+      "miss_rate": 0.2022
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "model_label": "DeepSeek chat",
+      "family": "Diagnosis",
+      "f1": 0.8708,
+      "precision": 0.8608,
+      "recall": 0.881,
+      "fp": 59,
+      "fn": 50,
+      "over_emission_rate": 0.1392,
+      "miss_rate": 0.119
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "model_label": "DeepSeek chat",
+      "family": "SeizureFrequency",
+      "f1": 0.7602,
+      "precision": 0.7196,
+      "recall": 0.8058,
+      "fp": 76,
+      "fn": 47,
+      "over_emission_rate": 0.2804,
+      "miss_rate": 0.1942
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "model_label": "DeepSeek chat",
+      "family": "Prescription",
+      "f1": 0.8926,
+      "precision": 0.8993,
+      "recall": 0.886,
+      "fp": 27,
+      "fn": 31,
+      "over_emission_rate": 0.1007,
+      "miss_rate": 0.114
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_deepseek_full200",
+      "model_label": "DeepSeek chat",
+      "family": "Investigations",
+      "f1": 0.9091,
+      "precision": 0.981,
+      "recall": 0.847,
+      "fp": 3,
+      "fn": 28,
+      "over_emission_rate": 0.019,
+      "miss_rate": 0.153
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "model_label": "Qwen 3.6 35B (repair v02)",
+      "family": "Diagnosis",
+      "f1": 0.8307,
+      "precision": 0.8145,
+      "recall": 0.8476,
+      "fp": 77,
+      "fn": 64,
+      "over_emission_rate": 0.1855,
+      "miss_rate": 0.1524
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "model_label": "Qwen 3.6 35B (repair v02)",
+      "family": "SeizureFrequency",
+      "f1": 0.702,
+      "precision": 0.6679,
+      "recall": 0.7397,
+      "fp": 89,
+      "fn": 63,
+      "over_emission_rate": 0.3321,
+      "miss_rate": 0.2603
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "model_label": "Qwen 3.6 35B (repair v02)",
+      "family": "Prescription",
+      "f1": 0.8926,
+      "precision": 0.8993,
+      "recall": 0.886,
+      "fp": 27,
+      "fn": 31,
+      "over_emission_rate": 0.1007,
+      "miss_rate": 0.114
+    },
+    {
+      "split": "full200",
+      "candidate_id": "exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200",
+      "model_label": "Qwen 3.6 35B (repair v02)",
+      "family": "Investigations",
+      "f1": 0.8503,
+      "precision": 0.8325,
+      "recall": 0.8689,
+      "fp": 32,
+      "fn": 24,
+      "over_emission_rate": 0.1675,
+      "miss_rate": 0.1311
+    }
+  ],
+  "weakest_family": {
+    "dev140": {
+      "worst_family": "SeizureFrequency",
+      "worst_family_f1": 0.7645,
+      "best_family": "Prescription",
+      "best_family_f1": 0.8895,
+      "family_f1": {
+        "Diagnosis": 0.8573,
+        "SeizureFrequency": 0.7645,
+        "Prescription": 0.8895,
+        "Investigations": 0.8347
+      }
+    },
+    "full200": {
+      "worst_family": "SeizureFrequency",
+      "worst_family_f1": 0.7525,
+      "best_family": "Prescription",
+      "best_family_f1": 0.8926,
+      "family_f1": {
+        "Diagnosis": 0.8397,
+        "SeizureFrequency": 0.7525,
+        "Prescription": 0.8926,
+        "Investigations": 0.8563
+      }
+    }
+  },
+  "cross_model_dev140": {
+    "split": "dev140",
+    "model_count": 3,
+    "models": [
+      "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+      "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+      "exectv2_2call_no_sf_adjudicator_qwen36_dev140"
+    ],
+    "letter_count": 140,
+    "overall": {
+      "cell_count": 560,
+      "exact_agreement_rate": 0.6911,
+      "mean_pairwise_jaccard": 0.8406
+    },
+    "by_family": [
+      {
+        "family": "Diagnosis",
+        "cells": 140,
+        "exact_agreement_rate": 0.5143,
+        "mean_pairwise_jaccard": 0.7704,
+        "error_cells": 42,
+        "correct_cells": 98,
+        "error_exact_agreement_rate": 0.119,
+        "correct_exact_agreement_rate": 0.6837,
+        "error_mean_agreement_cluster_size": 1.7857,
+        "correct_mean_agreement_cluster_size": 2.602,
+        "error_low_confidence_rate": 0.1667,
+        "correct_low_confidence_rate": 0.0816
+      },
+      {
+        "family": "SeizureFrequency",
+        "cells": 140,
+        "exact_agreement_rate": 0.5071,
+        "mean_pairwise_jaccard": 0.7429,
+        "error_cells": 55,
+        "correct_cells": 85,
+        "error_exact_agreement_rate": 0.2182,
+        "correct_exact_agreement_rate": 0.6941,
+        "error_mean_agreement_cluster_size": 1.9636,
+        "correct_mean_agreement_cluster_size": 2.6353,
+        "error_low_confidence_rate": 0.5273,
+        "correct_low_confidence_rate": 0.4235
+      },
+      {
+        "family": "Prescription",
+        "cells": 140,
+        "exact_agreement_rate": 1.0,
+        "mean_pairwise_jaccard": 1.0,
+        "error_cells": 33,
+        "correct_cells": 107,
+        "error_exact_agreement_rate": 1.0,
+        "correct_exact_agreement_rate": 1.0,
+        "error_mean_agreement_cluster_size": 3.0,
+        "correct_mean_agreement_cluster_size": 3.0,
+        "error_low_confidence_rate": 0.7576,
+        "correct_low_confidence_rate": 0.785
+      },
+      {
+        "family": "Investigations",
+        "cells": 140,
+        "exact_agreement_rate": 0.7429,
+        "mean_pairwise_jaccard": 0.8492,
+        "error_cells": 16,
+        "correct_cells": 124,
+        "error_exact_agreement_rate": 0.25,
+        "correct_exact_agreement_rate": 0.8065,
+        "error_mean_agreement_cluster_size": 2.0625,
+        "correct_mean_agreement_cluster_size": 2.7903,
+        "error_low_confidence_rate": 0.0,
+        "correct_low_confidence_rate": 0.0
+      }
+    ],
+    "pairwise": [
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "family": "Diagnosis",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.7071,
+        "mean_pairwise_jaccard": 0.8518
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "family": "SeizureFrequency",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.6929,
+        "mean_pairwise_jaccard": 0.7996
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "family": "Prescription",
+        "cells": 140,
+        "exact_cell_agreement_rate": 1.0,
+        "mean_pairwise_jaccard": 1.0
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "family": "Investigations",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.8357,
+        "mean_pairwise_jaccard": 0.8488
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Diagnosis",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.6,
+        "mean_pairwise_jaccard": 0.7473
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "SeizureFrequency",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.5929,
+        "mean_pairwise_jaccard": 0.7082
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Prescription",
+        "cells": 140,
+        "exact_cell_agreement_rate": 1.0,
+        "mean_pairwise_jaccard": 1.0
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_deepseek_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Investigations",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.85,
+        "mean_pairwise_jaccard": 0.8917
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Diagnosis",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.5643,
+        "mean_pairwise_jaccard": 0.7123
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "SeizureFrequency",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.5929,
+        "mean_pairwise_jaccard": 0.7208
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Prescription",
+        "cells": 140,
+        "exact_cell_agreement_rate": 1.0,
+        "mean_pairwise_jaccard": 1.0
+      },
+      {
+        "left_candidate": "exectv2_2call_no_sf_adjudicator_gpt41mini_dev140",
+        "right_candidate": "exectv2_2call_no_sf_adjudicator_qwen36_dev140",
+        "family": "Investigations",
+        "cells": 140,
+        "exact_cell_agreement_rate": 0.7643,
+        "mean_pairwise_jaccard": 0.8071
+      }
+    ]
+  },
+  "self_consistency_panel": {
+    "artifact": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_20260625.json",
+    "pairwise_agreement": {
+      "by_family": [
+        {
+          "cell_count": 840,
+          "exact_family_cell_agreement_rate": 0.8155,
+          "family": "Diagnosis",
+          "mean_pairwise_jaccard": 0.9107
+        },
+        {
+          "cell_count": 840,
+          "exact_family_cell_agreement_rate": 0.8333,
+          "family": "SeizureFrequency",
+          "mean_pairwise_jaccard": 0.8911
+        },
+        {
+          "cell_count": 840,
+          "exact_family_cell_agreement_rate": 1.0,
+          "family": "Prescription",
+          "mean_pairwise_jaccard": 1.0
+        },
+        {
+          "cell_count": 840,
+          "exact_family_cell_agreement_rate": 0.894,
+          "family": "Investigations",
+          "mean_pairwise_jaccard": 0.9119
+        }
+      ],
+      "cell_count": 3360,
+      "exact_family_cell_agreement_rate": 0.8857,
+      "mean_pairwise_jaccard": 0.9284,
+      "pairwise_comparisons": 6
+    },
+    "semantic_entropy": {
+      "by_family": [
+        {
+          "cell_count": 140,
+          "family": "Diagnosis",
+          "mean_entropy": 0.3069,
+          "nonzero_entropy_cells": 42
+        },
+        {
+          "cell_count": 140,
+          "family": "SeizureFrequency",
+          "mean_entropy": 0.2792,
+          "nonzero_entropy_cells": 39
+        },
+        {
+          "cell_count": 140,
+          "family": "Prescription",
+          "mean_entropy": 0.0,
+          "nonzero_entropy_cells": 0
+        },
+        {
+          "cell_count": 140,
+          "family": "Investigations",
+          "mean_entropy": 0.1757,
+          "nonzero_entropy_cells": 26
+        }
+      ],
+      "mean_entropy": 0.1905,
+      "nonzero_entropy_cells": 107
+    },
+    "majority_correctness": {
+      "agreement_accuracy_curve": [
+        {
+          "accuracy": 0.7925,
+          "cells": 453,
+          "correct_majority_cells": 359,
+          "majority_top_k": "4/4"
+        },
+        {
+          "accuracy": 0.3529,
+          "cells": 68,
+          "correct_majority_cells": 24,
+          "majority_top_k": "3/4"
+        },
+        {
+          "accuracy": 0.4444,
+          "cells": 36,
+          "correct_majority_cells": 16,
+          "majority_top_k": "2/4"
+        },
+        {
+          "accuracy": 0.3333,
+          "cells": 3,
+          "correct_majority_cells": 1,
+          "majority_top_k": "1/4"
+        }
+      ]
+    }
+  },
+  "self_consistency_error_stratification": {
+    "panel_id": "entropy_dev140_temps",
+    "repeat_count": 4,
+    "temperatures": [
+      0.3,
+      0.5,
+      0.7,
+      1.0
+    ],
+    "by_family": [
+      {
+        "family": "Diagnosis",
+        "cells": 140,
+        "error_cells": 50,
+        "correct_cells": 90,
+        "mean_entropy": 0.1796,
+        "error_mean_entropy": 0.3117,
+        "correct_mean_entropy": 0.1062,
+        "unanimous_4_of_4_rate": 0.6643,
+        "unanimous_4_of_4_wrong_rate": 0.1571,
+        "error_unanimous_4_of_4_rate": 0.44,
+        "correct_unanimous_4_of_4_rate": 0.7889
+      },
+      {
+        "family": "SeizureFrequency",
+        "cells": 140,
+        "error_cells": 55,
+        "correct_cells": 85,
+        "mean_entropy": 0.1548,
+        "error_mean_entropy": 0.2867,
+        "correct_mean_entropy": 0.0694,
+        "unanimous_4_of_4_rate": 0.6929,
+        "unanimous_4_of_4_wrong_rate": 0.1714,
+        "error_unanimous_4_of_4_rate": 0.4364,
+        "correct_unanimous_4_of_4_rate": 0.8588
+      },
+      {
+        "family": "Prescription",
+        "cells": 140,
+        "error_cells": 33,
+        "correct_cells": 107,
+        "mean_entropy": 0.0,
+        "error_mean_entropy": 0.0,
+        "correct_mean_entropy": 0.0,
+        "unanimous_4_of_4_rate": 1.0,
+        "unanimous_4_of_4_wrong_rate": 0.2357,
+        "error_unanimous_4_of_4_rate": 1.0,
+        "correct_unanimous_4_of_4_rate": 1.0
+      },
+      {
+        "family": "Investigations",
+        "cells": 140,
+        "error_cells": 26,
+        "correct_cells": 114,
+        "mean_entropy": 0.0879,
+        "error_mean_entropy": 0.2522,
+        "correct_mean_entropy": 0.0504,
+        "unanimous_4_of_4_rate": 0.8143,
+        "unanimous_4_of_4_wrong_rate": 0.0857,
+        "error_unanimous_4_of_4_rate": 0.4615,
+        "correct_unanimous_4_of_4_rate": 0.8947
+      }
+    ]
+  },
+  "source_artifacts": {
+    "dev140_model_swap": "experiments/exectv2_same_core_model_swap_dev140_20260625.json",
+    "full200_model_swap": "experiments/exectv2_same_core_model_swap_full200_20260625.json",
+    "qwen_full200": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_20260626.json",
+    "self_consistency": "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_20260625.json",
+    "gan_p21": "experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json"
+  },
+  "verdict": {
+    "verdict": "partial",
+    "rationale": "SF weakness and some confident-error signatures transfer, but ExECTv2 entropy/agreement magnitudes differ from Gan's near-zero P2.1 panel — same mechanism, different observability.",
+    "checks_passed": 3,
+    "checks_total": 6,
+    "checks": {
+      "sf_weakest_on_dev140_and_full200": true,
+      "sf_error_cross_model_agreement_not_lower_than_correct": false,
+      "sf_unanimous_4_of_4_wrong_material": true,
+      "sf_error_entropy_not_elevated_vs_correct": false,
+      "gan_p21_h0_confident_over_reading_reference": true,
+      "other_families_also_show_confident_error_pattern": false
+    }
+  }
+}
