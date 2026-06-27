@@ -15,6 +15,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_sto
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops import (
     LensPolicy,
     LensResult,
+    evidence_is_grounded,
     finding_with_text_attributes,
     source_for_residual,
     text_counts,
@@ -218,7 +219,7 @@ def _investigation_added_finding(
             "The source phrase matches a bounded dev residual completed-investigation "
             "pattern."
         ),
-        evidence_valid=evidence in store.note_text,
+        evidence_valid=evidence_is_grounded(store.note_text, evidence),
         raw_surface=False,
     )
 

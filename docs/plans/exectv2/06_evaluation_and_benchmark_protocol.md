@@ -15,6 +15,9 @@ until `docs/runbooks/gated_blockers_2026-06-18.md` is satisfied, including
 benchmark-beating GPT-first dev evidence, explicit user authorization, a
 predeclared aggregate readout, and a separate frozen protocol.
 
+**Evidence validity metric (2026-06-27):** canonical definition in
+[`docs/reference/evidence_groundedness_metric.md`](../../reference/evidence_groundedness_metric.md).
+
 ## Purpose
 
 Define exactly how we score, what counts as "beating the benchmark", how splits

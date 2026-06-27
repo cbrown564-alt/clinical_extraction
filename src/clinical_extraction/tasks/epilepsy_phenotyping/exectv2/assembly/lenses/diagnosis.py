@@ -17,6 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops im
     LensResult,
     diagnosis_added_finding,
     diagnosis_finding_with_text,
+    evidence_is_grounded,
     first_source_finding,
     has_diagnosis_text_with_evidence,
     rewrite_counts,
@@ -354,7 +355,7 @@ def _focal_epilepsy_heading_findings(
             ),
         ),
         rationale="The Diagnosis heading explicitly names focal epilepsy.",
-        evidence_valid=evidence in store.note_text,
+        evidence_valid=evidence_is_grounded(store.note_text, evidence),
         raw_surface=False,
     )
     return (finding,)

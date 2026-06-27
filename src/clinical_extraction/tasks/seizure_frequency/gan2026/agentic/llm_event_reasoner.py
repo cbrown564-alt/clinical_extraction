@@ -17,7 +17,7 @@ from typing import Any, Literal
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from clinical_extraction.core.evidence import evidence_is_substring, locate_evidence
+from clinical_extraction.core.evidence import locate_evidence, score_evidence_set
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -965,7 +965,8 @@ def _decision_evidence_valid(
 ) -> bool:
     if decision is None or not decision.evidence:
         return False
-    return all(evidence_is_substring(note_text, evidence) for evidence in decision.evidence)
+    scored = score_evidence_set(note_text, decision.evidence)
+    return scored.total > 0 and scored.grounded == scored.total
 
 
 def _v0_reference(structured_event_row: Mapping[str, Any] | None) -> dict[str, Any]:

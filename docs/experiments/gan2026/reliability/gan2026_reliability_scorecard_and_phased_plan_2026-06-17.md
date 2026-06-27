@@ -16,6 +16,9 @@ work is re-expression of existing logs into reliability form, not new experiment
 findings below come from a four-agent deep evidence audit (2026-06-17); every cited
 artifact was read, and numbers were recomputed from logged JSONL where stated.
 
+**Evidence validity metric (2026-06-27):** unified cross-task definition in
+[`docs/reference/evidence_groundedness_metric.md`](../../reference/evidence_groundedness_metric.md).
+
 ---
 
 ## Scope, canonical subject, and the governing prior

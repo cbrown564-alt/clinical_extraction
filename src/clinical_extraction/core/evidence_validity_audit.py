@@ -10,17 +10,14 @@ import json
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from enum import StrEnum
 from pathlib import Path
 from typing import Any, Literal
 
 from clinical_extraction.core.evidence import (
-    clean_semantically_neutral_text_artifacts,
-    evidence_is_substring,
-    repair_case_only_evidence_copy,
-    repair_ellipsis_span_evidence_copy,
-    repair_section_header_list_item_evidence_copy,
-    repair_whitespace_evidence_copy,
+    EvidenceGrade,
+    GROUNDED_GRADES,
+    grade_evidence,
+    is_grounded,
 )
 from clinical_extraction.core.registry import RunRegistryEntry, load_run_registry
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
@@ -42,23 +39,6 @@ TaskKind = Literal["gan2026", "exectv2"]
 GanPipelineKind = Literal["hybrid", "llm_only", "agentic", "unknown"]
 
 
-class EvidenceGrade(StrEnum):
-    EXACT = "EXACT"
-    REPAIRED_ARTIFACT = "REPAIRED_ARTIFACT"
-    REPAIRED_CASE = "REPAIRED_CASE"
-    REPAIRED_WHITESPACE = "REPAIRED_WHITESPACE"
-    REPAIRED_ELLIPSIS = "REPAIRED_ELLIPSIS"
-    REPAIRED_SECTION = "REPAIRED_SECTION"
-    ABSENT = "ABSENT"
-    EMPTY = "EMPTY"
-
-
-GROUNDED_GRADES: frozenset[EvidenceGrade] = frozenset(
-    grade
-    for grade in EvidenceGrade
-    if grade.name.startswith("EXACT") or grade.name.startswith("REPAIRED_")
-)
-
 ALL_GRADES: tuple[EvidenceGrade, ...] = tuple(EvidenceGrade)
 
 
@@ -74,38 +54,9 @@ class AuditTarget:
 
 
 def grade_evidence_string(note_text: str, evidence: str) -> EvidenceGrade:
-    """Classify one evidence string using the existing repair cascade priority."""
+    """Classify one evidence string using the canonical core metric."""
 
-    if not str(evidence or "").strip():
-        return EvidenceGrade.EMPTY
-    if evidence_is_substring(note_text, evidence):
-        return EvidenceGrade.EXACT
-
-    repaired = clean_semantically_neutral_text_artifacts(evidence)
-    if repaired and repaired != evidence and evidence_is_substring(note_text, repaired):
-        return EvidenceGrade.REPAIRED_ARTIFACT
-
-    case_repaired = repair_case_only_evidence_copy(repaired, note_text)
-    if case_repaired != repaired and evidence_is_substring(note_text, case_repaired):
-        return EvidenceGrade.REPAIRED_CASE
-
-    whitespace_repaired = repair_whitespace_evidence_copy(repaired, note_text)
-    if whitespace_repaired != repaired and evidence_is_substring(note_text, whitespace_repaired):
-        return EvidenceGrade.REPAIRED_WHITESPACE
-
-    ellipsis_repaired = repair_ellipsis_span_evidence_copy(repaired, note_text)
-    if ellipsis_repaired != repaired and evidence_is_substring(note_text, ellipsis_repaired):
-        return EvidenceGrade.REPAIRED_ELLIPSIS
-
-    section_repaired = repair_section_header_list_item_evidence_copy(repaired, note_text)
-    if section_repaired != repaired and evidence_is_substring(note_text, section_repaired):
-        return EvidenceGrade.REPAIRED_SECTION
-
-    return EvidenceGrade.ABSENT
-
-
-def is_grounded(grade: EvidenceGrade) -> bool:
-    return grade in GROUNDED_GRADES
+    return grade_evidence(note_text, evidence)
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -650,6 +601,204 @@ def _fmt_pct(value: float | None) -> str:
     if value is None:
         return "n/a"
     return f"{value * 100:.1f}%"
+
+
+OUT_RECONCILIATION_MD = (
+    ROOT / "docs/experiments/reliability/evidence_groundedness_reconciliation_2026-06-27.md"
+)
+PRIORITY_SOURCES: frozenset[str] = frozenset(
+    {"registry_surface_as_architecture", "registry_promote"}
+)
+METRIC_DOC = "docs/reference/evidence_groundedness_metric.md"
+
+
+def _before_metric_rate(run: Mapping[str, Any]) -> float | None:
+    if run["task"] == "exectv2":
+        return run.get("row_exact_valid_rate")
+    return run.get("row_exact_valid_rate")
+
+
+def _after_metric_rate(run: Mapping[str, Any]) -> float | None:
+    if run["task"] == "gan2026":
+        return run.get("row_grounded_rate")
+    return run.get("grounded_rate")
+
+
+def _is_qwen_run(run: Mapping[str, Any]) -> bool:
+    run_id = str(run.get("run_id", "")).lower()
+    model = str(run.get("model_label", "")).lower()
+    return "qwen" in run_id or "qwen" in model
+
+
+def render_reconciliation_markdown(payload: Mapping[str, Any]) -> str:
+    all_runs = [*payload["gan2026_runs"], *payload["exectv2_runs"]]
+    priority_runs = [run for run in all_runs if run.get("source") in PRIORITY_SOURCES]
+    qwen_runs = [run for run in all_runs if _is_qwen_run(run)]
+
+    lines: list[str] = [
+        "# Evidence Groundedness Reconciliation — Phase 3 Replay",
+        "",
+        f"Date: {payload['date']}  ·  Model calls: {payload['model_calls']} (replay-only)",
+        "",
+        "Replay-only recompute of the unified `evidence_grounded_rate` over saved artifacts "
+        f"using the canonical metric in `core/evidence.py`. See [{METRIC_DOC}](../../reference/evidence_groundedness_metric.md).",
+        "",
+        "## Qwen headline (validation750 surfaced rows)",
+        "",
+    ]
+    headline = payload["headline"]
+    lines.extend(
+        [
+            (
+                f"- **Hybrid structured-events:** exact-valid "
+                f"{_fmt_pct(headline.get('qwen_hybrid_row_exact_valid_rate'))} → "
+                f"grounded {_fmt_pct(headline.get('qwen_hybrid_grounded_rate'))} "
+                f"(string-level); row-grounded "
+                f"{_fmt_pct(next((r.get('row_grounded_rate') for r in qwen_runs if r.get('gan_pipeline') == 'hybrid' and 'three_way' in r['run_id']), None))}"
+            ),
+            (
+                f"- **LLM-only canonical:** exact-valid "
+                f"{_fmt_pct(headline.get('qwen_llm_row_exact_valid_rate'))} → "
+                f"grounded {_fmt_pct(headline.get('qwen_llm_grounded_rate'))} "
+                f"(string-level); row-grounded "
+                f"{_fmt_pct(next((r.get('row_grounded_rate') for r in qwen_runs if r.get('gan_pipeline') == 'llm_only' and 'three_way' in r['run_id']), None))}"
+            ),
+            "",
+            "The Qwen gap was overwhelmingly `REPAIRED_*` formatting (especially `≤` copy "
+            "artifacts), not absent evidence — the old exact-substring metric penalised "
+            "grounded copy fidelity.",
+            "",
+            "## Priority set (9 promote + 6 surface-as-architecture)",
+            "",
+            "| Run | Task | Model | Before (exact) | After (grounded) | Exact sub-metric |",
+            "|---|---|---|---:|---:|---:|",
+        ]
+    )
+    for run in sorted(priority_runs, key=lambda row: row["run_id"]):
+        before = _before_metric_rate(run)
+        after = _after_metric_rate(run)
+        qwen_mark = " **Qwen**" if _is_qwen_run(run) else ""
+        lines.append(
+            f"| `{run['run_id']}` | {run['task']} | {run['model_label']}{qwen_mark} | "
+            f"{_fmt_pct(before)} | {_fmt_pct(after)} | {_fmt_pct(run.get('exact_rate'))} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Wider registry + reliability catalog",
+            "",
+            "| Run | Source | Before (exact) | After (grounded) | Exact sub-metric |",
+            "|---|---|---:|---:|---:|",
+        ]
+    )
+    for run in sorted(all_runs, key=lambda row: row["run_id"]):
+        if run.get("source") in PRIORITY_SOURCES:
+            continue
+        lines.append(
+            f"| `{run['run_id']}` | {run.get('source')} | "
+            f"{_fmt_pct(_before_metric_rate(run))} | {_fmt_pct(_after_metric_rate(run))} | "
+            f"{_fmt_pct(run.get('exact_rate'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Registry rows annotated in-place; prior exact-substring prose preserved under "
+            "`superseded_evidence_validity` in `primary_metrics`. No prediction or accuracy "
+            "numbers changed.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _registry_evidence_validity_text(
+    run: Mapping[str, Any],
+    *,
+    previous: str | None,
+) -> str:
+    before = _before_metric_rate(run)
+    after = _after_metric_rate(run)
+    exact = run.get("exact_rate")
+    parts = [
+        (
+            f"Unified evidence_grounded_rate {_fmt_pct(after)} "
+            f"(exact sub-metric {_fmt_pct(exact)}) from replay-only recompute "
+            f"{payload_date()}. Metric definition: {METRIC_DOC}."
+        )
+    ]
+    if previous:
+        parts.append(
+            f"Supersedes prior exact-substring prose ({_fmt_pct(before)} before recompute): "
+            f"{previous}"
+        )
+    return " ".join(parts)
+
+
+def payload_date() -> str:
+    return "2026-06-27"
+
+
+def reconcile_registry_from_audit(
+    payload: Mapping[str, Any],
+    *,
+    registry_path: Path = REGISTRY_PATH,
+) -> int:
+    """Annotate registry rows with unified groundedness metrics (append-aware)."""
+
+    audited = {
+        run["run_id"]: run
+        for run in (*payload["gan2026_runs"], *payload["exectv2_runs"])
+    }
+    updated = 0
+    out_lines: list[str] = []
+    with registry_path.open(encoding="utf-8") as handle:
+        for line in handle:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            record = json.loads(stripped)
+            run_id = record.get("run_id")
+            audit = audited.get(run_id)
+            if audit is None:
+                out_lines.append(stripped)
+                continue
+
+            previous = record.get("evidence_validity")
+            if previous and not record.get("primary_metrics", {}).get("superseded_evidence_validity"):
+                metrics = dict(record.get("primary_metrics") or {})
+                metrics["superseded_evidence_validity"] = previous
+                metrics["superseded_exact_valid_rate"] = _before_metric_rate(audit)
+                metrics["evidence_grounded_rate"] = _after_metric_rate(audit)
+                metrics["evidence_exact_rate"] = audit.get("exact_rate")
+                metrics["evidence_grounded_by_grade"] = audit.get("grade_counts")
+                record["primary_metrics"] = metrics
+            elif not previous:
+                metrics = dict(record.get("primary_metrics") or {})
+                metrics["evidence_grounded_rate"] = _after_metric_rate(audit)
+                metrics["evidence_exact_rate"] = audit.get("exact_rate")
+                record["primary_metrics"] = metrics
+
+            record["evidence_validity"] = _registry_evidence_validity_text(
+                audit,
+                previous=previous,
+            )
+            out_lines.append(json.dumps(record, ensure_ascii=False))
+            updated += 1
+
+    registry_path.write_text("\n".join(out_lines) + "\n", encoding="utf-8")
+    return updated
+
+
+def write_reconciliation(*, sample_limit: int = 5) -> tuple[Path, Path, int]:
+    payload = run_audit(sample_limit=sample_limit)
+    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
+    OUT_RECONCILIATION_MD.parent.mkdir(parents=True, exist_ok=True)
+    OUT_JSON.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    OUT_MD.write_text(render_markdown(payload), encoding="utf-8")
+    OUT_RECONCILIATION_MD.write_text(render_reconciliation_markdown(payload), encoding="utf-8")
+    updated = reconcile_registry_from_audit(payload)
+    return OUT_RECONCILIATION_MD, OUT_JSON, updated
 
 
 def write_report(*, sample_limit: int = 5) -> tuple[Path, Path]:

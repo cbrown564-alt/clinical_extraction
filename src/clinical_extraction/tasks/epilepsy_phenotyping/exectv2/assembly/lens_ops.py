@@ -14,6 +14,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_fi
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store import (
     ClinicalFindingStore,
 )
+from clinical_extraction.core.evidence import grade_evidence, is_grounded
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
@@ -38,6 +39,10 @@ class LensResult:
     lens_id: str
     findings: tuple[ClinicalFinding, ...]
     diagnostics: dict[str, object]
+
+
+def evidence_is_grounded(note_text: str, evidence: str) -> bool:
+    return is_grounded(grade_evidence(note_text, evidence))
 
 
 def text_counts(findings: list[ClinicalFinding]) -> dict[str, int]:
@@ -244,7 +249,7 @@ def diagnosis_added_finding(
             ),
         ),
         rationale="The source phrase matches a dev residual benchmark-format concept.",
-        evidence_valid=evidence in store.note_text,
+        evidence_valid=evidence_is_grounded(store.note_text, evidence),
         raw_surface=False,
     )
 
