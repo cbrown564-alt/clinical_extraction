@@ -63,10 +63,8 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     # --- ExECTv2 LLM top-4 blockers (A1) ---
     # generation_selection decomposed (Wave C-S5): facade now 94 LOC (no entry);
     # cohesive package submodules over the 500 LLM tier are allowlisted below.
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_generation_selection/prompt_builders.py": AllowlistEntry(
-        1282,
-        "Wave C-S5: generation_selection decomposed; build_*_prompt_payload cohesive unit — further split candidate",
-    ),
+    # generation_selection decomposed (Wave C-S5/S6): facade now 69 LOC (no entry);
+    # strategy submodules below are under the 500 LLM tier except parsing (640).
     "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_generation_selection/parsing.py": AllowlistEntry(
         640,
         "Wave C-S5: generation_selection decomposed; response parse/coerce cohesive unit",
@@ -84,10 +82,8 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         80,
         "Wave C-S2: thin facade over pipelines/clinical_findings/ 3-stage package",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/extract.py": AllowlistEntry(
-        1300,
-        "Wave C-S2: clinical_findings stage 1 — extraction prompts + parse/coerce",
-    ),
+    # clinical_findings extract decomposed (Wave C-S6): extract now ~50 LOC;
+    # prompt corpus in prompts/clinical_findings/, parsing in parsing.py.
     "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/verify.py": AllowlistEntry(
         700,
         "Wave C-S2: clinical_findings stage 2 — verification prompts + decisions",
@@ -105,22 +101,25 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         527,
         "Wave C-S5: target_indicators decomposed; prompt builders cohesive unit",
     ),
-    # --- Other ExECTv2 LLM >500 LOC ---
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_acceptance_gate.py": AllowlistEntry(
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/acceptance_gate.py": AllowlistEntry(
         524,
-        "A1: diagnosis verifier chain — migrate to pipelines/entity_verifier/",
+        "P1-3: diagnosis_verification acceptance gate — prompt corpus externalization pending (P3-2)",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_decomposer.py": AllowlistEntry(
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/decomposer.py": AllowlistEntry(
         583,
-        "A1: diagnosis verifier chain — migrate to pipelines/entity_verifier/",
+        "P1-3: diagnosis_verification decomposer — prompt corpus externalization pending (P3-2)",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_phase2_panel.py": AllowlistEntry(
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/phase2_panel.py": AllowlistEntry(
         864,
-        "A1: diagnosis verifier chain — migrate to pipelines/entity_verifier/",
+        "P1-3: diagnosis_verification phase2 panel — prompt corpus externalization pending (P3-2)",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_diagnosis_reconciler.py": AllowlistEntry(
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/reconciler.py": AllowlistEntry(
         666,
-        "A1: diagnosis verifier chain — migrate to pipelines/entity_verifier/",
+        "P1-3: diagnosis_verification reconciler — prompt corpus externalization pending (P3-2)",
+    ),
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/verifier_content.py": AllowlistEntry(
+        929,
+        "P1-3: diagnosis_verification verifier content — externalize prompts (P3-2)",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_family_conditioned_candidate_adjudicator.py": AllowlistEntry(
         877,
@@ -154,10 +153,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         515,
         "A1: SF union arbitration — pending decomposition",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/diagnosis_content.py": AllowlistEntry(
-        929,
-        "Wave2: entity_verifier diagnosis content — externalize prompts",
-    ),
     "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/med_inv_content.py": AllowlistEntry(
         705,
         "Wave2: entity_verifier med_inv content — externalize prompts",
@@ -167,10 +162,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         "Wave2: entity_verifier SF content — externalize prompts",
     ),
     # --- ExECTv2 non-LLM >1k LOC ---
-    "tasks/epilepsy_phenotyping/exectv2/assembly/lenses.py": AllowlistEntry(
-        1179,
-        "Wave1: lens assembly — data-driven lens_from_manifest; further split deferred",
-    ),
     # --- Gan2026 >1k LOC ---
     "tasks/seizure_frequency/gan2026/agentic/boundary_audit_prompt_v2.py": AllowlistEntry(
         1014,
@@ -239,10 +230,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     "tasks/seizure_frequency/gan2026/pipeline/stages/evidence_gating.py": AllowlistEntry(
         550,
         "Gan2026 pipeline: projection render evidence gating heuristics",
-    ),
-    "tasks/seizure_frequency/gan2026/runner.py": AllowlistEntry(
-        1103,
-        "Gan2026 runner — extract stage wiring to pipeline package",
     ),
 }
 
