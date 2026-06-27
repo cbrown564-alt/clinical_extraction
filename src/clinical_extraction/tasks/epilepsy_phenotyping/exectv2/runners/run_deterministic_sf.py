@@ -20,6 +20,7 @@ no_ref_attrs shows semantic-attribute accuracy, full_features shows the strict
 score including Certainty and Negation.
 """
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import sys
 from collections import defaultdict
@@ -65,8 +66,7 @@ def _row_errors(
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
         _keys,
         _letters_by_id,
-        normalize_phrase,
-    )
+            )
 
     gold_by_id = _letters_by_id(gold_letters)
     pred_by_id = _letters_by_id(pred_letters)

@@ -12,9 +12,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
     score_entity,
     semantic_config_for,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
-    normalize_phrase,
 )
 
 # Rate-bearing attributes for active-rate fidelity: seizure counts and cadence,

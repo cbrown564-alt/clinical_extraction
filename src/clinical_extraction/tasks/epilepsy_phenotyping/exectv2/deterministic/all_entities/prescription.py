@@ -17,8 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexico
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import PRESCRIPTION
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _owner, _right_context_until_separator

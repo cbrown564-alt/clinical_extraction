@@ -6,9 +6,7 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from .shared import (
     _DOSE_UNIT_RE,

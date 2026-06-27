@@ -1,4 +1,5 @@
 from dataclasses import replace
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
@@ -22,8 +23,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
     headline_duplicate_tags,
     match_key,
-    normalize_phrase,
-    score_concept_identity,
+        score_concept_identity,
     score_entity,
     score_frequency_state,
     score_investigations_components,

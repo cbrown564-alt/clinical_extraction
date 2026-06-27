@@ -21,6 +21,7 @@ TP/FP/FN against the published residual ledgers before reporting.
 """
 
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import json
 from collections import Counter
@@ -35,8 +36,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
-    normalize_phrase,
-)
+    )
 
 DIAG_JSONL = Path(
     "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl"

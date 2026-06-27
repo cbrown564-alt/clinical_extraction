@@ -20,8 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnn
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     _frequency_state_keys as frequency_state_keys,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 DEFAULT_JSONL = Path(
     "experiments/exectv2_hybrid_sf_state_projection_v06_combined_dev140_20260618.jsonl"
 )

@@ -7,7 +7,7 @@ from collections import Counter
 from collections.abc import Hashable, Iterable, Mapping
 from dataclasses import dataclass
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
     normalize_phrase,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (

@@ -32,9 +32,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexico
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
     assign_cui,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 @dataclass(frozen=True)
 class BenchmarkConcept:
     """Benchmark-facing concept projection for one extracted clinical mention."""

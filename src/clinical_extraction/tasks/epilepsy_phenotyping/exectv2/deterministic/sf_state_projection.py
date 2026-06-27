@@ -32,8 +32,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.6"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
