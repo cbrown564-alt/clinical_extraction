@@ -1,7 +1,7 @@
 # Agentic `run_driver` Decomposition Plan — Wave 1 Kickoff
 
 **Date:** 2026-06-27  
-**Status:** Wave 1 START — inventory + registry scaffold + first migration slice  
+**Status:** Wave 2 S1 in progress — 2/12 legacy `run_split` slices migrated  
 **Parent:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md) Track S1  
 **Reference:** [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) P3-1
 
@@ -56,7 +56,7 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 510 | `stage_protocol.py` | — | Shared scaffold | `AgenticStage`, parse/postprocess, metadata, JSONL, checkpoints | — | N/A |
 | 587 | `structured_event_patches.py` | — | Legacy utility | Deterministic structured-event patch helpers | — | N/A |
 | 565 | `cross_model_challenge_adjudicator.py` | ✓ | **Migrated W1** | V11 open peer-challenge over saved multi-agent finals | `cross_model_structured_event_adjudicator`, `llm_event_reasoner` | `cross_model_structured_event` |
-| 629 | `represented_event_normalizer.py` | ✓ | Legacy | V8 represented-event normalization | `llm_event_reasoner`, `structured_event_verifier` | `structured_event` |
+| 629 | `represented_event_normalizer.py` | ✓ | **Migrated W2** | V8 represented-event normalization | `llm_event_reasoner`, `structured_event_verifier` | `structured_event` |
 | 669 | `tool_self_consistency.py` | ✓ | Legacy | Tool self-consistency ablation split | `runner`, `tool_context_ablation`, `tools` | `standard` |
 | 699 | `selective_fallback_replay.py` | — | Legacy replay | Selective fallback replay (no `run_split`) | — | N/A |
 | 751 | `runner.py` | ✓ | Legacy (Phase 6) | Matched-budget multi-condition agentic runner | `contracts`, `tools` | `standard` (custom loop) |
@@ -74,8 +74,8 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 1,956 | `fresh_evidence_reasoner.py` | ✓ | Migrated (**gate frozen**) | V12 fresh-evidence reasoner + safety gate | `run_driver`, `family_*`, `precision_gated_selector` | `cross_model_structured_event` |
 | ~400 | `run_driver.py` (post-W1) | — | Scaffold | Shared split runners + stage registry | `stage_protocol`, `cross_model_structured_event_adjudicator` | — |
 
-**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 12 legacy
-inline `run_split` implementations remain after Wave 1 slice.
+**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 11 legacy
+inline `run_split` implementations remain after Wave 2 slice 1.
 
 ## Migration order (smallest / leafiest first)
 
@@ -85,8 +85,8 @@ share scoring/gate logic with M2.
 
 | Wave | Order | Module | Rationale |
 | ---: | ---: | --- | --- |
-| **1** | 1 | `cross_model_challenge_adjudicator.py` | Smallest legacy `run_split` using existing `cross_model_structured_event` helper; no M2 overlap |
-| 2 | 2 | `represented_event_normalizer.py` | Straight `structured_event` substrate; 629 LOC |
+| **1** | 1 | `cross_model_challenge_adjudicator.py` | ✓ Done — smallest legacy `run_split` using existing `cross_model_structured_event` helper; no M2 overlap |
+| 2 | 2 | `represented_event_normalizer.py` | ✓ Done — straight `structured_event` substrate; 629 LOC |
 | 2 | 3 | `event_completion_reasoner.py` | Same pattern; depends on `llm_event_reasoner` scoring only |
 | 2 | 4 | `temporal_sentinel_specialist.py` | Structured-event leaf; no gate edits |
 | 2 | 5 | `targeted_boundary_router.py` | Structured-event router |
@@ -102,7 +102,17 @@ Replay-only modules (`consensus_fresh_agreement_selector`, `selective_fallback_r
 `boundary_guide_rescue_replay`, `structured_event_consensus`) stay out of scope until
 split runners are exhausted.
 
-## Wave 1 deliverables (this tick)
+## Wave 2 deliverables (slice 1 — this tick)
+
+1. **`represented_event_normalizer.run_split`** →
+   `dispatch_registered_split("represented_event_normalizer", …)` via
+   `run_structured_event_split` with
+   `gate_interpretation=structured_event_verifier.gate_interpretation`.
+2. **Tests** — extend `tests/test_gan2026_agentic_run_driver.py` with registry +
+   dispatch parity; existing `tests/test_gan2026_represented_event_normalizer.py`
+   must pass unchanged.
+
+## Wave 1 deliverables (complete)
 
 1. **Registry scaffold** — `RegisteredAgenticStage`, `AgenticSplitHooks`,
    `dispatch_registered_split`, context dataclasses for structured-event and
@@ -114,13 +124,17 @@ split runners are exhausted.
 
 ## Recommended Wave 2 next slice
 
-**`represented_event_normalizer.py`** — next smallest legacy `run_split`, maps cleanly
-onto `run_structured_event_split` with `gate_interpretation=structured_event_verifier.gate_interpretation`.
-No M2 overlap. After that, **`event_completion_reasoner.py`**.
+**`event_completion_reasoner.py`** — same `structured_event` dispatch pattern as
+the normalizer; 830 LOC; no M2 overlap. After that, **`temporal_sentinel_specialist.py`**.
+
+## Previously recommended (completed)
+
+**`represented_event_normalizer.py`** — migrated in Wave 2 slice 1.
 
 ## Verification
 
 ```bash
+pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_represented_event_normalizer.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_cross_model_challenge_adjudicator.py -q
 ```
 
