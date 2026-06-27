@@ -8,7 +8,7 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 3. **Postprocess policy** — format-only or evidence-guided label repair, substring checks
 4. **Thin `run_split`** — row loop, metadata, JSONL, and markdown report via shared helpers
 
-## Migrated (AgenticStage)
+## Migrated (AgenticStage / run_driver)
 
 | Module | Notes |
 | --- | --- |
@@ -16,15 +16,14 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 | `boundary_audit_prompt_v2.py` | D1 panel/hard50 runner |
 | `direct_boundary_critic_rescue.py` | D2 direct + boundary critic panel/hard50 runner |
 | `structured_event_verifier.py` | V4 verifier-first structured-event correction |
+| `fresh_evidence_reasoner.py` | V12 fresh-evidence reasoner; `run_split` on `run_driver` |
 
 ## Legacy pattern (inline runner)
 
 These modules still duplicate parse/metadata/report boilerplate and are candidates
-for incremental migration. Do **not** rewrite monoliths (`fresh_evidence_reasoner`,
-`cross_model_structured_event_adjudicator`, etc.) wholesale — migrate one stage at a time.
+for incremental migration. Do **not** rewrite monoliths wholesale — migrate one stage at a time.
 
 - `llm_event_reasoner.py`
-- `fresh_evidence_reasoner.py`
 - `cross_model_structured_event_adjudicator.py`
 - `cross_model_challenge_adjudicator.py`
 - `event_completion_reasoner.py`
