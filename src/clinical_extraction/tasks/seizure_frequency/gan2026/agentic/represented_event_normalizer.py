@@ -22,15 +22,18 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
     structured_event_verifier,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    AgenticSplitHooks,
+    RegisteredAgenticStage,
+    SplitRunParams,
+    StructuredEventSplitContext,
+    dispatch_registered_split,
+    register_agentic_stage,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
@@ -42,6 +45,16 @@ DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
 )
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_represented_event_normalizer_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_represented_event_normalizer_validation.md")
+STAGE_ID = "represented_event_normalizer"
+
+register_agentic_stage(
+    RegisteredAgenticStage(
+        stage_id=STAGE_ID,
+        dispatch_kind="structured_event",
+        module=__name__,
+        description="V8 represented-event normalization over saved structured events",
+    )
+)
 
 ACTION_VALUES = (
     "keep_original_structured_event_final",
@@ -77,40 +90,25 @@ def run_split(
         or structured_event_jsonl_path
         or DEFAULT_STRUCTURED_EVENT_JSONL_PATH
     )
-    if structured_event_rows is None:
-        structured_event_rows = load_jsonl_rows(source_path)
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-
-    structured_rows_by_index = llm_event_reasoner._rows_by_source_index(
-        structured_event_rows
-    )
-    metadata = build_run_metadata(
-        mode=mode,
+    params = SplitRunParams(
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
-        dspy_version="none",
-        split=split,
-        split_manifest=split_manifest,
+        mode=mode,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
     )
-    metadata.update(
-        {
+    hooks = AgenticSplitHooks(
+        prompt_version=PROMPT_VERSION,
+        metadata_extra={
             "artifact_kind": "gan2026_represented_event_normalizer_trace",
             "pipeline_family": PIPELINE_FAMILY,
             "pipeline_version": PROMPT_VERSION,
-            "structured_event_source_path": str(source_path),
             "structured_event_source_role": (
                 "pure structured-event V0 comparator and represented-event "
                 "normalization substrate; the model owns any recomputed label"
@@ -119,38 +117,27 @@ def run_split(
                 "validation-development V8 represented-event normalizer; no "
                 "holdout use, no row-level test inspection, and no benchmark claim"
             ),
-            "dspy_cache": dspy_cache,
-        }
+        },
+        build_row=_build_row,
+        summarize_rows=summarize_rows,
+        gate_interpretation=structured_event_verifier.gate_interpretation,
+        write_report=write_report,
+        progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
     )
-
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        rows.append(
-            _build_row(
-                record,
-                structured_event_row=structured_rows_by_index.get(
-                    record.source_row_index
-                ),
-                split=split,
-                split_manifest=split_manifest,
-                model=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                mode=mode,
-            )
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-
-    metadata["summary"] = summarize_rows(rows)
-    metadata["gate"] = structured_event_verifier.gate_interpretation(metadata["summary"])
-    return rows, metadata
+    structured_event_context = StructuredEventSplitContext(
+        default_structured_event_jsonl_path=DEFAULT_STRUCTURED_EVENT_JSONL_PATH,
+        structured_event_jsonl_path=structured_event_jsonl_path,
+        structured_event_rows=structured_event_rows,
+        structured_event_source_path=source_path,
+        rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+    )
+    return dispatch_registered_split(
+        STAGE_ID,
+        records,
+        params=params,
+        hooks=hooks,
+        structured_event_context=structured_event_context,
+    )
 
 
 def build_prompt_input(
@@ -610,20 +597,3 @@ def _existing_event_ids(structured_event_row: Mapping[str, Any] | None) -> set[s
         for event in structured_record.get("events") or []
         if isinstance(event, Mapping) and event.get("event_id") is not None
     }
-
-
-def _emit_progress_checkpoint(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: Mapping[str, Any],
-    *,
-    total: int,
-    jsonl_path: Path | None,
-    report_path: Path | None,
-) -> None:
-    checkpoint_metadata = dict(metadata)
-    checkpoint_metadata["summary"] = summarize_rows(rows)
-    checkpoint_metadata["progress"] = {"completed_rows": len(rows), "total_rows": total}
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None:
-        write_report(rows, checkpoint_metadata, report_path, jsonl_path=jsonl_path or Path(""))

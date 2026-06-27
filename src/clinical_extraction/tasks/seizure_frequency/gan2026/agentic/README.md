@@ -18,6 +18,7 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 | `structured_event_verifier.py` | V4 verifier-first structured-event correction |
 | `fresh_evidence_reasoner.py` | V12 fresh-evidence reasoner; `run_split` on `run_driver` |
 | `cross_model_challenge_adjudicator.py` | V11 open peer-challenge; `run_split` via `dispatch_registered_split` |
+| `represented_event_normalizer.py` | V8 represented-event normalizer; `run_split` via `dispatch_registered_split` |
 
 ## Legacy pattern (inline runner)
 
@@ -29,7 +30,6 @@ for incremental migration. Do **not** rewrite monoliths wholesale — migrate on
 - `event_completion_reasoner.py`
 - `temporal_sentinel_specialist.py`
 - `targeted_boundary_router.py`
-- `represented_event_normalizer.py`
 - `structured_event_consensus.py`
 - `structured_event_patches.py`
 - `precision_gated_selector.py`
