@@ -44,6 +44,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity
     make_dspy_module,
     mention_to_row,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.entity_verifier.loader import (
+    load_med_inv_clinical_rules,
+    load_med_inv_worked_examples,
+)
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -139,182 +144,11 @@ def _attribute_vocabulary() -> dict[str, Any]:
 
 
 def _clinical_rules() -> list[str]:
-    return [
-        "Return only Prescription and Investigations mentions.",
-        "Every final evidence value must be an exact substring of the letter.",
-        "Do not emit CUI or CUIPhrase; projection is a deterministic layer.",
-        (
-            "Prescription headline scoring cares about current ordinary regimens "
-            "(drug, dose, unit, frequency) and dose-optional rescue regimens. "
-            "Previous medication, historical trials, plans, options, and titration "
-            "targets are not current ordinary regimens."
-        ),
-        (
-            "Do not emit lamotrigine or other titration steps as current medication "
-            "when the source says start, introduce, increase by, every week, every "
-            "fortnight, target dose, future, consider, or if further seizures then."
-        ),
-        (
-            "If a current-medication line lists split daily doses such as "
-            "400mg/400mg/200mg, return each supported current dose/frequency fact "
-            "separately rather than collapsing the dose."
-        ),
-        (
-            "Rescue medication such as midazolam or clobazam to take as required, "
-            "for clusters, or if necessary should use Frequency='As_Required'."
-        ),
-        (
-            "Investigations headline scoring cares about modality plus performed "
-            "status, result, and EEG type. Prefer complete performed/result facts "
-            "when the result is stated."
-        ),
-        (
-            "Do not emit planned future investigations as performed tests. Phrases "
-            "like 'I will arrange MRI', 'request EEG', or 'plan CT' should be "
-            "omitted unless a completed previous test is separately stated."
-        ),
-        (
-            "Do not emit modality-only Investigations when the sentence gives only "
-            "a planned test. If a completed test is stated without a result, use "
-            "Performed='Yes' and omit the result unless the source supports "
-            "Normal, Abnormal, or Unknown."
-        ),
-        (
-            "Map 'normal', 'unremarkable', or 'no abnormality' to Results='Normal'. "
-            "Map epileptiform discharges, spike and wave, slowing, gliosis, lesion, "
-            "atrophy, abnormality, or structural changes to Results='Abnormal'."
-        ),
-        (
-            "For video EEG, video-telemetry, telemetry, or VEEG, set EEG_Type="
-            "'VideoTelemetry'. For sleep-deprived EEG, set EEG_Type='SleepDeprived'."
-        ),
-        "Return exactly one JSON object. No markdown code fences.",
-    ]
+    return load_med_inv_clinical_rules()
 
 
 def _worked_examples() -> list[dict[str, Any]]:
-    return [
-        {
-            "note_fragment": (
-                "Currently she is taking sodium valproate 500 mg twice a day. "
-                "She should introduce lamotrigine at 25 mg every day, increasing "
-                "to a target dose of 75 mg twice a day."
-            ),
-            "draft": [{"entity": "Prescription", "text": "lamotrigine 75mg bd"}],
-            "correct": [
-                {
-                    "entity": "Prescription",
-                    "text": "sodium valproate 500 mg twice a day",
-                    "attributes": {
-                        "DrugName": "sodium valproate",
-                        "DrugDose": "500",
-                        "DoseUnit": "mg",
-                        "Frequency": "2",
-                    },
-                    "evidence": "sodium valproate 500 mg twice a day",
-                    "confidence": "high",
-                    "rationale": "The lamotrigine schedule is a future titration plan.",
-                }
-            ],
-        },
-        {
-            "note_fragment": "Current medication: Carbamazepine 400mg/400mg/200mg.",
-            "draft": [{"entity": "Prescription", "text": "Carbamazepine"}],
-            "correct": [
-                {
-                    "entity": "Prescription",
-                    "text": "Carbamazepine 400mg",
-                    "attributes": {
-                        "DrugName": "carbamazepine",
-                        "DrugDose": "400",
-                        "DoseUnit": "mg",
-                        "Frequency": "1",
-                    },
-                    "evidence": "Carbamazepine 400mg/400mg/200mg",
-                    "confidence": "medium",
-                    "rationale": "The split daily schedule includes a 400 mg dose.",
-                },
-                {
-                    "entity": "Prescription",
-                    "text": "Carbamazepine 200mg",
-                    "attributes": {
-                        "DrugName": "carbamazepine",
-                        "DrugDose": "200",
-                        "DoseUnit": "mg",
-                        "Frequency": "1",
-                    },
-                    "evidence": "Carbamazepine 400mg/400mg/200mg",
-                    "confidence": "medium",
-                    "rationale": "The split daily schedule includes a 200 mg dose.",
-                },
-            ],
-        },
-        {
-            "note_fragment": "He can take midazolam as required for seizure clusters.",
-            "draft": [],
-            "correct": [
-                {
-                    "entity": "Prescription",
-                    "text": "midazolam as required",
-                    "attributes": {
-                        "DrugName": "midazolam",
-                        "Frequency": "As_Required",
-                    },
-                    "evidence": "midazolam as required",
-                    "confidence": "medium",
-                    "rationale": "Rescue medication is dose-optional in the headline.",
-                }
-            ],
-        },
-        {
-            "note_fragment": "I will arrange an MRI scan of the brain and an EEG.",
-            "draft": [{"entity": "Investigations", "text": "MRI scan"}],
-            "correct": [],
-        },
-        {
-            "note_fragment": "MRI 2016 showed left-sided gliosis. EEG was normal.",
-            "draft": [],
-            "correct": [
-                {
-                    "entity": "Investigations",
-                    "text": "MRI 2016 showed left-sided gliosis",
-                    "attributes": {"MRI_Performed": "Yes", "MRI_Results": "Abnormal"},
-                    "evidence": "MRI 2016 showed left-sided gliosis",
-                    "confidence": "high",
-                    "rationale": "Gliosis is an abnormal MRI result.",
-                },
-                {
-                    "entity": "Investigations",
-                    "text": "EEG was normal",
-                    "attributes": {"EEG_Performed": "Yes", "EEG_Results": "Normal"},
-                    "evidence": "EEG was normal",
-                    "confidence": "high",
-                    "rationale": "The EEG result is explicitly normal.",
-                },
-            ],
-        },
-        {
-            "note_fragment": "Video EEG captured events with no epileptiform correlate.",
-            "draft": [],
-            "correct": [
-                {
-                    "entity": "Investigations",
-                    "text": "Video EEG captured events with no epileptiform correlate",
-                    "attributes": {
-                        "EEG_Performed": "Yes",
-                        "EEG_Results": "Normal",
-                        "EEG_Type": "VideoTelemetry",
-                    },
-                    "evidence": "Video EEG captured events with no epileptiform correlate",
-                    "confidence": "medium",
-                    "rationale": (
-                        "Video EEG is a completed telemetry EEG with no abnormal "
-                        "correlate."
-                    ),
-                }
-            ],
-        },
-    ]
+    return load_med_inv_worked_examples()
 
 
 def parse_med_inv_json(raw_output: str) -> tuple[MedInvExtractionRecord | None, list[str]]:
