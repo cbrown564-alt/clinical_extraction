@@ -439,6 +439,8 @@ def emit_progress_checkpoint(
     total: int,
     summarize_rows: Callable[[Sequence[Mapping[str, Any]]], dict[str, Any]],
     gate_interpretation: Callable[[Mapping[str, Any]], dict[str, Any]] | None = None,
+    finalize_metadata: Callable[[Sequence[Mapping[str, Any]], dict[str, Any]], None]
+    | None = None,
     jsonl_path: Path | None = None,
     report_path: Path | None = None,
     write_report: Callable[..., None] | None = None,
@@ -447,7 +449,9 @@ def emit_progress_checkpoint(
     """Write optional checkpoint artifacts and emit a stderr progress line."""
 
     metadata["summary"] = summarize_rows(rows)
-    if gate_interpretation is not None:
+    if finalize_metadata is not None:
+        finalize_metadata(rows, metadata)
+    elif gate_interpretation is not None:
         metadata["gate"] = gate_interpretation(metadata["summary"])
     if jsonl_path is not None:
         write_stage_jsonl(rows, jsonl_path)

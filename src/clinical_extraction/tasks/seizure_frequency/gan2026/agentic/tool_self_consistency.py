@@ -4,12 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
-
-import dspy
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     PROMPT_VERSION,
@@ -17,6 +14,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     _normalized_label_vote,
     _run_model_call,
     _trace_attribution_layer,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    AgenticSplitHooks,
+    RegisteredAgenticStage,
+    SplitRunParams,
+    StructuredEventSplitContext,
+    dispatch_registered_split,
+    register_agentic_stage,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tool_context_ablation import (
     _boundary_guides_for_parser_result,
@@ -36,9 +41,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
     map_purist,
@@ -47,13 +49,22 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_lab
     LlmOnlyDirectLabelerDecisionRecord,
     parse_decision_json,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
 
 CONDITION = "single_agent_tools_self_consistency_boundary_guide_only"
 REFERENCE_CONDITION = "single_self_consistency_temperature"
+STAGE_ID = "tool_self_consistency"
+
+register_agentic_stage(
+    RegisteredAgenticStage(
+        stage_id=STAGE_ID,
+        dispatch_kind="standard",
+        module=__name__,
+        description="E2 four-call boundary-guide tool self-consistency experiment",
+    )
+)
 
 
 def run_split(
@@ -72,19 +83,8 @@ def run_split(
     checkpoint_jsonl_path: Path | None,
     checkpoint_report_path: Path | None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
     reference_labels = _reference_labels(reference_rows)
-    metadata = _metadata(
-        records,
+    params = SplitRunParams(
         split=split,
         split_manifest=split_manifest,
         model=model,
@@ -93,32 +93,37 @@ def run_split(
         mode=mode,
         dspy_cache=dspy_cache,
         api_base=api_base,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
     )
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        rows.append(
-            _build_row(
-                record,
-                reference_label=reference_labels.get(record.source_row_index),
-                split=split,
-                split_manifest=split_manifest,
-                model=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                mode=mode,
-            )
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-    metadata["summary"] = summarize_rows(rows)
-    metadata["gate"] = gate_interpretation(metadata["summary"])
-    return rows, metadata
+    hooks = AgenticSplitHooks(
+        prompt_version=PROMPT_VERSION,
+        metadata_extra={
+            "artifact_kind": "gan2026_agentic_tool_self_consistency",
+            "pipeline_family": "agentic_tool_self_consistency",
+            "pipeline_version": "gan2026_agentic_e2_tool_self_consistency_v0",
+            "claim_boundary": (
+                "validation-development hard50 four-call boundary-guide "
+                "self-consistency; no holdout use, no row-level test inspection, "
+                "and no benchmark claim"
+            ),
+        },
+        build_row=_build_row,
+        summarize_rows=summarize_rows,
+        gate_interpretation=gate_interpretation,
+        write_report=write_report,
+    )
+    return dispatch_registered_split(
+        STAGE_ID,
+        records,
+        params=params,
+        hooks=hooks,
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=Path("."),
+            row_kwargs={"reference_labels": reference_labels},
+        ),
+    )
 
 
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -263,7 +268,7 @@ def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
 def _build_row(
     record: GanFrequencyRecord,
     *,
-    reference_label: str | None,
+    reference_labels: Mapping[int, str] | None = None,
     split: str,
     split_manifest: str,
     model: str,
@@ -271,6 +276,9 @@ def _build_row(
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
 ) -> dict[str, Any]:
+    reference_label = (
+        reference_labels.get(record.source_row_index) if reference_labels else None
+    )
     parser_result = parse_seizure_frequency_candidates(record.note_text).model_dump(mode="json")
     guide_results = _boundary_guides_for_parser_result(parser_result)
     trace = _condition_trace(
@@ -524,77 +532,6 @@ def _has_blocking_parse_issue(errors: Any) -> bool:
             )
         )
         for error in errors or []
-    )
-
-
-def _metadata(
-    records: Sequence[GanFrequencyRecord],
-    *,
-    split: str,
-    split_manifest: str,
-    model: str,
-    temperature: float,
-    max_tokens: int,
-    mode: str,
-    dspy_cache: bool,
-    api_base: str | None,
-) -> dict[str, Any]:
-    metadata = build_run_metadata(
-        mode=mode,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
-        dspy_version=getattr(dspy, "__version__", "unknown"),
-        split=split,
-        split_manifest=split_manifest,
-        api_base=api_base,
-        row_count=len(records),
-    )
-    metadata.update(
-        {
-            "artifact_kind": "gan2026_agentic_tool_self_consistency",
-            "pipeline_family": "agentic_tool_self_consistency",
-            "pipeline_version": "gan2026_agentic_e2_tool_self_consistency_v0",
-            "dspy_cache": dspy_cache,
-            "claim_boundary": (
-                "validation-development hard50 four-call boundary-guide "
-                "self-consistency; no holdout use, no row-level test inspection, "
-                "and no benchmark claim"
-            ),
-        }
-    )
-    return metadata
-
-
-def _emit_progress_checkpoint(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: dict[str, Any],
-    *,
-    total: int,
-    jsonl_path: Path | None,
-    report_path: Path | None,
-) -> None:
-    metadata["summary"] = summarize_rows(rows)
-    metadata["gate"] = gate_interpretation(metadata["summary"])
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
-    print(
-        json.dumps(
-            {
-                "processed": len(rows),
-                "total": total,
-                "call_failures": metadata["summary"]["call_failures"],
-                "parse_or_validation_failures": metadata["summary"][
-                    "parse_or_validation_failures"
-                ],
-            },
-            sort_keys=True,
-        ),
-        file=sys.stderr,
-        flush=True,
     )
 
 

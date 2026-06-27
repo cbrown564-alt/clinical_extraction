@@ -11,8 +11,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     event_completion_reasoner,
     llm_event_reasoner,
     represented_event_normalizer,
+    runner as agentic_runner,
     targeted_boundary_router,
     temporal_sentinel_specialist,
+    tool_context_ablation,
+    tool_self_consistency,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     structured_event_verifier,
@@ -20,6 +23,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
     AgenticSplitHooks,
     CrossModelSplitContext,
+    MatchedBudgetSplitContext,
     RegisteredAgenticStage,
     SplitRunParams,
     StructuredEventSplitContext,
@@ -31,6 +35,96 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+
+
+def test_runner_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "runner" in stages
+    stage = stages["runner"]
+    assert stage.dispatch_kind == "matched_budget"
+    assert stage.module.endswith("runner")
+
+
+def test_dispatch_runner_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del prompt_input_json, model, temperature, max_tokens
+        return (
+            '{"final_label":"2 per week","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(agentic_runner, "_run_model_call", fake_model_call)
+
+    record = _record(
+        1101,
+        "Clinic Date: 12 June 2026\nShe has 2 seizures per week.",
+        gold_label="2 per week",
+        gold_monthly_frequency=8.666666666666666,
+    )
+    split_kwargs = {
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 900,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = agentic_runner.run_split([record], **split_kwargs)
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        agentic_runner.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=agentic_runner.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_agentic_matched_budget_trace",
+                "pipeline_family": "agentic_matched_budget",
+                "pipeline_version": "gan2026_agentic_phase6_live_v0",
+                "claim_boundary": (
+                    "validation-development matched-budget agentic trace; no holdout "
+                    "use, no row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=agentic_runner._build_row_trace,
+            summarize_rows=agentic_runner.summarize_rows,
+            write_report=agentic_runner.write_report,
+        ),
+        matched_budget_context=MatchedBudgetSplitContext(
+            default_conditions=agentic_runner.DEFAULT_CONDITIONS,
+            validate_conditions=agentic_runner._validate_conditions,
+            default_budgets=agentic_runner._default_budgets,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
 
 
 def test_cross_model_challenge_stage_is_registered() -> None:
@@ -201,6 +295,211 @@ def test_dispatch_llm_event_reasoner_matches_direct_run_split(monkeypatch) -> No
             structured_event_rows=structured_event_rows,
             structured_event_source_path=Path("v0.jsonl"),
             rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_tool_context_ablation_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "tool_context_ablation" in stages
+    stage = stages["tool_context_ablation"]
+    assert stage.dispatch_kind == "standard"
+    assert stage.module.endswith("tool_context_ablation")
+
+
+def test_dispatch_tool_context_ablation_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return (
+            '{"final_label":"2 per week","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(tool_context_ablation, "_run_model_call", fake_model_call)
+
+    record = _record(
+        201,
+        "Clinic Date: 12 June 2026\nShe reports 2 seizures per week.",
+        gold_label="2 per week",
+        gold_monthly_frequency=8.690476190476192,
+    )
+    split_kwargs = {
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 900,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = tool_context_ablation.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        tool_context_ablation.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=tool_context_ablation.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_agentic_tool_context_ablation",
+                "pipeline_family": tool_context_ablation.PIPELINE_FAMILY,
+                "pipeline_version": tool_context_ablation.PIPELINE_VERSION,
+                "claim_boundary": (
+                    "validation-development hard50 tool-context ablation; no holdout "
+                    "use, no row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=tool_context_ablation._build_row,
+            summarize_rows=tool_context_ablation.summarize_rows,
+            finalize_metadata=tool_context_ablation._finalize_metadata,
+            write_report=tool_context_ablation.write_report,
+            progress_fields=("call_failures", "parse_or_validation_failures"),
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_tool_self_consistency_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "tool_self_consistency" in stages
+    stage = stages["tool_self_consistency"]
+    assert stage.dispatch_kind == "standard"
+    assert stage.module.endswith("tool_self_consistency")
+
+
+def test_dispatch_tool_self_consistency_matches_direct_run_split(monkeypatch) -> None:
+    labels_by_call_index = {
+        1: "2 per week",
+        2: "unknown",
+        3: "2 per week",
+        4: "2 per week",
+    }
+
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        call_index = int(json.loads(prompt_input_json)["call_index"])
+        label = labels_by_call_index[call_index]
+        return (
+            f'{{"final_label":"{label}","evidence":"2 seizures per week",'
+            '"answer_kind":"frequency","selected_seizure_type":"seizure",'
+            '"time_window":"current","confidence":"high",'
+            '"rationale":"The note states 2 seizures per week."}'
+        )
+
+    monkeypatch.setattr(tool_self_consistency, "_run_model_call", fake_model_call)
+
+    record = _record(
+        301,
+        "Clinic Date: 12 June 2026\nShe reports 2 seizures per week.",
+        gold_label="2 per week",
+        gold_monthly_frequency=8.690476190476192,
+    )
+    reference_rows = [
+        {
+            "source_row_index": 301,
+            "condition_traces": {
+                "single_self_consistency_temperature": {
+                    "final_label": "unknown",
+                }
+            },
+        }
+    ]
+    split_kwargs = {
+        "reference_rows": reference_rows,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 900,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = tool_self_consistency.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        tool_self_consistency.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=tool_self_consistency.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_agentic_tool_self_consistency",
+                "pipeline_family": "agentic_tool_self_consistency",
+                "pipeline_version": "gan2026_agentic_e2_tool_self_consistency_v0",
+                "claim_boundary": (
+                    "validation-development hard50 four-call boundary-guide "
+                    "self-consistency; no holdout use, no row-level test inspection, "
+                    "and no benchmark claim"
+                ),
+            },
+            build_row=tool_self_consistency._build_row,
+            summarize_rows=tool_self_consistency.summarize_rows,
+            gate_interpretation=tool_self_consistency.gate_interpretation,
+            write_report=tool_self_consistency.write_report,
+        ),
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=Path("."),
+            row_kwargs={
+                "reference_labels": tool_self_consistency._reference_labels(reference_rows)
+            },
         ),
     )
 

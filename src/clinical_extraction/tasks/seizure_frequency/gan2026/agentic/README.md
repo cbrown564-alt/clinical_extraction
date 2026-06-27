@@ -23,23 +23,21 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 | `temporal_sentinel_specialist.py` | V9 temporal/sentinel specialist; `run_split` via `dispatch_registered_split` |
 | `targeted_boundary_router.py` | V3 targeted boundary router; `run_split` via `dispatch_registered_split` |
 | `cross_model_structured_event_adjudicator.py` | V10 base cross-model adjudicator; `run_split` via `dispatch_registered_split` |
+| `tool_context_ablation.py` | E1 one-call tool-context ablation; `run_split` via `dispatch_registered_split` |
+| `tool_self_consistency.py` | E2 boundary-guide self-consistency; `run_split` via `dispatch_registered_split` |
 
 ## Legacy pattern (inline runner)
 
 These modules still duplicate parse/metadata/report boilerplate and are candidates
 for incremental migration. Do **not** rewrite monoliths wholesale — migrate one stage at a time.
 
-- `llm_event_reasoner.py`
 - `structured_event_consensus.py`
 - `structured_event_patches.py`
 - `precision_gated_selector.py`
 - `consensus_fresh_agreement_selector.py`
 - `boundary_guide_rescue_replay.py`
 - `selective_fallback_replay.py`
-- `tool_context_ablation.py`
-- `tool_self_consistency.py`
 - `llm_reasoning_stage0.py`
-- `runner.py`
 
 ## Shared helpers (`stage_protocol.py`)
 

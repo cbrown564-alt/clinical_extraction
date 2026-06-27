@@ -22,16 +22,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
     repair_decision_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
     LlmOnlyDirectLabelerDecisionRecord,
     _extract_json_object,
     parse_decision_json,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving_with_trace,
 )
@@ -50,6 +46,7 @@ DEFAULT_CONDITIONS: tuple[ConditionName, ...] = (
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_agentic_matched_budget_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_agentic_matched_budget_validation.md")
 PROMPT_VERSION = "gan2026_agentic_matched_budget_prompt_v1"
+STAGE_ID = "runner"
 
 
 def run_split(
@@ -72,49 +69,28 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Build matched-budget traces for agentic conditions."""
 
+    from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+        AgenticSplitHooks,
+        MatchedBudgetSplitContext,
+        SplitRunParams,
+        dispatch_registered_split,
+    )
+
     del escalation_reason, progress_every, checkpoint_jsonl_path
     del checkpoint_report_path, candidate_set_jsonl_path
-    active_conditions = tuple(conditions or DEFAULT_CONDITIONS)
-    _validate_conditions(active_conditions)
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-    budgets = _default_budgets(max_tokens=max_tokens)
-    rows = [
-        _build_row_trace(
-            record,
-            split=split,
-            split_manifest=split_manifest,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            mode=mode,
-            budgets=budgets,
-            conditions=active_conditions,
-        )
-        for record in records
-    ]
-    metadata = build_run_metadata(
-        mode=mode,
+    params = SplitRunParams(
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
-        dspy_version="none",
-        split=split,
-        split_manifest=split_manifest,
+        mode=mode,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
     )
-    metadata.update(
-        {
+    hooks = AgenticSplitHooks(
+        prompt_version=PROMPT_VERSION,
+        metadata_extra={
             "artifact_kind": "gan2026_agentic_matched_budget_trace",
             "pipeline_family": "agentic_matched_budget",
             "pipeline_version": "gan2026_agentic_phase6_live_v0",
@@ -122,18 +98,24 @@ def run_split(
                 "validation-development matched-budget agentic trace; no holdout "
                 "use, no row-level test inspection, and no benchmark claim"
             ),
-            "dspy_cache": dspy_cache,
-            "conditions": list(active_conditions),
-            "condition_filter": list(active_conditions),
-            "matched_budget": {
-                condition: budget.model_dump(mode="json")
-                for condition, budget in budgets.items()
-                if condition in active_conditions
-            },
-        }
+        },
+        build_row=_build_row_trace,
+        summarize_rows=summarize_rows,
+        write_report=write_report,
     )
-    metadata["summary"] = summarize_rows(rows)
-    return rows, metadata
+    matched_budget_context = MatchedBudgetSplitContext(
+        default_conditions=DEFAULT_CONDITIONS,
+        validate_conditions=_validate_conditions,
+        default_budgets=_default_budgets,
+        conditions=tuple(conditions) if conditions is not None else None,
+    )
+    return dispatch_registered_split(
+        STAGE_ID,
+        records,
+        params=params,
+        hooks=hooks,
+        matched_budget_context=matched_budget_context,
+    )
 
 
 def _validate_conditions(conditions: Sequence[ConditionName]) -> None:
