@@ -1,0 +1,538 @@
+clinical_rules:
+- Fill event_frames before findings. Each event_frame is a model-owned clinical reading of one possible seizure-frequency,
+  seizure-free, last-event, change, cluster, or non-target episode fact.
+- 'Use event_frames to separate coverage from scoring: include target epileptic seizure-frequency frames in findings, but
+  keep non-target episode/history/driving/diagnosis frames out of findings.'
+- Every finding should correspond to one target event_frame. If a target event_frame has include_as_finding true, copy its
+  exact finding_text when supplied; otherwise copy its seizure_phrase. Also copy evidence, statement family, count, period,
+  and time fields unless there is a clear reason not to score it.
+- event_frames are planning and audit output, not a shortcut. Do not invent a finding without exact source evidence, and do
+  not let a non-target event_frame become a scored finding.
+- Every finding must include frequency_statement_type and source_role. Use null for unknown optional numeric/date fields,
+  but do not omit keys.
+- Use one finding per seizure type. If the letter separately describes focal seizures and tonic-clonic seizures, return two
+  findings.
+- Pay close attention to compact sections headed seizure type and frequency. Treat comma-separated items in those sections
+  as findings, not only the prose paragraphs.
+- If the same seizure type has two distinct frequency facts with different time context, return two findings for that same
+  text.
+- If a compact frequency section states a fact and a later narrative sentence repeats the same fact, return both findings
+  with their own exact evidence strings.
+- A current seizure-free or controlled statement does not replace historical compact-section seizure-frequency facts. If a
+  compact section lists dated seizure-type facts and the narrative later says the patient remains seizure free, return the
+  dated facts as findings and treat the current-control statement separately.
+- Both text and evidence must be copied exactly from the letter. If no exact phrase can be copied, omit that finding.
+- Prefer source-near wording. Do not rewrite the seizure type into a different clinical concept.
+- For rates such as 2 to 3 per month, set count_low, count_high, period_count, and period_unit.
+- For header counts anchored to clinic review, such as several seizures since clinic review, set frequency_statement_type
+  to header_count_since_anchor, count to 3 when the word is several, time_relation to since, and point_in_time to last clinic.
+- For dated counts such as in March she had 2 to 3 seizures, set clinical_kind to dated_count, fill month and time_relation,
+  and do not fill period_count or period_unit unless words like per month or every month are present.
+- For a dated occurrence with no explicit count, such as absence like seizures in 2018, set frequency_statement_type to calendar_occurrence_no_count,
+  clinical_kind to dated_count, year to 2018, and time_relation to during.
+- For every 2 to 3 weeks, set count to 1, period_low to 2, period_high to 3, and period_unit to week.
+- For seizure-free duration, set clinical_kind to seizure_free and fill period_count and period_unit when stated.
+- For last-event statements such as last event July 2016, use the seizure type as text, clinical_kind last_event, count 0,
+  time_relation since, and fill month and year.
+- 'For vague counts, use these conventions: few or couple is 2, several is 3, and none or no is 0. Do not turn these words
+  into count ranges.'
+- If evidence says generic seizures, keep text as seizures even if the diagnosis names a more specific seizure syndrome elsewhere.
+  Do not replace generic seizures with the diagnosis term.
+- If the evidence says focal seizures with altered, impaired, or lost awareness, keep that awareness modifier in text.
+- If the evidence says focal seizures without change in awareness, use text focal seizures. Without change in awareness is
+  context, not an impaired-awareness seizure-type modifier.
+- Do not extract migraine/headache frequency, febrile-seizure history, family history, driving rules, future risk statements,
+  or medication titration intervals.
+- Do not extract blackouts, loss of consciousness episodes, dizzy spells, dissociative seizures, nonepileptic events, or generic
+  events unless the evidence itself states these are epileptic seizures.
+- Do not convert a diagnostic episode description into a seizure-frequency finding just because another sentence says the
+  clinician suspects epilepsy or thinks the episodes may be seizures. The frequency evidence itself must name epileptic seizures
+  or a seizure type.
+- Do not extract minor seizures as target frequency when the evidence describes dizzy spells, headache, nausea, unresponsiveness,
+  shaking, or other nonspecific episodes rather than a scored seizure type.
+- Do not extract minor seizures, jerks, or episodes as scored seizure frequency even when a rate is stated, unless the same
+  frequency clause itself explicitly names epileptic seizures or a standard seizure type such as focal seizures, absences,
+  tonic-clonic seizures, myoclonic jerks, or convulsive seizures.
+- Do not treat 'continues to get seizures' as a scored frequency-change finding unless the same evidence gives a count, rate,
+  date, last-event anchor, or explicit qualitative change word such as increased, decreased, frequent, or infrequent.
+- For a first or single diagnostic seizure encounter, do not score no previous seizures, no further episodes, future risk
+  of seizures, or driving-clearance seizure windows as seizure-frequency findings.
+- For last-event summaries, extract the most recent last event only. Do not add previous events as separate last-event findings.
+- If a compact line says last event plus previous event, return the last event and do not return the older previous event.
+  The previous event is context for the last-event summary, not another scored last-event finding.
+- For a rate stated during a finite episode, keep the denominator separate from the episode duration. In '6-9 seizures every
+  week for 3 weeks', the period_count is 1 and period_unit is week; the 3 weeks is the duration of that episode, not the rate
+  denominator.
+- For cluster wording such as a cluster of seizures in August where seizures happened 6-9 every week, return one dated cluster-of-seizures
+  finding and one separate within-cluster seizure-rate finding.
+- When evidence says seizures have returned after seizure freedom, return a frequency_change finding with frequency_change
+  increased if there is no exact count in that phrase.
+- When evidence says a seizure type is infrequent, return a frequency_change finding with frequency_change infrequent. Do
+  not turn older historical counts such as two in the year of diagnosis into a current rate unless the same clause gives a
+  current period.
+- For no further seizures or epileptic seizures under control, return a zero-count finding. If control follows a drug increase
+  or medication change, set point_in_time to medication change.
+- Do not score a bare current statement such as he remains seizure free or she remains seizure free when there is no duration,
+  no date, no medication-change/surgery/clinic anchor, and no wording such as no further seizures. Put it in event_frames
+  as current_control_no_duration with include_as_finding false.
+- Use current_control_no_duration only for vague diagnosis-level phrases such as epilepsy seems under control, especially
+  when no seizure type or no further seizures phrase is stated. For a specific seizure type or epileptic seizures completely
+  under control after a medication increase, use current_zero_no_duration with count 0 and point_in_time medication change.
+- For no further seizures, use text seizures and count 0. Do not rewrite the source phrase to seizure free unless the letter
+  itself says seizure free.
+- For last seizures in teenage years, use text seizures, count 0, time_relation since, age_low 13, age_high 19, and age_unit
+  year. Do not extract accompanying migraine or febrile-seizure counts.
+- Do not return a current seizure-free finding unless a duration, date, or clinical anchor is explicitly stated.
+- For change-only statements, set clinical_kind to frequency_change and fill frequency_change.
+- Only fill time_relation, point_in_time, day, month, or year when that context is explicitly stated in the letter.
+- 'If the letter has no seizure frequency information, return {"event_frames": [], "findings": []}.'
+- Return exactly one JSON object. No markdown code fences.
+event_frame_examples:
+- event_frames:
+  - count_high: '3'
+    count_low: '2'
+    event_id: e1
+    evidence: In March she had 2 to 3 of her focal seizures without change in awareness
+    finding_text: focal seizures
+    include_as_finding: true
+    month: March
+    rationale: Without change in awareness is context, so the scored seizure phrase is focal seizures.
+    seizure_phrase: focal seizures
+    source_role: narrative
+    statement_family: calendar_count
+    target_status: target_epileptic_seizure_frequency
+    time_relation: during
+  note_fragment: In March she had 2 to 3 of her focal seizures without change in awareness.
+- event_frames:
+  - count: '0'
+    event_id: e1
+    evidence: Generalised tonic clonic seizure-last event July 2016
+    finding_text: Generalised tonic clonic seizure
+    include_as_finding: true
+    month: July
+    rationale: The most recent last-event date is a scored finding.
+    seizure_phrase: Generalised tonic clonic seizure
+    source_role: compact_section
+    statement_family: last_event_date
+    target_status: target_epileptic_seizure_frequency
+    time_relation: since
+    year: '2016'
+  - count: '0'
+    event_id: e2
+    evidence: Previous event December 2015
+    include_as_finding: false
+    month: December
+    rationale: Older previous event is context once a newer last event is given.
+    seizure_phrase: event
+    source_role: compact_section
+    statement_family: last_event_date
+    target_status: history_context_only
+    time_relation: since
+    year: '2015'
+  note_fragment: 'Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December
+    2015.'
+- event_frames:
+  - count: '2'
+    event_id: e1
+    evidence: 2 generalised tonic clonic seizures 2014
+    finding_text: generalised tonic clonic seizures
+    include_as_finding: true
+    rationale: Historical dated compact-section count is scored.
+    seizure_phrase: generalised tonic clonic seizures
+    source_role: compact_section
+    statement_family: calendar_count
+    target_status: target_epileptic_seizure_frequency
+    time_relation: during
+    year: '2014'
+  - event_id: e2
+    evidence: absence like seizures 2014
+    finding_text: absence like seizures
+    include_as_finding: true
+    rationale: Dated occurrence without count is scored as one occurrence.
+    seizure_phrase: absence like seizures
+    source_role: compact_section
+    statement_family: calendar_occurrence_no_count
+    target_status: target_epileptic_seizure_frequency
+    time_relation: during
+    year: '2014'
+  - event_id: e3
+    evidence: He remains seizure free
+    include_as_finding: false
+    rationale: Bare remains seizure free has no duration, date, or clinical anchor, so it is not a scored finding.
+    seizure_phrase: seizure free
+    source_role: narrative
+    statement_family: current_control_no_duration
+    target_status: uncertain_not_scored
+  note_fragment: 'Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014. He remains
+    seizure free.'
+- event_frames:
+  - count: '2'
+    event_id: e1
+    evidence: dizzy episodes twice a week
+    include_as_finding: false
+    period_count: '1'
+    period_unit: week
+    rationale: The frequency belongs to non-target dizzy episodes.
+    seizure_phrase: dizzy episodes
+    source_role: narrative
+    statement_family: non_target
+    target_status: non_target_episode
+  note_fragment: She gets dizzy episodes twice a week. These are thought to be nonepileptic events.
+event_frame_schema:
+  age_low/age_high/age_unit: Age anchor when explicitly stated.
+  count: Single seizure count when stated or implied by one event.
+  count_high: Upper seizure count when a range is stated.
+  count_low: Lower seizure count when a range is stated.
+  day/month/year: Calendar date fields when explicitly stated.
+  event_id: Short stable id such as e1, e2, e3.
+  evidence: Exact source substring containing the seizure-frequency or non-target episode fact.
+  finding_text: Exact text that should be used in findings if include_as_finding is true. This may be shorter than seizure_phrase
+    when evidence includes context such as 'without change in awareness'.
+  frequency_change: decreased, frequent, increased, infrequent, or same.
+  include_as_finding: true only for event_frames that should become scored findings.
+  period_count: Number of denominator time periods, usually 1.
+  period_high: Upper denominator period count when a range is stated.
+  period_low: Lower denominator period count when a range is stated.
+  period_unit: day, week, month, or year when stated.
+  point_in_time: Clinical anchor such as last clinic or medication change.
+  rationale: One concise clinical reading of this event frame.
+  seizure_phrase: Exact source-near phrase naming the seizure type, seizure-free state, or non-target episode. Do not include
+    context words that describe preserved awareness, triggers, symptoms, or uncertainty unless they are part of the scored
+    seizure-type phrase.
+  source_role: compact_section, narrative, or both.
+  statement_family: header_count_since_anchor, calendar_count, calendar_occurrence_no_count, recurrence_interval, last_event_date,
+    background_rate, seizure_free_duration, current_control_no_duration, current_zero_no_duration, change_only, cluster, non_target,
+    or other_frequency.
+  target_status: target_epileptic_seizure_frequency, non_target_episode, history_context_only, diagnosis_without_frequency,
+    future_risk_or_driving, or uncertain_not_scored.
+  time_relation: during or since when explicitly stated.
+output_schema:
+  age_high: Upper patient age when an age range is stated.
+  age_low: Lower patient age when an age or age range is stated.
+  age_unit: year or month when age_low or age_high is stated.
+  clinical_kind: One of frequency_rate, seizure_free, frequency_change, dated_count, last_event, cluster_frequency, other_frequency.
+  confidence: high, medium, or low.
+  count: Single seizure count when stated. For every 3 to 4 weeks, the count is 1.
+  count_high: Upper seizure count when a range is stated.
+  count_low: Lower seizure count when a range is stated.
+  day: Day of month when explicitly stated.
+  evidence: Exact substring from the letter that supports this finding. Use the smallest clause or sentence that includes
+    the frequency.
+  frequency_change: decreased, frequent, increased, infrequent, or same when a change or relative frequency is stated.
+  frequency_statement_type: 'Classify the statement before filling fields: header_count_since_anchor, calendar_count, calendar_occurrence_no_count,
+    recurrence_interval, last_event_date, background_rate, seizure_free_duration, current_control_no_duration, current_zero_no_duration,
+    change_only, or other_frequency.'
+  month: Month when explicitly stated.
+  period_count: Number of time periods, usually 1.
+  period_high: Upper time-period count when a period range is stated.
+  period_low: Lower time-period count when a period range is stated.
+  period_unit: day, week, month, or year when stated.
+  point_in_time: Clinical anchor when explicitly stated, for example medication change, last clinic, last month, last week,
+    last year, surgery, or birthday.
+  rationale: One concise sentence explaining the clinical reading.
+  source_role: compact_section, narrative, or both. Use compact_section for facts listed in short headed lines such as seizure
+    type and frequency.
+  text: Exact short phrase from the letter naming the seizure type or seizure-free state, such as 'focal seizures', 'absences',
+    'generalised tonic-clonic seizures', or 'seizure free'.
+  time_relation: during or since when explicitly stated.
+  year: Year when explicitly stated.
+prompt_version: exectv2_llm_only_sf_clinical_findings_v0.19
+required_keys_per_finding:
+- text
+- evidence
+- clinical_kind
+- frequency_statement_type
+- source_role
+- count
+- count_low
+- count_high
+- period_count
+- period_low
+- period_high
+- period_unit
+- time_relation
+- point_in_time
+- day
+- month
+- year
+- age_low
+- age_high
+- age_unit
+- frequency_change
+- confidence
+- rationale
+task: Read the clinical letter and list each seizure type or seizure-free state that has frequency information. First enumerate
+  model-owned event_frames for every possible seizure-frequency or non-target episode fact, then convert only target event_frames
+  into the final 'findings' list. Return one JSON object.
+worked_examples:
+- correct:
+    clinical_kind: frequency_rate
+    confidence: high
+    count_high: '3'
+    count_low: '2'
+    evidence: 2 to 3 focal seizures with impaired awareness per month since the medication change
+    frequency_statement_type: background_rate
+    period_count: '1'
+    period_unit: month
+    point_in_time: medication change
+    rationale: Focal seizures occur 2 to 3 per month since medication change.
+    source_role: narrative
+    text: focal seizures with impaired awareness
+    time_relation: since
+  note_fragment: She has 2 to 3 focal seizures with impaired awareness per month since the medication change.
+- correct:
+    clinical_kind: dated_count
+    confidence: high
+    count_high: '3'
+    count_low: '2'
+    evidence: In April she had 2 to 3 of her focal seizures without change in awareness
+    frequency_statement_type: calendar_count
+    month: April
+    rationale: The count is stated during April, not as a per-month rate.
+    source_role: narrative
+    text: focal seizures
+    time_relation: during
+  note_fragment: In April she had 2 to 3 of her focal seizures without change in awareness.
+- correct:
+    clinical_kind: seizure_free
+    confidence: high
+    evidence: seizure free for 6 months after surgery
+    frequency_statement_type: seizure_free_duration
+    period_count: '6'
+    period_unit: month
+    point_in_time: surgery
+    rationale: Seizure-free state has lasted 6 months since surgery.
+    source_role: narrative
+    text: seizure free
+    time_relation: since
+  note_fragment: He has been seizure free for 6 months after surgery.
+- correct:
+  - clinical_kind: dated_count
+    confidence: medium
+    count: '3'
+    evidence: several seizures since clinic review
+    frequency_statement_type: header_count_since_anchor
+    point_in_time: last clinic
+    rationale: Several means 3 seizures since clinic review.
+    source_role: compact_section
+    text: seizures
+    time_relation: since
+  - clinical_kind: frequency_rate
+    confidence: medium
+    count: '2'
+    evidence: a few seizures per year
+    frequency_statement_type: background_rate
+    period_count: '1'
+    period_unit: year
+    rationale: Few means 2 seizures per year.
+    source_role: compact_section
+    text: seizures
+  note_fragment: 'Seizure frequency: several seizures since clinic review, a few seizures per year.'
+- correct:
+  - clinical_kind: frequency_rate
+    confidence: high
+    count: '1'
+    evidence: seizures every 3 to 4 weeks
+    frequency_statement_type: recurrence_interval
+    period_high: '4'
+    period_low: '3'
+    period_unit: week
+    rationale: The compact section states one seizure interval every 3 to 4 weeks.
+    source_role: compact_section
+    text: seizures
+  - clinical_kind: frequency_rate
+    confidence: high
+    count: '1'
+    evidence: seizures every 3 to 4 weeks
+    frequency_statement_type: recurrence_interval
+    period_high: '4'
+    period_low: '3'
+    period_unit: week
+    rationale: The narrative repeats the same seizure interval.
+    source_role: narrative
+    text: seizures
+  note_fragment: 'Seizure type and frequency: seizures every 3 to 4 weeks. She currently has seizures every 3 to 4 weeks.'
+- correct:
+    clinical_kind: frequency_rate
+    confidence: high
+    count: '2'
+    evidence: roughly two seizures per year
+    frequency_statement_type: background_rate
+    period_count: '1'
+    period_unit: year
+    rationale: The evidence says generic seizures, so the text remains seizures.
+    source_role: narrative
+    text: seizures
+  note_fragment: 'Diagnosis: generalised epilepsy. He has had roughly two seizures per year.'
+- correct:
+    age_high: '19'
+    age_low: '13'
+    age_unit: year
+    clinical_kind: last_event
+    confidence: medium
+    count: '0'
+    evidence: His last seizures were in his teenage years
+    frequency_statement_type: last_event_date
+    rationale: Last seizures were in teenage years; migraine and febrile history are not target frequency facts.
+    source_role: narrative
+    text: seizures
+    time_relation: since
+  note_fragment: His last seizures were in his teenage years. He had migraines three times per month and febrile seizures
+    as a child.
+- correct:
+    clinical_kind: dated_count
+    confidence: medium
+    evidence: absence like seizures 2018
+    frequency_statement_type: calendar_occurrence_no_count
+    rationale: The line records an occurrence in 2018 without an exact count.
+    source_role: compact_section
+    text: absence like seizures
+    time_relation: during
+    year: '2018'
+  note_fragment: 'Seizure type and frequency: absence like seizures 2018'
+- correct:
+  - clinical_kind: dated_count
+    confidence: high
+    count: '2'
+    evidence: 2 generalised tonic clonic seizures 2018
+    frequency_statement_type: calendar_count
+    rationale: The compact section states a dated count of generalised tonic clonic seizures.
+    source_role: compact_section
+    text: generalised tonic clonic seizures
+    time_relation: during
+    year: '2018'
+  - clinical_kind: dated_count
+    confidence: medium
+    evidence: absence like seizures 2018
+    frequency_statement_type: calendar_occurrence_no_count
+    rationale: The compact section records absence like seizures in 2018 without an exact count.
+    source_role: compact_section
+    text: absence like seizures
+    time_relation: during
+    year: '2018'
+  note_fragment: 'Seizure type and frequency: 2 generalised tonic clonic seizures 2018, absence like seizures 2018. He remains
+    seizure free.'
+- correct:
+    clinical_kind: last_event
+    confidence: high
+    count: '0'
+    evidence: Generalised tonic clonic seizure-last event July 2016.
+    frequency_statement_type: last_event_date
+    month: July
+    rationale: The July 2016 last event is the most recent event; the older previous event is context.
+    source_role: compact_section
+    text: Generalised tonic clonic seizure
+    time_relation: since
+    year: '2016'
+  note_fragment: 'Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December
+    2015.'
+- correct:
+  - clinical_kind: cluster_frequency
+    confidence: high
+    count: '1'
+    evidence: a cluster of seizures in August 2017
+    frequency_statement_type: calendar_occurrence_no_count
+    month: August
+    rationale: The cluster itself is a dated occurrence.
+    source_role: narrative
+    text: cluster of seizures
+    time_relation: during
+    year: '2017'
+  - clinical_kind: frequency_rate
+    confidence: high
+    count_high: '9'
+    count_low: '6'
+    evidence: 6-9 seizures every week for 3 weeks
+    frequency_statement_type: background_rate
+    month: August
+    period_count: '1'
+    period_unit: week
+    rationale: The rate is every week; the 3 weeks is episode duration.
+    source_role: narrative
+    text: seizures
+    time_relation: during
+    year: '2017'
+  note_fragment: She had a cluster of seizures in August 2017 where she had 6-9 seizures every week for 3 weeks.
+- correct:
+  - clinical_kind: frequency_change
+    confidence: medium
+    evidence: The seizures have returned
+    frequency_change: increased
+    frequency_statement_type: change_only
+    rationale: Seizures returning after seizure freedom is an increase.
+    source_role: narrative
+    text: seizures
+  - clinical_kind: frequency_change
+    confidence: medium
+    evidence: infrequent focal to bilateral convulsive seizures
+    frequency_change: infrequent
+    frequency_statement_type: change_only
+    rationale: Infrequent is a qualitative frequency-change statement; the old count at diagnosis is not a current rate.
+    source_role: narrative
+    text: focal to bilateral convulsive seizures
+  note_fragment: The seizures have returned. He can get infrequent focal to bilateral convulsive seizures having around two
+    in the year of his diagnosis.
+- correct: []
+  note_fragment: The epilepsy seems to be under control on levetiracetam. I will review her again in nine months.
+  rationale: Vague diagnosis-level control without a seizure type, count, date, duration, or no-further-seizures phrase is
+    not scored.
+- correct:
+  - clinical_kind: seizure_free
+    confidence: high
+    count: '0'
+    evidence: The focal seizures are completely under control
+    frequency_statement_type: current_zero_no_duration
+    point_in_time: medication change
+    rationale: A specific seizure type is completely controlled after a medication increase.
+    source_role: narrative
+    text: focal seizures
+  - clinical_kind: frequency_change
+    confidence: medium
+    evidence: There has been significant improvement since increasing lamotrigine
+    frequency_change: infrequent
+    frequency_statement_type: change_only
+    point_in_time: medication change
+    rationale: Improvement since medication increase means seizure frequency became infrequent.
+    source_role: narrative
+    text: seizures
+  note_fragment: There has been significant improvement since increasing lamotrigine. The focal seizures are completely under
+    control on lamotrigine.
+- correct:
+    clinical_kind: seizure_free
+    confidence: high
+    count: '0'
+    evidence: has not had any further seizures
+    frequency_statement_type: current_zero_no_duration
+    rationale: The source says no further seizures, so text remains seizures.
+    source_role: narrative
+    text: seizures
+  note_fragment: She has not had any further seizures on levetiracetam.
+- correct: []
+  note_fragment: She has episodes twice a week of deja vu. I think these are focal seizures.
+  rationale: The frequency clause names episodes, and the seizure interpretation is separate diagnostic reasoning rather than
+    a source-near seizure frequency statement.
+- correct: []
+  note_fragment: Despite medication she continues to get general and complex partial seizures. She continues to get chronic
+    daily headaches.
+  rationale: Continues to get seizures is not a scored frequency without a count, rate, date, or explicit qualitative frequency
+    change.
+- correct: []
+  note_fragment: He developed some minor seizures. The episodes last no longer than 3 minutes and occur 4 to 5 times a year.
+  rationale: The rate belongs to nonspecific minor episodes rather than a standard scored seizure type.
+- correct: []
+  note_fragment: 'Diagnosis: single focal seizure. He has not had any previous seizures and is at risk of further seizures.'
+  rationale: A single diagnostic seizure encounter plus no previous seizures or future risk is not scored as recurrent seizure
+    frequency.
+- correct:
+    clinical_kind: frequency_rate
+    confidence: high
+    count: '15'
+    evidence: approximately 15 seizures over 4 months
+    frequency_statement_type: background_rate
+    period_count: '4'
+    period_unit: month
+    rationale: The frequency evidence says generic seizures, so text remains seizures.
+    source_role: narrative
+    text: seizures
+  note_fragment: 'Diagnosis: generalised tonic clonic seizures with myoclonic jerks. She is still having approximately 15
+    seizures over 4 months.'

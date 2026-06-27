@@ -48,6 +48,18 @@ def _load_dedup_fact_worked_examples_cached() -> list[dict[str, Any]]:
 
 
 @lru_cache(maxsize=1)
+def _load_dedup_fact_guidance_cached() -> list[str]:
+    path = _PACKAGE_DIR / "dedup_fact_guidance.yaml"
+    payload = _read_yaml(path)
+    if not isinstance(payload, dict):
+        raise ValueError(f"{path} must contain a mapping with fact_guidance")
+    guidance = payload.get("fact_guidance")
+    if not isinstance(guidance, list):
+        raise ValueError(f"{path} must contain fact_guidance list")
+    return guidance
+
+
+@lru_cache(maxsize=1)
 def _load_qwen_compact_worked_examples_cached() -> list[dict[str, Any]]:
     path = _PACKAGE_DIR / "qwen_compact_worked_examples.yaml"
     payload = _read_yaml(path)
@@ -69,6 +81,11 @@ def load_dedup_fact_decision_tables() -> dict[str, list[dict[str, str]]]:
 def load_dedup_fact_worked_examples() -> list[dict[str, Any]]:
     """Return worked examples for the de-duplicated clinical-facts route."""
     return _load_dedup_fact_worked_examples_cached()
+
+
+def load_dedup_fact_guidance() -> list[str]:
+    """Return family-agnostic clinical-fact guidance for dedup prompts."""
+    return _load_dedup_fact_guidance_cached()
 
 
 def load_qwen_compact_worked_examples() -> list[dict[str, Any]]:

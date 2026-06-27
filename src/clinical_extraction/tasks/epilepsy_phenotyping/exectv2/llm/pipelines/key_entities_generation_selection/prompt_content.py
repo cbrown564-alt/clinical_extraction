@@ -8,6 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_dedup_fact_guidance,
     load_dedup_fact_worked_examples,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
@@ -255,6 +256,10 @@ def _forbidden_attribute_combinations() -> list[dict[str, str]]:
             "reason": "Future tests are omitted from final_events.",
         },
     ]
+
+
+def _dedup_fact_guidance() -> list[str]:
+    return load_dedup_fact_guidance()
 
 
 def _dedup_fact_worked_examples(
