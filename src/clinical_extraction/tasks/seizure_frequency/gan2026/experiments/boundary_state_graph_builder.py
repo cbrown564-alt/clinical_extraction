@@ -12,7 +12,7 @@ import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.replay_io import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
     load_raw_outputs_by_source_index,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (

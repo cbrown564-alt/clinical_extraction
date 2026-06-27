@@ -27,7 +27,7 @@ def load_jsonl_rows(path: Path) -> list[dict[str, Any]]:
 def load_raw_outputs_by_source_index(path: Path) -> dict[int, str]:
     """Compatibility wrapper for saved-output replay analysis loading."""
 
-    from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.replay_io import (
+    from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
         load_raw_outputs_by_source_index as _load_raw_outputs_by_source_index,
     )
 

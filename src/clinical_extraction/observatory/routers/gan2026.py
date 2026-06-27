@@ -239,11 +239,6 @@ def hard_slice_definitions() -> dict[str, Any]:
 
 @router.post("/hard-slices/membership")
 def hard_slice_membership(request_body: HardSliceMembershipRequest) -> dict[str, Any]:
-    if classify_hidden_families is None:
-        raise HTTPException(
-            status_code=503,
-            detail="Hard-slice classification dependencies are not available.",
-        )
     results = []
     for row in request_body.rows:
         note_text = str(row.get("note_text", ""))
