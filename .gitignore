@@ -20,6 +20,16 @@ experiments/**/predictions*.csv
 experiments/**/predictions*.json
 experiments/**/traces/
 
+# GEPA optimizer run scratch: cloudpickle resume checkpoints, per-example output
+# dumps, and orchestrator logs/status. The curated synthesis + per-run
+# json/md/jsonl/instruction artifacts are committed intentionally; these
+# machine-generated internals are not.
+experiments/**/gepa_state.bin
+experiments/**/generated_best_outputs_valset/
+experiments/gepa_overnight*/**/*.log
+experiments/gepa_overnight*/*.log
+experiments/gepa_overnight*/*_status.json
+
 # Scratch run scripts/outputs under experiments/ and scripts/ (underscore-prefixed by
 # convention) and captured run logs/streams. Registered artifacts are added explicitly.
 experiments/_*
