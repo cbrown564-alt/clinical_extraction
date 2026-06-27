@@ -144,11 +144,17 @@ _PRESCRIPTION_RESIDUAL_TARGET_KEYS: frozenset[tuple[str, str, str, str, str]] = 
 
 
 def normalize_drug_name(surface: str) -> str | None:
-    """Return the canonical generic drug name for a surface mention, if known."""
+    """Return the benchmark canonical drug name for a surface mention, if known."""
 
-    key = resolve_drug_surface(surface)
+    key = normalize_phrase(surface)
     concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(key)
-    return concept.canonical if concept is not None else None
+    if concept is not None:
+        return concept.canonical
+    resolved = normalize_phrase(resolve_drug_surface(surface))
+    if resolved != key:
+        concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(resolved)
+        return concept.canonical if concept is not None else None
+    return None
 
 
 def normalize_dose_unit(unit: str) -> str:
