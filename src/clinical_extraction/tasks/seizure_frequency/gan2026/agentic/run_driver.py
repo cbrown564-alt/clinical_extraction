@@ -12,7 +12,7 @@ inline ``run_split`` implementations incrementally (see P3-1).
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -53,6 +53,149 @@ SummarizeRows = Callable[[Sequence[Mapping[str, Any]]], dict[str, Any]]
 GateInterpretation = Callable[[Mapping[str, Any]], dict[str, Any]]
 WriteReport = Callable[..., None]
 RowsBySourceIndex = Callable[[Sequence[Mapping[str, Any]]], Mapping[int, Mapping[str, Any]]]
+SplitDispatchKind = Literal["standard", "structured_event", "cross_model_structured_event"]
+
+
+@dataclass(frozen=True)
+class RegisteredAgenticStage:
+    """Registry entry describing how a stage routes through ``run_driver``."""
+
+    stage_id: str
+    dispatch_kind: SplitDispatchKind
+    module: str
+    description: str = ""
+
+
+@dataclass(frozen=True)
+class AgenticSplitHooks:
+    """Stage-local callbacks supplied when dispatching a registered split runner."""
+
+    prompt_version: str
+    metadata_extra: Mapping[str, Any]
+    build_row: RowBuilder
+    summarize_rows: SummarizeRows
+    gate_interpretation: GateInterpretation | None = None
+    write_report: WriteReport | None = None
+    progress_fields: Sequence[str] = (
+        "call_failures",
+        "parse_or_validation_failures",
+        "purist_correct",
+    )
+
+
+@dataclass(frozen=True)
+class CrossModelSplitContext:
+    """Substrate paths for ``cross_model_structured_event`` dispatch."""
+
+    gpt_structured_event_source_path: Path
+    agent_source_paths: Mapping[str, Path]
+    gpt_structured_event_rows: Sequence[Mapping[str, Any]] | None = None
+    agent_rows_by_id: Mapping[str, Sequence[Mapping[str, Any]]] | None = None
+    agent_ids: Sequence[str] = field(default_factory=lambda: cross_model_base.AGENT_IDS)
+    row_kwargs: Mapping[str, Any] | None = None
+
+
+@dataclass(frozen=True)
+class StructuredEventSplitContext:
+    """Substrate paths for ``structured_event`` dispatch."""
+
+    default_structured_event_jsonl_path: Path
+    structured_event_jsonl_path: Path | None = None
+    structured_event_rows: Sequence[Mapping[str, Any]] | None = None
+    structured_event_source_path: Path | None = None
+    rows_by_source_index: RowsBySourceIndex | None = None
+    row_kwargs: Mapping[str, Any] | None = None
+
+
+_STAGE_REGISTRY: dict[str, RegisteredAgenticStage] = {}
+
+
+def register_agentic_stage(stage: RegisteredAgenticStage) -> None:
+    """Register one agentic stage for ``dispatch_registered_split`` routing."""
+
+    if stage.stage_id in _STAGE_REGISTRY:
+        existing = _STAGE_REGISTRY[stage.stage_id]
+        if existing != stage:
+            raise ValueError(
+                f"agentic stage {stage.stage_id!r} already registered from {existing.module!r}"
+            )
+        return
+    _STAGE_REGISTRY[stage.stage_id] = stage
+
+
+def registered_agentic_stages() -> Mapping[str, RegisteredAgenticStage]:
+    """Return a read-only view of registered agentic stages."""
+
+    return dict(_STAGE_REGISTRY)
+
+
+def dispatch_registered_split(
+    stage_id: str,
+    records: Sequence[GanFrequencyRecord],
+    *,
+    params: SplitRunParams,
+    hooks: AgenticSplitHooks,
+    structured_event_context: StructuredEventSplitContext | None = None,
+    cross_model_context: CrossModelSplitContext | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Route a registered stage through the appropriate ``run_driver`` split helper."""
+    try:
+        stage = _STAGE_REGISTRY[stage_id]
+    except KeyError as exc:
+        registered = ", ".join(sorted(_STAGE_REGISTRY)) or "(none)"
+        raise KeyError(
+            f"unknown agentic stage {stage_id!r}; registered stages: {registered}"
+        ) from exc
+
+    common_kwargs = {
+        "records": records,
+        "params": params,
+        "prompt_version": hooks.prompt_version,
+        "metadata_extra": hooks.metadata_extra,
+        "build_row": hooks.build_row,
+        "summarize_rows": hooks.summarize_rows,
+        "gate_interpretation": hooks.gate_interpretation,
+        "write_report": hooks.write_report,
+        "progress_fields": hooks.progress_fields,
+    }
+    if stage.dispatch_kind == "standard":
+        return run_standard_split(
+            **common_kwargs,
+            row_kwargs=(
+                structured_event_context.row_kwargs if structured_event_context else None
+            ),
+        )
+    if stage.dispatch_kind == "structured_event":
+        if structured_event_context is None:
+            raise ValueError(
+                f"stage {stage_id!r} requires structured_event_context for structured_event dispatch"
+            )
+        return run_structured_event_split(
+            **common_kwargs,
+            default_structured_event_jsonl_path=(
+                structured_event_context.default_structured_event_jsonl_path
+            ),
+            structured_event_jsonl_path=structured_event_context.structured_event_jsonl_path,
+            structured_event_rows=structured_event_context.structured_event_rows,
+            structured_event_source_path=structured_event_context.structured_event_source_path,
+            rows_by_source_index=structured_event_context.rows_by_source_index,
+        )
+    if stage.dispatch_kind == "cross_model_structured_event":
+        if cross_model_context is None:
+            raise ValueError(
+                "stage "
+                f"{stage_id!r} requires cross_model_context for cross_model_structured_event dispatch"
+            )
+        return run_cross_model_structured_event_split(
+            **common_kwargs,
+            gpt_structured_event_source_path=cross_model_context.gpt_structured_event_source_path,
+            agent_source_paths=cross_model_context.agent_source_paths,
+            agent_ids=cross_model_context.agent_ids,
+            gpt_structured_event_rows=cross_model_context.gpt_structured_event_rows,
+            agent_rows_by_id=cross_model_context.agent_rows_by_id,
+            row_kwargs=cross_model_context.row_kwargs,
+        )
+    raise ValueError(f"unsupported dispatch_kind {stage.dispatch_kind!r} for stage {stage_id!r}")
 
 
 def run_standard_split(
