@@ -1,6 +1,6 @@
 {
   "schema": "gan2026_f1_orchestrator_state/v1",
-  "updated": "2026-06-27",
+  "updated": "2026-06-27T02:13+01:00",
   "campaign_status": "CLOSED 2026-06-16 — user accepted 379/450 (0.842) as the honest gpt-4.1-mini ceiling for the V12 hybrid and chose to consolidate. 0.90 not pursued further on mini (C7 structural finding). Synthesis: . Unrefuted future route to >0.90: a stronger/frontier model (changes the mini constraint).",
   "goal": {
     "metric": "micro_f1_purist_eq_accuracy",
@@ -88,8 +88,8 @@
     },
     {
       "id": "P6-manuscript-restructure",
-      "status": "in-progress",
-      "summary": "Capability-first manuscript restructure consuming P1-P5 + P3. Wave 4 drafts in progress. Blocked on P5 selector verdict and M3 ablation for complete consume."
+      "status": "complete",
+      "summary": "Capability-first manuscript restructure consuming P1-P5. Wave 4 drafts merged into paper_manuscript_2026-06-26.md (updated in place, date 2026-06-27). P5 CUT items C1-C5 applied. Remaining: P6 Discussion/Contributions LaTeX fold; S1 slices 7-10."
     },
     {
       "id": "C7-kg-family-gated-graph-trust",
@@ -113,6 +113,20 @@
     }
   ],
   "cycles": [
+    {
+      "id": "P6b-manuscript-merge",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (post-campaign manuscript merge)",
+      "candidate": "writing only — no model calls, no new data, no holdout reads",
+      "verdict": "complete — paper_manuscript_2026-06-26.md §4 rewritten in place (date updated to 2026-06-27); capability-first spine merged; P5 CUT items C1-C5 applied",
+      "deliverable": "docs/research/paper_manuscript_2026-06-26.md (updated in place)",
+      "key_finding": "§4 restructured from task-first (§4.1 Gan | §4.2 ExECTv2) to capability-first (§4.1 Architecture+Reconciliation | §4.2 LLM adds | §4.3 Generalizes | §4.4 Reliability | §4.5 Components). CUT applied: C1 §4.1.2 Gate 4 selector subsection removed; C2 Table 3 selector table removed; C4 selector rows removed from comparison tables; C5 selector removed from promoted-result prose; C3 selector exact-source holdout removed from prose. Tables renumbered 1–7. Claim boundary header preserved and updated. 'Do Not Use' section updated with P5 CUT wording and permitted appendix retention sentence.",
+      "p5_cut_items_applied": ["C1: §4.1.2 selector Gate 4 subsection — REMOVED", "C2: Table 3 consensus/fresh Gate 4 aggregate audits — REMOVED", "C3: frozen exact v0.9 selector holdout from promoted-result prose — REMOVED", "C4: selector rows in architecture comparison tables — REMOVED (no selector in Table 2 or Table 4)", "C5: selector from abstract/conclusions — selector not present in abstract/conclusions; Do Not Use entry added"],
+      "evidence_validity": "writing-only; merges frozen artifacts at their declared validity levels; no row-level reads; no holdout; [PENDING PROBE] markers preserved for cross-dataset wall-transfer mechanism",
+      "artifacts": [
+        "docs/research/paper_manuscript_2026-06-26.md"
+      ]
+    },
     {
       "id": "P6b-capability-first-results-section",
       "date": "2026-06-27",

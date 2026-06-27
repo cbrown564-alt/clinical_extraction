@@ -4,6 +4,18 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Paper-Writing Workstream Artifacts
 
+### `P6b-manuscript-merge` (2026-06-27)
+
+- **Deliverable**: `docs/research/paper_manuscript_2026-06-26.md` (updated in place, date 2026-06-27)
+- **Workstream**: P6b post-campaign merge — capability-first §4 folded into main manuscript; P5 CUT items C1–C5 applied; writing only, no model calls, no holdout reads.
+- **Verdict**: complete. §4 rewritten from task-first (§4.1 Gan | §4.2 ExECTv2) to capability-first (§4.1 Architecture+Reconciliation | §4.2 LLM adds | §4.3 Generalizes | §4.4 Reliability | §4.5 Components). Tables renumbered 1–7. Claim boundary header preserved and updated.
+- **CUT items applied**: C1 §4.1.2 Gate 4 selector subsection removed; C2 Table 3 selector table removed; C3 exact-source v0.9 selector holdout from promoted-result prose removed; C4 selector rows removed from comparison tables; C5 selector references removed from promoted results (not in abstract/conclusions; Do Not Use entry added with permitted appendix sentence).
+- **Sections replaced**: old §4.1.1–§4.1.3 (Gan task-first) + §4.2.1–§4.2.4 (ExECTv2 task-first).
+- **Evidence boundary**: writing-only; merges frozen artifacts at their declared validity levels; [PENDING PROBE] markers preserved for cross-dataset wall-transfer mechanism.
+- **Orchestrator state**: cycle `P6b-manuscript-merge` recorded in `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
 ### `P6-closeout` (2026-06-27)
 
 - **Deliverable**: `docs/plans/closing_campaign_closeout_2026-06-27.md`

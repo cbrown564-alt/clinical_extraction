@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-27  
 **Status:** Closing record — Waves 1–4 complete on disk (orchestrator reconcile 2026-06-27).  
-**Gates:** **5/5 PASS** (M1, M2, M3, I-track, P-track); S1 structural pole **6/10** slices migrated.  
+**Gates:** **5/5 PASS** (M1, M2, M3, I-track, P-track); S1 structural pole **7/10** slices migrated (7/12 per plan header counting all legacy `run_split` holders).  
 **Parent plan:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md)  
 **Cycle ID (orchestrator):** `P6-closeout`
 
@@ -53,13 +53,13 @@ All paths verified on-disk at HEAD 2026-06-27 unless marked ⚠ MISSING.
 | 4 | `temporal_sentinel_specialist.py` | 1,114 | Wave 2 | ✅ Migrated (new file) |
 | 5 | `targeted_boundary_router.py` | 734 | Wave 3 | ✅ Migrated (new file) |
 | 6 | `cross_model_structured_event_adjudicator.py` | 1,392 | Wave 4 | ✅ Migrated |
-| 7 | `llm_event_reasoner.py` | 1,071 | — | ⏳ Pending — coordinate with M2 call-site swap |
+| 7 | `llm_event_reasoner.py` | 1,071 | Wave 4 | ✅ Migrated (M2 call-site preserved; gate frozen) |
 | 8 | `tool_context_ablation.py` | 768 | — | ⏳ Pending |
 | 9 | `tool_self_consistency.py` | 669 | — | ⏳ Pending |
 | 10 | `runner.py` | 751 | — | ⏳ Pending (may need new dispatch kind) |
 | — | Replay-only + N/A modules | — | — | Out of scope (no `run_split`) |
 
-**S1 summary:** 6/10 eligible `run_split` slices migrated; 4 remaining (7 inline legacy `run_split` lines per plan header, counting non-split-eligible modules).  
+**S1 summary:** 7/10 eligible `run_split` slices migrated; 3 remaining (6 inline legacy `run_split` implementations per plan header per decomposition plan HEAD). Slice 7 (`llm_event_reasoner.py`) migrated Wave 4; M2 call-site preserved; safety gate frozen.  
 Supporting infrastructure: `tests/test_gan2026_agentic_run_driver.py` ✅ on disk; `agentic/README.md` ✅ updated.
 
 ---
@@ -145,16 +145,16 @@ Gates defined in `closing_campaign_orchestration_plan_2026-06-27.md` §Acceptanc
 - **P4** — Calibration claim revision (Brier honesty; external signal).
 - **P5** — Consensus/fresh selector CUT recommendation.
 - **P6** — Capability-first outline, Results, Discussion/Contributions drafts.
-- **S1 slices 1–6** — six `run_split` monoliths migrated onto `run_driver`; test suite extended; `agentic/README.md` current.
+- **S1 slices 1–7** — seven `run_split` monoliths migrated onto `run_driver`; test suite extended; `agentic/README.md` current.
 
 ### Remaining (post-campaign)
 
 | Item | Blocker | Notes |
 |------|---------|-------|
 | P6 doc reconcile | Optional | Replace stale `[PENDING PROBE]` in Results/Outline/Discussion with partial probe language (already done in `wall_transfer_cross_dataset`) |
-| S1 slice 7 — `llm_event_reasoner.py` | M2 call-site landed | Migrate `run_split`; do not re-open evidence metric |
-| S1 slices 8–10 — `tool_context_ablation`, `tool_self_consistency`, `runner.py` | Slice 7 | Phase 6 ablation chain |
-| Manuscript merge | Editorial | Fold P6 drafts into `paper_manuscript`; apply P5 CUT list (C1–C5) |
+| ~~S1 slice 7 — `llm_event_reasoner.py`~~ | ~~M2 call-site landed~~ | ✅ Done (Wave 4) |
+| S1 slices 8–10 — `tool_context_ablation`, `tool_self_consistency`, `runner.py` | Slice 7 done; ready | Phase 6 ablation chain |
+| Manuscript merge | Editorial | `paper_manuscript_2026-06-26.md` does NOT exist on disk; P6 capability-first drafts (Outline, Results, Discussion) are separate files; merge not yet done |
 
 ---
 
