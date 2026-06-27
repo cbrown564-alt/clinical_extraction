@@ -22,6 +22,7 @@ lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
 | `event_completion_reasoner.py` | V7 event-completion reasoner; `run_split` via `dispatch_registered_split` |
 | `temporal_sentinel_specialist.py` | V9 temporal/sentinel specialist; `run_split` via `dispatch_registered_split` |
 | `targeted_boundary_router.py` | V3 targeted boundary router; `run_split` via `dispatch_registered_split` |
+| `cross_model_structured_event_adjudicator.py` | V10 base cross-model adjudicator; `run_split` via `dispatch_registered_split` |
 
 ## Legacy pattern (inline runner)
 
@@ -29,7 +30,6 @@ These modules still duplicate parse/metadata/report boilerplate and are candidat
 for incremental migration. Do **not** rewrite monoliths wholesale — migrate one stage at a time.
 
 - `llm_event_reasoner.py`
-- `cross_model_structured_event_adjudicator.py`
 - `structured_event_consensus.py`
 - `structured_event_patches.py`
 - `precision_gated_selector.py`

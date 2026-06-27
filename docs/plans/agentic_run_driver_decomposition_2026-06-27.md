@@ -1,7 +1,7 @@
 # Agentic `run_driver` Decomposition Plan — Wave 1 Kickoff
 
 **Date:** 2026-06-27  
-**Status:** Wave 3 S1 in progress — 5/12 legacy `run_split` slices migrated  
+**Status:** Wave 4 S1 in progress — 6/12 legacy `run_split` slices migrated  
 **Parent:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md) Track S1  
 **Reference:** [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) P3-1
 
@@ -74,13 +74,13 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 1,114 | `temporal_sentinel_specialist.py` | ✓ | **Migrated W2** | Temporal sentinel specialist | `llm_event_reasoner` | `structured_event` |
 | 1,149 | `structured_event_verifier.py` | ✓ | Migrated | V4 verifier-first structured-event correction | `llm_event_reasoner`, `stage_protocol` | `structured_event` |
 | 1,251 | `consensus_fresh_agreement_selector.py` | — | Legacy replay | Consensus/fresh agreement selector | — | N/A (replay) |
-| 1,392 | `cross_model_structured_event_adjudicator.py` | ✓ | Legacy | V10 cross-model adjudicator (base for challenge/fresh) | `llm_event_reasoner` | `cross_model_structured_event` |
+| 1,392 | `cross_model_structured_event_adjudicator.py` | ✓ | **Migrated W4** | V10 cross-model adjudicator (base for challenge/fresh) | `llm_event_reasoner` | `cross_model_structured_event` |
 | 1,423 | `direct_boundary_critic_rescue.py` | ✓ | Migrated | D2 direct + boundary critic rescue | `stage_protocol`, `tools` | `standard` |
 | 1,956 | `fresh_evidence_reasoner.py` | ✓ | Migrated (**gate frozen**) | V12 fresh-evidence reasoner + safety gate | `run_driver`, `family_*`, `precision_gated_selector` | `cross_model_structured_event` |
 | ~400 | `run_driver.py` (post-W1) | — | Scaffold | Shared split runners + stage registry | `stage_protocol`, `cross_model_structured_event_adjudicator` | — |
 
-**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 8 legacy
-inline `run_split` implementations remain after Wave 3 slice 5.
+**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 7 legacy
+inline `run_split` implementations remain after Wave 4 slice 6.
 
 ## Migration order (smallest / leafiest first)
 
@@ -95,7 +95,7 @@ share scoring/gate logic with M2.
 | 2 | 3 | `event_completion_reasoner.py` | ✓ Done — same `structured_event` pattern; 830 LOC |
 | 2 | 4 | `temporal_sentinel_specialist.py` | ✓ Done — structured-event leaf; no gate edits |
 | 2 | 5 | `targeted_boundary_router.py` | ✓ Done — structured-event router; 734 LOC |
-| 3 | 6 | `cross_model_structured_event_adjudicator.py` | Base adjudicator; unblocks further cross-model variants |
+| 3 | 6 | `cross_model_structured_event_adjudicator.py` | ✓ Done — base adjudicator; unblocks further cross-model variants |
 | 3 | 7 | `llm_event_reasoner.py` | **Coordinate with M2** — evidence call-site swap |
 | 3 | 8 | `tool_context_ablation.py` | Phase 6 ablation; depends on `runner` |
 | 3 | 9 | `tool_self_consistency.py` | Chains off tool ablation |
@@ -107,7 +107,17 @@ Replay-only modules (`consensus_fresh_agreement_selector`, `selective_fallback_r
 `boundary_guide_rescue_replay`, `structured_event_consensus`) stay out of scope until
 split runners are exhausted.
 
-## Wave 3 deliverables (slice 5 — this tick)
+## Wave 4 deliverables (slice 6 — this tick)
+
+1. **`cross_model_structured_event_adjudicator.run_split`** →
+   `dispatch_registered_split("cross_model_structured_event_adjudicator", …)` via
+   `run_cross_model_structured_event_split`.
+2. **Tests** — extend `tests/test_gan2026_agentic_run_driver.py` with registry +
+   dispatch parity; existing
+   `tests/test_gan2026_cross_model_structured_event_adjudicator.py` must pass
+   unchanged.
+
+## Wave 3 deliverables (slice 5 — complete)
 
 1. **`targeted_boundary_router.run_split`** →
    `dispatch_registered_split("targeted_boundary_router", …)` via
@@ -155,14 +165,16 @@ split runners are exhausted.
 3. **Tests** — `tests/test_gan2026_agentic_run_driver.py` (registry + dispatch parity);
    existing `tests/test_gan2026_cross_model_challenge_adjudicator.py` must pass unchanged.
 
-## Recommended Wave 3 next slice
+## Recommended Wave 4 next slice
 
-**`cross_model_structured_event_adjudicator.py`** — base adjudicator; unblocks
-further cross-model variants; uses existing `cross_model_structured_event` dispatch.
+**`llm_event_reasoner.py`** — core structured-event monolith; **coordinate with M2**
+evidence call-site swap; uses existing `structured_event` dispatch.
 
 ## Previously recommended (completed)
 
-**`targeted_boundary_router.py`** — migrated in Wave 3 slice 5 (this tick).
+**`cross_model_structured_event_adjudicator.py`** — migrated in Wave 4 slice 6 (this tick).
+
+**`targeted_boundary_router.py`** — migrated in Wave 3 slice 5.
 
 **`event_completion_reasoner.py`** — migrated in Wave 2 slice 3 (parallel).
 
@@ -173,6 +185,7 @@ further cross-model variants; uses existing `cross_model_structured_event` dispa
 ## Verification
 
 ```bash
+pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_cross_model_structured_event_adjudicator.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_targeted_boundary_router.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_event_completion_reasoner.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_temporal_sentinel_specialist.py -q
