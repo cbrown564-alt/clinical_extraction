@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from clinical_extraction.core.registry import load_run_registry
 from clinical_extraction.observatory.gan2026 import (
     build_pipeline_families,
     load_artifact_content,
@@ -13,10 +14,13 @@ from clinical_extraction.observatory.gan2026 import (
     select_artifact_paths,
 )
 from clinical_extraction.observatory.helpers import relative_to_root, safe_repo_path
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_split_manifest
-from clinical_extraction.core.registry import (
-    load_run_registry,
+from clinical_extraction.observatory.responses import (
+    ArtifactResponse,
+    PipelineFamiliesResponse,
+    RegistryResponse,
+    SplitResponse,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_split_manifest
 
 router = APIRouter(tags=["registry"])
 
@@ -25,13 +29,13 @@ def _settings(request: Request):
     return request.app.state.observatory_settings
 
 
-@router.get("/artifacts/{run_id}")
+@router.get("/artifacts/{run_id}", response_model=ArtifactResponse)
 def get_artifact(
     run_id: str,
     request: Request,
     artifact_path: str | None = Query(default=None),
     limit: int | None = Query(default=None, ge=1),
-) -> dict[str, Any]:
+) -> ArtifactResponse:
     settings = _settings(request)
     entry = registry_entry(settings, run_id)
     record = entry.to_json_record()
@@ -42,13 +46,13 @@ def get_artifact(
         artifact_path,
     )
     if not selected_paths:
-        return {
-            "run_id": run_id,
-            "artifact_paths": [],
-            "artifact_type": "none",
-            "content": [],
-            "note": "No JSONL artifacts available for this run",
-        }
+        return ArtifactResponse(
+            run_id=run_id,
+            artifact_paths=[],
+            artifact_type="none",
+            content=[],
+            note="No JSONL artifacts available for this run",
+        )
     all_content: list[Any] = []
     for selected_path in selected_paths:
         resolved = safe_repo_path(settings.repo_root, selected_path)
@@ -61,26 +65,26 @@ def get_artifact(
             all_content.append(content)
     if limit is not None:
         all_content = all_content[:limit]
-    return {
-        "run_id": run_id,
-        "artifact_paths": selected_paths,
-        "artifact_type": "jsonl",
-        "content": all_content,
-    }
+    return ArtifactResponse(
+        run_id=run_id,
+        artifact_paths=selected_paths,
+        artifact_type="jsonl",
+        content=all_content,
+    )
 
 
-@router.get("/registry")
-def registry(request: Request) -> dict[str, Any]:
+@router.get("/registry", response_model=RegistryResponse)
+def registry(request: Request) -> RegistryResponse:
     settings = _settings(request)
     entries = [entry.to_json_record() for entry in load_run_registry(settings.registry_path)]
-    return {
-        "registry_path": relative_to_root(settings, settings.registry_path),
-        "runs": entries,
-    }
+    return RegistryResponse(
+        registry_path=relative_to_root(settings, settings.registry_path),
+        runs=entries,
+    )
 
 
-@router.get("/splits/{split_name}")
-def split(split_name: str, request: Request) -> dict[str, Any]:
+@router.get("/splits/{split_name}", response_model=SplitResponse)
+def split(split_name: str, request: Request) -> SplitResponse:
     settings = _settings(request)
     manifest = load_split_manifest(settings.split_manifest_path)
     splits = manifest.get("splits", {})
@@ -93,11 +97,11 @@ def split(split_name: str, request: Request) -> dict[str, Any]:
     payload["split_name"] = split_name
     payload["manifest_path"] = relative_to_root(settings, settings.split_manifest_path)
     payload["split_manifest"] = manifest.get("split_manifest", "gan2026_split_v1")
-    return payload
+    return SplitResponse.model_validate(payload)
 
 
-@router.get("/pipeline-families")
-def pipeline_families(request: Request) -> dict[str, Any]:
+@router.get("/pipeline-families", response_model=PipelineFamiliesResponse)
+def pipeline_families(request: Request) -> PipelineFamiliesResponse:
     settings = _settings(request)
     families = build_pipeline_families(settings)
-    return {"families": families}
+    return PipelineFamiliesResponse(families=families)
