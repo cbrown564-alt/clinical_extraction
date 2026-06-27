@@ -22,14 +22,15 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    AgenticSplitHooks,
+    CrossModelSplitContext,
+    RegisteredAgenticStage,
+    SplitRunParams,
+    dispatch_registered_split,
+    register_agentic_stage,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
@@ -52,6 +53,16 @@ DEFAULT_GATED_JSONL_PATH = Path(
 )
 DEFAULT_GATED_REPORT_PATH = Path(
     "experiments/gan2026_cross_model_challenge_gated_adjudicator_validation.md"
+)
+STAGE_ID = "cross_model_challenge_adjudicator"
+
+register_agentic_stage(
+    RegisteredAgenticStage(
+        stage_id=STAGE_ID,
+        dispatch_kind="cross_model_structured_event",
+        module=__name__,
+        description="V11 open peer-challenge adjudicator over saved structured-event agents",
+    )
 )
 
 
@@ -90,48 +101,25 @@ def run_split(
         "qwen": DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH,
         "deepseek": DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH,
     }
-    if structured_event_rows is None:
-        structured_event_rows = load_jsonl_rows(source_path)
-    loaded_agent_rows = base._load_agent_rows(
-        gpt_rows=structured_event_rows,
-        agent_sources=agent_sources,
-        agent_rows_by_id=agent_rows_by_id,
-    )
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-
-    rows_by_agent = {
-        agent_id: llm_event_reasoner._rows_by_source_index(rows)
-        for agent_id, rows in loaded_agent_rows.items()
-    }
-    metadata = build_run_metadata(
-        mode=mode,
+    params = SplitRunParams(
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
-        dspy_version="none",
-        split=split,
-        split_manifest=split_manifest,
+        mode=mode,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
     )
-    metadata.update(
-        {
+    hooks = AgenticSplitHooks(
+        prompt_version=PROMPT_VERSION,
+        metadata_extra={
             "artifact_kind": "gan2026_cross_model_challenge_adjudicator_trace",
             "pipeline_family": PIPELINE_FAMILY,
             "pipeline_version": PROMPT_VERSION,
-            "agent_source_paths": {
-                agent_id: str(path) for agent_id, path in agent_sources.items()
-            },
             "structured_event_source_role": (
                 "GPT, Qwen, and DeepSeek saved LLM structured-event finals are "
                 "peer candidates. Deterministic top labels are not shown or used."
@@ -142,42 +130,27 @@ def run_split(
                 "no benchmark claim"
             ),
             "safety_policy": _safety_policy_label(safety_policy),
-            "dspy_cache": dspy_cache,
-        }
+        },
+        build_row=_build_row,
+        summarize_rows=summarize_rows,
+        gate_interpretation=llm_event_reasoner.gate_interpretation,
+        write_report=write_report,
+        progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
     )
-
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        rows.append(
-            _build_row(
-                record,
-                agent_rows={
-                    agent_id: rows_by_agent.get(agent_id, {}).get(
-                        record.source_row_index
-                    )
-                    for agent_id in base.AGENT_IDS
-                },
-                split=split,
-                split_manifest=split_manifest,
-                model=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                mode=mode,
-                safety_policy=safety_policy,
-            )
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-
-    metadata["summary"] = summarize_rows(rows)
-    metadata["gate"] = llm_event_reasoner.gate_interpretation(metadata["summary"])
-    return rows, metadata
+    cross_model_context = CrossModelSplitContext(
+        gpt_structured_event_source_path=source_path,
+        agent_source_paths=agent_sources,
+        gpt_structured_event_rows=structured_event_rows,
+        agent_rows_by_id=agent_rows_by_id,
+        row_kwargs={"safety_policy": safety_policy},
+    )
+    return dispatch_registered_split(
+        STAGE_ID,
+        records,
+        params=params,
+        hooks=hooks,
+        cross_model_context=cross_model_context,
+    )
 
 
 def build_prompt_input(
@@ -533,33 +506,3 @@ def _safety_policy_label(safety_policy: Literal["none", "high_precision"]) -> st
     if safety_policy == "high_precision":
         return "high_precision_peer_gate"
     return "none_model_owned_agent_selection"
-
-
-def _emit_progress_checkpoint(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: Mapping[str, Any],
-    *,
-    total: int,
-    jsonl_path: Path | None,
-    report_path: Path | None,
-) -> None:
-    summary = summarize_rows(rows)
-    print(
-        json.dumps(
-            {
-                "pipeline": PIPELINE_FAMILY,
-                "completed": len(rows),
-                "total": total,
-                "final_purist_correct": summary.get("final_purist_correct"),
-                "net_purist_gain_vs_v0": summary.get("net_purist_gain_vs_v0"),
-            },
-            sort_keys=True,
-        )
-    )
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None:
-        checkpoint_metadata = dict(metadata)
-        checkpoint_metadata["summary"] = summary
-        checkpoint_metadata["gate"] = llm_event_reasoner.gate_interpretation(summary)
-        write_report(rows, checkpoint_metadata, report_path, jsonl_path=jsonl_path or Path(""))
