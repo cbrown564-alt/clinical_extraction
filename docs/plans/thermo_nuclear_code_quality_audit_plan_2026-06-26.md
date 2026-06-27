@@ -1,10 +1,10 @@
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
 **Date:** 2026-06-26  
-**Last updated:** 2026-06-27 (Wave C Sprint 6 complete; 8 commits `befbfd7` … `dd7c565`)  
+**Last updated:** 2026-06-27 (Wave C Sprint 7 complete; 8 commits `37046bd` … `3a39380`)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
-**Overall verdict:** **CONDITIONAL APPROVE** — Sprint 6 cleared Gan `runner.py`, `artifact_analysis/` importers, diagnosis chain, lenses, frontend god-hook/types, and two largest LLM submodules; remaining debt is entity-verifier YAML corpora, agentic monolith migration, Observatory API contracts, and incremental allowlisted submodules
+**Overall verdict:** **APPROVE** — Sprint 6–7 cleared structural blockers (runner, artifact_analysis, diagnosis, lenses, frontend debt, verifier YAML, Observatory contracts, atomic writes); remaining debt is incremental agentic monolith migration (12 left), optional typed row models, and megatest splits
 
 ---
 
@@ -82,8 +82,8 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Decompose `mlflow_registry_sync.py` below 500 LOC | ✅ Done | 399 LOC + 4 helper modules |
 | Extract `core/paths.py` | ✅ Done | `2d3917a` |
 | Restructure `observatory/helpers.py` → `observatory/gan2026/` | ✅ Done | helpers 366 → 54 LOC |
-| Add Pydantic response models for high-traffic routes | 🔴 Open | Skipped to prioritize extraction |
-| Gold audit atomic store + thin router | 🔴 Open | |
+| Add Pydantic response models for high-traffic routes | ✅ Done | `37046bd`; `observatory/responses.py` |
+| Gold audit atomic store + thin router | ✅ Done | `37046bd`; `gold_audit_store.py` |
 | `run_ablation` async/job pattern or dev-only guard | 🔴 Open | |
 | Consolidate split policy (`claim_policy` vs `mlflow_tracking` substring rules) | 🔴 Open | |
 
@@ -137,7 +137,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | `pipelines/clinical_findings/` 3-stage split | ✅ Done | `d8dc507`; facade 45 LOC; stages allowlisted |
 | Merge diagnosis chain into `entity_verifier` or `diagnosis_verification/` | ✅ Done | `6718200`; `pipelines/diagnosis_verification/` + thin facades |
 | Move deterministic `llm_sf_*` modules to `deterministic/` | ✅ Done | `210ca1c`; `sf_state_projection.py` + `sf_unknown_suppression.py` |
-| Split `entity_verifier/*_content.py`; decouple scoring from prompts | 🔴 Open | |
+| Split `entity_verifier/*_content.py`; decouple scoring from prompts | ✅ Done | `11f2fbc` P3-2 — YAML corpora; med_inv 539 LOC allowlisted |
 | Split `llm_target_indicators_single_call.py` LLM shell | ✅ Done | Facade 80 LOC + `pipelines/target_indicators_single_call/` |
 | `generation_selection` + `structured` package splits | ✅ Done | `f33d23d`, `83b6ec1`; facades 94 / 85 LOC; submodules allowlisted |
 
@@ -167,8 +167,8 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Split `component_ablation_replay.py` (1,474 LOC) | ✅ Done | `8839f88`; facade 99 LOC |
 | Ban `main()` in report modules (policy) | ✅ Done | `30c8055`; 14 mains → `reports/cli/`; `test_reports_no_main.py` |
 | Reliability golden tests + frontend mock JSON | ✅ Done | `51d754d`; ECE/review-burden aligned to live builder |
-| Atomic multi-artifact write helper | 🔴 Open | |
-| Thin `run_hybrid_benchmark_overall`, `run_phase7_audit` | 🔴 Open | |
+| Atomic multi-artifact write helper | ✅ Done | `b148fda`; `runners/artifact_io.py` |
+| Thin `run_hybrid_benchmark_overall`, `run_phase7_audit` | ✅ Done | `b148fda`; report modules extracted |
 
 ---
 
@@ -196,7 +196,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Collapse probe facades to one module | 🔴 Open | |
 | Decompose `runner.py` per-architecture modules | ✅ Done | `befbfd7`; 108 LOC facade + `runners/` |
 | `agentic/run_driver.py` shared split runner | ✅ Done | `befbfd7`; 191 LOC scaffold — monolith migration pending (P3-1) |
-| Migrate legacy agentic monoliths via driver | 🔴 Open | 14+ still inline `run_split` |
+| Migrate legacy agentic monoliths via driver | 🟡 Partial | `83829de`; `fresh_evidence_reasoner` migrated; 12 remain |
 | Quarantine `artifact_analysis/` from production imports | ✅ Done | `21da49a`; 0 importers (was 14 frozen at `8a8409a`) |
 | State graph: promote to hybrid or demote to experiment-only | 🔴 Open | |
 | Split `date_anchor_parsing.py` (789 LOC) if it grows | 🟡 Watch | Under 1k gate |
@@ -224,9 +224,9 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | Slice `useObservatoryData` → `lib/datasets/adapters/` | ✅ Done | `8ce784a`; hook 270 LOC + 3 adapters |
 | `createComponentImpactSurface` factory (Gan/ExECTv2 dedup) | ✅ Done | `8ce784a`; `createComponentImpactSurface.tsx` |
 | Extend line-count gate to `tests/**` ≤800 | ✅ Done | `1933397`; 21 megatest allowlist |
-| Extend line-count gate to `frontend/` | 🔴 Open | |
+| Extend line-count gate to `frontend/` | ✅ Done | `86083a6`; 600 LOC tier |
 | Pytest fast subset in CI | ✅ Done | `27d579b`; `backend-fast-tests` job (~145 tests) |
-| Pre-commit hook for line-count gates | 🔴 Open | Optional |
+| Pre-commit hook for line-count gates | ✅ Done | `86083a6`; `.pre-commit-config.yaml` (opt-in) |
 
 ---
 
@@ -300,6 +300,18 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | `f33d23d` | Decompose generation_selection into package + facade |
 | `83b6ec1` | Decompose structured key-entities into package + facade |
 
+### Wave C — Sprint 7 (`37046bd` … `3a39380`)
+
+| Commit | Summary |
+|--------|---------|
+| `37046bd` | Observatory Pydantic responses + gold audit store (P1-8, P2-4) |
+| `11f2fbc` | Entity verifier YAML corpora (P3-2) |
+| `4716fcb` | Structured prompt_builders + generation_selection parsing splits |
+| `83829de` | `fresh_evidence_reasoner` → `run_driver` (P3-1 first) |
+| `b148fda` | Atomic artifact writes + thin runners (P2-3) |
+| `86083a6` | Frontend line-count gate + pre-commit hook (P2-7) |
+| `3a39380` | Golden triage + drug lookup + component_owner (P3-7) |
+
 ### Wave C — Sprint 6 (`befbfd7` … `dd7c565`)
 
 | Commit | Summary |
@@ -348,7 +360,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | P1-5 | Decompose `runner.py` + `agentic/run_driver.py` | Gan2026 | ✅ Done `befbfd7` — facade 108 LOC; P3-1 migration open |
 | P1-6 | Split `cross_model_reliability` + `component_ablation_replay` | Reports | ✅ Done `8839f88` — facades 153 / 99 LOC |
 | P1-7 | Slice `useObservatoryData` to adapters | Frontend | ✅ Done `8ce784a` — hook 270 LOC |
-| P1-8 | Observatory Pydantic response models | Observatory | API contract clarity |
+| P1-8 | Observatory Pydantic response models | Observatory | ✅ Done `37046bd` |
 
 ### P2 — Quarantine & policy
 
@@ -356,23 +368,23 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 |----|------|------|-------|
 | P2-1 | Freeze new production imports from `artifact_analysis/` | Gan2026 | ✅ Done `21da49a` — 0 importers (gate empty) |
 | P2-2 | Ban `main()` in `reports/` modules | Reports | ✅ Done `30c8055` — 14 mains → `reports/cli/`; `test_reports_no_main.py` |
-| P2-3 | Atomic artifact write helper for multi-file runners | Runners | |
-| P2-4 | Gold audit dedicated store with atomic upsert | Observatory | |
+| P2-3 | Atomic artifact write helper for multi-file runners | Runners | ✅ Done `b148fda` |
+| P2-4 | Gold audit dedicated store with atomic upsert | Observatory | ✅ Done `37046bd` |
 | P2-5 | State graph promote-or-demote decision | Gan2026 | Architectural limbo |
 | P2-6 | Split `frontend/lib/types.ts` by domain | Frontend | ✅ Done `8ce784a` — domain modules under `lib/types/` |
-| P2-7 | Pre-commit line-count hook | CI | Optional |
+| P2-7 | Pre-commit line-count hook | CI | ✅ Done `86083a6` (opt-in) |
 
 ### P3 — Incremental / experimental
 
 | ID | Task | Notes |
 |----|------|-------|
-| P3-1 | Migrate legacy agentic monoliths one-by-one via `run_driver` | Start with `fresh_evidence_reasoner` (2,016 LOC) |
-| P3-2 | `entity_verifier` content → YAML per entity | diagnosis 929, sf 851, med_inv 705 LOC |
+| P3-1 | Migrate legacy agentic monoliths one-by-one via `run_driver` | ✅ Done `83829de` for `fresh_evidence_reasoner`; 12 remain |
+| P3-2 | `entity_verifier` content → YAML per entity | ✅ Done `11f2fbc` — diagnosis/sf/med_inv corpora |
 | P3-3 | Family-conditioned shared scaffold | ~2.2k LOC cluster |
 | P3-4 | `conventions/seizure_frequency.py` table-driven rewrite | Superseded by P1-1 Phase 2 registry migration |
 | P3-5 | `createComponentImpactSurface` factory | Frontend laboratory dedup | ✅ Done `8ce784a` |
 | P3-6 | Continue megatest splits | `test_gan2026_normalize`, `test_exectv2_deterministic_sf`, etc. |
-| P3-7 | Triage pre-existing red goldens | Reliability scorecard goldens ✅ `51d754d`; remaining: `test_exectv2_standard_dictionary`, `test_exectv2_projection_gap_ledger` |
+| P3-7 | Triage pre-existing red goldens | ✅ Done `3a39380` — drug lookup, component_owner, assembly/projection goldens |
 
 ---
 
@@ -456,7 +468,9 @@ Gate: `python scripts/check_line_counts.py` — fails on new violations or allow
 
 **Sprint 6 ✅** — P1-2 lenses, P1-3 diagnosis, P1-5 runner, P1-7 frontend hook, P2-1 importer removal, P2-6 types, P3-5 factory; LLM submodule shrink; component_ablation YAML (`befbfd7` … `dd7c565`)
 
-**Sprint 7 (next):** P3-2 entity-verifier YAML; P3-1 agentic monolith migration; P1-8/P2-4 Observatory contracts; P2-3 atomic writes; structured/parsing submodule shrink; P3-7 red golden triage; frontend line-count gate
+**Sprint 7 ✅** — P1-8, P2-3, P2-4, P2-7, P3-1 (first monolith), P3-2, P3-7; structured/parsing submodule shrink; frontend line-count gate (`37046bd` … `3a39380`)
+
+**Sprint 8 (next):** P3-1 remaining 12 agentic monoliths; P2-5 state graph decision; typed assembly row models; megatest splits (P3-6); collapse probe facades
 
 ---
 
