@@ -93,12 +93,12 @@ def build_sampling_model(
     """Fit a small transparent model from audited rows and decisions."""
 
     row_by_key = {_decision_key(row): row for row in rows}
-    latest_decisions = _latest_decisions(decisions)
+    keyed_decisions = latest_decisions(decisions)
     class_counts: Counter[str] = Counter()
     feature_class_counts: dict[str, Counter[str]] = defaultdict(Counter)
     feature_counts: Counter[str] = Counter()
 
-    for key, decision in latest_decisions.items():
+    for key, decision in keyed_decisions.items():
         row = row_by_key.get(key)
         class_name = str(decision.get("simple_class", ""))
         if row is None or class_name not in AUDIT_CLASSES:
@@ -134,7 +134,7 @@ def enrich_rows_for_active_sampling(
     """Attach model predictions and active-sampling scores to worklist rows."""
 
     model = build_sampling_model(rows, decisions)
-    decided = set(_latest_decisions(decisions))
+    decided = set(latest_decisions(decisions))
     enriched = []
     for row in rows:
         payload = dict(row)
@@ -209,9 +209,11 @@ def _predict_class_probs(
     return {class_name: weights[class_name] / total_weight for class_name in AUDIT_CLASSES}
 
 
-def _latest_decisions(
+def latest_decisions(
     decisions: Sequence[Mapping[str, Any]],
 ) -> dict[tuple[str, int], Mapping[str, Any]]:
+    """Return the latest decision per (split, source_row_index)."""
+
     latest: dict[tuple[str, int], Mapping[str, Any]] = {}
     for decision in decisions:
         latest[_decision_key(decision)] = decision
