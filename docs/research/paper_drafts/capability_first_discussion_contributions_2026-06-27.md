@@ -142,16 +142,22 @@ signatures as the Gan wall: persistent across models, not addressable by model c
 reducible by targeted post-processing that corrects the base extraction residual, but not
 eliminated at the base extraction level.
 
-Whether the same **entropy signature** reproduces on ExECTv2 SF — meaning the over-reading
-is also confident, not merely frequent — is currently pending a forward-observable-feature
-probe on an ExECTv2 SF validation slice [PENDING PROBE;
-`docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md`; probe
-specification exists but results are not in hand]. Until that probe runs, the cross-dataset
-claim is structural: the same clinical task, the same family weakness, the same persistence
-across models, and the same correctability pattern. The mechanism is hypothesized, not
-confirmed. The confirmed finding is already the more informative one: *a system whose ceiling
-is task-bound — not system-bound — is exhibiting exactly the behavior a clinically-grounded,
-modular architecture predicts*. The wall is a characterization, not an apology.
+The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140
+self-consistency artifacts and returned a **partial verdict** (3/6 checks passed). The
+cross-dataset claim can now be stated with evidence: **43.6% of SF error cells are
+temperature-unanimous wrong** (4/4 same wrong answer), confirming that a material
+confident-error component is present — consistent with the Gan pattern. However, the full
+Gan H0_confident_over_reading mechanism does not transfer: SF error entropy is elevated
+(0.287 vs 0.069 for correct cells) and cross-model agreement is lower on error cells
+(21.8%) than correct cells (69.4%) — the reverse of the Gan `band_unknown` pattern where
+every wrong answer was entropy-zero and stable across all temperatures. The ExECTv2 SF
+floor is a *mixed* mechanism: some errors are as confidently wrong as Gan's over-reading;
+others are genuinely uncertain and heterogeneous across models. The confirmed finding is
+**task-bound ceiling that transfers; mechanism that partially differs** — and this is the
+more honest, more informative characterization: *a system whose ceiling is task-bound — not
+system-bound — with an error composition that reveals both the clinical-reasoning limit and
+its mixed character on a second independent corpus*. The wall is a characterization, not an
+apology.
 
 ---
 
@@ -223,15 +229,20 @@ shared component off, report delta on both tasks at once) is predeclared in the
 cross-task scope. The modularity thesis is supported by structural evidence and the model-swap
 result; the quantified cross-task component dividend remains future work.
 
-**Partial wall mechanism — ExECTv2 entropy probe not yet run.** The cross-dataset
-claim that the confident-over-reading mechanism transfers to ExECTv2 SF requires a
-pre-registered forward-observable-feature entropy probe on a stratified SF slice. The probe
-specification is complete (acceptance criteria predeclared: mean label entropy on
-wrong-SF-extraction rows < 0.05 for H0 confirmation; per-temperature stability > 0.90). The
-structural parallel is confirmed; the mechanism claim is pending. If the probe returns high
-entropy on ExECTv2 SF wrong rows, the cross-dataset claim must be revised: the Gan wall
-mechanism is Gan-specific, and the ExECTv2 SF gap has a different, potentially addressable
-origin.
+**Partial wall mechanism — ExECTv2 probe returned PARTIAL verdict (3/6 checks).** The
+wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140
+self-consistency artifacts. Task-bound ceiling is confirmed: SF is the weakest family
+across all three LLMs and both splits, and 43.6% of SF error cells are
+temperature-unanimous wrong — a material confident-error component. However, the full
+Gan H0_confident_over_reading does not replicate: SF error entropy is elevated (0.287
+vs 0.069 for correct cells) and cross-model agreement is lower on error cells (21.8%)
+than correct cells (69.4%). The dominant Gan-residual pattern — near-zero entropy,
+stable wrong answer regardless of temperature — applies to a subset of ExECTv2 SF
+errors but not to the majority. The manuscript cross-dataset claim must be stated as:
+task-bound ceiling transfers; mechanism is mixed (confident-error component present but
+coexisting with uncertain errors not seen in the Gan residual). The stronger Gan claim
+— the wall is purely confident, undetectable by self-referential signals — does not
+transfer in full.
 
 **Calibration is near-base-rate, not deployment-ready.** The scoring rule's aggregate
 full-200 validation calibration is Brier **0.2245** versus constant base-rate **0.2387**
@@ -307,14 +318,20 @@ the persistently weakest extraction family under a frozen same-core architecture
 three tested LLMs (GPT-4.1-mini **0.7525**, DeepSeek chat **0.7602**, frozen full-200
 aggregate), with the same signatures — model-independent gap, 1.0000 evidence rate
 (faithful-but-wrong, not unfaithful), and correctability by task-specific adjudication
-(dev140 with SF adjudicator: 0.9053). The cross-dataset mechanism claim — that the ExECTv2
-over-reading is also confident, not merely frequent — requires the predeclared
-forward-observable-feature entropy probe on an ExECTv2 SF slice [PENDING PROBE]; pending
-that result, the structural parallel is reported as an observation and the framing as a
-hypothesis. The confirmed finding is already the methodologically significant one: a system
-whose ceiling is **task-bound, not system-bound** exhibits exactly the behavior a
+(dev140 with SF adjudicator: 0.9053). The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) returned a
+**partial verdict** (3/6 checks passed; dev140 self-consistency artifact replay): 43.6% of
+SF error cells are temperature-unanimous wrong, confirming a material confident-error
+component. However, SF error entropy is elevated (0.287 vs 0.069 correct) and cross-model
+agreement is lower on error cells (21.8%) than correct cells (69.4%), establishing that the
+ExECTv2 SF floor is a *mixed* mechanism — not purely the confident over-reading
+characterized on Gan. The cross-dataset claim is therefore: **task-bound ceiling transfers;
+mechanism partially differs.** The confirmed finding is the methodologically significant
+one: a system whose ceiling is **task-bound, not system-bound** — present on two
+independent corpora under three different LLMs — exhibits exactly the behavior a
 clinically-grounded, modular architecture predicts. The limit is the clinical task's
-ambiguity floor, not an architectural deficiency.
+ambiguity floor, not an architectural deficiency, and the error composition reveals both
+a confident-wrong component and a genuinely uncertain component that may respond to
+different mitigations.
 
 ---
 
@@ -367,7 +384,7 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 |---|---|---|
 | C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate | No full-200 published-benchmark surface computed |
 | C2 — Component ablation (gate inert; SF norm matters) | dev140 replay-only, aggregate | No model calls; cross-task ablation scope is future work (S1) |
-| C3 — Wall cross-dataset (structural) | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1) | Mechanism claim [PENDING PROBE]; no holdout on ExECTv2 |
+| C3 — Wall cross-dataset (partial mechanism) | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1); dev140 self-consistency artifact replay (wall-transfer probe) | Task-bound ceiling confirmed; Gan H0 mechanism partially differs (PARTIAL probe 3/6; error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct); no holdout on ExECTv2 |
 | C4 — Model-agnostic architecture | Frozen aggregate full-200, predeclared gate | No holdout on non-primary models; row-level attribution excluded |
 | C5 — Evaluation discipline | Validation-only + test450 aggregate (Gan); validation-only (ExECTv2) | No new experiments; retrospective characterization of completed work |
 
