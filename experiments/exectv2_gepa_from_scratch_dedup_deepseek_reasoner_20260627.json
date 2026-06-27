@@ -1,0 +1,53 @@
+{
+  "auto": "medium",
+  "date": "2026-06-27",
+  "elapsed_seconds": 4248.2,
+  "final_eval": {
+    "clinical_headline": {
+      "diagnosis_component": "concept_negation",
+      "overall_f1": 0.6363,
+      "per_family": {
+        "Diagnosis": 0.4346,
+        "Investigations": 0.8251,
+        "Prescription": 0.8917,
+        "SeizureFrequency": 0.5238
+      },
+      "precision": 0.5738,
+      "recall": 0.7141
+    },
+    "comparators": {
+      "dev140_hand_tuned_single_prompt_headline": {
+        "deepseek-chat": 0.745,
+        "gpt-4.1-mini": 0.71,
+        "qwen3.6-35b": 0.694
+      },
+      "dev140_v08_hybrid_headline": 0.9155
+    },
+    "letters": 140,
+    "n_facts_total": 894,
+    "n_scored_total": 871,
+    "semantic_per_item_f1": 0.1463,
+    "strict_benchmark_per_item_f1": 0.1363,
+    "unscorable_letters": 0
+  },
+  "final_instruction_tokens": 555,
+  "length_penalty": {
+    "alpha_output": 0.05,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 600,
+    "output_token_budget": 2000
+  },
+  "max_metric_calls": null,
+  "notes": "From-scratch GEPA, deepseek-reasoner task+reflection, length-penalized. Mirrors the Gan run's single-model setup; transfer arm vs the mini run.",
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_from_scratch_dedup_deepseek_reasoner_20260627",
+  "seed_instruction_tokens": 121,
+  "task_max_tokens": 12000,
+  "task_model": "deepseek/deepseek-reasoner",
+  "task_temperature": 0.0,
+  "trainset_size": 90,
+  "valset_size": 50
+}
