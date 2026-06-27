@@ -1,0 +1,34 @@
+{
+  "auto": "medium",
+  "date": "2026-06-27",
+  "elapsed_seconds": 3186.1,
+  "final_eval": {
+    "pragmatic_accuracy": 0.8649,
+    "pragmatic_correct": 621,
+    "purist_accuracy": 0.8329,
+    "purist_correct": 598,
+    "rows": 718,
+    "scorable": 717
+  },
+  "final_eval_split": "validation",
+  "final_instruction_tokens": 547,
+  "length_penalty": {
+    "alpha_output": 0.1,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 600,
+    "output_token_budget": 1200
+  },
+  "max_metric_calls": null,
+  "notes": "From-scratch GEPA, deepseek-reasoner task+reflection, length-penalized.",
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "gan2026_gepa_from_scratch_deepseek_reasoner_20260627",
+  "seed_instruction_tokens": 105,
+  "task_max_tokens": 12000,
+  "task_model": "deepseek/deepseek-reasoner",
+  "task_temperature": 0.0,
+  "trainset_size": 287,
+  "valset_size": 200
+}
