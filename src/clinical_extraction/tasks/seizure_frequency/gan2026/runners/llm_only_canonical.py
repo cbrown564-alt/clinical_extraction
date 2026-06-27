@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.core.evidence import grade_evidence, is_grounded
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
@@ -42,8 +42,8 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
         "raw_output": raw_output,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
-        "evidence_text_contained": (
-            evidence_is_substring(item.note_text, decision.evidence)
+        "evidence_grounded": (
+            is_grounded(grade_evidence(item.note_text, decision.evidence))
             if decision and decision.evidence
             else False
         ),

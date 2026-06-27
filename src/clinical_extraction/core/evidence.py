@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import re
+from collections import Counter
+from collections.abc import Sequence
+from dataclasses import dataclass
+from enum import StrEnum
+from typing import overload
 
 SEMANTICALLY_NEUTRAL_TEXT_ARTIFACTS: tuple[tuple[str, str], ...] = (
     ("\x026#8804;", "≤"),
@@ -197,3 +202,117 @@ def _find_flexible_whitespace_span(
     if not match:
         return None
     return start + match.start(), start + match.end()
+
+
+class EvidenceGrade(StrEnum):
+    EXACT = "EXACT"
+    REPAIRED_ARTIFACT = "REPAIRED_ARTIFACT"
+    REPAIRED_CASE = "REPAIRED_CASE"
+    REPAIRED_WHITESPACE = "REPAIRED_WHITESPACE"
+    REPAIRED_ELLIPSIS = "REPAIRED_ELLIPSIS"
+    REPAIRED_SECTION = "REPAIRED_SECTION"
+    ABSENT = "ABSENT"
+    EMPTY = "EMPTY"
+
+
+GROUNDED_GRADES: frozenset[EvidenceGrade] = frozenset(
+    grade
+    for grade in EvidenceGrade
+    if grade.name.startswith("EXACT") or grade.name.startswith("REPAIRED_")
+)
+
+
+def grade_evidence(note_text: str, evidence: str) -> EvidenceGrade:
+    """Classify one evidence string using the existing repair cascade priority."""
+
+    if not str(evidence or "").strip():
+        return EvidenceGrade.EMPTY
+    if evidence_is_substring(note_text, evidence):
+        return EvidenceGrade.EXACT
+
+    repaired = clean_semantically_neutral_text_artifacts(evidence)
+    if repaired and repaired != evidence and evidence_is_substring(note_text, repaired):
+        return EvidenceGrade.REPAIRED_ARTIFACT
+
+    case_repaired = repair_case_only_evidence_copy(repaired, note_text)
+    if case_repaired != repaired and evidence_is_substring(note_text, case_repaired):
+        return EvidenceGrade.REPAIRED_CASE
+
+    whitespace_repaired = repair_whitespace_evidence_copy(repaired, note_text)
+    if whitespace_repaired != repaired and evidence_is_substring(note_text, whitespace_repaired):
+        return EvidenceGrade.REPAIRED_WHITESPACE
+
+    ellipsis_repaired = repair_ellipsis_span_evidence_copy(repaired, note_text)
+    if ellipsis_repaired != repaired and evidence_is_substring(note_text, ellipsis_repaired):
+        return EvidenceGrade.REPAIRED_ELLIPSIS
+
+    section_repaired = repair_section_header_list_item_evidence_copy(repaired, note_text)
+    if section_repaired != repaired and evidence_is_substring(note_text, section_repaired):
+        return EvidenceGrade.REPAIRED_SECTION
+
+    return EvidenceGrade.ABSENT
+
+
+def is_grounded(grade: EvidenceGrade) -> bool:
+    return grade in GROUNDED_GRADES
+
+
+@dataclass(frozen=True)
+class EvidenceGroundedness:
+    total: int
+    grounded: int
+    exact: int
+    by_grade: dict[EvidenceGrade, int]
+    per_item: tuple[tuple[str, EvidenceGrade], ...]
+
+    @property
+    def grounded_rate(self) -> float | None:
+        if self.total <= 0:
+            return None
+        return round(self.grounded / self.total, 4)
+
+    @property
+    def exact_rate(self) -> float | None:
+        if self.total <= 0:
+            return None
+        return round(self.exact / self.total, 4)
+
+
+def _coerce_evidence_items(evidence: str | Sequence[str]) -> tuple[str, ...]:
+    if isinstance(evidence, str):
+        return (evidence,)
+    return tuple(str(item) for item in evidence)
+
+
+@overload
+def score_evidence_set(note_text: str, evidence: str) -> EvidenceGroundedness: ...
+
+
+@overload
+def score_evidence_set(note_text: str, evidence: Sequence[str]) -> EvidenceGroundedness: ...
+
+
+def score_evidence_set(
+    note_text: str,
+    evidence: str | Sequence[str],
+) -> EvidenceGroundedness:
+    """Grade one evidence string or a set of strings against ``note_text``."""
+
+    items = _coerce_evidence_items(evidence)
+    per_item: list[tuple[str, EvidenceGrade]] = []
+    by_grade: Counter[EvidenceGrade] = Counter()
+    for item in items:
+        grade = grade_evidence(note_text, item)
+        per_item.append((item, grade))
+        by_grade[grade] += 1
+
+    total = len(items)
+    grounded = sum(count for grade, count in by_grade.items() if is_grounded(grade))
+    exact = by_grade.get(EvidenceGrade.EXACT, 0)
+    return EvidenceGroundedness(
+        total=total,
+        grounded=grounded,
+        exact=exact,
+        by_grade=dict(by_grade),
+        per_item=tuple(per_item),
+    )
