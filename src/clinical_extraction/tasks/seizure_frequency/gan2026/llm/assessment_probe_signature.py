@@ -12,7 +12,7 @@ from typing import Any, Literal
 import dspy
 from pydantic import ValidationError
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.candidate_set_union import (  # noqa: E501
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate_set_union import (
     build_candidate_set_union_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (

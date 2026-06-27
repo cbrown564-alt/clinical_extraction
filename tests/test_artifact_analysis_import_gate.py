@@ -9,6 +9,8 @@ _SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
+import pytest
+
 from check_artifact_analysis_imports import (  # noqa: E402
     ALLOWLIST,
     ARTIFACT_ANALYSIS_PKG,
@@ -90,6 +92,8 @@ def test_relative_star_import_is_caught(tmp_path: Path) -> None:
 
 def test_allowlisted_importer_passes(tmp_path: Path) -> None:
     """An importer whose path is in the real allowlist passes in a synthetic tree."""
+    if not ALLOWLIST:
+        pytest.skip("no allowlisted importers remain after quarantine migration")
     rel = next(iter(ALLOWLIST))
     package_root = tmp_path / "src" / "clinical_extraction"
     target = package_root / rel

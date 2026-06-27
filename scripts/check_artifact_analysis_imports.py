@@ -63,64 +63,10 @@ ARTIFACT_ANALYSIS_PKG = "artifact_analysis"
 # tree). ``rule_ownership_audit.py`` is intentionally **absent**: it only mentions
 # ``artifact_analysis`` inside a string literal, not an import, so the AST detector
 # does not flag it.
-ALLOWLIST: dict[str, str] = {
-    # --- Observatory (review/audit web layer) ---
-    "observatory/models.py": (
-        "Observatory gold-audit models reuse the artifact_analysis active sampler; "
-        "frozen importer — no new dependency allowed"
-    ),
-    "observatory/routers/gold_audit.py": (
-        "Gold-audit router drives the artifact_analysis active sampler; frozen importer"
-    ),
-    # --- Gan2026 production surfaces ---
-    "tasks/seizure_frequency/gan2026/frontend_review.py": (
-        "Frontend review surfaces artifact_analysis component stage-ladder + "
-        "transition examples; frozen importer"
-    ),
-    "tasks/seizure_frequency/gan2026/llm/assessment_probe_signature.py": (
-        "Assessment probe signature reuses artifact_analysis candidate_set_union; "
-        "frozen importer"
-    ),
-    # --- Gan2026 experiments shims/drivers (thin re-exports of research code) ---
-    "tasks/seizure_frequency/gan2026/experiments/artifact_io.py": (
-        "Experiments artifact IO re-exports artifact_analysis.replay_io; frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/boundary_state_graph_builder.py": (
-        "Experiments boundary-state-graph builder reuses artifact_analysis.replay_io; "
-        "frozen importer"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/boundary_state_graph_replay.py": (
-        "Experiments shim re-exports artifact_analysis.boundary_state_graph_replay; "
-        "frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/candidate_union.py": (
-        "Experiments shim re-exports artifact_analysis.candidate_union; frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/claim_table_component_ablation.py": (
-        "Experiments shim re-exports artifact_analysis.claim_table_component_ablation; "
-        "frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/month_bucket_duration_selection_ablation.py": (
-        "Experiments shim re-exports "
-        "artifact_analysis.month_bucket_duration_selection_ablation; frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/projection_arbitration_ablation.py": (
-        "Experiments shim re-exports artifact_analysis.projection_arbitration_ablation; "
-        "frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/reset_stage_component_ablation_v6.py": (
-        "Experiments shim re-exports artifact_analysis.reset_stage_component_ablation_v6; "
-        "frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/seizure_free_duration_node_replay.py": (
-        "Experiments shim re-exports artifact_analysis.seizure_free_duration_node_replay; "
-        "frozen shim"
-    ),
-    "tasks/seizure_frequency/gan2026/experiments/seizure_free_duration_projection_ablation.py": (
-        "Experiments shim re-exports "
-        "artifact_analysis.seizure_free_duration_projection_ablation; frozen shim"
-    ),
-}
+#
+# Sprint 6 (P2-1): all 14 day-1 importers were migrated to canonical production
+# modules; the allowlist is empty until a new dependency is intentionally added.
+ALLOWLIST: dict[str, str] = {}
 
 
 _IMPORT_LINE_RE = re.compile(

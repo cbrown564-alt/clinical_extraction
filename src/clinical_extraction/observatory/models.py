@@ -15,18 +15,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rules import (
     temporal_selection,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import classify_hidden_families
 
-# Hard-slice atlas imports (may fail if dependencies missing; guarded below)
-try:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
-        hidden_family_atlas,
-    )
-
-    ATLAS_HARD_SLICE_DEFINITIONS = hidden_family_atlas.ATLAS_HARD_SLICE_DEFINITIONS
-    classify_hidden_families = hidden_family_atlas.classify_hidden_families
-except Exception:  # pragma: no cover
-    ATLAS_HARD_SLICE_DEFINITIONS = ()
-    classify_hidden_families = None  # type: ignore[assignment, misc]
+# The atlas hard-slice manifest module was removed; definitions stay empty until
+# a canonical production replacement lands.
+ATLAS_HARD_SLICE_DEFINITIONS: tuple[dict[str, object], ...] = ()
 
 # Only ``rules_only`` is executable via /run/note and /run/ablation. Registry-backed
 # families for the Explorer dropdown are served separately by /pipeline-families.

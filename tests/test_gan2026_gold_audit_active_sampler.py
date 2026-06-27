@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.gold_audit_active_sampler import (  # noqa: E501
+from clinical_extraction.observatory.gan2026.gold_audit_sampler import (
     build_sampling_model,
     enrich_rows_for_active_sampling,
     row_features,
