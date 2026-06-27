@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.loader import (
+    load_component_off_definitions,
+    load_full200_component_off_definitions,
+    load_full200_specs,
+    load_layer_definitions,
+    load_replay_specs,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
     ComponentImpactReplaySpec,
     ComponentOffDefinition,
@@ -55,123 +62,12 @@ DEFAULT_FULL200_COMPONENT_OFF_MD = Path(
 )
 
 
-LAYER_DEFINITIONS: tuple[LayerDefinition, ...] = (
-    LayerDefinition(
-        layer_id="raw_lane_candidates",
-        label="Raw lane candidates",
-        component_type="llm_producer",
-        score_source="score_ladder",
-        surface_key="raw_lane_score",
-        interpretation="Prediction-bearing producer outputs before downstream cleanup.",
-    ),
-    LayerDefinition(
-        layer_id="source_scored",
-        label="Source-scored mentions",
-        component_type="llm_producer",
-        score_source="materialized_surfaces",
-        surface_key="source_scored",
-        interpretation=(
-            "Scored source mentions before evidence/dictionary/projection layers. "
-            "Inert on these single-lane holistic runs: scoring attaches confidence "
-            "but adds or drops no mention, so the score is unchanged."
-        ),
-        inert=True,
-    ),
-    LayerDefinition(
-        layer_id="evidence_valid",
-        label="Evidence-valid mentions",
-        component_type="evidence_validation",
-        score_source="materialized_surfaces",
-        surface_key="evidence_valid",
-        interpretation=(
-            "Mentions after exact-evidence validation. Inert on these runs: the "
-            "producers only emit verbatim-grounded mentions, so nothing fails the "
-            "guard and the surface is identical to source-scored."
-        ),
-        inert=True,
-    ),
-    LayerDefinition(
-        layer_id="dictionary_normalized",
-        label="Dictionary normalized",
-        component_type="dictionary",
-        score_source="materialized_surfaces",
-        surface_key="dictionary_normalized",
-        interpretation="Standard dictionaries and format-normalization layers applied.",
-    ),
-    LayerDefinition(
-        layer_id="residual_semantic_added",
-        label="Residual semantic additions",
-        component_type="semantic_lens",
-        score_source="materialized_surfaces",
-        surface_key="residual_benchmark_added",
-        interpretation=(
-            "Residual recovery and semantic add/drop/replace layers applied. This "
-            "is the full assembled mention set fed to headline projection."
-        ),
-    ),
-    LayerDefinition(
-        layer_id="headline_projection",
-        label="Headline projection",
-        component_type="deterministic_projection",
-        score_source="score_ladder",
-        surface_key="headline_target",
-        interpretation="Clinical headline / projection surface used for final reporting.",
-    ),
+LAYER_DEFINITIONS: tuple[LayerDefinition, ...] = load_layer_definitions()
+COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = load_component_off_definitions()
+FULL200_COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = (
+    load_full200_component_off_definitions()
 )
 
-
-COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = (
-    ComponentOffDefinition(
-        component_id="evidence_validation",
-        component_boundary="evidence_valid",
-        component_type="evidence_validation",
-        component_portability_category="general",
-        prediction_bearing_status="no",
-        baseline_surface="evidence_valid",
-        component_off_surface="source_scored",
-    ),
-    ComponentOffDefinition(
-        component_id="standard_dictionary",
-        component_boundary="dictionary_normalized",
-        component_type="dictionary",
-        component_portability_category="clinical_epilepsy",
-        prediction_bearing_status="conditional",
-        baseline_surface="dictionary_normalized",
-        component_off_surface="evidence_valid",
-    ),
-    ComponentOffDefinition(
-        component_id="residual_semantic_lens",
-        component_boundary="residual_semantic_added",
-        component_type="semantic_lens",
-        component_portability_category="benchmark_format",
-        prediction_bearing_status="yes",
-        baseline_surface="residual_semantic_added",
-        component_off_surface="dictionary_normalized",
-    ),
-    ComponentOffDefinition(
-        component_id="headline_projection",
-        component_boundary="headline_projection",
-        component_type="deterministic_projection",
-        component_portability_category="benchmark_format",
-        prediction_bearing_status="no",
-        baseline_surface="headline_projection",
-        component_off_surface="residual_semantic_added",
-    ),
-)
-
-
-FULL200_COMPONENT_OFF_DEFINITIONS: tuple[ComponentOffDefinition, ...] = tuple(
-    definition
-    for definition in COMPONENT_OFF_DEFINITIONS
-    if definition.component_id
-    in {"standard_dictionary", "residual_semantic_lens", "headline_projection"}
-)
-
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.loader import (
-    load_full200_specs,
-    load_replay_specs,
-)
 
 DEFAULT_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = load_replay_specs()
 DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS: tuple[ComponentImpactReplaySpec, ...] = (

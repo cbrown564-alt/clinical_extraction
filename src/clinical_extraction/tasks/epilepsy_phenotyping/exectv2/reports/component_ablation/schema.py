@@ -28,3 +28,46 @@ class ReplayCatalog(BaseModel):
 
     dev140: tuple[ReplaySpecRecord, ...]
     full200: tuple[ReplaySpecRecord, ...]
+
+
+class LayerDefinitionRecord(BaseModel):
+    """One layer in the component-impact ladder."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    layer_id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    component_type: str = Field(min_length=1)
+    score_source: str = Field(min_length=1)
+    surface_key: str = Field(min_length=1)
+    interpretation: str = Field(min_length=1)
+    inert: bool = False
+
+
+class ComponentOffDefinitionRecord(BaseModel):
+    """One one-component-off ablation definition."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    component_id: str = Field(min_length=1)
+    component_boundary: str = Field(min_length=1)
+    component_type: str = Field(min_length=1)
+    component_portability_category: str = Field(min_length=1)
+    prediction_bearing_status: str = Field(min_length=1)
+    baseline_surface: str = Field(min_length=1)
+    component_off_surface: str = Field(min_length=1)
+    scorer_view: str = Field(default="clinical_headline", min_length=1)
+    scorer_version: str = Field(
+        default="exectv2_component_ablation_replay_v20260626",
+        min_length=1,
+    )
+
+
+class DefinitionsCatalog(BaseModel):
+    """Layer ladder and component-off definitions."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    layers: tuple[LayerDefinitionRecord, ...]
+    component_off: tuple[ComponentOffDefinitionRecord, ...]
+    full200_component_ids: tuple[str, ...]
