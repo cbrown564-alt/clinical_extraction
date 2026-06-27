@@ -570,7 +570,14 @@ _PATIENT_HISTORY_CONCEPT_BY_PHRASE: dict[str, BenchmarkConcept] = {
 def prescription_concept(phrase: str) -> BenchmarkConcept | None:
     """Return the benchmark medication concept for ``phrase`` if known."""
 
-    return PRESCRIPTION_CONCEPT_BY_PHRASE.get(resolve_drug_surface(phrase))
+    key = normalize_phrase(phrase)
+    concept = PRESCRIPTION_CONCEPT_BY_PHRASE.get(key)
+    if concept is not None:
+        return concept
+    resolved = normalize_phrase(resolve_drug_surface(phrase))
+    if resolved != key:
+        return PRESCRIPTION_CONCEPT_BY_PHRASE.get(resolved)
+    return None
 
 
 def diagnosis_concept(phrase: str) -> BenchmarkConcept | None:

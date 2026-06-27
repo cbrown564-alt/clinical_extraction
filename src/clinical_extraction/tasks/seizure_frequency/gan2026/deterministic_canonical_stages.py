@@ -41,8 +41,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_dra
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     ClinicalAssessment,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
-    assemble_clinical_assessment,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    llm_candidate_set_clinical_assessment_probe as assessment_probe,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateEvent,
@@ -182,10 +182,9 @@ def evidence_trace_check_stage(
         assessment_summary=final_selection.rationale,
     )
     try:
-        clinical_assessment, _ = assemble_clinical_assessment(
+        clinical_assessment, _ = assessment_probe.assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
-            component_owner="deterministic_canonical_pipeline",
             disabled_ablation_switches=disabled_ablation_switches,
         )
     except Exception:

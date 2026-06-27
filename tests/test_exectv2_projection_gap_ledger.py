@@ -210,5 +210,5 @@ def test_build_ledger_on_dev_split_is_consistent_and_has_rx_families() -> None:
     assert summary["per_entity"][PRESCRIPTION.name]["regime"] == "representation_bound"
 
     # Total concept-recovered (projection) share for the current dev snapshot.
-    assert totals["projection_misses"] == 522
-    assert totals["projection_share"] == round(522 / totals["gold_misses"], 4)
+    assert totals["projection_misses"] == 505
+    assert totals["projection_share"] == round(505 / totals["gold_misses"], 4)

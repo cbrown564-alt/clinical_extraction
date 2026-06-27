@@ -576,10 +576,10 @@ def test_holistic_manifest_reproduces_dev140_score_ladder() -> None:
     benchmark = run.report["score_ladder"]["benchmark"]
     companions = run.report["score_ladder"]["fidelity_companions"]
     assert run.report["gate_decision"]["decision"] == "promote-dev-holistic-finding-assembly"
-    assert headline["overall"]["f1"] == 0.8006
+    assert headline["overall"]["f1"] == 0.8043
     assert headline["by_indicator"]["Diagnosis"]["f1"] == 0.7572
     assert headline["by_indicator"]["SeizureFrequency"]["f1"] == 0.8068
-    assert headline["by_indicator"]["Prescription"]["f1"] == 0.8214
+    assert headline["by_indicator"]["Prescription"]["f1"] == 0.8367
     assert headline["by_indicator"]["Investigations"]["f1"] == 0.8615
     assert benchmark["raw"] == 0.2968
     assert benchmark["after_cui_projection"] == 0.3786
