@@ -1,0 +1,105 @@
+{
+  "attribute_vocabulary": {
+    "AgeLower": "lower age bound as string",
+    "AgeUnit": "exactly 'Year' or 'Month'",
+    "AgeUpper": "upper age bound as string",
+    "DayDate": "day of month as string",
+    "FrequencyChange": "exactly one of 'Decreased', 'Frequent', 'Increased', 'Infrequent', 'Same'",
+    "LowerNumberOfSeizures": "lower end of count range, e.g. '2' for '2 to 4 per month'",
+    "LowerNumberOfTimePeriods": "lower end of period range",
+    "MonthDate": "month as string",
+    "NumberOfSeizures": "single count as string, e.g. '2'",
+    "NumberOfTimePeriods": "period length as string, usually '1'",
+    "PointInTime": "exactly one of 'Birthday', 'DrugChange', 'LastClinic', 'Last_Month', 'Last_Week', 'Last_Year', 'Surgery'",
+    "TimePeriod": "exactly 'Day', 'Week', 'Month', or 'Year'",
+    "TimeSince_or_TimeOfEvent": "exactly 'During' or 'Since'",
+    "UpperNumberOfSeizures": "upper end of count range, e.g. '4' for '2 to 4 per month'",
+    "UpperNumberOfTimePeriods": "upper end of period range",
+    "YearDate": "4-digit year as string"
+  },
+  "clinical_rules": [
+    "One record per seizure TYPE. If the note describes focal seizures AND tonic-clonic seizures, each gets its own record with its own frequency attributes.",
+    "The 'text' field MUST be a SHORT anchor phrase: the seizure-type descriptor as it appears in the letter (2 to 6 words). Never put the full frequency sentence in 'text'.",
+    "Both 'text' and 'evidence' must be exact substrings of the letter. If you cannot copy them verbatim, omit the record.",
+    "Include historical frequency statements with PointInTime or TimeSince_or_TimeOfEvent to mark their temporal context.",
+    "Seizure-free: use 'seizure-free' as the text anchor; encode duration in NumberOfTimePeriods + TimePeriod; use TimeSince_or_TimeOfEvent='Since' and PointInTime when a trigger event is stated.",
+    "Ranges: '2 to 4 per month' → LowerNumberOfSeizures='2', UpperNumberOfSeizures='4', NumberOfTimePeriods='1', TimePeriod='Month'.",
+    "Period ranges: 'every 2 to 3 weeks' → NumberOfSeizures='1', LowerNumberOfTimePeriods='2', UpperNumberOfTimePeriods='3', TimePeriod='Week'.",
+    "Cluster patterns: if a cluster cadence is stated ('clusters every 3 weeks'), that is a frequency — use it. Events within a single cluster day are NOT the same as daily ongoing events.",
+    "Conditional windows: extract frequency as stated even if conditional. Do not infer an unconditional overall rate from a conditional window.",
+    "If the letter has no seizure frequency information, return {\"mentions\": []}.",
+    "Return exactly one JSON object. No markdown code fences."
+  ],
+  "field_definitions": {
+    "attributes": "Coded clinical features for this seizure type. Include only those present in the letter. All values must be strings.",
+    "confidence": "'high': one unambiguous frequency fact, exact count and time period stated, no competing claims. 'medium': frequency is clear but a vague count, conditional qualifier, or only a relative change is present. 'low': multiple competing current claims that cannot be resolved.",
+    "evidence": "An exact substring of the letter that gives the frequency context — the clause or sentence containing the seizure type and its frequency information. Must appear verbatim in the letter.",
+    "rationale": "One sentence: the deciding evidence and the coded result.",
+    "text": "The seizure-type anchor phrase — the SHORT noun phrase naming the specific seizure or event type as it appears in the letter. This is typically 2 to 6 words: the seizure type descriptor, not the full frequency sentence. Valid examples: 'focal seizures with altered awareness', 'generalised tonic-clonic seizures', 'myoclonic jerks', 'absences', 'seizures', 'seizure-free', 'cluster of seizures'. MUST be an exact substring of the letter text."
+  },
+  "letter_id": "SNAP001",
+  "letter_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
+  "prompt_version": "exectv2_llm_only_single_pass_v0.2",
+  "task": "Read the clinical letter. For each seizure type that has associated frequency information, produce one record. Return one JSON object with a 'mentions' list.",
+  "worked_examples": [
+    {
+      "correct": {
+        "attributes": {
+          "LowerNumberOfSeizures": "2",
+          "NumberOfTimePeriods": "1",
+          "PointInTime": "DrugChange",
+          "TimePeriod": "Month",
+          "TimeSince_or_TimeOfEvent": "Since",
+          "UpperNumberOfSeizures": "3"
+        },
+        "confidence": "high",
+        "evidence": "2 to 3 focal seizures per month since the medication change",
+        "rationale": "2 to 3 focal seizures per month since medication change.",
+        "text": "focal seizures"
+      },
+      "note": "text is the SHORT seizure-type phrase 'focal seizures', NOT the full sentence.",
+      "note_fragment": "She has had 2 to 3 focal seizures per month since the medication change."
+    },
+    {
+      "correct": {
+        "attributes": {
+          "NumberOfTimePeriods": "6",
+          "PointInTime": "Surgery",
+          "TimePeriod": "Month",
+          "TimeSince_or_TimeOfEvent": "Since"
+        },
+        "confidence": "high",
+        "evidence": "seizure-free for 6 months following surgery",
+        "rationale": "Seizure-free for 6 months since surgery.",
+        "text": "seizure-free"
+      },
+      "note_fragment": "He has been seizure-free for 6 months following surgery."
+    },
+    {
+      "correct": [
+        {
+          "attributes": {
+            "FrequencyChange": "Decreased"
+          },
+          "confidence": "medium",
+          "evidence": "generalised tonic clonic seizures have decreased since starting levetiracetam",
+          "rationale": "GTC seizures decreased — rate not stated.",
+          "text": "generalised tonic clonic seizures"
+        },
+        {
+          "attributes": {
+            "NumberOfSeizures": "3",
+            "NumberOfTimePeriods": "1",
+            "TimePeriod": "Day"
+          },
+          "confidence": "high",
+          "evidence": "absence seizures remain at roughly 3 per day",
+          "rationale": "Absence seizures 3 per day.",
+          "text": "absence seizures"
+        }
+      ],
+      "note": "Each seizure TYPE gets its own record.",
+      "note_fragment": "His generalised tonic clonic seizures have decreased since starting levetiracetam, whilst his absence seizures remain at roughly 3 per day."
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "adapter_contract": [
+    "The adapter maps each diagnosis fact to Diagnosis concept+Negation; each seizure_frequency fact to SeizureFrequency seizure type+state; each prescription fact to DrugName/DrugDose/DoseUnit/Frequency; and each investigation fact to modality Performed=Yes plus Result.",
+    "The adapter must not add missing facts, select a state the model omitted, expand ontology companions, or de-duplicate facts."
+  ],
+  "architecture": {
+    "generation_owner": "target_model",
+    "name": "llm_only_single_call_dedup_facts",
+    "pipeline_family": "exectv2_llm_only_key_entities_generation_selection",
+    "program_role": "json_schema_validation_evidence_validation_projection_reporting",
+    "scored_surface": "clinical_headline",
+    "selection_owner": "target_model"
+  },
+  "decision_tables": {
+    "diagnosis": [
+      {
+        "do_not_emit": "a generic epilepsy fact instead of a more specific stated epilepsy concept",
+        "emit": "the most specific epilepsy concept stated: epilepsy, focal epilepsy/focal-onset epilepsy, temporal lobe epilepsy, generalised epilepsy, genetic generalised epilepsy, or intractable epilepsy",
+        "source_pattern": "epilepsy heading or diagnosis line"
+      },
+      {
+        "do_not_emit": "an epilepsy syndrome such as focal epilepsy or temporal lobe epilepsy unless the source states that syndrome separately",
+        "emit": "the seizure type diagnosis, e.g. focal seizures, focal seizures with altered awareness, focal to bilateral convulsive seizures, generalised tonic clonic seizures, complex partial seizures",
+        "source_pattern": "seizure type named in a seizure type/frequency statement"
+      },
+      {
+        "do_not_emit": "mimics, historical febrile seizures, or symptoms as diagnosis facts",
+        "emit": "nothing unless the phrase is explicitly listed as the patient's current epileptic seizure type",
+        "source_pattern": "febrile seizures, dissociative/non-epileptic events, isolated jerks, migraine, syncope, blackouts, or uncertain attacks"
+      },
+      {
+        "do_not_emit": "an affirmed diagnosis fact for the negated phrase",
+        "emit": "a negated diagnosis fact for the named target seizure type",
+        "source_pattern": "no absences/no focal seizures/no convulsive seizures"
+      }
+    ],
+    "investigation": [
+      {
+        "do_not_emit": "dates or planned repeat tests",
+        "emit": "the modality with result normal or abnormal",
+        "source_pattern": "completed MRI/CT/EEG/telemetry with normal or abnormal result"
+      },
+      {
+        "do_not_emit": "unknown for a planned or requested test",
+        "emit": "the modality with result unknown",
+        "source_pattern": "completed test mentioned but result not stated"
+      },
+      {
+        "do_not_emit": "a completed investigation fact, even with result unknown",
+        "emit": "nothing",
+        "source_pattern": "arranging/requested/awaiting/repeat/planned/future test"
+      }
+    ],
+    "prescription": [
+      {
+        "do_not_emit": "non-antiepileptic medicines or previous trials",
+        "emit": "each standing current anti-seizure regimen with drug, dose, unit, frequency",
+        "source_pattern": "current medication/current anti-seizure medication/she is taking/she is on"
+      },
+      {
+        "do_not_emit": "future target doses or medication-change plans",
+        "emit": "only the dose/frequency the patient is currently taking now",
+        "source_pattern": "planned increase, taper, option, start later, reduce slowly"
+      },
+      {
+        "do_not_emit": "contingency or rescue medication as ordinary current treatment",
+        "emit": "nothing unless the source explicitly lists it as a current standing regimen",
+        "source_pattern": "can take, if necessary, rescue, PRN/as required"
+      }
+    ],
+    "seizure_frequency": [
+      {
+        "do_not_emit": "active_rate without an explicit burden expression",
+        "emit": "state=active_rate for that exact seizure type; examples include 2 per month, twice weekly, every 3 weeks, one seizure last week, 3 since last clinic",
+        "source_pattern": "explicit nonzero count, rate, cadence, or interval"
+      },
+      {
+        "do_not_emit": "active_rate, and never invent NumberOfSeizures=1 for qualitative language",
+        "emit": "state=unknown only when this is a seizure type/frequency target statement; otherwise omit",
+        "source_pattern": "continues to get, ongoing, returned, occasional, frequent, infrequent"
+      },
+      {
+        "do_not_emit": "active_rate from a last-event date",
+        "emit": "state=seizure_free for the named seizure type, or seizures if generic",
+        "source_pattern": "last event, last seizure, no seizures since, seizure-free"
+      },
+      {
+        "do_not_emit": "collapse different states for the same seizure type",
+        "emit": "one fact per distinct state, e.g. an infrequent/unknown state and a last-event/seizure_free state may both be present",
+        "source_pattern": "same seizure type has two distinct stated states"
+      },
+      {
+        "do_not_emit": "generic seizures from evidence that only names a specific seizure type",
+        "emit": "specific seizure-type facts for specific evidence; generic seizures only for a separate overall statement",
+        "source_pattern": "specific seizure type and generic overall seizure statement both appear"
+      }
+    ]
+  },
+  "fact_guidance": [
+    "Before emitting facts, apply the decision_tables exactly. If a decision table says omit, do not emit that fact even if the phrase looks clinically related.",
+    "Diagnosis: one fact per distinct diagnosis concept. Use negation affirmed or negated; do not emit Certainty or DiagCategory.",
+    "Diagnosis target scope is epilepsy, epilepsy syndromes, and named seizure types only. Do not emit unrelated comorbidities, brain lesions, symptoms, causes, or medication side effects as diagnoses.",
+    "Do not emit migraine, anxiety, alcohol use, blackouts, syncope, dissociative seizures, non-epileptic events, febrile seizures, or isolated myoclonic jerks as diagnosis facts unless the same phrase is explicitly named as the patient's epileptic seizure type.",
+    "Split compound diagnosis headings into separate facts. For example, focal epilepsy-Probable temporal supports focal epilepsy and temporal lobe epilepsy; genetic generalised epilepsy-epilepsy with generalised tonic clonic seizures alone supports both named epilepsy concepts. Treat source typos such as tonic chronic as tonic clonic when the surrounding phrase is a seizure type.",
+    "When a seizure-frequency sentence names a seizure type, also emit a diagnosis fact for that named seizure type, such as focal seizures, focal seizures with altered awareness, secondary generalised seizures, absence-like seizures, or generalised tonic clonic seizures.",
+    "SeizureFrequency: one fact per distinct seizure type and coarse state. Use active_rate for any stated nonzero count/rate/interval, including historical years or named months; seizure_free for zero/no seizures or seizure-free intervals; changed for explicit worsened/improved/controlled/increased/decreased/change statements; and unknown when a seizure-frequency reference has no recoverable coarse state.",
+    "SeizureFrequency state boundary: active_rate requires an explicit count, cadence, or interval such as 2 per month, twice a week, every 3 weeks, or one seizure last week. Phrases such as occasional, frequent, infrequent, well controlled, continues to get, returned, or improved are qualitative; use unknown for those only when they are a target seizure-frequency statement, and omit them when they are only narrative without a clear target seizure type.",
+    "SeizureFrequency last-event boundary: if the source says last event, last seizure, no seizures since, or seizure-free since a date, use seizure_free for that seizure type. Do not turn a last-event date into active_rate.",
+    "Do not emit a SeizureFrequency fact for a one-off narrative event, a first single seizure, a suspected attack, or a possible non-epileptic loss-of-consciousness episode unless the letter also states a count, rate, interval, seizure-free window, or frequency-change statement.",
+    "SeizureFrequency: scan the whole letter for counts, rates, intervals, since/over/during windows, last-seizure statements, seizure-free statements, and frequency-change statements. Do not skip a frequency fact just because it is in past history.",
+    "SeizureFrequency: do not add a generic seizures fact when the same evidence only supports a more specific seizure type you already emitted. Add generic seizures only for a separate source statement about overall seizures, overall seizure freedom, or overall change.",
+    "Prescription: current anti-seizure/antiepileptic medications only, as drug plus stated dose, dose_unit, and frequency. Do not emit non-antiepileptic medication-list items, prior trials, future plans, options, or medications without a recoverable dose and frequency.",
+    "Investigation: completed tests only. Use modality MRI, CT, EEG, or telemetry and result normal, abnormal, or unknown.",
+    "Investigation: prior/previous/old dated MRI, CT, EEG, video EEG, VEEG, or telemetry findings are completed tests when a result is stated. Omit requested, arranged, awaiting, repeat, planned, or future-only investigations.",
+    "Evidence: copy an exact contiguous substring from the letter. If a full sentence is hard to copy exactly, use the shortest exact phrase that still supports the fact; never paraphrase evidence."
+  ],
+  "letter": {
+    "letter_id": "SNAP001",
+    "note_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal."
+  },
+  "model_origin_contract": [
+    "Emit clinical_facts directly from the letter. The model must generate every scored fact; deterministic code only validates evidence, maps representation fields, and scores.",
+    "Do not assume any precomputed span list, regex hit list, proposal set, upstream target, or candidate evidence ledger.",
+    "De-duplicate at the source: emit each distinct clinical fact once. Do not repeat a diagnosis, seizure-type state, drug regimen, or investigation that you have already listed.",
+    "Every clinical_fact.evidence must be an exact substring copied from the letter.",
+    "Return only the JSON object; do not include chain-of-thought or private reasoning."
+  ],
+  "output_schema": {
+    "clinical_facts": [
+      {
+        "concept": "short diagnosis concept",
+        "evidence": "exact substring copied from the letter",
+        "family": "diagnosis",
+        "negation": "affirmed|negated"
+      },
+      {
+        "evidence": "exact substring copied from the letter",
+        "family": "seizure_frequency",
+        "seizure_type": "named seizure type, or seizures if generic",
+        "state": "active_rate|seizure_free|changed|unknown"
+      },
+      {
+        "dose": "number only when stated",
+        "dose_unit": "mg|g",
+        "drug": "current drug name",
+        "evidence": "exact substring copied from the letter",
+        "family": "prescription",
+        "frequency": "1|2|3|As_Required",
+        "source_text": "optional replay-only rendered mention text"
+      },
+      {
+        "evidence": "exact substring copied from the letter",
+        "family": "investigation",
+        "modality": "MRI|CT|EEG|telemetry",
+        "performed": "yes|no, optional and replay-only; new route should emit completed tests",
+        "result": "normal|abnormal|unknown"
+      }
+    ]
+  },
+  "prompt_profile": "decision_table",
+  "prompt_version": "exectv2_llm_only_key_entities_generation_selection_v0.5",
+  "stage": "single_call_dedup_facts",
+  "target_surface": {
+    "diagnosis_component": "concept_negation",
+    "name": "clinical_headline"
+  },
+  "worked_examples": [
+    {
+      "clinical_facts": [
+        {
+          "concept": "focal epilepsy",
+          "evidence": "She has focal epilepsy.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        },
+        {
+          "evidence": "No seizures since last review.",
+          "family": "seizure_frequency",
+          "seizure_type": "seizures",
+          "state": "seizure_free"
+        },
+        {
+          "dose": "200",
+          "dose_unit": "mg",
+          "drug": "lamotrigine",
+          "evidence": "Current treatment is lamotrigine 200 mg twice daily.",
+          "family": "prescription",
+          "frequency": "2"
+        },
+        {
+          "evidence": "MRI brain was normal.",
+          "family": "investigation",
+          "modality": "MRI",
+          "result": "normal"
+        }
+      ],
+      "note_fragment": "She has focal epilepsy. No seizures since last review. Current treatment is lamotrigine 200 mg twice daily. MRI brain was normal."
+    },
+    {
+      "clinical_facts": [
+        {
+          "concept": "focal epilepsy",
+          "evidence": "Diagnosis: focal epilepsy-Probable temporal.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        },
+        {
+          "concept": "temporal lobe epilepsy",
+          "evidence": "Diagnosis: focal epilepsy-Probable temporal.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        },
+        {
+          "concept": "secondary generalised seizures",
+          "evidence": "Since review she has had four secondary generalised seizures.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        },
+        {
+          "evidence": "Since review she has had four secondary generalised seizures.",
+          "family": "seizure_frequency",
+          "seizure_type": "secondary generalised seizures",
+          "state": "active_rate"
+        }
+      ],
+      "note_fragment": "Diagnosis: focal epilepsy-Probable temporal. Since review she has had four secondary generalised seizures."
+    },
+    {
+      "clinical_facts": [
+        {
+          "concept": "generalised tonic clonic seizures",
+          "evidence": "Seizure type and frequency: generalised tonic clonic seizure - last event July 2016.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        },
+        {
+          "evidence": "generalised tonic clonic seizure - last event July 2016.",
+          "family": "seizure_frequency",
+          "seizure_type": "generalised tonic clonic seizures",
+          "state": "seizure_free"
+        },
+        {
+          "evidence": "roughly two seizures per year",
+          "family": "seizure_frequency",
+          "seizure_type": "seizures",
+          "state": "active_rate"
+        }
+      ],
+      "note_fragment": "Seizure type and frequency: generalised tonic clonic seizure - last event July 2016. He has had roughly two seizures per year since onset."
+    },
+    {
+      "clinical_facts": [
+        {
+          "concept": "complex partial seizures",
+          "evidence": "She continues to get complex partial seizures.",
+          "family": "diagnosis",
+          "negation": "affirmed"
+        }
+      ],
+      "note_fragment": "She continues to get complex partial seizures. I will arrange an MRI scan.",
+      "omission_note": "Continues to get has no count/rate/window, so no seizure_frequency fact is emitted. The MRI is planned, so it is omitted."
+    }
+  ]
+}

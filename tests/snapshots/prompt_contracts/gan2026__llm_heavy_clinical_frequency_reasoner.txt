@@ -1,0 +1,139 @@
+{
+  "event_schema": {
+    "applies_to": "seizure type or clinical target, or null",
+    "assertion_status": [
+      "asserted",
+      "negated",
+      "hypothetical",
+      "uncertain"
+    ],
+    "certainty": [
+      "high",
+      "medium",
+      "low"
+    ],
+    "clinical_quantity": {
+      "cluster_period_unit": [
+        "day",
+        "week",
+        "month",
+        "year",
+        null
+      ],
+      "clusters_high": "number or null",
+      "clusters_low": "number or null",
+      "events_per_cluster_high": "number or null",
+      "events_per_cluster_low": "number or null",
+      "occurrences_high": "number or null",
+      "occurrences_low": "number or null",
+      "period_high": "number or null",
+      "period_low": "number or null",
+      "period_unit": [
+        "day",
+        "week",
+        "month",
+        "year",
+        null
+      ],
+      "seizure_free_duration_high": "number or null",
+      "seizure_free_duration_low": "number or null",
+      "seizure_free_duration_unit": [
+        "day",
+        "week",
+        "month",
+        "year",
+        null
+      ],
+      "vague_count": [
+        "multiple",
+        "rare",
+        "occasional",
+        "frequent",
+        null
+      ]
+    },
+    "event_id": "stable string such as sf-1",
+    "evidence": "exact note substring supporting this event",
+    "kind": [
+      "frequency_rate",
+      "cluster_frequency",
+      "seizure_free",
+      "last_event_only",
+      "unknown_frequency",
+      "no_reference"
+    ],
+    "model_normalized_clinical_label": "model-owned clinical label, or null",
+    "notes": "short note, or empty string",
+    "raw_phrase": "source-near phrase for the event",
+    "temporality": [
+      "current",
+      "recent",
+      "historical",
+      "unclear"
+    ]
+  },
+  "final_answer_schema": {
+    "arithmetic_trace": "brief source-near arithmetic/rendering trace linking selected_evidence to raw_llm_final_label",
+    "final_rationale": "optional short rationale; use empty string",
+    "raw_clinical_summary": "optional short source-near summary; use empty string",
+    "raw_llm_final_kind": [
+      "frequency",
+      "seizure_free",
+      "unknown",
+      "no_reference",
+      "unresolved_multiple"
+    ],
+    "raw_llm_final_label": "normalized model-rendered label, unknown, or no seizure frequency reference; no prose, inequality symbols, semiology, cluster modifiers, or explanatory clauses",
+    "raw_llm_monthly_frequency": "model-estimated monthly frequency or null",
+    "rendering_operands": "same shape as clinical_quantity; the final-answer operands the model used to render raw_llm_final_label from selected_evidence",
+    "selected_event_ids": "required; exact copy of selection.selected_event_ids; never omit",
+    "selected_evidence": "exact copy of one selected event evidence value supporting the final answer; if multiple events are selected, choose the prediction-bearing event here"
+  },
+  "instructions": [
+    "Read the full note.",
+    "Stage 1: extract all clinically relevant seizure-frequency events as source-near records. Omit administrative, medication, plan, and no-reference events unless they are necessary for the final answer.",
+    "Stage 2: select the event or combination that determines the final clinical seizure-frequency state.",
+    "Stage 3: render your selected answer into the requested schema and show the operands you used for the final label.",
+    "The model owns extraction, clinical normalization proposal, aggregation, selection, and final schema rendering.",
+    "Keep unknown_frequency, no_reference, seizure_free, and unresolved_multiple as distinct states.",
+    "For every event, copy evidence as an exact substring from the note. For final_answer.selected_evidence, copy exactly one selected event evidence value; do not concatenate, paraphrase, or merge evidence strings.",
+    "Keep the output compact: no long rationales, no duplicate administrative events, and no event whose evidence cannot be copied exactly from the note.",
+    "Render raw_llm_final_label as a normalized label using forms like 4 per day, 1 per 7 to 9 day, 2 to 4 per year, multiple per week, seizure free for 6 month, unknown, or no seizure frequency reference.",
+    "The final label must be your own rendering of the selected evidence. Fill final_answer.rendering_operands with the count, period, cluster, vague-count, or seizure-free duration operands that justify raw_llm_final_label, and fill final_answer.arithmetic_trace with a short source-near calculation.",
+    "Always include final_answer.selected_event_ids. It must exactly equal selection.selected_event_ids, even when only one event is selected.",
+    "Render raw_llm_final_label directly from the selected evidence; do not rely on a later field to reinterpret the selected fact.",
+    "Convert upper bounds and inequalities into the selected count without inequality symbols while preserving the selected denominator.",
+    "When a current quantified non-tonic-clonic seizure frequency is selected, do not let a seizure-free tonic-clonic distractor overwrite the final label.",
+    "Do not let raw_llm_final_label hide cluster cadence, per-cluster burden, seizure-free duration, or unresolved ambiguity.",
+    "Cluster cadence is not events-per-cluster. If selected evidence gives only cluster timing, render one cluster occurrence per stated interval unless the same selected evidence states the number of events within each cluster.",
+    "Return exactly one JSON object with top-level keys events, selection, and final_answer. Do not use markdown."
+  ],
+  "note_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
+  "pipeline_family": "llm_heavy_clinical_frequency_reasoner",
+  "prompt_version": "gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact",
+  "selection_schema": {
+    "aggregation_strategy": [
+      "highest_current_frequency",
+      "recent_window",
+      "seizure_free_over_current_event",
+      "cluster_total_rate",
+      "unknown_boundary",
+      "no_reference_boundary",
+      "other"
+    ],
+    "final_clinical_label": "source-near model-selected clinical answer",
+    "final_clinical_state": [
+      "frequency",
+      "seizure_free",
+      "unknown_frequency",
+      "no_reference",
+      "unresolved_multiple"
+    ],
+    "rationale": "brief clinical reason for the selection",
+    "rejected_event_ids": "list of rejected event ids",
+    "selected_event_ids": "list of selected event ids",
+    "uncertainty_flags": "list of short uncertainty flags"
+  },
+  "source_row_index": 1,
+  "task": "Clinical seizure-frequency reasoner"
+}

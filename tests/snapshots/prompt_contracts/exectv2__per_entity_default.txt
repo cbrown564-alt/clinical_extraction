@@ -1,0 +1,143 @@
+{
+  "attribute_vocabulary": {
+    "AgeLower": "string value copied or normalized from the letter.",
+    "AgeUnit": [
+      "Month",
+      "Year"
+    ],
+    "AgeUpper": "string value copied or normalized from the letter.",
+    "CUI": "UMLS CUI only if explicitly available; never guess.",
+    "CUIPhrase": "Clean concept phrase if explicitly available; otherwise omit.",
+    "Certainty": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "DayDate": "string value copied or normalized from the letter.",
+    "FrequencyChange": [
+      "Decreased",
+      "Frequent",
+      "Increased",
+      "Infrequent",
+      "Same"
+    ],
+    "LowerNumberOfSeizures": "string value copied or normalized from the letter.",
+    "LowerNumberOfTimePeriods": "string value copied or normalized from the letter.",
+    "MonthDate": "string value copied or normalized from the letter.",
+    "Negation": [
+      "Affirmed",
+      "Negated"
+    ],
+    "NumberOfSeizures": "string value copied or normalized from the letter.",
+    "NumberOfTimePeriods": "string value copied or normalized from the letter.",
+    "PointInTime": [
+      "Birthday",
+      "DrugChange",
+      "LastClinic",
+      "Last_Month",
+      "Last_Week",
+      "Last_Year",
+      "Surgery"
+    ],
+    "TimePeriod": [
+      "Day",
+      "Month",
+      "Week",
+      "Year",
+      "days"
+    ],
+    "TimeSince_or_TimeOfEvent": [
+      "During",
+      "Since"
+    ],
+    "UpperNumberOfSeizures": "string value copied or normalized from the letter.",
+    "UpperNumberOfTimePeriods": "string value copied or normalized from the letter.",
+    "YearDate": "string value copied or normalized from the letter."
+  },
+  "clinical_rules": [
+    "Each seizure TYPE that has frequency information gets one record.",
+    "text MUST be the SHORT seizure-type anchor phrase (2 to 6 words), not the full frequency sentence.",
+    "Both text and evidence must be exact substrings of the letter.",
+    "Extract historical and current frequency statements as separate records.",
+    "Seizure-free: text='seizure-free' or 'seizure free'; encode duration in NumberOfTimePeriods + TimePeriod; use TimeSince_or_TimeOfEvent='Since'.",
+    "Ranges: '2 to 4 per month' → LowerNumberOfSeizures='2', UpperNumberOfSeizures='4', TimePeriod='Month'.",
+    "Cluster cadence: if clusters occur 'every 3 weeks', that is the frequency — not the per-episode daily burst rate.",
+    "Do NOT emit Certainty or Negation for SeizureFrequency.",
+    "If no seizure frequency information is present, return {\"mentions\": []}.",
+    "Return exactly one JSON object. No markdown code fences."
+  ],
+  "entity": "SeizureFrequency",
+  "field_definitions": {
+    "attributes": "Coded clinical features for this finding. Include only those explicitly present. All values must be strings.",
+    "confidence": "'high': unambiguous finding, attributes clearly stated. 'medium': finding clear but an attribute is vague, approximate, or conditional. 'low': competing or ambiguous statements that cannot be resolved.",
+    "evidence": "The exact clause or sentence from the letter that supports this finding and its attributes. Must be an exact substring of the letter.",
+    "rationale": "One sentence: the deciding evidence and the coded result.",
+    "text": "The seizure-type anchor phrase — the SHORT noun phrase naming the seizure or event type as it appears in the letter. Typically 2 to 6 words. Valid examples: 'focal seizures with altered awareness', 'generalised tonic-clonic seizures', 'myoclonic jerks', 'absences', 'seizures', 'seizure-free', 'cluster of seizures'. Must be an exact substring of the letter. Do NOT put the full frequency sentence in this field."
+  },
+  "letter_id": "SNAP001",
+  "letter_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
+  "prompt_version": "exectv2_llm_only_per_entity_v0.4",
+  "task": "Read the clinical letter. For each seizure type that has associated frequency information, produce one record in the 'mentions' list.",
+  "worked_examples": [
+    {
+      "correct": {
+        "attributes": {
+          "LowerNumberOfSeizures": "2",
+          "NumberOfTimePeriods": "1",
+          "PointInTime": "DrugChange",
+          "TimePeriod": "Month",
+          "TimeSince_or_TimeOfEvent": "Since",
+          "UpperNumberOfSeizures": "3"
+        },
+        "confidence": "high",
+        "evidence": "2 to 3 focal seizures per month since the medication change",
+        "rationale": "2 to 3 focal seizures per month since medication change.",
+        "text": "focal seizures"
+      },
+      "note_fragment": "She has had 2 to 3 focal seizures per month since the medication change."
+    },
+    {
+      "correct": {
+        "attributes": {
+          "NumberOfTimePeriods": "8",
+          "PointInTime": "Surgery",
+          "TimePeriod": "Month",
+          "TimeSince_or_TimeOfEvent": "Since"
+        },
+        "confidence": "high",
+        "evidence": "seizure-free for 8 months following surgery",
+        "rationale": "Seizure-free for 8 months since surgery.",
+        "text": "seizure-free"
+      },
+      "note_fragment": "He remains seizure-free for 8 months following surgery."
+    },
+    {
+      "correct": [
+        {
+          "attributes": {
+            "NumberOfSeizures": "2",
+            "NumberOfTimePeriods": "1",
+            "TimePeriod": "Week"
+          },
+          "confidence": "high",
+          "evidence": "tonic-clonic seizures occur roughly twice a week",
+          "rationale": "Tonic-clonic seizures twice per week.",
+          "text": "tonic-clonic seizures"
+        },
+        {
+          "attributes": {
+            "FrequencyChange": "Decreased"
+          },
+          "confidence": "medium",
+          "evidence": "absence seizures have decreased",
+          "rationale": "Absence seizures decreased — rate not stated.",
+          "text": "absence seizures"
+        }
+      ],
+      "note": "One record per seizure TYPE.",
+      "note_fragment": "His tonic-clonic seizures occur roughly twice a week, while his absence seizures have decreased."
+    }
+  ]
+}
