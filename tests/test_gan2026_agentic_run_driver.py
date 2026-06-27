@@ -88,6 +88,128 @@ def test_dispatch_unknown_stage_raises_key_error() -> None:
         )
 
 
+def test_llm_event_reasoner_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "llm_event_reasoner" in stages
+    stage = stages["llm_event_reasoner"]
+    assert stage.dispatch_kind == "structured_event"
+    assert stage.module.endswith("llm_event_reasoner")
+
+
+def test_dispatch_llm_event_reasoner_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return json.dumps(
+            {
+                "final_label": "two_per_week",
+                "final_kind": "frequency",
+                "selected_event_ids": ["e1"],
+                "rejected_event_ids": [],
+                "evidence": ["2 seizures per week"],
+                "boundary_profile": ["freq_category_shift"],
+                "calculation_trace": "2 / week",
+                "clinical_rationale": "The event table has a current weekly rate.",
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        )
+
+    monkeypatch.setattr(llm_event_reasoner, "_run_model_call", fake_model_call)
+
+    record = _record(
+        903,
+        "Clinic Date: 12 June 2026\nPatient reports 2 seizures per week.",
+        gold_label="2 per week",
+        gold_monthly_frequency=8.69047619047619,
+    )
+    structured_event_rows = [
+        _llm_reasoner_structured_event_row(
+            903,
+            final_label="1 per month",
+            final_kind="frequency",
+            purist_correct=False,
+        )
+    ]
+    split_kwargs = {
+        "structured_event_rows": structured_event_rows,
+        "structured_event_source_path": Path("v0.jsonl"),
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 1600,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = llm_event_reasoner.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        llm_event_reasoner.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=llm_event_reasoner.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_llm_event_reasoner_trace",
+                "pipeline_family": llm_event_reasoner.PIPELINE_FAMILY,
+                "pipeline_version": llm_event_reasoner.PROMPT_VERSION,
+                "structured_event_source_role": (
+                    "pure structured-event V0 comparator and input substrate; not "
+                    "a deterministic final-label floor"
+                ),
+                "claim_boundary": (
+                    "validation-development Stage 1 scaffold; no holdout use, no "
+                    "row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=llm_event_reasoner._build_row,
+            summarize_rows=llm_event_reasoner.summarize_rows,
+            gate_interpretation=llm_event_reasoner.gate_interpretation,
+            write_report=llm_event_reasoner.write_report,
+            progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
+        ),
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=(
+                llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
+            ),
+            structured_event_rows=structured_event_rows,
+            structured_event_source_path=Path("v0.jsonl"),
+            rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
 def test_represented_event_normalizer_stage_is_registered() -> None:
     stages = registered_agentic_stages()
 
@@ -944,6 +1066,54 @@ def _record(
         gold_yearly_bounds=None,
         gold_monthly_frequency=gold_monthly_frequency,
     )
+
+
+def _llm_reasoner_structured_event_row(
+    source_row_index: int,
+    *,
+    final_label: str,
+    final_kind: str,
+    purist_correct: bool,
+) -> dict:
+    return {
+        "source_row_index": source_row_index,
+        "structured_record": {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": final_label,
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "applies_to": "seizures",
+                    "evidence": "one seizure per month",
+                    "time_window": "current",
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": final_kind,
+                "final_label": final_label,
+                "evidence": "one seizure per month",
+                "confidence": "high",
+                "rationale": "Original structured-event selection.",
+            },
+        },
+        "normalized_events": [
+            {
+                "event_id": "e1",
+                "normalized_label": final_label,
+                "semantic_kind": final_kind,
+                "monthly_frequency": 1.0138888888888888,
+                "validation_errors": [],
+            }
+        ],
+        "comparison": {
+            "purist_correct": purist_correct,
+            "pragmatic_correct": purist_correct,
+        },
+        "evidence_valid": True,
+    }
 
 
 def _router_structured_event_row(
