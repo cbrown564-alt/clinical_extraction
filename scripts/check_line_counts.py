@@ -13,6 +13,10 @@ Gate rules
 3. **Tests tier** (P0-6) — any ``*.py`` under ``tests/`` must be **≤ 800 lines**
    unless documented in ``TESTS_ALLOWLIST`` below.
 
+4. **Frontend tier** — any ``*.ts`` / ``*.tsx`` under ``frontend/`` (excluding
+   ``node_modules/`` and ``.next/``) must be **≤ 600 lines** unless documented
+   in ``FRONTEND_ALLOWLIST`` below.
+
 Allowlist policy (day-1 rollout)
 --------------------------------
 Known legacy monoliths are allowlisted with a **frozen ceiling** equal to their
@@ -45,9 +49,12 @@ from pathlib import Path
 EXECTV2_LLM_MAX_LINES = 500
 SRC_MAX_LINES = 1000
 TESTS_MAX_LINES = 800
+FRONTEND_MAX_LINES = 600
 
 SRC_PACKAGE = "src/clinical_extraction"
 TESTS_DIR = "tests"
+FRONTEND_DIR = "frontend"
+FRONTEND_EXTENSIONS = (".ts", ".tsx")
 
 
 @dataclass(frozen=True)
@@ -63,17 +70,8 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     # --- ExECTv2 LLM top-4 blockers (A1) ---
     # generation_selection decomposed (Wave C-S5): facade now 94 LOC (no entry);
     # cohesive package submodules over the 500 LLM tier are allowlisted below.
-    # generation_selection decomposed (Wave C-S5/S6): facade now 69 LOC (no entry);
-    # strategy submodules below are under the 500 LLM tier except parsing (640).
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_generation_selection/parsing.py": AllowlistEntry(
-        640,
-        "Wave C-S5: generation_selection decomposed; response parse/coerce cohesive unit",
-    ),
-    # key_entities_structured decomposed (Wave C-S5): facade now 85 LOC (no entry).
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders.py": AllowlistEntry(
-        815,
-        "Wave C-S5: structured decomposed; full + qwen_compact prompt builders cohesive unit",
-    ),
+    # generation_selection decomposed (Wave C-S5/S7): parsing facade now ~35 LOC (no entry).
+    # key_entities_structured decomposed (Wave C-S5/S7): prompt_builders facade now ~23 LOC (no entry).
     "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py": AllowlistEntry(
         588,
         "Wave C-S5: structured decomposed; run_split + report assembly cohesive unit",
@@ -117,9 +115,9 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         666,
         "P1-3: diagnosis_verification reconciler — prompt corpus externalization pending (P3-2)",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/verifier_content.py": AllowlistEntry(
-        929,
-        "P1-3: diagnosis_verification verifier content — externalize prompts (P3-2)",
+    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/med_inv_content.py": AllowlistEntry(
+        541,
+        "P3-2: med_inv prompt corpus externalized; runner/orchestration remains",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_family_conditioned_candidate_adjudicator.py": AllowlistEntry(
         877,
@@ -152,14 +150,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_sf_union_arbitration.py": AllowlistEntry(
         515,
         "A1: SF union arbitration — pending decomposition",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/med_inv_content.py": AllowlistEntry(
-        705,
-        "Wave2: entity_verifier med_inv content — externalize prompts",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/sf_content.py": AllowlistEntry(
-        851,
-        "Wave2: entity_verifier SF content — externalize prompts",
     ),
     # --- ExECTv2 non-LLM >1k LOC ---
     # --- Gan2026 >1k LOC ---
@@ -321,6 +311,14 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
     ),
 }
 
+# Paths are posix-relative to ``frontend/``.
+FRONTEND_ALLOWLIST: dict[str, AllowlistEntry] = {
+    "lib/types/shared.ts": AllowlistEntry(
+        632,
+        "P2-6/Wave-C-S6: types split — shared cross-domain types pending further slice",
+    ),
+}
+
 
 @dataclass(frozen=True)
 class LineCountViolation:
@@ -355,6 +353,11 @@ def tests_root(root: Path | None = None) -> Path:
     return base / TESTS_DIR
 
 
+def frontend_root(root: Path | None = None) -> Path:
+    base = repo_root() if root is None else root
+    return base / FRONTEND_DIR
+
+
 def is_exectv2_llm_production(rel_path: str) -> bool:
     return "exectv2/llm/" in rel_path and "/prompts/" not in rel_path
 
@@ -367,6 +370,20 @@ def iter_python_files(tree_root: Path) -> list[tuple[str, Path]]:
     files: list[tuple[str, Path]] = []
     for path in sorted(tree_root.rglob("*.py")):
         if "__pycache__" in path.parts:
+            continue
+        rel = path.relative_to(tree_root).as_posix()
+        files.append((rel, path))
+    return files
+
+
+def iter_frontend_files(tree_root: Path) -> list[tuple[str, Path]]:
+    files: list[tuple[str, Path]] = []
+    for path in sorted(tree_root.rglob("*")):
+        if not path.is_file():
+            continue
+        if path.suffix not in FRONTEND_EXTENSIONS:
+            continue
+        if "node_modules" in path.parts or ".next" in path.parts:
             continue
         rel = path.relative_to(tree_root).as_posix()
         files.append((rel, path))
@@ -465,8 +482,51 @@ def check_tests_line_counts(tests_dir: Path | None = None) -> list[LineCountViol
     return violations
 
 
+def check_frontend_line_counts(frontend_dir: Path | None = None) -> list[LineCountViolation]:
+    """Return violations for the frontend tree (empty list = pass)."""
+    root = frontend_root() if frontend_dir is None else frontend_dir
+    violations: list[LineCountViolation] = []
+
+    for rel_path, path in iter_frontend_files(root):
+        line_count = count_lines(path)
+        entry = FRONTEND_ALLOWLIST.get(rel_path)
+
+        if line_count <= FRONTEND_MAX_LINES:
+            continue
+
+        if entry is not None and line_count <= entry.max_lines:
+            continue
+
+        if entry is None:
+            violations.append(
+                LineCountViolation(
+                    rel_path=rel_path,
+                    line_count=line_count,
+                    triggered_rules=(f"frontend≤{FRONTEND_MAX_LINES}",),
+                    kind="new",
+                    ceiling=None,
+                    justification=None,
+                )
+            )
+        else:
+            violations.append(
+                LineCountViolation(
+                    rel_path=rel_path,
+                    line_count=line_count,
+                    triggered_rules=(f"frontend≤{FRONTEND_MAX_LINES}",),
+                    kind="growth",
+                    ceiling=entry.max_lines,
+                    justification=entry.justification,
+                )
+            )
+
+    return violations
+
+
 def main() -> int:
-    violations = check_line_counts() + check_tests_line_counts()
+    violations = (
+        check_line_counts() + check_tests_line_counts() + check_frontend_line_counts()
+    )
     if not violations:
         print("line-count gates: OK")
         return 0

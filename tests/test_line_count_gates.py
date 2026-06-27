@@ -14,11 +14,15 @@ if str(_SCRIPTS) not in sys.path:
 from check_line_counts import (  # noqa: E402
     ALLOWLIST,
     EXECTV2_LLM_MAX_LINES,
+    FRONTEND_ALLOWLIST,
+    FRONTEND_MAX_LINES,
     SRC_MAX_LINES,
     TESTS_ALLOWLIST,
     TESTS_MAX_LINES,
+    check_frontend_line_counts,
     check_line_counts,
     check_tests_line_counts,
+    frontend_root as get_frontend_root,
     is_exectv2_llm_production,
     src_root,
     tests_root as get_tests_root,
@@ -88,11 +92,12 @@ def test_allowlisted_monolith_growth_is_caught(tmp_path: Path) -> None:
         ("exectv2_llm", EXECTV2_LLM_MAX_LINES),
         ("src", SRC_MAX_LINES),
         ("tests", TESTS_MAX_LINES),
+        ("frontend", FRONTEND_MAX_LINES),
     ],
 )
 def test_gate_limits_documented(limit_name: str, limit_value: int) -> None:
     assert limit_value > 0
-    assert limit_name in {"exectv2_llm", "src", "tests"}
+    assert limit_name in {"exectv2_llm", "src", "tests", "frontend"}
 
 
 def test_tests_tree_passes_line_count_gates(repo_root: Path) -> None:
@@ -130,4 +135,52 @@ def test_allowlisted_megatest_growth_is_caught(tmp_path: Path) -> None:
     target.write_text("\n".join(["# legacy"] * (entry.max_lines + 1)), encoding="utf-8")
 
     violations = check_tests_line_counts(tree_root)
+    assert any(v.kind == "growth" and v.rel_path == rel for v in violations)
+
+
+def test_frontend_tree_passes_line_count_gates(repo_root: Path) -> None:
+    violations = check_frontend_line_counts(get_frontend_root(repo_root))
+    assert violations == [], "\n".join(v.format() for v in violations)
+
+
+def test_frontend_allowlist_paths_exist_under_frontend(repo_root: Path) -> None:
+    tree_root = get_frontend_root(repo_root)
+    missing = [rel for rel in FRONTEND_ALLOWLIST if not (tree_root / rel).is_file()]
+    assert missing == [], f"stale frontend allowlist entries: {missing}"
+
+
+def test_new_frontend_file_over_600_is_caught(tmp_path: Path) -> None:
+    """A new 700-line module under frontend/ must fail without allowlisting."""
+    tree_root = tmp_path / "frontend"
+    target = tree_root / "components/laboratory/NewMonolithSurface.tsx"
+    target.parent.mkdir(parents=True)
+    target.write_text("\n".join(["// stub"] * 700), encoding="utf-8")
+
+    violations = check_frontend_line_counts(tree_root)
+    assert len(violations) == 1
+    violation = violations[0]
+    assert violation.kind == "new"
+    assert violation.line_count == 700
+    assert violation.triggered_rules == (f"frontend≤{FRONTEND_MAX_LINES}",)
+
+
+def test_frontend_node_modules_excluded_from_gate(tmp_path: Path) -> None:
+    tree_root = tmp_path / "frontend"
+    target = tree_root / "node_modules/big-lib/index.ts"
+    target.parent.mkdir(parents=True)
+    target.write_text("\n".join(["// stub"] * 900), encoding="utf-8")
+
+    violations = check_frontend_line_counts(tree_root)
+    assert violations == []
+
+
+def test_allowlisted_frontend_monolith_growth_is_caught(tmp_path: Path) -> None:
+    rel = "lib/types/shared.ts"
+    entry = FRONTEND_ALLOWLIST[rel]
+    tree_root = tmp_path / "frontend"
+    target = tree_root / rel
+    target.parent.mkdir(parents=True)
+    target.write_text("\n".join(["// legacy"] * (entry.max_lines + 1)), encoding="utf-8")
+
+    violations = check_frontend_line_counts(tree_root)
     assert any(v.kind == "growth" and v.rel_path == rel for v in violations)

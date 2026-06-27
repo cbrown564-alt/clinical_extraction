@@ -97,7 +97,7 @@ jobs:
       - name: Install project (dev extras)
         run: pip install -e ".[dev]"
 
-      - name: Enforce production line-count limits
+      - name: Enforce line-count limits (src, tests, frontend)
         run: python scripts/check_line_counts.py
 
       - name: Enforce artifact_analysis import quarantine
