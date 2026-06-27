@@ -6,9 +6,7 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 _INVESTIGATION_MODALITY_ATTRS: dict[str, tuple[str, str | None]] = {
     "MRI": ("MRI_Performed", "MRI_Results"),

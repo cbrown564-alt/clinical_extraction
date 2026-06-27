@@ -2,20 +2,13 @@ from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
+    normalize_phrase,
+)
+
+_LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"})
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
-_LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"})
-
-
-def normalize_phrase(text: str) -> str:
-    """Normalize an annotated phrase for label matching.
-
-    Gold phrases store spaces as hyphens and sometimes carry quotes (including
-    mid-phrase) and case variation. Normalization makes phrase comparison robust
-    to those surface differences without relying on (drifted) character offsets."""
-
-    lowered = text.translate(_QUOTES).replace("-", " ").lower()
-    return _WHITESPACE.sub(" ", lowered).strip()
 
 
 def canonicalize_attribute_value(key: str, value: str) -> str:
@@ -30,3 +23,6 @@ def canonicalize_attribute_value(key: str, value: str) -> str:
     if key in _LOWERCASE_ATTRIBUTE_VALUES:
         normalized = normalized.lower()
     return normalized
+
+
+__all__ = ["canonicalize_attribute_value", "normalize_phrase"]

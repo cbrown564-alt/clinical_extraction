@@ -11,9 +11,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 def match_span(match: re.Match[str]) -> EvidenceSpan:
     """Return the exact source slice that triggered a mention."""
 

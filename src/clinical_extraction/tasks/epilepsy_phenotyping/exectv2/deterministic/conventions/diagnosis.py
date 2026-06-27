@@ -6,11 +6,11 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
     diagnosis_category_for_concept,
-    normalize_phrase,
-)
+    )
 
 DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
     {

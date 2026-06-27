@@ -29,8 +29,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
     TARGET_INDICATORS,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 DEFAULT_RUNS: tuple[tuple[str, Path, Path], ...] = (
     (
         "v08_dev140_control",

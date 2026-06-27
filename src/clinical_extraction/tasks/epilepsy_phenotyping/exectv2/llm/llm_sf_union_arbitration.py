@@ -27,8 +27,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 ARBITRATION_VERSION = "exectv2_hybrid_sf_union_arbitration_v08"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_union_arbitration"
 COMPONENT_OWNER = "deterministic_sf_union_arbitration"

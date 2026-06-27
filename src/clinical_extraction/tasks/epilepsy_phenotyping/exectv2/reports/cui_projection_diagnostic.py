@@ -25,8 +25,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 _CUI = "CUI"
 _CUI_PHRASE = "CUIPhrase"
 

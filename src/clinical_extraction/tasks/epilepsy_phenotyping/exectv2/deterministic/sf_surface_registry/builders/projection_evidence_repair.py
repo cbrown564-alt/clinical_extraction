@@ -5,9 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import ASYMMETRIC_DOSING
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.policy import (

@@ -41,9 +41,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
     semantic_ignore_for,
     source_near_diagnostic,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
-    normalize_phrase,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.prescription import (
     PrescriptionBenchmarkProjectionScores,

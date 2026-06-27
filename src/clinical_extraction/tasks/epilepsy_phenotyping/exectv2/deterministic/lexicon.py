@@ -41,8 +41,7 @@ normalize_phrase; ..."
 """
 from __future__ import annotations
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import normalize_phrase
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 # CUI → normalized concept-phrase variants observed in gold (canonical phrase
 # first). Counts in comments are gold-mention frequencies, 2026-06-10 corpus.
 SF_CUI_LEXICON: dict[str, tuple[str, ...]] = {

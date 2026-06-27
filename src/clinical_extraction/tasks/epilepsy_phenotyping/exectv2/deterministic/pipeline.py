@@ -38,7 +38,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 
-from ..scoring import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from .association import associate_attributes_to_anchors
 from .candidates import AnchorCandidate, AttributeExtraction
 from .frequency_section import frequency_section_mentions

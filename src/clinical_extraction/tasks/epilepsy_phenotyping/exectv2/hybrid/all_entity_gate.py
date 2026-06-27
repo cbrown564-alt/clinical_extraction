@@ -20,6 +20,7 @@ on semantic grounds — that is the LLM's job (the candidate already came from t
 LLM). Routed mentions are surfaced in a first-class taxonomy, never hidden.
 """
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from collections import Counter
 from collections.abc import Hashable, Sequence
@@ -34,7 +35,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
-    normalize_phrase,
 )
 
 _CUI_KEYS: frozenset[str] = frozenset({"CUI", "CUIPhrase"})

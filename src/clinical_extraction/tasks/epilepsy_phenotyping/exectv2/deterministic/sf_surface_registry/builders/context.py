@@ -6,9 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 RewriteResult = tuple[str, dict[str, Any], str]
 ResidualCandidate = tuple[str, str, dict[str, str]]

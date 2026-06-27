@@ -18,9 +18,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     annotation_clinical_concepts,
     collapse_concepts_to_most_specific,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
-    normalize_phrase,
 )
 
 # CUIPhrase mirrors the annotated phrase, so including it in the match key is

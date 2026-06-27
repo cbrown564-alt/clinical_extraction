@@ -10,9 +10,7 @@ import re
 from collections.abc import Mapping
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from ._legacy_constants import *  # noqa: F401,F403 (legacy regex constants)
 
 

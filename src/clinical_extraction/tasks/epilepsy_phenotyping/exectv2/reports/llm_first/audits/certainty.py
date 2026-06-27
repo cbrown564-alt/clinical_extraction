@@ -1,6 +1,7 @@
 """Certainty projection audit (plan report #2)."""
 
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import re
 from collections import Counter
@@ -37,8 +38,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     MatchConfig,
     benchmark_config_for,
     benchmark_ignore_for,
-    normalize_phrase,
-    score_overall,
+        score_overall,
 )
 
 

@@ -8,6 +8,7 @@ prediction artifacts, not for changing scoring policy.
 """
 
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import json
 from collections import Counter, defaultdict
@@ -38,8 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     concept_keys,
     frequency_state_keys,
     investigation_component_keys,
-    normalize_phrase,
-    prescription_component_key,
+        prescription_component_key,
     score_concept_identity,
     score_frequency_state,
     score_investigations_components,

@@ -11,9 +11,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexico
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     PRESCRIPTION_CONCEPT_BY_PHRASE,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    normalize_phrase,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 #: Canonical dose units. Variants collapse to one of these.
 _DOSE_UNIT_RE = re.compile(

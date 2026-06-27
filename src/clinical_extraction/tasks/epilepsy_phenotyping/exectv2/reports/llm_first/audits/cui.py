@@ -1,6 +1,7 @@
 """CUI projection audit (plan report #3)."""
 
 from __future__ import annotations
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from collections import Counter, defaultdict
 from collections.abc import Sequence
@@ -38,8 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.pr
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
-    normalize_phrase,
-    score_overall,
+        score_overall,
     semantic_config_for,
 )
 
