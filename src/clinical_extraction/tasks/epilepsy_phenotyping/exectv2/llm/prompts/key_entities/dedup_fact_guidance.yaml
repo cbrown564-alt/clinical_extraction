@@ -1,0 +1,40 @@
+fact_guidance:
+- 'Diagnosis: one fact per distinct diagnosis concept. Use negation affirmed or negated; do not emit Certainty or DiagCategory.'
+- Diagnosis target scope is epilepsy, epilepsy syndromes, and named seizure types only. Do not emit unrelated comorbidities,
+  brain lesions, symptoms, causes, or medication side effects as diagnoses.
+- Do not emit migraine, anxiety, alcohol use, blackouts, syncope, dissociative seizures, non-epileptic events, febrile seizures,
+  or isolated myoclonic jerks as diagnosis facts unless the same phrase is explicitly named as the patient's epileptic seizure
+  type.
+- Split compound diagnosis headings into separate facts. For example, focal epilepsy-Probable temporal supports focal epilepsy
+  and temporal lobe epilepsy; genetic generalised epilepsy-epilepsy with generalised tonic clonic seizures alone supports
+  both named epilepsy concepts. Treat source typos such as tonic chronic as tonic clonic when the surrounding phrase is a
+  seizure type.
+- When a seizure-frequency sentence names a seizure type, also emit a diagnosis fact for that named seizure type, such as
+  focal seizures, focal seizures with altered awareness, secondary generalised seizures, absence-like seizures, or generalised
+  tonic clonic seizures.
+- 'SeizureFrequency: one fact per distinct seizure type and coarse state. Use active_rate for any stated nonzero count/rate/interval,
+  including historical years or named months; seizure_free for zero/no seizures or seizure-free intervals; changed for explicit
+  worsened/improved/controlled/increased/decreased/change statements; and unknown when a seizure-frequency reference has no
+  recoverable coarse state.'
+- 'SeizureFrequency state boundary: active_rate requires an explicit count, cadence, or interval such as 2 per month, twice
+  a week, every 3 weeks, or one seizure last week. Phrases such as occasional, frequent, infrequent, well controlled, continues
+  to get, returned, or improved are qualitative; use unknown for those only when they are a target seizure-frequency statement,
+  and omit them when they are only narrative without a clear target seizure type.'
+- 'SeizureFrequency last-event boundary: if the source says last event, last seizure, no seizures since, or seizure-free since
+  a date, use seizure_free for that seizure type. Do not turn a last-event date into active_rate.'
+- Do not emit a SeizureFrequency fact for a one-off narrative event, a first single seizure, a suspected attack, or a possible
+  non-epileptic loss-of-consciousness episode unless the letter also states a count, rate, interval, seizure-free window,
+  or frequency-change statement.
+- 'SeizureFrequency: scan the whole letter for counts, rates, intervals, since/over/during windows, last-seizure statements,
+  seizure-free statements, and frequency-change statements. Do not skip a frequency fact just because it is in past history.'
+- 'SeizureFrequency: do not add a generic seizures fact when the same evidence only supports a more specific seizure type
+  you already emitted. Add generic seizures only for a separate source statement about overall seizures, overall seizure freedom,
+  or overall change.'
+- 'Prescription: current anti-seizure/antiepileptic medications only, as drug plus stated dose, dose_unit, and frequency.
+  Do not emit non-antiepileptic medication-list items, prior trials, future plans, options, or medications without a recoverable
+  dose and frequency.'
+- 'Investigation: completed tests only. Use modality MRI, CT, EEG, or telemetry and result normal, abnormal, or unknown.'
+- 'Investigation: prior/previous/old dated MRI, CT, EEG, video EEG, VEEG, or telemetry findings are completed tests when a
+  result is stated. Omit requested, arranged, awaiting, repeat, planned, or future-only investigations.'
+- 'Evidence: copy an exact contiguous substring from the letter. If a full sentence is hard to copy exactly, use the shortest
+  exact phrase that still supports the fact; never paraphrase evidence.'

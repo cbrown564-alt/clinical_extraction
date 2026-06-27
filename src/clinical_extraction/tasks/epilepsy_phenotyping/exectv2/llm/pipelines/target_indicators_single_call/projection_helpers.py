@@ -23,10 +23,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
     apply_all,
     projection_patterns,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
-    normalize_phrase,
-)
+    )
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.constants import (  # noqa: E501
     _CLUSTER_OF_SEIZURES,
