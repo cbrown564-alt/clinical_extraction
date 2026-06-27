@@ -7,8 +7,11 @@ import pytest
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     cross_model_challenge_adjudicator,
+    event_completion_reasoner,
     llm_event_reasoner,
     represented_event_normalizer,
+    targeted_boundary_router,
+    temporal_sentinel_specialist,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     structured_event_verifier,
@@ -91,6 +94,15 @@ def test_represented_event_normalizer_stage_is_registered() -> None:
     stage = stages["represented_event_normalizer"]
     assert stage.dispatch_kind == "structured_event"
     assert stage.module.endswith("represented_event_normalizer")
+
+
+def test_event_completion_reasoner_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "event_completion_reasoner" in stages
+    stage = stages["event_completion_reasoner"]
+    assert stage.dispatch_kind == "structured_event"
+    assert stage.module.endswith("event_completion_reasoner")
 
 
 def test_dispatch_structured_event_matches_direct_run_split(monkeypatch) -> None:
@@ -195,6 +207,382 @@ def test_dispatch_structured_event_matches_direct_run_split(monkeypatch) -> None
         structured_event_context=StructuredEventSplitContext(
             default_structured_event_jsonl_path=(
                 represented_event_normalizer.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
+            ),
+            structured_event_rows=structured_event_rows,
+            structured_event_source_path=Path("v0.jsonl"),
+            rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_temporal_sentinel_specialist_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "temporal_sentinel_specialist" in stages
+    stage = stages["temporal_sentinel_specialist"]
+    assert stage.dispatch_kind == "structured_event"
+    assert stage.module.endswith("temporal_sentinel_specialist")
+
+
+def test_dispatch_temporal_sentinel_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return json.dumps(
+            {
+                "action": "replace_with_existing_event",
+                "final_label": "no seizure frequency reference",
+                "final_kind": "no_reference",
+                "selected_event_ids": ["e1"],
+                "rejected_event_ids": [],
+                "evidence": ["a very infrequent, short event a fortnight ago"],
+                "contradiction_profile": ["temporal_sentinel:last_event_only_boundary"],
+                "calculation_trace": "isolated last-event evidence is not a cadence",
+                "clinical_rationale": (
+                    "The selected event's own normalized candidate is a sentinel "
+                    "boundary rather than a recurring frequency."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        )
+
+    monkeypatch.setattr(temporal_sentinel_specialist, "_run_model_call", fake_model_call)
+
+    record = _record(
+        963,
+        "Clinic Date: 12 June 2026\na very infrequent, short event a fortnight ago",
+        gold_label="unknown",
+        gold_monthly_frequency=1000.0,
+    )
+    structured_event_rows = [_temporal_sentinel_boundary_row(963)]
+    split_kwargs = {
+        "structured_event_rows": structured_event_rows,
+        "structured_event_source_path": Path("v0.jsonl"),
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 2400,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = temporal_sentinel_specialist.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        temporal_sentinel_specialist.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=temporal_sentinel_specialist.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_temporal_sentinel_specialist_trace",
+                "pipeline_family": temporal_sentinel_specialist.PIPELINE_FAMILY,
+                "pipeline_version": (
+                    f"{temporal_sentinel_specialist.PROMPT_VERSION}+"
+                    f"{temporal_sentinel_specialist.SAFETY_GATE_VERSION}"
+                ),
+                "safety_gate_version": temporal_sentinel_specialist.SAFETY_GATE_VERSION,
+                "structured_event_source_role": (
+                    "pure structured-event V0 comparator and temporal/sentinel "
+                    "specialist substrate; the specialist action owns any selected "
+                    "replacement event"
+                ),
+                "claim_boundary": (
+                    "validation-development V9 temporal/sentinel specialist; no "
+                    "holdout use, no row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=temporal_sentinel_specialist._build_row,
+            summarize_rows=temporal_sentinel_specialist.summarize_rows,
+            gate_interpretation=structured_event_verifier.gate_interpretation,
+            write_report=temporal_sentinel_specialist.write_report,
+            progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
+        ),
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=(
+                temporal_sentinel_specialist.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
+            ),
+            structured_event_rows=structured_event_rows,
+            structured_event_source_path=Path("v0.jsonl"),
+            rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_dispatch_event_completion_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return json.dumps(
+            {
+                "action": "create_completed_event_final",
+                "final_label": "multiple per month",
+                "final_kind": "unresolved_multiple",
+                "selected_event_ids": ["completed_event_1"],
+                "rejected_event_ids": ["e1"],
+                "evidence": ["clusters about four times per month"],
+                "boundary_profile": ["event_completion:cluster_axis"],
+                "calculation_trace": "cluster cadence is about 4/month",
+                "clinical_rationale": (
+                    "The raw note contains a cluster cadence omitted from the event table."
+                ),
+                "uncertainty": "medium",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+                "completed_event": {
+                    "event_id": "completed_event_1",
+                    "kind": "cluster_frequency",
+                    "raw_value": "clusters about four times per month",
+                    "evidence": "clusters about four times per month",
+                    "rationale": "Omitted cluster cadence.",
+                },
+            }
+        )
+
+    monkeypatch.setattr(event_completion_reasoner, "_run_model_call", fake_model_call)
+
+    record = _record(
+        932,
+        (
+            "Clinic Date: 12 June 2026\n"
+            "Patient has clusters about four times per month."
+        ),
+        gold_label="multiple per month",
+        gold_monthly_frequency=1000.0,
+    )
+    structured_event_rows = [
+        _completion_structured_event_row(
+            932,
+            final_label="unknown",
+            final_kind="unknown",
+            purist_correct=False,
+        )
+    ]
+    split_kwargs = {
+        "structured_event_rows": structured_event_rows,
+        "structured_event_source_path": Path("v0.jsonl"),
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 2200,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = event_completion_reasoner.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        event_completion_reasoner.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=event_completion_reasoner.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_event_completion_reasoner_trace",
+                "pipeline_family": event_completion_reasoner.PIPELINE_FAMILY,
+                "pipeline_version": event_completion_reasoner.PROMPT_VERSION,
+                "structured_event_source_role": (
+                    "pure structured-event V0 comparator and completion substrate; "
+                    "the model owns any created completed event"
+                ),
+                "claim_boundary": (
+                    "validation-development V7 event-completion scaffold; no holdout "
+                    "use, no row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=event_completion_reasoner._build_row,
+            summarize_rows=event_completion_reasoner.summarize_rows,
+            gate_interpretation=structured_event_verifier.gate_interpretation,
+            write_report=event_completion_reasoner.write_report,
+            progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
+        ),
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=(
+                event_completion_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
+            ),
+            structured_event_rows=structured_event_rows,
+            structured_event_source_path=Path("v0.jsonl"),
+            rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_targeted_boundary_router_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "targeted_boundary_router" in stages
+    stage = stages["targeted_boundary_router"]
+    assert stage.dispatch_kind == "structured_event"
+    assert stage.module.endswith("targeted_boundary_router")
+
+
+def test_dispatch_targeted_boundary_router_matches_direct_run_split(monkeypatch) -> None:
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return json.dumps(
+            {
+                "action": "replace_with_existing_event",
+                "final_label": "unknown",
+                "final_kind": "unknown",
+                "selected_event_ids": ["e2"],
+                "rejected_event_ids": ["e1"],
+                "evidence": ["spells are uncommon when meals are regular"],
+                "contradiction_profile": ["router:sentinel_boundary"],
+                "calculation_trace": "anchored count is not a recurring cadence",
+                "clinical_rationale": (
+                    "The numeric count is anchored to named occasions, while e2 "
+                    "states an unquantified current pattern."
+                ),
+                "uncertainty": "low",
+                "tool_calls": [],
+                "attribution": "llm_selected_tool_rendered",
+            }
+        )
+
+    monkeypatch.setattr(targeted_boundary_router, "_run_model_call", fake_model_call)
+
+    record = _record(
+        921,
+        "Clinic Date: 12 June 2026\nspells are uncommon when meals are regular.",
+        gold_label="unknown",
+        gold_monthly_frequency=1000.0,
+    )
+    structured_event_rows = [
+        _router_structured_event_row(
+            921,
+            final_label="2 per 3 month",
+            final_kind="frequency",
+            purist_correct=False,
+        )
+    ]
+    split_kwargs = {
+        "structured_event_rows": structured_event_rows,
+        "structured_event_source_path": Path("v0.jsonl"),
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 2000,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = targeted_boundary_router.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        targeted_boundary_router.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=targeted_boundary_router.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_targeted_boundary_router_trace",
+                "pipeline_family": targeted_boundary_router.PIPELINE_FAMILY,
+                "pipeline_version": targeted_boundary_router.PROMPT_VERSION,
+                "structured_event_source_role": (
+                    "pure structured-event V0 comparator and router substrate; "
+                    "the router action owns any selected replacement event"
+                ),
+                "claim_boundary": (
+                    "validation-development V3 targeted router scaffold; no holdout "
+                    "use, no row-level test inspection, and no benchmark claim"
+                ),
+            },
+            build_row=targeted_boundary_router._build_row,
+            summarize_rows=targeted_boundary_router.summarize_rows,
+            gate_interpretation=structured_event_verifier.gate_interpretation,
+            write_report=targeted_boundary_router.write_report,
+            progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
+        ),
+        structured_event_context=StructuredEventSplitContext(
+            default_structured_event_jsonl_path=(
+                targeted_boundary_router.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
             ),
             structured_event_rows=structured_event_rows,
             structured_event_source_path=Path("v0.jsonl"),
@@ -388,6 +776,77 @@ def _record(
     )
 
 
+def _router_structured_event_row(
+    source_row_index: int,
+    *,
+    final_label: str,
+    final_kind: str,
+    purist_correct: bool,
+) -> dict:
+    return {
+        "source_row_index": source_row_index,
+        "structured_record": {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": "two recent occasions (July and September)",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "applies_to": "seizures",
+                    "evidence": (
+                        "brief collapses have occurred on two recent occasions "
+                        "(July and September)"
+                    ),
+                    "time_window": "recent",
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "unknown_frequency",
+                    "raw_value": "spells are uncommon when meals are regular",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "applies_to": "spells",
+                    "evidence": "spells are uncommon when meals are regular",
+                    "time_window": "current",
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": final_kind,
+                "final_label": final_label,
+                "evidence": (
+                    "brief collapses have occurred on two recent occasions "
+                    "(July and September)"
+                ),
+                "confidence": "high",
+                "rationale": "Original structured-event selection.",
+            },
+        },
+        "normalized_events": [
+            {
+                "event_id": "e1",
+                "normalized_label": final_label,
+                "semantic_kind": final_kind,
+                "monthly_frequency": 0.6666666667,
+                "validation_errors": [],
+            },
+            {
+                "event_id": "e2",
+                "normalized_label": "unknown",
+                "semantic_kind": "unknown",
+                "monthly_frequency": 1000.0,
+                "validation_errors": [],
+            },
+        ],
+        "comparison": {
+            "purist_correct": purist_correct,
+            "pragmatic_correct": purist_correct,
+        },
+        "evidence_valid": True,
+    }
+
+
 def _structured_event_row(
     source_row_index: int,
     *,
@@ -445,6 +904,97 @@ def _structured_event_row(
                 "monthly_frequency": 1000.0,
                 "validation_errors": [],
             },
+        ],
+        "comparison": {
+            "purist_correct": purist_correct,
+            "pragmatic_correct": purist_correct,
+        },
+        "evidence_valid": True,
+    }
+
+
+def _temporal_sentinel_boundary_row(source_row_index: int) -> dict:
+    return {
+        "source_row_index": source_row_index,
+        "structured_record": {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "raw_value": "a very infrequent, short event a fortnight ago",
+                    "temporality": "recent",
+                    "assertion_status": "asserted",
+                    "applies_to": "seizures",
+                    "evidence": "a very infrequent, short event a fortnight ago",
+                    "time_window": "a fortnight ago",
+                    "notes": "isolated last event",
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 per 2 week",
+                "evidence": "a very infrequent, short event a fortnight ago",
+                "confidence": "high",
+                "rationale": "Original structured-event selection.",
+            },
+        },
+        "normalized_events": [
+            {
+                "event_id": "e1",
+                "normalized_label": "no seizure frequency reference",
+                "semantic_kind": "no_reference",
+                "monthly_frequency": 1000.0,
+                "validation_errors": [],
+            }
+        ],
+        "comparison": {
+            "purist_correct": False,
+            "pragmatic_correct": False,
+        },
+        "evidence_valid": True,
+    }
+
+
+def _completion_structured_event_row(
+    source_row_index: int,
+    *,
+    final_label: str,
+    final_kind: str,
+    purist_correct: bool,
+) -> dict:
+    return {
+        "source_row_index": source_row_index,
+        "structured_record": {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "unknown_frequency",
+                    "raw_value": "unclear frequency",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "applies_to": "seizures",
+                    "evidence": "unclear frequency",
+                    "time_window": "current",
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": final_kind,
+                "final_label": final_label,
+                "evidence": "unclear frequency",
+                "confidence": "medium",
+                "rationale": "Original structured-event selection.",
+            },
+        },
+        "normalized_events": [
+            {
+                "event_id": "e1",
+                "normalized_label": final_label,
+                "semantic_kind": final_kind,
+                "monthly_frequency": 1000.0,
+                "validation_errors": [],
+            }
         ],
         "comparison": {
             "purist_correct": purist_correct,
