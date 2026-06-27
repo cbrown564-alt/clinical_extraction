@@ -7,6 +7,7 @@ import pytest
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     cross_model_challenge_adjudicator,
+    cross_model_structured_event_adjudicator,
     event_completion_reasoner,
     llm_event_reasoner,
     represented_event_normalizer,
@@ -587,6 +588,175 @@ def test_dispatch_targeted_boundary_router_matches_direct_run_split(monkeypatch)
             structured_event_rows=structured_event_rows,
             structured_event_source_path=Path("v0.jsonl"),
             rows_by_source_index=llm_event_reasoner._rows_by_source_index,
+        ),
+    )
+
+    assert direct_rows == dispatched_rows
+    assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
+        dispatched_metadata
+    )
+
+
+def test_cross_model_structured_event_adjudicator_stage_is_registered() -> None:
+    stages = registered_agentic_stages()
+
+    assert "cross_model_structured_event_adjudicator" in stages
+    stage = stages["cross_model_structured_event_adjudicator"]
+    assert stage.dispatch_kind == "cross_model_structured_event"
+    assert stage.module.endswith("cross_model_structured_event_adjudicator")
+
+
+def test_dispatch_cross_model_structured_event_adjudicator_matches_direct_run_split(
+    monkeypatch,
+) -> None:
+    gpt_evidence = "only seven focal seizures reported so far this year"
+    peer_evidence = "typical pattern is a focal seizure monthly"
+    note_text = f"{gpt_evidence}; {peer_evidence}."
+    record = _record(
+        973,
+        note_text,
+        gold_label="1 per month",
+        gold_monthly_frequency=1.0138888888888888,
+    )
+    structured_event_rows = [
+        _agent_row(
+            973,
+            label="7 per 10 month",
+            kind="frequency",
+            evidence=gpt_evidence,
+            purist_correct=False,
+        )
+    ]
+    agent_rows_by_id = {
+        "qwen": [
+            _agent_row(
+                973,
+                label="1 per month",
+                kind="frequency",
+                evidence=peer_evidence,
+                purist_correct=True,
+            )
+        ],
+        "deepseek": [
+            _agent_row(
+                973,
+                label="1 per month",
+                kind="frequency",
+                evidence=peer_evidence,
+                purist_correct=True,
+            )
+        ],
+    }
+
+    def fake_model_call(
+        prompt_input_json: str,
+        *,
+        model: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> str:
+        del model, temperature, max_tokens
+        assert "deterministic_top" not in prompt_input_json
+        return json.dumps(
+            {
+                "action": "select_qwen_final",
+                "selected_agent_id": "qwen",
+                "final_label": "1 per month",
+                "final_kind": "frequency",
+                "selected_event_ids": ["e1"],
+                "rejected_agent_ids": ["gpt", "deepseek"],
+                "evidence": [peer_evidence],
+                "comparison_profile": ["peer_recurring_cadence_beats_gpt_unknown"],
+                "calculation_trace": "monthly cadence is explicitly stated",
+                "clinical_rationale": "Qwen selected the explicit current cadence.",
+                "uncertainty": "low",
+                "attribution": "llm_selected_tool_rendered",
+            }
+        )
+
+    monkeypatch.setattr(
+        cross_model_structured_event_adjudicator,
+        "_run_model_call",
+        fake_model_call,
+    )
+
+    split_kwargs = {
+        "structured_event_rows": structured_event_rows,
+        "structured_event_source_path": Path("gpt.jsonl"),
+        "agent_rows_by_id": agent_rows_by_id,
+        "split": "validation",
+        "split_manifest": "gan2026_split_v1",
+        "model": "openai/gpt-4.1-mini",
+        "temperature": 0.0,
+        "max_tokens": 1800,
+        "mode": "live",
+        "dspy_cache": True,
+        "api_base": None,
+        "escalation_reason": None,
+        "progress_every": None,
+        "checkpoint_jsonl_path": None,
+        "checkpoint_report_path": None,
+    }
+
+    direct_rows, direct_metadata = cross_model_structured_event_adjudicator.run_split(
+        [record],
+        **split_kwargs,
+    )
+    dispatched_rows, dispatched_metadata = dispatch_registered_split(
+        cross_model_structured_event_adjudicator.STAGE_ID,
+        [record],
+        params=SplitRunParams(
+            split=split_kwargs["split"],
+            split_manifest=split_kwargs["split_manifest"],
+            model=split_kwargs["model"],
+            temperature=split_kwargs["temperature"],
+            max_tokens=split_kwargs["max_tokens"],
+            mode=split_kwargs["mode"],
+            dspy_cache=split_kwargs["dspy_cache"],
+            api_base=split_kwargs["api_base"],
+        ),
+        hooks=AgenticSplitHooks(
+            prompt_version=cross_model_structured_event_adjudicator.PROMPT_VERSION,
+            metadata_extra={
+                "artifact_kind": "gan2026_cross_model_structured_event_adjudicator_trace",
+                "pipeline_family": cross_model_structured_event_adjudicator.PIPELINE_FAMILY,
+                "pipeline_version": (
+                    f"{cross_model_structured_event_adjudicator.PROMPT_VERSION}+"
+                    f"{cross_model_structured_event_adjudicator.SAFETY_GATE_VERSION}"
+                ),
+                "safety_gate_version": (
+                    cross_model_structured_event_adjudicator.SAFETY_GATE_VERSION
+                ),
+                "structured_event_source_role": (
+                    "GPT is the LLM structured-event fallback; Qwen and DeepSeek are "
+                    "peer LLM structured-event candidates. Deterministic top labels "
+                    "are not provided to the model or used as fallback."
+                ),
+                "claim_boundary": (
+                    "validation-development V10 cross-model structured-event "
+                    "adjudicator; no holdout use, no row-level test inspection, and "
+                    "no benchmark claim"
+                ),
+            },
+            build_row=cross_model_structured_event_adjudicator._build_row,
+            summarize_rows=cross_model_structured_event_adjudicator.summarize_rows,
+            gate_interpretation=llm_event_reasoner.gate_interpretation,
+            write_report=cross_model_structured_event_adjudicator.write_report,
+            progress_fields=("final_purist_correct", "net_purist_gain_vs_v0"),
+        ),
+        cross_model_context=CrossModelSplitContext(
+            gpt_structured_event_source_path=Path("gpt.jsonl"),
+            agent_source_paths={
+                "gpt": Path("gpt.jsonl"),
+                "qwen": (
+                    cross_model_structured_event_adjudicator.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
+                ),
+                "deepseek": (
+                    cross_model_structured_event_adjudicator.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
+                ),
+            },
+            gpt_structured_event_rows=structured_event_rows,
+            agent_rows_by_id=agent_rows_by_id,
         ),
     )
 
