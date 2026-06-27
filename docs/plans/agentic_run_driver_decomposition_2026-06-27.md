@@ -1,7 +1,7 @@
 # Agentic `run_driver` Decomposition Plan — Wave 1 Kickoff
 
 **Date:** 2026-06-27  
-**Status:** Wave 4 S1 in progress — 7/12 legacy `run_split` slices migrated  
+**Status:** Wave 4 S1 in progress — 10/12 legacy `run_split` slices migrated  
 **Parent:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md) Track S1  
 **Reference:** [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) P3-1
 
@@ -38,9 +38,10 @@ without explicit rebasing.
 | `run_standard_split` | Per-record loop + metadata + checkpoints |
 | `run_structured_event_split` | Single saved structured-event JSONL substrate |
 | `run_cross_model_structured_event_split` | Multi-agent GPT/Qwen/DeepSeek substrate |
-| `register_agentic_stage` / `dispatch_registered_split` | **Wave 1** — stage registry and dispatch routing |
+| `run_matched_budget_split` | Phase 6 multi-condition matched-budget traces |
+| `register_agentic_stage` / `dispatch_registered_split` | Stage registry and dispatch routing |
 
-Dispatch kinds: `standard`, `structured_event`, `cross_model_structured_event`.
+Dispatch kinds: `standard`, `structured_event`, `cross_model_structured_event`, `matched_budget`.
 
 ## Per-file inventory (HEAD 2026-06-27)
 
@@ -61,10 +62,10 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 587 | `structured_event_patches.py` | — | Legacy utility | Deterministic structured-event patch helpers | — | N/A |
 | 565 | `cross_model_challenge_adjudicator.py` | ✓ | **Migrated W1** | V11 open peer-challenge over saved multi-agent finals | `cross_model_structured_event_adjudicator`, `llm_event_reasoner` | `cross_model_structured_event` |
 | 629 | `represented_event_normalizer.py` | ✓ | **Migrated W2** | V8 represented-event normalization | `llm_event_reasoner`, `structured_event_verifier` | `structured_event` |
-| 669 | `tool_self_consistency.py` | ✓ | Legacy | Tool self-consistency ablation split | `runner`, `tool_context_ablation`, `tools` | `standard` |
+| 669 | `tool_self_consistency.py` | ✓ | **Migrated W4** | Tool self-consistency ablation split | `runner`, `tool_context_ablation`, `tools` | `standard` |
 | 699 | `selective_fallback_replay.py` | — | Legacy replay | Selective fallback replay (no `run_split`) | — | N/A |
-| 751 | `runner.py` | ✓ | Legacy (Phase 6) | Matched-budget multi-condition agentic runner | `contracts`, `tools` | `standard` (custom loop) |
-| 768 | `tool_context_ablation.py` | ✓ | Legacy | Tool-context ablation split | `runner`, `tools` | `standard` |
+| 751 | `runner.py` | ✓ | **Migrated W4** | Matched-budget multi-condition agentic runner | `contracts`, `tools` | `matched_budget` |
+| 768 | `tool_context_ablation.py` | ✓ | **Migrated W4** | Tool-context ablation split | `runner`, `tools` | `standard` |
 | 771 | `llm_reasoning_stage0.py` | — | Legacy utility | Stage-0 reasoning surfaces / hard50 indexing | — | N/A |
 | 819 | `boundary_guide_rescue_replay.py` | — | Legacy replay | Boundary-guide rescue replay | — | N/A |
 | 734 | `targeted_boundary_router.py` | ✓ | **Migrated W3** | V3 targeted boundary router | `llm_event_reasoner`, `structured_event_verifier` | `structured_event` |
@@ -79,8 +80,8 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 1,956 | `fresh_evidence_reasoner.py` | ✓ | Migrated (**gate frozen**) | V12 fresh-evidence reasoner + safety gate | `run_driver`, `family_*`, `precision_gated_selector` | `cross_model_structured_event` |
 | ~400 | `run_driver.py` (post-W1) | — | Scaffold | Shared split runners + stage registry | `stage_protocol`, `cross_model_structured_event_adjudicator` | — |
 
-**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 6 legacy
-inline `run_split` implementations remain after Wave 4 slice 7.
+**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 2 register-only
+`run_split` slices remain after Wave 4 slice 10.
 
 ## Migration order (smallest / leafiest first)
 
@@ -98,8 +99,8 @@ share scoring/gate logic with M2.
 | 3 | 6 | `cross_model_structured_event_adjudicator.py` | ✓ Done — base adjudicator; unblocks further cross-model variants |
 | 3 | 7 | `llm_event_reasoner.py` | ✓ Done — core structured-event monolith; M2 evidence call-site preserved |
 | 3 | 8 | `tool_context_ablation.py` | Phase 6 ablation; depends on `runner` |
-| 3 | 9 | `tool_self_consistency.py` | Chains off tool ablation |
-| 4 | 10 | `runner.py` | Matched-budget multi-condition loop (may need new dispatch kind) |
+| 3 | 9 | `tool_self_consistency.py` | ✓ Done — chains off tool ablation |
+| 4 | 10 | `runner.py` | ✓ Done — matched-budget multi-condition loop via `matched_budget` dispatch |
 | **never W1** | — | `fresh_evidence_reasoner.py` | Already on `run_driver`; gate logic frozen for M2 |
 | defer | — | `direct_boundary_critic_rescue.py`, `structured_event_verifier.py`, `boundary_audit_prompt_v2.py` | Already on `AgenticStage` / shared helpers — register only |
 
@@ -107,7 +108,35 @@ Replay-only modules (`consensus_fresh_agreement_selector`, `selective_fallback_r
 `boundary_guide_rescue_replay`, `structured_event_consensus`) stay out of scope until
 split runners are exhausted.
 
-## Wave 4 deliverables (slice 7 — this tick)
+## Wave 4 deliverables (slice 10 — this tick)
+
+1. **`runner.run_split`** →
+   `dispatch_registered_split("runner", …)` via new
+   `run_matched_budget_split` with `MatchedBudgetSplitContext`.
+2. **Tests** — extend `tests/test_gan2026_agentic_run_driver.py` with registry +
+   dispatch parity; existing
+   `tests/test_gan2026_agentic_phase6_runner.py` must pass unchanged.
+
+## Wave 4 deliverables (slice 8 — complete)
+
+1. **`tool_context_ablation.run_split`** →
+   `dispatch_registered_split("tool_context_ablation", …)` via
+   `run_standard_split` with `finalize_metadata` for condition summaries and gate.
+2. **Tests** — extend `tests/test_gan2026_agentic_run_driver.py` with registry +
+   dispatch parity; existing
+   `tests/test_gan2026_agentic_tool_context_ablation.py` must pass unchanged.
+
+## Wave 4 deliverables (slice 9 — complete)
+
+1. **`tool_self_consistency.run_split`** →
+   `dispatch_registered_split("tool_self_consistency", …)` via
+   `run_standard_split` with reference labels passed through
+   `StructuredEventSplitContext.row_kwargs`.
+2. **Tests** — extend `tests/test_gan2026_agentic_run_driver.py` with registry +
+   dispatch parity; existing
+   `tests/test_gan2026_agentic_tool_self_consistency.py` must pass unchanged.
+
+## Wave 4 deliverables (slice 7 — complete)
 
 1. **`llm_event_reasoner.run_split`** →
    `dispatch_registered_split("llm_event_reasoner", …)` via
@@ -176,12 +205,15 @@ split runners are exhausted.
 
 ## Recommended Wave 4 next slice
 
-**`tool_context_ablation.py`** — Phase 6 ablation; depends on `runner`; uses
-`standard` dispatch.
+**`runner.py`** — matched-budget multi-condition loop (may need new dispatch kind).
 
 ## Previously recommended (completed)
 
-**`llm_event_reasoner.py`** — migrated in Wave 4 slice 7 (this tick).
+**`tool_context_ablation.py`** — migrated in Wave 4 slice 8.
+
+**`tool_self_consistency.py`** — migrated in Wave 4 slice 9.
+
+**`llm_event_reasoner.py`** — migrated in Wave 4 slice 7.
 
 **`cross_model_structured_event_adjudicator.py`** — migrated in Wave 4 slice 6.
 
@@ -196,6 +228,8 @@ split runners are exhausted.
 ## Verification
 
 ```bash
+pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_agentic_tool_context_ablation.py -q
+pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_agentic_tool_self_consistency.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_agentic_llm_event_reasoner.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_cross_model_structured_event_adjudicator.py -q
 pytest tests/test_gan2026_agentic_run_driver.py tests/test_gan2026_targeted_boundary_router.py -q

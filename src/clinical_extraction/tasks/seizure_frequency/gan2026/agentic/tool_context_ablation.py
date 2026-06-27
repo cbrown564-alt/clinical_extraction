@@ -4,13 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
-
-import dspy
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     PROMPT_VERSION,
@@ -18,6 +15,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     _normalized_label_vote,
     _run_model_call,
     _trace_attribution_layer,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    AgenticSplitHooks,
+    RegisteredAgenticStage,
+    SplitRunParams,
+    dispatch_registered_split,
+    register_agentic_stage,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
     parse_seizure_frequency_candidates,
@@ -34,18 +38,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
+    LlmOnlyDirectLabelerDecisionRecord,
+    parse_decision_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
     map_purist,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
-    LlmOnlyDirectLabelerDecisionRecord,
-    parse_decision_json,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
 )
@@ -55,6 +55,18 @@ TOOL_CONTEXT_CONDITIONS: tuple[str, ...] = (
     "direct_parser_only",
     "direct_boundary_guide_only",
     "direct_parser_plus_boundary_guide",
+)
+PIPELINE_FAMILY = "agentic_tool_context_ablation"
+PIPELINE_VERSION = "gan2026_agentic_e1_tool_context_ablation_v0"
+STAGE_ID = "tool_context_ablation"
+
+register_agentic_stage(
+    RegisteredAgenticStage(
+        stage_id=STAGE_ID,
+        dispatch_kind="standard",
+        module=__name__,
+        description="E1 one-call tool-context ablation over fixed hard slices",
+    )
 )
 
 
@@ -75,18 +87,7 @@ def run_split(
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run the E1 one-call context ablation over a fixed record surface."""
 
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-    metadata = _metadata(
-        records,
+    params = SplitRunParams(
         split=split,
         split_manifest=split_manifest,
         model=model,
@@ -95,32 +96,28 @@ def run_split(
         mode=mode,
         dspy_cache=dspy_cache,
         api_base=api_base,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
     )
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        rows.append(
-            _build_row(
-                record,
-                split=split,
-                split_manifest=split_manifest,
-                model=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                mode=mode,
-            )
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-    metadata["summary"] = summarize_rows(rows)
-    metadata["condition_summaries"] = condition_summaries(rows)
-    metadata["gate"] = gate_interpretation(metadata["condition_summaries"])
-    return rows, metadata
+    hooks = AgenticSplitHooks(
+        prompt_version=PROMPT_VERSION,
+        metadata_extra={
+            "artifact_kind": "gan2026_agentic_tool_context_ablation",
+            "pipeline_family": PIPELINE_FAMILY,
+            "pipeline_version": PIPELINE_VERSION,
+            "claim_boundary": (
+                "validation-development hard50 tool-context ablation; no holdout "
+                "use, no row-level test inspection, and no benchmark claim"
+            ),
+        },
+        build_row=_build_row,
+        summarize_rows=summarize_rows,
+        finalize_metadata=_finalize_metadata,
+        write_report=write_report,
+        progress_fields=("call_failures", "parse_or_validation_failures"),
+    )
+    return dispatch_registered_split(STAGE_ID, records, params=params, hooks=hooks)
 
 
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -231,6 +228,14 @@ def gate_interpretation(condition_summary: Mapping[str, Mapping[str, Any]]) -> d
         "harmful_contexts": harmful,
         "interpretation": interpretation,
     }
+
+
+def _finalize_metadata(
+    rows: Sequence[Mapping[str, Any]],
+    metadata: dict[str, Any],
+) -> None:
+    metadata["condition_summaries"] = condition_summaries(rows)
+    metadata["gate"] = gate_interpretation(metadata["condition_summaries"])
 
 
 def write_report(
@@ -630,71 +635,6 @@ def _has_blocking_parse_issue(errors: Any) -> bool:
         )
         for error in errors or []
     )
-
-
-def _metadata(
-    records: Sequence[GanFrequencyRecord],
-    *,
-    split: str,
-    split_manifest: str,
-    model: str,
-    temperature: float,
-    max_tokens: int,
-    mode: str,
-    dspy_cache: bool,
-    api_base: str | None,
-) -> dict[str, Any]:
-    metadata = build_run_metadata(
-        mode=mode,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        prompt_version=PROMPT_VERSION,
-        dspy_version=getattr(dspy, "__version__", "unknown"),
-        split=split,
-        split_manifest=split_manifest,
-        api_base=api_base,
-        row_count=len(records),
-    )
-    metadata.update(
-        {
-            "artifact_kind": "gan2026_agentic_tool_context_ablation",
-            "pipeline_family": "agentic_tool_context_ablation",
-            "pipeline_version": "gan2026_agentic_e1_tool_context_ablation_v0",
-            "dspy_cache": dspy_cache,
-            "claim_boundary": (
-                "validation-development hard50 tool-context ablation; no holdout "
-                "use, no row-level test inspection, and no benchmark claim"
-            ),
-        }
-    )
-    return metadata
-
-
-def _emit_progress_checkpoint(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: dict[str, Any],
-    *,
-    total: int,
-    jsonl_path: Path | None,
-    report_path: Path | None,
-) -> None:
-    metadata["summary"] = summarize_rows(rows)
-    metadata["condition_summaries"] = condition_summaries(rows)
-    metadata["gate"] = gate_interpretation(metadata["condition_summaries"])
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None and jsonl_path is not None:
-        write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
-    progress = {
-        "processed": len(rows),
-        "total": total,
-        "call_failures": metadata["summary"]["call_failures"],
-        "parse_or_validation_failures": metadata["summary"][
-            "parse_or_validation_failures"
-        ],
-    }
-    print(json.dumps(progress, sort_keys=True), file=sys.stderr, flush=True)
 
 
 def _load_hard50_records(path: Path) -> list[int]:
