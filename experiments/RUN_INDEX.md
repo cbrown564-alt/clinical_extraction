@@ -4,6 +4,78 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Paper-Writing Workstream Artifacts
 
+### `P6-closeout` (2026-06-27)
+
+- **Deliverable**: `docs/plans/closing_campaign_closeout_2026-06-27.md`
+- **Workstream**: P6d — closing-campaign closeout; writing only, no model calls, no holdout reads.
+- **Verdict**: closeout recorded; gates 2/5 full-pass (M1, I-track); 2/5 partial (M2 Phase 0 only, P-track 4/6); 1/5 fail (M3 blocked on M2).
+- **Gates summary**: M1 PASS (4/4: reconciliation table + definitions.yaml proof + rules>hybrid inversion + full-200 Decision B); I-track PASS (3/3: SF registry honest verdict + CI parity step + artifact_analysis README); M2 PARTIAL (Phase 0 done, Phases 1–4 pending); P-track PARTIAL (P1/P2/P3/P4 delivered, P5 missing, P6 in progress); M3 FAIL (blocked on M2).
+- **S1 status**: 6/10 eligible `run_split` slices migrated; 4 remaining (slice 7 `llm_event_reasoner` must coordinate with M2 call-site swap).
+- **Recommended next**: M2 Phases 1–4 (unblocks M3 and P4 Qwen footnote) in parallel with P5 selector-fate verdict.
+- **Orchestrator state**: cycle `P6-closeout` and 5 queue entries recorded in `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
+### `P6b-capability-first-results-section` (2026-06-27)
+
+- **Deliverable**: `docs/research/paper_drafts/capability_first_results_section_2026-06-27.md`
+- **Workstream**: P6b — Wave 4 capability-first Results restructure; writing only, no model calls.
+- **Verdict**: draft complete; integrates P1 (benchmark reconciliation), P2 (DeepSeek
+  model-agnostic evidence), P3 (wall transfer, partial with `[PENDING PROBE]`), and P4
+  (calibration claim revision); omits consensus/fresh selector (P5 CUT).
+- **Structure**: §4.1 Shared architecture + scoring surfaces (leads with reconciliation
+  0.3877/0.6972); §4.2 What the LLM adds (format-layer ~+0.04 stable); §4.3 What
+  generalizes (DeepSeek +0.021; wall transfer task-bound ceiling); §4.4 Reliability
+  scorecard (near-base-rate calibration, external signal only); §4.5 Component impact
+  (stage-ladder, benchmark-format vs clinical-recovery split).
+- **Replaces**: old §4.1 (Gan task-first) + §4.2 (ExECTv2 task-first) in
+  `paper_manuscript_2026-06-26.md`.
+- **Estimated word count**: ~2,700 words (body text excluding tables and headers).
+- **Orchestrator state**: cycle `P6b-capability-first-results-section` recorded in
+  `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
+### `P6c-discussion-contributions-capability-first` (2026-06-27)
+
+- **Deliverable**: `docs/research/paper_drafts/capability_first_discussion_contributions_2026-06-27.md`
+- **Workstream**: P6c — Discussion + Contributions rewrite aligned with capability-first restructure; writing only, no model calls.
+- **Verdict**: draft complete; two items remain future work (S1 cross-task ablation full scope; C3 PENDING PROBE entropy confirmation on ExECTv2 SF).
+- **Five contributions**: (C1) Benchmark reconciliation — honest 0.3877/0.6972 dev140 gap disclosure; rules > hybrid SF surface-inversion (+0.345). (C2) Cross-task component ablation — evidence gate inert (Δ = 0.000), SF projection the operative shared component (+0.124–0.203 dev140). (C3) Wall cross-dataset — structural parallel confirmed full-200; mechanism [PENDING PROBE]. (C4) Model-agnostic architecture — DeepSeek +0.021 over GPT under frozen same-core full-200. (C5) Evaluation discipline as reusable methodology.
+- **Limitations**: I1 SF registry hybrid-delegated; S1 cross-task ablation scope future work; partial wall mechanism; near-base-rate calibration.
+- **Orchestrator state**: cycle `P6c-discussion-contributions-capability-first` recorded in `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
+### `P6a-capability-first-outline` (2026-06-27)
+
+- **Deliverable**: `docs/research/paper_drafts/capability_first_manuscript_outline_2026-06-27.md`
+- **Workstream**: P6a — capability-first manuscript spine outline; writing only, no model calls.
+- **Verdict**: outline complete — **5 sections, 20 subsections**; consensus/fresh selector
+  **CUT** (fails 7/8 closing-campaign pre-registration criteria); `[PENDING PROBE]` gates
+  §3.2.3 wall-transfer mechanism confirmation.
+- **Section map**: §1 Shared architecture (component graph, portability taxonomy, SF registry
+  caveat); §2 What LLM adds (Gan three-way + ExECTv2 two-surface: like-for-like 0.3877/0.6972
+  dev140, clinical-headline GPT 0.8356 / DeepSeek 0.8566 / Qwen 0.8197, rules > hybrid
+  inversion SF 0.692 vs 0.347); §3 What generalizes (DeepSeek +0.021 full-200 model-agnostic;
+  wall transfer ExECTv2 SF GPT 0.7525 / DeepSeek 0.7602 structurally parallel to Gan entropy
+  0.000); §4 Unified reliability (calibration Brier 0.2245 vs 0.2387 Δ=0.0142 external-signal-only;
+  M2 evidence groundedness; abstention AUROC 0.781; operational gates; consistency P2.1);
+  §5 Unified component impact (evidence_validation Δ=0.0000 both tasks; standard_dictionary
+  +0.0389/+0.0293; format-layer ladder +0.04 stable full-200; benchmark-surface inversion).
+- **P5 CUT items** (5 manuscript deletions, from `paper_manuscript_2026-06-26.md`):
+  C1 §4.1.2 (Gate 4 audits subsection), C2 Table 3 (selector result table),
+  C3 "frozen exact v0.9 selector holdout" from promoted-result prose,
+  C4 selector rows from architecture comparison tables,
+  C5 abstract/conclusions selector headline references.
+- **Three open actions before P6b full draft**: (a) run ExECTv2 SF wall-transfer entropy
+  probe; (b) assemble ExECTv2 three-way comparison in paper form; (c) compute cross-model
+  agreement abstention gate on ExECTv2 model-swap outputs.
+- **Orchestrator state**: cycle `P6a-capability-first-outline` recorded in
+  `experiments/gan2026_f1_orchestrator_state.json`.
+
+---
+
 ### `P3c-wall-transfers-manuscript-draft` (2026-06-27)
 
 - **Deliverable**: `docs/research/paper_drafts/wall_transfer_cross_dataset_2026-06-27.md`

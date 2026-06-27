@@ -67,6 +67,31 @@
   },
   "experiment_queue": [
     {
+      "id": "M2-evidence-validity-phases-1-4",
+      "status": "pending",
+      "summary": "Implement canonical score_evidence_set in core/evidence.py; replace three bespoke call sites (llm_event_reasoner.py:962, runners/llm_only_canonical.py:45, assembly/lens_ops.py:247); replay-recompute 15 surfaced/promoted rows; report corrected Qwen REPAIRED_* table. Phase 0 audit done; Phases 1-4 not yet executed. Unblocks M3 and P4 Qwen footnote removal."
+    },
+    {
+      "id": "M3-cross-task-ablation",
+      "status": "pending-blocked",
+      "summary": "Cross-task shared-component ablation: toggle off M2 evidence-groundedness component; report F1 delta on both Gan 2026 and ExECTv2 simultaneously, aggregate-only, validation-side. Blocked on M2 Phases 1-4 (primary subject not yet built)."
+    },
+    {
+      "id": "P5-selector-fate-verdict",
+      "status": "pending",
+      "summary": "Write consensus/fresh-selector pre-registration check + fate verdict. Keep only if selector survives pre-registration; else cut and let closeout headline stand. Fast; no code."
+    },
+    {
+      "id": "S1-slice-7-llm-event-reasoner",
+      "status": "pending-coordinate",
+      "summary": "Migrate llm_event_reasoner.py (1,071 LOC) run_split onto run_driver. Must land M2 evidence call-site swap first (or S1 owns agentic surface and M2 rebases onto it). fresh_evidence_reasoner.py gate logic remains frozen."
+    },
+    {
+      "id": "P6-manuscript-restructure",
+      "status": "in-progress",
+      "summary": "Capability-first manuscript restructure consuming P1-P5 + P3. Wave 4 drafts in progress. Blocked on P5 selector verdict and M3 ablation for complete consume."
+    },
+    {
       "id": "C7-kg-family-gated-graph-trust",
       "status": "rejected-structural",
       "summary": "REJECTED with a STRUCTURAL impossibility finding. P2.5 family-gated harvest got all 7 minted residual rows W->C but leaked 121 genuine-rate regressions (net -113, gap_robust=False) because the harvested rows are FEATURE-IDENTICAL to the genuine-rate casualties on every forward-observable signal (graph_kind, node kinds, claim count) -- only the hidden gold band separates them (e.g. row 531 weekly-casualty == row 5534 harvest). The 'ontology-guard families' (5/5, 5/6) are POST-HOC categories keyed on GOLD, not a selection-time signal; the guard never fires on the harvest set. CONCLUSION: the selection wall is STRUCTURAL -- the info distinguishing withhold-to-unknown from emit-rate is absent from all inference-time features. Also: no frozen test450 KG component exists; measuring would need a sizable live v4 extraction over 450 test rows (extractor-confound risk). test450 untouched."
@@ -88,6 +113,63 @@
     }
   ],
   "cycles": [
+    {
+      "id": "P6b-capability-first-results-section",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (paper-writing workstream P6b)",
+      "candidate": "writing only — no model calls, no new data",
+      "verdict": "draft complete — integrates P1/P2/P3/P4; omits P5 (consensus/fresh selector CUT); [PENDING PROBE] for cross-dataset mechanism confirmation",
+      "deliverable": "docs/research/paper_drafts/capability_first_results_section_2026-06-27.md",
+      "key_finding": "Capability-first Results section (5 sections): §4.1 shared architecture + benchmark reconciliation (0.3877/0.6972 dev140 like-for-like; rules>hybrid inversion as finding); §4.2 what the LLM adds (format layers ~+0.04 stable across 3 models on full-200); §4.3 what generalizes (DeepSeek +0.021 full-200 as model-agnostic evidence; wall-transfer structural claim with [PENDING PROBE]); §4.4 reliability (near-base-rate calibration Δ=0.0142, external signal only); §4.5 component impact (stage-ladder, benchmark-format vs clinical-recovery split).",
+      "replaces": "§4.1 (Gan task-first) + §4.2 (ExECTv2 task-first) in paper_manuscript_2026-06-26.md",
+      "word_count_estimate": "~2700 words body text",
+      "evidence_validity": "writing-only; cites frozen aggregate full-200 (ExECTv2), frozen test450 (Gan), validation-only probe (Gan P2.1); no holdout; [PENDING PROBE] marked for unconfirmed cross-dataset mechanism",
+      "artifacts": [
+        "docs/research/paper_drafts/capability_first_results_section_2026-06-27.md"
+      ]
+    },
+    {
+      "id": "P6c-discussion-contributions-capability-first",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (paper-writing workstream P6c)",
+      "candidate": "writing only — no model calls, no new data",
+      "verdict": "writing complete — five numbered contributions drafted; three limitations stated; two items remain future work (S1 cross-task ablation scope; C3 PENDING PROBE entropy confirmation)",
+      "deliverable": "docs/research/paper_drafts/capability_first_discussion_contributions_2026-06-27.md",
+      "key_finding": "Five measured contributions: (C1) benchmark reconciliation including honest 0.39 gap disclosure and rules>hybrid surface-inversion finding; (C2) cross-task ablation confirms evidence gate structurally inert (+0.000 delta), SF normalization/projection the operative shared component (+0.124–0.203); (C3) wall as cross-dataset phenomenon — structural confirmation on ExECTv2 SF (GPT 0.7525, DeepSeek 0.7602 full-200), mechanism [PENDING PROBE]; (C4) model-agnostic architecture — DeepSeek beats GPT by +0.021 full-200 under frozen same-core; (C5) evaluation discipline as reusable methodology. Limitations: I1 SF registry hybrid-delegated, S1 cross-task ablation incomplete, partial wall mechanism pending probe.",
+      "placement": "capability-first spine — Discussion (D.1–D.5) + standalone Contributions section",
+      "evidence_validity": "writing-only; cites frozen aggregate full-200 (ExECTv2 model-swap), dev140 replay-only (component ablation), validation-only probe (Gan P2.1); no holdout; [PENDING PROBE] marked for unconfirmed mechanism claim",
+      "artifacts": [
+        "docs/research/paper_drafts/capability_first_discussion_contributions_2026-06-27.md"
+      ]
+    },
+    {
+      "id": "P6-closeout",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (closing-campaign closeout)",
+      "candidate": "writing only — no model calls, no new data, no holdout reads",
+      "verdict": "closeout recorded — Waves 1–4 status document written; 2/5 acceptance gates full-pass (M1, I-track); 2/5 partial (M2, P-track); 1/5 fail (M3 blocked on M2); 5 experiment-queue entries added",
+      "deliverable": "docs/plans/closing_campaign_closeout_2026-06-27.md",
+      "key_finding": "Gates passed: M1 (4/4 criteria: reconciliation table, definitions.yaml proof, rules>hybrid inversion, full-200 aggregate) and I-track (3/3: registry honest verdict, CI parity step, artifact_analysis README). Gates partial: M2 Phase 0 done, Phases 1-4 pending; P-track P1/P2/P3/P4 done, P5 verdict missing, P6 in progress. Gate M3 fails (blocked on M2). S1 6/10 run_split slices migrated. Recommended next step: M2 Phases 1-4 in parallel with P5 selector verdict.",
+      "gates_summary": "2 full-pass / 5 total (M1: PASS, I-track: PASS, M2: PARTIAL, P-track: PARTIAL, M3: FAIL)",
+      "evidence_validity": "writing-only; cites frozen aggregate deliverables only; no row-level reads; no holdout",
+      "artifacts": [
+        "docs/plans/closing_campaign_closeout_2026-06-27.md"
+      ]
+    },
+    {
+      "id": "P6a-capability-first-outline",
+      "date": "2026-06-27",
+      "owner": "gan2026-scribe (paper-writing workstream P6a)",
+      "candidate": "writing only — no model calls, no new data",
+      "verdict": "outline complete — 5 sections, 20 subsections; consensus/fresh selector CUT (7/8 pre-registration criteria fail); [PENDING PROBE] gates §3.2.3 wall-transfer mechanism confirmation",
+      "deliverable": "docs/research/paper_drafts/capability_first_manuscript_outline_2026-06-27.md",
+      "key_finding": "Capability-first spine integrates P1–P5 and M2–M3: (1) Shared architecture, (2) What LLM adds — three-way both tasks, (3) What generalizes — DeepSeek model-agnostic (+0.021 full-200) + wall transfer (SF weakest family GPT 0.7525 / DeepSeek 0.7602 structurally parallel to Gan wall entropy 0.000), (4) Unified reliability scorecard (calibration revised: Brier 0.2245 vs base-rate 0.2387 Δ=0.0142; external signal only), (5) Unified component impact (evidence_validation Δ=0.0000 both tasks; standard_dictionary +0.0389 ExECTv2 / +0.0293 Gan). Consensus/fresh selector fails closing-campaign pre-registration bar P1–P7; cut from all paper-facing results. Five manuscript CUT items identified (C1–C5). Three open actions: wall-transfer probe; ExECTv2 three-way; cross-model agreement gate.",
+      "p5_cut_items": ["C1: §4.1.2 subsection (Gate 4 audits)", "C2: Table 3 (selector result table)", "C3: exact-source frozen v0.9 selector holdout from promoted prose", "C4: selector rows in architecture comparison tables", "C5: abstract/conclusions selector headline references"],
+      "evidence_validity": "writing-only; synthesizes prior frozen artifacts at their declared validity levels; no new numbers; [PENDING PROBE] marked for ExECTv2 SF mechanism confirmation",
+      "artifacts": [
+        "docs/research/paper_drafts/capability_first_manuscript_outline_2026-06-27.md"
+      ]
+    },
     {
       "id": "P3c-wall-transfers-manuscript-draft",
       "date": "2026-06-27",
