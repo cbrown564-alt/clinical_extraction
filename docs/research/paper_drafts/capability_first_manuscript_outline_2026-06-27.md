@@ -250,7 +250,8 @@ This belongs in §4 apparatus language, not in the headline framing. (P2 §4)
 ### 3.2  Wall Transfer: Task-Bound Ceiling (Cross-Dataset Confident Over-Reading)
 
 **Content source:** P3 (`wall_transfer_cross_dataset_2026-06-27.md`), all
-sections. **[PENDING PROBE]** markers apply throughout §3.2 mechanism claims.
+sections. Probe returned **PARTIAL verdict** (3/6 checks passed; task-bound ceiling
+confirmed; Gan H0 mechanism partially differs — see §3.2.3).
 
 #### 3.2.1  The Gan Wall Defined (Confirmed Finding)
 
@@ -282,28 +283,31 @@ sections. **[PENDING PROBE]** markers apply throughout §3.2 mechanism claims.
   event-indexed, or temporally-ambiguous prose — precisely the illegitimate
   evidence shapes the Gan wall analysis catalogued.
 
-#### 3.2.3  Cross-Dataset Claim and Its Gate
+#### 3.2.3  Cross-Dataset Claim — Probe Complete (PARTIAL Verdict)
 
-*[PENDING PROBE: `exectv2_sf_wall_transfer_probe_2026-06-27.md` does not yet exist.]*
+*Source: `exectv2_sf_wall_transfer_probe_2026-06-27.md` — **PARTIAL** (3/6 checks
+passed). Dev140 self-consistency artifact replay; no new model calls; no holdout.*
 
-**If probe confirms H0_confident_over_reading:** state as cross-dataset finding
-(P3 §3a draft language). The wall is a *clinical-reasoning limit*, not an
-architectural deficiency; it is present on two independent corpora under three
-different LLMs. The system's ceiling is the task's clinical-ambiguity floor.
+**Task-bound ceiling confirmed.** SF is the weakest family on every evaluation surface
+and every LLM tested. The gap is structural, not model-specific, and not addressable by
+model substitution alone. This part of the Gan → ExECTv2 transfer holds cleanly.
 
-**Until probe completes:** §3.2.3 presents the structural parallel as observation;
-mechanism as hypothesis. Use P3 §4c draft language verbatim:
-> "SeizureFrequency is the weakest ExECTv2 family under a frozen same-core
-> architecture across all tested LLMs (GPT-4.1-mini 0.7525, DeepSeek chat 0.7602,
-> full-200 aggregate). This pattern is consistent with the confident-over-reading
-> wall characterized on the Gan benchmark … Whether the same entropy signature
-> reproduces on ExECTv2 SF is currently under investigation."
+**Mechanism partially differs.** The Gan wall was characterized by zero-entropy,
+zero-disagreement confident over-reading. ExECTv2 SF presents a mixed picture:
+- **43.6%** of SF error cells are temperature-unanimous wrong (4/4 same wrong answer)
+  — a genuine confident-error component present and material.
+- SF error entropy is **elevated** (0.287 vs 0.069 for correct cells) — errors are
+  detectably more uncertain, unlike Gan where residual entropy was flat at ~0.018.
+- Cross-model agreement is **lower on errors** (21.8%) than correct cells (69.4%) —
+  the opposite direction to Gan's `band_unknown` pattern.
+- The elevated-error-entropy pattern is SF-specific; other families do not show it
+  uniformly.
 
-**Probe specification** (for drafting purposes — do not run in this outline task):
-- n ≥ 50 SF rows from dev140 or available validation split, SF-error-enriched (≥ 15
-  wrong-SF rows); k=3 or k=4 at temps [0.3, 0.7, 1.0]; report mean SF label entropy
-  and per-temperature stability; decision criterion: H0 confirmed if mean entropy on
-  wrong-SF rows < 0.05 and per-temperature stability > 0.90. (P3 §4a)
+**Manuscript framing (use P3 §3a language):** "task-bound ceiling transfers; mechanism
+partially differs." State 43.6% unanimous-wrong as confirming a confident-error
+component; state the elevated entropy and lower cross-model agreement as establishing
+the mechanism divergence from Gan. Do not assert full H0_confident_over_reading
+replication — probe fails checks on that claim.
 
 **CUT / reframe from current draft:**
 - "SF is consistent with deep-reasoning difficulty" — replace with the wall-transfer
@@ -426,7 +430,9 @@ headline (see §3.1.3). Evidence rate 1.0000 for all completed rows across model
 - Verdict: **H0_confirmed (confident over-reading)** — raw prose varies across
   temperatures; rendered label/kind does not. Consistency rating restores to 4/5.
 
-ExECTv2 equivalent: **[PENDING PROBE]** (see §3.2.3).
+ExECTv2 equivalent: probe returned **PARTIAL verdict** (3/6 checks; task-bound ceiling
+confirmed; error entropy elevated 0.287 vs correct 0.069; cross-model agreement lower on
+errors 21.8% than correct 69.4% — mechanism partially differs from Gan H0). See §3.2.3.
 
 ---
 
@@ -591,7 +597,7 @@ the closeout. The closeout headline stands alone.
 |---|------------|-----------------|----------------------------------|
 | 1 Shared architecture | 1.1–1.3 | Decomp review; P1 §4.x.6; definitions.yaml | Code audit; dev140 replay |
 | 2 What LLM adds | 2.1–2.3 | Existing Gan tables; P1 full | Frozen holdout (Gan test450); frozen aggregate full-200 (ExECTv2); dev140 validation-only (like-for-like) |
-| 3 What generalizes | 3.1–3.3 | P2; P3; P2.1 | Frozen aggregate full-200; validation-only probe (entropy); [PENDING PROBE] for mechanism |
+| 3 What generalizes | 3.1–3.3 | P2; P3; P2.1 | Frozen aggregate full-200; validation-only probe (entropy); wall-transfer probe PARTIAL (3/6) — task-bound ceiling confirmed; mechanism partially differs |
 | 4 Unified reliability | 4.1–4.5 | P4; M2; Gan scorecard; RUN_INDEX | Aggregate full-200 validation; validation750; test450 frozen holdout (Gan only) |
 | 5 Component impact | 5.1–5.4 | M3; P1 §4.x.4–5; gan2026 ladder | Dev140 replay; frozen aggregate full-200; validation750 replay |
 
@@ -613,9 +619,12 @@ the closeout. The closeout headline stands alone.
 
 ## Open Actions Before P6b (Full Draft)
 
-1. **[PENDING PROBE]** Run `exectv2_sf_wall_transfer_probe_2026-06-27.md` on an ExECTv2
-   SF slice to confirm or revise §3.2.3 mechanism claim. Until probe completes, use P3
-   §4c pending-probe hedge language.
+1. **[PROBE COMPLETE — PARTIAL]** `exectv2_sf_wall_transfer_probe_2026-06-27.md` returned
+   3/6 checks passed. Task-bound ceiling confirmed; Gan H0_confident_over_reading does not
+   fully transfer (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on
+   errors vs 69.4% correct; 43.6% error cells unanimous wrong). §3.2.3 updated to reflect
+   partial verdict; use P3 §3a "task-bound ceiling transfers; mechanism partially differs"
+   framing throughout.
 2. **ExECTv2 three-way comparison** (§2.3): assemble deterministic / LLM-only / hybrid
    comparison in paper form to close the §7 target criterion on task 2; or explicitly
    acknowledge as deferred with named reason (not assembled, not that it would fail).

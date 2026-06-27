@@ -235,9 +235,10 @@ validation-only and are not holdout estimates.
 #### §4.3.2 Wall Transfer: The Seizure-Frequency Ceiling Is Task-Bound
 
 *Evidence validity: Gan — frozen test450 aggregate (V12 0.842) + validation-only
-semantic-entropy probe (P2.1, n=150). ExECTv2 — frozen aggregate full-200 model-swap.
-Mechanism confirmation [PENDING PROBE]: marked throughout. Source: P3
-`wall_transfer_cross_dataset_2026-06-27.md`.*
+semantic-entropy probe (P2.1, n=150). ExECTv2 — frozen aggregate full-200 model-swap +
+dev140 self-consistency artifact replay (wall-transfer probe). Probe verdict: **PARTIAL**
+(3/6 checks passed; task-bound ceiling confirmed; Gan H0 mechanism partially differs).
+Source: P3 `wall_transfer_cross_dataset_2026-06-27.md`.*
 
 The central negative result of the Gan strand does not stay on the Gan dataset.
 
@@ -294,23 +295,22 @@ temporally ambiguous. The illegitimate evidence shapes that drive Gan over-readi
 last-event-only anchors, open-ended temporal qualifiers, vague counts read as habitual
 rates — are present in real clinical letters too.
 
-**[PENDING PROBE]** A forward-observable-feature entropy probe on a stratified ExECTv2
-SF validation slice is required to confirm that the entropy signature matches the Gan
-pattern (confident, not uncertain, over-reading). Specification in
-`docs/research/wall_transfer_forward_observable_feature_inventory_2026-06-27.md`; probe
-document `docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md`
-does not yet exist. Pending that result, the cross-dataset claim is structural:
+**Probe result (PARTIAL — 3/6 checks passed).** The wall-transfer probe
+(`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140 self-consistency artifacts
+and returned a partial verdict. The cross-dataset claim is:
 
 > SeizureFrequency is the weakest ExECTv2 family under a frozen same-core architecture
-> across all tested LLMs (GPT-4.1-mini 0.7525, DeepSeek chat 0.7602, full-200 aggregate).
-> This pattern is consistent with the confident-over-reading wall characterized on the Gan
-> benchmark (mean label entropy 0.012, `band_unknown` entropy 0.000 at k=4 sampling across
-> four temperatures), where the same mechanism — confident extraction of over-specified rate
-> interpretations from ambiguous evidence — was identified as the binding ceiling.
-> Whether the same entropy signature reproduces on ExECTv2 SF is currently under
-> investigation. If confirmed, the ExECTv2 SF gap and the Gan wall constitute a
-> **cross-dataset confident-over-reading phenomenon**: a clinical-reasoning limit that is
-> task-bound, not system-bound.
+> across all tested LLMs (GPT-4.1-mini 0.7525, DeepSeek chat 0.7602, full-200 aggregate;
+> GPT 0.7645, DeepSeek 0.7658 on dev140). This weakness is task-bound: **43.6% of SF
+> error cells are temperature-unanimous wrong** (4/4 same wrong answer), confirming a
+> material confident-error component consistent with the Gan wall pattern. However, the
+> Gan H0_confident_over_reading mechanism does **not** fully transfer: SF error entropy is
+> elevated (0.287 vs 0.069 for correct cells) and cross-model agreement is lower on error
+> cells (21.8%) than correct cells (69.4%) — the reverse of the Gan `band_unknown` pattern
+> where every wrong answer was entropy-zero and stable across all temperatures. The ExECTv2
+> SF floor is a **mixed** mechanism: some errors are as confidently wrong as Gan's
+> over-reading; others are genuinely uncertain and heterogeneous across models. The
+> **task-bound ceiling transfers; the mechanism partially differs.**
 
 This framing converts "SF is our weakest family" from an apology into the paper's
 strongest generalization claim: a system whose ceiling is the task's clinical-ambiguity
@@ -420,14 +420,14 @@ components.
 | Gan P2.1: mean label entropy 0.012; band_unknown 0.000 | Purist label entropy | Validation-only probe (n=150) | `gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.md` |
 | ExECTv2 SF weakest across all models (0.75–0.76 full-200) | `clinical_headline` | Frozen aggregate full-200 | `exectv2_same_core_model_swap_full200_2026-06-25.md` |
 | Calibration: Brier 0.2245 vs base-rate 0.2387 | `clinical_headline` | Aggregate full-200 validation | ExECTv2 reliability scorecard 2026-06-22/2026-06-25 |
-| Cross-dataset wall-transfer mechanism | Structural parallel | [PENDING PROBE] | `exectv2_sf_wall_transfer_probe_2026-06-27.md` (does not exist) |
+| Cross-dataset wall-transfer mechanism | PARTIAL probe verdict (3/6 checks passed) | Dev140 self-consistency artifact replay | `exectv2_sf_wall_transfer_probe_2026-06-27.md`; task-bound ceiling confirmed; Gan H0 mechanism partially differs (error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct; 43.6% error cells temperature-unanimous wrong) |
 
 **Do not claim:**
 - Holdout validation of ExECTv2 performance on any split.
 - Full-200 published-benchmark nine-entity CUI score (not computed under current protocol).
 - Cross-model agreement as a validated ExECTv2 reliability signal (unused; available artifact).
 - That the calibration scoring rule is deployment-ready.
-- That the wall-transfer mechanism is confirmed cross-dataset (requires pending probe).
+- That the full Gan H0_confident_over_reading mechanism transfers cross-dataset: probe fails 3 of 6 checks (error entropy elevated 0.287 vs correct 0.069; cross-model agreement lower on errors 21.8% vs correct 69.4%; elevated-error-entropy pattern is SF-specific). The task-bound ceiling transfers; the mechanism is mixed, not purely confident.
 - That the shared SF machinery is literally identical across tasks (ExECTv2 re-implements projection; structural reuse is the accurate claim, not code identity).
 
 ---
