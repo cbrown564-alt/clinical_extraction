@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.artifacts import (
     build_architecture_layer_ladder,
     cached_component_ablation_json,
