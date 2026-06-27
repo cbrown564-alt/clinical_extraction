@@ -1,7 +1,7 @@
 # Agentic `run_driver` Decomposition Plan — Wave 1 Kickoff
 
 **Date:** 2026-06-27  
-**Status:** Wave 4 S1 in progress — 10/12 legacy `run_split` slices migrated  
+**Status:** Wave 4 S1 COMPLETE — 10/10 eligible `run_split` slices migrated via `dispatch_registered_split` (2 register-only deferred; 66/66 tests pass verified 2026-06-27)  
 **Parent:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md) Track S1  
 **Reference:** [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) P3-1
 
@@ -80,8 +80,7 @@ LOC counts are physical lines (including blanks/docstrings). **Migrated** =
 | 1,956 | `fresh_evidence_reasoner.py` | ✓ | Migrated (**gate frozen**) | V12 fresh-evidence reasoner + safety gate | `run_driver`, `family_*`, `precision_gated_selector` | `cross_model_structured_event` |
 | ~400 | `run_driver.py` (post-W1) | — | Scaffold | Shared split runners + stage registry | `stage_protocol`, `cross_model_structured_event_adjudicator` | — |
 
-**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; 2 register-only
-`run_split` slices remain after Wave 4 slice 10.
+**Aggregate:** ~21k LOC across 28 Python modules; 11 modules ≥700 LOC; Wave 4 dispatch migration COMPLETE — all 10 eligible slices done; 2 register-only `run_split` slices (`direct_boundary_critic_rescue`, `boundary_audit_prompt_v2`) remain deferred out of scope for S1.
 
 ## Migration order (smallest / leafiest first)
 

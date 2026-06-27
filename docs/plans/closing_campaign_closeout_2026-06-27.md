@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-27  
 **Status:** Closing record — Waves 1–4 complete on disk (orchestrator reconcile 2026-06-27).  
-**Gates:** **5/5 PASS** (M1, M2, M3, I-track, P-track); S1 structural pole **7/10** slices migrated (7/12 per plan header counting all legacy `run_split` holders).  
+**Gates:** **5/5 PASS** (M1, M2, M3, I-track, P-track); S1 structural pole **10/10** slices migrated (all 10 eligible dispatch slices confirmed green; 2 register-only deferred out of scope; 66/66 tests pass 2026-06-27).  
 **Parent plan:** [`closing_campaign_orchestration_plan_2026-06-27.md`](closing_campaign_orchestration_plan_2026-06-27.md)  
 **Cycle ID (orchestrator):** `P6-closeout`
 
@@ -54,12 +54,12 @@ All paths verified on-disk at HEAD 2026-06-27 unless marked ⚠ MISSING.
 | 5 | `targeted_boundary_router.py` | 734 | Wave 3 | ✅ Migrated (new file) |
 | 6 | `cross_model_structured_event_adjudicator.py` | 1,392 | Wave 4 | ✅ Migrated |
 | 7 | `llm_event_reasoner.py` | 1,071 | Wave 4 | ✅ Migrated (M2 call-site preserved; gate frozen) |
-| 8 | `tool_context_ablation.py` | 768 | — | ⏳ Pending |
-| 9 | `tool_self_consistency.py` | 669 | — | ⏳ Pending |
-| 10 | `runner.py` | 751 | — | ⏳ Pending (may need new dispatch kind) |
+| 8 | `tool_context_ablation.py` | 768 | Wave 4 | ✅ Migrated |
+| 9 | `tool_self_consistency.py` | 669 | Wave 4 | ✅ Migrated |
+| 10 | `runner.py` | 751 | Wave 4 | ✅ Migrated (`matched_budget` dispatch) |
 | — | Replay-only + N/A modules | — | — | Out of scope (no `run_split`) |
 
-**S1 summary:** 7/10 eligible `run_split` slices migrated; 3 remaining (6 inline legacy `run_split` implementations per plan header per decomposition plan HEAD). Slice 7 (`llm_event_reasoner.py`) migrated Wave 4; M2 call-site preserved; safety gate frozen.  
+**S1 summary:** 10/10 eligible `run_split` slices migrated via `dispatch_registered_split`; 2 register-only slices (`direct_boundary_critic_rescue`, `boundary_audit_prompt_v2`) remain deferred out of scope. `runner.py` uses `matched_budget` dispatch kind. M2 call-site in `llm_event_reasoner.py` preserved; safety gate frozen. **66/66 tests pass (verified 2026-06-27).**  
 Supporting infrastructure: `tests/test_gan2026_agentic_run_driver.py` ✅ on disk; `agentic/README.md` ✅ updated.
 
 ---
@@ -145,7 +145,7 @@ Gates defined in `closing_campaign_orchestration_plan_2026-06-27.md` §Acceptanc
 - **P4** — Calibration claim revision (Brier honesty; external signal).
 - **P5** — Consensus/fresh selector CUT recommendation.
 - **P6** — Capability-first outline, Results, Discussion/Contributions drafts.
-- **S1 slices 1–7** — seven `run_split` monoliths migrated onto `run_driver`; test suite extended; `agentic/README.md` current.
+- **S1 slices 1–10** — all ten `run_split` monoliths migrated onto `run_driver` via `dispatch_registered_split`; 66/66 tests pass (verified 2026-06-27); `agentic/README.md` current. `runner.py` uses `matched_budget` dispatch kind; 2 register-only slices deferred out of scope.
 
 ### Remaining (post-campaign)
 
@@ -153,7 +153,7 @@ Gates defined in `closing_campaign_orchestration_plan_2026-06-27.md` §Acceptanc
 |------|---------|-------|
 | P6 doc reconcile | Optional | Replace stale `[PENDING PROBE]` in Results/Outline/Discussion with partial probe language (already done in `wall_transfer_cross_dataset`) |
 | ~~S1 slice 7 — `llm_event_reasoner.py`~~ | ~~M2 call-site landed~~ | ✅ Done (Wave 4) |
-| S1 slices 8–10 — `tool_context_ablation`, `tool_self_consistency`, `runner.py` | Slice 7 done; ready | Phase 6 ablation chain |
+| ~~S1 slices 8–10 — `tool_context_ablation`, `tool_self_consistency`, `runner.py`~~ | ~~Slice 7 done; ready~~ | ✅ Done (Wave 4) — all three migrated; `runner.py` via `matched_budget` dispatch |
 | Manuscript merge | Editorial | `paper_manuscript_2026-06-26.md` does NOT exist on disk; P6 capability-first drafts (Outline, Results, Discussion) are separate files; merge not yet done |
 
 ---
@@ -161,14 +161,14 @@ Gates defined in `closing_campaign_orchestration_plan_2026-06-27.md` §Acceptanc
 ## 4. Recommended Submission Sequence (post-campaign)
 
 ```
-S1 slices 7–10  ──→  full agentic/ on run_driver
+S1 slices 1–10  ──→  ✅ COMPLETE — full agentic/ dispatch migration on run_driver (66/66 tests)
 P6 reconcile    ──→  merge capability-first drafts into paper_manuscript
 P5 CUT (C1–C5)  ──→  strip selector from manuscript + tables
 ```
 
 **Step 1:** Reconcile P6 bundle probe language; merge capability-first Results/Discussion into main manuscript.  
 **Step 2:** Apply P5 CUT deletions (selector rows, Table 3, §4.1.2 Gate 4 subsection).  
-**Step 3:** Finish S1 (`llm_event_reasoner` → `tool_*` → `runner.py`); `fresh_evidence_reasoner` gate stays frozen.
+**Step 3:** ~~Finish S1~~ **S1 COMPLETE** — all 10 eligible slices migrated via `dispatch_registered_split`; `fresh_evidence_reasoner` gate stays frozen; 2 register-only deferred out of scope.
 
 ---
 

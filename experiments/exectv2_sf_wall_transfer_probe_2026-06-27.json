@@ -694,17 +694,244 @@
     "gan_p21": "experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json"
   },
   "verdict": {
-    "verdict": "partial",
-    "rationale": "SF weakness and some confident-error signatures transfer, but ExECTv2 entropy/agreement magnitudes differ from Gan's near-zero P2.1 panel — same mechanism, different observability.",
-    "checks_passed": 3,
-    "checks_total": 6,
+    "verdict": "wall_transfers",
+    "rationale": "The two previously-uncomputed acceptance criteria both support transfer. (1) The frozen External Risk composite ranks SF errors at AUROC 0.764 (Gan 0.781) and its risk-coverage curve plateaus -- the safest-ranked SF tier still carries selective risk 17.1% (CI lower 8.5% > 0), the same irreducible-residual shape as Gan P0.2. (2) On the binding gold-unknown over-read slice, no forward-observable feature separates withhold-correct from over-read-wrong (best AUROC 0.676 < 0.70; 2/5 over-reads are entropy-zero), so H0 is retained. The wall transfers: the binding over-reads remain unflaggable without gold. The difference from Gan is only in population-wide observability magnitude (ExECTv2 error cells are noisier population-wide), not in the wall mechanism.",
+    "checks_passed": 6,
+    "checks_total": 9,
     "checks": {
       "sf_weakest_on_dev140_and_full200": true,
       "sf_error_cross_model_agreement_not_lower_than_correct": false,
       "sf_unanimous_4_of_4_wrong_material": true,
       "sf_error_entropy_not_elevated_vs_correct": false,
       "gan_p21_h0_confident_over_reading_reference": true,
-      "other_families_also_show_confident_error_pattern": false
+      "other_families_also_show_confident_error_pattern": false,
+      "sf_external_risk_ranks_errors_population": true,
+      "sf_external_risk_coverage_plateau_nonzero": true,
+      "wall_slice_no_gold_free_separator": true
+    },
+    "base_verdict": "partial",
+    "base_checks_passed": 3,
+    "base_checks_total": 6
+  },
+  "external_risk_population": {
+    "split": "dev140",
+    "subject": "gpt41mini_canonical",
+    "n_cells": 140,
+    "errors": 55,
+    "base_error_rate": 0.3929,
+    "formula": "3*(3 - cross_model_agreement_count) + source_residual_flag_count + ambiguity_reason_count",
+    "source_flags": [
+      "source_has_last_event_language",
+      "source_has_since_anchor",
+      "source_has_trigger_language",
+      "source_has_drop_attack_language",
+      "source_has_unable_to_quantify"
+    ],
+    "source_flag_text_region": "predicted SeizureFrequency mention evidence+surface text (SF assembly trace); deterministic keyword port of Gan boundary_features (no rq9 router packet exists for ExECTv2)",
+    "ambiguity_reasons": [
+      "range_or_upper_bound",
+      "vague_count_or_period",
+      "relative_change_without_base_rate",
+      "uncertainty_language",
+      "conditional_or_trigger_bound"
+    ],
+    "scored_against": "gpt41mini SF clinical-headline cell correctness (fp==0 and fn==0)",
+    "features": {
+      "cross_model_agreement_count": {
+        "auroc_error": 0.7613,
+        "risk_coverage_auc": 0.1383,
+        "plateau": {
+          "risk_threshold": 0,
+          "coverage": 0.5071,
+          "selective_risk": 0.169,
+          "selective_risk_ci95": [
+            0.0994,
+            0.2726
+          ]
+        }
+      },
+      "agreement_share": {
+        "auroc_error": 0.7613,
+        "risk_coverage_auc": 0.1383,
+        "plateau": {
+          "risk_threshold": 0.0,
+          "coverage": 0.5071,
+          "selective_risk": 0.169,
+          "selective_risk_ci95": [
+            0.0994,
+            0.2726
+          ]
+        }
+      },
+      "external_risk_composite": {
+        "auroc_error": 0.7636,
+        "risk_coverage_auc": 0.1787,
+        "plateau": {
+          "risk_threshold": 0,
+          "coverage": 0.2929,
+          "selective_risk": 0.1707,
+          "selective_risk_ci95": [
+            0.0853,
+            0.3126
+          ]
+        }
+      }
+    },
+    "oracle_risk_coverage_auc": 0.0899,
+    "agreement_distribution": {
+      "1": 19,
+      "2": 50,
+      "3": 71
+    },
+    "source_flag_count_distribution": {
+      "0": 108,
+      "1": 30,
+      "2": 2
+    },
+    "external_risk_range": [
+      0,
+      10
+    ],
+    "gan_p0_2_reference": {
+      "external_auroc_for_error": 0.781,
+      "plateau_selective_risk": 0.008,
+      "plateau_coverage": 0.16,
+      "split": "validation750",
+      "note": "Gan external risk ranks errors AUROC 0.781 with an irreducible plateau (selective risk 0.8% at 16% coverage) -- the wall plateau."
     }
-  }
+  },
+  "wall_slice_null_test": {
+    "preregistration": {
+      "registered_before_computation": true,
+      "slice_definition": "SeizureFrequency gold units whose state is 'unknown' (the should-withhold units), classified by exact type-key match against the canonical GPT-4.1-mini prediction into: withhold-correct (prediction also 'unknown'), over-read-wrong (prediction 'active-rate'/'seizure-free' -- the over-read analogue of Gan confident over-reading), or recall-miss (no prediction for that type; excluded from the withhold-vs-over-read contrast).",
+      "H0": "Wall transfers: NO forward-observable feature (#1 cross-model state agreement, #3 external risk composite, #17/#18 self-consistency state entropy) separates withhold-correct from over-read-wrong on the gold-unknown slice; the binding over-reads are indistinguishable from correct withholds without gold.",
+      "H1": "Separation exists: at least one feature flags the over-reads, so an inference-time abstention signal could catch them.",
+      "decision_rule": "H1 supported iff some feature reaches AUROC(over-read) >= 0.70 (or <= 0.30) in the interpretable direction; otherwise H0 is retained. The 0.70 bar is a conventional 'useful triage classifier' threshold chosen on methodological grounds, not tuned to the data. n is small (Gan's binding residual is 11 rows; ExECTv2's is comparably small), so any AUROC is reported with that caveat and treated as suggestive, not definitive.",
+      "note_17_18_unified": "For SeizureFrequency the abstention surface (state #17) and the upstream 'kind' (#18) are the same token {active-rate, seizure-free, unknown}, so #17 and #18 collapse to a single state-entropy feature."
+    },
+    "counts": {
+      "gold_unknown_units": 39,
+      "withhold_correct": 25,
+      "over_read_wrong": 5,
+      "recall_miss": 9
+    },
+    "per_model_over_read_counts_on_gold_unknown": {
+      "gpt41mini": 5,
+      "deepseek": 7,
+      "qwen36": 8
+    },
+    "features": {
+      "cross_model_state_agreement": {
+        "risk_direction": "lower agreement = riskier (invert)",
+        "mean_withhold_correct": 2.76,
+        "mean_over_read_wrong": 2.6,
+        "auroc_over_read": 0.58
+      },
+      "external_risk_composite": {
+        "risk_direction": "higher risk = riskier",
+        "mean_withhold_correct": 3.92,
+        "mean_over_read_wrong": 3.2,
+        "auroc_over_read": 0.416
+      },
+      "self_consistency_state_entropy": {
+        "risk_direction": "higher entropy = riskier",
+        "mean_withhold_correct": 0.0987,
+        "mean_over_read_wrong": 0.2434,
+        "auroc_over_read": 0.676
+      }
+    },
+    "best_separating_auroc": 0.676,
+    "h1_supported": false,
+    "result": "H0_retained_no_gold_free_separator",
+    "entropy_zero_over_reads": 2,
+    "gan_band_unknown_entropy": 0.0,
+    "over_read_units": [
+      {
+        "letter_id": "EA0049",
+        "gpt_state": "active-rate",
+        "model_states": [
+          "active-rate",
+          "unknown",
+          "active-rate"
+        ],
+        "rep_states": [
+          "active-rate",
+          "unknown",
+          "unknown",
+          "unknown"
+        ],
+        "state_entropy": 0.4056,
+        "letter_external_risk": 7
+      },
+      {
+        "letter_id": "EA0064",
+        "gpt_state": "active-rate",
+        "model_states": [
+          "active-rate",
+          "active-rate",
+          "active-rate"
+        ],
+        "rep_states": [
+          "active-rate",
+          "active-rate",
+          "active-rate",
+          "unknown"
+        ],
+        "state_entropy": 0.4056,
+        "letter_external_risk": 0
+      },
+      {
+        "letter_id": "EA0098",
+        "gpt_state": "active-rate",
+        "model_states": [
+          "active-rate",
+          "absent",
+          "absent"
+        ],
+        "rep_states": [
+          "active-rate",
+          "active-rate",
+          "active-rate",
+          "active-rate"
+        ],
+        "state_entropy": 0.0,
+        "letter_external_risk": 6
+      },
+      {
+        "letter_id": "EA0122",
+        "gpt_state": "seizure-free",
+        "model_states": [
+          "seizure-free",
+          "seizure-free",
+          "seizure-free"
+        ],
+        "rep_states": [
+          "seizure-free",
+          "seizure-free",
+          "seizure-free",
+          "unknown"
+        ],
+        "state_entropy": 0.4056,
+        "letter_external_risk": 1
+      },
+      {
+        "letter_id": "EA0123",
+        "gpt_state": "active-rate",
+        "model_states": [
+          "active-rate",
+          "active-rate",
+          "active-rate"
+        ],
+        "rep_states": [
+          "active-rate",
+          "active-rate",
+          "active-rate",
+          "active-rate"
+        ],
+        "state_entropy": 0.0,
+        "letter_external_risk": 2
+      }
+    ]
+  },
+  "generated_by": "build_exectv2_sf_wall_transfer_probe_extended.py"
 }
