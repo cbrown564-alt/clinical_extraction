@@ -16,6 +16,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    cross_model_structured_event_adjudicator as cross_model_base,
+    llm_event_reasoner,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
     build_stage_metadata,
     configure_dspy_for_stage,
@@ -189,3 +193,68 @@ def _default_rows_by_source_index(
         if isinstance(source_row_index, int):
             indexed[source_row_index] = row
     return indexed
+
+
+def run_cross_model_structured_event_split(
+    records: Sequence[GanFrequencyRecord],
+    *,
+    params: SplitRunParams,
+    prompt_version: str,
+    metadata_extra: Mapping[str, Any],
+    build_row: RowBuilder,
+    summarize_rows: SummarizeRows,
+    gpt_structured_event_source_path: Path,
+    agent_source_paths: Mapping[str, Path],
+    agent_ids: Sequence[str] = cross_model_base.AGENT_IDS,
+    gpt_structured_event_rows: Sequence[Mapping[str, Any]] | None = None,
+    agent_rows_by_id: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+    gate_interpretation: GateInterpretation | None = None,
+    write_report: WriteReport | None = None,
+    progress_fields: Sequence[str] = (
+        "call_failures",
+        "parse_or_validation_failures",
+        "purist_correct",
+    ),
+    row_kwargs: Mapping[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Run a split over records with saved multi-agent structured-event traces."""
+    if gpt_structured_event_rows is None:
+        gpt_structured_event_rows = load_jsonl_rows(gpt_structured_event_source_path)
+    loaded_agent_rows = cross_model_base._load_agent_rows(
+        gpt_rows=gpt_structured_event_rows,
+        agent_sources=agent_source_paths,
+        agent_rows_by_id=agent_rows_by_id,
+    )
+    rows_by_agent = {
+        agent_id: llm_event_reasoner._rows_by_source_index(rows)
+        for agent_id, rows in loaded_agent_rows.items()
+    }
+
+    extra = dict(metadata_extra)
+    extra.setdefault(
+        "agent_source_paths",
+        {agent_id: str(path) for agent_id, path in agent_source_paths.items()},
+    )
+
+    def build_row_with_agents(record: GanFrequencyRecord, **kwargs: Any) -> dict[str, Any]:
+        return build_row(
+            record,
+            agent_rows={
+                agent_id: rows_by_agent.get(agent_id, {}).get(record.source_row_index)
+                for agent_id in agent_ids
+            },
+            **kwargs,
+        )
+
+    return run_standard_split(
+        records,
+        params=params,
+        prompt_version=prompt_version,
+        metadata_extra=extra,
+        build_row=build_row_with_agents,
+        summarize_rows=summarize_rows,
+        gate_interpretation=gate_interpretation,
+        write_report=write_report,
+        progress_fields=progress_fields,
+        row_kwargs=row_kwargs,
+    )

@@ -7,6 +7,8 @@ reviewing GPT, Qwen, and DeepSeek structured-event traces. Deterministic code
 only validates JSON, performs format-only label repair, validates cited evidence
 as source substrings, renders keep/fallback actions from the original GPT
 structured-event final, and scores after the decision.
+
+``run_split`` delegates row-loop ceremony to :mod:`run_driver`.
 """
 
 from __future__ import annotations
@@ -41,13 +43,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    load_jsonl_rows,
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    SplitRunParams,
+    run_cross_model_structured_event_split,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving_with_trace,
 )
@@ -299,50 +300,29 @@ def run_split(
         or DEFAULT_STRUCTURED_EVENT_JSONL_PATH,
     )
     agent_sources = _structured_event_source_paths_for_split(split, source_path)
-    if structured_event_rows is None:
-        structured_event_rows = load_jsonl_rows(source_path)
-    loaded_agent_rows = cross_model_base._load_agent_rows(
-        gpt_rows=structured_event_rows,
-        agent_sources=agent_sources,
-        agent_rows_by_id=agent_rows_by_id,
-    )
-    if mode == "live":
-        dspy.configure(
-            lm=build_dspy_lm(
-                model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                cache=dspy_cache,
-                api_base=api_base,
-            )
-        )
-
-    rows_by_agent = {
-        agent_id: llm_event_reasoner._rows_by_source_index(rows)
-        for agent_id, rows in loaded_agent_rows.items()
-    }
     active_prompt_version = _ACTIVE_PROMPT_VERSION
-    metadata = build_run_metadata(
-        mode=mode,
+    params = SplitRunParams(
+        split=split,
+        split_manifest=split_manifest,
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,
-        prompt_version=active_prompt_version,
-        dspy_version="none",
-        split=split,
-        split_manifest=split_manifest,
+        mode=mode,
+        dspy_cache=dspy_cache,
         api_base=api_base,
-        row_count=len(records),
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
     )
-    metadata.update(
-        {
+    rows, metadata = run_cross_model_structured_event_split(
+        records,
+        params=params,
+        prompt_version=active_prompt_version,
+        metadata_extra={
             "artifact_kind": "gan2026_fresh_evidence_reasoner_trace",
             "pipeline_family": PIPELINE_FAMILY,
             "pipeline_version": f"{active_prompt_version}+{SAFETY_GATE_VERSION}",
             "safety_gate_version": SAFETY_GATE_VERSION,
-            "agent_source_paths": {
-                agent_id: str(path) for agent_id, path in agent_sources.items()
-            },
             "structured_event_source_role": (
                 "GPT, Qwen, and DeepSeek saved LLM structured-event traces are "
                 "evidence scaffolds. The prediction-bearing replacement, when "
@@ -350,40 +330,17 @@ def run_split(
                 "evidence. Deterministic top labels are not shown or used."
             ),
             "claim_boundary": fresh_evidence_claim_boundary_for_split(split),
-            "dspy_cache": dspy_cache,
-        }
+        },
+        build_row=_build_row,
+        summarize_rows=lambda split_rows: summarize_rows(split_rows, split=split),
+        gpt_structured_event_source_path=source_path,
+        agent_source_paths=agent_sources,
+        gpt_structured_event_rows=structured_event_rows,
+        agent_rows_by_id=agent_rows_by_id,
+        gate_interpretation=llm_event_reasoner.gate_interpretation,
+        write_report=write_report,
+        row_kwargs={"prompt_version": active_prompt_version},
     )
-
-    rows: list[dict[str, Any]] = []
-    for record in records:
-        rows.append(
-            _build_row(
-                record,
-                agent_rows={
-                    agent_id: rows_by_agent.get(agent_id, {}).get(
-                        record.source_row_index
-                    )
-                    for agent_id in cross_model_base.AGENT_IDS
-                },
-                split=split,
-                split_manifest=split_manifest,
-                model=model,
-                temperature=temperature,
-                max_tokens=max_tokens,
-                mode=mode,
-                prompt_version=active_prompt_version,
-            )
-        )
-        if progress_every and len(rows) % progress_every == 0:
-            _emit_progress_checkpoint(
-                rows,
-                metadata,
-                total=len(records),
-                jsonl_path=checkpoint_jsonl_path,
-                report_path=checkpoint_report_path,
-            )
-
-    metadata["summary"] = summarize_rows(rows, split=split)
     if split != "test":
         # Per-family breakdown and the held-out-family CV promotion verdict are
         # validation-only instruments; the holdout protocol is aggregate-only,
@@ -400,7 +357,6 @@ def run_split(
                 rows, **family_transitions.FRESH_EVIDENCE_PATHS
             )
         )
-    metadata["gate"] = llm_event_reasoner.gate_interpretation(metadata["summary"])
     return rows, metadata
 
 
@@ -2123,23 +2079,3 @@ def _is_same_day_cluster_downgrade(
         )
     )
     return has_same_day_cluster and rejects_daily_rate
-
-
-def _emit_progress_checkpoint(
-    rows: Sequence[Mapping[str, Any]],
-    metadata: Mapping[str, Any],
-    *,
-    total: int,
-    jsonl_path: Path | None,
-    report_path: Path | None,
-) -> None:
-    checkpoint_metadata = dict(metadata)
-    checkpoint_metadata["summary"] = summarize_rows(
-        rows,
-        split=str(metadata.get("split") or ""),
-    )
-    checkpoint_metadata["progress"] = {"completed_rows": len(rows), "total_rows": total}
-    if jsonl_path is not None:
-        write_jsonl(rows, jsonl_path)
-    if report_path is not None:
-        write_report(rows, checkpoint_metadata, report_path, jsonl_path=jsonl_path or Path(""))
