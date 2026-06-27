@@ -401,3 +401,13 @@ def run_cross_model_structured_event_split(
         progress_fields=progress_fields,
         row_kwargs=row_kwargs,
     )
+
+
+register_agentic_stage(
+    RegisteredAgenticStage(
+        stage_id="llm_event_reasoner",
+        dispatch_kind="structured_event",
+        module="clinical_extraction.tasks.seizure_frequency.gan2026.agentic.llm_event_reasoner",
+        description="Core structured-event LLM reasoner and shared scoring helpers",
+    )
+)
