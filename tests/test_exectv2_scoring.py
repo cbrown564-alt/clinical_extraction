@@ -21,6 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     canonicalize_medication_name,
     clinical_headline_unit_keys,
+    frequency_state_faithful,
     headline_duplicate_tags,
     match_key,
         score_concept_identity,
@@ -287,6 +288,73 @@ def test_active_rate_fidelity_ignores_dates_when_rate_agrees() -> None:
 
     # Rate matches; the missing date is timing, not magnitude, so fidelity is clean.
     assert score.active_rate_fidelity.f1 == 1.0
+
+
+def test_frequency_state_faithful_distinguishes_change_from_unknown() -> None:
+    assert frequency_state_faithful({"NumberOfSeizures": "0"}) == "seizure-free"
+    assert frequency_state_faithful({"NumberOfSeizures": "3"}) == "active-rate"
+    assert frequency_state_faithful({"FrequencyChange": "Decreased"}) == "changed"
+    assert frequency_state_faithful({}) == "unknown"
+    # A concrete count is more specific than a qualitative change descriptor.
+    assert (
+        frequency_state_faithful({"NumberOfSeizures": "0", "FrequencyChange": "Decreased"})
+        == "seizure-free"
+    )
+
+
+def test_state_profile_credits_correct_state_despite_different_seizure_type_cui() -> None:
+    # Same clinical reality (seizure-free), different — both valid — seizure-type CUI
+    # granularity: generic 'seizure' vs a specific focal subtype.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="0", CUI="C0036572"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "focal seizures", NumberOfSeizures="0", CUI="C0270834"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    # The strict key conditions on the seizure-type CUI -> different bucket -> no credit.
+    assert score.clinical_headline.f1 == 0.0
+    # The clinical-recovery profile keys only the (change-aware) state -> full credit.
+    assert score.state_profile.f1 == 1.0
+
+
+def test_state_profile_stays_state_sensitive_and_collapses_per_type_multiplicity() -> None:
+    # Gold tags the SAME type twice (a numeric rate AND a separate qualitative change);
+    # the profile keeps both as distinct states, so a model emitting only the rate is
+    # still penalized for missing the change — faithful, not blind.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(SEIZURE_FREQUENCY.name, "gtc", NumberOfSeizures="2", CUI="C0494475"),
+                _ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Frequent", CUI="C0494475"),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", NumberOfSeizures="1", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    # Gold presence {active-rate, changed}; pred {active-rate}: the change is a real miss.
+    assert score.state_profile.precision == 1.0
+    assert score.state_profile.recall == 0.5
 
 
 def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> None:

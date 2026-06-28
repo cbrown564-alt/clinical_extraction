@@ -185,6 +185,24 @@ def test_feedback_warns_on_bare_unknown_seizure_frequency_drop():
     assert "bare 'unknown' state" in out.feedback
 
 
+def test_seizure_frequency_feedback_names_state_class_and_guides():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    # SF omitted -> the diff must render the missed fact by its change-aware STATE class
+    # (the actionable signal), not the old opaque raw-attribute bracket, and the
+    # targeted SF state-classification guidance must fire.
+    out = metric(
+        _gold(),
+        _pred(
+            [
+                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+            ]
+        ),
+    )
+    assert "seizures: active-rate" in out.feedback
+    assert "[NumberOfSeizures" not in out.feedback  # old opaque rendering is gone
+    assert "distinct 'changed' fact" in out.feedback
+
+
 def test_correct_prediction_has_no_diff():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
     out = metric(_gold(), _correct_pred())

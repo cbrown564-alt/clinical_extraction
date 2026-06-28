@@ -36,6 +36,7 @@ class FrequencyStateScores(BaseModel):
     model_config = {"frozen": True}
 
     clinical_headline: PRF1
+    state_profile: PRF1
     active_rate: PRF1
     active_rate_fidelity: PRF1
     seizure_free: PRF1
@@ -54,6 +55,7 @@ def score_frequency_state(
             pred_letters,
             "clinical_headline",
         ),
+        state_profile=_score_frequency_state_profile(gold_letters, pred_letters),
         active_rate=_score_frequency_state_component(gold_letters, pred_letters, "active-rate"),
         active_rate_fidelity=_score_frequency_active_rate_fidelity(gold_letters, pred_letters),
         seizure_free=_score_frequency_state_component(gold_letters, pred_letters, "seizure-free"),
@@ -98,6 +100,50 @@ def _score_frequency_state_component(
         )
         for letter_id in all_ids
     )
+
+
+def _score_frequency_state_profile(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PRF1:
+    """Clinical-recovery SF metric: the per-letter *state profile*, type-agnostic.
+
+    The ``clinical_headline`` key conditions every fact on the annotator's chosen
+    seizure-type CUI and on gold's exhaustive per-type multiplicity (the same seizure
+    type tagged once with a numeric rate and again with a qualitative change). Both are
+    convention choices, not clinical recovery: a correct frequency statement keyed to a
+    clinically-valid but *different* CUI granularity scores zero. This companion scores
+    the clinical question Gan asks — *which seizure-frequency states does this letter
+    describe?* — by keying only the (change-aware) state, deduplicated per letter. The
+    honest SF clinical number is the bracket [clinical_headline, state_profile]; the gap
+    is the seizure-type-CUI granularity + multiplicity tax. See
+    ``docs/research/exectv2_sf_representation_not_recall_2026-06-28.md``.
+    """
+
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _frequency_state_profile_keys(
+                gold_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in gold_by_id
+                else ()
+            ),
+            _frequency_state_profile_keys(
+                pred_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in pred_by_id
+                else ()
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _frequency_state_profile_keys(annotations: Iterable[ExectAnnotation]) -> list[Hashable]:
+    """Per-letter presence set of change-aware states (deduplicated, type-agnostic)."""
+
+    return list(dict.fromkeys(frequency_state_faithful(a.attributes) for a in annotations))
 
 
 def _frequency_state_keys(
@@ -170,6 +216,12 @@ def _frequency_type_key(annotation: ExectAnnotation) -> Hashable:
 
 
 def _frequency_state(attributes: Mapping[str, str]) -> str:
+    """Convention-strict 3-way state used by ``clinical_headline`` (count-only).
+
+    Kept count-only and ``FrequencyChange``-blind to preserve the frozen benchmark
+    key. The change-aware taxonomy lives in :func:`frequency_state_faithful`.
+    """
+
     count_values = [
         attributes.get("NumberOfSeizures"),
         attributes.get("LowerNumberOfSeizures"),
@@ -179,4 +231,30 @@ def _frequency_state(attributes: Mapping[str, str]) -> str:
         return "seizure-free"
     if any(value for value in count_values):
         return "active-rate"
+    return "unknown"
+
+
+def frequency_state_faithful(attributes: Mapping[str, str]) -> str:
+    """Change-aware 4-way state: seizure-free / active-rate / changed / unknown.
+
+    Unlike the count-only :func:`_frequency_state`, this credits a reported
+    *qualitative change* in seizure frequency (``FrequencyChange``: more/fewer/
+    improved/worse) as its own ``changed`` state instead of silently collapsing it to
+    ``unknown``. A concrete count takes precedence over a change descriptor (a numeric
+    rate or zero is the more specific signal). This matches the adapter round-trip
+    taxonomy (``llm/.../facts.py``) and is the basis for the type-agnostic
+    ``state_profile`` clinical metric and the GEPA SF feedback labels.
+    """
+
+    count_values = [
+        attributes.get("NumberOfSeizures"),
+        attributes.get("LowerNumberOfSeizures"),
+        attributes.get("UpperNumberOfSeizures"),
+    ]
+    if any(value == "0" for value in count_values if value is not None):
+        return "seizure-free"
+    if any(value for value in count_values):
+        return "active-rate"
+    if attributes.get("FrequencyChange"):
+        return "changed"
     return "unknown"
