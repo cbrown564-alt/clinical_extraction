@@ -102,6 +102,22 @@ def _f1_from(precision_tp: int, recall_tp: int, pred_count: int, gold_count: int
     return 2 * precision * recall / (precision + recall)
 
 
+def _fbeta_from(
+    precision_tp: int, recall_tp: int, pred_count: int, gold_count: int, *, beta: float
+) -> float:
+    """F-beta. beta>1 weights recall over precision (the recall-recovery objective)."""
+
+    if pred_count == 0 and gold_count == 0:
+        return 1.0
+    precision = precision_tp / pred_count if pred_count else 0.0
+    recall = recall_tp / gold_count if gold_count else 0.0
+    b2 = beta * beta
+    denom = b2 * precision + recall
+    if denom == 0.0:
+        return 0.0
+    return (1 + b2) * precision * recall / denom
+
+
 def _family_scores(gold_letter: ExectLetter, pred_letter: ExectLetter) -> dict[str, Any]:
     g = [gold_letter]
     p = [pred_letter]
@@ -203,6 +219,7 @@ def _score_prediction(raw_output: str, gold_letter: ExectLetter) -> dict[str, An
             "headline_f1": 0.0,
             "family_f1": {family: 0.0 for family in KEY_FAMILIES},
             "aggregate": (0, 0, 0, 0),
+            "family_counts": {family: (0, 0, 0, 0) for family in KEY_FAMILIES},
             "n_facts": 0,
             "n_scored": 0,
             "diffs": {},
@@ -216,12 +233,14 @@ def _score_prediction(raw_output: str, gold_letter: ExectLetter) -> dict[str, An
 
     precision_tp = recall_tp = pred_count = gold_count = 0
     family_f1: dict[str, float] = {}
+    family_counts: dict[str, tuple[int, int, int, int]] = {}
     for family in KEY_FAMILIES:
         ptp, rtp, pc, gc = _counts(scores[family])
         precision_tp += ptp
         recall_tp += rtp
         pred_count += pc
         gold_count += gc
+        family_counts[family] = (ptp, rtp, pc, gc)
         family_f1[family] = round(float(getattr(scores[family], "f1", 0.0)), 4)
 
     return {
@@ -230,10 +249,31 @@ def _score_prediction(raw_output: str, gold_letter: ExectLetter) -> dict[str, An
         "headline_f1": _f1_from(precision_tp, recall_tp, pred_count, gold_count),
         "family_f1": family_f1,
         "aggregate": (precision_tp, recall_tp, pred_count, gold_count),
+        "family_counts": family_counts,
         "n_facts": len(record.clinical_facts),
         "n_scored": len(predicted.mentions),
         "diffs": _family_diffs(gold_letter, pred_exect),
     }
+
+
+def _macro_family_fbeta(
+    family_counts: dict[str, tuple[int, int, int, int]], family_beta: dict[str, float]
+) -> float:
+    """Mean per-family F-beta over families ACTIVE in this letter (gold or pred present).
+
+    Averaging only active families avoids the per-letter macro trap where families with
+    no gold and no prediction score 1.0 and wash out the signal. Each family uses its own
+    beta (>1 = recall-weighted, e.g. Diagnosis), so recall pressure is applied surgically
+    without forcing over-emission on precision-sensitive families (Investigations).
+    """
+
+    values: list[float] = []
+    for family, counts in family_counts.items():
+        _ptp, _rtp, pred_count, gold_count = counts
+        if pred_count == 0 and gold_count == 0:
+            continue
+        values.append(_fbeta_from(*counts, beta=family_beta.get(family, 1.0)))
+    return sum(values) / len(values) if values else 1.0
 
 
 def _length_penalty(
@@ -401,8 +441,23 @@ def _prompt_lengths(pred: Any, pred_trace: Any) -> tuple[int, int]:
     return _predictor_lengths(pred_trace)
 
 
-def build_metric(config: LengthPenaltyConfig | None = None):
+def build_metric(
+    config: LengthPenaltyConfig | None = None,
+    *,
+    recall_beta: float = 1.0,
+    family_beta: dict[str, float] | None = None,
+):
     """Return a GEPA feedback metric closed over a length-penalty config.
+
+    Selection objective (only affects the optimization SCORE; the reported headline /
+    final eval stays micro-F1):
+
+    * default — micro-F1 over the four families (unchanged).
+    * ``recall_beta`` > 1 — micro F-beta favouring recall (uniform recall pressure).
+    * ``family_beta`` — PER-FAMILY recall weighting: mean per-family F-beta over the
+      families active in each letter, each with its own beta (e.g. Diagnosis=2 to push
+      its co-present-concept recall, others=1 to protect their F1). Takes precedence
+      over ``recall_beta``. This is the surgical refinement of the uniform recall run.
 
     The returned callable also works as a plain DSPy metric (trailing GEPA-only
     arguments default to ``None``), so the same scoring is reused for final
@@ -427,7 +482,14 @@ def build_metric(config: LengthPenaltyConfig | None = None):
         instr_tokens, demo_tokens = _prompt_lengths(pred, pred_trace)
         out_tokens = approx_tokens(raw_output)
 
-        quality = graded["headline_f1"] if graded["scorable"] else 0.0
+        if not graded["scorable"]:
+            quality = 0.0
+        elif family_beta:
+            quality = _macro_family_fbeta(graded["family_counts"], family_beta)
+        elif recall_beta == 1.0:
+            quality = graded["headline_f1"]
+        else:
+            quality = _fbeta_from(*graded["aggregate"], beta=recall_beta)
         penalty = _length_penalty(instr_tokens, demo_tokens, out_tokens, cfg)
         score = max(0.0, quality - penalty)
         feedback = _feedback(graded, instr_tokens, demo_tokens, out_tokens, cfg)
