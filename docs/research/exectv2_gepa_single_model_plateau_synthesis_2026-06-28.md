@@ -1,6 +1,12 @@
 # Synthesis — the single-model GEPA plateau on ExECTv2 de-dup `clinical_headline`
 
-Status: **CLOSED (bounded negative).** Date: 2026-06-28.
+Status: **REOPENED for SeizureFrequency (2026-06-28).** §4–§5's "genuine recall, hand-rules only"
+verdict for SF does not survive the predictions: the SF gap is dominated by the seizure-type-CUI
+granularity lottery + gold's exhaustive per-type multiplicity (re-scoring the *same* preds under a
+Gan-style state profile lifts SF 0.592→0.713), not recall. See
+`docs/research/exectv2_sf_representation_not_recall_2026-06-28.md`. The Diagnosis "consolidation"
+finding is the same mechanism, so the "architectural gap" framing is also in question.
+Original status: **CLOSED (bounded negative).** Date: 2026-06-28.
 Owner: ExECTv2 GEPA workstream.
 
 Companions:

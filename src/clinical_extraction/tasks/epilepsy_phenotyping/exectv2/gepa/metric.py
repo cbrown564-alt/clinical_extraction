@@ -39,6 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     concept_keys,
+    frequency_state_faithful,
     frequency_state_keys,
     investigation_component_keys,
     prescription_component_keys,
@@ -152,13 +153,21 @@ def _label(family: str, ann: Any) -> str:
         negated = str(attrs.get("Negation", "")).lower().startswith("negat")
         return f"{text} (negated)" if negated else text
     if family == "SeizureFrequency":
-        bits = [
-            f"{k}={attrs[k]}"
-            for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures",
-                      "FrequencyChange")
-            if attrs.get(k)
-        ]
-        return f"{text} [{', '.join(bits)}]" if bits else text
+        # Lead with the change-aware state class so reflection sees WHAT KIND of
+        # frequency it missed/over-emitted (the actionable signal), not raw attrs.
+        state = frequency_state_faithful(attrs)
+        detail = ""
+        if state == "active-rate":
+            rate = ", ".join(
+                f"{k}={attrs[k]}"
+                for k in ("NumberOfSeizures", "LowerNumberOfSeizures",
+                          "UpperNumberOfSeizures", "TimePeriod")
+                if attrs.get(k)
+            )
+            detail = f" ({rate})" if rate else ""
+        elif state == "changed" and attrs.get("FrequencyChange"):
+            detail = f" ({str(attrs['FrequencyChange']).lower()})"
+        return f"{text}: {state}{detail}"
     if family == "Prescription":
         bits = [str(attrs.get("DrugName") or text)]
         if attrs.get("DrugDose"):
@@ -348,6 +357,15 @@ def _clinical_hint(graded: dict[str, Any]) -> str:
             "Learn from the diff: emit the missed gold facts at the SAME concise "
             "canonical granularity shown (short concept, not a long qualified phrase), "
             "de-duplicate, and stop emitting the WRONG facts."
+        )
+
+    sf_diff = (graded.get("diffs") or {}).get("SeizureFrequency") or {}
+    if sf_diff.get("missed") or sf_diff.get("spurious"):
+        hints.append(
+            "SeizureFrequency: classify each fact's state precisely — a reported change "
+            "in frequency (more/fewer/improved/worse seizures) is a distinct 'changed' "
+            "fact, not an active rate; do not default every mention to active_rate, and "
+            "emit 'seizure_free' when seizures have stopped."
         )
 
     if graded["scorable"] and graded["n_scored"] < graded["n_facts"]:
