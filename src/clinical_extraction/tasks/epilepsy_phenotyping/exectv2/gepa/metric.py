@@ -313,8 +313,11 @@ def _clinical_hint(graded: dict[str, Any]) -> str:
     if graded["scorable"] and graded["n_scored"] < graded["n_facts"]:
         hints.append(
             "Some emitted facts were dropped before scoring: every 'evidence' must be "
-            "copied verbatim as an exact substring of the letter, and investigation "
-            "modality must be MRI/CT/EEG/telemetry."
+            "copied verbatim as an exact substring of the letter, investigation "
+            "modality must be MRI/CT/EEG/telemetry, and every SeizureFrequency fact "
+            "needs a concrete state (a seizure count/rate, 'seizure-free', or a "
+            "frequency change) — a bare 'unknown' state carries no attributes and is "
+            "dropped."
         )
     return " ".join(hints)
 

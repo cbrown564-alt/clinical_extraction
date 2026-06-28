@@ -168,6 +168,23 @@ def test_feedback_diff_shows_spurious_pred():
     assert "MISSED gold" in out.feedback
 
 
+def test_feedback_warns_on_bare_unknown_seizure_frequency_drop():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    # A bare 'unknown' SF state maps to no attributes and is dropped by the render
+    # gate before scoring; the feedback must tell reflection to emit a concrete state.
+    out = metric(
+        _gold(),
+        _pred(
+            [
+                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"},
+                {"family": "seizure_frequency", "seizure_type": "seizures", "state": "unknown", "evidence": "seizures"},
+            ]
+        ),
+    )
+    assert "concrete state" in out.feedback
+    assert "bare 'unknown' state" in out.feedback
+
+
 def test_correct_prediction_has_no_diff():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
     out = metric(_gold(), _correct_pred())
