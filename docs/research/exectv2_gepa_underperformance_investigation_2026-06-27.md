@@ -11,11 +11,13 @@ scores **F1=0.979** through the production path, so SF is NOT representation-cap
 achievable SF ceiling is ~0.98. **H2 confirmed + H6 cleared** (no LLM calls, log parse):
 the `minibatch=3` acceptance gate is noise-dominated (gate SE ≈ 0.13 vs ~0.05 real gains,
 SNR ≈ 0.37) while best-so-far is monotone and the argmax is returned — the flat headline was
-noisy *selection*, not a mechanics bug. **H2 fix RUN (2026-06-28) cleared the plateau**:
-`minibatch=8` (gate SE 0.129→0.084) lifted dev140 0.702→**0.7194** — first GEPA-from-scratch
-to beat the hand-tuned 0.710, on a big Diagnosis gain (0.57→0.66) — but the single-instruction
-monolith trades families (SF 0.60→0.54), pointing at the multi-family program (re-run with the
-H1+H2 fixes) as the next lever. H3/H5 still open for the push toward the 0.9155 hybrid.
+noisy *selection*, not a mechanics bug. **H2 fix RUN (2026-06-28)**: `minibatch=8` lifted
+dev140 0.702→0.719 (first to beat hand-tuned 0.710). **Multi-family RUN (2026-06-28)** with
+both fixes resolved the monolith's Dx↔SF tradeoff (SF 0.54→0.59, Dx held 0.66) for a new best
+**0.731**. **SYNTHESIS: the cap was the harness, confirmed** — H1+H2 climbed 0.628→0.731
+(+0.10, beats hand-tuned 0.710). The remaining ~0.18 gap to the hybrid 0.9155 is now
+**architectural** (single-pass GEPA plateaus ~0.73; the hybrid's multi-stage verify/arbitrate
+stages can't be reached by instruction tuning). H3/H5 second-order. Details below.
 
 ## H1 RESULT (confirmed)
 
@@ -167,6 +169,54 @@ bottleneck is the **single-instruction tradeoff** (Dx↑ forces SF↓), which po
 H1 diff-feedback **and** H2 minibatch fixes — as the highest-leverage next step toward 0.9155.
 H3 (temp diversity) remains a secondary lever.
 
+### Multi-family RUN RESULT (2026-06-28) — tradeoff resolved, new best, but plateauing
+
+`gepa_multifamily_h2_exectv2.py` — four per-family instructions, `minibatch=8`, diff-feedback
+metric, `auto=medium` (~2705 calls), 39 min. Run
+`exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628`:
+
+| dev140 | overall | Dx | SF | Rx | Inv | instr tok |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| multifamily pre-fix (mb=3, no diff) | 0.631 | 0.43 | 0.52 | 0.89 | 0.80 | — |
+| H2 monolith (mb=8) | 0.7194 | 0.662 | 0.540 | 0.850 | 0.862 | 490 |
+| **multifamily + H1 + H2 (mb=8)** | **0.7313** | 0.662 | **0.592** | 0.877 | 0.858 | 1736 |
+| hand-tuned / v08 hybrid | 0.710 / 0.9155 | | | | | |
+
+- **Thesis confirmed: the per-family split removes the monolith tradeoff.** Diagnosis holds at
+  0.662 *and* SF recovers from the monolith's 0.540 → **0.592** (plus Rx 0.850 → 0.877). New
+  best GEPA-from-scratch headline **0.7313**, and a +0.100 leap over the pre-fix multifamily
+  0.631 — the two harness fixes (H1 feedback + H2 selection) are what was missing, exactly as
+  predicted.
+- **But it is plateauing.** The gain over the H2 monolith is only +0.012, and single-pass GEPA
+  — monolith or per-family — now sits at ~0.72–0.73, **~0.18 below the multi-stage hybrid
+  (0.9155)**. The gap families Dx (0.66) and SF (0.59) are at ~0.91 each in the hybrid.
+
+## SYNTHESIS — the cap was the harness; the remaining gap is architectural
+
+The investigation's central question — *was the flat ≈-seed result a harness bug or a task
+ceiling?* — is **answered: harness bug.** Fixing the two harness defects climbed the dev140
+headline monotonically and decisively:
+
+| step | dev140 headline |
+| --- | ---: |
+| untuned seed / pre-fix runs | 0.619 / 0.628–0.631 |
+| + H1 diff-feedback metric | 0.702 |
+| + H2 `minibatch=8` selection (monolith) | 0.719 *(beats hand-tuned 0.710)* |
+| + per-family instructions (H1+H2) | **0.731** |
+
+That is **+0.10 over the pre-fix baseline**, and GEPA now beats both the hand-engineered single
+prompt (0.710) and the prior per-family run (0.631). The user's reframe was right: a run that
+barely beat its seed was a signal/selection defect, not a task ceiling.
+
+**A new, different ceiling is now characterised.** Single-pass GEPA (instruction-only over a
+fixed program shape) plateaus ~0.73. The ~0.18 gap to the multi-stage hybrid is **architectural,
+not an instruction-optimization gap**: the hybrid's lift comes from its generation → verification
+→ arbitration → deterministic-projection *stages*, which GEPA cannot invent by evolving the
+instructions of a single-pass extractor. Closing it would require giving GEPA a *multi-stage*
+program to optimize (e.g. an evolvable generate→verify→arbitrate pipeline), a build beyond
+instruction tuning. H3 (temp diversity) and H5 (convention coupling) remain open but are
+second-order against this ~0.18 architectural gap.
+
 ---
 
 Status (original): **investigation opened; hypotheses to test on return.**
@@ -314,14 +364,15 @@ H1–H4 are addressed.
 3. ~~**H2/H3**~~ H2 DONE — confirmed by diagnostic (gate SNR 0.37) AND by the fix run
    (`minibatch=8` → dev140 0.702→**0.719**, first to beat hand-tuned 0.710). H6 cleared. The
    monolith now shows a family tradeoff (Dx↑ SF↓). H3 (temp diversity) still open, secondary.
-4. **Multi-family re-run** (NEXT, highest leverage) — `program_multifamily.py` was flat 0.631
-   *pre-H1*; re-run with the H1 diff-feedback metric + H2 `minibatch=8` so each family gets its
-   own evolved instruction (removes the monolith Dx↔SF tradeoff) — the most plausible path past
-   0.719 toward 0.9155.
+4. ~~**Multi-family re-run**~~ DONE (2026-06-28) — with H1+H2 fixes it resolved the monolith
+   Dx↔SF tradeoff (SF 0.54→0.59, Dx held) for a new best **0.731**, but confirmed single-pass
+   GEPA plateaus ~0.73. See SYNTHESIS: the remaining ~0.18 gap to the hybrid is architectural.
 5. **D2/H5** (instrument the evidence gate and convention coupling). Partly evidenced by the
    H4 probe: the gate is exact-substring coupled and drops ~50% of SF on hyphenated evidence.
-6. ~~Re-run mini monolith~~ DONE (H2 run, 0.719). Remaining: push past the monolith ceiling via
-   the multi-family program (#4) and/or H3.
+   Second-order against the architectural gap.
+6. **To approach 0.9155** (open, bigger build): give GEPA a *multi-stage* program to optimize
+   (evolvable generate→verify→arbitrate), not just single-pass instructions. H3 (temp
+   diversity) is a marginal squeeze, unlikely to bridge ~0.18 alone.
 
 ## Appendix — diagnostic evidence (dev140, no new LLM calls)
 
