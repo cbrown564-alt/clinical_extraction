@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-26
+Last updated: 2026-06-28
 
 ## Active Objective
 
@@ -63,6 +63,12 @@ Current evidence stack:
   frozen aggregate evidence; do not tune gates, prompts, artifacts, rules,
   normalization, scorer, or model choice from them.
 - Keep Investigations cost work deferred until a separate predeclaration.
+- Build a test-safe UMLS-backed concept normalizer to replace the in-sample
+  gold-derived stub in `deterministic/concept_normalizer.py` (acquire a real
+  UMLS/MRCONSO resource for the `UmlsConceptNormalizer` placeholder).
+  Deprioritized: the 2026-06-28 single-model plateau synthesis
+  (`docs/research/exectv2_gepa_single_model_plateau_synthesis_2026-06-28.md`)
+  found CUI is not the lever for this benchmark's surface-granularity convention.
 
 ### Blocked
 
