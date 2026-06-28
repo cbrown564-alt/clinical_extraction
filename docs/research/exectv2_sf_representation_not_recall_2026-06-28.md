@@ -25,6 +25,15 @@ the model to **consolidate** ("emit one fact per distinct seizure type") against
 that **rewards exhaustive, granularity-specific multi-tagging.** We are both designing the inputs
 wrong and evaluating the outputs wrong, and the two compound.
 
+> **Resolution after P3 + the hybrid re-score (§8–§10).** The above is the *opening* finding; the
+> full picture is more bounded. The eval artifact is real but worth only **~0.12** (0.592→0.713),
+> *not* the whole gap. The change class is recoverable by a better schema (P3: 0.15→0.52) but a
+> single pass can't recover recall without losing precision (P3 aggregate stays ~0.71). And the v08
+> hybrid scores **0.930 on the *fair* `state_profile`** too — so the gap to it is **genuine,
+> precision-preserving recall recovery, not a metric artifact.** Net: the premise's two defects are
+> real but bounded; the path to ~0.9 SF is a recall-additive verify stage, not single-pass schema or
+> metric tuning. See §10.
+
 ## 1. The contradiction that reopens the case
 
 Two established facts cannot both support the synthesis's conclusion:
@@ -173,9 +182,14 @@ The synthesis's own Diagnosis finding ("the model **consolidates** where gold ta
 concept: *focal epilepsy-Probable temporal* → both focal **and** temporal") is the **identical**
 granularity+multiplicity mechanism. So the ~0.73 single-pass plateau across both gap families has
 one root cause: the de-dup framing instructs consolidation against an exhaustive multi-tagging
-target. The "architectural gap to the hybrid" framing is therefore misleading — the hybrid's edge is
-most plausibly hand-coding this convention (re-expansion + CUI granularity via its dictionary), not
-multi-stage reasoning that instruction tuning cannot reach.
+target.
+
+> **Correction (§9/§10, after the hybrid re-score):** this section initially argued the
+> "architectural gap" framing was misleading and the hybrid "most plausibly hand-codes convention."
+> That was an overreach. The hybrid scores **0.93 on the fair, type-agnostic `state_profile`** (not
+> just on the strict CUI-keyed headline), so its edge is **genuine recall recovery**, not convention
+> conformance. The convention mechanism explains the de-dup↔`state_profile` gap (~0.12) and the Dx
+> consolidation pattern, but **not** the gap to the hybrid. See §10.
 
 ## 7. Artifacts
 
@@ -234,8 +248,55 @@ type-agnostic clinical ceiling**; recovering recall costs precision.
   does not hold.
 
 **Immediate next diagnostic (cheap, decisive):** re-score the **v08 hybrid's** saved SF predictions
-through `state_profile`. If the hybrid is also ~0.71 there, its 0.91 was substantially the CUI/
-multiplicity convention tax and the "gap" largely evaporates under the fairer metric — the eval
-pivot is then the whole story. If the hybrid holds ~0.9 on `state_profile`, the gap is genuine
-precision-preserving recall recovery and the lever is a verify-that-keeps-recall second pass, not
-more single-pass schema tuning. This is the single highest-value follow-up.
+through `state_profile` — **DONE, result in §9.** (Answer: the hybrid holds **0.930** on
+`state_profile`; the gap is genuine recall recovery, not a metric artifact.)
+
+## 9. Decisive diagnostic — the v08 hybrid on the fair metric (run 2026-06-28)
+
+Re-scored the v08 hybrid's saved dev140 SF predictions
+(`exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl`) through the same scorers, zero-LLM:
+
+| metric (dev140) | de-dup best | P3 Gan-event | **v08 hybrid** |
+| --- | ---: | ---: | ---: |
+| clinical_headline | 0.592 | 0.569 | **0.926** |
+| state_profile | 0.713 | 0.708 | **0.930** |
+
+Per-state presence recall / precision:
+
+| state | de-dup | P3 | **hybrid** |
+| --- | ---: | ---: | ---: |
+| seizure-free | 0.79 / 0.80 | 0.79 / 0.73 | **0.96 / 0.96** |
+| active-rate | 0.92 / 0.66 | 0.84 / 0.63 | **0.95 / 0.88** |
+| **changed** | 0.15 / 0.67 | 0.52 / 0.64 | **0.85 / 1.00** |
+
+**The hypothesis that the gap is mostly a metric artifact is refuted.** The hybrid holds **0.930 on
+the lenient, type-agnostic `state_profile`** — it does *not* collapse to the single-pass ~0.71
+ceiling. Its edge is **genuine, precision-preserving recall**: it recovers the change class at 0.85
+recall *and* 1.00 precision — the exact thing P3 could only do at a precision cost (0.52 / 0.64),
+and the de-dup pass barely did at all (0.15). (The hybrid emits 270 SF mentions, many duplicate
+keys the headline dedups away — so its multiset precision looks low but its scored precision is
+0.88–1.00.)
+
+## 10. Final reconciliation — the premise, resolved with numbers
+
+Both halves of the premise are real, but **bounded**, and the original synthesis's "genuine recall
+recovery" instinct was substantially correct (more so than §6's first reading):
+
+1. **Evaluation was partly wrong — worth ~0.12, not the whole gap.** The strict `clinical_headline`
+   under-credits SF by ~0.12 (0.59→0.71 on `state_profile`) via the seizure-type-CUI granularity
+   lottery + multiplicity. Fixing this (P1) is correct and lifts the *floor*, but it does **not**
+   explain the gap to the hybrid: the hybrid is ~0.93 on the *fair* metric too.
+2. **Input design was partly wrong — recoverable but precision-limited on a single pass.** Naming
+   the change class (P3) recovers it 0.15→0.52, but a single gpt-4.1-mini pass cannot recover recall
+   without spending precision; it tops out ~0.71.
+3. **The gap to the hybrid is genuine, precision-preserving recall recovery.** Confirmed on the fair
+   metric (hybrid 0.93, changed 0.85R/1.00P). This is *not* a scoring illusion and *not* merely
+   convention conformance — §6's "the architectural gap is misleading" was an overreach; the
+   hybrid's multi-pass curated verification does real clinical work the single pass cannot.
+
+**So the path to ~0.9 SF is a verify-that-ADDS-recall-while-keeping-precision stage, not more
+single-pass schema or metric tuning.** This is exactly where the prior multistage GEPA attempt
+failed (its verify only *filtered*, cutting recall) — the now-precise target for P2/a future
+multistage run is a recall-additive, precision-preserving verifier, the behaviour the hybrid's
+hand-curated corpus encodes. The open research question is whether GEPA can *learn* that behaviour
+(with stage-local credit assignment) rather than it being hand-authored.
