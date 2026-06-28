@@ -154,11 +154,11 @@ SF signature to the committed convention (drop "one fact per distinct seizure ty
 assertion per distinct frequency statement incl. qualitative change), and re-run mini at
 `minibatch=8`. Expected: SF climbs toward the 0.713+ profile ceiling; the change class recovers.
 
-### P3 — Port the Gan frequency component as a shared module *(the decisive test of the premise)*
+### P3 — Port the Gan structured-event representation *(RUN 2026-06-28; result in §8)*
 
-Run the known-good Gan SF representation on ExECTv2 letters, deterministically project to
-`(type, state)` facts. If it clears the hybrid's 0.91, the SF gap was ~100% representation. This is
-the cross-task shared-component ablation already on the roadmap.
+Ran a focused Gan-style structured-event SF extractor on ExECTv2 letters, projected through the
+existing dedup adapter + scorer. The representation **recovers the change class** (0.15→0.52 recall)
+but the aggregate is precision-limited and does **not** alone close the gap. Full result in §8.
 
 ### P5 — Decide whether annotator-CUI-mimicry is a valid target *(research-integrity)*
 
@@ -190,3 +190,52 @@ Diagnostics (zero-LLM, read-only; one committed script reproduces all numbers be
 
 Code (this change set): `scoring/seizure_frequency.py` (`state_profile`), `scoring/__init__.py`
 (export), `gepa/metric.py` (SF feedback), `tests/test_exectv2_scoring.py` (new SF tests).
+P3: `experiments/exectv2_sf_gan_representation.py` (+ run
+`exectv2_sf_gan_representation_gpt41mini_20260628`).
+
+## 8. P3 result — the Gan structured-event representation (run 2026-06-28)
+
+A focused Gan-style structured-event SF extractor — per-type `events` with `applies_to` + `kind ∈
+{frequency_rate, cluster_frequency, seizure_free, changed, unknown}`, instructed for gold's
+per-type multiplicity — run on dev140 with the **same** model (gpt-4.1-mini), each event projected
+to an ExECTv2 SF fact through the **existing** dedup adapter + scorer. Note this is a **lean,
+unoptimized single prompt**, compared against the **GEPA-optimized** de-dup best.
+
+| metric (dev140) | de-dup best (optimized) | P3 Gan-event (lean) |
+| --- | ---: | ---: |
+| clinical_headline | 0.592 (P0.601 R0.583) | 0.569 (P0.540 R0.601) |
+| state_profile | 0.713 (P0.705 R0.721) | **0.708 (P0.665 R0.757)** |
+
+Per-state presence recall — the decisive cell:
+
+| state | de-dup R / P | P3 R / P |
+| --- | ---: | ---: |
+| seizure-free | 0.79 / 0.80 | 0.79 / 0.73 |
+| active-rate | 0.92 / 0.66 | 0.84 / 0.63 |
+| **changed** | **0.15 / 0.67** | **0.52 / 0.64** |
+
+**The representation does exactly what it was designed to.** Naming the qualitative-change class
+lifts its recall **0.15 → 0.52 (3.5×)** — the de-dup schema's `changed → unknown` collapse *was*
+suppressing a real, detectable signal (the input-design half of the premise, confirmed
+behaviourally). But the **aggregate is flat** (state_profile 0.708 vs 0.713): the recovered change-
+recall is paid for in precision — P3 emits 203 SF facts vs gold 187 (de-dup 163) — and active-rate
+recall dips. A single gpt-4.1-mini pass, even with the right schema, sits at the **~0.71
+type-agnostic clinical ceiling**; recovering recall costs precision.
+
+**Premise resolved, precisely — both halves confirmed and separated:**
+- *Evaluation is wrong*: ~0.12 of the strict 0.59 is the seizure-type-CUI granularity lottery +
+  multiplicity (P3's relaxation ladder 0.569→0.708 reproduces it; the tax is **larger** for P3
+  because it extracts more *specific* — correct — seizure types that miss gold's generic CUI). Not
+  winnable by any extractor; needs the eval pivot (P1/P5).
+- *Input design is wrong*: the change class is recoverable by a schema that names it (0.15→0.52).
+- *Neither closes the gap to the hybrid's 0.91 alone* on a single pass: the residual is
+  **precision-preserving recall recovery** — what the hybrid's curated verifier corpus does. The
+  *mechanism* behind the premise is confirmed; the *strong form* ("reschema a single pass to ~0.9")
+  does not hold.
+
+**Immediate next diagnostic (cheap, decisive):** re-score the **v08 hybrid's** saved SF predictions
+through `state_profile`. If the hybrid is also ~0.71 there, its 0.91 was substantially the CUI/
+multiplicity convention tax and the "gap" largely evaporates under the fairer metric — the eval
+pivot is then the whole story. If the hybrid holds ~0.9 on `state_profile`, the gap is genuine
+precision-preserving recall recovery and the lever is a verify-that-keeps-recall second pass, not
+more single-pass schema tuning. This is the single highest-value follow-up.
