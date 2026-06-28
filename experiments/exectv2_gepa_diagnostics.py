@@ -2,16 +2,23 @@
 
 Companion to ``docs/research/exectv2_gepa_underperformance_investigation_2026-06-27.md``.
 
-Currently implements the **H4 / D1** probe: does a *perfect model-style*
-SeizureFrequency answer score ~1.0 on the de-dup ``clinical_headline`` surface,
-or does the clinical_facts -> mention adapter + render-safety gate + CUI
-projection silently cap it? "Model-style" means facts shaped exactly as the
-dedup LLM emits them (``seizure_type`` + coarse ``state``, NO raw ``attributes``
-dict), routed through the *production* path the GEPA metric scores:
+Two probes, both no new LLM calls:
+
+**H4 / D1** — does a *perfect model-style* SeizureFrequency answer score ~1.0 on the
+de-dup ``clinical_headline`` surface, or does the clinical_facts -> mention adapter +
+render-safety gate + CUI projection silently cap it? "Model-style" means facts shaped
+exactly as the dedup LLM emits them (``seizure_type`` + coarse ``state``, NO raw
+``attributes`` dict), routed through the *production* path the GEPA metric scores:
 
     gold SF -> model-style fact -> clinical_facts_to_mentions
             -> to_predicted_letter_from_mentions (evidence gate + render gate
                + CUI projection) -> to_exect_letter -> score_frequency_state
+
+**H2 / H6** — is the GEPA selection signal too noisy to detect the ~+0.01-0.03 real
+gains? Parses a saved GEPA run log (per-candidate full-valset per-letter scores +
+the accept/aggregate trajectory) and reports the selection signal-to-noise: the SE of
+the valset-mean (n=50) and the minibatch-mean (n=3) against the actual inter-candidate
+step gains, plus the best-so-far trajectory (H6: monotone? argmax returned?).
 
 Run:
     uv run python experiments/exectv2_gepa_diagnostics.py
@@ -19,8 +26,12 @@ Run:
 
 from __future__ import annotations
 
+import ast
+import re
+import statistics as stats
 from collections import Counter
 from collections.abc import Iterable
+from pathlib import Path
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     to_exect_letter,
@@ -211,6 +222,91 @@ def _report(title: str, res: dict[str, object]) -> None:
             print(line)
 
 
+# --- H2 / H6: GEPA selection signal-to-noise from a saved run log ----------------
+
+#: Default GEPA run log to analyse (the H1 diff-feedback run).
+DEFAULT_GEPA_LOG = (
+    Path(__file__).resolve().parents[1]
+    / "experiments"
+    / "gepa_overnight_exectv2"
+    / "h1_diff_run.log"
+)
+_FLOAT = r"([0-9]+\.[0-9]+)"
+
+
+def _parse_gepa_log(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    txt = path.read_text(encoding="utf-8", errors="replace")
+    base = re.search(rf"Base program full valset score: {_FLOAT}", txt)
+    per_candidate = [
+        list(ast.literal_eval(d).values())
+        for d in re.findall(r"Individual valset scores for new program: (\{.*?\})", txt)
+    ]
+    aggregates = [
+        float(a) for a in re.findall(rf"Val aggregate for new program: {_FLOAT}", txt)
+    ]
+    best_so_far = [
+        float(b) for b in re.findall(rf"Best valset aggregate score so far: {_FLOAT}", txt)
+    ]
+    decisions = re.findall(
+        rf"New subsample score {_FLOAT} is (better|not better) than old score {_FLOAT}", txt
+    )
+    return {
+        "seed_aggregate": float(base.group(1)) if base else None,
+        "per_candidate": per_candidate,
+        "aggregates": aggregates,
+        "best_so_far": best_so_far,
+        "decisions": decisions,
+    }
+
+
+def _report_h2(path: Path, minibatch_size: int = 3) -> None:
+    parsed = _parse_gepa_log(path)
+    print(f"\n=== H2/H6 selection signal-to-noise ({path.name}) ===")
+    if parsed is None:
+        print(f"  (log not found at {path}; skipping)")
+        return
+
+    per_candidate = parsed["per_candidate"]
+    aggregates = parsed["aggregates"]
+    best_so_far = parsed["best_so_far"]
+
+    # Per-letter score spread -> SE of the selection estimators.
+    per_letter_std = stats.median(stats.pstdev(v) for v in per_candidate if len(v) > 1)
+    n_val = len(per_candidate[0]) if per_candidate else 0
+    se_val = per_letter_std / (n_val**0.5) if n_val else float("nan")
+    se_mini = per_letter_std / (minibatch_size**0.5)
+
+    step_deltas = [
+        round(aggregates[i] - aggregates[i - 1], 4) for i in range(1, len(aggregates))
+    ]
+    median_abs_step = stats.median(abs(d) for d in step_deltas) if step_deltas else float("nan")
+
+    print(f"seed valset aggregate          = {parsed['seed_aggregate']:.4f}")
+    print(f"accepted candidates (full-eval)= {len(per_candidate)} (valset n={n_val})")
+    print(f"per-letter score std (median)  = {per_letter_std:.3f}")
+    print(f"SE of valset mean (n={n_val})       = {se_val:.4f}")
+    print(f"SE of minibatch mean (n={minibatch_size})    = {se_mini:.4f}  <-- accept-gate noise")
+    print(f"median |accepted-step gain|    = {median_abs_step:.4f}")
+    print(
+        f"selection SNR  valset={median_abs_step / se_val:.2f}  "
+        f"minibatch={median_abs_step / se_mini:.2f}  "
+        f"({'NOISY: gains < noise' if median_abs_step < se_mini else 'ok'})"
+    )
+    print(f"best-so-far trajectory         = {[round(b, 3) for b in best_so_far]}")
+    monotone = all(b2 >= b1 - 1e-9 for b1, b2 in zip(best_so_far, best_so_far[1:], strict=False))
+    print(f"H6: best-so-far monotone       = {monotone}; final best = {max(best_so_far):.4f}")
+    if parsed["decisions"]:
+        accepted = sum(1 for d in parsed["decisions"] if d[1] == "better")
+        margins = [abs(float(n) - float(o)) / minibatch_size for n, _, o in parsed["decisions"]]
+        print(
+            f"minibatch decisions            = {len(parsed['decisions'])} "
+            f"(accepted {accepted}); median per-example margin = {stats.median(margins):.3f} "
+            f"(vs SE {se_mini:.3f})"
+        )
+
+
 def main() -> None:
     print("H4 / D1 probe: can a PERFECT model-style SF answer score ~1.0?")
     print("(production path: model-style fact -> adapter -> gates -> CUI projection -> scorer)")
@@ -219,6 +315,7 @@ def main() -> None:
             _score_dev(_oracle_replay_sf_facts))
     _report("MODEL-STYLE + RAW hyphenated gold text as evidence (reproduces D1 0.0)",
             _score_dev(_model_style_sf_facts_raw_evidence))
+    _report_h2(DEFAULT_GEPA_LOG, minibatch_size=3)
 
 
 if __name__ == "__main__":

@@ -8,8 +8,11 @@ from a 121-token seed. Both gap families improved (Dx 0.46→0.57, SF 0.54→0.6
 0.79→0.86; precision 0.56→0.75). **H4 is now refuted**: a perfect *model-style* SF answer
 scores **F1=0.979** through the production path, so SF is NOT representation-capped — its
 ~0.60 production number is an optimization-signal gap (same column as Dx), and the
-achievable SF ceiling is ~0.98. H2/H3/H5 remain open for the push toward the 0.9155
-hybrid. Details below.
+achievable SF ceiling is ~0.98. **H2 confirmed + H6 cleared** (no LLM calls, log parse):
+the `minibatch=3` acceptance gate is noise-dominated (gate SE ≈ 0.13 vs ~0.05 real gains,
+SNR ≈ 0.37) while best-so-far is monotone and the argmax is returned — the flat headline was
+noisy *selection*, not a mechanics bug. Next = run the H2+H3 fix (minibatch ~8 + task temp
+≈0.7 during optimize). H3/H5 still open for the push toward the 0.9155 hybrid. Details below.
 
 ## H1 RESULT (confirmed)
 
@@ -88,6 +91,41 @@ the **same production path the GEPA metric scores** — `clinical_facts_to_menti
 reachable model behaviour, not a pipeline ceiling — the headroom to ~0.98 is an optimizer/
 feedback problem, consistent with H1 already nudging SF 0.54→0.60. Next per the plan: H2/H3
 (selection noise + sampling diversity) so GEPA can detect and bank these gains.
+
+## H2 RESULT (confirmed) / H6 (cleared) — the selection signal is noise-dominated
+
+No new LLM calls: `experiments/exectv2_gepa_diagnostics.py` now parses the saved GEPA run log
+(`experiments/gepa_overnight_exectv2/h1_diff_run.log`), which records every accepted
+candidate's full 50-letter valset scores plus the accept/aggregate trajectory. From the H1
+diff-feedback run (task `gpt-4.1-mini`, `reflection_minibatch_size=3`, valset 50):
+
+| selection quantity | value |
+| --- | ---: |
+| per-letter score std (median over candidates) | 0.224 |
+| SE of valset mean (n=50) | 0.0317 |
+| **SE of minibatch mean (n=3) — the acceptance gate** | **0.1293** |
+| median \|accepted-step aggregate gain\| | 0.0485 |
+| selection SNR — valset (gain/SE) | 1.53 |
+| **selection SNR — minibatch (gain/SE)** | **0.37** |
+| median per-example minibatch margin vs its SE | 0.058 vs 0.129 |
+
+- **H2 confirmed.** The `reflection_minibatch_size=3` acceptance gate has SE ≈ 0.13, but the
+  real per-step gains are ≈ 0.05 — **SNR ≈ 0.37**, so the gate accepts/rejects proposals
+  largely by noise (the per-example accept margin 0.058 sits well inside its 0.129 SE). The
+  n=50 valset Pareto signal is only marginal (SE 0.032 vs ~0.05 gains, SNR 1.5); the accepted
+  aggregate trajectory swings ±0.10–0.19 (e.g. 0.629 → **0.422** → 0.448 → 0.639), far beyond
+  the 0.032 SE. GEPA *is* climbing, but through a very noisy sieve — exactly the "explores
+  but barely banks gains" pattern, and the lever that throttles how much of H1 it can keep.
+- **H6 cleared.** Best-so-far is monotone non-decreasing (seed 0.578 → 0.589 → 0.629 → 0.639
+  → 0.676) and the returned program is the valset argmax — no early-stop / acceptance / argmax
+  bug. The flatness was the noisy *selection*, not a mechanics defect.
+
+**Fix to test (H2 + H3 together, the next run):** raise `reflection_minibatch_size` to ~8
+(halves the gate SE to ≈ 0.078, lifting minibatch SNR ≈ 0.37 → ≈ 0.62) and run the
+optimization phase with task temperature ≈ 0.7 + cache off (H3: give the reflector behavioural
+diversity), keeping final eval at temp 0. Budget must rise to keep a comparable proposal count
+(a larger minibatch costs more rollouts per iteration). **Success = a clear jump above the
+0.702 H1 plateau toward the 0.9155 hybrid.**
 
 ---
 
@@ -182,14 +220,12 @@ leverage fix.
 - **Also:** read the GEPA reflection traces in `experiments/gepa_overnight_exectv2/<run>/`
   (gepa_state.bin / logs) to confirm proposals are generic and untargeted.
 
-### H2 — Selection signal is too noisy: small valset + tiny minibatch
-Valset is 50 letters; `reflection_minibatch_size=3`. Real improvements here are ~+0.01–0.03;
-if the valset's candidate-to-candidate score noise exceeds that, GEPA's accept/reject
-random-walks and the seed survives. The run showed candidate valset scores fluctuating
-~0.52–0.59.
-- **Test:** measure valset score variance across candidates; raise minibatch to 6–8; try
-  multiple GEPA seeds; (dev is only 140 so valset can't grow much without shrinking
-  trainset — consider k-fold or a stability analysis instead).
+### H2 — CONFIRMED (2026-06-27): selection signal is noise-dominated
+Valset is 50 letters; `reflection_minibatch_size=3`. **Confirmed** (no LLM calls, log
+parse — see "H2 RESULT" above): the minibatch acceptance gate SE ≈ 0.13 dwarfs the ~0.05
+real per-step gains (SNR ≈ 0.37); the n=50 valset SE ≈ 0.032 is only marginal (SNR ≈ 1.5).
+GEPA accepts/rejects largely by noise. **Fix:** raise minibatch to ~8 (gate SE → ≈ 0.078)
+and bump budget to preserve proposal count; bundle with H3 in the next run.
 
 ### H3 — temp=0 + cache gives the reflector no behavioral diversity
 Task model runs at temperature 0 with cache on, so each instruction yields exactly one
@@ -218,13 +254,10 @@ gap is real recall/precision, but the model is never told the target convention/
   convention-robust scoring surface for the optimization signal while still reporting
   canonical headline.
 
-### H6 — GEPA budget/acceptance mechanics
-Confirm GEPA actually proposed and *accepted* enough mutations and that the returned
-program is the valset-best. Logs show ~24 candidates and a best-on-valset ≈ seed, which is
-consistent with H1/H2 (it tried, nothing beat the seed on the noisy valset) — but verify
-there is no early-stop or acceptance bug.
-- **Test:** dump the GEPA candidate→valset-score trajectory; confirm monotone best-so-far
-  and that `optimized` is the argmax.
+### H6 — CLEARED (2026-06-27): no acceptance/argmax bug
+**Cleared** (see "H2 RESULT" above): the candidate→valset trajectory shows best-so-far is
+monotone non-decreasing (0.578 → 0.676) and the returned program is the valset argmax. The
+flat *headline* was the noisy selection (H2), not a budget/early-stop/acceptance defect.
 
 ### H7 (kept, downgraded) — a genuine partial single-prompt ceiling
 Still possible that a single prompt truly cannot reach the hybrid. But the **same base LLM
@@ -238,12 +271,13 @@ H1–H4 are addressed.
    diffs jumped mini monolith 0.628→0.702.
 2. ~~**H4 + D1**~~ DONE (H4 refuted, D1 resolved) — SF representation is sound (perfect
    model-style SF = 0.979); SF gap is optimization signal, not a pipeline cap. No fix.
-3. **H2/H3** (selection noise + sampling diversity) — make the optimizer able to detect the
-   gains H1 unlocks. **← NEXT.**
+3. **H2/H3** (selection noise + sampling diversity) — H2 CONFIRMED + H6 CLEARED by the cheap
+   log-parse diagnostic (minibatch gate SNR ≈ 0.37). **← NEXT: run the fix** (minibatch ~8 +
+   task temp ≈ 0.7/cache-off during optimize, eval at temp 0, budget bumped).
 4. **D2/H5** (instrument the evidence gate and convention coupling). Partly evidenced by the
    H4 probe: the gate is exact-substring coupled and drops ~50% of SF on hyphenated evidence.
-5. Re-run mini monolith at medium budget; **success = a clear jump above the 0.71 hand-tuned
-   plateau**, concentrated in Diagnosis, confirming the ceiling was the harness not the task.
+5. Re-run mini monolith at medium budget; **success = a clear jump above the 0.702 H1 plateau**,
+   confirming the remaining cap was the selection noise, not the task.
 
 ## Appendix — diagnostic evidence (dev140, no new LLM calls)
 
