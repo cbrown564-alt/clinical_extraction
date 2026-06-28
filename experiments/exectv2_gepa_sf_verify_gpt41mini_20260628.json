@@ -1,0 +1,34 @@
+{
+  "comparators": {
+    "dedup": {
+      "clinical_headline": 0.592,
+      "state_profile": 0.713
+    },
+    "p3_gan_event": {
+      "clinical_headline": 0.569,
+      "state_profile": 0.708
+    },
+    "v08_hybrid": {
+      "clinical_headline": 0.926,
+      "state_profile": 0.93
+    }
+  },
+  "elapsed_minutes": 18.1,
+  "instruction_tokens": 1433,
+  "max_metric_calls": 1000,
+  "minibatch": 8,
+  "model": "openai/gpt-4.1-mini",
+  "optimized": {
+    "clinical_headline_f1": 0.5971,
+    "state_profile_f1": 0.7413,
+    "state_profile_precision": 0.7067,
+    "state_profile_recall": 0.7794
+  },
+  "recall_beta": 1.0,
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_sf_verify_gpt41mini_20260628",
+  "seed": {
+    "clinical_headline_f1": 0.5149,
+    "state_profile_f1": 0.6628
+  }
+}

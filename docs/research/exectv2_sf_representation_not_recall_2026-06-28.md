@@ -299,4 +299,62 @@ single-pass schema or metric tuning.** This is exactly where the prior multistag
 failed (its verify only *filtered*, cutting recall) — the now-precise target for P2/a future
 multistage run is a recall-additive, precision-preserving verifier, the behaviour the hybrid's
 hand-curated corpus encodes. The open research question is whether GEPA can *learn* that behaviour
-(with stage-local credit assignment) rather than it being hand-authored.
+(with stage-local credit assignment) rather than it being hand-authored. **P2 (§11) ran this and
+answers it: partially.**
+
+## 11. P2 result — recall-additive generate→verify, GEPA-optimized on `state_profile` (run 2026-06-28)
+
+`experiments/gepa_sf_verify_exectv2.py`, run `exectv2_gepa_sf_verify_gpt41mini_20260628` (mini,
+minibatch=8, 1000 metric calls, 18 min). SF-only two-stage: S0 = exhaustive per-type structured
+events; S1 = a **recall-additive** verifier (instructed to ADD missed facts, not filter); both
+instructions evolved jointly under a `state_profile` F1 objective whose feedback names the missed
+clinical states.
+
+| config (dev140) | clinical_headline | state_profile |
+| --- | ---: | ---: |
+| de-dup best (optimized) | 0.592 | 0.713 |
+| P3 Gan-event (lean) | 0.569 | 0.708 |
+| SF-verify SEED (2-stage, unoptimized) | 0.515 | 0.663 |
+| **SF-verify OPTIMIZED** | **0.597** | **0.741** |
+| v08 hybrid | 0.926 | 0.930 |
+
+Per-state presence recall / precision:
+
+| state | de-dup | P3 | **SF-verify opt** | hybrid |
+| --- | ---: | ---: | ---: | ---: |
+| seizure-free | 0.79 / 0.80 | 0.79 / 0.73 | **0.83 / 0.76** | 0.96 / 0.96 |
+| active-rate | 0.92 / 0.66 | 0.84 / 0.63 | **0.87 / 0.76** | 0.95 / 0.88 |
+| changed | 0.15 / 0.67 | 0.52 / 0.64 | **0.48 / 0.46** | 0.85 / 1.00 |
+
+**Findings:**
+- **New single-model best on both metrics** (`state_profile` **0.741**, `clinical_headline`
+  **0.597**). GEPA lifted `state_profile` **+0.078** over its own 2-stage seed (0.663) and **+0.028**
+  over the de-dup best (0.713).
+- **The verify is recall-additive, not a filter, and it recovered precision.** It emits exactly
+  **187** SF facts (= gold's count; de-dup under-emits at 163, hybrid over-emits at 270), and it
+  lifted active-rate precision **0.66 → 0.76** while holding recall (0.87) — the precision P3's
+  single pass had lost (0.63). This is the precision-preserving recall the diagnostic predicted; the
+  lever is confirmed correct.
+- **But it captures only ~0.03 of the ~0.22 `state_profile` gap to the hybrid.** The residual is
+  concentrated in the **change class**: the verify recovers change *recall* (0.48) but at **0.46
+  precision** — it *over-fires* "changed". The hybrid gets **0.85R / 1.00P**. Precise change
+  detection, plus the last ~0.1–0.2 of precision on every state, is what the hybrid's curated rule
+  corpus delivers and a single evolved verify pass does not.
+
+**Conclusion — P2 answers the open question: partially, and it bounds the lever.** A recall-additive
+verify is the right direction and yields the **best single-model SF to date** (0.741 fair / 0.597
+strict), confirming GEPA *can* learn precision-preserving recall to a degree. But single-model
+instruction optimization — even with the correct multi-stage shape, the fair objective, and the
+recall-additive framing — **plateaus ~0.74, ~0.19 below the hybrid's 0.930.** The hybrid's edge is
+now precisely localized and confirmed genuine: **perfect-precision change detection (1.00P) and
+high precision on every state**, the work its hand-curated rule/example corpus does. The remaining
+levers are narrow and known: a precision-weighted change sub-objective or a dedicated
+change-detection example set (i.e., re-introducing targeted curation) — or accept the ~0.74
+single-model ceiling and **report `state_profile` as the honest clinical SF number** (the P1 pivot),
+with the hybrid's 0.93 credited to its curated precision.
+
+This closes the SF investigation arc: the premise was confirmed (real, recoverable input/eval
+defects), the lever was identified *and validated* (recall-additive verify on the fair metric =
+new best), and the hybrid's residual edge is now characterized — not as architecture GEPA can't
+express, but as **curated precision (especially change detection) GEPA can't fully learn from the
+diff signal in one verify pass.**
