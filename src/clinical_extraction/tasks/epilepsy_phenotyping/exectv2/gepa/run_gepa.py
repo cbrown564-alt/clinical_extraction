@@ -99,6 +99,11 @@ class GepaExperimentConfig:
     num_threads: int = 12
     reflection_minibatch_size: int = 3
     length_penalty: LengthPenaltyConfig = field(default_factory=LengthPenaltyConfig)
+    #: F-beta weight for the optimization objective. 1.0 = F1; >1 favours recall.
+    recall_beta: float = 1.0
+    #: Per-family F-beta weights (family -> beta) as pairs; macro per-family objective.
+    #: Overrides recall_beta when non-empty. e.g. (("Diagnosis", 2.0),).
+    family_recall_beta: tuple[tuple[str, float], ...] = ()
     date: str = "2026-06-27"
     seed: int = 0
     notes: str = ""
@@ -395,7 +400,11 @@ def run_experiment(
 
     trainset = gepa_data.load_trainset(trainset_size=config.trainset_size)
     valset = gepa_data.load_valset(trainset_size=config.trainset_size, limit=config.valset_size)
-    metric = build_metric(config.length_penalty)
+    metric = build_metric(
+        config.length_penalty,
+        recall_beta=config.recall_beta,
+        family_beta=dict(config.family_recall_beta) or None,
+    )
 
     program = seed_program if seed_program is not None else build_from_scratch_program()
     instruction_of = final_instruction_fn or _final_instruction
@@ -445,6 +454,8 @@ def run_experiment(
         "max_metric_calls": config.max_metric_calls,
         "trainset_size": len(trainset),
         "valset_size": len(valset),
+        "recall_beta": config.recall_beta,
+        "family_recall_beta": dict(config.family_recall_beta),
         "seed_instruction_tokens": seed_instruction_tokens,
         "final_instruction_tokens": final_instruction_tokens,
         "elapsed_seconds": round(elapsed, 1),

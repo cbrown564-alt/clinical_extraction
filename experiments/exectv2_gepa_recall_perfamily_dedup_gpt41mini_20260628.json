@@ -1,0 +1,57 @@
+{
+  "auto": "medium",
+  "date": "2026-06-28",
+  "elapsed_seconds": 2276.4,
+  "family_recall_beta": {
+    "Diagnosis": 2.0
+  },
+  "final_eval": {
+    "clinical_headline": {
+      "diagnosis_component": "concept_negation",
+      "overall_f1": 0.7213,
+      "per_family": {
+        "Diagnosis": 0.6451,
+        "Investigations": 0.8784,
+        "Prescription": 0.8715,
+        "SeizureFrequency": 0.5439
+      },
+      "precision": 0.7409,
+      "recall": 0.7028
+    },
+    "comparators": {
+      "dev140_hand_tuned_single_prompt_headline": {
+        "deepseek-chat": 0.745,
+        "gpt-4.1-mini": 0.71,
+        "qwen3.6-35b": 0.694
+      },
+      "dev140_v08_hybrid_headline": 0.9155
+    },
+    "letters": 140,
+    "n_facts_total": 705,
+    "n_scored_total": 689,
+    "semantic_per_item_f1": 0.1479,
+    "strict_benchmark_per_item_f1": 0.1368,
+    "unscorable_letters": 0
+  },
+  "final_instruction_tokens": 1897,
+  "length_penalty": {
+    "alpha_output": 0.05,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 2000,
+    "output_token_budget": 2000
+  },
+  "max_metric_calls": null,
+  "notes": "Per-family-beta refinement of the uniform recall run: Diagnosis F-beta=2 (recall-push its co-present-concept gap), SF/Rx/Inv F-beta=1 (protect their F1 \u2014 the uniform beta=2 run over-emitted Inv -0.075 and SF -0.046). Macro per-family objective; reported headline stays micro-F1. Compare to uniform-recall 0.721 (Dx 0.700), per-family F1 0.731, hand-tuned 0.710, v08 hybrid 0.9155.",
+  "recall_beta": 2.0,
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_recall_perfamily_dedup_gpt41mini_20260628",
+  "seed_instruction_tokens": 417,
+  "task_max_tokens": 12000,
+  "task_model": "openai/gpt-4.1-mini",
+  "task_temperature": 0.0,
+  "trainset_size": 90,
+  "valset_size": 50
+}

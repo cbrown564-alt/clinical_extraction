@@ -1,0 +1,193 @@
+# GEPA from-scratch (ExECTv2 de-dup facts) — exectv2_gepa_multistage_dedup_gpt41mini_20260628
+
+Date: 2026-06-28
+
+DSPy-native GEPA run. The optimizable surface is the signature instruction; the existing de-dup parse/evidence-gate/adapter and the canonical clinical_headline scorers are reused unchanged. Trained on a seeded sub-split of `dev` (optimizer-only); evaluated on the full `dev` split (development surface, NOT test). Attribution-clean LLM-only: the adapter performs representation mapping only, it adds no facts.
+
+## Models
+
+- Task model: `openai/gpt-4.1-mini` (temp 0.0, max_tokens 12000)
+- Reflection (teacher) model: `deepseek/deepseek-reasoner`
+- GEPA budget: auto=medium max_metric_calls=None (trainset 90, valset 50)
+
+## Length penalty (prompt-bloat control)
+
+- enabled: True
+- instruction budget: 4000 tok (beta 0.25)
+- demo budget: 800 tok (beta 0.25)
+- output budget: 2000 tok (alpha 0.05)
+- **final instruction length: 4030 tokens** (seed was 2272 tokens)
+
+## Final evaluation (dev, clinical-recovery surface)
+
+- **Canonical clinical_headline overall F1: 0.724** (P=0.740 R=0.708, Diagnosis=concept_negation)
+  - Diagnosis=0.650  SeizureFrequency=0.550  Prescription=0.851  Investigations=0.916
+- Strict benchmark per-item F1 (diagnostic, NOT paper-cleared): 0.137
+- Semantic (CUI-dropped) per-item F1: 0.148
+- Letters: 140 (unscorable: 0); facts emitted 783, scored 717
+
+## Comparators (dev140, from plan 13)
+
+- Hand-tuned single-prompt de-dup plateau: GPT-4.1-mini 0.710, DeepSeek 0.745, Qwen 0.694
+- v08 hybrid (multi-component) control: 0.9155
+
+## Evolved instruction
+
+```text
+=== generate.diagnosis ===
+{
+  "instruction": "Read the clinical letter and extract all distinct epilepsy-related diagnosis facts. This includes: (1) the type of epilepsy (e.g., 'focal epilepsy', 'symptomatic structural focal epilepsy', 'Juvenile myoclonic epilepsy') and (2) any specific seizure types mentioned as part of the patient's epilepsy (e.g., 'generalised tonic clonic seizures', 'focal motor seizures', 'focal to bilateral convulsive seizures', 'absence', 'myoclonic jerks'). Do not include comorbid conditions (e.g., anxiety, learning difficulties, previous infections, meningioma, Trisomy 21, dementia), past medical history, non-epileptic attacks (e.g., dissociative seizures), or single seizure events (first seizure). For each concept, provide an exact substring from the letter as evidence. Use short canonical clinical terms for the concept (e.g., 'generalised tonic clonic seizures', 'absence', 'focal seizures', 'epilepsy'). Set 'family' always to 'diagnosis'. Set 'negation' to 'affirmed' if the concept is present, or 'negated' if explicitly excluded as part of the current diagnosis (e.g., 'no history of febrile seizures' is not to be extracted; only negated statements directly about the epilepsy diagnosis). Deduplicate concepts. Return exactly one JSON object matching the schema {\"clinical_facts\": [{\"concept\": \"short diagnosis concept\", \"evidence\": \"exact substring copied from the letter\", \"family\": \"diagnosis\", \"negation\": \"affirmed | negated\"}]}. No markdown, just the JSON object."
+}
+
+=== generate.seizure_frequency ===
+You read a clinical letter and extract seizure-frequency facts. For each distinct seizure type mentioned in the letter (use the exact name as it appears, including typographical errors; if no specific type is given, use "seizures"), emit one or more facts that capture the current frequency information. Do not enumerate individual dated events. Ground each fact with an exact verbatim substring from the letter as evidence. Return a single JSON object with a 'clinical_facts' list, no markdown, following this schema:
+
+{"clinical_facts": [{"evidence": "exact substring", "family": "seizure_frequency", "seizure_type": "named type or 'seizures'", "state": "active_rate | seizure_free | changed | unknown"}]}
+
+Important rules:
+
+- Only extract seizure-frequency facts. Do not output facts about diagnoses, prescriptions, investigations, comorbidities, or other clinical details.
+
+- Seizure type: Use the exact name from the letter. Examples: "absences", "generalised tonic clonic seizures", "minor seizures", "myoclonic jerks", "dissociative seizures". If the letter uses a generic term like "seizures" or "episodes", use that. If the letter mentions multiple distinct seizure types, emit facts for each.
+
+- State definitions:
+  * "active_rate": Use when the letter gives an explicit numeric count or periodic frequency (e.g., "2 per year", "3–4 episodes", "1 per week", "every month", "4 to 5 times a year", "2-3 per day"). The evidence must include a specific numerical or periodic expression.
+  * "changed": Use when the letter describes a qualitative frequency (e.g., "frequent", "infrequent", "occasional", "rare", "very frequent") OR an explicit frequency comparison (e.g., "used to happen weekly but now less often", "seizures have increased", "more frequent"). Do not use for "helped", "improved", "under control" without a clear comparison.
+  * "seizure_free": Use when the letter states a clear period without seizures (e.g., "seven years without any tonic clonic", "last event was more than five years ago", "has not had any further seizures", "remains seizure free"). Do not use for absence of prior seizures (e.g., "he has not had any previous seizures" is not a freedom period after having seizures). If the letter says "has not had any more seizures" after a past event, treat current state as seizure_free.
+  * "unknown": Only if the letter mentions seizures but gives no count, rate, freedom period, or qualitative descriptor. Prefer to omit such facts entirely; they will be dropped in scoring.
+
+- A single seizure type may yield multiple facts if the letter provides both a numeric rate and a qualitative descriptor (e.g., "absences continue fairly frequent, he probably gets 2-3 per day" → emit one fact for the numeric rate with state "active_rate" and one fact for the qualitative descriptor with state "changed").
+
+- If the letter describes a past period of seizure activity and a current freedom period for the same seizure type, emit only the current seizure_free state (do not also emit active_rate for the past events).
+
+- Do not emit facts for which you cannot provide a concrete state with an exact evidence substring. For example, "focal motor seizures where her arm twitches continually for up to 5 hours" does not give a frequency, so omit.
+
+- Evidence must be copied verbatim from the letter. Do not paraphrase. Ensure the substring includes the frequency information (e.g., "has not had any further seizures", "occur 4 to 5 times a year", "very frequent myoclonic jerks").
+
+- Output exactly a valid JSON object, no additional text.
+
+=== generate.prescription ===
+You are given a clinical letter about a patient with epilepsy. Extract all clinical facts from the letter and output them as a JSON object. The facts belong to four families: "diagnosis", "seizure_frequency", "investigation", and "prescription". Follow these rules:
+
+1. Output exactly one JSON object with a key "clinical_facts" that contains an array of fact objects. Each fact object must have a "family" field indicating the category. No markdown, no extra text.
+
+2. For each fact, include the "evidence" field which must be an exact substring copied verbatim from the letter that contains the relevant information. If multiple facts share the same evidence, you may reuse it.
+
+3. Diagnosis facts:
+   - Extract each distinct seizure type or epilepsy syndrome mentioned. Use short canonical hyphenated concepts only from this list: 
+     "focal-seizures", "focal-to-bilateral-convulsive-seizures", "generalised-tonic-clonic-seizures", "absence-seizures", "myoclonus", "epilepsy", "refractory-epilepsies", "symptomatic-structural-focal-epilepsy", "juvenile-myoclonic-epilepsy", "genetic-generalised-epilepsy", "temporal-lobe-epilepsy", "focal-seizures-with-altered-awareness", "drug-refractory-epilepsy", "secondarily-generalised-seizures".
+   - Do not use long qualified phrases. For example, "Symptomatic structural epilepsy" becomes "symptomatic-structural-focal-epilepsy". "generalised epilepsy with absences and GTCS" becomes "generalised-tonic-clonic-seizures" and "absence-seizures".
+   - De-duplicate: do not emit the same concept twice.
+   - Format: fact object has "concept" (string) and "evidence" (string) in addition to "family": "diagnosis".
+
+4. Seizure frequency facts:
+   - Extract concrete statements about seizure occurrence: counts, rates, or changes.
+   - Use canonical representation: "seizure-free [NumberOfSeizures=0]" if no seizures; "seizures [NumberOfSeizures=...]" if present, where "..." is a concise description (e.g., "2-3 per month", "weekly", "15 over 4 months").
+   - For frequency changes, use "seizures [FrequencyChange=...]" or "tonic-clonic-seizures [FrequencyChange=...]" with values like "Frequent" or "Increased".
+   - Only include if there is a concrete state (a number, rate, or change). Do not emit bare "unknown".
+   - Example: "he remains seizure free" -> {"family": "seizure_frequency", "concept": "seizure-free [NumberOfSeizures=0]", "evidence": "remains seizure free"}.
+   - Example: "seizures on a weekly basis" -> {"family": "seizure_frequency", "concept": "seizures [NumberOfSeizures=weekly]", "evidence": "seizures on a weekly basis"}.
+
+5. Investigation facts:
+   - Only include MRI, CT, EEG, or telemetry investigations that have a stated result (e.g., normal, abnormal, specific findings).
+   - Use concept format: "<modality>-<result>" where result is either "normal" or "abnormalities (Abnormal)". For example: "MRI-normal", "EEG-abnormalities (Abnormal)", "CT-normal".
+   - Evidence substring must include modality and result.
+   - Example: "MRI normal" -> {"family": "investigation", "concept": "MRI-normal", "evidence": "MRI normal"}.
+   - Example: "EEG 2002 - left temporal slowing with focal sharp waves" -> {"family": "investigation", "concept": "EEG-abnormalities (Abnormal)", "evidence": "EEG 2002 - left temporal slowing with focal sharp waves"}.
+
+6. Prescription facts (current antiepileptic medications only):
+   - Only include drugs that are explicitly stated with a numeric dose and a dosing frequency (e.g., "bd", "od", "twice a day", "nocte").
+   - Exclude: non-epilepsy medications, past medications, planned dose increases, medications without dose or frequency.
+   - Use generic drug name (e.g., "Sodium Valproate" not "Epilim", "Carbamazepine" not "Tegretol", "Levetiracetam" not "Keppra").
+   - If a drug has different doses at different times (e.g., "200 mg in the morning and 400 mg at night"), emit one fact per unique dose-frequency combination.
+   - Frequency must be one of "1" (once daily), "2" (twice daily), "3" (three times daily), "As_Required".
+   - Dose unit: "mg" or "g".
+   - Dose: number as a string.
+   - Example: "Carbamazepine 400mg bd" -> {"drug": "Carbamazepine", "dose": "400", "dose_unit": "mg", "frequency": "2", "evidence": "Carbamazepine 400mg bd", "family": "prescription"}.
+   - Do not include planned increases: e.g., "increase the carbamazepine to 600mg bd" is not current.
+
+7. Deduplication: Do not emit the same fact (same family and same concept/drug+dose combo) more than once. If the same evidence is used for different facts, that's fine.
+
+8. If a fact cannot be extracted according to these rules, omit it. Do not guess.
+
+Now, read the following letter and produce the JSON.
+
+=== generate.investigation ===
+{
+  "instruction": "Extract only investigation facts from the clinical letter. For each completed investigation (modality: MRI, CT, EEG, or telemetry) that has an explicitly stated result (normal or abnormal, or a description that clearly implies normal/abnormal) in the letter, output exactly one entry. Use the exact evidence substring copied verbatim from the letter, including punctuation. If a phrase contains results for multiple modalities (e.g., 'MRI and EEG normal 2018'), output separate entries for each with the same evidence. Map 'negative' to 'normal'. Treat descriptions like 'showed some non-specific slowing', 'generalised spike and wave', 'calcifications', 'atrophy', 'hyperintensities' as 'abnormal'; 'normal apart from...' as 'normal'. Do not include investigations that are only requested, planned, or scheduled. Output exactly one JSON object matching the schema: {\"clinical_facts\": [{\"evidence\": \"exact substring\", \"family\": \"investigation\", \"modality\": \"MRI|CT|EEG|telemetry\", \"result\": \"normal|abnormal\"}]}. Do not include any other clinical facts (diagnosis, seizure frequency, prescriptions). Return no markdown."
+}
+
+=== verify.diagnosis ===
+You audit a draft list of diagnosis facts against the clinical letter.
+
+Keep facts that name an epilepsy syndrome or a named seizure-type diagnosis and
+whose evidence is an exact substring of the letter. Drop comorbidities,
+non-epileptic events, and duplicates. Add any clearly-stated epilepsy or
+named-seizure-type diagnosis the draft missed, at a concise canonical
+granularity (e.g. 'focal epilepsy', not a long qualified phrase). Set
+negation=negated only if the diagnosis is explicitly excluded. Return exactly
+one JSON object matching output_schema with a 'clinical_facts' list, no markdown.
+
+=== verify.seizure_frequency ===
+You are given a clinical letter (`letter_text`) and a draft list of seizure-frequency facts (`draft_facts_json`).  
+Audit the draft against the letter, then **output a complete, corrected list of clinical facts** covering all relevant families:  
+`diagnosis`, `seizure_frequency`, `prescription`, and `investigations`.
+
+**Rules for every family:**
+
+- **Evidence** must be an exact substring from the letter that directly supports the fact.  
+- **Family** is one of: `"diagnosis"`, `"seizure_frequency"`, `"prescription"`, `"investigations"`.  
+- **Canonical representation** – use the concise, hyphenated‑lowercase concept shown in the gold standard (e.g., `"generalised-tonic-clonic-seizures"`, `"focal-motor-seizures"`, `"symptomatic-structural-epilepsy"`). Do not add spaces or capitalise except where the gold does (e.g., `"SodiumValproate"` for medications).  
+- Only include **epilepsy‑related** facts:  
+  - Diagnoses must be epileptic syndromes or seizure types (exclude `"dissociative seizures"`, `"blackouts"`, `"anxiety"`, etc.).  
+  - Seizure‑frequency facts only for explicitly named epileptic seizure types or `"seizures"` (never from vague terms like `"episodes"`, `"events"`, `"blackouts"`).  
+  - Prescriptions only for anti‑epileptic drugs (AEDs) that the patient is **currently taking** (exclude recommended changes, historic medications, non‑AEDs).  
+  - Investigations only for tests directly relevant to epilepsy (e.g., EEG, MRI/CT head) – include a short canonical result if stated (e.g., `"EEG abnormal"`, `"MRI normal"`).
+
+**Seizure‑frequency specifics:**
+- `state` must be one of: `"active_rate"` (explicit count/rate), `"seizure_free"` (stated period without seizures), `"changed"` (explicit frequency change like “more”, “fewer”, “increased”), or `"unknown"` – drop bare `"unknown"`.  
+- Do **not** turn a historical active count into `seizure_free` (e.g., “used to get every month” is not a current seizure‑free period).  
+- For `"changed"`, the evidence must contain a word indicating change (e.g., “more”, “increased”, “decreased”, “less”).  
+
+**Duplicates:** Merge identical facts (same family, same canonical concept, same state/dose) – keep only one.  
+
+**Output format:** Return exactly one JSON object with a `"clinical_facts"` list. Each fact is an object with keys:  
+- `"evidence"` (string, exact substring)  
+- `"family"` (string)  
+- For `"seizure_frequency"` also include `"seizure_type"` (canonical name) and `"state"` (string).  
+- For `"diagnosis"` include `"concept"` (canonical name).  
+- For `"prescription"` include `"medication"` (canonical name, e.g., `"Carbamazepine 400mg x2"`) – dose and frequency as in gold (e.g., `x1` for once daily, `x2` for twice, `x3` for three times).  
+- For `"investigations"` include `"concept"` (e.g., `"EEG abnormal"`).  
+
+Do **not** output any markdown or extra text – only the JSON object.  
+
+**Example canonical concepts (learn from these patterns):**  
+- Diagnosis: `"generalised-tonic-clonic-seizures"`, `"focal-motor-seizures"`, `"focal-to-bilateral-convulsive-seizures"`, `"symptomatic-structural-focal-epilepsy"`, `"epileptic-seizures"`.  
+- Seizure‑frequency: same seizure‑type names, plus state.  
+- Prescription: `"SodiumValproate 500mg x1"`, `"Carbamazepine 400mg x2"`, `"Lamotrigine 25mg x1"`.  
+- Investigation: `"CT Head normal"`, `"MRI normal"`, `"EEG abnormal"`.  
+
+Use the draft only as a starting point – you must add any missing gold facts and remove any wrong facts according to the rules above.
+
+=== verify.prescription ===
+You audit a draft list of prescription facts against the clinical letter.
+
+Keep only current regimens whose evidence (an exact substring of the letter)
+states both a numeric dose and a dosing frequency. Drop past, planned-only, or
+dose/frequency-less drugs and duplicates. Normalize dose_unit to mg or g and
+frequency to 1/2/3/As_Required. Return exactly one JSON object matching
+output_schema with a 'clinical_facts' list, no markdown.
+
+=== verify.investigation ===
+You audit a draft list of investigation facts against the clinical letter.
+
+Keep only completed MRI/CT/EEG/telemetry investigations with a stated result
+(normal or abnormal) whose evidence is an exact substring of the letter. Drop
+requested/planned-only investigations and duplicates (de-duplicate by
+modality+result). Return exactly one JSON object matching output_schema with a
+'clinical_facts' list, no markdown.
+```
+
+## Provenance
+
+`dev` is sub-split deterministically (seed 20260627) into an optimizer-only trainset and a selection valset; `test` is never touched. The full-dev headline is a superset of the valset, so it is mildly optimistic versus a disjoint split — a development-only number, NOT paper-comparable and NOT a test readout. The length penalty is part of the GEPA selection metric, so a shorter evolved instruction is a recorded optimization outcome.

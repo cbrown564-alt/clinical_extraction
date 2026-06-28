@@ -1,0 +1,53 @@
+{
+  "auto": "medium",
+  "date": "2026-06-28",
+  "elapsed_seconds": 8479.9,
+  "final_eval": {
+    "clinical_headline": {
+      "diagnosis_component": "concept_negation",
+      "overall_f1": 0.7235,
+      "per_family": {
+        "Diagnosis": 0.65,
+        "Investigations": 0.916,
+        "Prescription": 0.8514,
+        "SeizureFrequency": 0.55
+      },
+      "precision": 0.7399,
+      "recall": 0.7078
+    },
+    "comparators": {
+      "dev140_hand_tuned_single_prompt_headline": {
+        "deepseek-chat": 0.745,
+        "gpt-4.1-mini": 0.71,
+        "qwen3.6-35b": 0.694
+      },
+      "dev140_v08_hybrid_headline": 0.9155
+    },
+    "letters": 140,
+    "n_facts_total": 783,
+    "n_scored_total": 717,
+    "semantic_per_item_f1": 0.1478,
+    "strict_benchmark_per_item_f1": 0.1369,
+    "unscorable_letters": 0
+  },
+  "final_instruction_tokens": 4030,
+  "length_penalty": {
+    "alpha_output": 0.05,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 4000,
+    "output_token_budget": 2000
+  },
+  "max_metric_calls": null,
+  "notes": "Multi-stage (generate->verify) GEPA, Phase 1 of the multistage scope. Four per-family generate instructions (S0, warm-started from the 0.731 evolved run) + four per-family verify instructions (S1, lean distilled from the entity_verifier rules), evolved jointly with H1 diff-feedback + H2 minibatch=8. Tests whether an evolvable verify stage closes the architectural gap. Kill-criterion: beat 0.731 by >= +0.03 on dev140. Compare to per-family 0.731, hand-tuned 0.710, v08 hybrid 0.9155.",
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_multistage_dedup_gpt41mini_20260628",
+  "seed_instruction_tokens": 2272,
+  "task_max_tokens": 12000,
+  "task_model": "openai/gpt-4.1-mini",
+  "task_temperature": 0.0,
+  "trainset_size": 90,
+  "valset_size": 50
+}
