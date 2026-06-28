@@ -11,8 +11,11 @@ scores **F1=0.979** through the production path, so SF is NOT representation-cap
 achievable SF ceiling is ~0.98. **H2 confirmed + H6 cleared** (no LLM calls, log parse):
 the `minibatch=3` acceptance gate is noise-dominated (gate SE ≈ 0.13 vs ~0.05 real gains,
 SNR ≈ 0.37) while best-so-far is monotone and the argmax is returned — the flat headline was
-noisy *selection*, not a mechanics bug. Next = run the H2+H3 fix (minibatch ~8 + task temp
-≈0.7 during optimize). H3/H5 still open for the push toward the 0.9155 hybrid. Details below.
+noisy *selection*, not a mechanics bug. **H2 fix RUN (2026-06-28) cleared the plateau**:
+`minibatch=8` (gate SE 0.129→0.084) lifted dev140 0.702→**0.7194** — first GEPA-from-scratch
+to beat the hand-tuned 0.710, on a big Diagnosis gain (0.57→0.66) — but the single-instruction
+monolith trades families (SF 0.60→0.54), pointing at the multi-family program (re-run with the
+H1+H2 fixes) as the next lever. H3/H5 still open for the push toward the 0.9155 hybrid.
 
 ## H1 RESULT (confirmed)
 
@@ -131,6 +134,38 @@ diff-feedback run (task `gpt-4.1-mini`, `reflection_minibatch_size=3`, valset 50
    change to use a separate compile vs eval LM.
 
 **Success = a clear jump above the 0.702 H1 plateau toward the 0.9155 hybrid.**
+
+### H2 fix RUN RESULT (2026-06-28) — cleared the hand-tuned plateau, modestly
+
+`gepa_h2_minibatch_exectv2.py`, `minibatch=8`, task temp 0, `max_metric_calls=1400`,
+diff-feedback metric. Run `exectv2_gepa_dedup_gpt41mini_h2mb8_20260628` (41 min):
+
+| dev140 | overall | Dx | SF | Rx | Inv | instr tok |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| pre-H1 monolith (mb=3) | 0.628 | 0.46 | 0.54 | 0.82 | 0.79 | — |
+| H1 diff (mb=3) | 0.702 | 0.569 | 0.597 | 0.836 | 0.864 | 576 |
+| **H2 diff + mb=8** | **0.7194** | **0.662** | 0.540 | 0.850 | 0.862 | 490 |
+| hand-tuned single prompt | 0.710 | 0.67 | 0.56 | 0.81 | 0.83 | 121 |
+
+- **H2 confirmed, mechanism verified.** Re-parsing the new log, the gate SE fell exactly as
+  predicted: minibatch SE 0.129 (n=3) → **0.084** (n=8). The cleaner gate let GEPA bank a big
+  **Diagnosis** gain (0.569 → 0.662) and a smaller Rx gain in a **shorter** prompt (576 → 490
+  tok), lifting the headline to **0.7194 — the first GEPA-from-scratch run to beat the
+  hand-tuned 0.710 plateau.** This is the payoff the investigation predicted: the cap was the
+  harness (H1 feedback + H2 selection), not the task.
+- **Two honest caveats.** (1) *Monolith family tradeoff*: the single instruction cannot serve
+  all four families at once — Dx +0.093 came with **SF −0.057** (0.597 → 0.540). (2) *Still
+  noise-limited*: the per-accepted-step true gains shrank to ~0.019, so even the halved gate
+  noise leaves SNR < 1 (minibatch 0.22, valset 0.56). The gate fix helped but did not unlock a
+  large climb; the valset-best (0.659) is actually below H1's (0.676) — the dev140 headline rose
+  because of the Dx/Rx gains and the shorter prompt, on a different (micro-F1 vs mean-per-letter)
+  aggregation.
+
+**Read:** H2 is a real, confirmed win (plateau cleared) but incremental. The now-visible
+bottleneck is the **single-instruction tradeoff** (Dx↑ forces SF↓), which points at the
+**multi-family multi-signature** program — flat at 0.631 *pre-H1* but never re-run with the
+H1 diff-feedback **and** H2 minibatch fixes — as the highest-leverage next step toward 0.9155.
+H3 (temp diversity) remains a secondary lever.
 
 ---
 
@@ -276,13 +311,17 @@ H1–H4 are addressed.
    diffs jumped mini monolith 0.628→0.702.
 2. ~~**H4 + D1**~~ DONE (H4 refuted, D1 resolved) — SF representation is sound (perfect
    model-style SF = 0.979); SF gap is optimization signal, not a pipeline cap. No fix.
-3. **H2/H3** (selection noise + sampling diversity) — H2 CONFIRMED + H6 CLEARED by the cheap
-   log-parse diagnostic (minibatch gate SNR ≈ 0.37). **← NEXT: run the fix** (minibatch ~8 +
-   task temp ≈ 0.7/cache-off during optimize, eval at temp 0, budget bumped).
-4. **D2/H5** (instrument the evidence gate and convention coupling). Partly evidenced by the
+3. ~~**H2/H3**~~ H2 DONE — confirmed by diagnostic (gate SNR 0.37) AND by the fix run
+   (`minibatch=8` → dev140 0.702→**0.719**, first to beat hand-tuned 0.710). H6 cleared. The
+   monolith now shows a family tradeoff (Dx↑ SF↓). H3 (temp diversity) still open, secondary.
+4. **Multi-family re-run** (NEXT, highest leverage) — `program_multifamily.py` was flat 0.631
+   *pre-H1*; re-run with the H1 diff-feedback metric + H2 `minibatch=8` so each family gets its
+   own evolved instruction (removes the monolith Dx↔SF tradeoff) — the most plausible path past
+   0.719 toward 0.9155.
+5. **D2/H5** (instrument the evidence gate and convention coupling). Partly evidenced by the
    H4 probe: the gate is exact-substring coupled and drops ~50% of SF on hyphenated evidence.
-5. Re-run mini monolith at medium budget; **success = a clear jump above the 0.702 H1 plateau**,
-   confirming the remaining cap was the selection noise, not the task.
+6. ~~Re-run mini monolith~~ DONE (H2 run, 0.719). Remaining: push past the monolith ceiling via
+   the multi-family program (#4) and/or H3.
 
 ## Appendix — diagnostic evidence (dev140, no new LLM calls)
 
