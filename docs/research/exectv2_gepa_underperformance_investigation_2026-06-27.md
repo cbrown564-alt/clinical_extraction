@@ -120,12 +120,17 @@ diff-feedback run (task `gpt-4.1-mini`, `reflection_minibatch_size=3`, valset 50
   → 0.676) and the returned program is the valset argmax — no early-stop / acceptance / argmax
   bug. The flatness was the noisy *selection*, not a mechanics defect.
 
-**Fix to test (H2 + H3 together, the next run):** raise `reflection_minibatch_size` to ~8
-(halves the gate SE to ≈ 0.078, lifting minibatch SNR ≈ 0.37 → ≈ 0.62) and run the
-optimization phase with task temperature ≈ 0.7 + cache off (H3: give the reflector behavioural
-diversity), keeping final eval at temp 0. Budget must rise to keep a comparable proposal count
-(a larger minibatch costs more rollouts per iteration). **Success = a clear jump above the
-0.702 H1 plateau toward the 0.9155 hybrid.**
+**Fix to test — staged for clean attribution** (H2 and H3 pull opposite ways on selection
+*variance*, so do not bundle them blind):
+1. **H2 first (`gepa_h2_minibatch_exectv2.py`):** raise `reflection_minibatch_size` 3 → 8
+   (halves the gate SE to ≈ 0.078, lifting minibatch SNR ≈ 0.37 → ≈ 0.62), keep task temp 0,
+   and bump the budget (`max_metric_calls≈1400`) so the larger minibatch does not cut the
+   proposal count. No `run_gepa` code change needed; the diff-feedback metric is now default.
+2. **H3 next (only if H2 under-delivers):** run the optimization phase at task temp ≈ 0.7 with
+   cache off (reflector sees behavioural diversity), eval still at temp 0 — needs a `run_gepa`
+   change to use a separate compile vs eval LM.
+
+**Success = a clear jump above the 0.702 H1 plateau toward the 0.9155 hybrid.**
 
 ---
 
