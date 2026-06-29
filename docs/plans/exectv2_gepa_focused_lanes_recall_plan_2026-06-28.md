@@ -476,6 +476,52 @@ vs P2 mini 0.741 · Phase 3b **with** projection 0.779 · hybrid 0.930.
   (evidence-decomposition thesis), not feedback precision or determinism. The next real SF lever is
   architectural, not another feedback/demo iteration.
 
+### Phase 6 — `changed`-class row-by-row adjudication (run 2026-06-29) = REVISES Phase 4 + the "irreducible" framing
+
+Full doc: `docs/experiments/exectv2/seizure_frequency/exectv2_sf_changed_class_row_analysis_2026-06-29.md`.
+A zero-LLM quantitative skeleton + five parallel sub-agent clinical adjudications read every dev140
+letter where gold OR the model emits a `changed` state (14 misses / 15 over-calls / 13 agreements) on
+the P2 mini run. The question: is the `changed` plateau an unlearnable convention boundary (Phase 4's
+claim), and does optimising toward gold trade away clinical usefulness?
+
+**Three findings overturn Phase 4's "not a learnable boundary; curated-precision territory".**
+
+1. **The schema is direction-blind, and so are both metrics.** `program_sf_verify.py:58-75` offers only
+   `kind = frequency_rate | cluster_frequency | seizure_free | changed` — no direction field. The model
+   flags "changed" and the adapter fills `FrequencyChange="Same"` as a default. `state_profile` collapses
+   the five-way FC vocab to one `changed` bucket; `clinical_headline` is FC-blind (`changed → unknown`).
+   So `FC=Same` on every prediction is a *pipeline default, not the model's judgment*, and **direction is
+   neither produced nor scored.** On the 13 agreements the model emitted `Same` while gold was directional
+   in 12 — direction recovered 0/12. The "TPs" match only because the metric ignores direction.
+
+2. **The errors decompose ~52% fixable representation defect / ~31% irreducible IAA-0.47 ambiguity /
+   ~17% gold-convention friction** — not one wall. Recall misses are 100% lexically present (12/14 a band
+   word adjacent to a seizure term; recoverable by the same `rules/change.py` whitelist Phase 3b used).
+   Over-calls are 60% genuine error: 6/15 lift `Same` from *medication* language ("dose unchanged") or a
+   diagnosis header (a missing **seizure-adjacency** rule), and several flatten clear deteriorations to
+   `Same` (the missing **direction**). Only 2/15 over-calls and 9 BOTH_DEFENSIBLE cases are the genuine
+   coin-flip the IAA 0.47 measures.
+
+3. **Why two different LLMs (mini, deepseek-chat/-reasoner) plateaued at the same ~0.47:** they inherited
+   the *same* representation defect (direction-blind schema + `Same` default + no seizure-adjacency +
+   letter-level feedback), not the same irreducible floor. The hybrid's 0.85R/1.00P comes from fixing all
+   three (direction-mapped whitelist + adjacency + recall-additive extraction); its 1.00P is partly
+   in-sample fitting to this gold.
+
+**Clinical-usefulness verdict (answers the standing question).** Mostly NOT "model more useful, marked
+down": precision over-calls are 9/15 NO-LOSS noise, only 2/15 LOSE real info. The hypothesis holds partly
+on recall (~36% of misses are gold double-tagging a band on a rate the model already has — convention
+padding) and decisively at the **metric level**: the `changed` class scores presence-of-a-band-token, not
+direction, so optimising it chases a noisy direction-stripped flag while the actionable signal (Increased
+vs Decreased) is unmodelled and unscored.
+
+**Revised next lever (supersedes Phase 5's "architectural, multi-lane extraction" as the *first* SF move).**
+Before more extraction, test the representation fix: a **direction-aware SF schema** (five-way `kind`
+matching the gold FC vocab) + **seizure-adjacency discipline** + a **direction-sensitive metric**. This
+isolates whether the LLM-only route can reach the hybrid's change-class numbers on *direction* — the part
+a clinician acts on, which the current schema and benchmark both discard. Phase 5's "stop single-pass SF
+feedback tuning" stands (feedback was not the lever); this is a schema/metric change, a different axis.
+
 ## 7. Reuse & artifacts
 
 - Reuses unchanged: `program_multifamily.py` (lane structure), `run_gepa.run_experiment`
