@@ -1,0 +1,23 @@
+=== generate ===
+You read one clinical letter and list EVERY distinct seizure-frequency statement as an event. Emit one event per (seizure type x distinct frequency statement) and list the same seizure type more than once when the letter gives it more than one distinct statement (e.g. a current numeric rate AND a separately-reported change). For each event give applies_to (the seizure type, or 'seizures' if generic); kind (an explicit numeric rate or cluster cadence = frequency_rate / cluster_frequency; seizures stopped / none / X seizure-free = seizure_free; a reported increase, decrease, improvement, or worsening = changed); and evidence copied verbatim. If a seizure type is only mentioned with no usable frequency, seizure-free, or change statement, do NOT emit an event for it. Favour recall on real frequency statements. Return exactly one JSON object matching output_schema with an 'events' list, no markdown.
+
+=== verify ===
+You are a recall-additive verifier. Read the clinical letter and a DRAFT list of seizure-frequency events. Output a COMPLETED, corrected list as a single JSON object matching the output_schema, with no markdown.
+
+Your task:
+- Add every seizure-frequency statement the letter contains that the draft omitted.
+- Correct any wrong `kind` or `applies_to` field.
+- Remove only events the letter does not support.
+- Keep every well-supported draft event.
+
+Crucial domain rules (derived from verified gold standards):
+1. **Only include seizures from a confirmed epilepsy diagnosis.** Do NOT include events from suspected, dissociative, non-epileptic, or unwitnessed blackouts (e.g., letters with diagnoses like “unwitnessed blackouts”, “episodes of changed awareness” without clear epilepsy, or events described as “jerks” that are not explicitly called seizures). If the letter does not clearly state epilepsy (e.g., “new diagnosis of epilepsy” is present, but events are described only as “episodes” without a definite seizure label), do NOT count them.
+2. **`seizure_free` events are often missed.** If the letter states the patient has had no seizures for a period (e.g., “no further seizures”, “has not had any for the last 2 weeks”, “last event October 2019”), add a `seizure_free` event. Use `applies_to` = the specific seizure type if mentioned, otherwise `"seizures"`.
+3. **`changed` events** (qualitative frequency changes like “improved significantly”, “worsened”) must be about a seizure type that is part of the confirmed epilepsy. Do not add `changed` events for non-epileptic symptoms or for types that are not explicitly linked to the epilepsy.
+4. **Historical baseline frequencies** (e.g., “two unprovoked generalised seizures” in the past) are NOT current frequency statements. Only include ongoing frequencies (e.g., “around 1-2 per month”, “occurs up to 2 or 3 times per month”) or the fact that seizures have stopped.
+5. **`cluster_frequency` events** should be added when the letter describes seizures occurring in clusters (e.g., “in clusters very frequently”, “another 3 events in quick succession”).
+6. **Use the exact seizure type name** as written in the letter (e.g., “focal seizures with altered awareness”, “focal to bilateral convulsive seizures”). If the letter refers broadly to “seizures”, use `"seizures"`.
+7. **Evidence must be an exact substring** copied verbatim from the letter (including typos). Do not paraphrase.
+8. **Never include events for seizure types that are not part of the confirmed epilepsy** – even if the draft contains them. Remove such events.
+
+Output only a JSON object with an `"events"` array. Each event has: `applies_to` (string), `kind` (one of `"frequency_rate"`, `"cluster_frequency"`, `"seizure_free"`, `"changed"`), and `evidence` (string). Do not add any extra text, markdown, or code fences.

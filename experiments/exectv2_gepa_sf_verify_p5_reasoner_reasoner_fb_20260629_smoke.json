@@ -1,0 +1,51 @@
+{
+  "change_precision_weight": 0.0,
+  "comparators": {
+    "p2_sf_verify_mini": {
+      "clinical_headline": 0.597,
+      "state_profile": 0.741
+    },
+    "phase3b_with_projection": {
+      "clinical_headline": 0.65,
+      "state_profile": 0.779
+    },
+    "recall_lanes_sf": {
+      "clinical_headline": 0.58,
+      "state_profile": 0.71
+    },
+    "v08_hybrid": {
+      "changed_precision": 1.0,
+      "changed_recall": 0.85,
+      "clinical_headline": 0.926,
+      "state_profile": 0.93
+    }
+  },
+  "elapsed_minutes": 3.1,
+  "extraction_model": "deepseek/deepseek-reasoner",
+  "gate": {
+    "clinical_headline_sf": 0.65,
+    "feedback_lever_min_state_profile": 0.771,
+    "state_profile": 0.8
+  },
+  "instruction_tokens": 409,
+  "max_metric_calls": 20,
+  "minibatch": 3,
+  "optimized": {
+    "changed_precision": 0.5,
+    "changed_recall": 0.5,
+    "clinical_headline_f1": 0.4615,
+    "state_profile_f1": 0.8276,
+    "state_profile_precision": 0.75,
+    "state_profile_recall": 0.9231
+  },
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629_smoke",
+  "seed": {
+    "changed_precision": 0.5,
+    "changed_recall": 0.5,
+    "clinical_headline_f1": 0.4615,
+    "state_profile_f1": 0.8276
+  },
+  "verify_model": "deepseek/deepseek-reasoner",
+  "with_examples": false
+}

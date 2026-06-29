@@ -1,0 +1,51 @@
+{
+  "change_precision_weight": 0.0,
+  "comparators": {
+    "p2_sf_verify_mini": {
+      "clinical_headline": 0.597,
+      "state_profile": 0.741
+    },
+    "phase3b_with_projection": {
+      "clinical_headline": 0.65,
+      "state_profile": 0.779
+    },
+    "recall_lanes_sf": {
+      "clinical_headline": 0.58,
+      "state_profile": 0.71
+    },
+    "v08_hybrid": {
+      "changed_precision": 1.0,
+      "changed_recall": 0.85,
+      "clinical_headline": 0.926,
+      "state_profile": 0.93
+    }
+  },
+  "elapsed_minutes": 17.2,
+  "extraction_model": "deepseek/deepseek-reasoner",
+  "gate": {
+    "clinical_headline_sf": 0.65,
+    "feedback_lever_min_state_profile": 0.771,
+    "state_profile": 0.8
+  },
+  "instruction_tokens": 949,
+  "max_metric_calls": 1000,
+  "minibatch": 8,
+  "optimized": {
+    "changed_precision": 0.5667,
+    "changed_recall": 0.6296,
+    "clinical_headline_f1": 0.608,
+    "state_profile_f1": 0.7661,
+    "state_profile_precision": 0.7107,
+    "state_profile_recall": 0.8309
+  },
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629",
+  "seed": {
+    "changed_precision": 0.3704,
+    "changed_recall": 0.7407,
+    "clinical_headline_f1": 0.5152,
+    "state_profile_f1": 0.6875
+  },
+  "verify_model": "openai/gpt-4.1-mini",
+  "with_examples": true
+}

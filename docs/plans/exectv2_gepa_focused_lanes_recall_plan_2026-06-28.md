@@ -354,7 +354,7 @@ operations uniformly as "re-keying," missed them — the assumption that SF proj
 Dx/Rx projection (label/alias/filter over model-selected evidence) was wrong. SF projection is a
 miniature deterministic extraction pipeline in its own right.
 
-### Phase 5 — keep pushing the GEPA route: feedback precision + hand-curated examples + model swap (predeclared, not started)
+### Phase 5 — keep pushing the GEPA route: feedback precision + hand-curated examples + model swap (run 2026-06-29) = PARTIAL — new LLM-only SF best 0.784, gate not cleared
 
 Phase 3b reached **0.781** overall / **0.779** SF state_profile **by wiring in the deterministic SF
 projection** (`sf_state_projection.py` + `rules/change.py`). That is the *with-deterministic-fallback*
@@ -433,6 +433,48 @@ LLM-only SF state precision.
 model config — it does **not** touch the deterministic SF projection (`sf_state_projection.py`,
 `rules/change.py`). The reported SF number is the LLM-only number; the Phase-3b-with-projection number
 is reported alongside as the deterministic-fallback comparison, never blended.
+
+**Execution results (2026-06-29).** Full doc:
+`docs/experiments/exectv2/seizure_frequency/exectv2_sf_verify_phase5_result_2026-06-29.md`. The
+post-audit pipeline was re-smoked clean (all 4 arms exit 0, the Cat-B over-emission spiral the audit
+targeted is gone), then the matrix ran on full dev140 (minibatch=8, 1000 calls, same
+`score_frequency_state` path as P2).
+
+| arm | extract→verify | examples | state_profile | clinical_headline | SP P/R | changed R/P |
+| --- | --- | --- | ---: | ---: | --- | --- |
+| reasoner→reasoner fb | reasoner→reasoner | no | 0.743 | 0.560 | 0.67/0.83 | 0.56/0.48 |
+| reasoner→mini fb | reasoner→mini | no | 0.766 | 0.587 | 0.71/0.83 | 0.52/0.54 |
+| **reasoner→reasoner ex** | **reasoner→reasoner** | **yes** | **0.784** | 0.586 | 0.78/0.79 | 0.56/0.56 |
+| reasoner→mini ex | reasoner→mini | yes | 0.766 | 0.608 | 0.71/0.83 | 0.63/0.57 |
+
+vs P2 mini 0.741 · Phase 3b **with** projection 0.779 · hybrid 0.930.
+
+- **Gate (`state_profile ≥ 0.80` AND `clin ≥ 0.65`): NOT MET** (best 0.784 / 0.608). Feedback-lever bar
+  (+0.03 → 0.771): cleared by **one** arm, and **only with demos** — feedback alone topped out at 0.766
+  (+0.025). The +H-examples crossing (the predeclared fallback) supplied the difference.
+- **New LLM-only SF best = 0.784**, +0.043 over P2, and **edges past the Phase-3b-with-projection line
+  (0.779)** — the LLM-only route now reaches unaided what previously needed the deterministic projection.
+- Demos are **decisive for reasoner-verify** (fb 0.743 → ex 0.784) but **inert for mini-verify** (0.766
+  both): the reasoner needs concrete convention examples to discipline over-reasoning (error analysis §6
+  predicted this); mini already follows the evolved instructions. H-examples ⇒ confirmed; H-feedback
+  (primary) ⇒ partial (real but sub-threshold without demos).
+- Gain is **precision** (winner P 0.67→0.78, R 0.83→0.79) from Cat-B/C + type-naming discipline. Audited
+  all four selected instructions: **none contains the destructive "only emit a rate if there's a change"
+  rule** the reasoner-verify reflection proposed during the smoke (valset gate rejected it 0.729 < 0.767;
+  it never reached a selected program). The changed class improved across all arms vs P2's 0.473 (best
+  reasoner→mini ex 0.63R/0.567P) but remains the drag vs hybrid's 0.85R/1.00P.
+
+**Recommendation / adoption.**
+- **Adopt `reasoner_reasoner_ex` (deepseek-reasoner extract + deepseek-reasoner verify + the 4
+  hand-curated demos) as the LLM-only SF reference** at **0.784 state_profile** — the new LLM-only best,
+  and the proof that the LLM-only route reaches the deterministic-projection line on its own. Its evolved
+  prompt is `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.instruction.txt`.
+- For a **deployable** SF number, keep the deterministic SF projection alongside (Phase 3b, 0.779/0.650
+  with projection); the two are reported separately, never blended.
+- **Do not invest further in single-pass SF feedback tuning** — the ~0.78 LLM-only plateau is firm across
+  fb/ex × reasoner/mini, ~0.15 below the hybrid's 0.93. The residual is **multi-lane extraction**
+  (evidence-decomposition thesis), not feedback precision or determinism. The next real SF lever is
+  architectural, not another feedback/demo iteration.
 
 ## 7. Reuse & artifacts
 
