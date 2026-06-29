@@ -1,7 +1,17 @@
 # Scope — GEPA over a multi-stage ExECTv2 program (toward the 0.9155 hybrid)
 
-Status: **DRAFT scope, not started.** Decision gate at the end of Phase 1.
+Status: **DRAFT scope, SUPERSEDED in emphasis (not started).** Decision gate at the end of Phase 1.
 Owner: ExECTv2 GEPA workstream. Date: 2026-06-28.
+
+> **Redirect (2026-06-28):** the evidence decomposition
+> (`docs/research/exectv2_gepa_vs_hybrid_evidence_decomposition_2026-06-28.md`) shows the
+> GEPA→hybrid gap is **producer evidence-retrieval** (ev-recall 0.694 → 0.883), not the
+> verify/arbitrate/deterministic stages (which net only +0.016 evidence-recall and +0.058 F1,
+> all Diagnosis). This scope's Phase-1 bet on an evolvable **S1 verify** stage is therefore
+> demoted to a secondary lever. The active plan is
+> `docs/plans/exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md` (recall-oriented S0
+> producers on a DeepSeek task model). Keep this scope for the verify/arbitrate design if the
+> producer lever plateaus.
 
 Companion: `docs/research/exectv2_gepa_underperformance_investigation_2026-06-27.md`
 (the investigation this scope follows from). Code under

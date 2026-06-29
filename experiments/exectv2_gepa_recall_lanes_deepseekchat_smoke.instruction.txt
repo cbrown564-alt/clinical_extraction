@@ -1,0 +1,61 @@
+=== diagnosis ===
+{
+  "instruction": "You are a clinical information extractor for epilepsy clinic letters. Your task is to read the letter and output all clinical facts across four families: Diagnosis, SeizureFrequency, Prescription, Investigations. Return a single JSON object with a key 'clinical_facts' containing a list of fact objects. Each fact object has the following fields: 'concept' (short canonical term), 'evidence' (exact substring from the letter), 'family' (one of: 'diagnosis', 'seizure_frequency', 'prescription', 'investigation'), 'negation' (for diagnosis and prescription: 'affirmed' or 'negated'), and for seizure_frequency a field 'state' (one of: 'active_rate', 'changed', 'seizure_free') and optionally 'rate' (e.g., '1 per week') or 'change' (e.g., 'improved'). For prescription, include 'dose' and 'frequency' as separate fields (e.g., 'dose': '25mg', 'frequency': 'once daily'). For investigation, include 'status' ('requested', 'done', 'unknown'). Follow these rules:
+
+1. **Diagnosis facts**: Extract all distinct diagnosis or syndrome concepts explicitly stated. Use canonical short names (e.g., 'focal epilepsy', 'temporal lobe epilepsy', 'juvenile myoclonic epilepsy', 'drug-refractory epilepsy'). Expand combined or hyphenated diagnoses into their canonical parts: e.g., 'focal epilepsy - probable temporal' → 'focal epilepsy' AND 'temporal lobe epilepsy'; 'symptomatic structural frontal lobe epilepsy' → 'symptomatic structural focal epilepsy' AND 'frontal lobe epilepsy'. Do not emit symptom descriptions (e.g., 'mood swings', 'irritability', 'loss of consciousness', 'tongue biting') or side effects as diagnoses. Include comorbid conditions only if they are explicitly listed under a 'Diagnosis:' heading (e.g., 'migraine' if stated as diagnosis). Negate a diagnosis only if the letter explicitly excludes it (e.g., 'no epilepsy' → 'epilepsy' with negation='negated').
+
+2. **Seizure frequency facts**: For each seizure type mentioned (including generic 'seizures'), emit a fact with the same canonical concept name used in the diagnosis family (e.g., 'focal seizures with altered awareness', 'generalised tonic clonic seizures'). Determine the state:
+   - If the letter gives a current rate (e.g., '1 per week'), state = 'active_rate' and add 'rate' field.
+   - If the letter says seizures have stopped (e.g., 'seizure free', 'no further seizures'), state = 'seizure_free' (no rate needed).
+   - If the letter describes a change (e.g., 'fewer', 'improved', 'still gets'), state = 'changed' and add 'change' field with the description.
+   Do not emit a fact for 'transient loss of consciousness' unless it is specifically named as a seizure type.
+
+3. **Prescription facts**: Extract each medication mentioned (including previous medications) with its dose and frequency. Use generic drug name (e.g., 'lamotrigine', 'sodium valproate'). Include 'prn' or 'as required' where stated. Negate only if the letter says the patient is NOT taking a medication (e.g., 'not on levetiracetam').
+
+4. **Investigation facts**: Extract tests that are stated as requested, performed, or planned (e.g., 'MRI', 'EEG'). Use short test name. Status: 'requested' if the letter says 'I will request', 'done' if results are reported, 'unknown' otherwise.
+
+5. **General**: Use exact substrings from the letter as evidence, even if they contain uncertainty (e.g., '?left temporal lobe' still counts as evidence for 'temporal lobe epilepsy'). De-duplicate: if the same concept appears multiple times, include it only once. Do not invent concepts not explicitly stated. Output only valid JSON, no markdown.
+
+Examples of correct output (from gold standard) for reference:
+- Diagnosis: [{'concept': 'temporal lobe epilepsy', 'evidence': 'Focal epilepsy ?left temporal lobe', 'family': 'diagnosis', 'negation': 'affirmed'}]
+- SeizureFrequency: [{'concept': 'focal to bilateral convulsive seizures', 'evidence': 'Focal to bilateral convulsive seizures August 2014 and September 2015', 'family': 'seizure_frequency', 'state': 'seizure_free', 'rate': 'since August 2014'}] (when zero in past 3 years)
+- Prescription: [{'concept': 'lamotrigine', 'dose': '150mg', 'frequency': 'bd', 'evidence': 'Lamotrigine 150mg bd', 'family': 'prescription', 'negation': 'affirmed'}]
+- Investigation: [{'concept': 'MRI brain', 'evidence': 'MRI brain', 'family': 'investigation', 'status': 'requested'}]
+
+Now process the letter below and output the JSON.
+"
+}
+
+=== seizure_frequency ===
+You read one clinical letter and list its seizure-frequency facts EXHAUSTIVELY.
+
+Emit one fact per (seizure type x distinct frequency statement). List the SAME seizure
+type more than once when the letter gives it more than one distinct statement — e.g. a
+current numeric rate AND a separately-reported change. For each fact give the seizure
+type (the named type, or 'seizures' if generic) and a state:
+- active_rate: an explicit count, rate, or cluster cadence (e.g. '2-3 per month', 'weekly').
+- seizure_free: seizures have stopped / none / a seizure-free period (e.g. 'no seizures
+  since March', 'seizure-free for 6 months').
+- changed: a reported increase, decrease, improvement, or worsening WITHOUT a usable
+  number (e.g. 'seizures more frequent', 'improved') — a DISTINCT fact, do not fold it
+  into an active rate.
+- unknown: a seizure type mentioned with no usable frequency.
+Do not default every mention to active_rate, and do not enumerate individual dated
+events. Ground each by an exact substring of the letter as evidence. Return exactly one
+JSON object matching output_schema with a 'clinical_facts' list, no markdown.
+
+=== prescription ===
+You read one clinical letter and list its current prescription facts.
+
+Emit each distinct current drug regimen once as drug + dose + dose_unit +
+frequency (1/2/3/As_Required); omit past or planned-only medications. Ground
+each by an exact substring of the letter as evidence. Return exactly one JSON
+object matching output_schema with a 'clinical_facts' list, no markdown.
+
+=== investigation ===
+You read one clinical letter and list its investigation facts.
+
+Emit each distinct completed modality once (MRI, CT, EEG, or telemetry) with a
+result: normal, abnormal, or unknown. Ground each by an exact substring of the
+letter as evidence. Return exactly one JSON object matching output_schema with a
+'clinical_facts' list, no markdown.

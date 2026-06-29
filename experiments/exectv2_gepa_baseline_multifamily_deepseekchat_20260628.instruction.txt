@@ -1,0 +1,62 @@
+=== diagnosis ===
+You are given a clinical letter text. Your task is to extract all distinct clinical facts from the letter and return them as a JSON object matching the schema below. The facts belong to one of four families: `diagnosis`, `seizure_frequency`, `prescription`, or `investigation`. Follow these rules:
+
+- **Diagnosis facts**: Epilepsy type, seizure types, and any epilepsy‑related comorbid conditions (e.g., “focal epilepsy”, “generalised tonic‑clonic seizures”, “temporal‑lobe‑seizure”). Do **not** emit non‑epilepsy diagnoses (e.g., ischaemic heart disease, low mood, stress). Use short canonical concept names (e.g., “drug‑refractory‑epilepsies”, not “Drug refactory focal epilepsy”). Always include a `negation` field: `"affirmed"` if the diagnosis is present, `"negated"` if explicitly ruled out.
+
+- **Seizure frequency facts**: For every seizure type mentioned, emit a fact with the family `seizure_frequency`. The `concept` field must encode both the seizure type and its current state, using the following formats:
+  - **Active rate**: `"<canonical‑seizure‑type>: active‑rate (NumberOfSeizures=<number>, TimePeriod=<unit>)"`  
+    Example: `"tonic‑clonic‑seizure: active‑rate (NumberOfSeizures=1, TimePeriod=Month)"`
+  - **Changed frequency** (more/fewer/improved/worse): `"<canonical‑seizure‑type>: changed (<direction>)"`  
+    Example: `"tonic‑clonic‑seizures: changed (frequent)"` or `"seizure: changed (decreased)"`
+  - **Seizure‑free**: `"<canonical‑seizure‑type>: seizure‑free"`  
+    Do **not** default every mention to active‑rate. A reported improvement or worsening is a distinct `changed` fact.
+
+- **Prescription facts**: Each medication with its dose and frequency. Use canonical drug names (e.g., “Carbamazepine”, not “Tegretol”). Format: `"<drug> <dose> x<times‑per‑day>"` (e.g., `"Carbamazepine 200mg x1"`). Family: `prescription`.
+
+- **Investigation facts**: Each test performed and its result (if mentioned). Use short canonical names: `"EEG (<finding>)"`, `"MRI (<finding>)"`. If no result is given, use `"EEG (Unknown)"`. Family: `investigation`.
+
+**General rules**:
+- Always ground every fact with an **exact substring** copied from the letter as the `evidence` field.
+- **De‑duplicate**: emit each distinct concept only once, even if mentioned multiple times.
+- For diagnosis facts only, include the `negation` field. For other families, omit `negation`.
+- Return **exactly one JSON object** with a field `"clinical_facts"` containing a list of fact objects. Each object must have at least `"concept"`, `"evidence"`, and `"family"`. Use the following schema:
+
+```json
+{
+  "clinical_facts": [
+    {
+      "concept": "short canonical concept (with state if applicable)",
+      "evidence": "exact substring from the letter",
+      "family": "diagnosis | seizure_frequency | prescription | investigation",
+      "negation": "affirmed | negated"   // only for diagnosis family
+    }
+  ]
+}
+```
+
+Do not use markdown. Output only the JSON.
+
+Examples of correct concept formatting (from gold standards):
+- Diagnosis: `"generalised epilepsy"`, `"focal epilepsy"`, `"generalised‑tonic‑clonic‑seizures"`, `"temporal‑lobe‑seizure"`
+- Seizure frequency: `"tonic‑clonic‑seizures: changed (frequent)"`, `"seizure: changed (decreased)"`, `"tonic‑clonic‑seizure: active‑rate (NumberOfSeizures=1, TimePeriod=Month)"`, `"focal‑to‑bilateral‑convulsive‑seizures: active‑rate (NumberOfSeizures=1)"`
+- Prescription: `"lamotrigine 100mg x1"`, `"Carbamazepine 200mg x2"`, `"sodium valproate 400mg x2"`
+- Investigation: `"EEG (generalised spike and wave)"`, `"MRI (normal)"`, `"EEG (Unknown)"`
+
+=== seizure_frequency ===
+{
+  "instruction": "You are given a clinical letter. Extract all seizure-frequency facts from it, following these rules strictly:\n\n1. **One fact per distinct seizure type** mentioned in the letter. Use the exact named type as given (e.g., 'generalised tonic clonic seizures', 'focal seizures with altered awareness') or 'seizures' if the letter uses a generic term. Keep the type name concise – do not add qualifying phrases.\n\n2. **Assign exactly one coarse state** per fact:\n   - `\"active_rate\"` – when the letter reports a current count or rate (e.g., 'once a week', 'around 1 seizure per day', '2-3 per day').\n   - `\"seizure_free\"` – when the letter explicitly states the patient has had no seizures (e.g., 'has not had any further episodes', 'remains seizure free', 'last event was more than five years ago' if it implies ongoing freedom).\n   - `\"changed\"` – when the letter describes a change in frequency (more, fewer, improved, worse) **without** giving an explicit current rate. Do **not** use `\"active_rate\"` for statements that simply report a change.\n   - `\"unknown\"` – only if no frequency information is present and the state cannot be inferred. (Note: a bare `\"unknown\"` state may be dropped in scoring; avoid it if any frequency clue exists.)\n\n3. **Evidence must be a verbatim substring** (exact copy including typos) of one or more consecutive sentences from the letter that directly support the state. Do not paraphrase.\n\n4. **Do not emit facts about** diagnosis, medications, investigations, or other clinical families. Only seizure-frequency facts.\n\n5. **De-duplicate**: if the same seizure type and same state appear more than once, emit only one fact.\n\n6. **Do not enumerate individual dated events** (e.g., 'last occurred three years ago' alone is not a frequency fact unless it implies seizure-free).\n\n7. **Return exactly one JSON object** matching the schema below. Do not wrap in markdown or add any other text.\n\nOutput schema:\n```json\n{\"clinical_facts\": [{\"evidence\": \"exact substring copied from the letter\", \"family\": \"seizure_frequency\", \"seizure_type\": \"named seizure type, or 'seizures' if generic\", \"state\": \"active_rate | seizure_free | changed | unknown\"}]}\n```\n\n**Examples of correct behaviour (from previous feedback):**\n- If the letter says 'She gets generalised seizures once a week.' → state = `\"active_rate\"`, seizure_type = `\"generalised seizures\"`.\n- If the letter says 'The absences and jerks happen more frequently perhaps several times a day.' → state = `\"changed\"`, seizure_type = `\"absences and jerks\"` (but note gold may require separate facts for 'absences' and 'jerks'; use the exact phrase from the letter).\n- If the letter says 'her last event was more than five years ago' and implies current seizure freedom → state = `\"seizure_free\"` for that type.\n- If the letter says 'She has not had any seizure as a result of this.' → state = `\"seizure_free\"`, seizure_type = `\"seizures\"`.\n- If the letter says 'Things have got a bit worse recently and he is having one or two seizures per month.' → this contains both a change and a current rate; the current rate is explicit, so emit one fact with state `\"active_rate\"` for the rate (e.g., 'one or two seizures per month') **and** a separate fact with state `\"changed\"` for the deterioration? Actually, per the feedback example 4, they emitted two facts: one for baseline rate and one for change. But note the rule: if a current rate is given, it's `\"active_rate\"`; the change is separate. However, if the same sentence contains both, you may need to split evidence. Usually the letter gives separate sentences. Follow the principle: each fact needs distinct evidence. In example 4, the assistant emitted two facts from two separate sentences, which was correct. So do the same.\n\n**Common pitfalls to avoid:**\n- Do not emit facts for diagnosis (e.g., 'drug-resistant epilepsy', 'dissociative seizures') even if repeated in the letter.\n- Do not emit facts about medications, doses, or investigations.\n- Always use the exact seizure type string from the letter, even if it includes 'and' (e.g., 'absences and jerks'). Do not split unless the letter splits them.\n- Never use a state of `\"unknown\"` if any frequency information exists; prefer `\"changed\"` if only a trend is described.\n- Ensure the evidence substring is exactly as written, including typos (`\"she say that she remains seizure free\"` is acceptable).\n\nNow extract the facts from the provided letter."
+}
+
+=== prescription ===
+You read one clinical letter and list its current prescription facts.
+
+Emit each distinct current drug regimen once as drug + dose + dose_unit +
+frequency (1/2/3/As_Required); omit past or planned-only medications. Ground
+each by an exact substring of the letter as evidence. Return exactly one JSON
+object matching output_schema with a 'clinical_facts' list, no markdown.
+
+=== investigation ===
+You are given a clinical letter. Your task is to list the investigation facts by extracting each distinct completed modality (MRI, CT, EEG, or telemetry) mentioned in the letter that has been performed (past tense, not planned or future). For each such modality, assign a result: "normal", "abnormal", or "unknown" based on the letter's explicit wording. If no result is given, use "unknown". Provide an exact substring from the letter as evidence for each fact. Return exactly one JSON object matching the output_schema with a 'clinical_facts' list. Do not include any other facts (e.g., diagnosis, seizure frequency, prescriptions). Do not use markdown.
+
+Output schema:
+{"clinical_facts": [{"evidence": "exact substring copied from the letter", "family": "investigation", "modality": "MRI | CT | EEG | telemetry", "result": "normal | abnormal | unknown"}]}

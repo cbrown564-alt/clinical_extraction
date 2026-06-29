@@ -60,6 +60,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_overall,
     score_prescription_components,
     semantic_config_for,
+    source_near_diagnostic,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -160,6 +161,26 @@ def _canonical_headline(
     }
 
 
+def _evidence_recall(
+    gold_letters: list[ExectLetter], pred_letters: list[ExectLetter]
+) -> dict[str, Any]:
+    """Producer evidence-presence recall (source_near same-entity text-overlap).
+
+    The fraction of gold facts for which the program retrieved ANY overlapping-text
+    prediction, representation aside — the north-star for "did the producers retrieve
+    more?", independent of keying. GEPA per-family baseline 0.694; v08 hybrid 0.883.
+    """
+
+    diag = source_near_diagnostic(gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for)
+    return {
+        "overall_recall": round(diag.overall.overlap.recall, 4),
+        "per_family": {
+            entity: round(diag.per_entity[entity].overlap.recall, 4) for entity in KEY_ENTITY_NAMES
+        },
+        "comparators": {"gepa_per_family_baseline": 0.694, "v08_hybrid": 0.883},
+    }
+
+
 def _evaluate_program(
     program: GepaDedupFactsExtractor,
     letters: list[ExectLetter],
@@ -214,12 +235,14 @@ def _evaluate_program(
     headline = _canonical_headline(gold_letters, pred_letters)
     strict = score_overall(gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for).per_item
     semantic = score_overall(gold_letters, pred_letters, KEY_ENTITY_NAMES, semantic_config_for).per_item
+    evidence_recall = _evidence_recall(gold_letters, pred_letters)
     summary = {
         "letters": len(rows),
         "unscorable_letters": n_unscorable,
         "n_facts_total": n_facts_total,
         "n_scored_total": n_scored_total,
         "clinical_headline": headline,
+        "evidence_recall": evidence_recall,
         "strict_benchmark_per_item_f1": round(strict.f1, 4),
         "semantic_per_item_f1": round(semantic.f1, 4),
         "comparators": {
@@ -282,6 +305,14 @@ def _markdown(payload: dict[str, Any], instruction: str) -> str:
         f"(P={h['precision']:.3f} R={h['recall']:.3f}, Diagnosis={h['diagnosis_component']})",
         f"  - Diagnosis={pf['Diagnosis']:.3f}  SeizureFrequency={pf['SeizureFrequency']:.3f}  "
         f"Prescription={pf['Prescription']:.3f}  Investigations={pf['Investigations']:.3f}",
+        (
+            f"- **Producer evidence-recall (source_near): {s['evidence_recall']['overall_recall']:.3f}** "
+            f"(GEPA per-family baseline 0.694, v08 hybrid 0.883) — Dx="
+            f"{s['evidence_recall']['per_family']['Diagnosis']:.3f} "
+            f"SF={s['evidence_recall']['per_family']['SeizureFrequency']:.3f} "
+            f"Rx={s['evidence_recall']['per_family']['Prescription']:.3f} "
+            f"Inv={s['evidence_recall']['per_family']['Investigations']:.3f}"
+        ),
         f"- Strict benchmark per-item F1 (diagnostic, NOT paper-cleared): "
         f"{s['strict_benchmark_per_item_f1']:.3f}",
         f"- Semantic (CUI-dropped) per-item F1: {s['semantic_per_item_f1']:.3f}",
