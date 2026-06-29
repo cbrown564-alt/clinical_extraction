@@ -99,8 +99,95 @@ def test_metric_missing_state_feedback_tells_reflection_to_add() -> None:
         ),
     )
     assert out.score < 0.999
-    assert "MISSED states you must ADD" in out.feedback
+    # Phase 5 per-(type, state) feedback: a residual MISSED list plus the per-type breakdown.
+    assert "MISSED states to ADD" in out.feedback
     assert "seizure-free" in out.feedback
+    assert "by seizure type" in out.feedback
+
+
+def test_metric_feedback_flags_per_type_multiplicity() -> None:
+    # Gold tags focal seizures with BOTH active-rate and changed; pred emits only the rate.
+    # Phase 5 Category A: the feedback must name the type and tell the model to emit BOTH.
+    metric = build_sf_verify_metric(LengthPenaltyConfig(enabled=False))
+    gold_letter = ExectLetter(
+        letter_id="T2",
+        note_text="focal seizures 2 per month, now increased.",
+        annotations=(
+            ExectAnnotation(
+                entity="SeizureFrequency",
+                text="focal seizures",
+                attributes={"CUI": "C0270834", "LowerNumberOfSeizures": "2", "TimePeriod": "Month"},
+            ),
+            ExectAnnotation(
+                entity="SeizureFrequency",
+                text="focal seizures",
+                attributes={"CUI": "C0270834", "FrequencyChange": "Increased"},
+            ),
+        ),
+    )
+    out = metric(
+        dspy.Example(letter=gold_letter),
+        _pred(
+            [
+                {"family": "seizure_frequency", "seizure_type": "focal seizures", "state": "active_rate", "evidence": "focal seizures 2 per month"}
+            ]
+        ),
+    )
+    assert "PER-TYPE MULTIPLICITY" in out.feedback
+    assert "changed" in out.feedback
+
+
+def test_metric_feedback_flags_non_epileptic_over_emission() -> None:
+    # Gold has no SF and NO epilepsy Dx (dissociative only); pred emits SF -> Category B "absent".
+    metric = build_sf_verify_metric(LengthPenaltyConfig(enabled=False))
+    gold_letter = ExectLetter(
+        letter_id="T3",
+        note_text="She reports episodes around twice a week of an unusual thought.",
+        annotations=(
+            ExectAnnotation(
+                entity="Diagnosis",
+                text="dissociative seizures",
+                attributes={"Certainty": "3", "Negation": "Affirmed", "DiagCategory": "None"},
+            ),
+        ),
+    )
+    out = metric(
+        dspy.Example(letter=gold_letter),
+        _pred(
+            [
+                {"family": "seizure_frequency", "seizure_type": "episodes", "state": "active_rate", "evidence": "episodes around twice a week"}
+            ]
+        ),
+    )
+    assert "OVER-EMISSION" in out.feedback
+    assert "no epilepsy diagnosis" in out.feedback.lower()
+
+
+def test_metric_feedback_flags_uncertain_diagnosis_over_emission() -> None:
+    # Gold has no SF but an epilepsy Dx that is only PROBABLE (Certainty 4) -> Category B "uncertain".
+    # The reason must NOT claim "no confirmed diagnosis" (the smoke contradiction); it names non-definiteness.
+    metric = build_sf_verify_metric(LengthPenaltyConfig(enabled=False))
+    gold_letter = ExectLetter(
+        letter_id="T4",
+        note_text="Probable focal epilepsy, ?left temporal lobe. He reports events most weeks.",
+        annotations=(
+            ExectAnnotation(
+                entity="Diagnosis",
+                text="focal epilepsy",
+                attributes={"Certainty": "4", "Negation": "Affirmed", "DiagCategory": "Epilepsy"},
+            ),
+        ),
+    )
+    out = metric(
+        dspy.Example(letter=gold_letter),
+        _pred(
+            [
+                {"family": "seizure_frequency", "seizure_type": "events", "state": "active_rate", "evidence": "events most weeks"}
+            ]
+        ),
+    )
+    assert "OVER-EMISSION" in out.feedback
+    assert "not definite" in out.feedback.lower()
 
 
 def test_metric_unscorable_output_scores_zero() -> None:
