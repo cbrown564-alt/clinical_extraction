@@ -522,6 +522,31 @@ isolates whether the LLM-only route can reach the hybrid's change-class numbers 
 a clinician acts on, which the current schema and benchmark both discard. Phase 5's "stop single-pass SF
 feedback tuning" stands (feedback was not the lever); this is a schema/metric change, a different axis.
 
+### Phase 7 — canonical whole-corpus metric row-analysis (run 2026-06-29) = the wall is gold quality, not the model
+
+Full doc: `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`.
+Every dev140 letter, on the **exact `state_profile` metric** (direction-blind), with **both** model
+stages captured and projected (stage 1 = `generate`, stage 2 = `verify`). Canonical run = the P2
+gpt-4.1-mini two-stage program; harness `experiments/exectv2_sf_canonical_row_analysis.py`
+(self-validates the per-row decomposition == `score_frequency_state`); 53 disagreement rows adjudicated
+clinically in `experiments/exectv2_sf_canonical_adjudication.py`.
+
+- **First LLM (stage 1) is wrong ~50% of letters** (exact 49.3%, F1 0.710); the verifier cuts it to
+  37.9% wrong (F1 0.772), almost all via precision; verify **fixes 14, breaks 7** (3 are regressions
+  deleting a correct `seizure-free`).
+- **Of the 53 metric-errors only 15 (28%) are genuine model mistakes.** 22 (42%) are the model right and
+  scored wrong (gold **under-annotated** a stated frequency = 13, or **redundantly double-tagged** a type
+  = 9); 16 (30%) are genuine IAA-0.47 ambiguity / gold temporal conventions. **Counting only genuine
+  errors the model is clinically defensible on 125/140 = 89.3% of letters** vs the 62.1% the metric reports.
+- **The metric is noisy:** a faithful re-run of the *same* program scores 0.772 not the logged 0.741, with
+  41/140 letters flipping state-set across identical-instruction runs (gpt-4.1-mini temp-0). The
+  0.741→0.763→0.779→0.784 ladder is partly inside a ±0.03 band.
+- **Conclusion:** the ~0.74–0.78 SF "wall" is a **gold-quality ceiling** (SeizureFrequency human IAA F1
+  = 0.47), not a model ceiling. The only attributable model lever left is the 15 genuine errors, which are
+  rule-shaped (temporal discipline + state-evidence discipline + stop the verify deletions) = exactly the
+  Phase-3b deterministic SF projection. **Stop single-pass `state_profile` optimisation; report SF with a
+  ±0.03 re-run band; move the SF story into the closing benchmark-vs-clinical-recovery reconciliation.**
+
 ## 7. Reuse & artifacts
 
 - Reuses unchanged: `program_multifamily.py` (lane structure), `run_gepa.run_experiment`

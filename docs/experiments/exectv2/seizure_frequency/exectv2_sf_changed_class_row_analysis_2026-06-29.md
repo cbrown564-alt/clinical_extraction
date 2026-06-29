@@ -1,5 +1,14 @@
 # SF `changed`-class: row-by-row adjudication — why two LLMs plateau, and what is actually irreducible
 
+> **SUPERSEDED (2026-06-29) by the canonical whole-corpus analysis:**
+> `exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`. This report covered only the `changed`
+> slice (42 letters) and reported ~52% genuine model error. The canonical analysis adjudicates **all
+> 140 dev rows** on the **exact `state_profile` metric** (both LLM stages) and finds genuine model
+> error is **28%** corpus-wide — the changed class is the *worst* slice, not representative. Its
+> dominant whole-corpus finding (gold=[] over-emission = mostly **gold under-annotation**, not model
+> error) is invisible from the changed-only slice. Read the canonical report for current conclusions;
+> this one stands only as the `changed`/direction-axis deep dive.
+
 Date: 2026-06-29
 Scope: every dev140 letter where gold OR the model emits a SeizureFrequency `changed` state
 (42 letters: 14 recall misses / 15 over-calls / 13 agreements).
