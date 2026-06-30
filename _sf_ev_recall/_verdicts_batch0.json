@@ -1,0 +1,134 @@
+[
+  {
+    "case_id": 1,
+    "letter_id": "EA0004",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Header ('several seizures since the last clinic appointment') and narrative ('a few seizures per year') restate the same uncertain ongoing-seizure picture; model's single generic active-rate prediction already conveys the substance."
+  },
+  {
+    "case_id": 2,
+    "letter_id": "EA0005",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Letter explicitly states an ongoing current rate ('roughly two seizures per year since 2010') that the model's lone prediction (tied to the dated last/previous-event header line) never mentions in any form."
+  },
+  {
+    "case_id": 3,
+    "letter_id": "EA0006",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Model's only SF output for this letter is a generic 'currently seizure free' tag; it drops the explicit 2014 absence-like episodes entirely."
+  },
+  {
+    "case_id": 4,
+    "letter_id": "EA0006",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Same single generic 'seizure free' model output also drops the explicit '2 generalised tonic clonic seizures in 2014' historical count."
+  },
+  {
+    "case_id": 5,
+    "letter_id": "EA0007",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Header ('seizures every 3 to 4 weeks') and narrative ('she has seizures every 3 to 4 weeks') are a verbatim duplicate of the same statement; model's one active-rate prediction already covers it."
+  },
+  {
+    "case_id": 6,
+    "letter_id": "EA0008",
+    "verdict": "BOTH_DEFENSIBLE",
+    "reason": "'Seizures have returned after a period of freedom' could reasonably be read as already captured by the model's existing 'every 3 weeks' rate tag rather than requiring its own separate changed/Increased entry."
+  },
+  {
+    "case_id": 7,
+    "letter_id": "EA0009",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Letter names a distinct, clinically significant cluster event ('cluster of seizures in August 2017') that the model's single generic, unquantified 'seizures' active-rate prediction never references."
+  },
+  {
+    "case_id": 8,
+    "letter_id": "EA0009",
+    "verdict": "GOLD_RIGHT",
+    "reason": "The specific intra-cluster rate detail (6-9 seizures/week for 3 weeks) is nowhere reflected in the model's lone generic, unquantified prediction."
+  },
+  {
+    "case_id": 9,
+    "letter_id": "EA0011",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Header ('last event around Christmas 2017') and narrative ('his last one being around Christmas 2017') restate the same last-event/seizure-free fact; model's seizure-free prediction already covers it."
+  },
+  {
+    "case_id": 10,
+    "letter_id": "EA0011",
+    "verdict": "GOLD_RIGHT",
+    "reason": "The explicit quantified historical rate ('infrequent...around two in the year of his diagnosis') is a distinct fact the model's seizure-free-only prediction for this seizure type never conveys."
+  },
+  {
+    "case_id": 11,
+    "letter_id": "EA0011",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The head-injury sentence re-mentions the same Christmas-2017 last seizure under a more generic CUI label; already captured by the model's 'Focal to bilateral convulsive seizures -> seizure-free' prediction."
+  },
+  {
+    "case_id": 12,
+    "letter_id": "EA0022",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Letter explicitly states focal seizures are 'completely under control'; model emitted zero SeizureFrequency predictions anywhere in this letter."
+  },
+  {
+    "case_id": 13,
+    "letter_id": "EA0022",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Same letter, same total absence of any model SF prediction; the 'significant improvement since increasing the dose' change fact is entirely unaddressed."
+  },
+  {
+    "case_id": 14,
+    "letter_id": "EA0025",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Model's GTC prediction verbatim-transcribes the letter's own typo'd phrase ('tonic chronic') from the exact sentence with the 3-4/week count; gold silently normalized to canonical 'tonic-clonic' spelling, same fact captured at lower count-granularity."
+  },
+  {
+    "case_id": 15,
+    "letter_id": "EA0038",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Model's only SF prediction labels the patient seizure-free, capturing the PRIOR 3-year-free period, but never flags the clinically critical new fact that she just had a recent breakthrough GTC seizure."
+  },
+  {
+    "case_id": 16,
+    "letter_id": "EA0044",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Current 'no further seizures since last appointment' and the future driving-eligibility line ('a year free of seizures') restate the same seizure-free status twice; model's one seizure-free prediction already covers it."
+  },
+  {
+    "case_id": 17,
+    "letter_id": "EA0049",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Model has zero predictions mentioning absences anywhere despite the explicit header line 'Occasional absences'."
+  },
+  {
+    "case_id": 18,
+    "letter_id": "EA0049",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Narrative 'frequently gets myoclonic jerks' duplicates the header's 'daily' claim already captured by the model's myoclonic-jerks active-rate prediction."
+  },
+  {
+    "case_id": 19,
+    "letter_id": "EA0049",
+    "verdict": "BOTH_DEFENSIBLE",
+    "reason": "'Were infrequent at first... now happening frequently' trend could reasonably be read as already covered by the model's static '1-2/month' GTC rate tag rather than needing its own separate changed entry."
+  },
+  {
+    "case_id": 20,
+    "letter_id": "EA0049",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Header ('1 to 2 every month') and narrative ('having one to 2...every month') restate the identical GTC rate; model's one active-rate prediction already covers it."
+  },
+  {
+    "case_id": 21,
+    "letter_id": "EA0050",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Model again has zero predictions mentioning absences despite the explicit header line 'Occasional absences'."
+  },
+  {
+    "case_id": 22,
+    "letter_id": "EA0050",
+    "verdict": "BOTH_DEFENSIBLE",
+    "reason": "'His seizures have improved since reducing the lamotrigine' could reasonably be read as already implied by the model's low static counts (1 since last appointment, weekly jerks) rather than needing a separate changed/Decreased tag."
+  }
+]

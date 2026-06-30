@@ -1,0 +1,74 @@
+[
+  {
+    "case_id": 1,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The letter states 'Zonisamide 125 mg BD' but gold tags the misspelled span 'zobisamide', while the model's prediction 'Zonisamide' carries the identical dose/frequency/CUI (C0078844) for the same drug, so the FN is a gold-side spelling artifact rather than a missed extraction."
+  },
+  {
+    "case_id": 2,
+    "entity": "Prescription",
+    "verdict": "GOLD_RIGHT",
+    "reason": "The medication list reads 'Clobazam 10 mg as required' but the model's only Prescription prediction for this letter is 'sodium valproate' -- no predicted text overlaps clobazam anywhere, so the model genuinely dropped an entire prescribed AED."
+  },
+  {
+    "case_id": 3,
+    "entity": "Prescription",
+    "verdict": "GOLD_RIGHT",
+    "reason": "The header 'Carbamazepine 400mg/400 mg/200mg' names an active AED, yet the model's predicted set for this letter contains only Zonisamide and Clobazam -- Carbamazepine is absent entirely, a genuine recall failure (gold's three sibling Carbamazepine tags over this one slash-string is a separate cardinality issue, but the omission itself is total)."
+  },
+  {
+    "case_id": 4,
+    "entity": "Prescription",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Same letter and same total omission as case 3 -- Carbamazepine never appears in the model's predictions, so this second 400mg-dose tag (from the same 'Carbamazepine 400mg/400 mg/200mg' slash list) is also a genuine miss, not a sibling already captured by another prediction."
+  },
+  {
+    "case_id": 5,
+    "entity": "Prescription",
+    "verdict": "GOLD_RIGHT",
+    "reason": "Again the same letter/omission -- the third (200mg) dose segment of 'Carbamazepine 400mg/400 mg/200mg' is nowhere in the model's predictions (only Zonisamide and Clobazam were produced), so the drug is genuinely missing despite the gold-side cardinality of three tags for one dose string."
+  },
+  {
+    "case_id": 6,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Clobazam is stated twice -- 'Current medication: Clobazam 10mg on' and the narrative restatement 'She is currently taking clobazam 10 mg od' -- and the model produced one consolidated 'Clobazam' prediction matching dose/frequency/CUI, so this narrative-restatement gold tag is already credited via the header-mention prediction."
+  },
+  {
+    "case_id": 7,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Sodium Valproate is likewise stated in the header ('Sodium Valproate 200 mg twice a day...') and restated in the narrative ('sodium valproate 200 mg BD'), and the model again produced one consolidated 'Sodium Valproate' prediction matching all attributes, so this is a sibling restatement already covered."
+  },
+  {
+    "case_id": 8,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The header spells the drug correctly ('Oxcarbazepine 300mg bd') while the narrative misspells it ('reducing the oxcarbazine slowly'), and gold tagged only the misspelled narrative span; the model's single prediction 'Oxcarbazepine' carries identical dose/frequency/CUI (C0069751) for the same fact, just keyed to the correctly-spelled header text."
+  },
+  {
+    "case_id": 9,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The letter itself misspells the drug ('lamtorigine 250mg bd'), which gold annotated verbatim, but the model normalized this to 'lamotrigine' with identical dose/frequency/CUI (C0064636), so the substring mismatch is purely a source-letter typo artifact, not a missed extraction."
+  },
+  {
+    "case_id": 10,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The letter correctly spells 'Lamotrigine 50mg bd', but the gold span itself is typo'd as 'Lamotrigne'; the model's prediction 'Lamotrigine' matches the letter's actual spelling and all attributes (50mg, freq 2, CUI C0064636), so the FN is solely an annotation-side spelling artifact."
+  },
+  {
+    "case_id": 11,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "The single sentence 'Valproate as Episenta 500mg nocte...' names the drug twice in one breath (generic 'Valproate' and brand 'Episenta'); gold tagged the brand-name span while the model predicted the generic-name span, both carrying identical CUI/dose/frequency, so the model captured the same clinical fact via a different but equally present name."
+  },
+  {
+    "case_id": 12,
+    "entity": "Prescription",
+    "verdict": "MODEL_DEFENSIBLE",
+    "reason": "Lamotrigine is stated in the header ('Current medication Lamotrigine 150mg bd') and restated in the narrative ('she is taking lamotrigine 150 milligrammes twice a day'), and the model produced one consolidated 'Lamotrigine' prediction matching dose/frequency/CUI, the same sibling-restatement-already-credited pattern as cases 6/7."
+  }
+]

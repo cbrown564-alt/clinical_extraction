@@ -105,6 +105,11 @@ class GepaExperimentConfig:
     #: Per-family F-beta weights (family -> beta) as pairs; macro per-family objective.
     #: Overrides recall_beta when non-empty. e.g. (("Diagnosis", 2.0),).
     family_recall_beta: tuple[tuple[str, float], ...] = ()
+    #: Optional override of GEPA's reflective-mutation component selector (default:
+    #: dspy's "round_robin", which cycles through every named predictor). Pass a
+    #: callable matching gepa's ReflectionComponentSelector protocol to restrict
+    #: which predictor(s) GEPA is allowed to mutate, e.g. a single-family lane run.
+    component_selector: Any | None = None
     date: str = "2026-06-27"
     seed: int = 0
     notes: str = ""
@@ -453,6 +458,8 @@ def run_experiment(
         "add_format_failure_as_feedback": True,
         "gepa_kwargs": {"use_cloudpickle": True},
     }
+    if config.component_selector is not None:
+        gepa_kwargs["component_selector"] = config.component_selector
     if config.max_metric_calls is not None:
         gepa_kwargs["max_metric_calls"] = config.max_metric_calls
     else:
