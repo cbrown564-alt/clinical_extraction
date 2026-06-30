@@ -90,6 +90,16 @@ Current evidence stack:
 
 ### Next
 
+- Fix a discovered ExECTv2 `test60` content-leak bug: `EA0159` (test) and
+  `EA0160` (dev) are byte-identical letters (same patient, same clinical body,
+  confirmed via diff) per `data/ExECTv2 (2025)/splits/exectv2_split_v1.json`.
+  Dedupe the corpus by content hash and reassign or drop one of the pair before
+  the next claim that ExECTv2 `test60` is frozen/untouched; also check whether
+  either letter was ever cited as a standalone example in a report. Scope is
+  narrow (1/60 test letters) and does not implicate existing GEPA/hybrid/
+  model-swap comparisons, which all score the same contaminated set equally.
+  Found 2026-07-01 during a synthetic-corpus integrity audit; see
+  `docs/research/exploratory_research_directions_multiagent_review_2026-07-01.md`.
 - If the Gan consensus/fresh path is revisited for tuning or redesign, start
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level
