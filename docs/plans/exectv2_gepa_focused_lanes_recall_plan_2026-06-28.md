@@ -1,6 +1,20 @@
 # Plan — replicate the hybrid's focused LLM lanes with GEPA (producer-recall, DeepSeek task model)
 
-Status: **DRAFT plan, not started.** Decision gates at the end of Phase 0 and Phase 1.
+Status: **Executed through Phase 7 (see §6b onward); superseded by the closing
+benchmark-vs-clinical-recovery reconciliation.** Diagnosis-specific framing CORRECTED
+(2026-06-30): §1's "Dx 56/101 genuine misses" and Phase 1 item 2's "consolidation pattern the
+decomposition flagged" cite a coarse text-overlap-only check. A row-level re-examination
+(`docs/experiments/exectv2/diagnosis/exectv2_dx_ev_recall_consolidation_check_2026-06-30.md`)
+found only 6.5% of Diagnosis's `clinical_headline` misses are unambiguous genuine retrieval
+failures; 93.5% are cardinality artifacts, already-credited evidence, or clinically-defensible
+phrase divergence from gold consolidation. In hindsight this plan's own execution validated the
+correction without naming it: Phase 1's recall-oriented Dx lane (the "retrieve exhaustively" lever
+this framing motivated) bought a modest gain (0.662→0.703), while Phase 3's **deterministic
+re-keying** (no new retrieval) bought the larger, cleaner win (0.703→0.792) — consistent with the
+residual being mostly a consolidation/keying problem, not a retrieval deficit, for Diagnosis
+specifically. This does not revise the SF findings (Phases 4-7), which used their own
+adjudication-based methodology and reached the gold-quality-ceiling conclusion independently.
+Original status: **DRAFT plan, not started.** Decision gates at the end of Phase 0 and Phase 1.
 Owner: ExECTv2 GEPA workstream. Date: 2026-06-28.
 
 Follows from: `docs/research/exectv2_gepa_vs_hybrid_evidence_decomposition_2026-06-28.md`.

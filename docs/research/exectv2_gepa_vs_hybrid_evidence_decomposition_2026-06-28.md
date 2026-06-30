@@ -1,6 +1,26 @@
 # GEPA vs hybrid: the gap is LLM evidence retrieval, not deterministic rules
 
-Status: **CLOSED diagnostic.** Date: 2026-06-28. Owner: ExECTv2 GEPA workstream.
+Status: **CLOSED diagnostic. Diagnosis-specific framing CORRECTED (2026-06-30).** The §3/§4
+Diagnosis numbers below ("Dx misses are dominated by genuine non-retrieval, 56/101") were computed
+by a coarse, text-overlap-only check with no cardinality distinction and no clinical adjudication.
+A row-level re-examination
+(`docs/experiments/exectv2/diagnosis/exectv2_dx_ev_recall_consolidation_check_2026-06-30.md`),
+run after the same-date Diagnosis canonical row-adjudication found 85.2% of the *scored*
+`clinical_headline` Diagnosis gap is gold multiplicity, asked whether that consolidation mechanism
+also inflates *this* doc's evidence-recall gap. **It does, substantially:** of the 92 Diagnosis
+`clinical_headline` misses, only **6.5%** are unambiguous genuine retrieval failures (no
+phrase-overlapping prediction exists anywhere, and a clinician agrees the model erred); **93.5%**
+are cardinality artifacts (the model's text was retrieved but credited to another gold annotation),
+already-credited `source_near` true positives despite the concept-key mismatch, or genuine
+phrase-divergence that is nonetheless clinically defensible (gold split one diagnostic statement
+into a generic + specific tag; the model's one consolidated tag is reasonable). The doc's text below
+is left unedited as the historical record of what was measured at the time (BP9), but its
+Diagnosis-specific "genuine non-retrieval" framing should not be cited without this correction —
+the §5 "actionable lever for GEPA is retrieval, not re-keying" conclusion holds for SF (no
+adjudication-based correction has been run there) but **does not hold for Diagnosis**, where the
+already-executed deterministic re-keying lever (`exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md`
+Phase 3, 0.703→0.792) was the correctly-shaped fix, not more retrieval.
+Original status: **CLOSED diagnostic.** Date: 2026-06-28. Owner: ExECTv2 GEPA workstream.
 
 Builds on / answers a question left open by
 `docs/research/exectv2_sf_representation_not_recall_2026-06-28.md` (§10–§11, "the gap to
