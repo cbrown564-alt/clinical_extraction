@@ -142,8 +142,10 @@ historical), and normalization (count/range × period → comparable rate).
 defines nine entity types with attributes and UMLS CUIs, scored per-item and per-letter; the
 reference is a rule-based GATE pipeline reporting overall F1 **0.87 per item / 0.90 per letter**
 against human inter-annotator agreement of **0.73**. SeizureFrequency is the benchmark's
-weakest entity (0.66 per item, 0.47 human IAA), precisely because it resists rule-based
-extraction for the reasons that make it task 1's central challenge. We use a `dev140`
+weakest entity (0.66 per item) and its lowest-agreement one (0.47 human IAA), precisely
+because it resists rule-based extraction for the reasons that make it task 1's central
+challenge; that low agreement also caps the achievable F1 and is the dominant component
+of our SeizureFrequency benchmark gap (§4.1.2). We use a `dev140`
 development split (140 letters) and a `full-200` aggregate split (200 letters). The ExECTv2
 annotation schema independently corroborates the task-1 normalization model: its
 SeizureFrequency attributes encode the same count/range × period × temporal-anchor structure
@@ -350,21 +352,29 @@ checkpoint from 2026-06-12 is superseded and must not be cited as a frozen audit
 conclusion.*
 
 The `0.3877` per-item figure is approximately 45% of the published headline. The gap
-is concentrated in **CUI reproduction and attribute-bundle strictness**, not in
-concept recall or entity recognition. Phrase-only and semantic-recall metrics remain
-materially higher than the nine-entity bundle score. The lever that would close the
-gap is deterministic phrase/CUI/attribute-bundle engineering — catalogued patterns
-that reproduce the exact bundle structure the benchmark expects — work that was
-explicitly deprioritised in favour of the clinical-recovery evaluation framework. The
-correct paper statement is therefore:
+decomposes into **two distinct mechanisms**. For Prescription and Investigations it is
+concentrated in **CUI reproduction and attribute-bundle strictness**, not in concept
+recall or entity recognition: phrase-only and semantic-recall metrics remain materially
+higher than the nine-entity bundle score, and the lever that would close it is
+deterministic phrase/CUI/attribute-bundle engineering — catalogued patterns that
+reproduce the exact bundle structure the benchmark expects — work that was explicitly
+deprioritised in favour of the clinical-recovery evaluation framework. **SeizureFrequency
+and Diagnosis both carry a second, non-closeable component: the gold's own
+inter-annotator/consolidation conventions** (detailed below). The correct paper statement
+is therefore:
 
 > *We evaluate on a label-based surface because spelling correction drifted the gold
 > offsets, making the offset-tuned published number non-reproducible on corrected
 > text; on the comparable dev140 surface we reach `0.39` per item / `0.70` per
-> letter; closing the remaining gap to the published headline requires deterministic
-> phrase-and-CUI bundle engineering (CUI normalisation, full attribute serialisation,
-> entity-bundle assembly per family) that was explicitly deprioritised as outside the
-> clinical-recovery scope of this work.*
+> letter; closing most of the remaining gap to the published headline requires
+> deterministic phrase-and-CUI bundle engineering (CUI normalisation, full attribute
+> serialisation, entity-bundle assembly per family) that was explicitly deprioritised
+> as outside the clinical-recovery scope of this work — except for SeizureFrequency and
+> Diagnosis, where a measurable share of the gap is not closeable engineering but the
+> gold's own annotation conventions: SeizureFrequency's ~0.47 inter-annotator agreement,
+> against which even a clinically-correct reader is scored wrong on roughly a third of
+> letters, and Diagnosis's tendency to tag multiple co-present concepts from one
+> diagnostic statement that a clinically complete consolidation correctly merges.*
 
 **The rules > hybrid inversion on the benchmark surface is a genuine finding.** Stacking
 hybrid verifiers lowers the nine-entity benchmark overall from deterministic-only
@@ -376,6 +386,60 @@ retain benchmark fidelity — is a finding about the two surfaces, not a measure
 artefact. LLM-enriched clinical recovery does not substitute for deterministic bundle
 engineering on the published-benchmark scorer; and the headline is not fully
 recoverable from clinical facts alone.
+
+**A second gap mechanism: gold quality, most acutely on SeizureFrequency.** The
+closeable-fidelity account above does not hold uniformly. SeizureFrequency is the
+benchmark's weakest entity (0.66 per item) and its lowest-agreement one (human IAA
+0.47, §2.1), and a whole-corpus row-level adjudication on the primary SF state-set
+metric (a per-letter clinical-recovery scorer over frequency states {active-rate,
+seizure-free, changed, unknown} — a finer SF-specific view than the four-family
+`clinical_headline` surface, and not the published-benchmark surface) shows why: the
+gold is itself the ceiling. Scoring our two-stage SF program against
+that metric, the per-letter answer is wrong on 37.9% of dev140 letters (F1 0.772); but
+adjudicating every disagreement clinically, only **28% (15/53) are genuine model
+errors**. The remaining 72% are the model being clinically defensible and scored
+wrong — 42% (22/53) because the gold *under-annotated* a stated frequency or
+*redundantly double-tagged* a single seizure type, and 30% (16/53) genuine
+inter-annotator coin-flips. Counting only genuine model errors, the program is
+clinically defensible on **125/140 = 89.3%** of letters where the metric credits
+**62.1%**; the 27-point gap is gold noise, not model deficit, consistent with SF being
+the corpus's lowest-IAA entity. Two reporting corollaries follow: (i) the metric
+carries **±0.03 run-to-run variance** — a faithful re-run of the identical program
+flips the state-set on 41/140 letters from temperature-0 nondeterminism alone, so SF
+figures are reported as bands, never single decimals; (ii) the residual *attributable*
+model lever is small and rule-shaped (≈15 letters: historical-versus-current temporal
+discipline, and exam/inter-event-gap/non-epileptic state-evidence discipline), already
+encoded in the deterministic projection. SeizureFrequency is thus the cleanest case in
+the corpus where the benchmark gap is a property of the gold rather than of the model
+— a gold-quality ceiling no fidelity engineering can recover. *(The 89.3% is mildly
+optimistic — 34 of the 53 errors fall in the optimizer-seen trainset, 19 in the
+held-out valset — but the error structure is the same across both splits. Source:
+`docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`.)*
+
+**The same mechanism, more lopsided, on Diagnosis.** A parallel whole-corpus
+row-level adjudication on the official Diagnosis `clinical_headline` scorer
+(`score_concept_identity(...).concept_only` — entity-agnostic recall, home-tagged
+precision; self-validated to reproduce the scorer's aggregate exactly, F1 0.6617)
+finds the same pattern, more pronounced. 88/140 letters carry at least one Diagnosis
+disagreement (92 missed + 117 spurious concepts, 209 total); adjudicating every one
+clinically, only **14.8% (31/209) are genuine model errors** (concentrated in two
+narrow, fixable patterns: tagging an explicitly *negated* finding as a diagnosis, and
+mis-tagging an EEG/Investigations finding under the Diagnosis entity). The remaining
+**85.2%** are the model being clinically correct and scored wrong — dominantly *gold
+multiplicity*: the gold tags both a generic/parent concept and a specific/co-present
+concept (or splits one compound diagnostic phrase into separate atomic tags) from a
+single diagnostic statement, and the model's reasonable one-tag consolidation is
+scored as both a miss and a false positive. Recomputing precision/recall after
+crediting every clinically-defensible disagreement lifts Diagnosis from **F1 0.6617 to
+0.9501** — a larger absolute gap than SeizureFrequency's. Diagnosis is therefore not a
+pure closeable-fidelity entity: it shares SeizureFrequency's gold-quality ceiling,
+just driven by annotation-granularity convention rather than inter-annotator
+agreement. *(Source:
+`docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md`.
+Caveat: adjudicated by five independent reviewers without cross-checking between
+batches, unlike the single coherent SF pass; the four recurring mechanisms replicate
+identically across all five independent batches, which is the main evidence for
+robustness.)*
 
 ---
 
@@ -782,12 +846,14 @@ The honest consequence must be stated directly. On the comparable dev140 publish
 surface (nine-entity CUI + attribute-bundle scorer), the best-of-dev140 like-for-like figure
 is **0.3877 per item / 0.6972 per letter** — approximately 45% of the paper's 0.87 per-item
 headline (evidence validity: dev140 validation-only, frozen aggregate, not a full-200
-estimate). The gap is not a measurement artifact. The project's own 2026-06-18
-like-for-like analysis locates the loss in **CUI reproduction and attribute-bundle
-strictness**, not in concept recall or entity recognition, and identifies the lever as
-deterministic phrase/CUI/attribute-bundle fidelity engineering that was explicitly
-deprioritised in favour of the clinical-recovery evaluation framework. This is a defensible
-choice; it should be narrated, not quietly elided.
+estimate). For Prescription and Investigations this gap is not a measurement artifact: the
+project's own 2026-06-18 like-for-like analysis locates the loss in **CUI reproduction and
+attribute-bundle strictness**, not in concept recall or entity recognition, and identifies
+the lever as deterministic phrase/CUI/attribute-bundle fidelity engineering that was
+explicitly deprioritised in favour of the clinical-recovery evaluation framework. This is a
+defensible choice; it should be narrated, not quietly elided. SeizureFrequency and
+Diagnosis are the two entities where a substantial part of the gap *is* a property of the
+measurement, for related but distinct reasons (below).
 
 There is a second finding embedded in the benchmark-surface comparison that is genuinely
 informative: **rules beat hybrid on the published-benchmark surface for SeizureFrequency,
@@ -799,6 +865,40 @@ overall from 0.3687 (deterministic) to 0.3100 (all-hybrid). This is not a contra
 LLM's clinical-recovery gains and the benchmark's format-fidelity requirements are
 orthogonal surfaces with different owners. The paper should state this directly — as a
 two-surface, two-stakeholder finding — rather than allow the surface choice to hide it.
+
+A third finding sharpens what "the gap" means for SeizureFrequency, the benchmark's
+weakest (0.66 per item) and lowest-agreement (human IAA 0.47) entity. A whole-corpus
+row-level adjudication of our two-stage SF program on the primary state-set metric finds
+that of its metric-errors only 28% are genuine model mistakes; 42% are the model being
+clinically correct and scored wrong because the gold under-annotated a stated frequency or
+redundantly double-tagged a seizure type, and 30% are genuine inter-annotator coin-flips.
+Counting only genuine errors, the program is clinically defensible on **89.3%** of dev140
+letters where the metric credits **62.1%** (dev140 validation-only; error structure
+consistent across the held-out split). For SeizureFrequency, therefore, a substantial part
+of the benchmark gap is not closeable fidelity engineering but a **gold-quality ceiling**:
+the scorer penalises a clinically-correct reader because the reference it scores against is
+itself only ~0.47 self-consistent. Two honesty consequences follow — SF figures are reported
+as bands (the identical program re-run flips the per-letter state-set on 41/140 letters from
+temperature-0 nondeterminism alone, a ±0.03 measurement band), and the only attributable
+model lever that remains is a small, rule-shaped temporal/state-evidence discipline already
+encoded in the deterministic projection. This makes SeizureFrequency the cleanest case in the
+corpus where the benchmark gap is a property of the gold, not the model (row-analysis:
+`exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`).
+
+A fourth finding extends the same pattern to Diagnosis, more lopsidedly. A parallel
+whole-corpus adjudication on the official Diagnosis `clinical_headline` scorer
+(self-validated against the scorer's own aggregate, F1 0.6617) finds 88/140 letters
+carry a Diagnosis disagreement (209 missed-or-spurious concepts); of these only
+**14.8%** are genuine model errors (two narrow patterns: negation mis-read as
+diagnosis, and Investigations findings mis-tagged as Diagnosis). **85.2%** are gold
+*multiplicity* — splitting one diagnostic statement into a generic-plus-specific tag
+pair, or several atomic fragments — that the model's reasonable single-tag
+consolidation is scored against twice (once as a miss, once as a false positive).
+Crediting every clinically-defensible disagreement lifts Diagnosis from F1 0.6617 to
+0.9501, a larger raw gap than SeizureFrequency's. Diagnosis therefore is not a pure
+closeable-fidelity entity either; it shares the gold-quality-ceiling mechanism, driven
+by annotation-granularity convention rather than inter-annotator disagreement
+(row-analysis: `exectv2_dx_canonical_row_analysis_2026-06-30.md`).
 
 A specific caveat applies to SeizureFrequency rule-level claims under the published-benchmark
 surface. The SF registry consolidates 133 rule IDs but the clinical behavior remains split:
@@ -866,6 +966,24 @@ error distribution is less uniformly degenerate than Gan's near-zero P2.1 panel 
 noisier than Gan** — the more honest and more informative characterization: *a system whose
 ceiling is task-bound, not system-bound, with the binding over-reads confident and undetectable
 on a second independent corpus*. The wall is a characterization, not an apology.
+
+**Reconciling the wall and the gold-quality ceiling.** D.2 and this section may read as
+competing accounts of the same SF weakness — one a confident model *over-reading*, the
+other a *gold under-annotation* that scores a clinically-correct model wrong. They are
+not in competition: they are two mechanisms on disjoint error slices, measured on
+different surfaces, and they converge. The whole-corpus row adjudication (D.2, on the
+per-letter SF state-set metric) finds that only ~28% of SF metric-errors are genuine
+model mistakes — and those are exactly the confident over-reads characterized here
+(historical or superseded rates read as current, single or lifetime events read as
+habitual rates), the rows the probe confirms are unflaggable without gold. The other
+~72% are gold under-annotation, redundant double-tagging, and 0.47-IAA coin-flips — not
+model errors. So the wall is real but small (it caps the genuinely-attributable residual
+at ~28% of the SF error mass), while the bulk of SF's *apparent* weakness is a
+gold-quality measurement ceiling. The 0.9053 dev140 adjudicated figure above is on the
+four-family `clinical_headline` surface with a hand-tuned adjudicator that partly fits
+this gold's conventions in-sample; it is not comparable to, and does not contradict, the
+state-set gold ceiling of D.2. Both mechanisms point the same way: SeizureFrequency's
+ceiling is a property of the task and its annotation, not of the system extracting it.
 
 ---
 
@@ -974,11 +1092,20 @@ We provide the first like-for-like comparison between our clinical-recovery eval
 surface and the published ExECTv2 benchmark (nine-entity CUI + attribute-bundle scorer): our
 best-of-dev140 configuration reaches **0.3877 per item / 0.6972 per letter** on the
 published-benchmark surface versus the published pipeline's **0.87 / 0.90**
-(evidence validity: dev140 validation-only, frozen aggregate). The gap is explained:
-spelling correction on the clinical letters drifted the gold character offsets, making the
-offset-tuned published number non-reproducible on the corrected surface; the residual gap
-on the aligned surface is concentrated in CUI reproduction and attribute-bundle strictness,
-representing closeable deterministic fidelity engineering that was explicitly deprioritised.
+(evidence validity: dev140 validation-only, frozen aggregate). The gap is explained by
+two distinct mechanisms. First, spelling correction on the clinical letters drifted the gold
+character offsets, making the offset-tuned published number non-reproducible on the corrected
+surface; for Prescription and Investigations the residual gap on the aligned surface is
+concentrated in CUI reproduction and attribute-bundle strictness, representing closeable
+deterministic fidelity engineering that was explicitly deprioritised. Second, for
+SeizureFrequency and Diagnosis whole-corpus row-level adjudications show a measurable share of
+the gap is **not** closeable engineering but the gold's own annotation conventions: for
+SeizureFrequency, the gold's ~0.47 inter-annotator agreement leaves the two-stage program
+clinically defensible on 89.3% of letters where the metric credits 62.1%; for Diagnosis, the
+gold's tendency to split one diagnostic statement into multiple co-present concepts leaves the
+single-pass extractor clinically defensible on the equivalent of F1 0.9501 where the metric
+credits 0.6617. Both of the benchmark's weakest cells are therefore in substantial part a
+gold-quality ceiling rather than a model deficit.
 A non-obvious inversion accompanies this finding: the deterministic rules pipeline beats the
 hybrid configuration on the published-benchmark surface for Diagnosis, Prescription, and
 SeizureFrequency (SF rules advantage: +0.345 benchmark per-item F1 on SF), while the hybrid

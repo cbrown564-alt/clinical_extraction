@@ -1,11 +1,21 @@
 # Synthesis — the single-model GEPA plateau on ExECTv2 de-dup `clinical_headline`
 
-Status: **REOPENED for SeizureFrequency (2026-06-28).** §4–§5's "genuine recall, hand-rules only"
+Status: **REOPENED for SeizureFrequency (2026-06-28), and the Diagnosis question this doc
+raised is now ANSWERED (2026-06-30).** §4–§5's "genuine recall, hand-rules only"
 verdict for SF does not survive the predictions: the SF gap is dominated by the seizure-type-CUI
 granularity lottery + gold's exhaustive per-type multiplicity (re-scoring the *same* preds under a
 Gan-style state profile lifts SF 0.592→0.713), not recall. See
 `docs/research/exectv2_sf_representation_not_recall_2026-06-28.md`. The Diagnosis "consolidation"
-finding is the same mechanism, so the "architectural gap" framing is also in question.
+finding flagged below as "the same mechanism [as SF]" was confirmed by a canonical row-by-row
+adjudication: of 209 dev140 Diagnosis disagreements, only 14.8% are genuine model error; 85.2%
+are gold annotation-multiplicity artifacts the model's consolidation correctly merges (adjusted
+F1 0.6617 → 0.9501). See
+`docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md`. **§4's "56
+genuine [Diagnosis] misses" and the "0.18 architectural gap is genuine recall" framing below
+therefore overstate genuine model error for Diagnosis, the same way the pre-row-adjudication SF
+framing did** — the §4/§5 text is left unedited below as the historical record of what was
+believed at the time (BP9: preserve negative results as design knowledge), but should not be
+cited for the Diagnosis genuine-recall claim without this correction.
 Original status: **CLOSED (bounded negative).** Date: 2026-06-28.
 Owner: ExECTv2 GEPA workstream.
 
