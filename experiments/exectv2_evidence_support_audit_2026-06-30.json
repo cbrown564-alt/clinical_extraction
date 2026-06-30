@@ -1,0 +1,212 @@
+{
+  "run_id": "exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624",
+  "model": "openai/gpt-4.1-mini",
+  "n_per_family_sampled": 5,
+  "seed": 20260630,
+  "groundedness_baseline": {
+    "Diagnosis": {
+      "n_mentions": 409,
+      "n_grounded": 409,
+      "groundedness_rate": 1.0
+    },
+    "SeizureFrequency": {
+      "n_mentions": 276,
+      "n_grounded": 276,
+      "groundedness_rate": 1.0
+    },
+    "Prescription": {
+      "n_mentions": 201,
+      "n_grounded": 201,
+      "groundedness_rate": 1.0
+    },
+    "Investigations": {
+      "n_mentions": 129,
+      "n_grounded": 129,
+      "groundedness_rate": 1.0
+    }
+  },
+  "support_summary": {
+    "Diagnosis": {
+      "n_sampled": 5,
+      "SUPPORTS": 4,
+      "PARTIALLY_SUPPORTS": 1,
+      "DOES_NOT_SUPPORT": 0,
+      "support_rate_strict": 0.8,
+      "support_rate_lenient": 1.0
+    },
+    "SeizureFrequency": {
+      "n_sampled": 5,
+      "SUPPORTS": 3,
+      "PARTIALLY_SUPPORTS": 1,
+      "DOES_NOT_SUPPORT": 1,
+      "support_rate_strict": 0.6,
+      "support_rate_lenient": 0.8
+    },
+    "Prescription": {
+      "n_sampled": 5,
+      "SUPPORTS": 5,
+      "PARTIALLY_SUPPORTS": 0,
+      "DOES_NOT_SUPPORT": 0,
+      "support_rate_strict": 1.0,
+      "support_rate_lenient": 1.0
+    },
+    "Investigations": {
+      "n_sampled": 5,
+      "SUPPORTS": 5,
+      "PARTIALLY_SUPPORTS": 0,
+      "DOES_NOT_SUPPORT": 0,
+      "support_rate_strict": 1.0,
+      "support_rate_lenient": 1.0
+    }
+  },
+  "support_samples": {
+    "Diagnosis": [
+      {
+        "letter_id": "EA0108",
+        "claimed_text": "tonic clonic seizures",
+        "evidence": "There is usually a warning in the form of twitching in his left hand and then the episode progresses to a tonic clonic convulsion.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that the seizure episode progresses to a tonic clonic convulsion, directly supporting the claim of tonic clonic seizures."
+      },
+      {
+        "letter_id": "EA0124",
+        "claimed_text": "tonic clonic seizures",
+        "evidence": "generalised tonic clonic seizures",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states \"generalised tonic clonic seizures,\" which directly supports the claimed text \"tonic clonic seizures\" with affirmed certainty."
+      },
+      {
+        "letter_id": "EA0113",
+        "claimed_text": "juvenile myoclonic epilepsy",
+        "evidence": "Diagnosis: Juvenile myoclonic epilepsy",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states \"Diagnosis: Juvenile myoclonic epilepsy,\" directly affirming the claimed diagnosis with certainty."
+      },
+      {
+        "letter_id": "EA0109",
+        "claimed_text": "temporal lobe seizures",
+        "evidence": "Diagnosis:  Focal Seizures, probably temporal lobe.",
+        "verdict": "PARTIALLY_SUPPORTS",
+        "reason": "The evidence states \"Focal Seizures, probably temporal lobe,\" indicating a probable but not definitive diagnosis, which partially supports the claim of \"temporal lobe seizures\" with affirmed certainty."
+      },
+      {
+        "letter_id": "EA0009",
+        "claimed_text": "epilepsy",
+        "evidence": "she has experienced seizures since around 4 weeks after her operation",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence that the patient has experienced seizures since around 4 weeks after her operation supports the diagnosis of epilepsy, as seizures are a defining feature of epilepsy."
+      }
+    ],
+    "SeizureFrequency": [
+      {
+        "letter_id": "EA0119",
+        "claimed_text": "seizures",
+        "evidence": "Seizure type and frequency: 1 seizure per week to 1 seizure every month",
+        "verdict": "PARTIALLY_SUPPORTS",
+        "reason": "The evidence states the seizure frequency ranges from 1 seizure per week to 1 seizure every month, but the claimed attributes specify a range of 1 to 4 seizures per week, which is not fully supported by the evidence."
+      },
+      {
+        "letter_id": "EA0019",
+        "claimed_text": "generalised tonic clonic seizure",
+        "evidence": "generalised tonic clonic seizure",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence phrase \"generalised tonic clonic seizure\" directly matches the claimed text and confirms the occurrence of one such seizure last week."
+      },
+      {
+        "letter_id": "EA0050",
+        "claimed_text": "seizure clusters",
+        "evidence": "He can have 10 to 20 mg at night for up to 5 days for seizure clusters.",
+        "verdict": "DOES_NOT_SUPPORT",
+        "reason": "The evidence mentions treatment for seizure clusters lasting up to 5 days but does not specify the number of seizures as 1 within that time period."
+      },
+      {
+        "letter_id": "EA0011",
+        "claimed_text": "focal to bilateral convulsive seizures",
+        "evidence": "focal to bilateral convulsive seizures",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence text explicitly states \"focal to bilateral convulsive seizures,\" directly supporting the claimed seizure type."
+      },
+      {
+        "letter_id": "EA0131",
+        "claimed_text": "seizures",
+        "evidence": "Unfortunately seizures have been worse in the last year.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that seizures have been worse in the last year, directly supporting the claim of increased seizure frequency during that time."
+      }
+    ],
+    "Prescription": [
+      {
+        "letter_id": "EA0102",
+        "claimed_text": "Eplim 200mg twice a day",
+        "evidence": "Eplim 200mg twice a day",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence text explicitly states \"Eplim 200mg twice a day,\" which directly matches the claimed prescription details."
+      },
+      {
+        "letter_id": "EA0049",
+        "claimed_text": "Sodium valproate 700 mg BD",
+        "evidence": "Sodium valproate 700 mg BD",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence text explicitly states \"Sodium valproate 700 mg BD,\" which matches the claimed drug name, dose, and frequency exactly."
+      },
+      {
+        "letter_id": "EA0172",
+        "claimed_text": "Lamotrigine 200mg bd",
+        "evidence": "Lamotrigine 200mg bd",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence text explicitly states \"Lamotrigine 200mg bd,\" which directly matches the claimed drug name, dose, and frequency."
+      },
+      {
+        "letter_id": "EA0044",
+        "claimed_text": "lamotrigine 75mg twice a day",
+        "evidence": "lamotrigine 75mg twice a day",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence text explicitly states the prescription as \"lamotrigine 75mg twice a day,\" which exactly matches the claimed text and attributes."
+      },
+      {
+        "letter_id": "EA0007",
+        "claimed_text": "levetiracetam 750mg mane",
+        "evidence": "levetiracetam 750mg mane, 500 mg nocte",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states \"levetiracetam 750mg mane,\" which matches the claimed drug name, dose, and frequency."
+      }
+    ],
+    "Investigations": [
+      {
+        "letter_id": "EA0076",
+        "claimed_text": "EEG",
+        "evidence": "and his EEG was normal although it didn't capture any events.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that an EEG was performed and the result was normal, directly supporting the claimed attributes."
+      },
+      {
+        "letter_id": "EA0146",
+        "claimed_text": "EEG",
+        "evidence": "A recent MRI and EEG in 2018 have been normal.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that an EEG was performed in 2018 and the results were normal, directly supporting the claimed attributes."
+      },
+      {
+        "letter_id": "EA0186",
+        "claimed_text": "MRI",
+        "evidence": "As you will recall his MRI at the time was abnormal with an area of ischaemic damage in the left inferior frontal lobe.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that the MRI was performed and was abnormal, showing an area of ischaemic damage in the left inferior frontal lobe, directly supporting the claimed attributes."
+      },
+      {
+        "letter_id": "EA0021",
+        "claimed_text": "EEG",
+        "evidence": "His EEG in 2010 was abnormal, with sharp wave activity in the left anterior region.",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that the EEG was performed in 2010 and was abnormal, matching the claimed attributes."
+      },
+      {
+        "letter_id": "EA0142",
+        "claimed_text": "An EEG from November last year did show bilateral temporal spike (right more than left).",
+        "evidence": "An EEG from November last year did show bilateral temporal spike (right more than left).",
+        "verdict": "SUPPORTS",
+        "reason": "The evidence explicitly states that the EEG from November showed bilateral temporal spikes, confirming the EEG was performed and abnormal as claimed."
+      }
+    ]
+  }
+}
