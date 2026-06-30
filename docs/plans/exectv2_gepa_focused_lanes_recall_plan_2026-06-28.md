@@ -12,8 +12,29 @@ correction without naming it: Phase 1's recall-oriented Dx lane (the "retrieve e
 this framing motivated) bought a modest gain (0.662→0.703), while Phase 3's **deterministic
 re-keying** (no new retrieval) bought the larger, cleaner win (0.703→0.792) — consistent with the
 residual being mostly a consolidation/keying problem, not a retrieval deficit, for Diagnosis
-specifically. This does not revise the SF findings (Phases 4-7), which used their own
-adjudication-based methodology and reached the gold-quality-ceiling conclusion independently.
+specifically. This does not revise the SF `state_profile` ceiling findings (Phases 4-7), which used
+their own adjudication-based methodology on a different metric/run and reached the
+gold-quality-ceiling conclusion independently. A separate, same-date adjudication-based correction
+HAS now been run on SF's `source_near` evidence-recall figure specifically
+(`docs/experiments/exectv2/seizure_frequency/exectv2_sf_ev_recall_consolidation_check_2026-06-30.md`):
+61-83% of SF's 72 misses (two readings) are the same cardinality/consolidation artifact as
+Diagnosis's, but a materially larger genuine-error residual survives (38.9% vs Dx's 7.6%) — so for
+SF, re-keying captures most but not all of the apparent retrieval gap; some real retrieval-lane
+investment remains justified, more so than for Diagnosis. The four-family sweep is now COMPLETE
+(`docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md`, Prescription
++ Investigations): a SPLIT result, not a third confirmation. Investigations is a clean negative
+(25.9-29.6%, both readings) — its evidence-recall framing needs **no correction**, the cleanest
+result in the whole plan. Prescription crosses the H-inflated threshold but only barely (52.2%,
+literally one case from the null) and via a **different mechanism** than Dx/SF — mostly
+spelling/transcription divergence breaking `source_near`'s literal substring match (8/12 of its
+inflated bucket), not gold multiplicity (only 4/12). The share of H-inflated falls monotonically
+with how strongly a family is tied to the `clinical_headline` dedup convention (Dx 93.5% >
+SF 61-83% > Rx 52.2% > Inv 26-30%), corroborating this plan's framing in direction, though
+Prescription's position is explained by an unanticipated artifact rather than a weaker version of
+the same mechanism. Practical upshot: the "make each lane retrieve exhaustively" lever this plan
+bet on (§1) is correctly targeted for Investigations (genuine retrieval gap, concentrated
+specifically in EEG-under-extraction when an MRI is also present) and partially targeted for
+Prescription (lever should include fuzzy/CUI-aware evidence matching, not just more retrieval).
 Original status: **DRAFT plan, not started.** Decision gates at the end of Phase 0 and Phase 1.
 Owner: ExECTv2 GEPA workstream. Date: 2026-06-28.
 

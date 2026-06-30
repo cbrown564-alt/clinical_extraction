@@ -1,9 +1,9 @@
 # GEPA vs hybrid: the gap is LLM evidence retrieval, not deterministic rules
 
-Status: **CLOSED diagnostic. Diagnosis-specific framing CORRECTED (2026-06-30).** The §3/§4
-Diagnosis numbers below ("Dx misses are dominated by genuine non-retrieval, 56/101") were computed
-by a coarse, text-overlap-only check with no cardinality distinction and no clinical adjudication.
-A row-level re-examination
+Status: **CLOSED diagnostic. Diagnosis-specific framing CORRECTED (2026-06-30); SeizureFrequency
+framing PARTIALLY CORRECTED (2026-06-30).** The §3/§4 Diagnosis numbers below ("Dx misses are
+dominated by genuine non-retrieval, 56/101") were computed by a coarse, text-overlap-only check
+with no cardinality distinction and no clinical adjudication. A row-level re-examination
 (`docs/experiments/exectv2/diagnosis/exectv2_dx_ev_recall_consolidation_check_2026-06-30.md`),
 run after the same-date Diagnosis canonical row-adjudication found 85.2% of the *scored*
 `clinical_headline` Diagnosis gap is gold multiplicity, asked whether that consolidation mechanism
@@ -13,13 +13,43 @@ phrase-overlapping prediction exists anywhere, and a clinician agrees the model 
 are cardinality artifacts (the model's text was retrieved but credited to another gold annotation),
 already-credited `source_near` true positives despite the concept-key mismatch, or genuine
 phrase-divergence that is nonetheless clinically defensible (gold split one diagnostic statement
-into a generic + specific tag; the model's one consolidated tag is reasonable). The doc's text below
-is left unedited as the historical record of what was measured at the time (BP9), but its
-Diagnosis-specific "genuine non-retrieval" framing should not be cited without this correction —
-the §5 "actionable lever for GEPA is retrieval, not re-keying" conclusion holds for SF (no
-adjudication-based correction has been run there) but **does not hold for Diagnosis**, where the
-already-executed deterministic re-keying lever (`exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md`
-Phase 3, 0.703→0.792) was the correctly-shaped fix, not more retrieval.
+into a generic + specific tag; the model's one consolidated tag is reasonable).
+
+A follow-up same-day extension
+(`docs/experiments/exectv2/seizure_frequency/exectv2_sf_ev_recall_consolidation_check_2026-06-30.md`)
+ran the analogous (freshly adjudicated, since no prior per-case verdict existed for this population)
+check on SeizureFrequency's 72 `source_near` misses: **the same mechanism also inflates SF's
+evidence-recall gap, though less completely than Dx's** — 61–83% (two readings; both clear the >50%
+threshold) are cardinality artifacts or clinically-defensible consolidation, but a materially larger
+genuine-error residual survives than Dx's (28/72 = 38.9% plain-verdict `GOLD_RIGHT`, vs Dx's 7.6%).
+
+A second follow-up, same date
+(`docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md`), completed
+the sweep across all four `KEY_FAMILIES` with Prescription and Investigations — entities the
+`clinical_headline` metric scores **per-occurrence**, not deduped, so the Dx/SF mechanism was not
+guaranteed to transfer. It produced a **split result**: **Investigations needs no correction** — a
+clean negative (25.9–29.6%, both readings, the lowest H-inflated share of any family checked), with
+every `H2_GENUINE_DIVERGENCE` case (19/19) adjudicated a genuine miss, concentrated specifically in
+**EEG under-extraction when an MRI is also present in the same letter** (a sharper, more actionable
+target than this doc's aggregate "genuine non-retrieval" framing implied). **Prescription gets a
+partial correction via a different mechanism than Dx/SF**: it crosses the H-inflated threshold but
+only barely (52.2%, one case from the null), and two-thirds of its inflated bucket is not gold
+multiplicity but **spelling/transcription divergence** (gold-span typos, letter-text typos, or a
+brand/generic name split) that breaks `source_near`'s literal substring check even when every
+structured attribute (CUI, dose, frequency) matches exactly between gold and prediction — a
+measurement-mechanics finding distinct from the consolidation finding, pointing toward fuzzy/CUI-aware
+evidence matching rather than consolidation-aware re-keying as the fix.
+
+The doc's text below is left unedited as the historical record of what was measured at the time
+(BP9), but its "genuine non-retrieval" framing should not be cited for Diagnosis, SeizureFrequency,
+or Prescription without these corrections — the §5 "actionable lever for GEPA is retrieval, not
+re-keying" conclusion **does not hold as stated for Diagnosis** (re-keying, already executed via
+`exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md` Phase 3, 0.703→0.792, was the correctly-shaped
+fix), **holds only partially for SF** (re-keying captures the majority of SF's apparent gap too, but
+a real, non-trivial genuine-retrieval residual remains, larger than Dx's), **holds in a modified
+form for Prescription** (the residual is real but the lever is fuzzy-matching evidence credit, not
+consolidation-aware keying), and **holds as originally stated for Investigations** (genuine
+retrieval gap, validated rather than corrected, now localized specifically to EEG extraction).
 Original status: **CLOSED diagnostic.** Date: 2026-06-28. Owner: ExECTv2 GEPA workstream.
 
 Builds on / answers a question left open by
