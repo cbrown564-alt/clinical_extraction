@@ -26,8 +26,8 @@ experiments/**/traces/
 # machine-generated internals are not.
 experiments/**/gepa_state.bin
 experiments/**/generated_best_outputs_valset/
-experiments/gepa_overnight*/**/*.log
-experiments/gepa_overnight*/*.log
+experiments/gepa_overnight*/**/*.log*
+experiments/gepa_overnight*/*.log*
 experiments/gepa_overnight*/*_status.json
 
 # Scratch run scripts/outputs under experiments/ and scripts/ (underscore-prefixed by
