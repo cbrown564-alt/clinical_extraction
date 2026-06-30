@@ -78,3 +78,6 @@ literature/**/*.log
 # SF canonical row-analysis working output (regenerable from experiments/exectv2_sf_canonical_*.py)
 /_sf_canonical/
 /_sf_changed_letters/
+
+# Diagnosis canonical row-analysis working output (regenerable from experiments/exectv2_dx_canonical_*.py)
+/_dx_canonical/
