@@ -1,0 +1,30 @@
+{
+  "clinical_facts": [
+    {
+      "concept": "short canonical diagnosis concept (e.g., 'focal epilepsy', 'generalised tonic-clonic seizures')",
+      "evidence": "exact verbatim substring from the letter",
+      "family": "diagnosis",
+      "negation": "affirmed | negated"
+    },
+    {
+      "evidence": "exact verbatim substring",
+      "family": "seizure_frequency",
+      "seizure_type": "named type from letter, or 'seizures' if not named",
+      "state": "active_rate | seizure_free | changed | unknown"
+    },
+    {
+      "drug": "generic drug name (e.g., 'sodium valproate', not brand)",
+      "dose": "<numeric value only>",
+      "dose_unit": "mg | g",
+      "frequency": "1 | 2 | 3 | As_Required",
+      "evidence": "exact verbatim substring",
+      "family": "prescription"
+    },
+    {
+      "evidence": "exact verbatim substring",
+      "family": "investigation",
+      "modality": "MRI | CT | EEG | telemetry",
+      "result": "normal | abnormal | unknown"
+    }
+  ]
+}

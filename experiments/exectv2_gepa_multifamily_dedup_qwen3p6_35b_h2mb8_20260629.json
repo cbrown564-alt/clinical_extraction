@@ -1,0 +1,68 @@
+{
+  "auto": "medium",
+  "date": "2026-06-29",
+  "elapsed_seconds": 27572.1,
+  "family_recall_beta": {},
+  "final_eval": {
+    "clinical_headline": {
+      "diagnosis_component": "concept_negation",
+      "overall_f1": 0.654,
+      "per_family": {
+        "Diagnosis": 0.5526,
+        "Investigations": 0.9323,
+        "Prescription": 0.7303,
+        "SeizureFrequency": 0.5056
+      },
+      "precision": 0.6298,
+      "recall": 0.6801
+    },
+    "comparators": {
+      "dev140_hand_tuned_single_prompt_headline": {
+        "deepseek-chat": 0.745,
+        "gpt-4.1-mini": 0.71,
+        "qwen3.6-35b": 0.694
+      },
+      "dev140_v08_hybrid_headline": 0.9155
+    },
+    "evidence_recall": {
+      "comparators": {
+        "gepa_per_family_baseline": 0.694,
+        "v08_hybrid": 0.883
+      },
+      "overall_recall": 0.6146,
+      "per_family": {
+        "Diagnosis": 0.3778,
+        "Investigations": 0.9191,
+        "Prescription": 0.835,
+        "SeizureFrequency": 0.6631
+      }
+    },
+    "letters": 140,
+    "n_facts_total": 1357,
+    "n_scored_total": 796,
+    "semantic_per_item_f1": 0.1422,
+    "strict_benchmark_per_item_f1": 0.1318,
+    "unscorable_letters": 0
+  },
+  "final_instruction_tokens": 2083,
+  "length_penalty": {
+    "alpha_output": 0.05,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 2000,
+    "output_token_budget": 2000
+  },
+  "max_metric_calls": null,
+  "notes": "Qwen 3.6 35B (local) multi-family 4-signature program, deepseek-reasoner reflection. Cross-model replay of the mini multi-family H2 best (0.731): H1 diff-feedback metric (default) + reflection_minibatch_size=8, auto=medium, four per-family instructions optimized independently. Single-threaded local 35B. Compare to Qwen hand-tuned 0.694, mini GEPA single 0.719, multi 0.731, v08 hybrid 0.9155.",
+  "recall_beta": 1.0,
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629",
+  "seed_instruction_tokens": 417,
+  "task_max_tokens": 6000,
+  "task_model": "ollama_chat/qwen3.6:35b",
+  "task_temperature": 0.0,
+  "trainset_size": 90,
+  "valset_size": 50
+}

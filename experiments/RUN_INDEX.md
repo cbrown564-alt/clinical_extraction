@@ -2,111 +2,6 @@
 
 Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical machine-readable registry.
 
-## Paper-Writing Workstream Artifacts
-
-### `P6b-manuscript-merge` (2026-06-27)
-
-- **Deliverable**: `docs/research/paper_manuscript_2026-06-26.md` (updated in place, date 2026-06-27)
-- **Workstream**: P6b post-campaign merge — capability-first §4 folded into main manuscript; P5 CUT items C1–C5 applied; writing only, no model calls, no holdout reads.
-- **Verdict**: complete. §4 rewritten from task-first (§4.1 Gan | §4.2 ExECTv2) to capability-first (§4.1 Architecture+Reconciliation | §4.2 LLM adds | §4.3 Generalizes | §4.4 Reliability | §4.5 Components). Tables renumbered 1–7. Claim boundary header preserved and updated.
-- **CUT items applied**: C1 §4.1.2 Gate 4 selector subsection removed; C2 Table 3 selector table removed; C3 exact-source v0.9 selector holdout from promoted-result prose removed; C4 selector rows removed from comparison tables; C5 selector references removed from promoted results (not in abstract/conclusions; Do Not Use entry added with permitted appendix sentence).
-- **Sections replaced**: old §4.1.1–§4.1.3 (Gan task-first) + §4.2.1–§4.2.4 (ExECTv2 task-first).
-- **Evidence boundary**: writing-only; merges frozen artifacts at their declared validity levels; [PENDING PROBE] markers preserved for cross-dataset wall-transfer mechanism.
-- **Orchestrator state**: cycle `P6b-manuscript-merge` recorded in `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
-### `P6-closeout` (2026-06-27)
-
-- **Deliverable**: `docs/plans/closing_campaign_closeout_2026-06-27.md`
-- **Workstream**: P6d — closing-campaign closeout; writing only, no model calls, no holdout reads.
-- **Verdict**: closeout recorded; gates 2/5 full-pass (M1, I-track); 2/5 partial (M2 Phase 0 only, P-track 4/6); 1/5 fail (M3 blocked on M2).
-- **Gates summary**: M1 PASS (4/4: reconciliation table + definitions.yaml proof + rules>hybrid inversion + full-200 Decision B); I-track PASS (3/3: SF registry honest verdict + CI parity step + artifact_analysis README); M2 PARTIAL (Phase 0 done, Phases 1–4 pending); P-track PARTIAL (P1/P2/P3/P4 delivered, P5 missing, P6 in progress); M3 FAIL (blocked on M2).
-- **S1 status**: 6/10 eligible `run_split` slices migrated; 4 remaining (slice 7 `llm_event_reasoner` must coordinate with M2 call-site swap).
-- **Recommended next**: M2 Phases 1–4 (unblocks M3 and P4 Qwen footnote) in parallel with P5 selector-fate verdict.
-- **Orchestrator state**: cycle `P6-closeout` and 5 queue entries recorded in `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
-### `P6b-capability-first-results-section` (2026-06-27)
-
-- **Deliverable**: `docs/research/paper_drafts/capability_first_results_section_2026-06-27.md`
-- **Workstream**: P6b — Wave 4 capability-first Results restructure; writing only, no model calls.
-- **Verdict**: draft complete; integrates P1 (benchmark reconciliation), P2 (DeepSeek
-  model-agnostic evidence), P3 (wall transfer, partial with `[PENDING PROBE]`), and P4
-  (calibration claim revision); omits consensus/fresh selector (P5 CUT).
-- **Structure**: §4.1 Shared architecture + scoring surfaces (leads with reconciliation
-  0.3877/0.6972); §4.2 What the LLM adds (format-layer ~+0.04 stable); §4.3 What
-  generalizes (DeepSeek +0.021; wall transfer task-bound ceiling); §4.4 Reliability
-  scorecard (near-base-rate calibration, external signal only); §4.5 Component impact
-  (stage-ladder, benchmark-format vs clinical-recovery split).
-- **Replaces**: old §4.1 (Gan task-first) + §4.2 (ExECTv2 task-first) in
-  `paper_manuscript_2026-06-26.md`.
-- **Estimated word count**: ~2,700 words (body text excluding tables and headers).
-- **Orchestrator state**: cycle `P6b-capability-first-results-section` recorded in
-  `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
-### `P6c-discussion-contributions-capability-first` (2026-06-27)
-
-- **Deliverable**: `docs/research/paper_drafts/capability_first_discussion_contributions_2026-06-27.md`
-- **Workstream**: P6c — Discussion + Contributions rewrite aligned with capability-first restructure; writing only, no model calls.
-- **Verdict**: draft complete; two items remain future work (S1 cross-task ablation full scope; C3 PENDING PROBE entropy confirmation on ExECTv2 SF).
-- **Five contributions**: (C1) Benchmark reconciliation — honest 0.3877/0.6972 dev140 gap disclosure; rules > hybrid SF surface-inversion (+0.345). (C2) Cross-task component ablation — evidence gate inert (Δ = 0.000), SF projection the operative shared component (+0.124–0.203 dev140). (C3) Wall cross-dataset — structural parallel confirmed full-200; mechanism [PENDING PROBE]. (C4) Model-agnostic architecture — DeepSeek +0.021 over GPT under frozen same-core full-200. (C5) Evaluation discipline as reusable methodology.
-- **Limitations**: I1 SF registry hybrid-delegated; S1 cross-task ablation scope future work; partial wall mechanism; near-base-rate calibration.
-- **Orchestrator state**: cycle `P6c-discussion-contributions-capability-first` recorded in `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
-### `P6a-capability-first-outline` (2026-06-27)
-
-- **Deliverable**: `docs/research/paper_drafts/capability_first_manuscript_outline_2026-06-27.md`
-- **Workstream**: P6a — capability-first manuscript spine outline; writing only, no model calls.
-- **Verdict**: outline complete — **5 sections, 20 subsections**; consensus/fresh selector
-  **CUT** (fails 7/8 closing-campaign pre-registration criteria); `[PENDING PROBE]` gates
-  §3.2.3 wall-transfer mechanism confirmation.
-- **Section map**: §1 Shared architecture (component graph, portability taxonomy, SF registry
-  caveat); §2 What LLM adds (Gan three-way + ExECTv2 two-surface: like-for-like 0.3877/0.6972
-  dev140, clinical-headline GPT 0.8356 / DeepSeek 0.8566 / Qwen 0.8197, rules > hybrid
-  inversion SF 0.692 vs 0.347); §3 What generalizes (DeepSeek +0.021 full-200 model-agnostic;
-  wall transfer ExECTv2 SF GPT 0.7525 / DeepSeek 0.7602 structurally parallel to Gan entropy
-  0.000); §4 Unified reliability (calibration Brier 0.2245 vs 0.2387 Δ=0.0142 external-signal-only;
-  M2 evidence groundedness; abstention AUROC 0.781; operational gates; consistency P2.1);
-  §5 Unified component impact (evidence_validation Δ=0.0000 both tasks; standard_dictionary
-  +0.0389/+0.0293; format-layer ladder +0.04 stable full-200; benchmark-surface inversion).
-- **P5 CUT items** (5 manuscript deletions, from `paper_manuscript_2026-06-26.md`):
-  C1 §4.1.2 (Gate 4 audits subsection), C2 Table 3 (selector result table),
-  C3 "frozen exact v0.9 selector holdout" from promoted-result prose,
-  C4 selector rows from architecture comparison tables,
-  C5 abstract/conclusions selector headline references.
-- **Three open actions before P6b full draft**: (a) run ExECTv2 SF wall-transfer entropy
-  probe; (b) assemble ExECTv2 three-way comparison in paper form; (c) compute cross-model
-  agreement abstention gate on ExECTv2 model-swap outputs.
-- **Orchestrator state**: cycle `P6a-capability-first-outline` recorded in
-  `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
-### `P3c-wall-transfers-manuscript-draft` (2026-06-27)
-
-- **Deliverable**: `docs/research/paper_drafts/wall_transfer_cross_dataset_2026-06-27.md`
-- **Workstream**: P3c — wall-transfers reframe; writing only, no model calls.
-- **Verdict**: draft complete; one section gated `[PENDING PROBE]` pending
-  `exectv2_sf_wall_transfer_probe_2026-06-27.md`.
-- **Key finding**: ExECTv2 SF gap (GPT 0.7525, DeepSeek 0.7602 full-200 aggregate) is
-  structurally parallel to the Gan confident-over-reading wall (P2.1: mean label entropy
-  0.012, `band_unknown` entropy 0.000). The framing converts "SF is our weakest family"
-  into the paper's strongest generalization claim: **a task-bound, not system-bound, ceiling
-  that transfers across datasets and models**. Mechanism confirmation ([PENDING PROBE])
-  requires a forward-observable-feature entropy probe on an ExECTv2 SF slice.
-- **Recommended placement**: capability-first spine §3 (*What generalizes*), subsection 3.2,
-  following the model-swap / model-agnostic subsection.
-- **Orchestrator state**: cycle `P3c-wall-transfers-manuscript-draft` recorded in
-  `experiments/gan2026_f1_orchestrator_state.json`.
-
----
-
 ## Reliability Scorecard
 
 ### `exectv2_robustness_validation_audit_2026-06-25`
@@ -240,8 +135,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: Stage D promotion gate: rebuilds the resolve_label graph query deterministically from the validation750 v4 claim-table and feeds it as a P2-gated fourth component to the frozen v0.9 selector replay on a predeclared 250-row residual-inclusive slice. No model calls and no holdout rows are read.; model `none`.
 - Registry roles: `component_ladder`.
 - Repair mode/config: `state_graph_resolve_label_promotion_gate_v1`.
-- Primary metrics: graph_component_purist_correct=99, graph_mints_correct_for_no_correct=7, graph_mints_correct_for_predeclared_residual=7, no_correct_pool_rows=11, p1_unilateral_correct_to_wrong=147, p2_corroborated_correct_to_wrong=0, p2_corroborated_net_purist_gain=1, p2_corroborated_wrong_to_correct=1, p3_unknown_only_correct_to_wrong=71, predeclared_residual_rows=11, rows=250, v09_selected_purist_correct=238.
-- Evidence validity: Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made.
+- Primary metrics: evidence_exact_rate=0.0, evidence_grounded_by_grade_EMPTY=250, evidence_grounded_rate=0.0, graph_component_purist_correct=99, graph_mints_correct_for_no_correct=7, graph_mints_correct_for_predeclared_residual=7, no_correct_pool_rows=11, p1_unilateral_correct_to_wrong=147, p2_corroborated_correct_to_wrong=0, p2_corroborated_net_purist_gain=1, p2_corroborated_wrong_to_correct=1, p3_unknown_only_correct_to_wrong=71, predeclared_residual_rows=11, rows=250, superseded_evidence_validity=Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made., superseded_exact_valid_rate=0.0, v09_selected_purist_correct=238.
+- Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made.
 - Cache/reuse source: claim_table:gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl;selector:gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl;residual_audit:gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
 - Claim language: Stage D promotion gate for the graph-as-component generator. Not a holdout-facing candidate; a promote decision clears the validation ladder only and test450 remains locked behind a separate frozen protocol. The graph enters the selector only under independent-corroboration gating (P2, the Stage C survivor); P1/P3 are effect bounds. Evaluated where the no-correct residual actually lives.
 - Artifacts: `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl`.
@@ -263,8 +158,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; the model may keep the original GPT structured-event final or replace it with a direct label grounded in exact raw-note evidence.; model `openai/gpt-4.1`.
 - Registry roles: `component_ladder`, `historical_lineage`.
 - Repair mode/config: `format-only label repair, exact-substring evidence filtering, and predeclared safety gates; fallback is only to the original GPT structured-event LLM final, not deterministic top.`.
-- Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.2857, changed_labels_vs_v0=147, correct_to_wrong_vs_v0=22, evidence_exact_substrings=703, final_minus_v0_purist_correct=21, final_pragmatic_correct=698, final_purist_correct=682, format_only_purist_correct=676, fresh_evidence_gate_fallbacks=8, fresh_evidence_replace_actions=182, net_purist_gain_vs_v0=20, parse_or_validation_failures=0, prediction_bearing_rows=749, raw_model_purist_correct=676, rows=750, v0_pragmatic_correct=679, v0_purist_correct=661, wrong_to_correct_vs_v0=42.
-- Evidence validity: 703/750 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures.
+- Primary metrics: call_failures=0, changed_label_precision_vs_v0=0.2857, changed_labels_vs_v0=147, correct_to_wrong_vs_v0=22, evidence_exact_rate=0.9502, evidence_exact_substrings=703, evidence_grounded_by_grade_ABSENT=55, evidence_grounded_by_grade_EXACT=1565, evidence_grounded_by_grade_REPAIRED_CASE=23, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=3, evidence_grounded_by_grade_REPAIRED_WHITESPACE=1, evidence_grounded_rate=0.936, final_minus_v0_purist_correct=21, final_pragmatic_correct=698, final_purist_correct=682, format_only_purist_correct=676, fresh_evidence_gate_fallbacks=8, fresh_evidence_replace_actions=182, net_purist_gain_vs_v0=20, parse_or_validation_failures=0, prediction_bearing_rows=749, raw_model_purist_correct=676, rows=750, superseded_evidence_validity=703/750 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures., superseded_exact_valid_rate=0.9373, v0_pragmatic_correct=679, v0_purist_correct=661, wrong_to_correct_vs_v0=42.
+- Evidence validity: Unified evidence_grounded_rate 93.6% (exact sub-metric 95.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (93.7% before recompute): 703/750 final decisions cite exact raw-note evidence substrings after filtering; 0 call failures and 0 parse/schema/label failures.
 - Cache/reuse source: Saved validation structured-event artifacts used as prompt scaffolding; no gold labels, row IDs, split labels, or deterministic top labels are provided to the model.
 - Supersedes: `gan2026_cross_model_challenge_gated_adjudicator_v0_1_validation_ladder_2026-06-13`.
 - Claim language: Validation-development promotion only: V12 v0.4 passed validation25, fixed hard50, family-slice, validation250, and full validation750 transfer checks. It is frozen as the current candidate for one explicit aggregate-only test450 authorization request; it is not yet a holdout result or benchmark-comparable claim.
@@ -288,8 +183,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: deterministic tool floor plus structured-event agent unanimity selector; model `panel: deterministic_rules_tool + gpt-4.1-mini + qwen3-235b-a22b + deepseek`.
 - Registry roles: `component_ladder`.
 - Repair mode/config: `exact_label_unanimity_over_structured_events`.
-- Primary metrics: baseline_pragmatic_correct=704, baseline_purist_correct=697, changed_label_precision=0.22131147540983606, consensus_pragmatic_correct=713, consensus_purist_correct=708, correct_to_wrong=16, net_purist_gain=11, switched_labels=122, wrong_to_correct=27.
-- Evidence validity: Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring.
+- Primary metrics: baseline_pragmatic_correct=704, baseline_purist_correct=697, changed_label_precision=0.22131147540983606, consensus_pragmatic_correct=713, consensus_purist_correct=708, correct_to_wrong=16, evidence_exact_rate=0.0, evidence_grounded_by_grade_EMPTY=750, evidence_grounded_rate=0.0, net_purist_gain=11, superseded_evidence_validity=Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring., superseded_exact_valid_rate=0.0, switched_labels=122, wrong_to_correct=27.
+- Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring.
 - Claim language: First tool-floor + structured-event multi-agent consensus replay to exceed 700/750 Purist on validation. Promote the selector direction, with regression-filter hardening required before holdout.
 - Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.md`.
 
@@ -298,8 +193,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `agentic_structured_event_patch`; mode `validation750 no-call structured-event selection patch replay`; replay `saved_output_replay`.
 - Model role: No-call tool/agent selection-patch replay over Qwen SE v0.6 structured events; the source LLM owns event extraction and baseline selection, while the patcher may only select an already extracted event through conservative gates.; model `none; saved ollama_chat/qwen3.6:35b structured-events outputs only`.
 - Repair mode/config: `recent_unresolved_burden_v0 selection patch: non-selected frequency_rate event, temporality=recent, assertion_status=asserted, semantic_kind=unresolved_multiple, exact evidence, normalized label contains multiple`.
-- Primary metrics: accepted_patches=2, baseline_pragmatic_correct=656, baseline_purist_accuracy=0.8507, baseline_purist_correct=638, changed_label_precision=1.0, changed_labels=2, correct_to_wrong=0, patched_pragmatic_correct=658, patched_purist_accuracy=0.8533, patched_purist_correct=640, row_count=750, wrong_to_correct=2.
-- Evidence validity: Accepted patch evidence was exact-substring gated: 2/2 accepted patches passed; source artifact evidence_valid was 581/750.
+- Primary metrics: accepted_patches=2, baseline_pragmatic_correct=656, baseline_purist_accuracy=0.8507, baseline_purist_correct=638, changed_label_precision=1.0, changed_labels=2, correct_to_wrong=0, evidence_exact_rate=0.8957, evidence_grounded_by_grade_ABSENT=95, evidence_grounded_by_grade_EMPTY=4, evidence_grounded_by_grade_EXACT=1838, evidence_grounded_by_grade_REPAIRED_CASE=4, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=111, evidence_grounded_rate=0.8787, patched_pragmatic_correct=658, patched_purist_accuracy=0.8533, patched_purist_correct=640, row_count=750, superseded_evidence_validity=Accepted patch evidence was exact-substring gated: 2/2 accepted patches passed; source artifact evidence_valid was 581/750., superseded_exact_valid_rate=0.7747, wrong_to_correct=2.
+- Evidence validity: Unified evidence_grounded_rate 87.9% (exact sub-metric 89.6%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (77.5% before recompute): Accepted patch evidence was exact-substring gated: 2/2 accepted patches passed; source artifact evidence_valid was 581/750.
 - Cache/reuse source: experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl.
 - Claim language: Promoted only as validation-development evidence that a narrow structured-event patch can improve the already successful Qwen SE substrate. No new model calls, no holdout rows, no row-level test inspection, and no multi-agent superiority claim.
 - Artifacts: `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.md`.
@@ -309,8 +204,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `agentic_boundary_guide_rescue_replay`; mode `no_call_replay`; replay `saved_output_replay`.
 - Model role: D0 no-call boundary-guide rescue replay over saved E1/E2 validation hard50 traces; tests rescue-only policies using direct_no_tool_context and single_self_consistency_temperature fallbacks.; model `none`.
 - Repair mode/config: `saved-output policy replay; no scorer or label repair changes`.
-- Primary metrics: best_promotable_policy=higher_burden_only, cluster_restore_only_correct_to_wrong=0, cluster_restore_only_wrong_to_correct=2, higher_burden_only_changed_label_precision=0.75, higher_burden_only_changed_labels=4, higher_burden_only_correct_to_wrong=0, higher_burden_only_net_purist_gain=3, higher_burden_only_pragmatic_correct=36, higher_burden_only_purist_correct=35, higher_burden_only_wrong_to_correct=3, holdout_authorized=no, promoted_policy_count=1, rows=50.
-- Evidence validity: No new prediction evidence. Replay uses saved validation hard50 E1/E2 final labels, normalized vote features, repair notes, and manifest slice tags for validation-only analysis.
+- Primary metrics: best_promotable_policy=higher_burden_only, cluster_restore_only_correct_to_wrong=0, cluster_restore_only_wrong_to_correct=2, evidence_exact_rate=0.0, evidence_grounded_by_grade_EMPTY=50, evidence_grounded_rate=0.0, higher_burden_only_changed_label_precision=0.75, higher_burden_only_changed_labels=4, higher_burden_only_correct_to_wrong=0, higher_burden_only_net_purist_gain=3, higher_burden_only_pragmatic_correct=36, higher_burden_only_purist_correct=35, higher_burden_only_wrong_to_correct=3, holdout_authorized=no, promoted_policy_count=1, rows=50, superseded_evidence_validity=No new prediction evidence. Replay uses saved validation hard50 E1/E2 final labels, normalized vote features, repair notes, and manifest slice tags for validation-only analysis., superseded_exact_valid_rate=0.0.
+- Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): No new prediction evidence. Replay uses saved validation hard50 E1/E2 final labels, normalized vote features, repair notes, and manifest slice tags for validation-only analysis.
 - Cache/reuse source: experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl; experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl.
 - Claim language: Validation-development no-call replay only. higher_burden_only passed the D0 gate (3 wrong-to-correct, 0 correct-to-wrong, precision 0.750), but this does not by itself authorize holdout use, benchmark claims, or live validation250 escalation.
 - Artifacts: `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
@@ -320,8 +215,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `agentic_boundary_audit_prompt_v2`; mode `saved_output_reparse`; replay `saved_output_replay`.
 - Model role: D1 one-call boundary-audit prompt v2 over the predeclared validation micro-panel; fixed boundary-guide context only, parser candidates disabled.; model `openai/gpt-4.1-mini`.
 - Repair mode/config: `format-only audit-field shape repair plus existing label/evidence repair; parser candidates disabled as prompt context`.
-- Primary metrics: call_failures=0, changed_label_precision=0.4286, changed_labels_vs_reference=7, e2_loss_sentinel_regressions=0, holdout_authorized=no, losses_vs_single_self_consistency_temperature=1, panel_gate=pass, parse_or_validation_failures=0, pragmatic_correct=10, purist_correct=10, rows=12, wins_vs_single_self_consistency_temperature=3.
-- Evidence validity: 10/12 exact evidence substrings after saved-output reparse; no new prediction evidence during reparse.
+- Primary metrics: call_failures=0, changed_label_precision=0.4286, changed_labels_vs_reference=7, e2_loss_sentinel_regressions=0, evidence_exact_rate=0.8333, evidence_grounded_by_grade_ABSENT=2, evidence_grounded_by_grade_EXACT=10, evidence_grounded_rate=0.8333, holdout_authorized=no, losses_vs_single_self_consistency_temperature=1, panel_gate=pass, parse_or_validation_failures=0, pragmatic_correct=10, purist_correct=10, rows=12, superseded_evidence_validity=10/12 exact evidence substrings after saved-output reparse; no new prediction evidence during reparse., superseded_exact_valid_rate=0.8333, wins_vs_single_self_consistency_temperature=3.
+- Evidence validity: Unified evidence_grounded_rate 83.3% (exact sub-metric 83.3%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (83.3% before recompute): 10/12 exact evidence substrings after saved-output reparse; no new prediction evidence during reparse.
 - Cache/reuse source: live raw outputs in experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl.
 - Supersedes: `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`.
 - Claim language: Validation micro-panel development result only. Panel gate passed and authorized D1 hard50, but this artifact does not authorize broader validation or holdout use.
@@ -1490,8 +1385,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `llm_only_canonical_pipeline`; mode `validation750 replay`; replay `saved_output_replay`.
 - Model role: llm_only architecture comparator; model `ollama_chat/qwen3.6:35b`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: evidence_trace_metric=evidence_text_contained, evidence_trace_valid_rate=0.7653333333333333, evidence_trace_valid_rows=574, null_rows=2, pragmatic_correct_of_rendered=582, pragmatic_correct_rate_of_rendered=0.7780748663101604, purist_correct_of_rendered=544, purist_correct_rate_of_rendered=0.7272727272727273, rendered_rows=748.
-- Evidence validity: Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid.
+- Primary metrics: evidence_exact_rate=0.7653, evidence_grounded_by_grade_ABSENT=66, evidence_grounded_by_grade_EMPTY=2, evidence_grounded_by_grade_EXACT=574, evidence_grounded_by_grade_REPAIRED_CASE=1, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=106, evidence_grounded_by_grade_REPAIRED_WHITESPACE=1, evidence_grounded_rate=0.9093, evidence_trace_metric=evidence_text_contained, evidence_trace_valid_rate=0.7653333333333333, evidence_trace_valid_rows=574, null_rows=2, pragmatic_correct_of_rendered=582, pragmatic_correct_rate_of_rendered=0.7780748663101604, purist_correct_of_rendered=544, purist_correct_rate_of_rendered=0.7272727272727273, rendered_rows=748, superseded_evidence_validity=Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid., superseded_exact_valid_rate=0.7653.
+- Evidence validity: Unified evidence_grounded_rate 90.9% (exact sub-metric 76.5%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (76.5% before recompute): Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid.
 - Claim language: Phase 1 three-way architecture comparison data point for Qwen LLM-only canonical pipeline on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
 
@@ -1500,8 +1395,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `llm_only_canonical_pipeline`; mode `live`; replay `live`.
 - Model role: LLM-only canonical pipeline -- single DSPy call collapses extract/select/normalize/project/render into one pass; no deterministic CandidateSet or projection stage; model `openai/gpt-4.1-mini`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: evidence_text_contained_rows=700, null_rows=0, pragmatic_correct_of_rendered=626, purist_correct_of_rendered=581, rendered_rows=750.
-- Evidence validity: 700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote).
+- Primary metrics: evidence_exact_rate=0.9333, evidence_grounded_by_grade_ABSENT=24, evidence_grounded_by_grade_EMPTY=10, evidence_grounded_by_grade_EXACT=700, evidence_grounded_by_grade_REPAIRED_CASE=11, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=3, evidence_grounded_by_grade_REPAIRED_WHITESPACE=2, evidence_grounded_rate=0.9547, evidence_text_contained_rows=700, null_rows=0, pragmatic_correct_of_rendered=626, purist_correct_of_rendered=581, rendered_rows=750, superseded_evidence_validity=700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote)., superseded_exact_valid_rate=0.9333.
+- Evidence validity: Unified evidence_grounded_rate 95.5% (exact sub-metric 93.3%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (93.3% before recompute): 700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote).
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Newest of the six architectures -- the 'purest form' fully-LLM comparator with the deterministic/hybrid clinical-reasoning rule taxonomy embedded as prompt instructions rather than pre/post processing.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.md`.
 
@@ -1510,8 +1405,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `llm_only_canonical_pipeline`; mode `live`; replay `live`.
 - Model role: LLM-only canonical pipeline -- single DSPy call collapses extract/select/normalize/project/render into one pass; no deterministic CandidateSet or projection stage. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: call_failures=0, evidence_text_contained_rate=0.925, evidence_text_contained_rows=694, null_rows=0, parse_or_validation_failures=0, pragmatic_accuracy=0.781, pragmatic_correct=586, purist_accuracy=0.753, purist_correct=565, rendered_rows=750.
-- Evidence validity: 694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures.
+- Primary metrics: call_failures=0, evidence_exact_rate=0.9253, evidence_grounded_by_grade_ABSENT=24, evidence_grounded_by_grade_EMPTY=9, evidence_grounded_by_grade_EXACT=694, evidence_grounded_by_grade_REPAIRED_CASE=6, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=15, evidence_grounded_by_grade_REPAIRED_WHITESPACE=2, evidence_grounded_rate=0.956, evidence_text_contained_rate=0.925, evidence_text_contained_rows=694, null_rows=0, parse_or_validation_failures=0, pragmatic_accuracy=0.781, pragmatic_correct=586, purist_accuracy=0.753, purist_correct=565, rendered_rows=750, superseded_evidence_validity=694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures., superseded_exact_valid_rate=0.9253.
+- Evidence validity: Unified evidence_grounded_rate 95.6% (exact sub-metric 92.5%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (92.5% before recompute): 694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.md`.
 
@@ -1520,8 +1415,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `hybrid_structured_events`; mode `validation750 replay`; replay `saved_output_replay`.
 - Model role: hybrid architecture comparator; model `ollama_chat/qwen3.6:35b`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: evidence_trace_metric=evidence_valid, evidence_trace_valid_rate=0.748, evidence_trace_valid_rows=561, null_rows=4, pragmatic_correct_of_rendered=646, pragmatic_correct_rate_of_rendered=0.8659517426273459, purist_correct_of_rendered=624, purist_correct_rate_of_rendered=0.8364611260053619, rendered_rows=746.
-- Evidence validity: Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures.
+- Primary metrics: evidence_exact_rate=0.8861, evidence_grounded_by_grade_ABSENT=108, evidence_grounded_by_grade_EMPTY=4, evidence_grounded_by_grade_EXACT=1883, evidence_grounded_by_grade_REPAIRED_CASE=5, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=125, evidence_grounded_rate=0.864, evidence_trace_metric=evidence_valid, evidence_trace_valid_rate=0.748, evidence_trace_valid_rows=561, null_rows=4, pragmatic_correct_of_rendered=646, pragmatic_correct_rate_of_rendered=0.8659517426273459, purist_correct_of_rendered=624, purist_correct_rate_of_rendered=0.8364611260053619, rendered_rows=746, superseded_evidence_validity=Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures., superseded_exact_valid_rate=0.748.
+- Evidence validity: Unified evidence_grounded_rate 86.4% (exact sub-metric 88.6%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (74.8% before recompute): Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures.
 - Claim language: Phase 1 three-way architecture comparison data point for Qwen SE on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
 
@@ -1530,8 +1425,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring; model `openai/gpt-4.1-mini`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748.
-- Evidence validity: 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
+- Primary metrics: evidence_exact_rate=0.9479, evidence_grounded_by_grade_ABSENT=63, evidence_grounded_by_grade_EMPTY=2, evidence_grounded_by_grade_EXACT=2130, evidence_grounded_by_grade_REPAIRED_CASE=38, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=14, evidence_grounded_rate=0.9213, evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748, superseded_evidence_validity=691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote., superseded_exact_valid_rate=0.9213.
+- Evidence validity: Unified evidence_grounded_rate 92.1% (exact sub-metric 94.8%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (92.1% before recompute): 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
 
@@ -1540,8 +1435,8 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Pipeline: `hybrid_structured_events`; mode `live`; replay `live`.
 - Model role: LLM-only structured-events extractor and selector -- slim source-near event schema; deterministic code limited to Gan normalization, evidence validation, and scoring. deepseek-chat alias for deepseek-v4-flash non-thinking mode -- calling deepseek-v4-flash directly defaults to thinking mode (emits reasoning_content blocks that exhaust max_tokens before producing JSON output); deepseek-chat is the official non-thinking-mode alias for the same underlying v4-flash model; model `deepseek/deepseek-chat`.
 - Registry roles: `architecture_comparator`.
-- Primary metrics: call_failures=0, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742.
-- Evidence validity: 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
+- Primary metrics: call_failures=0, evidence_exact_rate=0.9779, evidence_grounded_by_grade_ABSENT=31, evidence_grounded_by_grade_EMPTY=8, evidence_grounded_by_grade_EXACT=2128, evidence_grounded_by_grade_REPAIRED_CASE=8, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=1, evidence_grounded_rate=0.9493, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742, superseded_evidence_validity=718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture., superseded_exact_valid_rate=0.9573.
+- Evidence validity: Unified evidence_grounded_rate 94.9% (exact sub-metric 97.8%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (95.7% before recompute): 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
 - Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
 
@@ -2579,6 +2474,50 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Artifacts: ``.
 
 ## Inform Architecture Loop
+
+### `exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (ollama_chat/qwen3.6:35b), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `ollama_chat/qwen3.6:35b`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.5526, clinical_headline_investigations_f1=0.9323, clinical_headline_overall_f1=0.654, clinical_headline_prescription_f1=0.7303, clinical_headline_seizure_frequency_f1=0.5056, final_instruction_tokens=2083, seed_instruction_tokens=417, semantic_per_item_f1=0.1422, strict_benchmark_per_item_f1=0.1318.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629.json`, `experiments/exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629.md`, `experiments/exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629.jsonl`, `experiments/exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629.instruction.txt`.
+
+### `exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (ollama_chat/qwen3.6:35b), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `ollama_chat/qwen3.6:35b`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.5302, clinical_headline_investigations_f1=0.7879, clinical_headline_overall_f1=0.6065, clinical_headline_prescription_f1=0.7591, clinical_headline_seizure_frequency_f1=0.3909, final_instruction_tokens=247, seed_instruction_tokens=121, semantic_per_item_f1=0.1327, strict_benchmark_per_item_f1=0.1215.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.json`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.md`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.jsonl`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.instruction.txt`.
+
+### `exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628`
+- Date/split: `2026-06-28`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.6617, clinical_headline_investigations_f1=0.8583, clinical_headline_overall_f1=0.7313, clinical_headline_prescription_f1=0.8766, clinical_headline_seizure_frequency_f1=0.5921, final_instruction_tokens=1736, seed_instruction_tokens=417, semantic_per_item_f1=0.1321, strict_benchmark_per_item_f1=0.1217.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.json`, `experiments/exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.md`, `experiments/exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.jsonl`, `experiments/exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt`.
+
+### `exectv2_gepa_dedup_gpt41mini_h2mb8_20260628`
+- Date/split: `2026-06-28`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.6624, clinical_headline_investigations_f1=0.8623, clinical_headline_overall_f1=0.7194, clinical_headline_prescription_f1=0.8498, clinical_headline_seizure_frequency_f1=0.5396, final_instruction_tokens=490, seed_instruction_tokens=121, semantic_per_item_f1=0.1456, strict_benchmark_per_item_f1=0.1356.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.json`, `experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.md`, `experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl`, `experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt`.
 
 ### `exectv2_hybrid_benchmark_overall_dev_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
