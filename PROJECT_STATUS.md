@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-06-28
+Last updated: 2026-06-30
 
 ## Active Objective
 
@@ -9,7 +9,9 @@ LLM-only plateau. `clinical_headline` de-duplicated clinical recovery is the
 headline surface; strict benchmark/CUI results stay diagnostic. Paper-facing
 language and results scaffolding live in `docs/research/`. Resume the
 paper/results sprint from `docs/research/paper_manuscript_2026-06-26.md` and the
-IEEE LaTeX draft in `literature/IEEE/IEEE-conference-template-062824/`.
+IEEE LaTeX draft in `literature/IEEE/IEEE-conference-template-062824/`
+(markdown is ahead of the LaTeX draft as of 2026-06-30 — the LaTeX has not yet
+been re-synced with the 2026-06-30 Diagnosis gold-quality revision below).
 
 ## Current Read
 
@@ -35,6 +37,25 @@ Current evidence stack:
   Pragmatic; consensus/fresh constrained Gate 4 failed (`348/450`, precision
   `0.5909`), while exact-source Gate 4 passed only as frozen aggregate evidence
   (`359/450`, `+16`, precision `0.6000`).
+- GEPA workstream closed out (06-28 to 06-30): single-pass GEPA plateaus
+  ~0.73 (mini) / ~0.65 (Qwen) on dev140 `clinical_headline`, ~0.15-0.19 below
+  the v08 hybrid (0.9155); root-caused to producer evidence-recall, not
+  verify/arbitrate stages
+  (`docs/research/exectv2_gepa_vs_hybrid_evidence_decomposition_2026-06-28.md`).
+  Cross-model close-out: Qwen 3.6 35B underperforms mini on the identical
+  architecture and does not clear its own hand-tuned baseline
+  (`docs/research/exectv2_gepa_qwen_cross_model_2026-06-30.md`).
+- SF "plateau" reframed as a gold-quality ceiling, not a model ceiling
+  (SF Phases 1-7, closing in
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`):
+  only 15/53 dev140 `state_profile` metric-errors are genuine model mistakes;
+  counting only genuine errors the model is clinically defensible on 89.3% of
+  letters vs the metric's 62.1%. The same row-adjudication method applied to
+  Diagnosis on 2026-06-30 found the identical mechanism, more lopsided: of 209
+  dev140 Diagnosis disagreements, 14.8% are genuine model error, 85.2% are gold
+  multiplicity/consolidation artifacts (adjusted F1 0.6617 -> 0.9501); see
+  `docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md`
+  and the manuscript revision notes in `docs/research/paper_drafts/`.
 
 ## Active Priorities
 
@@ -46,12 +67,26 @@ Current evidence stack:
 
 ### Now
 
-- Manuscript consistency pass complete; the IEEE draft is provenance-verified and
-  internally consistent (see Done Recently). The only remaining manuscript items
-  are author-controlled camera-ready fields still showing placeholders
-  (author/affiliation block, acknowledgment) and the two-column last-page balance
-  IEEEtran flags on build — none are development tasks. No open ExECTv2/Gan
-  development task is authorized; forward work is gated under Next/Blocked.
+- 2026-06-30: applying `docs/research/predecessor_lessons/` to the current
+  evidence base (the packet's own absorption tables were stale relative to the
+  GEPA/SF work done since 06-28). Five bounded items: (1) registry hygiene
+  fixed — 247 artifact paths across 183 entries repaired, one pre-existing
+  out-of-scope Gan entry left; (2) Diagnosis canonical row-adjudication (see
+  Current Read above) — the highest-value finding, revises the manuscript's
+  gap-mechanism claim; (3) evidence support-quality companion audit built
+  (`experiments/exectv2_evidence_support_audit.py`), closing the FM1 guardrail
+  that was "Partial"; (4) DeepSeek precision prompt profile probe (A5) — small,
+  mechanistically clean positive (+0.0146 overall F1, precision +0.026/recall
+  flat) on `docs/experiments/exectv2/reliability/exectv2_deepseek_precision_profile_probe_2026-06-30.md`;
+  (5) this PROJECT_STATUS update + predecessor-lessons absorption table refresh
+  + manuscript revision (in progress). The IEEE LaTeX draft has NOT yet been
+  re-synced with the 2026-06-30 manuscript markdown changes — that is the next
+  step before any camera-ready pass.
+- Manuscript consistency pass (06-26) and the SF/Diagnosis gold-quality
+  revisions (06-29, 06-30) are layered on the markdown source; the IEEE draft
+  reflects only the 06-26 state. The remaining camera-ready-only items
+  (author/affiliation block, acknowledgment, two-column last-page balance) are
+  unaffected by the content revisions.
 
 ### Next
 
@@ -81,6 +116,23 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-06-30: Applied `docs/research/predecessor_lessons/` to the current evidence
+  base. Registry hygiene (247 artifact paths repaired); Diagnosis canonical
+  row-adjudication (the GEPA plateau synthesis's self-reopened question,
+  answered — 85.2% of Diagnosis disagreements are gold-quality artifacts, not
+  genuine model error, mirroring and exceeding the SF finding); evidence
+  support-quality companion audit (closes FM1's "Partial" guardrail); DeepSeek
+  precision prompt profile probe (A5, small mechanistically-clean positive);
+  manuscript revised (§4.1.2, D.2, §6) to give Diagnosis the same
+  gold-quality-ceiling treatment SF got on 06-29; predecessor-lessons
+  absorption tables refreshed.
+- 2026-06-30: ExECTv2 GEPA Qwen 3.6 35B cross-model close-out (bounded
+  negative) + registry registration fix (12 malformed records flattened).
+- 2026-06-29: ExECTv2 SF Phases 5-7 — feedback+demos LLM-only SF best (0.784,
+  gate not cleared); changed-class row adjudication revises Phase 4's "not
+  learnable" call; canonical whole-corpus metric row-analysis concludes the SF
+  "wall" is a gold-quality ceiling, not a model ceiling (only 15/53 dev140
+  metric-errors are genuine model mistakes).
 - 2026-06-26: IEEE manuscript final consistency pass — verified every reported
   number, family score, and claim-boundary phrase end-to-end against the Appendix
   Table I source artifacts (Gan `test450` phase-4 audit; consensus/fresh Gate 4

@@ -287,31 +287,32 @@ Safe protocol shape:
 - preserve examples as synthetic/paraphrased or artifact-linked, avoiding protected row-level holdout inspection;
 - state that companion views support interpretation, not published-benchmark replacement.
 
-## Current Absorption Status (2026-06-27)
+## Current Absorption Status (2026-06-30)
 
-Some of these avenues are already partly built in `clinical_extraction/`. This column prevents the packet from re-recommending shipped work or reading as more open than it is. Grounded against current modules, tests, and `PROJECT_STATUS.md`.
+Some of these avenues are already partly built in `clinical_extraction/`. This column prevents the packet from re-recommending shipped work or reading as more open than it is. Grounded against current modules, tests, and `PROJECT_STATUS.md`. Refreshed 2026-06-30 after a deliberate, less-conservative second pass through this packet against the paper-ready evidence base (the 2026-06-27 snapshot below was stale relative to the GEPA/SF work that followed it).
 
-| Avenue | Status in `clinical_extraction/` (2026-06-27) |
+| Avenue | Status in `clinical_extraction/` (2026-06-30) |
 | --- | --- |
-| A1 Post-hoc evidence resolver | Partial — `core/evidence_validity_audit.py` and `experiments/reconcile_evidence_groundedness_registry.py` cover validity/groundedness; a dev-only resolver audit separating first-pass selection from grounding is the open part. |
-| A2 ExECTv2 frequency surface repair | Open — locked surfaces; dev140-only and predeclared if reopened. |
-| A3 Gan canonical-format port | Open — `test450` frozen; exact-label work must not learn from locked test. |
+| A1 Post-hoc evidence resolver | Partial, extended — `core/evidence_validity_audit.py` covers groundedness; `experiments/exectv2_evidence_support_audit.py` (2026-06-30) adds the SUPPORT dimension this avenue called for (does the evidence justify the specific claimed value, sampled on the production v08 hybrid run, dev140-only). Still open: a dedicated dev-only resolver that separates first-pass selection from grounding *as a pipeline stage* (this audit is read-only measurement, not a resolver). |
+| A2 ExECTv2 frequency surface repair | **Absorbed, far beyond the avenue's original scope** — SF Phases 1-7 (2026-06-27 to 06-29) ended in a canonical whole-corpus row-adjudication concluding the SF "wall" is a gold-quality ceiling (IAA 0.47), not a model ceiling; only 15/53 dev140 metric-errors are genuine model mistakes. The SAME method applied to Diagnosis (2026-06-30) found the identical mechanism, more lopsided (85.2% gold-artifact vs SF's 72%). Both fed directly into manuscript revisions. |
+| A3 Gan canonical-format port | Open — `test450` frozen; exact-label work must not learn from locked test. Deliberately not picked up in the 2026-06-30 pass: Gan numbers are already locked/reported, and the avenue's safe-protocol-shape requires validation-only work that would not change a number already in the paper. |
 | A4 Hard-case panels | Partial — Gan generalization/adversary battery and the split protocol already favor hard slices over broad reruns. |
-| A5 Model-specific prompt profiles | Open — not built; maintenance/overfit risk noted. |
+| A5 Model-specific prompt profiles | **Absorbed (2026-06-30)** — the first model-specific prompt profile was built and tested: a DeepSeek-tailored precision-discipline clause on the GEPA per-family producer, targeting the Phase 0c over-emission/weak-keying failure mode. Result: small, mechanistically clean positive (+0.0146 overall F1; precision +0.026, recall flat — exactly the predicted mechanism). Reported as a model-specific result per A5's own instruction, not a universal change. See `docs/experiments/exectv2/reliability/exectv2_deepseek_precision_profile_probe_2026-06-30.md`. |
 | A6 Retrieval highlighting | Open — predecessor evidence already negative on the ExECT frontier; low priority. |
-| A7 One fair ExECT optimizer baseline | Partial — GEPA from-scratch was run on ExECTv2 (`exectv2/gepa/`) as a bounded probe (negative-on-goal + length-penalty win), so "was an optimizer ever tried on the harder task?" is now partly answered. |
-| A8 Agent-assisted review as controlled process | Absorbed as discipline — leads-only, primary-artifact promotion required. |
+| A7 One fair ExECT optimizer baseline | **Absorbed, far beyond a single baseline** — the full GEPA investigation (2026-06-27 to 06-30) ran single-pass, multi-family, multi-stage, recall-lanes, and cross-model (Qwen 3.6 35B) arms, each with a predeclared kill-criterion, closing with a root-caused negative (single-pass plateaus ~0.73, gap is producer evidence-recall not architecture) rather than an open-ended loop. "Was an optimizer ever tried on the harder task?" is now answered in full, not partly. |
+| A8 Agent-assisted review as controlled process | Absorbed as discipline — leads-only, primary-artifact promotion required; the 2026-06-30 Diagnosis adjudication (5 parallel sub-agent reviews, self-validated via a 209/209 coverage assertion before promotion) is a clean instance of this discipline working as designed. |
 | A9 Clinical-utility companion views | Absorbed — `clinical_headline` primary plus clinical-utility companion docs already operationalize this. |
 
 ## Prioritization For A Future Backlog
 
 If work reopens, the safest high-yield order is:
 
-1. Documentation-only: use this packet to sharpen manuscript caveats and future work language.
-2. Dev-only evidence resolver audit for compact/local outputs, if auditability remains a gap.
-3. Dev-only ExECT frequency surface repair, only with a predeclared hard slice.
-4. Validation-only Gan canonical-format port, only if exact-label residuals are still a meaningful paper gap.
-5. One bounded ExECT optimizer baseline, only for dissertation-method closure.
+1. ~~Documentation-only: use this packet to sharpen manuscript caveats and future work language.~~ Done 2026-06-30 (SF + Diagnosis gold-quality reconciliation, §4.1.2/D.2/§6).
+2. A dedicated dev-only evidence-resolver *stage* (not just an audit) for compact/local outputs, if auditability remains a gap after the 2026-06-30 support-quality audit's findings are reviewed.
+3. ~~Dev-only ExECT frequency surface repair~~ Done — SF Phases 1-7, closed 2026-06-29.
+4. Validation-only Gan canonical-format port, only if exact-label residuals are still a meaningful paper gap (still open, deliberately deferred).
+5. ~~One bounded ExECT optimizer baseline~~ Done — the full GEPA investigation, closed 2026-06-30 with the Qwen cross-model arm.
+6. Sync the IEEE LaTeX draft with the 2026-06-30 manuscript markdown revisions (SF + Diagnosis gold-quality paragraphs) — not yet done.
 
 Avoid:
 

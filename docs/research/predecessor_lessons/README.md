@@ -46,14 +46,14 @@ Predecessor numbers remain at evidence-authority level 4 (see below): they guide
 
 ## Current Claim Boundary
 
-The current `clinical_extraction/PROJECT_STATUS.md` states that ExECTv2 `clinical_headline` recovery is the headline surface, while strict benchmark/CUI results remain diagnostic. It also states that no open ExECTv2/Gan development task is authorized, and that Gan `test450` and ExECTv2 full-200/holdout row-level inspection remain blocked for development.
+The current `clinical_extraction/PROJECT_STATUS.md` states that ExECTv2 `clinical_headline` recovery is the headline surface, while strict benchmark/CUI results remain diagnostic. As of 2026-06-30 the user has explicitly authorized dev140-scoped development work that applies this packet's lessons to the current paper-ready evidence base (not just documentation/interpretation) — see `PROJECT_STATUS.md` "Done Recently" for the 2026-06-30 entry and `03_promising_unfinished_avenues.md`'s refreshed absorption table for what that authorization has already produced. Gan `test450` and ExECTv2 full-200/holdout row-level inspection remain blocked regardless; that boundary did not move.
 
 Therefore:
 
-- Use predecessor lessons to improve interpretation, documentation, and future protocol design.
+- Use predecessor lessons to improve interpretation, documentation, future protocol design, AND to scope bounded dev140-only follow-up work, when explicitly authorized.
 - Do not use predecessor metrics as current performance evidence.
-- Do not tune from Gan locked-test or ExECTv2 full-200/holdout row-level failures.
-- If a future experiment is authorized, start from current validation/dev protocols and predeclare the scorer, split, inspection boundary, component ownership, and stop rule.
+- Do not tune from Gan locked-test or ExECTv2 full-200/holdout row-level failures — this remains absolute regardless of the development-authorization state.
+- Any new experiment, authorized or not, still predeclares the scorer, split, inspection boundary, component ownership, and stop rule before running (BP1) — authorization widens what may be attempted, not the discipline each attempt is held to.
 
 ## Evidence Authority Order
 
