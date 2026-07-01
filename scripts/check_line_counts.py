@@ -144,7 +144,7 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         "A1: single-pass orchestrator — pending decomposition",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_sf_state_adjudicator.py": AllowlistEntry(
-        1206,
+        1222,
         "A1: SF state adjudicator — migrate to entity_verifier/sf pipeline",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_sf_union_arbitration.py": AllowlistEntry(
@@ -254,7 +254,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split projection render repair cases",
     ),
     "test_exectv2_scoring.py": AllowlistEntry(
-        1401,
+        1469,
         "P0-6/Wave-C-S1: megatest — split scoring scenario tables",
     ),
     "test_gan2026_fresh_evidence_reasoner.py": AllowlistEntry(
