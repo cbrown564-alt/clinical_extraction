@@ -101,11 +101,17 @@ jobs:
       - name: Enforce line-count limits (src, tests, frontend)
         run: python scripts/check_line_counts.py
 
+      - name: Enforce documentation hygiene gates
+        run: python scripts/check_doc_hygiene.py
+
       - name: Enforce artifact_analysis import quarantine
         run: python scripts/check_artifact_analysis_imports.py
 
       - name: Pytest — line-count gate behavior
         run: python -m pytest tests/test_line_count_gates.py -q
+
+      - name: Pytest — documentation hygiene gates
+        run: python -m pytest tests/test_doc_hygiene.py -q
 
   sf-registry-parity:
     name: SF registry parity
