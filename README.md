@@ -2,30 +2,32 @@
 
 Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
 
-The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The short-term goal is narrower and sharper: beat the seizure-frequency benchmarks from Gan 2026, prioritizing purist F1.
+The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The active research phase is ExECTv2 reliability and paper closeout on capability-first claims; Gan 2026 holdout evidence is frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
 
 This is also a research codebase. The intended paper contribution is not only higher benchmark performance, but a clearer account of how modular hybrid systems work: what deterministic rules contribute, what LLM reasoning contributes, where each fails, and how evidence/rationale trails can make clinical extraction less opaque.
 
 ## Current Focus
 
-Immediate work is exclusively focused on:
+**Authoritative steering:** [`PROJECT_STATUS.md`](PROJECT_STATUS.md) and
+[`docs/plans/ACTIVE_ROADMAP.md`](docs/plans/ACTIVE_ROADMAP.md).
 
-- Dataset: `data/Gan (2026)/synthetic_data_subset_1500.json`
-- Paper: `data/Gan (2026)/Synthetic Clinical Letters for Seizure Frequency.pdf`
-- Author code: `data/Gan (2026)/previous implementation/`
-- Primary metric: purist F1
+Active work (2026-07-01):
 
-The first pipeline hypothesis is:
+- **ExECTv2:** `clinical_headline` de-duplicated clinical recovery as the headline
+  scorer; strict benchmark/CUI stays diagnostic. Production control is holistic
+  finding assembly v08 on dev140/full-200.
+- **Paper:** capability-first claims (C1–C5) in
+  [`docs/research/paper_manuscript_2026-06-26.md`](docs/research/paper_manuscript_2026-06-26.md);
+  IEEE LaTeX re-sync pending after 2026-06-30 Diagnosis gold-quality revision.
+- **Gan 2026:** holdout frozen (test450 aggregate-only); reliability closeout and
+  The Wall documented in research synthesis — not an active tuning target.
 
-```text
-clinical note
-  -> DSPy seizure-event extractor
-  -> deterministic frequency/date normalization
-  -> DSPy clinical reasoner for grouping, temporal selection, and final answer
-  -> deterministic schema/evidence validation
-  -> deterministic repair where interpretation is unchanged
-  -> Gan-compatible evaluation
-```
+**Reading by thread:** [`docs/THREAD_MAP.md`](docs/THREAD_MAP.md) (five paths, ≤8
+hops each).
+
+Both tasks share modular hybrid architecture (rules / LLM-only / hybrid families).
+Gan seizure-frequency remains the deep single-label benchmark surface; ExECTv2
+covers broad epilepsy phenotyping on de-identified letters.
 
 ## Design Principles
 
@@ -84,6 +86,9 @@ tests/                          Focused tests for data contracts and determinist
 ## Resuming Work
 
 - **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
+- **Thread map (pick your narrative):** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
+- **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)
+- **Live control board:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
 - Active experiment surface: [experiments/README.md](experiments/README.md)
 - Superseded notes archive: [experiments/archive/ARCHIVE_INDEX.md](experiments/archive/ARCHIVE_INDEX.md)
 - Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)

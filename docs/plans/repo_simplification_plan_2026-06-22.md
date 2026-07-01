@@ -1,3 +1,5 @@
+> **Status: DEFERRED** — not started until evidence spine and paper closeout stabilize. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) P2.
+
 # Repo Simplification Plan
 
 Date: 2026-06-22

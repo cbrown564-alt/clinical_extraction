@@ -1,3 +1,5 @@
+> **Status: ACTIVE** — open work tracked in [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md).
+
 # Plan — Close the five named manuscript evidence gaps
 
 Status: **PROPOSED, not started.** Owner: paper/manuscript track. Date: 2026-07-01.

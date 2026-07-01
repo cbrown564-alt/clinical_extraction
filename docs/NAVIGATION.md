@@ -18,15 +18,30 @@ new documents belong and how they retire.
 | Frozen evidence spine (hashes + claim boundaries) | [`docs/experiments/final_artifact_index_2026-06-22.md`](experiments/final_artifact_index_2026-06-22.md) |
 | Regenerating tracked artifacts | [`docs/REGENERATION.md`](REGENERATION.md) |
 | Older status entries (rolling archive) | [`docs/research/maintenance/project_status_digest_2026-06.md`](research/maintenance/project_status_digest_2026-06.md) |
+| Active roadmap (open work only) | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) |
+| Narrative thread map (reading paths) | [`docs/THREAD_MAP.md`](THREAD_MAP.md) |
+
+## Tier 1.5 — Reading by thread
+
+Pick one thread before diving into the long tail. Each path has at most eight hops;
+see [`THREAD_MAP.md`](THREAD_MAP.md) for full tables.
+
+| Thread | Start here if you need… |
+| --- | --- |
+| **T1 Reliability & The Wall** | Gan ceiling, forward-observable features, wall transfer to ExECT SF |
+| **T2 Clinical recovery & scoring** | `clinical_headline`, gold-quality ceiling, benchmark reconciliation |
+| **T3 Architecture & components** | Pipeline stages, three families, component-off / promotion gates |
+| **T4 Paper & claim boundaries** | Manuscript gaps, frozen evidence, supervisor-brief conformance |
+| **T5 Engineering & governance** | Registry, two-tree rule, holdout gates, doc lifecycle |
 
 ## Tier 2 — Durable design
 
 | Job | Path |
 | --- | --- |
-| Architecture, data contracts, model strategy | [`docs/design/`](design/) |
+| Architecture, data contracts, model strategy | [`docs/design/`](design/) — spine index: [`design/README.md`](design/README.md) |
 | Architecture decision records | [`docs/decisions/`](decisions/) |
 | Repeatable operational procedures | [`docs/runbooks/`](runbooks/) |
-| Forward implementation plans | [`docs/plans/`](plans/) |
+| Forward implementation plans | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) (historical plans in [`docs/plans/`](plans/)) |
 | Metric definitions | [`docs/reference/`](reference/) |
 
 ## Tier 3 — Paper and claims

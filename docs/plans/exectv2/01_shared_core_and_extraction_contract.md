@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](../ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](../recent_plan_rationalisation_2026-06-25.md).
+
 # Satellite 01 — Shared Core & ExECTv2 Extraction Contract
 
 Parent: [[00_overarching_implementation_plan]] · Phase 1

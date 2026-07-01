@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](../ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](../recent_plan_rationalisation_2026-06-25.md).
+
 # Satellite 09 — GPT-First Execution Plan (Phased)
 
 Parent: [[00_overarching_implementation_plan]] · execution arm of

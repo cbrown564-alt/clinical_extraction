@@ -1,8 +1,10 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md).
+
 # Evidence-Validity Unification — Review, Categorise, Unify, Re-run
 
 **Date:** 2026-06-27
 **Task:** Cross-task reliability — one canonical evidence-groundedness metric for gan2026, ExECTv2, and future tasks
-**Status:** Plan — not yet executed
+**Status:** Executed 2026-06-27 — canonical metric in `core/evidence.py`; see [`docs/reference/evidence_groundedness_metric.md`](../reference/evidence_groundedness_metric.md).
 **Author:** Design pass on current `main`
 
 ---
