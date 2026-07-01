@@ -71,6 +71,7 @@ docs/
   design/                       Architecture and pipeline design notes.
   decisions/                    Lightweight architecture decision records.
   experiments/                  Human-readable experiment reports and predeclarations.
+  NAVIGATION.md                 Tiered routing to control plane and long tail.
   plans/                        Forward implementation plans by workstream.
   research/                     Thesis, synthesis, error analysis, and paper-facing notes.
   runbooks/                     Repeatable development/evaluation workflows.
@@ -82,6 +83,7 @@ tests/                          Focused tests for data contracts and determinist
 
 ## Resuming Work
 
+- **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
 - Active experiment surface: [experiments/README.md](experiments/README.md)
 - Superseded notes archive: [experiments/archive/ARCHIVE_INDEX.md](experiments/archive/ARCHIVE_INDEX.md)
 - Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)

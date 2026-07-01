@@ -28,7 +28,8 @@ Unlike Phase 1, there is no existing per-case clinical verdict to cross-referenc
 SF Phase 7 adjudication is letter-level, on a different model run, for a different
 metric). This script's second half writes a full adjudication substrate (letter text +
 gold/pred SF mentions + cross-entity overlap flag) per FN case to
-``_sf_ev_recall/<letter>.md`` and a manifest to ``_sf_ev_recall/_cases.json``, for a
+``docs/research/error_analysis/sf_ev_recall/<letter>.md`` and a manifest to
+``docs/research/error_analysis/sf_ev_recall/_cases.json``, for a
 FRESH clinical pass (see ``exectv2_sf_evidence_recall_adjudication.py``, written after
 this script's output is reviewed) using the same GOLD_RIGHT / MODEL_DEFENSIBLE /
 BOTH_DEFENSIBLE taxonomy as the Dx and SF Phase-7 adjudications.
@@ -56,7 +57,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
-OUT = ROOT / "_sf_ev_recall"
+OUT = ROOT / "docs" / "research" / "error_analysis" / "sf_ev_recall"
 RUN_ID = "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628"
 ENTITY = "SeizureFrequency"
 

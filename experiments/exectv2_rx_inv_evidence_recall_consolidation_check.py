@@ -31,8 +31,8 @@ GEPA-best run Phase 1/Phase 3 and the evidence-decomposition doc use).
 No existing per-case clinical verdict to cross-reference for either family (no prior
 adjudication exists, per the plan's original non-goals). This script's second half writes
 a full adjudication substrate (letter text + gold/pred family mentions + cross-entity
-overlap flag) per FN case to ``_rx_inv_ev_recall/<entity>/<case>.md`` and a manifest to
-``_rx_inv_ev_recall/_cases.json``, for a FRESH clinical pass using the same GOLD_RIGHT /
+overlap flag) per FN case to ``docs/research/error_analysis/rx_inv_ev_recall/<entity>/<case>.md`` and a manifest to
+``docs/research/error_analysis/rx_inv_ev_recall/_cases.json``, for a FRESH clinical pass using the same GOLD_RIGHT /
 MODEL_DEFENSIBLE / BOTH_DEFENSIBLE taxonomy as the Dx and SF adjudications.
 
 Usage: uv run python experiments/exectv2_rx_inv_evidence_recall_consolidation_check.py
@@ -57,7 +57,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
-OUT = ROOT / "_rx_inv_ev_recall"
+OUT = ROOT / "docs" / "research" / "error_analysis" / "rx_inv_ev_recall"
 RUN_ID = "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628"
 ENTITIES = ("Prescription", "Investigations")
 

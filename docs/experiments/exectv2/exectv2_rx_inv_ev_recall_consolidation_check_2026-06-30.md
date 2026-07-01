@@ -233,9 +233,9 @@ confirmation or a clean third negative — and the split is informative in its o
   substrate dump for both families, committed, reusable, zero-LLM.
 - `experiments/exectv2_rx_inv_evidence_recall_finalize.py` — merges adjudication batches, computes
   the per-family cross-tab and both decision-number readings, writes
-  `_rx_inv_ev_recall/_adjudication.csv`.
+  `docs/research/error_analysis/rx_inv_ev_recall/_adjudication.csv`.
 - `experiments/exectv2_rx_inv_evidence_recall_consolidation_check.json` — full per-case data
   (mechanism, verdict, reason, substrate) and final per-family tallies.
-- `_rx_inv_ev_recall/` — 50 per-case adjudication substrate `.md` files (split into `prescription/`
+- `docs/research/error_analysis/rx_inv_ev_recall/` — 50 per-case adjudication substrate `.md` files (split into `prescription/`
   and `investigations/` subdirectories) + `_adjudication.csv` (case-level CSV: entity, letter,
   mechanism, verdict, missed text, reason).

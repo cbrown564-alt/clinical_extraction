@@ -134,7 +134,7 @@ residual lever) but sharpens which families would benefit most from re-keying vs
   scoping rather than a direct port of Phase 1's method.
 - The fresh adjudication was done by 4 independent parallel reviewers rather than a single pass;
   each reviewer flagged their own "torn calls" transparently (case-level notes preserved in
-  `_sf_ev_recall/_adjudication.csv` and the reviewers' own reports), consistent with the genuine
+  `_adjudication.csv` and the reviewers' own reports), consistent with the genuine
   IAA-level ambiguity this domain has (SF human IAA = 0.47, the second-worst entity per Phase 6/7).
   A different reviewer could plausibly move a handful of borderline cases between `GOLD_RIGHT` and
   `BOTH_DEFENSIBLE`; the decision number is robust to this (both readings clear 50% by a wide
@@ -167,5 +167,5 @@ residual lever) but sharpens which families would benefit most from re-keying vs
   cross-tab and both decision-number readings, writes `_sf_ev_recall/_adjudication.csv`.
 - `experiments/exectv2_sf_evidence_recall_consolidation_check.json` — full per-case data (mechanism,
   verdict, reason, substrate) and final tallies.
-- `_sf_ev_recall/` — 72 per-case adjudication substrate `.md` files + `_adjudication.csv`
+- `docs/research/error_analysis/sf_ev_recall/` — 72 per-case adjudication substrate `.md` files + `_adjudication.csv`
   (case-level CSV: letter, mechanism, verdict, missed text/state, reason).

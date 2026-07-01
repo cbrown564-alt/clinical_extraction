@@ -3,6 +3,10 @@
 The docs tree is organized by the job a document does, not by the order it was
 written.
 
+**Start here:** [`NAVIGATION.md`](NAVIGATION.md) — tiered routing to the control
+plane, design docs, paper material, and long tail. Lifecycle rules:
+[`runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md).
+
 ## Stable Design
 
 - `design/`: Durable architecture notes, data contracts, evaluation protocols,
@@ -17,6 +21,10 @@ written.
 - `research/`: Thesis, synthesis, paper-facing interpretation, major error
   analysis, and durable data/gold-scoring notes. A research doc should answer
   "what did we learn?" or "what claim does this support?"
+- `research/error_analysis/`: Row-level case files and adjudication substrates
+  for error-analysis workstreams (for example evidence-recall consolidation).
+- `research/maintenance/`: Rolling archives such as monthly PROJECT_STATUS
+  digests.
 - `experiments/`: Human-readable lab-notebook material for individual runs,
   predeclarations, pilot iterations, readouts, and short experiment reports. An
   experiment doc should answer "what did this run do?"
@@ -26,3 +34,6 @@ The repository-level `experiments/` directory remains the home for runnable
 scripts, JSON/JSONL outputs, generated scorecards, and raw run artifacts. The
 `docs/experiments/` directory is for curated narrative records that humans read.
 
+New narrative markdown belongs in `docs/experiments/` unless it is a
+registry-linked scorecard or error ledger that must co-locate with JSON/JSONL
+under `experiments/`. See the two-tree rule in `NAVIGATION.md`.
