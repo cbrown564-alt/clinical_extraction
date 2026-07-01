@@ -1,5 +1,12 @@
 # Exploratory Research Directions: Multi-Agent Review (2026-07-01)
 
+**Terminology note (added 2026-07-01, no content change below):** "multi-agent"
+in this document's title/method means Claude Code sub-agents used as a
+research methodology to audit this project's own artifacts — unrelated to
+the supervisor brief's "multi-agent extraction system" (cooperating LLM
+roles that jointly perform clinical extraction). See
+`docs/design/brief_role_crosswalk.md` for the brief's sense of the term.
+
 Status: exploratory, read-only review. Produced by nine sub-agent investigations
 (six generative, three adversarial) run against the current repo state, not by
 manual analysis. No code was edited, no experiments were run, and no guardrail
@@ -12,6 +19,29 @@ it is deliberately downstream of neither — the brief was to set the existing
 manuscript and `PROJECT_STATUS.md` priorities aside and ask what *new* research
 questions this project's accumulated data, code, and experiment log make
 answerable that have not been asked yet.
+
+**Correction (2026-07-01, post-review, before any implementation work
+started):** the "An Actionable Finding" section below frames the 4 duplicate
+letter-pairs as an undiscovered corpus defect ("4 pairs of byte-identical
+letters," "content leakage," "a discrete, measurable, fixable bug"). That
+framing is wrong. The source dataset paper (Fonferko-Shadrach et al. 2024,
+*Annotation of epilepsy clinic letters for natural language processing*, J
+Biomed Semantics, DOI 10.1186/s13326-024-00316-z) states directly: **"Four
+letters were duplicated within the set to test for consistency in
+annotations."** That is exactly 4 pairs / 8 of 200 letters (4%) — precisely
+what the md5 audit below found. This is a disclosed, intentional
+annotation-QA design choice by the corpus's original authors, not a corpus
+integrity bug this project introduced or discovered. The section is left
+unedited below as the historical record of what the audit found before this
+correction (BP9: preserve negative results as design knowledge). The ONE
+finding that remains genuine and locally-fixable is narrower than originally
+framed: this project's own `exectv2_split_v1.json` split construction
+stratifies only by `has_seizure_frequency_mention`, with no
+identity-awareness, so it did not know to keep the paper's known duplicate
+pairs on the same side of the dev/test boundary — one pair (`EA0159`
+test / `EA0160` dev) landed across it. See `PROJECT_STATUS.md` and
+`docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md`
+for the corrected write-up and fix.
 
 ## Method
 

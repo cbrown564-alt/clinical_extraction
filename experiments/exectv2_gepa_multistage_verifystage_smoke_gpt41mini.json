@@ -1,0 +1,68 @@
+{
+  "auto": null,
+  "date": "2026-07-01",
+  "elapsed_seconds": 184.5,
+  "family_recall_beta": {},
+  "final_eval": {
+    "clinical_headline": {
+      "diagnosis_component": "concept_negation",
+      "overall_f1": 0.7091,
+      "per_family": {
+        "Diagnosis": 0.4211,
+        "Investigations": 0.9231,
+        "Prescription": 1.0,
+        "SeizureFrequency": 0.5
+      },
+      "precision": 0.7727,
+      "recall": 0.6552
+    },
+    "comparators": {
+      "dev140_hand_tuned_single_prompt_headline": {
+        "deepseek-chat": 0.745,
+        "gpt-4.1-mini": 0.71,
+        "qwen3.6-35b": 0.694
+      },
+      "dev140_v08_hybrid_headline": 0.9155
+    },
+    "evidence_recall": {
+      "comparators": {
+        "gepa_per_family_baseline": 0.694,
+        "v08_hybrid": 0.883
+      },
+      "overall_recall": 0.5526,
+      "per_family": {
+        "Diagnosis": 0.25,
+        "Investigations": 0.8571,
+        "Prescription": 1.0,
+        "SeizureFrequency": 0.5556
+      }
+    },
+    "letters": 4,
+    "n_facts_total": 21,
+    "n_scored_total": 21,
+    "semantic_per_item_f1": 0.1017,
+    "strict_benchmark_per_item_f1": 0.1017,
+    "unscorable_letters": 0
+  },
+  "final_instruction_tokens": 2272,
+  "length_penalty": {
+    "alpha_output": 0.05,
+    "beta_demo": 0.25,
+    "beta_instruction": 0.25,
+    "demo_token_budget": 800,
+    "enabled": true,
+    "instruction_token_budget": 4000,
+    "output_token_budget": 2000
+  },
+  "max_metric_calls": 24,
+  "notes": "Verify-only multistage smoke; not a result.",
+  "recall_beta": 1.0,
+  "reflection_model": "deepseek/deepseek-reasoner",
+  "run_id": "exectv2_gepa_multistage_verifystage_smoke_gpt41mini",
+  "seed_instruction_tokens": 2272,
+  "task_max_tokens": 8000,
+  "task_model": "openai/gpt-4.1-mini",
+  "task_temperature": 0.0,
+  "trainset_size": 8,
+  "valset_size": 6
+}

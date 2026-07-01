@@ -35,6 +35,18 @@ the same mechanism. Practical upshot: the "make each lane retrieve exhaustively"
 bet on (§1) is correctly targeted for Investigations (genuine retrieval gap, concentrated
 specifically in EEG-under-extraction when an MRI is also present) and partially targeted for
 Prescription (lever should include fuzzy/CUI-aware evidence matching, not just more retrieval).
+**Investigations lane tested 2026-07-01, NEGATIVE**
+(`experiments/gepa_investigations_lane_deepseek_reasoner_exectv2.py`, run
+`exectv2_gepa_investigations_lane_deepseekreasoner_20260630`; full result in the status banner
+of `docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md`): a
+dedicated GEPA lane reseeding only the Investigation predictor with an explicit MRI/EEG
+anti-anchoring instruction, task model deepseek-reasoner, produced headline 0.9254 / ev-recall
+0.9412 — statistically identical to the existing DeepSeek-chat baseline's 0.9259 / 0.9412, which
+used no Investigation-specific instruction at all. The DeepSeek model swap already closed this
+gap as a side effect; the targeted instruction and the extra reasoning compute (~4x wall-clock)
+added nothing measurable. No further Investigations-lane work is planned; the "correctly
+targeted" framing above should be read as "correctly targeted and already resolved," not as an
+open lever.
 Original status: **DRAFT plan, not started.** Decision gates at the end of Phase 0 and Phase 1.
 Owner: ExECTv2 GEPA workstream. Date: 2026-06-28.
 

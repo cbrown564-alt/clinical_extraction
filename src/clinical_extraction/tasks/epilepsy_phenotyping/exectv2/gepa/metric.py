@@ -21,6 +21,7 @@ just per-letter for a dense per-example gradient.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -31,6 +32,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program import approx_tokens
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifamily import (
+    _facts_of,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
     parse_dedup_clinical_facts_json,
 )
@@ -190,6 +194,120 @@ def _labels_for_keys(family: str, annotations: list, target_keys: set, note_text
                 seen.add(key)
                 labels.append(_label(family, ann))
     return labels
+
+
+#: verify_<family> attribute name (program_multistage.py) -> canonical family title.
+_VERIFY_PREFIX = "verify_"
+_VERIFY_FAMILY_TITLE: dict[str, str] = {
+    "diagnosis": "Diagnosis",
+    "seizure_frequency": "SeizureFrequency",
+    "prescription": "Prescription",
+    "investigation": "Investigations",
+}
+
+
+def _verify_family_of(pred_name: str | None) -> str | None:
+    """The lowercase family name if ``pred_name`` is a multi-stage verify predictor."""
+
+    if not pred_name or not pred_name.startswith(_VERIFY_PREFIX):
+        return None
+    family = pred_name[len(_VERIFY_PREFIX) :]
+    return family if family in _VERIFY_FAMILY_TITLE else None
+
+
+def _keys_and_annotations_for(
+    family_title: str, facts: list[dict], gold_letter: ExectLetter
+) -> tuple[set, list]:
+    """Gold-comparable unit keys + annotations for a raw list of one family's fact dicts.
+
+    Reuses the exact same parse -> adapter -> unit-key path ``_score_prediction``
+    uses for the final merged output, applied to an intermediate (draft or
+    verified) fact list from a single stage, so a stage's own keep/drop/add
+    decisions can be scored against gold independent of the other stage."""
+
+    record, _errors = parse_dedup_clinical_facts_json(
+        json.dumps({"clinical_facts": facts}, ensure_ascii=False)
+    )
+    if record is None:
+        return set(), []
+    predicted, *_ = to_predicted_letter_from_dedup_facts(gold_letter, record)
+    pred_exect = to_exect_letter(predicted)
+    annotations = list(pred_exect.entities(family_title))
+    keys = set(_family_unit_keys(family_title, annotations, gold_letter.note_text))
+    return keys, annotations
+
+
+def _verify_stage_feedback(family: str, pred_trace: Any, gold_letter: ExectLetter) -> str | None:
+    """Stage-local accept/reject/add feedback for one ``verify_<family>`` call.
+
+    Independent of the shared end-to-end ``clinical_headline`` score: audits the
+    verify predictor's own keep/drop/add DECISIONS on the draft facts it was
+    actually given, against gold-derived unit keys, so reflection can credit
+    "correctly rejected a bad candidate" separately from "produced a good final
+    list" — the credit-assignment gap the 2026-06-28 multistage kill-criterion
+    failure diagnosed (verify only had the whole merged-output diff to learn
+    from, and drifted into reformatting a complete list rather than filtering
+    one; see docs/research/exectv2_gepa_single_model_plateau_synthesis_2026-06-28.md
+    §3). Returns ``None`` if ``pred_trace`` doesn't carry the expected
+    (predictor, inputs, outputs) shape, so callers can fall back safely.
+    """
+
+    if not pred_trace:
+        return None
+    try:
+        _predictor, inputs, outputs = pred_trace[-1]
+    except (IndexError, TypeError, ValueError):
+        return None
+
+    draft_json = str((inputs or {}).get("draft_facts_json", "") or "")
+    verified_json = str(getattr(outputs, "verified_facts_json", "") or "")
+    draft_facts = _facts_of(draft_json)
+    verified_facts = _facts_of(verified_json)
+
+    title = _VERIFY_FAMILY_TITLE[family]
+    gold_keys = set(
+        _family_unit_keys(title, list(gold_letter.entities(title)), gold_letter.note_text)
+    )
+    draft_keys, draft_anns = _keys_and_annotations_for(title, draft_facts, gold_letter)
+    verified_keys, verified_anns = _keys_and_annotations_for(title, verified_facts, gold_letter)
+
+    should_keep = draft_keys & gold_keys
+    should_drop = draft_keys - gold_keys
+    correct_keep = should_keep & verified_keys
+    wrong_reject = should_keep - verified_keys
+    correct_reject = should_drop - verified_keys
+    wrong_keep = should_drop & verified_keys
+    added = verified_keys - draft_keys
+    correct_add = added & gold_keys
+    wrong_add = added - gold_keys
+
+    note = gold_letter.note_text
+    parts = [
+        f"VERIFY STAGE ({title}) accept/reject audit of THIS call's OWN decisions "
+        f"on the {len(draft_keys)} draft facts it was given (independent of the "
+        "final merged score): "
+        f"correctly kept {len(correct_keep)}/{len(should_keep)} that belong, "
+        f"correctly rejected {len(correct_reject)}/{len(should_drop)} that don't."
+    ]
+    if wrong_reject:
+        shown = "; ".join(_labels_for_keys(title, draft_anns, wrong_reject, note)[:_MAX_DIFF_ITEMS])
+        parts.append(f"WRONGLY DROPPED {len(wrong_reject)} that should stay: [{shown}].")
+    if wrong_keep:
+        shown = "; ".join(_labels_for_keys(title, draft_anns, wrong_keep, note)[:_MAX_DIFF_ITEMS])
+        parts.append(f"WRONGLY KEPT {len(wrong_keep)} that should be dropped: [{shown}].")
+    if correct_add:
+        parts.append(f"Correctly ADDED {len(correct_add)} facts the draft missed (good).")
+    if wrong_add:
+        shown = "; ".join(
+            _labels_for_keys(title, verified_anns, wrong_add, note)[:_MAX_DIFF_ITEMS]
+        )
+        parts.append(f"WRONGLY ADDED {len(wrong_add)} facts not in gold: [{shown}].")
+    parts.append(
+        "Goal: be a precise FILTER (plus occasional recall-additive rescue of a "
+        "clearly-missed gold fact) — decide each draft fact on its own merits; do "
+        "not rewrite, reformat, or regenerate the whole list."
+    )
+    return " ".join(parts)
 
 
 def _family_diffs(gold_letter: ExectLetter, pred_letter: ExectLetter) -> dict[str, dict[str, list[str]]]:
@@ -511,6 +629,22 @@ def build_metric(
         penalty = _length_penalty(instr_tokens, demo_tokens, out_tokens, cfg)
         score = max(0.0, quality - penalty)
         feedback = _feedback(graded, instr_tokens, demo_tokens, out_tokens, cfg)
+
+        # Stage-local reflection feedback for a multi-stage verify predictor: the
+        # SELECTION score above stays the unchanged end-to-end clinical_headline
+        # objective (comparable across the whole program, so Pareto selection is
+        # untouched); only the FEEDBACK TEXT for a verify_<family> reflective
+        # mutation call is replaced with an accept/reject/add audit of that
+        # predictor's own decisions, independent of the merged-output diff. See
+        # docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md
+        # Phase 2. Falls back to the standard whole-program feedback if the trace
+        # doesn't carry the expected shape (e.g. a plain, non-GEPA metric call).
+        verify_family = _verify_family_of(pred_name)
+        if verify_family is not None:
+            stage_feedback = _verify_stage_feedback(verify_family, pred_trace, gold_letter)
+            if stage_feedback is not None:
+                feedback = stage_feedback
+
         return dspy.Prediction(score=score, feedback=feedback)
 
     return metric

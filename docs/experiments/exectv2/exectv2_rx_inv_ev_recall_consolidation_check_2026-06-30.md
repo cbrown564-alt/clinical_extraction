@@ -6,6 +6,21 @@ multiplicity); Investigations H-genuine STANDS, the first clean negative in this
 sweep (25.9–29.6%, both readings < 30%).** Date: 2026-06-30. Owner: ExECTv2 GEPA workstream /
 predecessor-lessons application follow-up.
 
+**Follow-up (2026-07-01): the §4 MRI-anchoring hypothesis was tested and is a NEGATIVE.** A
+dedicated GEPA lane (`experiments/gepa_investigations_lane_deepseek_reasoner_exectv2.py`,
+run `exectv2_gepa_investigations_lane_deepseekreasoner_20260630`) reseeded ONLY the
+Investigation predictor with an explicit "check each modality independently, don't let MRI
+crowd out EEG" instruction, task model `deepseek/deepseek-reasoner`, Diagnosis/SF/Prescription
+frozen at their unchanged seeds via a single-predictor GEPA component selector. Result:
+Investigations headline 0.9254 / `source_near` recall 0.9412 — statistically indistinguishable
+from the existing DeepSeek-chat baseline that used NO Investigation-specific instruction at all
+(`exectv2_gepa_baseline_multifamily_deepseekchat_20260628`: headline 0.9259 / recall 0.9412,
+identical to 4 decimals), despite ~2.5h/~4x the wall-clock (reasoning tokens genuinely engaged,
+not a routing no-op). **Conclusion: the DeepSeek model-family swap itself, not a targeted
+instruction or extra reasoning compute, is what closed Investigations' MRI/EEG gap** — the
+mini-era anchoring bias this doc diagnosed does not require dedicated engineering to fix once
+the task model changes off gpt-4.1-mini. No further Investigations-lane work is planned.
+
 Executes: `docs/plans/exectv2_gepa_ev_recall_consolidation_reexamination_plan_2026-06-30.md` Phase 4
 (Prescription + Investigations extension, fresh predeclaration written into that plan's Phase 4
 section, user-requested completion of the sweep across all four `KEY_FAMILIES` after Dx and SF both
@@ -162,7 +177,9 @@ confirmation or a clean third negative — and the split is informative in its o
   more useful target than "build more retrieval lanes" in general — it suggests the Investigations
   producer lane specifically should be checked for an MRI-anchoring bias that crowds out EEG
   extraction, a concrete, testable hypothesis for a future GEPA Investigations-lane iteration (out of
-  scope here — this plan does not propose new runs).
+  scope here — this plan does not propose new runs). **Tested 2026-07-01, NEGATIVE: see the status
+  banner at the top of this doc** — a dedicated MRI/EEG-targeted lane matched but did not beat the
+  existing untargeted DeepSeek-chat baseline; the model swap, not the instruction, did the work.
 - **Across all four families, the share of H-inflated falls monotonically with how strongly the
   family is tied to the headline-dedup convention**: Diagnosis 93.5% (full dedup entity, dominant
   consolidation pattern) > SeizureFrequency 61.1–83.3% (full dedup entity, larger genuine residual
