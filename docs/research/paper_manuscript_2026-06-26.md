@@ -47,10 +47,12 @@ component spine: deep single-concept seizure-frequency labeling (Gan 2026) and b
 multi-entity phenotyping (ExECTv2, Fonferko-Shadrach 2024). On Gan 2026 a single GPT
 structured-event pass reaches 364/450 (0.809) Purist accuracy on a locked holdout, within 15
 rows of a far more complex hybrid ceiling (379/450, 0.842). On ExECTv2 de-duplicated
-`clinical_headline` recovery reaches 0.8356–0.8566 F1 across three qualitatively different
+`clinical_headline` recovery reaches 0.8197–0.8566 F1 across three qualitatively different
 LLMs under a frozen component graph, with a non-development model (DeepSeek) leading the
 development model (GPT-4.1-mini) by +0.021 — the predicted signature of a model-agnostic
-architecture. We reconcile our label-based surface with the published benchmark honestly: on
+architecture — while the open-weight model (Qwen 3.6 35B) trails both by a modest,
+diagnosed margin concentrated in the corpus's hardest family (SeizureFrequency), not spread
+uniformly or left unexplained. We reconcile our label-based surface with the published benchmark honestly: on
 the comparable like-for-like surface we reach 0.3877 per item / 0.6972 per letter against the
 paper's 0.87 / 0.90, a gap we locate in deterministic CUI-and-attribute-bundle fidelity that
 was explicitly deprioritised, not in concept recall. The central negative result — a
@@ -414,7 +416,14 @@ encoded in the deterministic projection. SeizureFrequency is thus the cleanest c
 the corpus where the benchmark gap is a property of the gold rather than of the model
 — a gold-quality ceiling no fidelity engineering can recover. *(The 89.3% is mildly
 optimistic — 34 of the 53 errors fall in the optimizer-seen trainset, 19 in the
-held-out valset — but the error structure is the same across both splits. Source:
+held-out valset — but the error structure is the same across both splits. This figure is
+corroborated, not merely asserted, by a blinded independent re-adjudication of a stratified
+20-letter sample (`exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`):
+the population-reweighted genuine-error-rate estimate (30.3%, 95% CI [14.3%, 46.4%])
+overlaps the original (28.3%) closely, yielding a reweighted defensible-letter estimate of
+88.5% (range 82.4–94.6%) against the original 89.3% — item-level verdict agreement on
+individual cases is weaker (Cohen's κ≈0.40) than this aggregate-level robustness, a
+distinction worth stating plainly. Source:
 `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`.)*
 
 **The same mechanism, more lopsided, on Diagnosis.** A parallel whole-corpus
@@ -432,7 +441,8 @@ concept (or splits one compound diagnostic phrase into separate atomic tags) fro
 single diagnostic statement, and the model's reasonable one-tag consolidation is
 scored as both a miss and a false positive. Recomputing precision/recall after
 crediting every clinically-defensible disagreement lifts Diagnosis from **F1 0.6617 to
-0.9501** — a larger absolute gap than SeizureFrequency's. Diagnosis is therefore not a
+approximately 0.85–0.99 (point estimate ≈0.92)** — a larger absolute gap than
+SeizureFrequency's even at the lower bound of this range. Diagnosis is therefore not a
 pure closeable-fidelity entity: it shares SeizureFrequency's gold-quality ceiling,
 just driven by annotation-granularity convention rather than inter-annotator
 agreement. *(Source:
@@ -440,7 +450,17 @@ agreement. *(Source:
 Caveat: adjudicated by five independent reviewers without cross-checking between
 batches, unlike the single coherent SF pass; the four recurring mechanisms replicate
 identically across all five independent batches, which is the main evidence for
-robustness.)*
+robustness. This is reported as a range, not the single point estimate of 0.9501 from
+the original pass, because a blinded independent re-adjudication of a stratified
+20-item sample
+(`exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`) found item-level
+agreement with the original verdicts too weak to trust a bare point figure (Cohen's
+κ≈0.39, at the predeclared 0.4 robustness threshold) and a directionally higher
+population-reweighted genuine-error-rate estimate (14.8%→22.5% point estimate, wide CI
+[1.6%, 43.5%]) — consistent with, and corroborating, this same weaker five-reviewer
+provenance caveat. The core finding (most of the Diagnosis gap is gold-quality
+artifact, not model deficit) is unchanged; only the point magnitude is revised to a
+range.)*
 
 ---
 
@@ -620,6 +640,31 @@ The format-layer contribution remains **stable at ~+0.044–0.046** across model
 full-200 (Table R2), buffering idiosyncratic differences in how each LLM structures
 its outputs. Score stability plus a non-development model leading is the joint
 evidence for model-agnostic architecture.
+
+**Qwen's shortfall, decomposed.** Qwen 3.6 35B (the local open-weight model) trails both
+closed models on the frozen full-200 aggregate (0.8197 vs. GPT 0.8356, DeepSeek 0.8566;
+Table R3), and this gap is neither uniform nor unexplained. *Evidence validity: frozen
+aggregate full-200, replay-only decomposition, no row-level inspection. Source:
+`exectv2_qwen_hybrid_swap_gap_decomposition_2026-07-01.md`.* Per-family, Qwen's deficit
+versus GPT is concentrated in SeizureFrequency (−0.0505) — 5–8× the size of its Diagnosis
+(−0.0090) or Investigations (−0.0060) deltas — with Prescription exactly tied. Three
+candidate mechanisms are ruled out directly from the replayed diagnostics: call failures
+(zero on all models/families), parse/schema failures (zero for Qwen), and evidence
+groundedness (exact evidence rate 1.0000 for Qwen on every family, including SF). A fourth,
+extraction-volume over/under-calling, is also ruled out: Qwen's SF prediction-to-gold ratio
+(1.1074) sits between GPT's (1.0537) and DeepSeek's (1.1198), yet Qwen's SF precision
+(0.6679) and recall (0.7397) are both below both closed models' at that comparable volume —
+a per-mention SF classification-quality gap, not a coverage or evidence problem. This
+differs from the *separate* GEPA single-pass Qwen finding
+(`exectv2_gepa_qwen_cross_model_2026-06-30.md`), which located Qwen's shortfall in
+Diagnosis evidence-retrieval under an LLM-only architecture with no deterministic
+scaffolding: under the hybrid graph analyzed here, Diagnosis is nearly flat and SF carries
+the gap instead, suggesting the hybrid's deterministic dictionary/CUI-normalization layers
+(§4.5) absorb most of Qwen's raw Diagnosis weakness before scoring, but not its SF
+weakness. The honest characterization of the abstract's model range is therefore: the
+aggregate spread across all three models is tight and non-catastrophic (Qwen trails by
+0.0159 overall), but the open-weight model does not fully maintain the closed models' level
+on the corpus's hardest, lowest-agreement family.
 
 *Note on dev140:* DeepSeek leads on dev140 as well (0.9174 vs GPT 0.9155 overall
 headline F1), with its clinical-recovery base lower (0.8334 vs 0.8697) but headline
@@ -816,6 +861,8 @@ components.
 | Claim | Surface | Evidence level | Source artifact |
 |-------|---------|---------------|-----------------|
 | Full-200 clinical-headline F1: GPT 0.8356, DeepSeek 0.8566, Qwen 0.8197 | `clinical_headline` | Frozen aggregate full-200 | `exectv2_same_core_model_swap_full200_2026-06-25.md` |
+| Qwen shortfall decomposition: SF-concentrated (−0.0505 vs GPT), Diagnosis/Investigations modest (−0.009/−0.006), Prescription tied; not call/parse/evidence-rate/volume-explained | `clinical_headline` | Frozen aggregate full-200, replay-only, no row-level inspection | `exectv2_qwen_hybrid_swap_gap_decomposition_2026-07-01.md` |
+| C1 gold-quality blind replication: item-level κ≈0.39 (Dx), 0.40 (SF); population-reweighted genuine-error rate Dx 14.8%→22.5% (CI 1.6–43.5%), SF 28.3%→30.3% (CI 14.3–46.4%); revised Diagnosis adjusted F1 range 0.85–0.99 (pt. ≈0.92), SF defensible-% range 82.4–94.6% (pt. 88.5%) | Diagnosis `concept_only`; SF `state_profile` | Stratified n=20/family blind sub-agent re-adjudication over already-published dev140 case files; not external clinical validation | `exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md` |
 | Like-for-like dev140: 0.3877 per-item / 0.6972 per-letter | Published-benchmark, nine-entity | Validation-only, frozen aggregate | `exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json` |
 | Rules > hybrid on SF benchmark (+0.34 per-item) | Published-benchmark | Validation-only, frozen aggregate | `exectv2_benchmark_surface_overall_2026-06-18.md` |
 | Format-layer delta ~+0.04 stable across models | `clinical_headline` | Frozen aggregate full-200, component-off replay | `exectv2_component_off_replay_full200_20260626.json` |
@@ -938,10 +985,19 @@ diagnosis, and Investigations findings mis-tagged as Diagnosis). **85.2%** are g
 pair, or several atomic fragments — that the model's reasonable single-tag
 consolidation is scored against twice (once as a miss, once as a false positive).
 Crediting every clinically-defensible disagreement lifts Diagnosis from F1 0.6617 to
-0.9501, a larger raw gap than SeizureFrequency's. Diagnosis therefore is not a pure
-closeable-fidelity entity either; it shares the gold-quality-ceiling mechanism, driven
-by annotation-granularity convention rather than inter-annotator disagreement
-(row-analysis: `exectv2_dx_canonical_row_analysis_2026-06-30.md`).
+approximately 0.85–0.99 (point estimate ≈0.92), a larger raw gap than SeizureFrequency's
+even at the range's lower bound. Diagnosis therefore is not a pure closeable-fidelity
+entity either; it shares the gold-quality-ceiling mechanism, driven by
+annotation-granularity convention rather than inter-annotator disagreement
+(row-analysis: `exectv2_dx_canonical_row_analysis_2026-06-30.md`). This figure is
+reported as a range rather than the original pass's single point estimate (0.9501)
+because a blinded independent re-adjudication of a stratified sample found item-level
+verdict agreement too weak (κ≈0.39) to certify a bare point figure, and a
+directionally higher population-reweighted genuine-error rate (14.8%→22.5% point
+estimate); SeizureFrequency's parallel figure was, by contrast, corroborated closely by
+the same check (§4.1.2; `exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`).
+The core finding for both families — most of the benchmark gap is gold-quality artifact,
+not model deficit — is unchanged; only Diagnosis's point magnitude is revised.
 
 A specific caveat applies to SeizureFrequency rule-level claims under the published-benchmark
 surface. The SF registry consolidates 133 rule IDs but the clinical behavior remains split:
@@ -1179,11 +1235,13 @@ deterministic fidelity engineering that was explicitly deprioritised. Second, fo
 SeizureFrequency and Diagnosis whole-corpus row-level adjudications show a measurable share of
 the gap is **not** closeable engineering but the gold's own annotation conventions: for
 SeizureFrequency, the gold's ~0.47 inter-annotator agreement leaves the two-stage program
-clinically defensible on 89.3% of letters where the metric credits 62.1%; for Diagnosis, the
-gold's tendency to split one diagnostic statement into multiple co-present concepts leaves the
-single-pass extractor clinically defensible on the equivalent of F1 0.9501 where the metric
-credits 0.6617. Both of the benchmark's weakest cells are therefore in substantial part a
-gold-quality ceiling rather than a model deficit.
+clinically defensible on 89.3% of letters (blinded-replication-corroborated, 88.5%,
+range 82.4–94.6%) where the metric credits 62.1%; for Diagnosis, the gold's tendency to
+split one diagnostic statement into multiple co-present concepts leaves the single-pass
+extractor clinically defensible on the equivalent of F1 ≈0.85–0.99 (point estimate
+≈0.92, revised from an original single-pass point estimate of 0.9501 by the same blinded
+replication check) where the metric credits 0.6617. Both of the benchmark's weakest cells
+are therefore in substantial part a gold-quality ceiling rather than a model deficit.
 A non-obvious inversion accompanies this finding: the deterministic rules pipeline beats the
 hybrid configuration on the published-benchmark surface for Diagnosis, Prescription, and
 SeizureFrequency (SF rules advantage: +0.345 benchmark per-item F1 on SF), while the hybrid
@@ -1297,7 +1355,7 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 
 | Contribution | Evidence level | Boundary |
 |---|---|---|
-| C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate | No full-200 published-benchmark surface computed |
+| C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate; gold-quality magnitudes corroborated by a blinded independent re-adjudication (SF closely; Diagnosis revised to a range) | No full-200 published-benchmark surface computed; blind-replication check is internal (project-framework second-pass, not external clinical validation), n=20/family, wide CIs |
 | C2 — Component ablation (gate inert; SF norm matters) + cross-task dividend | dev140 replay-only, aggregate (ExECTv2 single-task); validation-side cross-task ablation (ExECTv2 dev140 + Gan validation750) | No model calls; cross-task ablation is validation-side/aggregate-only, no new freeze — not a full-200/holdout cross-task result |
 | C3 — Wall cross-dataset | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1); wall-transfers probe 6/9 | Ceiling and wall mechanism transfer (external-risk plateau + no gold-free separator); population-wide observability noisier than Gan; no holdout on ExECTv2 |
 | C4 — Model-agnostic architecture | Frozen aggregate full-200, predeclared gate | No holdout on non-primary models; row-level attribution excluded |
@@ -1323,3 +1381,4 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 - ExECTv2 SF reproduces Gan's population-wide error magnitude. The wall *mechanism* transfers (6/9 checks: External Risk plateau + no gold-free separator on the binding gold-unknown slice, H0 retained), but ExECTv2's population-wide error cells are noisier than Gan's degenerate P2.1 panel (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on errors vs 69.4% correct), so 3 of 9 checks — the population-magnitude ones — read `no`. Identical same-magnitude population-wide degeneracy is not claimed.
 - The shared SF machinery is literally identical across tasks (ExECTv2 re-implements projection; structural reuse is the accurate claim, not code identity).
 - The GEPA LLM-only ExECTv2 numbers (≈0.731 gpt-4.1-mini, ≈0.654 Qwen dev140 clinical_headline F1) are a promoted full-200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's frozen full-200 numbers without the dev140-vs-full200 caveat.
+- The C1 gold-quality blind replication (`exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`) is external clinical validation. It is a second internal pass (an LLM-based sub-agent blind to the original verdicts and to this project's conclusions, not a human clinician) that corroborates the aggregate magnitude and revises the Diagnosis point estimate to a range; a blinded board-certified neurologist/epileptologist review remains open future work.
