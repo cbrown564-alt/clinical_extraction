@@ -47,10 +47,12 @@ component spine: deep single-concept seizure-frequency labeling (Gan 2026) and b
 multi-entity phenotyping (ExECTv2, Fonferko-Shadrach 2024). On Gan 2026 a single GPT
 structured-event pass reaches 364/450 (0.809) Purist accuracy on a locked holdout, within 15
 rows of a far more complex hybrid ceiling (379/450, 0.842). On ExECTv2 de-duplicated
-`clinical_headline` recovery reaches 0.8356–0.8566 F1 across three qualitatively different
+`clinical_headline` recovery reaches 0.8197–0.8566 F1 across three qualitatively different
 LLMs under a frozen component graph, with a non-development model (DeepSeek) leading the
 development model (GPT-4.1-mini) by +0.021 — the predicted signature of a model-agnostic
-architecture. We reconcile our label-based surface with the published benchmark honestly: on
+architecture — while the open-weight model (Qwen 3.6 35B) trails both by a modest,
+diagnosed margin concentrated in the corpus's hardest family (SeizureFrequency), not spread
+uniformly or left unexplained. We reconcile our label-based surface with the published benchmark honestly: on
 the comparable like-for-like surface we reach 0.3877 per item / 0.6972 per letter against the
 paper's 0.87 / 0.90, a gap we locate in deterministic CUI-and-attribute-bundle fidelity that
 was explicitly deprioritised, not in concept recall. The central negative result — a
@@ -621,6 +623,31 @@ full-200 (Table R2), buffering idiosyncratic differences in how each LLM structu
 its outputs. Score stability plus a non-development model leading is the joint
 evidence for model-agnostic architecture.
 
+**Qwen's shortfall, decomposed.** Qwen 3.6 35B (the local open-weight model) trails both
+closed models on the frozen full-200 aggregate (0.8197 vs. GPT 0.8356, DeepSeek 0.8566;
+Table R3), and this gap is neither uniform nor unexplained. *Evidence validity: frozen
+aggregate full-200, replay-only decomposition, no row-level inspection. Source:
+`exectv2_qwen_hybrid_swap_gap_decomposition_2026-07-01.md`.* Per-family, Qwen's deficit
+versus GPT is concentrated in SeizureFrequency (−0.0505) — 5–8× the size of its Diagnosis
+(−0.0090) or Investigations (−0.0060) deltas — with Prescription exactly tied. Three
+candidate mechanisms are ruled out directly from the replayed diagnostics: call failures
+(zero on all models/families), parse/schema failures (zero for Qwen), and evidence
+groundedness (exact evidence rate 1.0000 for Qwen on every family, including SF). A fourth,
+extraction-volume over/under-calling, is also ruled out: Qwen's SF prediction-to-gold ratio
+(1.1074) sits between GPT's (1.0537) and DeepSeek's (1.1198), yet Qwen's SF precision
+(0.6679) and recall (0.7397) are both below both closed models' at that comparable volume —
+a per-mention SF classification-quality gap, not a coverage or evidence problem. This
+differs from the *separate* GEPA single-pass Qwen finding
+(`exectv2_gepa_qwen_cross_model_2026-06-30.md`), which located Qwen's shortfall in
+Diagnosis evidence-retrieval under an LLM-only architecture with no deterministic
+scaffolding: under the hybrid graph analyzed here, Diagnosis is nearly flat and SF carries
+the gap instead, suggesting the hybrid's deterministic dictionary/CUI-normalization layers
+(§4.5) absorb most of Qwen's raw Diagnosis weakness before scoring, but not its SF
+weakness. The honest characterization of the abstract's model range is therefore: the
+aggregate spread across all three models is tight and non-catastrophic (Qwen trails by
+0.0159 overall), but the open-weight model does not fully maintain the closed models' level
+on the corpus's hardest, lowest-agreement family.
+
 *Note on dev140:* DeepSeek leads on dev140 as well (0.9174 vs GPT 0.9155 overall
 headline F1), with its clinical-recovery base lower (0.8334 vs 0.8697) but headline
 F1 higher — indicating the post-processing stack extracts more value from DeepSeek's
@@ -816,6 +843,7 @@ components.
 | Claim | Surface | Evidence level | Source artifact |
 |-------|---------|---------------|-----------------|
 | Full-200 clinical-headline F1: GPT 0.8356, DeepSeek 0.8566, Qwen 0.8197 | `clinical_headline` | Frozen aggregate full-200 | `exectv2_same_core_model_swap_full200_2026-06-25.md` |
+| Qwen shortfall decomposition: SF-concentrated (−0.0505 vs GPT), Diagnosis/Investigations modest (−0.009/−0.006), Prescription tied; not call/parse/evidence-rate/volume-explained | `clinical_headline` | Frozen aggregate full-200, replay-only, no row-level inspection | `exectv2_qwen_hybrid_swap_gap_decomposition_2026-07-01.md` |
 | Like-for-like dev140: 0.3877 per-item / 0.6972 per-letter | Published-benchmark, nine-entity | Validation-only, frozen aggregate | `exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json` |
 | Rules > hybrid on SF benchmark (+0.34 per-item) | Published-benchmark | Validation-only, frozen aggregate | `exectv2_benchmark_surface_overall_2026-06-18.md` |
 | Format-layer delta ~+0.04 stable across models | `clinical_headline` | Frozen aggregate full-200, component-off replay | `exectv2_component_off_replay_full200_20260626.json` |
