@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`SELF_CONSISTENCY_RELIABILITY_CANON.md`](../../../canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md). Full detail retained below.
+
 # ExECTv2 2-Call GPT-4.1-Mini Self-Consistency
 
 - Generated: `2026-06-25`

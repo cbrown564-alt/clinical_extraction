@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](../ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](../recent_plan_rationalisation_2026-06-25.md).
+
 # Satellite 06 — Evaluation & Benchmark Protocol
 
 Parent: [[00_overarching_implementation_plan]] · Phase 7 (+ governs all phases)

@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`SELF_CONSISTENCY_RELIABILITY_CANON.md`](../../../canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md). Full detail retained below.
+
 # ExECTv2 Focused-Lane Component-Evidence Replay
 
 - Generated: `2026-06-25`

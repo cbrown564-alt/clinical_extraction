@@ -5,14 +5,29 @@ evaluation surfaces.
 
 ## Repo layout / resumption
 
+- Project control board: `PROJECT_STATUS.md`
+- Active roadmap (what we are doing now): `docs/plans/ACTIVE_ROADMAP.md`
+- Documentation map: `docs/NAVIGATION.md`
+- Reading by narrative thread (five paths): `docs/THREAD_MAP.md`
 - Active experiment surface: `experiments/README.md`
 - Superseded notes archive: `experiments/archive/ARCHIVE_INDEX.md`
 - Regenerating tracked artifacts: `docs/REGENERATION.md`
-- Project control board: `PROJECT_STATUS.md`
-- Documentation map: `docs/NAVIGATION.md`
 - Mapping the original supervisor brief's role names (Section/Timeline,
   Field Extractor, Verification, Aggregator Agent) onto the actual
   architecture: `docs/design/brief_role_crosswalk.md`
+
+### Narrative threads (one-line pointers)
+
+Full hop lists live in `docs/THREAD_MAP.md`. Terms for each thread are in the
+sections below.
+
+| Thread | One-line | Start doc |
+| --- | --- | --- |
+| **T1 Reliability / The Wall** | Confident over-reading; no forward-observable abstention signal on binding residuals | `docs/canon/06_gan_clinical_policy.md` |
+| **T2 Clinical recovery / capability-first** | `clinical_headline` primary; benchmark/CUI diagnostic; gold-quality ceiling on SF/Dx | `docs/canon/04_scoring.md` |
+| **T3 Architecture / component evidence** | Three families (rules / LLM-only / hybrid); ablatable component homes | `docs/design/architecture.md` |
+| **T4 Paper closeout / claims** | C1–C5 capability claims; frozen artifact index governs promotion | `docs/canon/10_paper_provenance.md` |
+| **T5 Engineering / experiment governance** | Two-tree rule; registry; predeclare → ladder → frozen index | `docs/runbooks/documentation_lifecycle.md` |
 
 ## Language
 

@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`../../canon/08_gepa.md`](../../canon/08_gepa.md). GEPA plateau verdict and corrected per-family attribution. Full detail retained below.
+
 # Synthesis — the single-model GEPA plateau on ExECTv2 de-dup `clinical_headline`
 
 Status: **REOPENED for SeizureFrequency (2026-06-28), and the Diagnosis question this doc

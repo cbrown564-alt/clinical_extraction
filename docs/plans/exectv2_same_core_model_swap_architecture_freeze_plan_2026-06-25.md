@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md).
+
 # ExECTv2 Same-Core Model-Swap Architecture Freeze Plan
 
 Date: 2026-06-25  

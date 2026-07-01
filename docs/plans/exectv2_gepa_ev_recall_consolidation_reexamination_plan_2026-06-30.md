@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md).
+
 # Plan — does gold-consolidation inflate the GEPA-vs-hybrid evidence-recall gap?
 
 Status: **EXECUTED, ALL FOUR PHASES COMPLETE (2026-06-30) — the full KEY_FAMILIES sweep is done.**

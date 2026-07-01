@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md).
+
 # Implementation plan — Exploratory Research Directions (Tier 1 + Phase 0)
 
 Status: **EXECUTED, all phases complete.** Date: 2026-07-01 (planned and executed same day).

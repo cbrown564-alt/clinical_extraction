@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
+
 # Does gold-consolidation inflate the GEPA-vs-hybrid evidence-recall gap? — Diagnosis check
 
 Status: **CLOSED (H-inflated CONFIRMED, 93.5% >> 50% threshold).** Date: 2026-06-30.

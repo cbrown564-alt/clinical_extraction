@@ -1,5 +1,8 @@
 # Gan 2026 Research Docs
 
+**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canon:**
+[`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md).
+
 This directory holds durable Gan 2026 research material: synthesis, architecture
 interpretation, policy notes, major error analyses, retrospectives, and
 repo-maintenance history.

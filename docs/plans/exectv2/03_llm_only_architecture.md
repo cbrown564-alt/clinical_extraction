@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](../ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](../recent_plan_rationalisation_2026-06-25.md).
+
 # Satellite 03 — LLM-Only Architecture
 
 Parent: [[00_overarching_implementation_plan]] · Phases 3 & 6

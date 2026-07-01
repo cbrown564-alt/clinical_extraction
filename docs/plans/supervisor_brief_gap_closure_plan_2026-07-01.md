@@ -1,3 +1,5 @@
+> **Status: HISTORICAL** — design record only. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) and [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md).
+
 # Supervisor Brief Gap Closure Plan (2026-07-01)
 
 Status: **all four phases complete as of 2026-07-01** (A: legibility

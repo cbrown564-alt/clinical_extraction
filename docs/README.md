@@ -4,8 +4,12 @@ The docs tree is organized by the job a document does, not by the order it was
 written.
 
 **Start here:** [`NAVIGATION.md`](NAVIGATION.md) — tiered routing to the control
-plane, design docs, paper material, and long tail. Lifecycle rules:
-[`runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md).
+plane, design docs, paper material, and long tail.
+
+**Active work:** [`plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md).  
+**Reading by thread:** [`THREAD_MAP.md`](THREAD_MAP.md).  
+**Canon summaries (Wave 2–3):** [`canon/README.md`](canon/README.md) — full index.  
+**Lifecycle rules:** [`runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md).
 
 ## Stable Design
 

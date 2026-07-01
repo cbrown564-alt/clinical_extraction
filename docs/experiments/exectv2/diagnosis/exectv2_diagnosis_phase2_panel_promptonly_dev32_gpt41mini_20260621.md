@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
+
 # ExECTv2 Diagnosis Phase 2 Residual Panel
 
 - JSONL: `experiments\exectv2_diagnosis_phase2_panel_promptonly_dev32_gpt41mini_20260621.jsonl`

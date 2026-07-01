@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`../../canon/07_exect_plan11.md`](../experiments/exectv2/../../canon/07_exect_plan11.md). Selected architecture set and closeout evidence. Full detail retained below.
+
 # Final Architecture Selection
 
 Date: 2026-06-22

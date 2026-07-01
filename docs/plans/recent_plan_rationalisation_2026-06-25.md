@@ -1,3 +1,5 @@
+> **Status: ACTIVE** — open work tracked in [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md).
+
 # Recent Plan Rationalisation
 
 Date: 2026-06-25

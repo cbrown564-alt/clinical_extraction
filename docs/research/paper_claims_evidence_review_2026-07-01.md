@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`../../canon/10_paper_provenance.md`](../../canon/10_paper_provenance.md). Claims register and provenance index; this file remains the detailed gap analysis. Full detail retained below.
+
 # Paper Claims and Evidence Review (2026-07-01)
 
 Status: analysis-only review of `docs/research/paper_manuscript_2026-06-26.md` (as it

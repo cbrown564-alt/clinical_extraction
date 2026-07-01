@@ -1,3 +1,5 @@
+> **Status: ACTIVE** — open work tracked in [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md).
+
 # Plan — Strengthen ExECTv2 calibration and abstention/review-routing
 
 Status: **PROPOSED, not started.** Owner: ExECTv2 reliability track. Date: 2026-07-01.
