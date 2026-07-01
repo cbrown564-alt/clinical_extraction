@@ -8,3 +8,9 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+      - id: doc-hygiene-gates
+        name: documentation hygiene gates
+        entry: python scripts/check_doc_hygiene.py
+        language: system
+        pass_filenames: false
+        always_run: true

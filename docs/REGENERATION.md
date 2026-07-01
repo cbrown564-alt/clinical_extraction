@@ -12,7 +12,8 @@ It does not authorize deleting frozen evidence artifacts.
 | `experiments/RUN_INDEX.md` | Human scan of `registry.jsonl` | From repo root: `python -c "from pathlib import Path; from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import load_run_registry, write_run_registry_markdown; write_run_registry_markdown(load_run_registry(Path('experiments/registry.jsonl')), Path('experiments/RUN_INDEX.md'))"` |
 | `docs/experiments/final_artifact_index_2026-06-22.md` | Frozen evidence spine with SHA-256 hashes | Manual update when canonical artifact paths or hashes change |
 
-See also `experiments/README.md`, `docs/runbooks/mlflow_local_tracking.md`, and
+See also `experiments/README.md`, `docs/runbooks/mlflow_local_tracking.md`,
+`docs/runbooks/documentation_lifecycle.md`, and
 `docs/experiments/final_artifact_index_2026-06-22.md`.
 
 ## Paper / LaTeX

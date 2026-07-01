@@ -1,4 +1,4 @@
-# 0005: JSON Dialect Repair As Explicit Schema Repair
+# 0038: JSON Dialect Repair As Explicit Schema Repair
 
 Date: 2026-06-02
 

@@ -24,8 +24,10 @@ corroboration, but is NOT folded into the pre-flight-usable verdict (reason text
 until after adjudication has already been paid for).
 
 Inputs (all already on disk, zero LLM calls, zero re-adjudication):
-  - ``_sf_ev_recall/_adjudication.csv`` + ``_sf_ev_recall/_cases.json``
-  - ``_rx_inv_ev_recall/_adjudication.csv`` + ``_rx_inv_ev_recall/_cases.json``
+  - ``docs/research/error_analysis/sf_ev_recall/_adjudication.csv`` +
+    ``docs/research/error_analysis/sf_ev_recall/_cases.json``
+  - ``docs/research/error_analysis/rx_inv_ev_recall/_adjudication.csv`` +
+    ``docs/research/error_analysis/rx_inv_ev_recall/_cases.json``
   - ``experiments/exectv2_dx_evidence_recall_consolidation_check.json`` (Diagnosis has no
     standalone ev-recall CSV -- confirmed by reading
     ``experiments/exectv2_dx_evidence_recall_consolidation_check.py``: it writes only this
@@ -59,8 +61,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
 
-SF_DIR = ROOT / "_sf_ev_recall"
-RXINV_DIR = ROOT / "_rx_inv_ev_recall"
+SF_DIR = ROOT / "docs" / "research" / "error_analysis" / "sf_ev_recall"
+RXINV_DIR = ROOT / "docs" / "research" / "error_analysis" / "rx_inv_ev_recall"
 DX_CANONICAL = ROOT / "_dx_canonical"
 DX_JSON = EXPERIMENTS / "exectv2_dx_evidence_recall_consolidation_check.json"
 DX_PRED_RUN_ID = "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628"

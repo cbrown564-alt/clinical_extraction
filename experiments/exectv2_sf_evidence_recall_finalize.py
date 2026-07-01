@@ -1,7 +1,7 @@
 """Finalizes Phase 3 of
 ``docs/plans/exectv2_gepa_ev_recall_consolidation_reexamination_plan_2026-06-30.md``
 (SF extension): merges the 4 parallel adjudication batches written by sub-agents
-(``_sf_ev_recall/_verdicts_batch{0,1,2,3}.json``, one verdict per of the 72
+(``docs/research/error_analysis/sf_ev_recall/_verdicts_batch{0,1,2,3}.json``, one verdict per of the 72
 ``source_near`` SeizureFrequency false-negative cases produced by
 ``exectv2_sf_evidence_recall_consolidation_check.py``) against the mechanical
 H1_CARDINALITY / H2_GENUINE_DIVERGENCE split, computes the mechanism x verdict
@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
-OUT = ROOT / "_sf_ev_recall"
+OUT = ROOT / "docs" / "research" / "error_analysis" / "sf_ev_recall"
 
 VERDICTS = ("GOLD_RIGHT", "MODEL_DEFENSIBLE", "BOTH_DEFENSIBLE")
 MECHS = ("H1_CARDINALITY", "H2_GENUINE_DIVERGENCE")

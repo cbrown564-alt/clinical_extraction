@@ -57,9 +57,9 @@ the other three families' adjudication CSV and is what this script reads.
 
 | family | adjudication source | missed-span source | same-letter candidate spans |
 | --- | --- | --- | --- |
-| SeizureFrequency | `_sf_ev_recall/_adjudication.csv` | `_sf_ev_recall/_cases.json` `gold_missed.text` | `_cases.json` `pred_sf_all[].text` |
-| Prescription | `_rx_inv_ev_recall/_adjudication.csv` (entity=Prescription) | `_cases.json` `gold_missed.text` | `_cases.json` `pred_family_all[].text` |
-| Investigations | `_rx_inv_ev_recall/_adjudication.csv` (entity=Investigations) | `_cases.json` `gold_missed.text` | `_cases.json` `pred_family_all[].text` |
+| SeizureFrequency | `docs/research/error_analysis/sf_ev_recall/_adjudication.csv` | `_cases.json` `gold_missed.text` | `_cases.json` `pred_sf_all[].text` |
+| Prescription | `docs/research/error_analysis/rx_inv_ev_recall/_adjudication.csv` (entity=Prescription) | `_cases.json` `gold_missed.text` | `_cases.json` `pred_family_all[].text` |
+| Investigations | `docs/research/error_analysis/rx_inv_ev_recall/_adjudication.csv` (entity=Investigations) | `_cases.json` `gold_missed.text` | `_cases.json` `pred_family_all[].text` |
 | Diagnosis | `experiments/exectv2_dx_evidence_recall_consolidation_check.json` `rows` | raw gold `ExectAnnotation.text` for that letter+concept, via `gepa_data.load_dev_letters()` + `canonicalize_diagnosis_concept()` (concept itself is already canonicalized, not a raw span) | cached GEPA prediction jsonl (`exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.jsonl`), Diagnosis `predicted_mentions[].text` for that letter |
 
 Diagnosis needed one extra hop (back to the raw gold annotations and the cached prediction jsonl,
