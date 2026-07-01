@@ -39,6 +39,7 @@ def build_prompt_input(
     letter: ExectLetter,
     draft_mentions: Sequence[Mapping[str, Any]],
     config: VerifierConfig,
+    timeline_context: str | None = None,
 ) -> str:
     payload = {
         "prompt_version": config.prompt_version,
@@ -51,4 +52,10 @@ def build_prompt_input(
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
+    if timeline_context is not None:
+        # Optional pre-extraction context (Phase C, see
+        # docs/plans/supervisor_brief_gap_closure_plan_2026-07-01.md). Only
+        # added to the payload when the caller opts in, so the prompt/JSONL
+        # produced for existing runs is byte-identical when unset.
+        payload["timeline_context"] = timeline_context
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
