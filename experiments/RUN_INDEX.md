@@ -45,7 +45,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=temps=[0.3,0.5,0.7,1.0], k=4, n_rows=150, residual_rows=23, mean_label_entropy=0.012, mean_kind_entropy=0.003, rows_nonzero_label_entropy=4, residual_label_entropy=0.018, nonresidual_label_entropy=0.011, band_unknown_label_entropy=0.000, verdict=H0_confident_over_reading, decision_stable_under_temperature=True, raw_prose_varies=True.
 - Evidence validity: Live gpt-4.1-mini, validation split only (no test exposure). 25-row degeneracy preflight gate run first; 150-row residual-enriched tier confirms the result on 23 residual rows. Verified non-artifact: raw_output differs across temperatures while the rendered label/kind does not (genuine decision-stability, not caching). Full validation750 x4 (~3,000 calls) deliberately not spent once the gate fired.
 - Claim language: THE research swing, falsification test of The Wall. H0 confirmed: varying-temperature semantic entropy is ~0 everywhere, the residual (incl. band_unknown=0.000) is no more uncertain than the rest -> the unknown-vs-rate over-reading is CONFIDENT, not uncertain. Converts the closeout's negative result into a mechanism; no abstention/calibration signal derivable from the model's own samples. Restores Consistency to 4/5.
-- Artifacts: `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_samples_preflight{25,150}_temp{0.3,0.5,0.7,1.0}_2026-06-17.jsonl`.
+- Artifacts: `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.json`, `experiments/gan2026_reliability_p2_1_semantic_entropy_preflight25_2026-06-17.md`, `experiments/gan2026_reliability_p2_1_samples_preflight25_temp0.3_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight25_temp0.5_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight25_temp0.7_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight25_temp1.0_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight150_temp0.3_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight150_temp0.5_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight150_temp0.7_2026-06-17.jsonl`, `experiments/gan2026_reliability_p2_1_samples_preflight150_temp1.0_2026-06-17.jsonl`.
 
 ### `gan2026_reliability_d_gating_value_validation750_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `748` rows.
@@ -93,7 +93,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=variant D top-bucket=76.5%, mean p=0.863, ECE=0.052, Brier=0.118, failure_AUROC=**0.684**; intrinsic in-pass `selection.confidence` top-bucket=99.5%, failure_AUROC=0.497 (chance) on same rows; external comparator AUROC=0.781; residual (n=269) mean p 0.843/acc 88.8% vs non-resid mean p 0.874/acc 88.1%.
 - Evidence validity: Validation-only; test450 untouched. SE answers reused from `..._hybrid_structured_events_gpt41mini_2026-06-07.jsonl` (full 750-row coverage); reviewer scored against the SE pass's own `comparison.purist_correct`. Production-shape scale-confirmation of the pilot.
 - Claim language: At validation750 scale and in production shape, the decoupled failure-mode-primed reviewer recovers GENUINE discrimination (AUROC 0.684 vs intrinsic-field chance 0.497) and survives integration — but it is WEAKER than the residual-enriched 160-row pilot implied (0.755, only 12 failures) and below external corroboration (0.781). Residual rows are not meaningfully less accurate on this distribution, so D's confidence barely drops there. Remains a SHADOW signal complementing (not replacing) external corroboration; not promoted to gating. Does not change champion/robustness status.
-- Artifacts: `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.json`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.md`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.jsonl`.
+- Artifacts: `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.md`, `experiments/gan2026_confidence_reviewer_shadow_validation750_2026-06-17.jsonl`.
 
 ### `gan2026_confidence_one_vs_two_call_validation750_2026-06-17`
 - Date/split: `2026-06-17`; `validation`; `750` rows.
@@ -102,7 +102,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=joint(1-call) failure-AUROC **0.609** (ECE 0.050, Brier 0.119, top-bucket 91.0%); decoupled(2-call) failure-AUROC **0.641** (ECE 0.080, Brier 0.139, top-bucket 79.8%); **paired AUROC difference (decoupled − joint) = +0.032, 95% CI [−0.032, +0.098]** (1000 bootstrap reps; CI includes 0). Joint-arm Purist acc 0.863 (≈ SE baseline 0.881 — priming doesn't move the answer at scale). Comparators: decoupled-on-frozen-SE 0.684, intrinsic in-pass 0.497, external corroboration 0.781.
 - Evidence validity: Validation-only; test450 untouched. 0 parse failures either arm; 13 unscorable-gold rows dropped. Internally valid paired comparison (both signals share the joint answer set).
 - Claim language: **H_wording — the variant-D gain is a PROMPT-WORDING effect, not a decoupling effect.** Folding the verbatim failure-mode priming into the single extraction call recovers essentially the same failure-prediction discrimination (0.609 vs 0.641, difference CI straddles 0) at ONE call instead of two, with BETTER calibration (ECE/Brier). Falsifies the prior belief (recorded in `confidence_reviewer.py`) that joint-pass folding "re-degenerates" — it does not. The degenerate intrinsic `selection.confidence` (0.497) is degenerate because it is unprimed/categorical, not because it is in-pass. Both signals remain modest (<external 0.781) and gate nothing; the practical implication is the decoupled second call can be retired in favour of the free in-pass primed field.
-- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`, ``.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_confidence_one_vs_two_call_validation750_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_validation750_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_validation750_2026-06-17.jsonl`, ``.
 
 ### `gan2026_confidence_one_vs_two_call_test450_2026-06-17`
 - Date/split: `2026-06-17`; `test`; `450` rows.
@@ -112,7 +112,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: summary=joint(1-call) failure-AUROC **0.601** (ECE 0.146, Brier 0.197, top-bucket 92.4%); decoupled(2-call) **0.669** (ECE 0.146, Brier 0.190, top-bucket 80.9%); **paired AUROC difference (decoupled − joint) = +0.068, 95% CI [+0.014, +0.132]** (1000 reps; CI EXCLUDES 0). Joint-arm Purist accuracy **0.767** (< SE test baseline 0.809 — priming degrades the extractor on the holdout). Comparators (validation750): joint 0.609, decoupled 0.641, diff CI [−0.032, +0.098].
 - Evidence validity: Frozen aggregate-only holdout readout; no row-level test inspection; single run; preflight-gated. 0 parse failures either arm; 4 unscorable-gold rows dropped. Internally valid paired comparison (shared joint answer set).
 - Claim language: **The validation H_wording conclusion does NOT replicate on the holdout.** On test450 the decoupled two-call reviewer ranks errors significantly better than the one-call joint signal (paired diff +0.068, CI excludes 0), and folding the priming into the extraction pass costs ~4pp Purist accuracy. Direction (decoupled ≥ joint) was consistent across both splits; validation lacked the gap/power to call it. CORRECTED conclusion: KEEP the two-call decoupled `ConfidenceReviewer` stage — the extra call earns its cost on the holdout; the validation-only "removable" read was a false economy. Retracts the earlier validation-based recommendation. Both signals remain modest (< external 0.781) and gate nothing.
-- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, ``.
+- Artifacts: `experiments/gan2026_confidence_one_vs_two_call_test450_2026-06-17.json`, `experiments/archive/gan2026_misc_iterations/gan2026_confidence_one_vs_two_call_test450_2026-06-17.md`, `experiments/gan2026_confidence_one_vs_two_joint_test450_2026-06-17.jsonl`, `experiments/gan2026_confidence_one_vs_two_decoupled_test450_2026-06-17.jsonl`, ``.
 
 ## Promote
 
@@ -139,7 +139,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): Validation-only saved-output replay on a predeclared 250-row slice containing all 11/750 no-correct residual rows (residual UNION first 239 non-residual rows in source order). Gold-free graph rebuild from the v4 claim-table (raw_frequency normalized, no diary/window arithmetic; v3->v4 extractor change is a declared confound held constant across the slice); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made.
 - Cache/reuse source: claim_table:gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl;selector:gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl;residual_audit:gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
 - Claim language: Stage D promotion gate for the graph-as-component generator. Not a holdout-facing candidate; a promote decision clears the validation ladder only and test450 remains locked behind a separate frozen protocol. The graph enters the selector only under independent-corroboration gating (P2, the Stage C survivor); P1/P3 are effect bounds. Evaluated where the no-correct residual actually lives.
-- Artifacts: `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl`.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl`.
 
 ### `gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `27` rows.
@@ -150,7 +150,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
 - Cache/reuse source: experiments\gan2026_robustness_battery_v1_evidence_v0_7_checkpoints.
 - Claim language: Cycle-3 fitness tier 2 robustness gate for the v0.7 label-binding candidate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
-- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
 
 ### `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `750` rows.
@@ -163,7 +163,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation structured-event artifacts used as prompt scaffolding; no gold labels, row IDs, split labels, or deterministic top labels are provided to the model.
 - Supersedes: `gan2026_cross_model_challenge_gated_adjudicator_v0_1_validation_ladder_2026-06-13`.
 - Claim language: Validation-development promotion only: V12 v0.4 passed validation25, fixed hard50, family-slice, validation250, and full validation750 transfer checks. It is frozen as the current candidate for one explicit aggregate-only test450 authorization request; it is not yet a holdout result or benchmark-comparable claim.
-- Artifacts: `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md`.
 
 ### `gan2026_fresh_evidence_reasoner_frozen_test450_protocol_2026-06-13`
 - Date/split: `2026-06-13`; `test_planned`; `0` rows.
@@ -186,7 +186,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: baseline_pragmatic_correct=704, baseline_purist_correct=697, changed_label_precision=0.22131147540983606, consensus_pragmatic_correct=713, consensus_purist_correct=708, correct_to_wrong=16, evidence_exact_rate=0.0, evidence_grounded_by_grade_EMPTY=750, evidence_grounded_rate=0.0, net_purist_gain=11, superseded_evidence_validity=Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring., superseded_exact_valid_rate=0.0, switched_labels=122, wrong_to_correct=27.
 - Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): Validation-development saved-output replay over deterministic top plus three saved structured-event agent outputs; gold labels used only for post-hoc scoring.
 - Claim language: First tool-floor + structured-event multi-agent consensus replay to exceed 700/750 Purist on validation. Promote the selector direction, with regression-filter hardening required before holdout.
-- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_2026-06-13.md`.
 
 ### `gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `750` rows.
@@ -197,7 +197,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Unified evidence_grounded_rate 87.9% (exact sub-metric 89.6%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (77.5% before recompute): Accepted patch evidence was exact-substring gated: 2/2 accepted patches passed; source artifact evidence_valid was 581/750.
 - Cache/reuse source: experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl.
 - Claim language: Promoted only as validation-development evidence that a narrow structured-event patch can improve the already successful Qwen SE substrate. No new model calls, no holdout rows, no row-level test inspection, and no multi-agent superiority claim.
-- Artifacts: `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_agentic_structured_event_patch_recent_unresolved_burden_validation750_qwen3635b_2026-06-12.md`.
 
 ### `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -208,7 +208,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Unified evidence_grounded_rate 0.0% (exact sub-metric 0.0%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (0.0% before recompute): No new prediction evidence. Replay uses saved validation hard50 E1/E2 final labels, normalized vote features, repair notes, and manifest slice tags for validation-only analysis.
 - Cache/reuse source: experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl; experiments/gan2026_agentic_hard50_tool_self_consistency_2026-06-12.jsonl.
 - Claim language: Validation-development no-call replay only. higher_burden_only passed the D0 gate (3 wrong-to-correct, 0 correct-to-wrong, precision 0.750), but this does not by itself authorize holdout use, benchmark claims, or live validation250 escalation.
-- Artifacts: `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12.md`.
 
 ### `gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `12` rows.
@@ -220,7 +220,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: live raw outputs in experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl.
 - Supersedes: `gan2026_agentic_hard50_boundary_guide_rescue_replay_2026-06-12`.
 - Claim language: Validation micro-panel development result only. Panel gate passed and authorized D1 hard50, but this artifact does not authorize broader validation or holdout use.
-- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl`, `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12.md`.
 
 ## Promote Hybrid Structured Events Direction
 
@@ -330,7 +330,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved test450 rules-tool baseline plus GPT, Qwen recent-patch, and DeepSeek v0.6 structured-event artifacts.
 - Supersedes: `gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13`.
 - Claim language: Generated to resolve the exact v0.9 source-parity blocker. It is not a Gate 4 result and does not authorize tuning or row-level test review.
-- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.md`, `experiments/build_gan2026_exact_three_agent_consensus_test_replay.py`.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.md`, `experiments/build_gan2026_exact_three_agent_consensus_test_replay.py`.
 
 ### `exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140`
 - Date/split: `2026-06-25`; `dev`; `140` rows.
@@ -389,7 +389,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 34/34 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: First SeizureFrequency-specific candidate to clear the dev25 clinical-recovery target (0.831 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -400,7 +400,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`.
 - Claim language: Strong near-miss SeizureFrequency verifier iteration. v0.2 improves over v0.1 (0.788 vs 0.667) and v0.5 single structured (0.633) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One narrow residual pass is justified before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_sf_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -410,7 +410,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_sf_verifier_v0.1, seizure_frequency_clinical_headline_f1=0.667, seizure_frequency_clinical_headline_precision=0.629, seizure_frequency_clinical_headline_recall=0.71, seizure_frequency_source_near_f1=0.727.
 - Evidence validity: 0 call failures, 0 parse failures; 35/35 evidence-valid rendered mentions.
 - Claim language: First SeizureFrequency verifier diagnostic over the v0.5 single structured draft. It improves recall and headline F1 over v0.5 single structured (0.667 vs 0.633) while keeping evidence validity 1.0000, but remains below the 0.8 target and loses precision. Revise from residual errors before dev140.
-- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_sf_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_verifier_v01_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -421,7 +421,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 153/158 evidence-valid rendered mentions (0.9684).
 - Supersedes: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
 - Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.5 lifts Diagnosis headline F1 (0.460->0.569) while preserving medication (0.897) and Investigations (0.837) above target and SF near v0.4 (0.633). Next: specialist Diagnosis prompt comparison on dev25 before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v05_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -433,7 +433,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
 - Claim language: Best single-prompt structured dev25 candidate so far, but revise-only. v0.4 recovers SeizureFrequency headline F1 (0.421->0.644) while preserving medication (0.900) and Investigations (0.837) above target. Diagnosis remains the bottleneck (0.460), so next v0.5 should focus on Diagnosis hard cases before dev140 or specialist-prompt comparison.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v04_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -445,7 +445,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v04_dev25_gpt41mini_20260618`.
 - Claim language: Revise-only development pilot for v0.3 single structured schema + single prompt. Medication and Investigations clear the clinical-recovery headline target (0.883/0.878), Diagnosis improves modestly (0.455), but SeizureFrequency regresses (0.421) and evidence validity falls (0.9441). Not promoted; next v0.4 should preserve medication/investigation wins and isolate SF headline-state misses.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -457,7 +457,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_only_key_entities_structured_v03_dev25_gpt41mini_20260618`.
 - Claim language: Development pilot for error-analysis-led v0.2 of the single structured schema + single prompt key-family architecture. Improved semantic item F1 0.206->0.272 and benchmark 0.158->0.220 with clean gate; refreshed clinical-recovery headlines show medication above target (0.846), Investigations near target (0.783), and Diagnosis/SF still below target (0.414/0.456). Not promoted. Next: v0.3 Diagnosis/SF hard-case panel, Investigation FP cleanup, and medication regression protection before dev140.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_structured_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -467,7 +467,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: benchmark_per_item_f1=0.158, diagnosis_semantic_f1=0.204, evidence_validity_rate=0.9539, investigations_semantic_f1=0.267, parse_failures=0, phrase_only_per_item_f1=0.385, prescription_semantic_f1=0.264, prompt_version=exectv2_llm_only_key_entities_structured_v0.1, seizurefrequency_semantic_f1=0.07, semantic_per_item_f1=0.206, source_near_f1=0.722.
 - Evidence validity: 0 call failures, 0 parse failures; 145/152 evidence-valid rendered mentions (0.9539).
 - Claim language: Development pilot for the user-requested single structured schema + single prompt extreme over the four key families (Prescription/medication, Diagnosis, SeizureFrequency, Investigations). Viable schema and evidence gate, not promoted: source-near F1 0.722 but semantic item F1 only 0.206; next iteration should target attribute agreement and phrase altitude, especially SeizureFrequency quantification.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -478,7 +478,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=0.9792, investigations_f1=0.496, parse_failures=0, prescription_f1=0.817, prescription_precision=0.773, prescription_recall=0.865, prompt_version=exectv2_llm_med_inv_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 376/384 evidence-valid rendered mentions.
 - Claim language: Split decision. Use v0.1 as the current Prescription candidate because it clears dev140 target (0.817 > 0.8), but reject it for Investigations because it regresses from the single structured baseline (0.496 vs 0.786). Build a dedicated Investigations verifier next.
-- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_med_inv_verifier_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -489,7 +489,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_validity_rate=0.9928, investigations_f1=0.872, investigations_precision=0.869, investigations_recall=0.875, parse_failures=0, prompt_version=exectv2_llm_investigations_verifier_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 137/138 evidence-valid rendered mentions.
 - Claim language: First Investigations-specific candidate to clear the dev140 clinical-recovery target (0.872 > 0.8). Confirms Investigations should be split from medication verification.
-- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/medication_investigations/exectv2_investigations_verifier_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -501,7 +501,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 44/44 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`.
 - Claim language: First Diagnosis-specific candidate to clear the dev25 clinical-recovery target (0.837 > 0.8) while keeping evidence validity 1.0000. Development-surface success only; requires dev140 confirmation before any generalization claim. Shift key-entity work to SeizureFrequency next.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v05_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -512,7 +512,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 45/45 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.4 improves over verifier v0.3 (0.768 vs 0.701) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains just below the 0.8 target. One more residual-error iteration is justified before dev140 if precision stays protected.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v04_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v04_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -523,7 +523,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific candidate so far, but revise-only. v0.3 improves over verifier v0.2 (0.701 vs 0.619) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains below the 0.8 target. Run v0.4 from residual error analysis before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v03_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v03_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -534,7 +534,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 43/43 evidence-valid rendered mentions (1.0000).
 - Supersedes: `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`.
 - Claim language: Best Diagnosis-specific multi-prompt candidate so far, but revise-only. v0.2 improves over verifier v0.1 (0.619 vs 0.592) and v0.5 single structured (0.569) while keeping evidence validity 1.0000, but remains recall-limited and below the 0.8 target.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v02_pilot_report_2026-06-18.md`.
 
 ### `exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -546,7 +546,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `exectv2_llm_only_key_entities_structured_v05_dev25_gpt41mini_20260618`.
 - Superseded by: `exectv2_llm_diagnosis_verifier_v02_dev25_gpt41mini_20260618`.
 - Claim language: First multi-prompt variant to improve over the best single structured Diagnosis candidate (0.592 vs v0.5 0.569), but still far below the 0.8 target and recall-limited. Revise with targeted Diagnosis recall before dev140.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_verifier_v01_pilot_report_2026-06-18.md`.
 
 ### `exectv2_key_entities_dev140_transfer_readout_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -557,7 +557,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Structured draft evidence validity 0.9563; Diagnosis verifier 0.9832; SeizureFrequency verifier 0.9796. All three dev140 runs had 0 call failures and 0 parse failures.
 - Supersedes: `exectv2_llm_sf_verifier_v03_dev25_gpt41mini_20260618`, `exectv2_llm_diagnosis_verifier_v05_dev25_gpt41mini_20260618`.
 - Claim language: Negative transfer readout. The dev25 target-clearing configuration does not transfer to dev140: all four key families remain below 0.8. Medication and Investigations are near misses; Diagnosis and SeizureFrequency require dev140 residual-led development. Do not promote or claim generalization from dev25.
-- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_transfer_readout_2026-06-18.md`.
 
 ### `exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -569,7 +569,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.
 - Supersedes: `exectv2_key_entities_clinical_error_ledger_dev140_20260618`.
 - Claim language: Diagnostic residual taxonomy for the next Diagnosis/SF architecture loop. Current promoted family candidates remain Prescription verifier v0.1 and Investigations verifier v0.1; this ledger is for remaining below-target families.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_key_entities_clinical_error_ledger_diagv06_sfv04_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ### `exectv2_key_entities_clinical_error_ledger_dev140_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -581,7 +581,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Read-only analysis over exectv2_llm_only_key_entities_structured_v05_dev140_gpt41mini_20260618, exectv2_llm_diagnosis_verifier_v05_dev140_gpt41mini_20260618, and exectv2_llm_sf_verifier_v03_dev140_gpt41mini_20260618.
 - Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
 - Claim language: Diagnostic residual taxonomy for the failed dev140 transfer readout. Use this as the control surface for the next targeted verifier iteration; do not treat it as a promoted candidate.
-- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_key_entities_clinical_error_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_key_entities_clinical_error_ledger_dev140_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_key_entities_dev140_clinical_error_ledger_readout_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -592,7 +592,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only signal. v0.5 remains above target on dev25 but below v0.4 local F1; dev140 transfer is the decision surface.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v05_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -604,7 +604,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 193/193 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only current best SF candidate. Seizure-free specialization improves dev140 from 0.707 to 0.721 and seizure-free F1 from 0.738 to 0.781, but unknown-state regression keeps the family below the 0.8 target.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v05_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_sf_state_adjudicator_v05_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v05_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -615,7 +615,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 31/31 evidence-valid rendered mentions.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Typed candidate decomposition stayed strong on dev25 and justified dev140 transfer testing.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v04_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -626,7 +626,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 189/189 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only current best SF candidate. Typed candidate decomposition improves dev140 from 0.681 to 0.707 but remains below the 0.8 target; next loop should specialize seizure-free anchors.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v04_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_sf_state_adjudicator_v04_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v04_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -637,7 +637,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only continuation of the unknown/change-state recovery loop. v0.3 remained strong on dev25 but lower than v0.2; full dev140 was still required for transfer evidence.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v03_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -648,7 +648,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 195/195 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only. Best SF dev140 score so far (0.681) and unknown-state F1 improves from 0.235 to 0.424, but the gain is small and still below the 0.8 target. Next loop should use typed candidate decomposition plus constrained state classification rather than more broad prompt accretion.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v03_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_sf_state_adjudicator_v03_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v03_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -659,7 +659,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 30/30 evidence-valid rendered mentions.
 - Supersedes: `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Strong dev25 precision improvement (0.951 F1, precision 0.967) justified dev140, but the effect did not transfer.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v02_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -669,7 +669,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: active_rate_f1=0.725, candidate_spans=412, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_sf_state_adjudicator_v0.2, seizure_free_f1=0.77, seizure_frequency_f1=0.672, seizure_frequency_precision=0.687, seizure_frequency_recall=0.658, unknown_f1=0.235.
 - Evidence validity: 0 call failures, 0 parse failures; 179/179 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Claim language: Revise-only. v0.2 improves precision versus v0.1 but loses enough recall that F1 is slightly worse (0.672 vs 0.674). Unknown-state recall collapses; next loop should add a separate unknown/change-state recovery lane rather than tighten generic rejection further.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_sf_state_adjudicator_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v02_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -680,7 +680,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 32/32 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Candidate-span/state adjudication cleared dev25 strongly (0.921 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v01_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -691,7 +691,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 199/199 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Supersedes: `exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only architecture evidence. Candidate-span/state adjudication improves over SF verifier v0.4 (0.623 -> 0.674) and keeps gates clean, but remains below the 0.8 target. Residuals show generic seizure active-rate over-emission and generic unknown/seizure-free misses; next loop should tighten generic candidate keep/reject rather than discard the architecture.
-- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_sf_state_adjudicator_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_sf_state_adjudicator_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_state_adjudicator_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -703,7 +703,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
 - Supersedes: `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Concept grouping improved dev25 slightly over v0.1 (0.844 vs 0.833), but required dev140 transfer evidence before any candidate claim.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_reconciler_v02_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -715,7 +715,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
 - Supersedes: `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Strong dev25 balance (0.833 F1) justified the dev140 run but does not transfer by itself.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_reconciler_v01_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -727,7 +727,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
 - Claim language: Revise-only. Best Diagnosis dev140 score so far, but only a small gain over verifier v0.6 (0.658 vs 0.651) and still far below the 0.8 target. Residuals show generic epilepsy and tonic-clonic over-emission plus focal epilepsy/secondary-generalised misses.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_diagnosis_reconciler_v01_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -738,7 +738,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 69/69 evidence-valid rendered mentions.
 - Supersedes: `exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618`.
 - Claim language: Pilot-only escalation signal. Diagnosis heading/narrative decomposition cleared dev25 (0.814 F1) with clean gates, justifying the dev140 architecture probe. This is not a transfer or promotion claim.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_decomposer_v01_dev25_gpt41mini_20260618.md`.
 
 ### `exectv2_diag_sf_verifier_v06_v04_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -749,7 +749,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Diagnosis 0 call failures, 0 parse failures, 317/320 evidence-valid rendered mentions. SeizureFrequency 0 call failures, 0 parse failures, 208/210 evidence-valid rendered mentions.
 - Supersedes: `exectv2_key_entities_dev140_transfer_readout_20260618`.
 - Claim language: Revise-only dev140 improvement. Diagnosis improves 0.616 -> 0.651 and SeizureFrequency improves 0.602 -> 0.623, but both remain below the 0.8 target. Next iteration should use stronger task decomposition, not more broad prompt accretion.
-- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_diagnosis_verifier_v06_dev140_gpt41mini_20260618.md`, `experiments/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_sf_verifier_v04_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/key_entities/exectv2_diag_sf_verifier_v06_v04_dev140_report_2026-06-18.md`.
 
 ### `gan2026_cluster_axis_gate_v1_tightened_2026-06-16`
 - Date/split: `2026-06-16`; `validation+test`; `1200` rows.
@@ -760,7 +760,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only replay for gate development (step 1-2). Test450 applied only after validation gate cleared: zero genuine-rate regressions + gap_robust. Test450 result reported verbatim, no tuning on test.
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl.
 - Claim language: C6 cluster-axis RETENTION gate: fires only on plain-rate v0.4 predictions where the note has explicit recurring-cluster language AND the rewrite changes the Purist bucket. Zero unknown-coercion; additive cluster-axis only. Genuine-rate regression count must be 0 to clear precision gate.
-- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.json`, `experiments/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.md`.
+- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.json`, `experiments/archive/gan2026_misc_iterations/gan2026_cluster_axis_gate_v1_tightened_2026-06-16.md`.
 
 ### `gan2026_cluster_axis_gate_v1_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `750` rows.
@@ -771,7 +771,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only replay for gate development (step 1-2). Test450 applied only after validation gate cleared: zero genuine-rate regressions + gap_robust. Test450 result reported verbatim, no tuning on test.
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl.
 - Claim language: C6 cluster-axis RETENTION gate: fires only on plain-rate v0.4 predictions where the note has explicit recurring-cluster language AND the rewrite changes the Purist bucket. Zero unknown-coercion; additive cluster-axis only. Genuine-rate regression count must be 0 to clear precision gate.
-- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_2026-06-16.json`, `experiments/gan2026_cluster_axis_gate_v1_2026-06-16.md`.
+- Artifacts: `experiments/gan2026_cluster_axis_gate_v1_2026-06-16.json`, `experiments/archive/gan2026_misc_iterations/gan2026_cluster_axis_gate_v1_2026-06-16.md`.
 
 ### `gan2026_unknown_frequency_ambiguity_panel_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `6` rows.
@@ -782,7 +782,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Synthetic validation-only policy panel derived from supervisor clarification. No model calls, no scorer changes, and no locked test row inspection.
 - Supersedes: `gan2026_fresh_evidence_reasoner_unknown_policy_v0_6_safety_v0_9_replay_2026-06-15`.
 - Claim language: Adds a hard-negative ambiguity-classification contract for unknown-frequency cases. This is prerequisite validation infrastructure, not a promoted test450 candidate.
-- Artifacts: `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.json`, `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_unknown_frequency_ambiguity_panel_2026-06-15.md`.
 
 ### `gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `50` rows.
@@ -793,7 +793,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only saved-output replay over the first-50 validation rows. Gold-free graph rebuild (raw_frequency normalized, no diary/window arithmetic); gold labels used only for post-hoc Purist scoring. No holdout rows are read and no model calls are made. The pool already covers all 50 rows, so Arm 1 has no no-correct targets in this slice.
 - Cache/reuse source: claim_table:gan2026_section_claim_table_validation50_gpt41mini_v3_2026-06-01.jsonl;selector:gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
 - Claim language: Stage C gate for the graph-as-component generator. Not a holdout-facing candidate. Finds the graph component regression-safe only under independent-corroboration gating (P2), neutral on the solved first-50 slice; an unconditional graph component regresses (P1/P3). The no-correct-residual uplift is untested here because the residual is not in this slice.
-- Artifacts: `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_rows.jsonl`.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_graphs.jsonl`, `experiments/gan2026_state_graph_ontology_stage_c_component_contribution_2026-06-15_rows.jsonl`.
 
 ### `gan2026_state_graph_ontology_stage_b_viability_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `25` rows.
@@ -804,7 +804,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only viability gate over a saved atomic-claim artifact. Gold-free: no gold labels, no holdout rows, and no model calls. The C2 over-inference guard fired 0 times because the v3 atomic-claim builder mints no quantifying states; the gate's structural and interpretability sub-gates pass.
 - Cache/reuse source: artifact:gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.jsonl.
 - Claim language: Stage B viability gate for the ontology + typed-edge atomic-claim component generator. Not a holdout-facing candidate. The guard's rejection mechanism is unexercised on this artifact; informs whether and how the ladder proceeds to Stage C.
-- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_ontology_stage_b_viability_2026-06-15.md`.
 
 ### `gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `25` rows.
@@ -815,7 +815,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only viability gate over rebuilt atomic-claim graphs. Gold-free: no gold labels, no holdout rows, and no model calls. raw_frequency is normalized with the project scorer-facing grammar (no diary/window arithmetic). The C2 over-inference guard fired 1 time(s) on uncurated quantifying mints out of unknown-only evidence shapes.
 - Cache/reuse source: claim_table:gan2026_section_claim_table_validation25_gpt41mini_v3_2026-06-01.jsonl.
 - Claim language: Stage B (rebuilt) gate for the ontology + typed-edge atomic-claim component generator. Not a holdout-facing candidate. The guard is now exercised; informs whether the ladder proceeds to Stage C.
-- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15_graphs.jsonl`.
+- Artifacts: `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15.md`, `experiments/gan2026_state_graph_ontology_stage_b_rebuild_2026-06-15_graphs.jsonl`.
 
 ### `gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -826,7 +826,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only oracle-uplift gate. Gold labels are used only for post-hoc Purist correctness and band breakdown; no holdout rows are read and no model is called.
 - Cache/reuse source: split:gan2026_split_v1.
 - Claim language: Stage A viability gate for the ontology + typed-edge component generator. Not a holdout-facing candidate; informs whether the validation-only ladder proceeds to Stage B.
-- Artifacts: `experiments/gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15.json`, `experiments/gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_ontology_oracle_uplift_stage_a_2026-06-15.md`.
 
 ### `gan2026_source_near_contrast_panel_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `6` rows.
@@ -836,7 +836,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: cases=6, failed=0, pairs_both_directions_pass=3, passed=6, prompt_version=gan2026_fresh_evidence_reasoner_v0_6, safety_gate_version=gan2026_fresh_evidence_safety_gate_v0_9.
 - Evidence validity: Synthetic validation-only contrast panel derived from the supervisor distinctions. No model calls, no scorer changes, no locked test row inspection. Static passing is necessary but not sufficient for the live run.
 - Claim language: Adds paired source-near hard negatives stressing the ambiguous-vs-determinate distinction. Prerequisite validation infrastructure for the live ambiguity run, not a promoted test450 candidate.
-- Artifacts: `experiments/gan2026_source_near_contrast_panel_2026-06-15.json`, `experiments/gan2026_source_near_contrast_panel_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_source_near_contrast_panel_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_source_near_contrast_panel_2026-06-15.md`.
 
 ### `gan2026_robustness_battery_v1_gpt41mini_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `27` rows.
@@ -847,7 +847,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
 - Cache/reuse source: experiments\gan2026_robustness_battery_v1_checkpoints.
 - Claim language: Fitness tier 2 robustness gate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
-- Artifacts: `experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_robustness_battery_v1_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
 
 ### `gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `27` rows.
@@ -858,7 +858,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Authored-fresh OOD/adversarial cases (NOT Gan rows, NOT test450 holdout). Gold Purist computed from authored labels via the project normalizer + labels.map_purist. Live gpt-4.1-mini, temperature 0. Transfer/overfit estimate, not a holdout benchmark.
 - Cache/reuse source: experiments\gan2026_robustness_battery_v1_evidence_v0_6_checkpoints.
 - Claim language: Fitness tier 2 robustness gate. 'transfers' is necessary (not sufficient) for Freeze Warden test450 authorisation; any failed bar returns the candidate as revise.
-- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.json`, `experiments/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
+- Artifacts: `experiments/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.md`, `experiments/gan2026_robustness_battery_v1_cases.json`.
 
 ### `gan2026_residual_component_diversity_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `17` rows.
@@ -869,7 +869,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only re-analysis of saved component labels. No model calls, no scorer changes, no locked test rows read.
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json.
 - Claim language: Quantifies whether the no-correct residual is correlated (single-bucket) or independent (split) failure. Diagnostic instrumentation for the component-generation bet, not a holdout-facing candidate.
-- Artifacts: `experiments/gan2026_residual_component_diversity_audit_2026-06-15.json`, `experiments/gan2026_residual_component_diversity_audit_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_residual_component_diversity_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_residual_component_diversity_audit_2026-06-15.md`.
 
 ### `gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -881,7 +881,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live gpt-4.1-mini, temperature 0. Family CV is within-validation leave-one-boundary-band-out; gap_robust is a promotion-stability estimate, not a test450 number.
 - Cache/reuse source: experiments\gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.jsonl.
 - Claim language: Cycle-3 validation750 + family-CV gate for v0.7 label binding. gap_robust + positive net is necessary, NOT sufficient, for test450 authorisation. Not a holdout result.
-- Artifacts: `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.json`, `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.md`, `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.jsonl`.
+- Artifacts: `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.md`, `experiments/gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15.jsonl`.
 
 ### `gan2026_fresh_evidence_reasoner_unknown_policy_v0_6_safety_v0_9_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `250` rows.
@@ -892,7 +892,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No-call replay preserves 239/250 exact evidence substrings on validation250 and 115/123 on the trigger panel; no call failures or parse/schema/label failures; semantic no-reference-to-unknown repairs are scorer-neutral.
 - Cache/reuse source: Raw outputs from gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_6_safety_v0_7_2026-06-15 and trigger_full v0.6/safety-v0.7 artifacts.
 - Claim language: Validation diagnostic only. Safety v0.9 preserves the v0.8 Purist counts, repairs no-reference fallbacks to unknown on 5 validation250 rows and 4 trigger-panel rows, and still trails the v0.4 validation250 comparator (240/250 vs 242/250), so it is not a promoted holdout candidate and does not authorize a test450 run.
-- Artifacts: ``, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
+- Artifacts: ``, `experiments/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_fresh_evidence_reasoner_unknown_policy_trigger_full_validation_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_fresh_evidence_reasoner_validation250_nocall_replay_v0_6_safety_v0_9_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -902,7 +902,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No new model evidence. Reuses saved deterministic, consensus, and V12 validation artifacts; scoring and boundary-band summaries are post-hoc validation instrumentation only.
 - Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
 - Claim language: Validation-only no-call selector replay. It improves aggregate validation750 to 712/750 by accepting exact consensus switches only when V12 fresh-evidence independently agrees, but changed-label precision remains low outside band_daily; revise, do not freeze or request holdout.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -915,7 +915,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15`.
 - Claim language: v0.9 improves saved validation through two narrow residual selector gates. Still validation-only and not holdout authorization.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_semantic_equiv_unknown_probe`; `7` rows.
@@ -927,7 +927,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Synthetic hand-specified component outputs only.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15`.
 - Claim language: v0.9 passes source-near hard negatives for two narrow residual selector gates, but does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_9_semantic_equiv_unknown_synthetic_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -939,7 +939,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15`.
 - Claim language: Identifies component-generation bottlenecks in the v0.9 validation residual, especially unknown-frequency over-inference. Not a holdout-facing candidate.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -951,7 +951,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`.
 - Claim language: v0.8 improves saved validation through a narrow parseable denominator/window refinement gate. Still validation-only and not holdout authorization.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_8_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_parseable_refinement_probe`; `11` rows.
@@ -963,7 +963,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Synthetic hand-specified component outputs only.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15`.
 - Claim language: v0.8 passes source-near parseable-refinement hard negatives, but does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_8_parseable_refinement_synthetic_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -975,7 +975,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15`.
 - Claim language: v0.7 preserves the v0.6 validation score and adds a guarded unknown-origin count-window mechanism. Still validation-only and not holdout authorization.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_unknown_count_window_probe`; `12` rows.
@@ -987,7 +987,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Synthetic hand-specified component outputs only.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15`.
 - Claim language: v0.7 passes a source-near unknown count-window synthetic mechanism probe, but it does not improve saved validation and does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_7_unknown_count_window_synthetic_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -999,7 +999,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_7_validation750_no_call_replay_2026-06-15`.
 - Claim language: Identifies residual selector headroom and rejects broad parseable-other relaxation as validation-negative. Not a holdout-facing candidate.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1011,7 +1011,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`.
 - Claim language: v0.6 preserves the v0.5 validation score while adding a profile guard motivated by a synthetic hard-negative panel. Still validation-only and not holdout authorization.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_6_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_boundary_rescue_probe`; `12` rows.
@@ -1023,7 +1023,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.json.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15`.
 - Claim language: v0.6 blocks v0.5's synthetic hard-negative false positives and keeps intended positives. This supports revision but does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_6_boundary_rescue_synthetic_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1035,7 +1035,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`.
 - Claim language: Validation-only no-call selector replay. v0.5 improves the saved validation aggregate by rescuing deterministic seizure-free/no-reference boundary overreach with V12 fresh evidence, but it remains mined on validation and needs targeted robustness evidence before any holdout-facing protocol.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_boundary_rescue_probe`; `12` rows.
@@ -1047,7 +1047,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Synthetic hand-specified component outputs only.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15`.
 - Claim language: Predeclared synthetic component-stress probe for selector v0.5. Supports deterministic seizure-free/no-reference overreach rescue as a direction, but exposes hard-negative false positives from the label-only rescue rule. Does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1059,7 +1059,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments\gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_5_validation750_no_call_replay_2026-06-15`.
 - Claim language: Validation-only audit. v0.5 fresh-boundary-rescue actions are 14/14 wrong-to-correct on saved validation, but this remains validation-mined evidence requiring robustness before holdout.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_audit_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1071,7 +1071,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_3_validation750_replay_2026-06-15`.
 - Claim language: Validation-only no-call selector replay. v0.4 improves the selector-family front-runner to 714/750, removes all correct-to-wrong regressions in changed labels, and raises changed-label precision to 0.6538. Still revise-only: it needs predeclared hard-slice/robustness evidence and a frozen protocol before any holdout-facing claim.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1083,7 +1083,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_consensus_fresh_agreement_selector_v0_4_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15`.
 - Claim language: Validation-only counterfactual showing that a label-only relaxation out of deterministic unknown origins would be net negative; keep v0.4 until an evidence-based explicit count-window feature is tested.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_4_unknown_origin_relaxation_probe_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15`
 - Date/split: `2026-06-15`; `synthetic_validation_probe`; `20` rows.
@@ -1095,7 +1095,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Synthetic hand-specified component outputs only.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15`.
 - Claim language: Predeclared synthetic component-stress probe for selector v0.4. Supports the cluster-cadence and unknown-boundary mechanics, exposes the conservative unknown-origin false-negative cost, and does not authorize a frozen holdout audit.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1107,7 +1107,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved v0.1-v0.4 consensus_fresh_agreement_selector validation750 replay artifacts from 2026-06-15.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_4_validation750_replay_2026-06-15`.
 - Claim language: Validation-only hard-slice audit. Supports v0.4 cluster-cadence gate: the two v0.3 switches suppressed by v0.4 were both correct-to-wrong regressions, while v0.4 keeps all 17 wrong-to-correct changes. Still revise-only; next evidence should be predeclared synthetic/robustness panel before any holdout-facing claim.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_3_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1119,7 +1119,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_2_validation750_replay_2026-06-15`.
 - Claim language: Validation-only no-call selector replay. v0.3 restores the v0.1 aggregate 712/750 while reducing changed labels to 28 and raising changed-label precision to 0.6071, but weekly-band precision remains weak; revise, do not freeze or request holdout.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_3_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_consensus_fresh_agreement_selector_v0_2_validation750_replay_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `750` rows.
@@ -1131,7 +1131,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation artifacts: deterministic gpt41mini 2026-06-07, exact consensus 2026-06-13, and V12 fresh_evidence_reasoner v0.4 2026-06-13.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_validation750_replay_2026-06-15`.
 - Claim language: Validation-only no-call selector replay. v0.2 suppresses no-reference-origin switches and unknown/seizure-free consensus replacements, improving changed-label precision from v0.1 0.2385 to 0.3621 while retaining 710/750 Purist. Still revise-only: submonthly/monthly/weekly changed-label precision remains below the promotion bar.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_consensus_fresh_agreement_selector_v0_2_validation750_no_call_replay_2026-06-15.md`.
 
 ### `gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `22` rows.
@@ -1142,7 +1142,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only diagnostic overlay on saved live outputs. No model calls, no scorer policy change, no locked test rows read. The frozen Purist scorer is unchanged; this is an additional view used to keep the live run honest about re-bucketing.
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl.
 - Claim language: Adds a semantic / over-specificity view so the live ambiguity run cannot be credited for Purist re-bucketing. Diagnostic instrumentation, not a holdout-facing candidate or a scorer replacement.
-- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.json`, `experiments/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
+- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_ambiguity_slice_semantic_scorer_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
 
 ### `gan2026_ambiguity_slice_semantic_scorer_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `22` rows.
@@ -1153,7 +1153,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only diagnostic overlay on saved live outputs. No model calls, no scorer policy change, no locked test rows read. The frozen Purist scorer is unchanged; this is an additional view used to keep the live run honest about re-bucketing.
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl.
 - Claim language: Adds a semantic / over-specificity view so the live ambiguity run cannot be credited for Purist re-bucketing. Diagnostic instrumentation, not a holdout-facing candidate or a scorer replacement.
-- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.json`, `experiments/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
+- Artifacts: `experiments/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_ambiguity_slice_semantic_scorer_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
 
 ### `gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `22` rows.
@@ -1165,7 +1165,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl.
 - Supersedes: `gan2026_ambiguity_live_component_generation_audit_2026-06-15`.
 - Claim language: Measures whether the ambiguity contract lifts the component oracle ceiling on the predeclared residual slice. Not a holdout-facing candidate; a wider validation replay and held-out-family CV are required before any freeze.
-- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.json`, `experiments/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
+- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_ambiguity_live_component_generation_audit_v0_7_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_2026-06-15.jsonl`.
 
 ### `gan2026_ambiguity_live_component_generation_audit_2026-06-15`
 - Date/split: `2026-06-15`; `validation`; `22` rows.
@@ -1177,7 +1177,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`.
 - Claim language: Measures whether the ambiguity contract lifts the component oracle ceiling on the predeclared residual slice. Not a holdout-facing candidate; a wider validation replay and held-out-family CV are required before any freeze.
-- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_2026-06-15.json`, `experiments/gan2026_ambiguity_live_component_generation_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
+- Artifacts: `experiments/gan2026_ambiguity_live_component_generation_audit_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_ambiguity_live_component_generation_audit_2026-06-15.md`, `experiments/gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl`.
 
 ### `gan2026_hybrid_structured_events_agentic_consensus_fresh_evidence_analysis_2026-06-14`
 - Date/split: `2026-06-14`; `validation+test_aggregate`; `1200` rows.
@@ -1208,7 +1208,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Structured-event source: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl.
 - Supersedes: `gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_2_2026-06-13`.
 - Claim language: Validation-development contract smoke only. v1.3 clears schema/evidence smoke and authorizes fixed hard50, but does not by itself authorize family slices, validation250, holdout use, or benchmark claims.
-- Artifacts: `experiments/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_event_reasoner_validation25_live_gpt41mini_v1_3_2026-06-13.md`.
 
 ### `gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13`
 - Date/split: `2026-06-13`; `test`; `450` rows.
@@ -1218,7 +1218,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: changed_label_precision=0.39473684210526316, constrained_consensus_pragmatic_correct=375, constrained_consensus_purist_correct=365, correct_to_wrong=23, deterministic_floor_pragmatic_correct=354, deterministic_floor_purist_correct=343, exact_three_agent_test450_available=no, net_purist_gain=22, switched_labels=114, validation_three_agent_consensus_purist_correct=708, wrong_to_correct=45.
 - Evidence validity: Final holdout aggregate saved-output replay. Exact validation policy cannot be fully replayed because no DeepSeek test450 structured-event artifact is available on disk; no test-row failure inspection or tuning.
 - Claim language: Constrained two-agent holdout audit improves the weak deterministic test floor but drops far below validation consensus rate; reject robust-final-claim interpretation and start any follow-up from validation only.
-- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.jsonl`, `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.md`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl`.
+- Artifacts: `experiments/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.md`, `experiments/gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_qwen3635b_2026-06-13.jsonl`.
 
 ### `gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `750` rows.
@@ -1231,7 +1231,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live through local Ollama.
 - Supersedes: `gan2026_v06_validation250_hybrid_structured_events_qwen3635b_2026-06-11`.
 - Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Qwen SE v0.6 improves over the Phase 1 validation750 SE result, with 638/746 Purist rendered-correct versus the earlier 624/746 and 656/746 Pragmatic rendered-correct. Curated 2026-06-26 as a best SE v0.6 model-family validation variant; kept unsurfaced so Phase 1 canonical rows are not silently replaced.
-- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`.
 
 ### `gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `750` rows.
@@ -1244,7 +1244,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Resumed from completed validation250 prefix artifact experiments/gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10.jsonl; --resume-existing skipped 250 completed rows and ran the remaining 500 validation rows live.
 - Supersedes: `gan2026_v06_validation250_hybrid_structured_events_deepseek_2026-06-10`.
 - Claim language: User-approved close-off confirmation for SE v0.6 on the full validation750 surface. Validation development evidence only, not a holdout or benchmark claim. Compared to the earlier DeepSeek SE Phase 1 validation750 result, v0.6 improves Purist from 609/742 rendered to 622/745 rendered and Pragmatic from 634/742 to 646/745. Curated 2026-06-26 as a best SE v0.6 model-family validation variant; kept unsurfaced so Phase 1 canonical rows are not silently replaced.
-- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl`, `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`.
 
 ### `gan2026_agentic_pipeline_phase_plan_2026-06-12`
 - Date/split: `2026-06-12`; `none`; `0` rows.
@@ -1264,7 +1264,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Prediction-bearing validation development smoke: 150/150 decision records, 0 call failures, 0 blocking parse/validation failures, 52 parser/guide tool smoke calls, 70 normalized-label vote repairs, and no holdout use.
 - Supersedes: `gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`.
 - Claim language: Validation development result only, not a benchmark claim. Deterministic normalized-label voting stabilizes all three active single-agent condition finals at 25/25 Purist/Pragmatic with no call or blocking parse failures. Five condition-label disagreements remain scoring-equivalent; row 187 remains 1 per 7 to 9 day versus 2 per month. This clears the planned single-agent comparator gate before spending matched multi_agent_matched calls.
-- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_agentic_matched_budget_validation25_single_agent_live_prompt_v1_post_vote_2026-06-12.md`.
 
 ### `gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `25` rows.
@@ -1275,7 +1275,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Prediction-bearing validation development smoke: 150/150 decision records, 0 call failures, 0 blocking parse/validation failures, 52 parser/guide tool smoke calls, and no holdout use. Format repairs were common and should be treated as direct-label parser/schema repair, not semantic promotion.
 - Supersedes: `gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`.
 - Claim language: Validation development result only, not a benchmark claim. The condition filter prevented multi_agent_matched and single_self_consistency_cross_model calls; single_self_consistency_temperature was 25/25 Purist-correct at condition-final level, while single_greedy and single_agent_tools were each 24/25. Next work should inspect/repair label-format normalization and disagreement rows before spending matched multi-agent calls.
-- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_agentic_matched_budget_validation25_single_agent_live_2026-06-12.md`.
 
 ### `gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `25` rows.
@@ -1284,7 +1284,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: conditions=5, holdout_authorized=no, prediction_bearing_rows=0, rows=25, tool_smoke_calls=104.
 - Evidence validity: No prediction-bearing evidence metric. Tool contract smoke emitted parser/guide traces only: 104 tool smoke calls and 0 prediction-bearing rows.
 - Claim language: Phase 6 runner-surface contract artifact only. Validation25 prompt-only run made no model calls and produces no accuracy claim. It verifies shared CLI wiring, matched budget trace shape, parser-as-tool output, boundary-guide retrieval, and no-prediction attribution before live agentic comparisons.
-- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12.md`.
 
 ### `gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `1` rows.
@@ -1295,7 +1295,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: First live transport smoke only; 14 model calls attempted, 14 decision records, 0 call failures, 0 parse/validation failures, and tool traces preserved for tool-using conditions.
 - Supersedes: `gan2026_agentic_matched_budget_validation25_prompt_only_2026-06-12`.
 - Claim language: Validation development live smoke only, not an accuracy comparison or benchmark claim. Confirms that the agentic matched-budget runner can make live calls, parse prediction-bearing labels, score call-level outputs, and preserve tool/no-tool trace attribution. Validation25 live comparison remains the next scale-up before any multi-agent value claim.
-- Artifacts: `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.jsonl`, `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_agentic_matched_budget_validation1_live_smoke_2026-06-12.md`.
 
 ### `gan2026_agentic_hard50_tool_context_ablation_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -1305,7 +1305,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, decision_records=200, direct_boundary_guide_only_purist_correct=34, direct_no_tool_context_purist_correct=30, direct_parser_only_purist_correct=21, direct_parser_plus_boundary_guide_purist_correct=19, holdout_authorized=no, model_calls_attempted=200, non_harmful_contexts=['direct_boundary_guide_only'], parse_or_validation_failures=0, rows=50.
 - Evidence validity: Prediction-bearing validation hard50 development run: 200/200 decision records, 0 call failures, 0 parse/schema/label failures. Evidence substring metric not computed for this ablation artifact.
 - Claim language: Validation-development hard-slice result only. Parser context was harmful, while boundary-guide-only was non-harmful and improved to 34/50 Purist; E2 therefore used boundary guides only and excluded parser candidates.
-- Artifacts: `experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_hard50_tool_context_ablation_2026-06-12.md`.
 
 ### `gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -1315,7 +1315,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No new prediction evidence. Consolidates E5/E1/E2 validation hard50 artifacts and predeclares D0-D4 surfaces, gates, and attribution requirements.
 - Supersedes: `gan2026_agentic_hard50_tool_self_consistency_2026-06-12`.
 - Claim language: Validation-development design artifact only. It supersedes only unrun E3/E4 live designs from the prior hard50 plan and does not authorize holdout use, scorer changes, or validation250/full-validation escalation without a D-series hard50 gate.
-- Artifacts: `experiments/gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_agentic_hard50_redesign_after_e2_stop_2026-06-12.md`.
 
 ### `gan2026_three_way_comparison_validation750_deterministic_phase2_gan_shorthand_generalized_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
@@ -1360,7 +1360,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=674, deterministic_purist_correct_of_rendered=674, hybrid_purist_correct_of_rendered=500, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate. The report footnotes and per-architecture metric table make this explicit.
 - Claim language: Phase 2 de-overfitting iteration 1 comparison report synthesis (validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4). No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs; deterministic and deterministic_canonical_pipeline are from Phase 2 runs (GAN_SHORTHAND de-overfitted); hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline are from the Phase 1 gpt-4.1-mini pass (unchanged). Key finding: expected and intentional 14-row regression on deterministic architectures (674 vs 688 purist-correct); validates that the removed rules were GAN-dataset-specific and not genuinely generalizable clinical patterns.
-- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase2_report_gan_shorthand_generalized_validation750_2026-06-09.md`.
 
 ### `gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
@@ -1369,7 +1369,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=673, deterministic_purist_correct_of_rendered=673, hybrid_purist_correct_of_rendered=500, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate.
 - Claim language: Phase 2 de-overfitting iteration 2 comparison report synthesis (validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 4). No test450 read, no holdout-facing or benchmark-comparable claim. Compares six PipelineArchitecture configs; deterministic and deterministic_canonical_pipeline are from Phase 2 iteration 2 runs (GAN_SHORTHAND + CLUSTER_ARITHMETIC + DIARY_LOG_AGGREGATION de-overfitted); hybrid, llm_only_direct_labeler, hybrid_structured_events, llm_only_canonical_pipeline are from the Phase 1 gpt-4.1-mini pass (unchanged). Key finding: expected and intentional total regression of 15 rows across both de-overfitting iterations (688 -> 673 purist-correct); validates that the removed rules depended on GAN-dataset-specific notation.
-- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1378,7 +1378,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_valid_rate=0.941, evidence_valid_rows=706, null_rows=0, parse_or_validation_failures=0, pragmatic_accuracy=0.781, pragmatic_correct=586, purist_accuracy=0.744, purist_correct=558, rendered_rows=750.
 - Evidence validity: 706/750 rows (94.1%) carry an evidence_valid substring-presence trace. This architecture structurally cannot produce a null/unrendered row.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_deepseek_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1388,7 +1388,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_exact_rate=0.7653, evidence_grounded_by_grade_ABSENT=66, evidence_grounded_by_grade_EMPTY=2, evidence_grounded_by_grade_EXACT=574, evidence_grounded_by_grade_REPAIRED_CASE=1, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=106, evidence_grounded_by_grade_REPAIRED_WHITESPACE=1, evidence_grounded_rate=0.9093, evidence_trace_metric=evidence_text_contained, evidence_trace_valid_rate=0.7653333333333333, evidence_trace_valid_rows=574, null_rows=2, pragmatic_correct_of_rendered=582, pragmatic_correct_rate_of_rendered=0.7780748663101604, purist_correct_of_rendered=544, purist_correct_rate_of_rendered=0.7272727272727273, rendered_rows=748, superseded_evidence_validity=Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid., superseded_exact_valid_rate=0.7653.
 - Evidence validity: Unified evidence_grounded_rate 90.9% (exact sub-metric 76.5%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (76.5% before recompute): Backfilled from the full Qwen Phase 1 validation750 report: 574/750 rows carry the llm_only_canonical_pipeline evidence_text_contained trace; this metric is deliberately distinct from evidence_valid.
 - Claim language: Phase 1 three-way architecture comparison data point for Qwen LLM-only canonical pipeline on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1398,7 +1398,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_exact_rate=0.9333, evidence_grounded_by_grade_ABSENT=24, evidence_grounded_by_grade_EMPTY=10, evidence_grounded_by_grade_EXACT=700, evidence_grounded_by_grade_REPAIRED_CASE=11, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=3, evidence_grounded_by_grade_REPAIRED_WHITESPACE=2, evidence_grounded_rate=0.9547, evidence_text_contained_rows=700, null_rows=0, pragmatic_correct_of_rendered=626, purist_correct_of_rendered=581, rendered_rows=750, superseded_evidence_validity=700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote)., superseded_exact_valid_rate=0.9333.
 - Evidence validity: Unified evidence_grounded_rate 95.5% (exact sub-metric 93.3%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (93.3% before recompute): 700/750 rows (93.3%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric the other five architectures report; do not compare the two as one accuracy number (see Phase 1 report footnote).
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Newest of the six architectures -- the 'purest form' fully-LLM comparator with the deterministic/hybrid clinical-reasoning rule taxonomy embedded as prompt instructions rather than pre/post processing.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1408,7 +1408,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_exact_rate=0.9253, evidence_grounded_by_grade_ABSENT=24, evidence_grounded_by_grade_EMPTY=9, evidence_grounded_by_grade_EXACT=694, evidence_grounded_by_grade_REPAIRED_CASE=6, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=15, evidence_grounded_by_grade_REPAIRED_WHITESPACE=2, evidence_grounded_rate=0.956, evidence_text_contained_rate=0.925, evidence_text_contained_rows=694, null_rows=0, parse_or_validation_failures=0, pragmatic_accuracy=0.781, pragmatic_correct=586, purist_accuracy=0.753, purist_correct=565, rendered_rows=750, superseded_evidence_validity=694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures., superseded_exact_valid_rate=0.9253.
 - Evidence validity: Unified evidence_grounded_rate 95.6% (exact sub-metric 92.5%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (92.5% before recompute): 694/750 rows (92.5%) carry an evidence_text_contained free-text trace -- a metric this architecture reports in place of (and deliberately distinct from) the evidence_valid substring-presence metric other architectures report; do not compare directly across architectures.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_deepseek_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1418,7 +1418,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_exact_rate=0.8861, evidence_grounded_by_grade_ABSENT=108, evidence_grounded_by_grade_EMPTY=4, evidence_grounded_by_grade_EXACT=1883, evidence_grounded_by_grade_REPAIRED_CASE=5, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=125, evidence_grounded_rate=0.864, evidence_trace_metric=evidence_valid, evidence_trace_valid_rate=0.748, evidence_trace_valid_rows=561, null_rows=4, pragmatic_correct_of_rendered=646, pragmatic_correct_rate_of_rendered=0.8659517426273459, purist_correct_of_rendered=624, purist_correct_rate_of_rendered=0.8364611260053619, rendered_rows=746, superseded_evidence_validity=Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures., superseded_exact_valid_rate=0.748.
 - Evidence validity: Unified evidence_grounded_rate 86.4% (exact sub-metric 88.6%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (74.8% before recompute): Backfilled from the full Qwen Phase 1 validation750 report: 561/750 rows carry the architecture-specific evidence_valid trace; evidence trace metrics are not uniform across architectures.
 - Claim language: Phase 1 three-way architecture comparison data point for Qwen SE on validation750. Metrics are backfilled from gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09; validation development only, no test450 or benchmark-comparable claim.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
 
 ### `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1428,7 +1428,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_exact_rate=0.9479, evidence_grounded_by_grade_ABSENT=63, evidence_grounded_by_grade_EMPTY=2, evidence_grounded_by_grade_EXACT=2130, evidence_grounded_by_grade_REPAIRED_CASE=38, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=14, evidence_grounded_rate=0.9213, evidence_valid_rows=691, null_rows=2, pragmatic_correct_of_rendered=679, purist_correct_of_rendered=661, rendered_rows=748, superseded_evidence_validity=691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote., superseded_exact_valid_rate=0.9213.
 - Evidence validity: Unified evidence_grounded_rate 92.1% (exact sub-metric 94.8%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (92.1% before recompute): 691/750 rows (92.1%) carry an evidence_valid substring-presence trace; the 2 null rows are rare parse failures, not a structural give-up signal -- see the Phase 1 report's per-architecture rendered/null derivation footnote.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted after fixing a schema_repair.py _ASSERTION_ALIASES bug that remapped the already-valid assertion_status value 'unknown' to the invalid 'unclear'; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.md`.
 
 ### `gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1438,7 +1438,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_exact_rate=0.9779, evidence_grounded_by_grade_ABSENT=31, evidence_grounded_by_grade_EMPTY=8, evidence_grounded_by_grade_EXACT=2128, evidence_grounded_by_grade_REPAIRED_CASE=8, evidence_grounded_by_grade_REPAIRED_ELLIPSIS=1, evidence_grounded_rate=0.9493, evidence_valid_rate=0.957, evidence_valid_rows=718, null_rows=8, parse_or_validation_failures=8, pragmatic_accuracy=0.845, pragmatic_correct=634, purist_accuracy=0.812, purist_correct=609, rendered_rows=742, superseded_evidence_validity=718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture., superseded_exact_valid_rate=0.9573.
 - Evidence validity: Unified evidence_grounded_rate 94.9% (exact sub-metric 97.8%) from replay-only recompute 2026-06-27. Metric definition: docs/reference/evidence_groundedness_metric.md. Supersedes prior exact-substring prose (95.7% before recompute): 718/750 rows (95.7%) carry an evidence_valid substring-presence trace. 8 parse_or_validation_failures (~1%) -- within accepted noise for this architecture.
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_hybrid_structured_events_deepseek_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1448,7 +1448,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 734/750 rows (0.979) carry a valid candidate_set_source_id_status -- a formal CandidateSet source-id validity rate, NOT the evidence_valid substring-presence metric the other five architectures report (see the Phase 1 report's evidence-trace-metric-by-architecture table; these numbers are not directly comparable).
 - Supersedes: `gan2026_three_way_comparison_validation750_hybrid_gpt41mini_2026-06-07`.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis. This run replaces the prior 250-row-scoped hybrid run (gan2026_three_way_comparison_validation750_hybrid_gpt41mini_2026-06-07, kept for the historical record of what that scoping looked like): run_split's fallback CandidateSet path was rewired from a static 250-row precomputed artifact (which emitted candidate_set_missing placeholders for the other 500 rows) to live per-row generation that replicates the static artifact's own deterministic+LLM-extraction union methodology, so this run finally covers the full 750-row validation surface like the other five architectures (missing_candidate_set_rows: 0, call_failures: 0, parse_or_validation_failures: 1). Launched as a fully OS-detached process (harness silently kills long-running background bash tasks at ~9 minutes; PowerShell Start-Process survives past that window) and resumed via --resume-existing after an earlier interruption -- see run markdown header for the resume provenance.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_hybrid_live_candidate_sets_gpt41mini_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1457,7 +1457,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_trace_valid_rate=0.985, evidence_trace_valid_rows=739, null_rows=146, pragmatic_correct_of_rendered=520, pragmatic_correct_rate_of_rendered=0.861, purist_correct_of_rendered=490, purist_correct_rate_of_rendered=0.811, rendered_rows=604, routed_rows=123.
 - Evidence validity: 739/750 rows (98.5%) carry a valid candidate_set_source_id_status -- a formal CandidateSet source-id validity rate from the deep-replay (NOT the evidence_valid substring-presence metric other architectures report; these numbers are not directly comparable across architecture types).
 - Claim language: Phase 1 three-way architecture comparison data point (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); deepseek-v4-flash pass (third model alongside gpt-4.1-mini and qwen3.6-35b). Run had two transient Windows OSError [Errno 22] crashes during checkpoint writes (likely anti-virus file-locking); both were recovered via --resume-existing without data loss. deterministic and deterministic_canonical_pipeline are rule-based (no LLM calls); their results are shared from the gpt-4.1-mini canonical artifacts (2026-06-07) -- byte-identical across models.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08`
 - Date/split: `2026-06-08`; `validation`; `750` rows.
@@ -1466,7 +1466,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: architectures_compared=6, deterministic_canonical_pipeline_purist_correct_of_rendered=688, deterministic_purist_correct_of_rendered=688, hybrid_purist_correct_of_rendered=511, hybrid_structured_events_purist_correct_of_rendered=661, llm_only_canonical_pipeline_purist_correct_of_rendered=581, llm_only_direct_labeler_purist_correct_of_rendered=564, rows_per_architecture=750.
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (free-text substring presence), llm_only_canonical_pipeline reports the deliberately distinct evidence_text_contained, and hybrid reports a formal CandidateSet source-id validity rate. The report's footnotes and per-architecture metric table make this explicit so readers do not compare these as one accuracy number.
 - Claim language: Phase 1 three-way architecture comparison synthesis (gpt-4.1-mini pass, validation750 only; gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 and gan2026_three_way_comparison_phase1_report_design_2026-06-07). No test450 read, no holdout-facing or benchmark-comparable claim -- compares six PipelineArchitecture configs on universally meaningful axes (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix with no analogous surface in the other five. hybrid's shared-table row is sourced from build_unified_pipeline_artifact deep-replay (using the live-generated CandidateSets the now-fixed hybrid run embeds in its own output rows), not raw run_split output -- this asymmetry is the architectural fact under comparison, not a methodology artifact, and the report's footnotes say so explicitly. A notable finding surfaced here: deterministic and deterministic_canonical_pipeline produce IDENTICAL purist/pragmatic/distribution numbers, i.e. the staged canonical-pipeline wrapper converges on the same rendered answers as the unstaged baseline on this pass.
-- Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.json`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md`.
 
 ### `gan2026_three_way_comparison_validation750_llm_only_direct_labeler_gpt41mini_2026-06-07`
 - Date/split: `2026-06-07`; `validation`; `750` rows.
@@ -1475,7 +1475,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_valid_rows=711, null_rows=0, pragmatic_correct_of_rendered=599, purist_correct_of_rendered=564, rendered_rows=750.
 - Evidence validity: 711/750 rows (94.8%) carry an evidence_valid substring-presence trace. This architecture structurally cannot produce a null/unrendered row -- see the Phase 1 report's footnote on the rendered-disposition asymmetry between single-shot LLM-only and deterministic-routed architectures.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands. Restarted mid-effort after fixing an answer_kind prompt/schema mismatch bug; confirmed clean via re-pilot validation25 (0 failures, 100% accuracy) before this full run (see run markdown header).
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_gpt41mini_2026-06-07.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_llm_only_direct_labeler_gpt41mini_2026-06-07.md`.
 
 ### `gan2026_three_way_comparison_validation750_deterministic_gpt41mini_2026-06-07`
 - Date/split: `2026-06-07`; `validation`; `750` rows.
@@ -1484,7 +1484,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=695, purist_correct_of_rendered=688, rendered_rows=741.
 - Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace (this architecture's reported evidence-trace metric); formal CandidateSet source-id validity is not computed for single-shot architectures.
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_deterministic_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_gpt41mini_2026-06-07.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_deterministic_gpt41mini_2026-06-07.md`.
 
 ### `gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07`
 - Date/split: `2026-06-07`; `validation`; `750` rows.
@@ -1493,7 +1493,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: evidence_valid_rows=750, null_rows=9, pragmatic_correct_of_rendered=695, purist_correct_of_rendered=688, rendered_rows=741.
 - Evidence validity: 750/750 rows carry an evidence_valid substring-presence trace; identical to the `deterministic` architecture's numbers and final-label distribution on this split -- the staged canonical-pipeline wrapper converges on the same rendered answers as the unstaged baseline (see Phase 1 report).
 - Claim language: Phase 1 three-way architecture comparison data point (gpt-4.1-mini pass, validation750, gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07); not a standalone promote/reject verdict on its own -- see gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08 for cross-architecture synthesis once it lands.
-- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07.jsonl`, `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07.md`.
 
 ### `gan2026_llm_only_typed_operations_reasoner_v3_max4800_validation25_live_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
@@ -1505,7 +1505,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; no saved raw-output reuse. The CLI default max token budget for this pipeline is now 4800.
 - Superseded by: `gan2026_llm_only_typed_operations_reasoner_v3_max4800_no_call_replay_2026-06-03`.
 - Claim language: Validation25 development smoke only. The 4800-token budget removed truncation warnings. This live artifact is superseded for deterministic replay interpretation by the no-call replay after generalized evidence-artifact cleanup and graph-label precedence repair.
-- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.jsonl`, `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.md`.
+- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.md`.
 
 ### `gan2026_llm_only_typed_operations_reasoner_v3_max4800_no_call_replay_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
@@ -1517,7 +1517,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_llm_only_typed_operations_reasoner_validation25_gpt41mini_v3_max4800_2026-06-03.jsonl.
 - Supersedes: `gan2026_llm_only_typed_operations_reasoner_v3_max4800_validation25_live_2026-06-03`.
 - Claim language: Saved-output replay only: no hosted calls, prompt changes, scorer changes, split changes, or holdout behavior changes. Row 446 and row 467 deterministic replay bugs are fixed; row 598 remains a Purist graph-rendering miss, so revise before validation50.
-- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.jsonl`, `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`.
+- Artifacts: `experiments/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_typed_operations_reasoner_validation25_max4800_no_call_replay_2026-06-03.md`.
 
 ### `gan2026_llm_heavy_evidence_selection_decision0007_validation25_contract_triage_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
@@ -1529,7 +1529,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved-output row review of the v0 Decision 0007 validation25 smoke; no hosted calls.
 - Superseded by: `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`.
 - Claim language: Analysis-only triage predeclared a v1 prompt/schema revision. It did not change scorer, split, adapter, gate, or holdout behavior.
-- Artifacts: `experiments/gan2026_llm_heavy_decision0007_validation25_contract_triage_2026-06-03.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_decision0007_validation25_contract_triage_2026-06-03.md`.
 
 ### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
@@ -1541,7 +1541,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
 - Supersedes: `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02`.
 - Claim language: Diagnostic validation-cycle projection ablation. Gating preserves the 18/18 target corrections while removing v0 already-correct and frequency-with-seizure-free regressions; four wrong-to-wrong regression changes remain, so this is the best revise-only seed, not production policy.
-- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02.md`.
 
 ### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
@@ -1553,7 +1553,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02`.
 - Claim language: Diagnostic validation-cycle projection ablation. It fixes the intended 18-row duration surface but causes 27 already-correct validation hard-slice regressions, so it is not promoted as a production projection policy; next work should design a gated/narrow policy.
-- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v0_2026-06-02.md`.
 
 ### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
@@ -1565,7 +1565,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
 - Supersedes: `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02`.
 - Claim language: Diagnostic validation-cycle graph-metadata gate replay. The gate preserves 18/18 enriched duration corrections and blocks all broad-regression label changes by requiring selected month-bucket nodes to come from seizure_free_duration_node_normalization_v0 and by refusing active boundary-state graphs; no production projection policy is promoted.
-- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02.md`.
 
 ### `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `250` rows.
@@ -1577,7 +1577,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved seizure-free duration node replay JSONL and validation hard-slice state-graph diagnostics; no hosted calls.
 - Supersedes: `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1_2026-06-02`.
 - Claim language: Diagnostic validation-cycle broad-regression replay. Gated v1 preserves 18/18 enriched duration corrections, adds hidden-family regression accounting, and leaves four wrong-to-wrong regression changes concentrated in cluster/diary plus temporal-conflict rows, including one unknown-boundary row; no production policy is promoted.
-- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.json`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.jsonl`, `experiments/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_state_graph_projection_ablation_month_bucket_duration_selection_broad_regression_v1_2026-06-02.md`.
 
 ### `gan2026_llm_replacement_postprocessing_ablation_validation250_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `250` rows.
@@ -1589,7 +1589,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl.
 - Supersedes: `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`.
 - Claim language: Diagnostic saved-output replay only. No hosted calls, prompt changes, scorer changes, production projection policy changes, or holdout behavior changes are made.
-- Artifacts: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json`, `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md`.
 
 ### `gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices_planned`; `250` rows.
@@ -1601,7 +1601,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: No hosted calls; design derived from project retrospective, LLM-heavy v1 validation250 failure families, state-graph diagnostics, and existing repair-attribution conventions.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`, `gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_2026-06-02`.
 - Claim language: Diagnostic design only. Predeclares replacement ablations for deterministic post-processing modules before LLM-heavy v2 prompt work; no scorer, prompt, production projection policy, or holdout behavior changed.
-- Artifacts: `experiments/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_llm_replacement_postprocessing_ablation_design_2026-06-02.md`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `250` rows.
@@ -1613,7 +1613,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Reused validation50 v1 raw outputs for the first 50 rows and ran rows 51-250 live with DSPy cache enabled.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation50_live_2026-06-02`.
 - Claim language: Validation250 rejects promotion of v1 as an LLM-heavy final-label candidate: raw/format-only Purist is 188/250 and the stronger 219/250 selected-evidence arithmetic layer is attribution-diagnostic, not LLM-heavy success.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_validation250_gpt41mini_v1_2026-06-02.md`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_schema_smoke_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -1625,7 +1625,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled for the initial live run; saved raw outputs replayed after non-semantic scalar-list schema repair.
 - Supersedes: `gan2026_llm_heavy_extraction_protocol_2026-06-02`.
 - Claim language: LLM-heavy validation development smoke only. Schema validity reaches the 24/25 minimum after shape replay, but selected evidence exactness and raw LLM scorer format fail the Stage A stop rule; revise prompt/schema before validation50.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.md`, `experiments/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.md`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_extraction_protocol_2026-06-02.md`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -1637,7 +1637,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: No new hosted calls; analysis uses saved validation25 JSONL and deterministic V1 same-row comparator.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_schema_smoke_2026-06-02`.
 - Claim language: Full validation-development error analysis. High selected-evidence arithmetic score is diagnostic only because raw LLM labels are 0/25 scorable and the best layer depends on deterministic derivation over selected evidence; revise before validation50.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.json`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v0_validation25_error_analysis_2026-06-02.json`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `25` rows.
@@ -1649,7 +1649,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation hard-slice projection/arbitration surface reused; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02`.
 - Claim language: Diagnostic validation-cycle replay only. Projection-only policies recover at most 7/25 exact seizure-free duration labels because most misses lack an exact gold duration node; the next repair target is seizure-free duration graph-node construction/normalization, not a production projection-policy promotion.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.json`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `18` rows.
@@ -1661,7 +1661,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation hard-slice projection/arbitration graph rows; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_ablation_design_2026-06-02`.
 - Claim language: Diagnostic validation-cycle replay only. Node construction recovered month-scale representability on all 18 target rows, but unchanged projection still recovered 0/18 exact duration labels, so projection/arbitration remains separate and no production policy is promoted.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.json`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_ablation_design_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `18` rows.
@@ -1673,7 +1673,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: No hosted calls; design derived from saved validation hard-slice duration projection ablation rows.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_projection_ablation_2026-06-02`.
 - Claim language: Diagnostic design only. Predeclares an 18-row validation hard-slice node-construction surface and acceptance criteria for month-scale seizure-free duration representability; no scorer, projection, production graph-builder, or holdout policy change.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_ablation_design_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_ablation_design_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `18` rows.
@@ -1685,7 +1685,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation hard-slice seizure-free duration node replay JSONL; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_node_replay_2026-06-02`.
 - Claim language: Diagnostic validation-cycle replay only. The month_bucket_duration_selection variant recovers 18/18 exact duration labels on this enriched validation surface by preferring broad month-bucket nodes over numeric-month or broad-year conflicts and preserving plural numeric-month output on row 5040; no scorer normalization or production projection policy is changed.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.json`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `42` rows.
@@ -1697,7 +1697,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation hard-slice state-graph diagnostics plus accepted boundary-node replay JSONL; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02`.
 - Claim language: Diagnostic validation-cycle replay only. Boundary-state priority is the strongest non-oracle signal, but oracle exact-label gaps show seizure-free duration projection remains separate work; do not promote a production policy from this artifact alone.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.json`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `18` rows.
@@ -1709,7 +1709,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Decision derived from saved enriched validation hard-slice projection replay; no hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_seizure_free_duration_enriched_projection_replay_2026-06-02`.
 - Claim language: Diagnostic validation-cycle decision. month_bucket_duration_selection becomes a separately named projection-ablation seed, not scorer normalization, benchmark evidence, or production policy.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_month_bucket_duration_selection_decision_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices+synthetic_hard_cases`; `39` rows.
@@ -1721,7 +1721,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; validation31 and synthetic unknown8 live runs recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02`.
 - Claim language: Hosted graph-builder diagnostic only. It emitted no final Gan labels and did not run projection or arbitration; keep revise-only pending accepted-node graph replay and separate projection/arbitration ablations.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_gpt41mini_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_gpt41mini_live_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_gpt41mini_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_gpt41mini_live_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_gpt41mini_live_2026-06-02.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_gpt41mini_live_2026-06-02.md`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_gpt41mini_live_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_gpt41mini_live_2026-06-02.md`, `experiments/archive/gan2026_validation_iterations/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_interpretation_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_2026-06-02`
 - Date/split: `2026-06-02`; `synthetic_hard_cases`; `8` rows.
@@ -1733,7 +1733,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; synthetic unknown8 v1 live run recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_live_2026-06-02`.
 - Claim language: Hosted graph-builder diagnostic only. The v1 prompt fixes synthetic unknown-state node recall and root-level output shape, emits no final Gan labels, and does not run graph merge, projection, arbitration, or benchmark scoring.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_synthetic_unknown8_v1_unknown_recall_gpt41mini_live_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `1` rows.
@@ -1745,7 +1745,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; live smoke recorded 0 reused raw outputs. Prompt-only replay seed is available at experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_smoke_reuse_2026-06-02.jsonl.
 - Supersedes: `gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02`.
 - Claim language: Hosted graph-builder component smoke only. It emits exact-evidence unknown/unresolved_multiple nodes and no final Gan label; projection F1 and arbitration are intentionally out of scope.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_live_smoke_2026-06-02.md`.
 
 ### `gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices`; `10` rows.
@@ -1757,7 +1757,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved validation31 hosted boundary-state graph-builder JSONL; no new hosted calls.
 - Supersedes: `gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_validation31_synthetic_unknown8_live_2026-06-02`.
 - Claim language: Diagnostic graph replay only. It shows accepted nodes recover graph representability on the 10 gain rows; projection/arbitration changes remain separate ablation work and this is not a benchmark result.
-- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.json`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.jsonl`, `experiments/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_clinical_frequency_state_graph_accepted_boundary_nodes_replay_2026-06-02.md`.
 
 ### `gan2026_clinical_frequency_state_graph_validation_cycle_diagnostics_2026-06-02`
 - Date/split: `2026-06-02`; `validation+synthetic_hard_cases`; `381` rows.
@@ -1769,7 +1769,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: No hosted calls for deterministic diagnostics; LLM atomic-claim rows reused saved validation25 claim-table output.
 - Supersedes: `gan2026_clinical_frequency_state_graph_protocol_2026-06-02`.
 - Claim language: Diagnostic architecture cycle only. Separates oracle coverage, projection-only F1, exact-evidence-gated LLM claim rows, counterfactual invariance, and validation-only grouping; no benchmark or holdout claim.
-- Artifacts: `experiments/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_family_aware_validation_grouping_2026-06-02.json`, `experiments/gan2026_clinical_frequency_state_graph_family_aware_validation_grouping_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_validation25_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_synthetic_hard_cases_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_validation_hard_slices_diagnostics_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_llm_atomic_claim_rows_validation25_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.jsonl`, `experiments/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_validation50_counterfactual_invariance_2026-06-02.md`, `experiments/gan2026_clinical_frequency_state_graph_family_aware_validation_grouping_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_family_aware_validation_grouping_2026-06-02.md`.
 
 ### `gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02`
 - Date/split: `2026-06-02`; `validation_hard_slices+synthetic_hard_cases`; `306` rows.
@@ -1781,7 +1781,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: No hosted calls; reviewed existing validation-only state-graph diagnostic artifacts and synthetic hard-case diagnostics.
 - Supersedes: `gan2026_clinical_frequency_state_graph_validation_cycle_diagnostics_2026-06-02`.
 - Claim language: Diagnostic planning artifact only. Chooses the next hosted graph-builder target from validation-only row/family review; no benchmark or holdout claim.
-- Artifacts: `experiments/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_row_family_review_2026-06-02.md`.
 
 ### `gan2026_clinical_frequency_state_graph_protocol_2026-06-02`
 - Date/split: `2026-06-02`; `validation protocol`; `0` rows.
@@ -1792,7 +1792,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Graph nodes are tested for exact evidence offsets; no corpus run yet.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_generalization_audit_2026-06-02`.
 - Claim language: Architecture scaffold only, not a benchmark result. Next results must separate graph coverage, projection, invariance, and arbitration effects.
-- Artifacts: `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`.
 
 ### `gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `1` rows.
@@ -1803,7 +1803,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No structured record; output-contract smoke only.
 - Cache/reuse source: DSPy cache disabled; native Ollama /api/chat smoke used think=false.
 - Claim language: Endpoint setup is unblocked through ollama_chat/qwen3.6:35b with think=false, but v5 is not ladder-ready for Qwen: validation1 returned a nonempty Python-style dict and final_selector shape, producing a schema parse failure. Do not treat this as model-quality evidence or start validation5/25 until prompt hardening or a named schema-repair ablation exists. Dedicated schema-contract risk note logged for future Qwen prompt/repair design.
-- Artifacts: `experiments/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, ``, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_qwen36_35b_ollama_chat_setup_smoke_2026-06-01.md`, ``, `experiments/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_claim_table_selector_validation1_prompt_only_v5_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`.
 
 ### `gan2026_minimal_evidence_selector_validation25_gpt41mini_v0_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `25` rows.
@@ -1814,7 +1814,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Answer evidence exact in 24/25 rows; supporting-fact evidence exact in 49/50 facts. Row 243 used a non-exact answer/supporting evidence substring.
 - Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs; first-device OpenAI/LiteLLM smoke passed from .env before run.
 - Claim language: Hosted simplified-contract baseline is output-contract clean with no JSON/schema failures and no alias repairs, but raw source-near answers are mostly scorer-unparsable; frozen clean scorer-facing score is 16/25 Purist and Pragmatic. Use as matched GPT-4.1 mini transfer baseline for Qwen minimal-contract validation, not holdout evidence.
-- Artifacts: `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.jsonl`, `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_minimal_evidence_selector_validation25_v0_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
@@ -1826,7 +1826,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_validation50_live_2026-06-01`.
 - Claim language: Revise before any broader run or holdout: validation250 live underperformed deterministic top, made 8 gated label changes, introduced 2 deterministic-correct regressions, and produced 0 deterministic-wrong to gated-correct Purist corrections.
-- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.json`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.json`, `experiments/archive/gan2026_validation_iterations/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_live_component_ablation_2026-06-01.md`, `experiments/archive/gan2026_validation_iterations/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_v02_audit_trail_interpretation_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_synthetic_hard_case_component_stress_2026-06-01`
 - Date/split: `2026-06-01`; `synthetic_hard_cases`; `56` rows.
@@ -1838,7 +1838,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_saturated_surface_analysis_2026-06-01`.
 - Claim language: Diagnostic/revise-only synthetic hard-case component stress. Row-level review chose cluster/diary candidate-generation recall as the single next v0.2 revision target; schema repair and proxy/boundary gate relaxation stay separate named ablations.
-- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_failure_review_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_gpt41mini_live_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_component_stress_2026-06-01.md`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_failure_review_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v02_saturated_surface_analysis_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `250` rows.
@@ -1850,7 +1850,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved v0.2 validation250 live JSONL; no hosted calls.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_validation250_live_2026-06-01`.
 - Claim language: Analysis-only saturated-surface report: raw changes show one useful correction but gated changes have 0 corrections and 2 regressions. Keep v0.2 revise-only and move to manual review of the synthetic hard-case panel or stricter selective-action design before any holdout audit.
-- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_validation_hard_slices_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_2026-06-01.jsonl`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_case_schema_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_validation_hard_slice_schema_2026-06-01.json`.
+- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_validation_hard_slices_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_cases_2026-06-01.jsonl`, `experiments/gan2026_hybrid_adjudicator_v02_synthetic_hard_case_schema_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_validation_hard_slice_schema_2026-06-01.json`.
 
 ### `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_case_component_stress_2026-06-01`
 - Date/split: `2026-06-01`; `synthetic_hard_cases`; `56` rows.
@@ -1862,7 +1862,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; run recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_synthetic_hard_case_component_stress_2026-06-01`.
 - Claim language: Diagnostic/revise-only named hybrid v0.2 candidate-recall revision outside frozen deterministic V1. The branch fixed all targeted cluster/diary recall misses on the synthetic panel and improved gated hard-case performance without regressions, but remaining proxy/boundary, seizure-free, shorthand, and schema failures stay separate ablation targets.
-- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl`, `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_component_stress_2026-06-01.json`, `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_component_stress_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_gpt41mini_live_2026-06-01.md`, `experiments/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_component_stress_2026-06-01.json`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_cases_component_stress_2026-06-01.md`.
 
 ### `gan2026_hybrid_adjudicator_v01_validation750_schema_replay_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
@@ -1899,7 +1899,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Supersedes: `gan2026_claim_table_v4_validation250_live_2026-06-01`.
 - Superseded by: `gan2026_claim_table_v4_validation750_2026-06-01`.
 - Claim language: Development diagnostic cleared 0.9000 on 250 rows after schema replay, but semantic failure families keep it revise-only.
-- Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_section_claim_table_validation250_gpt41mini_v4_schema_replay_2026-06-01.md`.
 
 ## Reject
 
@@ -1924,7 +1924,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: diagnosis_clinical_headline_f1=0.282, diagnosis_semantic_item_f1=0.259, diagnosis_source_near_f1=0.565, diagnosis_source_near_recall=0.429, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_llm_only_per_entity_v0.4.
 - Evidence validity: 0 call failures, 0 parse failures; 29/29 evidence-valid rendered mentions (1.0000).
 - Claim language: Negative specialist-prompt comparison. The existing per-entity Diagnosis prompt is cleaner than the old all-9 baseline on source-near recall, but it is not competitive with the v0.5 single structured prompt on objective-aligned Diagnosis clinical recovery (0.282 vs 0.569). Do not promote; next specialist attempt should start from v0.5 guidance or use a verifier/repair prompt.
-- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_diagnosis.md`, `experiments/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.json`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_per_entity_diagnosis_dev25_gpt41mini_20260618_combined.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_specialist_prompt_comparison_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -1935,7 +1935,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 449/451 evidence-valid rendered mentions. Residual ledger is analysis-only over the same JSONL.
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs.
 - Claim language: Reject as current Diagnosis candidate. v0.2 concept grouping improved dev25 but transferred worse than v0.1 on dev140 (0.647 vs 0.658), with higher FP count. Keep v0.1 as current numeric Diagnosis candidate; next loop should use constrained accept/reject gating.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_reconciler_v02_dev140_gpt41mini_20260618.md`, `experiments/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_diagnosis_reconciler_v02_residual_ledger_dev140_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_reconciler_v02_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `140` rows.
@@ -1945,7 +1945,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: diagnosis_f1=0.642, diagnosis_precision=0.631, diagnosis_recall=0.653, diagnosis_spans=812, evidence_validity_rate=1.0, parse_failures=0, prompt_version=exectv2_hybrid_diagnosis_decomposer_v0.1.
 - Evidence validity: 0 call failures, 0 parse failures; 462/462 evidence-valid rendered mentions.
 - Claim language: Reject as current Diagnosis candidate. The decomposition increased source-near recall but over-emitted too many Diagnosis mentions and underperformed verifier v0.6 (0.642 vs 0.651). Keep v0.6 as current Diagnosis baseline; future decomposition needs an explicit reconciler/verifier.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_decomposer_v01_dev140_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_decomposer_v01_dev140_report_2026-06-18.md`.
 
 ### `exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618`
 - Date/split: `2026-06-18`; `dev`; `25` rows.
@@ -1956,7 +1956,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 0 call failures, 0 parse failures; 42/42 evidence-valid rendered mentions.
 - Cache/reuse source: Uses saved Diagnosis verifier v0.6 and Diagnosis decomposer v0.1 dev140 artifacts as candidate inputs, restricted to the first 25 dev letters for this pilot.
 - Claim language: Reject before dev140. The constrained gate is clean but too conservative on dev25 (0.625 F1, recall 0.566), so a full dev140 run is not justified. Next gate needs named seizure-type recovery rather than a broad frequency-only rejection rule.
-- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
+- Artifacts: `experiments/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_diagnosis_acceptance_gate_v01_dev25_gpt41mini_20260618.md`, `docs/experiments/exectv2/diagnosis/exectv2_diagnosis_acceptance_gate_v01_pilot_report_2026-06-18.md`.
 
 ### `gan2026_kg_family_gated_graph_trust_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `250` rows.
@@ -1968,7 +1968,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Validation-only no-call replay over the frozen Stage D predeclared 250-row residual-inclusive slice. Graphs reused from the Stage D graphs artifact; dual-validation/resolve recomputed deterministically (no model calls). v0.9 components/baseline from the Stage D rows artifact; gold used only for post-hoc Purist scoring and an honest discriminability probe. No holdout rows.
 - Cache/reuse source: stage_d_graphs:gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_graphs.jsonl;stage_d_rows:gan2026_state_graph_ontology_stage_d_promotion_gate_2026-06-15_rows.jsonl.
 - Claim language: Tests whether a corroboration-free family-gated graph-trust posture (P2.5) can harvest the 7 minted residual rows without re-introducing P3 genuine-rate regressions. Not a holdout-facing candidate. A reject means no forward-observable family gate separates the harvest set from the genuine-rate casualties; test450 stays locked.
-- Artifacts: `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.json`, `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.md`, `experiments/gan2026_kg_family_gated_graph_trust_predeclaration_2026-06-16.md`.
+- Artifacts: `experiments/gan2026_kg_family_gated_graph_trust_2026-06-16.json`, `experiments/archive/gan2026_misc_iterations/gan2026_kg_family_gated_graph_trust_2026-06-16.md`, `experiments/archive/gan2026_misc_iterations/gan2026_kg_family_gated_graph_trust_predeclaration_2026-06-16.md`.
 
 ### `gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `750` rows.
@@ -1979,7 +1979,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live openai/gpt-4.1 (synonymous with gpt-4.1-mini), temperature 0; DeepSeek peer trace is a saved artifact. Family CV is within-validation leave-one-band-out.
 - Cache/reuse source: experiments\gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.jsonl.
 - Claim language: A4 two-model rung, run for information. Within-tolerance + gap_robust is necessary, NOT sufficient, for any test450 authorisation.
-- Artifacts: `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.jsonl`.
+- Artifacts: `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_12_gpt_deepseek_validation750_live_gpt41_2026-06-16.jsonl`.
 
 ### `gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `750` rows.
@@ -1990,7 +1990,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: validation750 development split (gan2026_split_v1), NOT a holdout or test450 result. Live openai/gpt-4.1 (synonymous with gpt-4.1-mini), temperature 0. Family CV is within-validation leave-one-band-out.
 - Cache/reuse source: experiments\gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.jsonl.
 - Claim language: A3 simplest-architecture rung. Within-tolerance + gap_robust is necessary, NOT sufficient, for test450 authorisation; the robustness battery gate sits between this and any holdout run.
-- Artifacts: `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.jsonl`.
+- Artifacts: `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_v0_11_gpt_only_validation750_live_gpt41_2026-06-16.jsonl`.
 
 ### `gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16`
 - Date/split: `2026-06-16`; `validation`; `750` rows.
@@ -2002,7 +2002,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments\gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.jsonl.
 - Supersedes: `gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13`.
 - Claim language: Cycle C5 confidence-gated triage scaffold fresh-evidence reasoner v0.10. gap_robust + non-negative net is necessary, NOT sufficient, for test450 authorisation. Not a holdout result. Stop rule: reject if net < 0 or not gap_robust or genuine-rate regressions > 0.
-- Artifacts: `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.json`, `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.jsonl`.
+- Artifacts: `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.md`, `experiments/gan2026_fresh_evidence_triage_v0_10_validation750_live_gpt41_2026-06-16.jsonl`.
 
 ### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15`
 - Date/split: `2026-06-15`; `test`; `450` rows.
@@ -2026,7 +2026,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: C:\Users\cbrow\Code\clinical_extraction\experiments\gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15.jsonl.
 - Supersedes: `gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15`.
 - Claim language: Rejects broad deterministic last-event-to-unknown component repair as validation-negative or non-improving. Supports a model-owned ambiguity-classification redesign instead.
-- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.json`, `experiments/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.md`.
+- Artifacts: `experiments/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.json`, `experiments/archive/gan2026_misc_iterations/gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15.md`.
 
 ### `gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13`
 - Date/split: `2026-06-14`; `test`; `450` rows.
@@ -2050,7 +2050,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; fixed hard50 source rows and Stage 0 temporal/sentinel validation50 family slices. v0.3 validation250 reused cached v0.1 prompt outputs with a stricter safety gate.
 - Supersedes: `gan2026_represented_event_normalizer_v0_2_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V9 diagnostic. The specialist plus safety gate is safe and useful on fixed hard50 (+3 net, 0 regressions), but validation250 transfer is only +1 net and misses the predeclared +5 validation250 gate. Do not escalate to validation750 or frozen test450; use the result as evidence that high-precision original-LLM fallback gates are safer than free recomputation, but too weak for the >0.85 test objective.
-- Artifacts: `experiments/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_temporal_sentinel_specialist_validation25_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_temporal_sentinel_specialist_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_temporal_sentinel_specialist_unknown_no_reference_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_temporal_sentinel_specialist_seizure_free_last_event_validation50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_temporal_sentinel_specialist_validation250_live_gpt41mini_v0_3_2026-06-13.md`.
 
 ### `gan2026_targeted_boundary_router_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `150` rows.
@@ -2062,7 +2062,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. v0.1-v0.4 prompt variants were run on validation25 and fixed hard50 only; v0.2 was the safest variant, v0.4 added split-neutral router hints but did not improve the gate.
 - Supersedes: `gan2026_structured_event_verifier_v0_5_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V3 targeted-router attempt. The implementation is auditable and LLM-owned over saved structured-event rows, but no variant passed the Stage 2 gate. v0.1 found 3 hard50 wins but also 2 losses (changed-label precision 0.50); v0.2 was safe but weak at +1 net; v0.3 made no label changes; v0.4 with router_hints regressed to V0 parity with one win and one loss. Do not escalate this branch to validation250, validation750, or holdout.
-- Artifacts: `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_targeted_boundary_router_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_targeted_boundary_router_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
 
 ### `gan2026_structured_event_verifier_v0_5_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `175` rows.
@@ -2074,7 +2074,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. Prompt iterations v0.1-v0.4 were used only to harden the v0.5 contract before this recorded ladder.
 - Supersedes: `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13`.
 - Claim language: Validation-development V4 verifier-first attempt. v0.5 is safe where it acts (hard50 +1 net, 1.0 changed-label precision, 0 losses; frequency-denominator slice +1 net, 0 losses) but far below the predeclared +4 hard50 and +5 validation250 promotion gates. Do not escalate this branch to validation250, validation750, or holdout; next work should use a different specialist/selector rather than free recomputation.
-- Artifacts: `experiments/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_structured_event_verifier_validation25_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_structured_event_verifier_hard50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_structured_event_verifier_frequency_denominator_validation50_live_gpt41mini_v0_5_2026-06-13.md`, `experiments/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_structured_event_verifier_unknown_no_reference_validation50_live_gpt41mini_v0_5_2026-06-13.md`.
 
 ### `gan2026_represented_event_normalizer_v0_2_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `75` rows.
@@ -2086,7 +2086,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; fixed hard50 source rows from experiments/gan2026_agentic_validation_hard50_source_rows_2026-06-12.txt.
 - Supersedes: `gan2026_event_completion_reasoner_v0_3_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V8 diagnostic. The represented-event recompute contract is clean, but fixed hard50 regressed from V0 39/50 to 38/50: 3 recompute actions, 0 wins, and 1 regression, mainly from over-selecting seizure-free evidence. Do not escalate to family slices, validation250, validation750, or holdout. Next work should use a more explicit specialist gate rather than free recomputation.
-- Artifacts: `experiments/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_represented_event_normalizer_validation25_live_gpt41mini_v0_2_2026-06-13.md`, `experiments/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_represented_event_normalizer_hard50_live_gpt41mini_v0_2_2026-06-13.md`.
 
 ### `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13`
 - Date/split: `2026-06-13`; `validation_hard50`; `50` rows.
@@ -2098,7 +2098,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Structured-event source: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl; source rows: experiments/gan2026_agentic_validation_hard50_source_rows_2026-06-12.txt.
 - Supersedes: `gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_2_2026-06-13`.
 - Claim language: Validation-development fixed hard50 rejection. v1.3 regressed from V0 39/50 Purist to 35/50, so V1 free second-pass reasoning is blocked from family-slice, validation250, validation750, or holdout escalation.
-- Artifacts: `experiments/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_event_reasoner_hard50_live_gpt41mini_v1_3_2026-06-13.md`.
 
 ### `gan2026_event_completion_reasoner_v0_3_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `275` rows.
@@ -2110,7 +2110,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Input substrate: experiments/gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl. Family source-row files from Stage 0 validation-only manifests.
 - Supersedes: `gan2026_targeted_boundary_router_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V7 diagnostic. The contract is clean and safe, but the strict event-absence framing produced no create actions on hard50 or the four omission-heavy family slices, so it cannot clear the Stage 2 gate or support validation250, validation750, or holdout escalation. The result suggests many misses are represented in the event table but not normalized/selected correctly, rather than literally absent from the extracted events.
-- Artifacts: `experiments/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_validation25_live_gpt41mini_v0_3b_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_hard50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_seizure_free_last_event_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_frequency_denominator_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_cluster_axis_validation50_live_gpt41mini_v0_3_2026-06-13.md`, `experiments/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_event_completion_reasoner_multi_semiology_burden_validation50_live_gpt41mini_v0_3_2026-06-13.md`.
 
 ### `gan2026_cross_model_structured_event_adjudicator_v0_4_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `75` rows.
@@ -2122,7 +2122,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved GPT/Qwen/DeepSeek validation structured-event artifacts plus validation25 and fixed hard50 source rows.
 - Supersedes: `gan2026_temporal_sentinel_specialist_v0_3_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V10 diagnostic only. The high-precision peer gate is safe but too weak: fixed hard50 improves by only +1, below the +4 gate, so do not escalate to validation250, validation750, or holdout.
-- Artifacts: `experiments/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_structured_event_adjudicator_validation25_live_gpt41mini_v0_4_2026-06-13.md`, `experiments/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_structured_event_adjudicator_hard50_live_gpt41mini_v0_4_2026-06-13.md`.
 
 ### `gan2026_cross_model_challenge_gated_adjudicator_v0_1_validation_ladder_2026-06-13`
 - Date/split: `2026-06-13`; `validation`; `325` rows.
@@ -2134,7 +2134,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Saved GPT/Qwen/DeepSeek structured-event validation artifacts; live validation25, fixed hard50, and five validation50 family slices. The validation250 prefix value is a no-call upper-bound diagnostic, not a live score.
 - Supersedes: `gan2026_cross_model_structured_event_adjudicator_v0_4_validation_ladder_2026-06-13`.
 - Claim language: Validation-development V11 diagnostic only. The open challenge prompt found real peer rescues but regressed on seizure-free and GPT-unknown-to-peer-numeric overreach. The high-precision gate removed hard50 regressions and improved five family slices by +1 each, but hard50 +2 misses the +4 gate and the validation250 prefix upper bound is only +2, below the +5 gate; do not escalate to validation250 live, validation750, frozen test450, or benchmark claims.
-- Artifacts: `experiments/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.md`.
+- Artifacts: `experiments/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_validation25_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_hard50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_unknown_no_reference_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_frequency_denominator_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_cluster_axis_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_multi_semiology_burden_validation50_live_gpt41_v0_1_2026-06-13.md`, `experiments/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_cross_model_challenge_gated_adjudicator_seizure_free_last_event_validation50_live_gpt41_v0_1_2026-06-13.md`.
 
 ### `gan2026_agentic_hard50_tool_self_consistency_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -2156,7 +2156,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: No new prediction evidence. Replay uses saved validation hard50 condition traces, final labels, role labels, normalized votes, and manifest slice tags for validation-only analysis.
 - Cache/reuse source: experiments/gan2026_agentic_matched_budget_validation_hard50_active_conditions_live_prompt_v1_2026-06-12.jsonl.
 - Claim language: Validation-development replay only. No promotable selective fallback policy produced any wrong-to-correct changes; all eligible policies were reject signals, so the branch moved to E1 tool-context ablation rather than new live multi-agent calls.
-- Artifacts: `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_hard50_selective_fallback_replay_2026-06-12.md`.
 
 ### `gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `12` rows.
@@ -2167,7 +2167,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 24/24 exact evidence substrings after saved-output format repair; no new prediction evidence during replay.
 - Cache/reuse source: live raw outputs in experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl.
 - Claim language: Validation micro-panel development result only. D2 failed the panel gate after format-only repair because the critic accepted 0 rescue actions; do not run D2 hard50, D3, D4, validation250, or holdout from this branch.
-- Artifacts: `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.md`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.jsonl`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_direct_boundary_critic_rescue_panel_2026-06-12.md`, `experiments/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_direct_boundary_critic_rescue_panel_format_repair_replay_2026-06-12.md`.
 
 ### `gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12`
 - Date/split: `2026-06-12`; `validation`; `50` rows.
@@ -2178,7 +2178,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: 35/50 exact evidence substrings. Prediction-bearing hard50 run had 50/50 decision records, 0 call failures, and 0 parse/schema/label failures after format-only audit repair.
 - Supersedes: `gan2026_agentic_boundary_audit_prompt_v2_panel_2026-06-12`.
 - Claim language: Validation hard-slice development result only. Despite 8 rescues, D1 missed the hard50 gate because it caused 2 regressions and changed-label precision was 0.3636; do not escalate D1 to validation250, D3, or holdout.
-- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.jsonl`, `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`.
+- Artifacts: `experiments/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_agentic_boundary_audit_prompt_v2_hard50_2026-06-12.md`.
 
 ### `gan2026_llm_heavy_evidence_selection_decision0007_v1_validation25_live_2026-06-03`
 - Date/split: `2026-06-03`; `validation`; `25` rows.
@@ -2190,7 +2190,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache disabled for the live v1 smoke; no saved raw-output reuse.
 - Supersedes: `gan2026_llm_heavy_evidence_selection_decision0007_validation25_contract_triage_2026-06-03`.
 - Claim language: Decision 0007 validation25 development smoke only. V1 fixes raw parser-label grammar and operand completeness, but promotion remains rejected because selected evidence exactness is 22/25 and the mechanical adapter regresses two raw-correct cluster-cadence rows.
-- Artifacts: `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.jsonl`, `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.md`.
+- Artifacts: `experiments/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_evidence_selection_with_deterministic_adapters_validation25_gpt41mini_v1_2026-06-03.md`.
 
 ### `gan2026_llm_only_typed_adapter_reasoner_v0_validation50_diagnostic_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `50` rows.
@@ -2202,7 +2202,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for the validation50 diagnostic. Error analysis reuses the saved validation50 JSONL only.
 - Supersedes: `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`.
 - Claim language: User-approved validation50 diagnostic after failed validation25 gate. Reject promotion: typed JSONAdapter/schema reliability is strong, but raw model-owned labels, exact selected evidence, and arithmetic traces are not clean enough; selected-evidence arithmetic is a deterministic side-car, not LLM-only success.
-- Artifacts: `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.jsonl`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.json`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_typed_adapter_reasoner_validation50_gpt41mini_v0_diagnostic_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.json`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_typed_adapter_reasoner_validation50_error_analysis_2026-06-02.md`.
 
 ### `gan2026_llm_only_typed_adapter_reasoner_v0_validation25_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -2214,7 +2214,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this typed JSONAdapter smoke.
 - Supersedes: `gan2026_dspy_adapter_architecture_report_2026-06-02`.
 - Claim language: Typed-adapter LLM-only architecture smoke only. The scoped JSONAdapter and typed DSPy outputs produced 25/25 structured records with no adapter parse failures, but selected evidence exactness, parser-ready raw label rendering, and arithmetic traces miss the validation25 gate; selected-evidence arithmetic remains a deterministic side-car, not LLM-only success.
-- Artifacts: `experiments/gan2026_dspy_adapter_architecture_report_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_dspy_adapter_architecture_report_2026-06-02.md`, `experiments/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_typed_adapter_reasoner_validation25_gpt41mini_v0_2026-06-02.md`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -2226,7 +2226,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this v2 prompt run.
 - Supersedes: `gan2026_llm_replacement_postprocessing_ablation_validation250_2026-06-02`, `gan2026_llm_heavy_clinical_frequency_reasoner_v1_validation250_live_2026-06-02`.
 - Claim language: Validation25 development smoke rejects validation50 escalation under decision 0006: raw model-owned Purist is 21/25 with zero deterministic arithmetic gap, but structured/scorable labels, selected evidence exactness, rendering operands, and arithmetic traces are only 22/25.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.md`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -2238,7 +2238,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_2026-06-02.jsonl.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_live_2026-06-02`.
 - Claim language: Analysis confirms no validation50 escalation: failure is mainly compactness/output contract, with one true cluster-cadence selected-fact/semantics error and zero deterministic-arithmetic rescue gap.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.json`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.csv`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02.json`.
 
 ### `gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact_validation25_live_2026-06-02`
 - Date/split: `2026-06-02`; `validation`; `25` rows.
@@ -2250,7 +2250,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; no saved raw-output reuse for this compact v2 prompt run.
 - Supersedes: `gan2026_llm_heavy_clinical_frequency_reasoner_v2_validation25_error_analysis_2026-06-02`.
 - Claim language: Validation25 development smoke rejects validation50 escalation under decision 0006. Compact schema fixed the prior truncation/missing-selected-event-id failures with 25/25 structured records, but raw parser compatibility, selected evidence exactness, and model-owned rendering remain below stop rules; selected-evidence arithmetic is a deterministic side-car, not LLM-heavy success.
-- Artifacts: `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact_validation25_predeclaration_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.jsonl`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact_validation25_predeclaration_2026-06-02.md`, `experiments/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_heavy_clinical_frequency_reasoner_validation25_gpt41mini_v2_compact_2026-06-02.md`.
 
 ### `gan2026_llm_structured_v05_full_validation_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
@@ -2263,7 +2263,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: Reused 720 raw model outputs from the validation ladder; live calls only for rows 721-750.
 - Supersedes: `gan2026_llm_first_direct_extractor_validation750_2026-06-01`.
 - Claim language: Reached 675/750 Purist on validation, but retrospective/audit reject it as a clean LLM-first result because deterministic semantic repair became prediction-bearing.
-- Artifacts: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.jsonl`, `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`, `experiments/gan2026_llm_structured_decision_retrospective_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.jsonl`, `experiments/archive/gan2026_validation_iterations/gan2026_llm_structured_validation750_gpt41mini_v05_completion5_2026-06-01.md`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_structured_decision_retrospective_2026-06-01.md`.
 
 ### `gan2026_llm_first_direct_extractor_validation750_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
@@ -2275,7 +2275,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Exact evidence substrings 670/750; 41 parse/schema/label issues.
 - Cache/reuse source: DSPy cache; full validation reused 610 raw model outputs.
 - Claim language: Validation development result only. Full validation reached 505/750 Purist, rejecting direct note-to-label extraction as the active LLM-first path.
-- Artifacts: `experiments/gan2026_llm_first_validation25_gpt41mini_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation25_gpt41mini_2026-05-31.md`, `experiments/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.md`, `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl`, `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.md`, `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`, `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_llm_first_validation25_gpt41mini_2026-05-31.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_first_validation25_gpt41mini_2026-05-31.md`, `experiments/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_first_validation25_gpt41mini_v02_2026-05-31.md`, `experiments/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_first_validation250_gpt41mini_v01_2026-05-31.md`, `experiments/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_llm_first_validation750_gpt41mini_v01_2026-06-01.md`.
 
 ### `gan2026_claim_table_v5_validation250_test450_generalization_audit_2026-06-01`
 - Date/split: `2026-06-01`; `validation+test`; `700` rows.
@@ -2287,7 +2287,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; test450 resumed from 150 saved raw outputs.
 - Supersedes: `gan2026_claim_table_v4_validation750_2026-06-01`.
 - Claim language: Frozen generalization audit for claim-table v5. Test clean Purist was 301/450, so the path remains a comparator/failure-analysis artifact, not an active promoted candidate.
-- Artifacts: `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.json`, `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.json`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.md`, `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.md`.
 
 ### `gan2026_claim_table_v4_validation750_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `750` rows.
@@ -2300,7 +2300,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache/live completion mix recorded in artifact metadata.
 - Supersedes: `gan2026_claim_table_v4_validation250_schema_replay_2026-06-01`.
 - Claim language: Reject for holdout; full validation exposed cluster-axis and boundary-state collapse.
-- Artifacts: `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl`, `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.md`, `experiments/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`.
+- Artifacts: `experiments/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.jsonl`, `experiments/archive/gan2026_validation750_iterations/gan2026_section_claim_table_validation750_gpt41mini_v4_2026-06-01.md`, `experiments/archive/gan2026_validation750_iterations/gan2026_section_claim_table_validation750_v4_interpretation_2026-06-01.md`.
 
 ## Inform Phase7
 
@@ -2311,7 +2311,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: benchmark_per_item_f1=0.0, benchmark_per_letter_f1=0.0, call_failures=0, evidence_validity_rate=0.9418, mentions_scored=988, mentions_total=1049, parse_failures=0, phrase_only_per_item_f1=0.143, phrase_only_per_letter_f1=0.346, prompt_version=exectv2_llm_only_all_entities_v0.1, semantic_per_item_f1=0.087, semantic_per_letter_f1=0.236.
 - Evidence validity: evidence_is_substring; 988/1049 valid, 61 dropped.
 - Claim language: ExECTv2 Phase 6 LLM-only all-9 dev140 gpt-4.1-mini. Contract-clean (0 call/parse failures), evidence validity 94.18%, but low semantic overall F1 0.087/0.236 and benchmark with-CUI 0.000/0.000; suitable as locked all-entity LLM-only baseline for the authorized overall audit, not a competitive result.
-- Artifacts: `experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.jsonl`, `experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.md`.
+- Artifacts: `experiments/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_all_entities_dev140_gpt41mini_20260612.md`.
 
 ## Phase4 Complete
 
@@ -2373,7 +2373,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_valid_rows=440, parse_or_validation_failures=4, pragmatic_accuracy=0.8178, pragmatic_correct=368, prompt_version=gan2026_hybrid_structured_events_v0.6, purist_accuracy=0.7867, purist_correct=354, rendered_rows=446, structured_records=446.
 - Evidence validity: 440/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 4 parse/schema/label issues; 446 structured records.
 - Claim language: User-authorized DeepSeek structured-events test450 source-coverage run to correct the missing cross-model holdout artifact noted in the 2026-06-14 structured-events/agentic synthesis. Aggregate artifact generation only; no row-level holdout failure analysis or post-test tuning is authorized by this entry. This fills the DeepSeek SE source gap for future frozen aggregate-only consensus/scaffolding audits, but is not itself a promoted final-answer architecture.
-- Artifacts: `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl`, `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`.
+- Artifacts: `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`.
 
 ### `exectv2_hybrid_dev140_qwen3635b_20260611`
 - Date/split: `2026-06-11`; `dev`; `140` rows.
@@ -2383,7 +2383,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: evidence_is_substring (exact source-text substring check); routing taxonomy {no_frequency_attributes:25, bare_nonzero_count:13, empty_evidence:5, evidence_not_substring:2}.
 - Supersedes: `exectv2_hybrid_dev50partial_qwen3635b_20260611`.
 - Claim language: ExECTv2 Phase 4 - hybrid (candidate + assessment) full dev run (140 letters, D16 gold, SeizureFrequency only), qwen3.6:35b. Completed by RESUMING from a 50/140 checkpoint after a power interruption (core.run_resume; n_resumed=50) - no work re-spent. phrase_only per-item F1 0.498, per-letter 0.730 - below gpt-4.1-mini hybrid (0.585/0.781) but above the deterministic baseline per-letter (0.604) and the qwen LLM-only per_entity (0.642). sf_semantic == sf_benchmark per-item 0.228, per-letter 0.451 - below gpt hybrid (0.327/0.578) and deterministic (0.362/0.575), far above qwen LLM-only (0.036/0.104). 639 candidates offered, 313 kept by LLM, 235 scored, 45 routed; 0 call failures, 1 parse failure (one max_tokens=3000 truncation). gpt-4.1-mini > qwen on hybrid, mirroring the LLM-only result.
-- Artifacts: `experiments/exectv2_hybrid_v02_dev140_qwen3635b_20260611.jsonl`, `experiments/exectv2_hybrid_v02_dev140_qwen3635b_20260611.md`.
+- Artifacts: `experiments/exectv2_hybrid_v02_dev140_qwen3635b_20260611.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_v02_dev140_qwen3635b_20260611.md`.
 
 ### `exectv2_hybrid_dev140_gpt41mini_20260611`
 - Date/split: `2026-06-11`; `dev`; `140` rows.
@@ -2392,7 +2392,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, candidates_offered=639, mentions_kept=288, mentions_routed=37, mentions_scored=247, parse_failures=0, phrase_only_per_item_f1=0.585, phrase_only_per_letter_f1=0.781, prompt_version=exectv2_hybrid_candidate_assessment_v0.2, sf_benchmark_per_item_f1=0.327, sf_benchmark_per_letter_f1=0.578, sf_semantic_per_item_f1=0.327, sf_semantic_per_letter_f1=0.578.
 - Evidence validity: evidence_is_substring (exact source-text substring check); routing taxonomy {no_frequency_attributes:7, bare_nonzero_count:29, evidence_not_substring:1}.
 - Claim language: ExECTv2 Phase 4 - hybrid (candidate + assessment) full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.585, per-letter 0.781 - best phrase recall of any family and the only architecture whose per-letter clears the SF benchmark target 0.68. sf_semantic == sf_benchmark per-item 0.327, per-letter 0.578 - best attribute-aware per-letter of any architecture (above deterministic 0.575 and far above LLM-only), marginally below deterministic on per-item (0.362). 639 candidates offered, 288 kept by LLM, 247 scored, 37 routed; 0 call/parse failures.
-- Artifacts: `experiments/exectv2_hybrid_v02_dev140_gpt41mini_20260611.jsonl`, `experiments/exectv2_hybrid_v02_dev140_gpt41mini_20260611.md`.
+- Artifacts: `experiments/exectv2_hybrid_v02_dev140_gpt41mini_20260611.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_v02_dev140_gpt41mini_20260611.md`.
 
 ### `exectv2_llm_only_single_pass_dev140_qwen3635b_20260610`
 - Date/split: `2026-06-10`; `dev`; `140` rows.
@@ -2401,7 +2401,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_validity_rate=0.945, mentions_scored=189, mentions_total=200, parse_failures=2, phrase_only_per_item_f1=0.383, phrase_only_per_letter_f1=0.623, prompt_version=exectv2_llm_only_single_pass_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.09, sf_semantic_per_letter_f1=0.213.
 - Evidence validity: evidence_is_substring; 189/200 valid, 11 dropped.
 - Claim language: ExECTv2 Phase 3 — qwen3.6:35b single_pass dev140. phrase_only per-letter 0.623 (below gpt-4.1-mini 0.701 by 11%). sf_semantic per-letter 0.213 (above gpt-4.1-mini 0.197 by 8%). 2 parse failures. 94.5% evidence validity. sf_benchmark 0.000 (CUI D3).
-- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.jsonl`, `experiments/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.md`.
+- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_single_pass_dev140_qwen3635b_20260610.md`.
 
 ### `exectv2_llm_only_single_pass_dev140_gpt41mini_20260610`
 - Date/split: `2026-06-10`; `dev`; `140` rows.
@@ -2410,7 +2410,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_validity_rate=0.9749, mentions_scored=195, mentions_total=199, parse_failures=0, phrase_only_per_item_f1=0.466, phrase_only_per_letter_f1=0.701, prompt_version=exectv2_llm_only_single_pass_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.094, sf_semantic_per_letter_f1=0.197.
 - Evidence validity: evidence_is_substring (exact source-text substring check); 195/199 valid, 4 dropped.
 - Claim language: ExECTv2 Phase 3 — LLM-only single-pass full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.466, per-letter 0.701 (exceeds SF benchmark target 0.68). sf_semantic near-zero (attribute-convention mismatch). sf_benchmark 0.000 (CUI lookup is shared post-step D3). Deterministic baseline: phrase_only 0.382/0.604.
-- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.jsonl`, `experiments/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.md`.
+- Artifacts: `experiments/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_single_pass_dev140_gpt41mini_20260610.md`.
 
 ### `exectv2_llm_only_per_entity_dev140_qwen3635b_20260610`
 - Date/split: `2026-06-10`; `dev`; `140` rows.
@@ -2419,7 +2419,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_validity_rate=0.961, mentions_scored=197, mentions_total=205, parse_failures=0, phrase_only_per_item_f1=0.401, phrase_only_per_letter_f1=0.642, prompt_version=exectv2_llm_only_per_entity_v0.2, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.036, sf_semantic_per_letter_f1=0.104.
 - Evidence validity: evidence_is_substring; 197/205 valid, 8 dropped.
 - Claim language: ExECTv2 Phase 3 — qwen3.6:35b per_entity dev140. phrase_only per-letter 0.642 (below gpt-4.1-mini 0.698 by 8%). sf_semantic per-item 0.036, per-letter 0.104 — dramatically worse than gpt-4.1-mini per_entity (0.135/0.264). Unlike gpt-4.1-mini, qwen does NOT benefit from focused per_entity prompt for attributes; sf_semantic is even worse than qwen single_pass (0.090/0.213). 0 parse failures, 96.1% evidence validity. sf_benchmark 0.000 (CUI D3).
-- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.jsonl`, `experiments/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.md`.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_per_entity_dev140_qwen3635b_20260610.md`.
 
 ### `exectv2_llm_only_per_entity_dev140_gpt41mini_20260610`
 - Date/split: `2026-06-10`; `dev`; `140` rows.
@@ -2428,7 +2428,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, evidence_validity_rate=0.9632, mentions_scored=183, mentions_total=190, parse_failures=0, phrase_only_per_item_f1=0.486, phrase_only_per_letter_f1=0.698, prompt_version=exectv2_llm_only_per_entity_v0.1, sf_benchmark_per_item_f1=0.0, sf_benchmark_per_letter_f1=0.0, sf_semantic_per_item_f1=0.135, sf_semantic_per_letter_f1=0.264.
 - Evidence validity: evidence_is_substring (exact source-text substring check); 183/190 valid, 7 dropped.
 - Claim language: ExECTv2 Phase 3 — LLM-only per-entity full dev run (140 letters, D16 gold, SeizureFrequency only). phrase_only per-item F1 0.486, per-letter 0.698 (exceeds SF benchmark target 0.68). sf_semantic 0.135/0.264 — 44% better than single_pass per-item (0.094), 34% better per-letter (0.197). sf_benchmark 0.000 (CUI D3). Best LLM-only config for attribute matching. Deterministic baseline: phrase_only 0.382/0.604.
-- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.jsonl`, `experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.md`.
+- Artifacts: `experiments/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.jsonl`, `experiments/archive/exectv2_misc_iterations/exectv2_llm_only_per_entity_dev140_gpt41mini_20260610.md`.
 
 ## Phase3 Complete Gpt41Mini
 
@@ -2440,7 +2440,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Surfaces, but does not collapse, that evidence-trace metrics are NOT uniform across architectures: four report evidence_valid (substring presence), llm_only_canonical_pipeline reports evidence_text_contained, hybrid reports CandidateSet source-id validity rate.
 - Supersedes: `gan2026_three_way_comparison_phase2_report_cluster_diary_digit_validation750_2026-06-09`.
 - Claim language: Phase 3 three-way architecture comparison report (validation750, gpt-4.1-mini). Deterministic/DCP from Phase 2 iteration 2 (digit-only de-overfitting); hybrid from v5 run (FM-2/FM-5b/FM-6 prompt fixes); DL v0.5 / CP v0.5 from Phase 3 LLM-only runs; SE from Phase 1 (no SE-specific Phase 3 changes). Key Phase 3 vs Phase 2 delta for hybrid (gpt-4.1-mini): 597 rendered vs 589 (+8 more rendered), 526/597 purist = 88.1% vs 500/589 = 84.9% (+3.2pp); 545/597 pragmatic = 91.3%. hybrid_structured_events leads purist at 661/748=88.4%. deterministic/DCP ceiling: 673/741=90.8%. No test450 read; no holdout-facing claim.
-- Artifacts: `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`.
 
 ## Inform Phase3
 
@@ -2452,7 +2452,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Surfaces, but does not collapse, the fact that evidence-trace metrics are NOT uniform across architectures.
 - Supersedes: `gan2026_three_way_comparison_phase1_report_qwen3635b_validation750_2026-06-09`.
 - Claim language: Phase 1 three-way architecture comparison, ollama_chat/qwen3.6:35b pass, validation750 only (gan2026_three_way_architecture_comparison_and_cross_pollination_plan_2026-06-07 Section 3 + Section 8b). Full 750-row surface: hybrid now uses the live-wired candidate-set generation (section 8a) merged from the resume-part into the 2026-06-08 file; 0 candidate_set_missing rows. Supersedes the interim 250-row-scoped hybrid report (gan2026_three_way_comparison_phase1_report_qwen3635b_validation750_2026-06-09). Key findings: hybrid_structured_events leads at 624/746 (0.836); hybrid renders only 400/750 rows (much lower surface than gpt-4.1-mini 589/750 or deepseek 604/750), with 62 routed (15.5%); llm_only_direct_labeler and llm_only_canonical_pipeline nearly tied (550/749=0.734 vs 544/748=0.727). Closes Section 8b.
-- Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
+- Artifacts: `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.jsonl`, `experiments/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.json`, `experiments/archive/gan2026_validation750_iterations/gan2026_three_way_comparison_phase1_report_qwen3635b_full_validation750_2026-06-09.md`.
 
 ### `gan2026_phase3_error_analysis_2026-06-09`
 - Date/split: `2026-06-09`; `validation`; `750` rows.
@@ -2475,6 +2475,83 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 
 ## Inform Architecture Loop
 
+### `exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701`
+- Date/split: `2026-07-01`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.7194, clinical_headline_investigations_f1=0.8571, clinical_headline_overall_f1=0.7596, clinical_headline_prescription_f1=0.886, clinical_headline_seizure_frequency_f1=0.6006, final_instruction_tokens=4660, seed_instruction_tokens=2272, semantic_per_item_f1=0.1405, strict_benchmark_per_item_f1=0.1293.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.json`, `experiments/exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.md`, `experiments/exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.jsonl`, `experiments/exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.instruction.txt`.
+
+### `exectv2_gepa_investigations_lane_deepseekreasoner_20260630`
+- Date/split: `2026-06-30`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (deepseek/deepseek-reasoner), reflection LM deepseek/deepseek-reasoner; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `deepseek/deepseek-reasoner`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.4479, clinical_headline_investigations_f1=0.9254, clinical_headline_overall_f1=0.6252, clinical_headline_prescription_f1=0.8856, clinical_headline_seizure_frequency_f1=0.4488, final_instruction_tokens=1904, seed_instruction_tokens=625, semantic_per_item_f1=0.1308, strict_benchmark_per_item_f1=0.1217.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner.
+- Cache/reuse source: experiments/exectv2_gepa_investigations_lane_deepseekreasoner_20260630.jsonl.
+- Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_investigations_lane_deepseekreasoner_20260630.json`, `experiments/exectv2_gepa_investigations_lane_deepseekreasoner_20260630.md`, `experiments/exectv2_gepa_investigations_lane_deepseekreasoner_20260630.jsonl`, `experiments/exectv2_gepa_investigations_lane_deepseekreasoner_20260630.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_v2_deepseekchat_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (deepseek/deepseek-chat), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter.; model `deepseek/deepseek-chat`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: changed_precision=0.4839, changed_recall=0.5556, clinical_headline_f1=0.534, instruction_tokens=1626, seed_clinical_headline_f1=0.575, seed_state_profile_f1=0.693, state_profile_f1=0.7021, state_profile_precision=0.5862, state_profile_recall=0.875.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_v2_deepseekchat_20260629.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_v2_deepseekchat_20260629.json`, `experiments/exectv2_gepa_sf_verify_v2_deepseekchat_20260629.jsonl`, `experiments/exectv2_gepa_sf_verify_v2_deepseekchat_20260629.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (deepseek/deepseek-reasoner), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter. Phase-5 arm: extraction=deepseek/deepseek-reasoner, verify=deepseek/deepseek-reasoner, examples=no (feedback-only).; model `deepseek/deepseek-reasoner`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: changed_precision=0.4839, changed_recall=0.5556, clinical_headline_f1=0.56, instruction_tokens=1112, seed_clinical_headline_f1=0.5012, seed_state_profile_f1=0.6627, state_profile_f1=0.7434, state_profile_precision=0.6726, state_profile_recall=0.8309.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629.json`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629.jsonl`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_fb_20260629.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (deepseek/deepseek-reasoner), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter. Phase-5 arm: extraction=deepseek/deepseek-reasoner, verify=deepseek/deepseek-reasoner, examples=yes.; model `deepseek/deepseek-reasoner`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: changed_precision=0.5556, changed_recall=0.5556, clinical_headline_f1=0.5861, instruction_tokens=1335, seed_clinical_headline_f1=0.5293, seed_state_profile_f1=0.7125, state_profile_f1=0.7839, state_profile_precision=0.781, state_profile_recall=0.7868.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.json`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.jsonl`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_p5_reasoner_mini_fb_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter. Phase-5 arm: extraction=deepseek/deepseek-reasoner, verify=openai/gpt-4.1-mini, examples=no (feedback-only).; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: changed_precision=0.5385, changed_recall=0.5185, clinical_headline_f1=0.5873, instruction_tokens=1962, seed_clinical_headline_f1=0.5022, seed_state_profile_f1=0.6611, state_profile_f1=0.7661, state_profile_precision=0.7107, state_profile_recall=0.8309.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_fb_20260629.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_fb_20260629.json`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_fb_20260629.jsonl`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_fb_20260629.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629`
+- Date/split: `2026-06-29`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter. Phase-5 arm: extraction=deepseek/deepseek-reasoner, verify=openai/gpt-4.1-mini, examples=yes.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: changed_precision=0.5667, changed_recall=0.6296, clinical_headline_f1=0.608, instruction_tokens=949, seed_clinical_headline_f1=0.5152, seed_state_profile_f1=0.6875, state_profile_f1=0.7661, state_profile_precision=0.7107, state_profile_recall=0.8309.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629.json`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629.jsonl`, `experiments/exectv2_gepa_sf_verify_p5_reasoner_mini_ex_20260629.instruction.txt`.
+
 ### `exectv2_gepa_multifamily_dedup_qwen3p6_35b_h2mb8_20260629`
 - Date/split: `2026-06-29`; `dev`; `140` rows.
 - Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
@@ -2496,6 +2573,28 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.jsonl.
 - Claim language: DSPy-native GEPA from-scratch on the de-dup clinical_headline surface; instruction evolved under a prompt-length penalty. Clinical-recovery number only, development-surface only; not benchmark-cleared.
 - Artifacts: `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.json`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.md`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.jsonl`, `experiments/exectv2_gepa_dedup_qwen3p6_35b_h2mb8_20260629.instruction.txt`.
+
+### `exectv2_gepa_sf_verify_gpt41mini_20260628`
+- Date/split: `2026-06-28`; `dev`; `140` rows.
+- Pipeline: `gepa_sf_verify`; mode `live`; replay `live`.
+- Model role: GEPA SF-only generate->recall-additive-verify student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; optimized directly on the fair, type-agnostic state_profile metric (length-penalized), feedback naming missed clinical states so reflection learns to ADD recall, not just filter.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `sf_generate_recall_additive_verify`.
+- Primary metrics: clinical_headline_f1=0.5971, instruction_tokens=1433, seed_clinical_headline_f1=0.5149, seed_state_profile_f1=0.6628, state_profile_f1=0.7413, state_profile_precision=0.7067, state_profile_recall=0.7794.
+- Evidence validity: Development split (dev140, exectv2_split_v1), NOT test. Trained/evaluated on the full dev140 shuffled split (seed 20260627), not a disjoint optimizer-only sub-split like the gepa_from_scratch family — a development-only number. state_profile is the fair, type-agnostic SF metric (see docs/research/exectv2_sf_representation_not_recall_2026-06-28.md); clinical_headline reported beside it for cross-comparison. Backfilled 2026-07-01: this family's launcher scripts (gepa_sf_verify_exectv2.py / gepa_sf_verify_phase5_exectv2.py / gepa_sf_verify_v2_deepseek_exectv2.py) never called the shared registration path at all — a coverage gap, not the same load-failure bug as the multistage run — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_sf_verify_gpt41mini_20260628.jsonl.
+- Claim language: SF verify-stage GEPA arm feeding the SF plateau/wall investigation (docs/research/exectv2_sf_verify_phase5_result_2026-06-29.md). Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_sf_verify_gpt41mini_20260628.json`, `experiments/exectv2_gepa_sf_verify_gpt41mini_20260628.jsonl`, `experiments/exectv2_gepa_sf_verify_gpt41mini_20260628.instruction.txt`.
+
+### `exectv2_gepa_multistage_dedup_gpt41mini_20260628`
+- Date/split: `2026-06-28`; `dev`; `140` rows.
+- Pipeline: `gepa_from_scratch`; mode `live`; replay `live`.
+- Model role: GEPA from-scratch student (openai/gpt-4.1-mini), reflection LM deepseek/deepseek-reasoner; two-stage (generate->verify, 4 families x 2 stages = 8 evolvable instructions) program, S0 warm-started from the evolved 0.731 per-family run, S1 lean-seeded from distilled entity_verifier rules; length-penalized clinical_headline metric; trained on optimizer-only dev sub-split, attribution-clean de-dup adapter.; model `openai/gpt-4.1-mini`.
+- Repair mode/config: `dedup_clinical_facts_adapter`.
+- Primary metrics: clinical_headline_diagnosis_f1=0.65, clinical_headline_investigations_f1=0.916, clinical_headline_overall_f1=0.7235, clinical_headline_prescription_f1=0.8514, clinical_headline_seizure_frequency_f1=0.55, final_instruction_tokens=4030, seed_instruction_tokens=2272, semantic_per_item_f1=0.1478, strict_benchmark_per_item_f1=0.1369.
+- Evidence validity: Development split (dev, exectv2_split_v1), NOT test. GEPA trained on an optimizer-only dev sub-split. clinical_headline is the clinical-recovery surface (decision 0027), NOT paper-comparable; strict benchmark reported beside it. Live task model; reflection deepseek-reasoner. Backfilled 2026-07-01: artifacts complete since 2026-06-28, but the row was never written due to a registry-load failure inside `_register()`'s own try/except (silently swallowed, no exception propagated) — see docs/research/exectv2_registry_survivorship_bias_2026-07-01.md.
+- Cache/reuse source: experiments/exectv2_gepa_multistage_dedup_gpt41mini_20260628.jsonl.
+- Claim language: DSPy-native GEPA multi-stage (generate->verify) from-scratch on the de-dup clinical_headline surface. MISSED the pre-registered kill-criterion (beat 0.731 per-family ceiling by >= +0.03): scored 0.7235, -0.008 below the single-pass per-family ceiling. Mechanism (evolved-instruction inspection, docs/research/exectv2_gepa_single_model_plateau_synthesis_2026-06-28.md §3): verify on an already-precision-tuned generator only filtered (recall 805->783 facts); the most heavily-evolved verifier drifted into reformatting the whole list rather than filtering it — an undecomposed end-to-end clinical_headline reward gave reflection no way to credit 'correctly rejected a bad candidate' separately from 'produced a good final list'. Development-surface only; not benchmark-cleared.
+- Artifacts: `experiments/exectv2_gepa_multistage_dedup_gpt41mini_20260628.json`, `experiments/exectv2_gepa_multistage_dedup_gpt41mini_20260628.md`, `experiments/exectv2_gepa_multistage_dedup_gpt41mini_20260628.jsonl`, `experiments/exectv2_gepa_multistage_dedup_gpt41mini_20260628.instruction.txt`.
 
 ### `exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628`
 - Date/split: `2026-06-28`; `dev`; `140` rows.
@@ -2525,7 +2624,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Model role: Merged hybrid key-family + deterministic all-9, benchmark surface.; model `gpt-4.1-mini (key families) + deterministic`.
 - Primary metrics: benchmark_per_item_f1=0.3877, benchmark_per_letter_f1=0.6972, paper_overall_per_item_f1=0.87, paper_overall_per_letter_f1=0.9, phrase_only_per_item_f1=0.4549, semantic_per_item_f1=0.4008.
 - Claim language: Like-for-like benchmark-surface overall for the synthesis hybrid key-family architecture. Dev140, analysis-only, no full-200 audit.
-- Artifacts: `experiments\exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json`, `experiments\exectv2_hybrid_benchmark_overall_bestof_dev_20260618.md`.
+- Artifacts: `experiments/exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json`, `experiments/archive/exectv2_misc_iterations/exectv2_hybrid_benchmark_overall_bestof_dev_20260618.md`.
 
 ### `exectv2_deterministic_all9_dev_20260617`
 - Date/split: `2026-06-17`; `dev`; `140` rows.
@@ -2534,7 +2633,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: active_entities=['Prescription', 'Investigations', 'Diagnosis', 'Onset', 'WhenDiagnosed', 'BirthHistory', 'EpilepsyCause', 'PatientHistory', 'SeizureFrequency'], benchmark_per_item_f1=0.3625, benchmark_per_letter_f1=0.6747, call_failures=0, cui_attachment_rate=0.9909, evidence_not_substring_count=0, evidence_validity_rate=1.0, mentions_total=992, mentions_with_cui=983, parse_failures=0, phrase_only_per_item_f1=0.4571, phrase_only_per_letter_f1=0.7526, prescription_benchmark_with_cui_f1=0.302, prescription_clinical_headline_f1=0.9072, prompt_version=n/a (deterministic rules), routing_count=0, schema_error_count=0, schema_repairs=0, semantic_per_item_f1=0.3754, semantic_per_letter_f1=0.6814.
 - Evidence validity: exact source substring validation summarized in scorecard.
 - Claim language: First GPT-first rules_only all-9 substrate. Not freeze-ready; incomplete entity coverage remains explicit in per-entity scores.
-- Artifacts: `experiments/exectv2_deterministic_all9_dev_20260617.json`, `experiments/exectv2_deterministic_all9_dev_20260617.md`.
+- Artifacts: `experiments/exectv2_deterministic_all9_dev_20260617.json`, `experiments/archive/exectv2_misc_iterations/exectv2_deterministic_all9_dev_20260617.md`.
 
 ## Clinical Recovery Reporting
 
@@ -2660,7 +2759,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Cache/reuse source: DSPy cache enabled; validation/test artifacts recorded 0 reused raw outputs.
 - Supersedes: `gan2026_hybrid_adjudicator_v02_cluster_diary_candidate_recall_synthetic_hard_case_component_stress_2026-06-01`.
 - Claim language: Frozen comparator-only generalization audit. Do not tune v0.2 gates, prompts, candidate generation, or repair policy from locked-test behavior; use the state-graph validation cycle for new development.
-- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/archive/gan2026_historical_lineage/gan2026_generalization_gap_research_report_2026-06-02.md`.
+- Artifacts: `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/archive/gan2026_historical_lineage/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`, `experiments/archive/gan2026_historical_lineage/gan2026_generalization_gap_research_report_2026-06-02.md`.
 
 ### `gan2026_llm_structured_v05_attribution_repair_ladder650_2026-06-01`
 - Date/split: `2026-06-01`; `validation`; `650` rows.
@@ -2696,7 +2795,7 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Evidence validity: Aggregate holdout report; no test row-level debugging allowed.
 - Supersedes: `gan2026_rules_only_v1_baseline_2026-05-31`.
 - Claim language: Final holdout result for frozen deterministic V1 only; useful as generalization context, not a benchmark-comparable paper claim or tuning surface.
-- Artifacts: `experiments/gan2026_v1_test_holdout_2026-05-31.md`.
+- Artifacts: `experiments/archive/gan2026_misc_iterations/gan2026_v1_test_holdout_2026-05-31.md`.
 
 ### `gan2026_rules_only_v1_baseline_2026-05-31`
 - Date/split: `2026-05-31`; `validation+test`; `1200` rows.
@@ -2729,4 +2828,4 @@ Generated from `experiments/registry.jsonl`. The JSONL file remains the canonica
 - Primary metrics: call_failures=0, decision_records=450, evidence_valid_rows=422, max_tokens=900, parse_or_validation_failures=0, pragmatic_accuracy=0.7867, pragmatic_correct=354, prompt_version=gan2026_llm_only_direct_labeler_v0.5, purist_accuracy=0.7222, purist_correct=325, temperature=0.0, val_to_test_gap_purist=0.0444, validation750_reference_purist_accuracy=0.7667, validation750_reference_purist_correct=575.
 - Evidence validity: USER-AUTHORISED CALIBRATION measurement of the validation->test gap on gpt-4.1-mini, NOT a robustness-certified result. Candidate failed the Cycle 1 robustness battery and is NOT certified; it was run once only to obtain the first-ever mini test450 number. 422/450 rows carry an evidence_valid substring-presence trace; 0 call failures; 0 parse/schema/label failures; 450/450 decision records; all 450 rows split=test with unique source_row_index. No tuning on test, no re-run, no row-level failure inspection.
 - Claim language: First-ever frozen test450 Purist for llm_only direct labeler v0.5 on gpt-4.1-mini. test450 Purist = 325/450 = 0.7222. validation750 reference (mini, v0.5) = 575/750 = 0.7667. val->test gap = +0.0444 (+4.44 pp); -20 rows vs the val-implied 345/450. Prior holdouts (incl. V12 379/450) used full gpt-4.1, not mini, so this is the first mini val->test anchor. Calibration only; does not promote this candidate or change champion/robustness status.
-- Artifacts: `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.jsonl`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.md`, `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16_record.md`.
+- Artifacts: `experiments/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.jsonl`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16.md`, `experiments/archive/gan2026_misc_iterations/gan2026_llm_only_direct_labeler_CALIBRATION_test450_live_gpt41mini_v0_5_2026-06-16_record.md`.

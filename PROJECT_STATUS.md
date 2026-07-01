@@ -90,16 +90,106 @@ Current evidence stack:
 
 ### Next
 
-- Fix a discovered ExECTv2 `test60` content-leak bug: `EA0159` (test) and
-  `EA0160` (dev) are byte-identical letters (same patient, same clinical body,
-  confirmed via diff) per `data/ExECTv2 (2025)/splits/exectv2_split_v1.json`.
-  Dedupe the corpus by content hash and reassign or drop one of the pair before
-  the next claim that ExECTv2 `test60` is frozen/untouched; also check whether
-  either letter was ever cited as a standalone example in a report. Scope is
-  narrow (1/60 test letters) and does not implicate existing GEPA/hybrid/
-  model-swap comparisons, which all score the same contaminated set equally.
-  Found 2026-07-01 during a synthetic-corpus integrity audit; see
-  `docs/research/exploratory_research_directions_multiagent_review_2026-07-01.md`.
+- **NEW 2026-07-01:** audited the whole project against the original
+  supervisor brief (training-free multi-agent epilepsy-letter extraction;
+  Section/Timeline + Field Extractor + Verification + Aggregator roles;
+  single-prompt-vs-multi-agent reliability comparison at matched budget;
+  dissertation deliverable). Research substance (evidence gates, structured
+  validation, self-consistency, field-level F1, robustness, synthetic +
+  de-identified data) is met or exceeded; architecture/vocabulary has
+  drifted from the brief's literal framing (three-family rules/LLM-only/
+  hybrid comparison instead of single-prompt-vs-multi-agent; no named
+  Section/Timeline Agent; no dissertation document, only a paper-length
+  manuscript). See
+  `docs/research/supervisor_brief_conformance_audit_2026-07-01.md` for the
+  full conformance table and
+  `docs/plans/supervisor_brief_gap_closure_plan_2026-07-01.md` for the
+  phased closure plan. Phase A (legibility crosswalk) DONE. Phase C
+  (Section/Timeline Agent) DONE — built `exectv2/deterministic/
+  section_timeline.py` and ran a dev140 ablation on SeizureFrequency +
+  Investigations; **null result** (SeizureFrequency -0.0106, Investigations
+  -0.0034, both within/near measurement noise), written up in
+  `docs/experiments/exectv2/reliability/exectv2_section_timeline_ablation_2026-07-01.md`.
+  Module kept in the codebase, not wired into production v08. Phase D
+  (dissertation) confirmed out of scope — actual target is the existing
+  5,000-word/8-page IEEE paper, user-owned. **Phase B DONE, revised scope**:
+  the user challenged the original "cheap table" framing and it did not
+  hold up — the only prior "multi-agent" artifact in this codebase
+  (2026-06-12, Gan 2026) was found to hard-code tool calls and fake its
+  multi-agent condition (four identical calls, cosmetic role labels).
+  Rebuilt from scratch with genuine `dspy.ReAct` tool use and
+  structurally-honest specialists (output schema cannot contain a final
+  answer) on both tasks. **Gan 2026**
+  (`docs/experiments/gan2026/agentic/gan2026_agentic_redo_results_2026-07-01.md`):
+  every new architecture beat single-prompt on a hard panel (Purist
+  38%→64%), dynamic orchestration beat static fan-out, neither cleared the
+  strict promotion gate at n=50. **ExECTv2 SeizureFrequency**
+  (`docs/experiments/exectv2/seizure_frequency/exectv2_sf_agentic_redo_results_2026-07-01.md`,
+  first agentic infrastructure ever built for ExECTv2): the pattern did
+  *not* transfer — single-prompt was the best performer, new architectures
+  trended mildly negative (small-sample, inconclusive). Cross-task
+  divergence is the honest answer to the brief's key research question —
+  agentic decomposition is task-dependent, not a universal win. All four
+  phases of the gap-closure plan are now complete.
+- **DONE 2026-07-01:** fixed the `test60` split-construction gap. The source
+  dataset paper (Fonferko-Shadrach et al. 2024, *J Biomed Semantics*, DOI
+  10.1186/s13326-024-00316-z) discloses "Four letters were duplicated within
+  the set to test for consistency in annotations" — a deliberate, documented
+  design choice by the corpus's original authors (confirmed: 4 duplicate
+  pairs / 8 of 200 letters, 4%, exactly matching that statement), NOT a
+  corpus integrity bug. The genuine, locally-fixable issue was narrower:
+  `exectv2_split_v1.json` stratifies only by `has_seizure_frequency_mention`,
+  with no identity-awareness, so it did not know to keep the paper's known
+  duplicate pairs on one side of the boundary — one pair, `EA0159` (test) /
+  `EA0160` (dev), landed across the frozen dev/test split. Fix: cut
+  `data/ExECTv2 (2025)/splits/exectv2_split_v2.json` (dev unchanged at 140;
+  `EA0159` dropped from test, so **test59** going forward), `v1` left
+  untouched as historical record. `data.py`'s `DEFAULT_SPLIT_MANIFEST` still
+  points at `v1`; cut over the next time a fresh test-split run is planned.
+  See `docs/experiments/exectv2/exectv2_test60_split_dedupe_fix_2026-07-01.md`
+  for the full audit (including a refinement: 3 of the 4 duplicate pairs show
+  substantially different `.ann` annotations — consistent with genuine
+  independent re-annotation for the paper's consistency check — while only
+  the EA0159/EA0160 pair is near-identical) and
+  `docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md`
+  for the implementation plan this was Phase 0 of.
+- **DONE 2026-07-01:** implemented the exploratory-review's Tier-1 items 1-4
+  (`docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md`
+  Phases 1-2). Registry hygiene: retroactively registered 7 silently-missing
+  GEPA runs (2 distinct root causes — a swallowed load-failure in
+  `_register()`, and a standalone launcher family that never had a
+  registration path — plus a pre-existing broken artifact-path row that was
+  blocking registry validation entirely) — 244 -> 251 rows
+  (`docs/research/exectv2_registry_survivorship_bias_2026-07-01.md`, which
+  also corrected the item's own framing: mean chain-length-to-publication is
+  only 1.12, but 40.7% of the manuscript's own citation graph has no
+  registry row at all). Cost-quality table
+  (`docs/research/exectv2_cost_quality_matched_split_table_2026-07-01.md`)
+  confirmed the 1-2 call delta and the ~9x deterministic-stack claim, but
+  found the informally-cited "hybrid +0.2 F1, ~5x split-dependent" figure
+  conflates two non-commensurable comparisons (real +0.18-0.20 vs. GEPA at
+  dev140-only, untestable for split-dependence; a much smaller +0.015/+0.076
+  premium vs. a 2-call baseline that IS split-comparable but not robust to
+  baseline-model choice). Mechanical gold-inflation heuristic
+  (`docs/research/exectv2_gold_inflation_mechanical_heuristic_2026-07-01.md`)
+  recovered Prescription's 7 typo cases cleanly (0 false positives) but does
+  NOT generalize to SF/Diagnosis (stem-collision false positives) — a
+  calibrated pre-flight rule, not a universal detector. **Verify-stage
+  credit-assignment GEPA rerun**
+  (`docs/research/exectv2_gepa_verify_stage_credit_assignment_2026-07-01.md`):
+  froze S0 + added a stage-local accept/reject/add feedback metric
+  (independent of the merged-output diff; selection score unchanged) for the
+  multistage generate->verify program. Result: 0.7235 -> **0.7596** dev140
+  `clinical_headline` (+0.036, precision-driven), evolved verify instructions
+  turned decisively filter-shaped (vs. the prior run's reformatting drift) —
+  the review's credit-assignment hypothesis is CONFIRMED qualitatively, but
+  the run narrowly MISSES the pre-registered kill-criterion (needed >=
+  0.761, got 0.7596, -0.0014). This nuances but does not overturn the
+  06-28/06-30 GEPA close-out's "root-caused to producer evidence-recall, not
+  verify/arbitrate stages" framing above — a well-credited verify stage
+  clearly recovers real value within the single-model plateau, just not
+  enough (on this run) to change which architecture family closes the gap
+  to the v08 hybrid (0.9155).
 - If the Gan consensus/fresh path is revisited for tuning or redesign, start
   from validation-only component-generation work; the holdout aggregate results
   may be cited only as frozen evaluation evidence, not used for row-level

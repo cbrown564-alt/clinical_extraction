@@ -39,12 +39,13 @@ class VerifierConfig:
         self,
         letter: ExectLetter,
         draft_mentions: Sequence[Mapping[str, Any]],
+        timeline_context: str | None = None,
     ) -> str:
         from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.prompt import (
             build_prompt_input,
         )
 
-        return build_prompt_input(letter, draft_mentions, self)
+        return build_prompt_input(letter, draft_mentions, self, timeline_context=timeline_context)
 
     def draft_mentions_by_letter(
         self,

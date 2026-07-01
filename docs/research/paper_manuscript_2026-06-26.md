@@ -217,6 +217,51 @@ fixed and varies only the generation LLM (frozen core
 `exectv2_2call_no_sf_adjudicator`); it is the central test of model-agnostic architecture
 (§4.3.1). Gan production runs use `gpt-4.1-mini`.
 
+### §2.4 Relationship to the Original Brief
+
+The originating brief asked for one training-free multi-agent extraction system with four
+named roles — a Section/Timeline Agent, per-field-group Field Extractor Agents, a Verification
+Agent checking evidence spans/contradictions/missingness, and an Aggregator Agent producing
+final JSON with confidence and citations — evaluated by comparing single-prompt against
+multi-agent extraction at matched budget, with self-consistency, evidence requirements, and
+structured output validation as the levers under test. The hybrid architecture here implements
+three of the four roles directly: per-family producer lanes are the Field Extractor Agents,
+always-on schema/evidence gates plus per-family LLM verifiers are the Verification Agent, and
+the assembly stage's `ClinicalFinding` object (confidence, evidence span, provenance) is the
+Aggregator Agent. It generalizes the brief's single-prompt-vs-multi-agent question into a
+three-way rules-only/LLM-only/hybrid comparison across two independent tasks rather than one
+(§2.3). The fourth role, a Section/Timeline Agent, was built and ablation-tested on 2026-07-01
+(`exectv2/deterministic/section_timeline.py`: letter-wide section segmentation plus
+chronological-reference extraction, threaded as optional prompt context into the
+SeizureFrequency and Investigations stages) with a **null result** on dev140 — neither family
+improved (SeizureFrequency -0.0106, Investigations -0.0034, both within or near this project's
+established measurement noise floor;
+`docs/experiments/exectv2/reliability/exectv2_section_timeline_ablation_2026-07-01.md`). The
+module remains available but is not part of the production v08 pipeline; temporal reasoning
+continues to be handled by per-fact attributes (`PointInTime`, `TimeSince_or_TimeOfEvent`,
+`FrequencyChange`) rather than a dedicated upstream stage, consistent with ExECTv2 letters being
+single-encounter snapshots rather than multi-visit documents.
+
+The brief's literal single-prompt-vs-multi-agent question was also answered directly, on
+2026-07-01, with a genuine tool-using redo on both tasks (`docs/experiments/gan2026/agentic/gan2026_agentic_redo_results_2026-07-01.md`,
+`docs/experiments/exectv2/seizure_frequency/exectv2_sf_agentic_redo_results_2026-07-01.md`) — a
+from-scratch rebuild using `dspy.ReAct` for genuine LM-decided tool invocation and specialist
+sub-agents whose output schema structurally cannot contain a final answer, replacing a prior
+2026-06-12 Gan attempt found to have hard-coded its tool calls and faked its multi-agent
+condition. On Gan 2026, every new architecture beat single-prompt extraction by a wide accuracy
+margin on a hard, disagreement-selected panel (Purist 38%→64%), and dynamic tool/specialist
+selection beat a static always-run-everything decomposition — real, if statistically
+underpowered, evidence that decomposition and dynamism both help. On ExECTv2 SeizureFrequency,
+the same architecture family did *not* reproduce that pattern: single-prompt extraction was the
+best performer among the four tested, with the new architectures trending mildly negative
+(small-sample, inconclusive, not a confident reversal). The honest, cross-task reading is that
+agentic decomposition is not a universal win for clinical extraction — it is at best
+task-dependent, plausibly because Gan's single-label classification does not transfer cleanly to
+ExECTv2 SF's multi-mention, richly-attributed extraction, where a resolver must reassemble full
+attribute sets from partial specialist evidence rather than choose among whole-answer candidates.
+The full role-to-component mapping is maintained as a living reference in
+`docs/design/brief_role_crosswalk.md`.
+
 ---
 
 ## 3 Evaluation Protocol and Claim Discipline

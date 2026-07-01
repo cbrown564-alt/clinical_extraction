@@ -40,8 +40,12 @@ def draft_mentions_by_letter(rows: Sequence[Mapping[str, Any]]) -> dict[str, lis
     return CONFIG.draft_mentions_by_letter(rows)
 
 
-def build_prompt_input(letter: ExectLetter, draft_mentions: Sequence[Mapping[str, Any]]) -> str:
-    return CONFIG.build_prompt_input(letter, draft_mentions)
+def build_prompt_input(
+    letter: ExectLetter,
+    draft_mentions: Sequence[Mapping[str, Any]],
+    timeline_context: str | None = None,
+) -> str:
+    return CONFIG.build_prompt_input(letter, draft_mentions, timeline_context=timeline_context)
 
 
 def run_split(
@@ -59,6 +63,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
+    timeline_context_by_letter: Mapping[str, str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     return CONFIG.run_split(
         letters,
@@ -74,6 +79,7 @@ def run_split(
         checkpoint_jsonl_path=checkpoint_jsonl_path,
         checkpoint_report_path=checkpoint_report_path,
         resume=resume,
+        timeline_context_by_letter=timeline_context_by_letter,
     )
 
 

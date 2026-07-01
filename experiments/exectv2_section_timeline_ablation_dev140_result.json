@@ -1,0 +1,18 @@
+{
+  "baseline": {
+    "SeizureFrequency": 0.9053,
+    "Investigations": 0.9132
+  },
+  "with_timeline": {
+    "SeizureFrequency": 0.8947,
+    "Investigations": 0.9098
+  },
+  "delta": {
+    "SeizureFrequency": -0.010599999999999943,
+    "Investigations": -0.0033999999999999586
+  },
+  "sf_with_timeline_artifact": "experiments\\exectv2_section_timeline_ablation_dev140_sf_union_with_timeline.jsonl",
+  "inv_with_timeline_artifact": "experiments\\exectv2_section_timeline_ablation_dev140_inv_arbitration_with_timeline.jsonl",
+  "sf_baseline_artifact": "experiments\\exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl",
+  "inv_baseline_artifact": "experiments\\exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl"
+}

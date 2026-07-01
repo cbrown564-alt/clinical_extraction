@@ -9,6 +9,9 @@ evaluation surfaces.
 - Superseded notes archive: `experiments/archive/ARCHIVE_INDEX.md`
 - Regenerating tracked artifacts: `docs/REGENERATION.md`
 - Project control board: `PROJECT_STATUS.md`
+- Mapping the original supervisor brief's role names (Section/Timeline,
+  Field Extractor, Verification, Aggregator Agent) onto the actual
+  architecture: `docs/design/brief_role_crosswalk.md`
 
 ## Language
 

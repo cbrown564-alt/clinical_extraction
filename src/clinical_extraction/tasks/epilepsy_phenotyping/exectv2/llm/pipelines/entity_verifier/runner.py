@@ -196,6 +196,7 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
+    timeline_context_by_letter: Mapping[str, str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     program = make_dspy_module(config)
     if mode == "live":
@@ -223,7 +224,14 @@ def run_split(
 
     for letter in todo:
         draft_mentions = drafts.get(letter.letter_id, [])
-        prompt_input_json = config.build_prompt_input(letter, draft_mentions)
+        timeline_context = (
+            timeline_context_by_letter.get(letter.letter_id)
+            if timeline_context_by_letter is not None
+            else None
+        )
+        prompt_input_json = config.build_prompt_input(
+            letter, draft_mentions, timeline_context=timeline_context
+        )
         raw_output = ""
         call_error: str | None = None
         if mode == "live":
@@ -252,6 +260,7 @@ def run_split(
                 "model": model,
                 "mode": mode,
                 "draft_mentions": list(draft_mentions),
+                "timeline_context_used": timeline_context is not None,
                 "prompt_input_json": prompt_input_json,
                 "raw_output": raw_output,
                 "call_error": call_error,

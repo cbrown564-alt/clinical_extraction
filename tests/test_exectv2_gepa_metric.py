@@ -208,3 +208,90 @@ def test_correct_prediction_has_no_diff():
     out = metric(_gold(), _correct_pred())
     assert "DIFF" not in out.feedback
     assert "MISSED gold" not in out.feedback
+
+
+# --- Phase 2 (docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md):
+# stage-local verify feedback, independent of the shared end-to-end score. ---
+
+_MIGRAINE = {"family": "diagnosis", "concept": "migraine", "negation": "affirmed", "evidence": "epilepsy"}
+_EPILEPSY = {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+
+
+def _verify_pred_trace(draft_facts: list[dict], verified_facts: list[dict]):
+    inputs = {"draft_facts_json": json.dumps({"clinical_facts": draft_facts})}
+    outputs = dspy.Prediction(verified_facts_json=json.dumps({"clinical_facts": verified_facts}))
+    return [(None, inputs, outputs)]
+
+
+def test_verify_stage_feedback_replaces_whole_program_diff():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    out = metric(
+        _gold(),
+        _correct_pred(),
+        None,
+        "verify_diagnosis",
+        _verify_pred_trace([_EPILEPSY, _MIGRAINE], [_EPILEPSY]),
+    )
+    assert "VERIFY STAGE (Diagnosis)" in out.feedback
+    assert "DIFF —" not in out.feedback  # the whole-program diff text is gone
+
+
+def test_verify_stage_feedback_credits_correct_keep_and_reject():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    out = metric(
+        _gold(),
+        _correct_pred(),
+        None,
+        "verify_diagnosis",
+        _verify_pred_trace([_EPILEPSY, _MIGRAINE], [_EPILEPSY]),
+    )
+    assert "correctly kept 1/1" in out.feedback
+    assert "correctly rejected 1/1" in out.feedback
+    assert "WRONGLY" not in out.feedback
+
+
+def test_verify_stage_feedback_flags_wrong_reject():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    # Verify drops BOTH drafts, including the one gold actually wants kept.
+    out = metric(_gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([_EPILEPSY], []))
+    assert "WRONGLY DROPPED 1" in out.feedback
+    assert "epilepsy" in out.feedback
+
+
+def test_verify_stage_feedback_flags_wrong_keep():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    # Verify keeps the spurious draft fact instead of rejecting it.
+    out = metric(
+        _gold(), _correct_pred(), None, "verify_diagnosis",
+        _verify_pred_trace([_EPILEPSY, _MIGRAINE], [_EPILEPSY, _MIGRAINE]),
+    )
+    assert "WRONGLY KEPT 1" in out.feedback
+    assert "migraine" in out.feedback
+
+
+def test_verify_stage_feedback_credits_correct_add():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    # Draft missed the gold fact entirely; verify adds it (recall-additive rescue).
+    out = metric(_gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([], [_EPILEPSY]))
+    assert "Correctly ADDED 1" in out.feedback
+
+
+def test_non_verify_pred_name_keeps_whole_program_feedback():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    out = metric(
+        _gold(),
+        _pred([_EPILEPSY]),
+        None,
+        "generate_diagnosis",
+        _verify_pred_trace([_EPILEPSY], [_EPILEPSY]),
+    )
+    assert "VERIFY STAGE" not in out.feedback
+    assert "DIFF" in out.feedback  # SeizureFrequency still missing from the merged pred
+
+
+def test_verify_stage_feedback_does_not_change_selection_score():
+    metric = build_metric(LengthPenaltyConfig(enabled=False))
+    trace = _verify_pred_trace([_EPILEPSY, _MIGRAINE], [_EPILEPSY])
+    whole_program = metric(_gold(), _correct_pred())
+    stage_local = metric(_gold(), _correct_pred(), None, "verify_diagnosis", trace)
+    assert whole_program.score == pytest.approx(stage_local.score)
