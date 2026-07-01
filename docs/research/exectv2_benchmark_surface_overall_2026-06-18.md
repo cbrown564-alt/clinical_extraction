@@ -1,4 +1,4 @@
-> **Superseded for navigation —** canonical summary: [`exectv2_evaluation_canon.md`](exectv2_evaluation_canon.md). Like-for-like 0.3877 benchmark surface tables. Full detail retained below.
+> **Superseded for navigation —** canonical summary: [`../../canon/04_scoring.md`](../../canon/04_scoring.md). Like-for-like 0.3877 benchmark surface tables. Full detail retained below.
 
 # ExECTv2 Benchmark-Surface Overall: The Like-for-Like Read
 

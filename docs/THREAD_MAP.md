@@ -18,12 +18,12 @@ signals route it without gold?
 | Hop | Document | Why |
 | --- | --- | --- |
 | 1 | [`CONTEXT.md`](../CONTEXT.md) § Reliability | Vocabulary: The Wall, irreducible residual, external risk score |
-| 2 | [`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](research/gan2026/GAN2026_RESEARCH_CANON.md) | **Canon:** architecture arc, frozen recommendation, The Wall |
+| 2 | [`docs/canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md) | **Canon:** architecture arc, frozen recommendation, The Wall |
 | 3 | [`docs/design/reliability_thesis.md`](design/reliability_thesis.md) | Project-level reliability claim and success criteria |
 | 4 | [`experiments/gan2026_reliability_master_scorecard_2026-06-17.md`](../experiments/gan2026_reliability_master_scorecard_2026-06-17.md) | Machine scorecard (aggregate evidence) |
 | 5 | [`docs/research/wall_transfer_forward_observable_feature_inventory_2026-06-27.md`](research/wall_transfer_forward_observable_feature_inventory_2026-06-27.md) | Cross-dataset feature inventory |
 | 6 | [`docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md`](experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md) | ExECTv2 SF wall-transfer probe |
-| 7 | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) § C3 | Paper claim boundary for wall transfer |
+| 7 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) § C3 | Paper claim boundary for wall transfer |
 | 8 | [`docs/experiments/gan2026/VALIDATION750_CANON.md`](experiments/gan2026/VALIDATION750_CANON.md) | Workstream canon; rq_series via COMPONENT_MECHANICS |
 
 **Start here if:** you are writing the reliability pillar or explaining why
@@ -38,12 +38,12 @@ abstention routing failed on binding residuals.
 | Hop | Document | Why |
 | --- | --- | --- |
 | 1 | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) § Active Priorities | `clinical_headline` primary; benchmark/CUI diagnostic |
-| 2 | [`docs/research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md) | **Canon:** P1–P7, surface hierarchy, gold-quality ceiling |
-| 3 | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) § C1 | Claim register for SF/Dx gold-quality |
+| 2 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | **Canon:** P1–P7, surface hierarchy, gold-quality ceiling |
+| 3 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) § C1 | Claim register for SF/Dx gold-quality |
 | 4 | [`docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`](decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md) | ADR: headline vs projection |
 | 5 | [`docs/decisions/0037-sf-state-profile-is-primary-clinical-metric.md`](decisions/0037-sf-state-profile-is-primary-clinical-metric.md) | ADR: SF `state_profile` for SF-family experiments |
 | 6 | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) | v01→v08 assembly ladder (v08 frozen) |
-| 7 | [`docs/research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) | LLM-only ceiling (three-way negative) |
+| 7 | [`docs/canon/08_gepa.md`](canon/08_gepa.md) | LLM-only ceiling (three-way negative) |
 | 8 | [`docs/experiments/exectv2/README.md`](experiments/exectv2/README.md) | Long tail: per-family iteration reports |
 
 **Start here if:** you are interpreting F1 numbers, gold-quality row adjudication,
@@ -60,8 +60,8 @@ or the SF/Diagnosis “plateau” reframing.
 | 1 | [`docs/design/architecture.md`](design/architecture.md) | Package layers and task boundaries |
 | 2 | [`docs/design/component_evidence_attribution_architecture.md`](design/component_evidence_attribution_architecture.md) | Component ownership and promotion contract |
 | 3 | [`docs/research/contribution_thesis.md`](research/contribution_thesis.md) | Three architecture families (rules / LLM-only / hybrid) |
-| 4 | [`docs/experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) | Selected architectures and full-200 evidence |
-| 5 | [`docs/research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) | LLM-only vs hybrid (closed negative) |
+| 4 | [`docs/canon/07_exect_plan11.md`](canon/07_exect_plan11.md) | Selected architectures and full-200 evidence |
+| 5 | [`docs/canon/08_gepa.md`](canon/08_gepa.md) | LLM-only vs hybrid (closed negative) |
 | 6 | [`docs/decisions/0009-gan2026-staged-hybrid-assembly.md`](decisions/0009-gan2026-staged-hybrid-assembly.md) | Gan staged hybrid (not LLM-first) |
 | 7 | [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md) | ExECT Plan 11 spine |
 | 8 | [`docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md`](experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md) | Cross-task component dividend |
@@ -77,12 +77,12 @@ or comparing rules vs hybrid vs LLM-only.
 
 | Hop | Document | Why |
 | --- | --- | --- |
-| 1 | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) | **Canon:** C1–C5 claims register and provenance |
+| 1 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) | **Canon:** C1–C5 claims register and provenance |
 | 2 | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) | Open paper/manuscript work only |
 | 3 | [`docs/research/paper_manuscript_2026-06-26.md`](research/paper_manuscript_2026-06-26.md) | Markdown manuscript source |
 | 4 | [`docs/experiments/final_artifact_index_2026-06-22.md`](experiments/final_artifact_index_2026-06-22.md) | Frozen hashes and claim boundaries |
-| 5 | [`docs/research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md) | Scoring surfaces and gold-quality |
-| 6 | [`docs/experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) | Frozen experiment evidence tables |
+| 5 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | Scoring surfaces and gold-quality |
+| 6 | [`docs/canon/07_exect_plan11.md`](canon/07_exect_plan11.md) | Frozen experiment evidence tables |
 | 7 | [`docs/research/paper_claims_evidence_review_2026-07-01.md`](research/paper_claims_evidence_review_2026-07-01.md) | Detailed gap analysis (companion) |
 | 8 | [`literature/IEEE/IEEE-conference-template-062824/`](../literature/IEEE/IEEE-conference-template-062824/) | LaTeX draft (may lag markdown) |
 
@@ -129,11 +129,11 @@ planning archive/cleanup without breaking frozen evidence.
 
 | Canon | Path |
 | --- | --- |
-| Paper claims & provenance | [`research/PAPER_CANON.md`](research/PAPER_CANON.md) |
-| ExECT evaluation & surfaces | [`research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md) |
-| Gan closeout & The Wall | [`research/gan2026/GAN2026_RESEARCH_CANON.md`](research/gan2026/GAN2026_RESEARCH_CANON.md) |
-| ExECT closeout evidence | [`experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) |
-| GEPA negative program | [`research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) |
+| Paper claims & provenance | [`canon/10_paper_provenance.md`](canon/10_paper_provenance.md) |
+| ExECT evaluation & surfaces | [`canon/04_scoring.md`](canon/04_scoring.md) |
+| Gan closeout & The Wall | [`canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md) |
+| ExECT closeout evidence | [`canon/07_exect_plan11.md`](canon/07_exect_plan11.md) |
+| GEPA negative program | [`canon/08_gepa.md`](canon/08_gepa.md) |
 
 **Wave 3 (2026-07-01):** Workstream canons + routing index:
 
@@ -145,6 +145,27 @@ planning archive/cleanup without breaking frozen evidence.
 | Canon index | [`canon/README.md`](canon/README.md) |
 | Archive policy | [`archive/README.md`](archive/README.md) |
 
-~75 experiment iteration files stubbed (detail retained). Bulk file moves deferred.
+**Wave 4 (2026-07-01):** Structural migration to `docs/canon/01–10`; workstream
+canons for Diagnosis, SF, self-consistency; 75 iteration files archived under
+`docs/archive/experiments/` with redirect stubs.
 
-**Wave 4 (optional):** `docs/canon/` structural migration; pilot/ladder archive under `docs/archive/`.
+| Structural canon | Path |
+| --- | --- |
+| 01 System architecture | [`canon/01_system_architecture.md`](canon/01_system_architecture.md) |
+| 02 Pipeline spine | [`canon/02_pipeline_spine.md`](canon/02_pipeline_spine.md) |
+| 03 Evidence / frozen | [`canon/03_evidence_claims_frozen.md`](canon/03_evidence_claims_frozen.md) |
+| 04 Scoring | [`canon/04_scoring.md`](canon/04_scoring.md) |
+| 05 Ceilings / Wall | [`canon/05_ceilings_wall.md`](canon/05_ceilings_wall.md) |
+| 06 Gan policy | [`canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md) |
+| 07 ExECT Plan 11 | [`canon/07_exect_plan11.md`](canon/07_exect_plan11.md) |
+| 08 GEPA | [`canon/08_gepa.md`](canon/08_gepa.md) |
+| 09 Cross-task reliability | [`canon/09_cross_task_reliability.md`](canon/09_cross_task_reliability.md) |
+| 10 Paper / provenance | [`canon/10_paper_provenance.md`](canon/10_paper_provenance.md) |
+
+| Wave 4 workstream canon | Path |
+| --- | --- |
+| Diagnosis family ladder | [`canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md`](canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md) |
+| SF adjudicator ladder | [`canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md`](canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md) |
+| Self-consistency / entropy | [`canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md`](canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md) |
+
+Legacy paths (`research/PAPER_CANON.md`, etc.) redirect to numbered canons.

@@ -1,4 +1,4 @@
-> **Superseded for navigation —** canonical summary: [`exectv2_gepa_canon.md`](exectv2_gepa_canon.md). Hybrid vs GEPA decomposition (use canon for corrected attribution). Full detail retained below.
+> **Superseded for navigation —** canonical summary: [`../../canon/08_gepa.md`](../../canon/08_gepa.md). Hybrid vs GEPA decomposition (use canon for corrected attribution). Full detail retained below.
 
 # GEPA vs hybrid: the gap is LLM evidence retrieval, not deterministic rules
 

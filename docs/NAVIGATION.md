@@ -48,15 +48,19 @@ see [`THREAD_MAP.md`](THREAD_MAP.md) for full tables.
 
 | Job | Path |
 | --- | --- |
-| **Paper claims register (start here for claims)** | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) |
-| ExECT evaluation & scoring surfaces | [`docs/research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md) |
-| Gan closeout & The Wall | [`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](research/gan2026/GAN2026_RESEARCH_CANON.md) |
-| ExECT closeout / frozen evidence tables | [`docs/experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) |
-| GEPA closed negative program | [`docs/research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) |
-| **All canons (index)** | [`docs/canon/README.md`](canon/README.md) |
+| **Paper claims register (start here for claims)** | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) |
+| ExECT evaluation & scoring surfaces | [`docs/canon/04_scoring.md`](canon/04_scoring.md) |
+| Gan closeout & The Wall | [`docs/canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md) |
+| ExECT closeout / frozen evidence tables | [`docs/canon/07_exect_plan11.md`](canon/07_exect_plan11.md) |
+| GEPA closed negative program | [`docs/canon/08_gepa.md`](canon/08_gepa.md) |
+| **Structural canons 01–10 (index)** | [`docs/canon/README.md`](canon/README.md) |
 | Gan validation750 workstream | [`docs/experiments/gan2026/VALIDATION750_CANON.md`](experiments/gan2026/VALIDATION750_CANON.md) |
 | Gan RQ component mechanics | [`docs/experiments/gan2026/COMPONENT_MECHANICS_CANON.md`](experiments/gan2026/COMPONENT_MECHANICS_CANON.md) |
 | ExECT holistic assembly ladder | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) |
+| ExECT Diagnosis family ladder | [`docs/canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md`](canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md) |
+| ExECT SF adjudicator ladder | [`docs/canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md`](canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md) |
+| Self-consistency / entropy reliability | [`docs/canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md`](canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md) |
+| Archived iteration narratives | [`docs/archive/ARCHIVE_INDEX.md`](archive/ARCHIVE_INDEX.md) |
 | Manuscript source (markdown ahead of LaTeX) | [`docs/research/paper_manuscript_2026-06-26.md`](research/paper_manuscript_2026-06-26.md) |
 | Detailed claims gap analysis | [`docs/research/paper_claims_evidence_review_2026-07-01.md`](research/paper_claims_evidence_review_2026-07-01.md) |
 | Results drafts and synthesis | [`docs/research/`](research/) |

@@ -6,7 +6,7 @@ Last updated: 2026-07-01
 **Claim boundary:** Validation-development only — not benchmark-comparable, not
 holdout promotion.
 
-**Parent canon:** [`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md)  
+**Parent canon:** [`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md)  
 **Long tail:** 31 files in [`validation750/`](validation750/) (stubbed; detail retained)
 
 ---
@@ -123,5 +123,5 @@ for `validation750` when reproducing.
 ## Related reading
 
 - [`COMPONENT_MECHANICS_CANON.md`](COMPONENT_MECHANICS_CANON.md) — RQ1–RQ10 answers
-- [`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md) — promoted SE vs hybrid ceiling
+- [`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md) — promoted SE vs hybrid ceiling
 - [`docs/THREAD_MAP.md`](../../THREAD_MAP.md) T1 long tail

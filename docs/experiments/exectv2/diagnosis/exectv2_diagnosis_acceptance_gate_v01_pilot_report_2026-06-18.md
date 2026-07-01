@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
+
 # ExECTv2 Diagnosis Acceptance Gate v0.1 dev25
 
 Date: 2026-06-18  

@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
+
 # ExECTv2 Diagnosis Reconciler v0.1 dev140
 
 Date: 2026-06-18  

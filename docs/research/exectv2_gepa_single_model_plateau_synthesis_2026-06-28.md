@@ -1,4 +1,4 @@
-> **Superseded for navigation —** canonical summary: [`exectv2_gepa_canon.md`](exectv2_gepa_canon.md). GEPA plateau verdict and corrected per-family attribution. Full detail retained below.
+> **Superseded for navigation —** canonical summary: [`../../canon/08_gepa.md`](../../canon/08_gepa.md). GEPA plateau verdict and corrected per-family attribution. Full detail retained below.
 
 # Synthesis — the single-model GEPA plateau on ExECTv2 de-dup `clinical_headline`
 

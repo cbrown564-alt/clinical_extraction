@@ -5,7 +5,7 @@ Last updated: 2026-07-01
 **Scope:** Plan 11 holistic assembly replays v01–v08 on dev140 (June 2026).  
 **Claim boundary:** Dev-only component-attributed evidence unless noted frozen.
 
-**Production control (frozen):** v08 — see [`CLOSEOUT_EVIDENCE_CANON.md`](../CLOSEOUT_EVIDENCE_CANON.md)  
+**Production control (frozen):** v08 — see [`docs/canon/07_exect_plan11.md`](../../canon/07_exect_plan11.md)  
 **Long tail:** 15 files in [`key_entities/`](.) (v01–v07 + phase error analyses stubbed)
 
 ---
@@ -87,6 +87,6 @@ residuals for each ladder step. Use when debugging a specific family regression;
 
 ## Related reading
 
-- [`CLOSEOUT_EVIDENCE_CANON.md`](../CLOSEOUT_EVIDENCE_CANON.md) — v08 + full-200  
-- [`docs/research/exectv2_evaluation_canon.md`](../../../research/exectv2_evaluation_canon.md) — scoring surfaces  
+- [`docs/canon/07_exect_plan11.md`](../../canon/07_exect_plan11.md) — v08 + full-200  
+- [`docs/canon/04_scoring.md`](../../canon/04_scoring.md) — scoring surfaces  
 - [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](../../../decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md)

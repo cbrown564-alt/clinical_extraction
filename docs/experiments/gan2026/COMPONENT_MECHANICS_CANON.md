@@ -7,7 +7,7 @@ owns** on validation750 (June 2026).
 **Claim boundary:** Validation-development / saved-replay evidence — not
 production promotion, not benchmark-comparable holdout claims.
 
-**Parent canon:** [`GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md)  
+**Parent canon:** [`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md)  
 **Companion:** [`VALIDATION750_CANON.md`](VALIDATION750_CANON.md)  
 **Long tail:** 31 files in [`rq_series/`](rq_series/) + protocols (stubbed)
 
@@ -131,4 +131,4 @@ remain for audit trail.
 
 - [`docs/design/component_evidence_attribution_architecture.md`](../../design/component_evidence_attribution_architecture.md)  
 - [`docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md`](../reliability/cross_task_shared_component_ablation_2026-06-27.md)  
-- [`docs/research/PAPER_CANON.md`](../../research/PAPER_CANON.md) C2, C5
+- [`docs/canon/10_paper_provenance.md`](../../canon/10_paper_provenance.md) C2, C5

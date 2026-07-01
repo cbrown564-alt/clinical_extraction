@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`SF_ADJUDICATOR_LADDER_CANON.md`](../../../canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md). Full detail retained below.
+
 # ExECTv2 SeizureFrequency Candidate-Span State Adjudicator v0.3 dev140
 
 Date: 2026-06-18  

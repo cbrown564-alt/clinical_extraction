@@ -1,7 +1,7 @@
 # Gan 2026 Experiment Docs
 
 **Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canons:**
-[`GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md),
+[`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md),
 [`VALIDATION750_CANON.md`](VALIDATION750_CANON.md),
 [`COMPONENT_MECHANICS_CANON.md`](COMPONENT_MECHANICS_CANON.md).
 

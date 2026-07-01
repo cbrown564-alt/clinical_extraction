@@ -1,4 +1,4 @@
-> **Superseded for navigation —** canonical summary: [`PAPER_CANON.md`](PAPER_CANON.md). Claims register and provenance index; this file remains the detailed gap analysis. Full detail retained below.
+> **Superseded for navigation —** canonical summary: [`../../canon/10_paper_provenance.md`](../../canon/10_paper_provenance.md). Claims register and provenance index; this file remains the detailed gap analysis. Full detail retained below.
 
 # Paper Claims and Evidence Review (2026-07-01)
 

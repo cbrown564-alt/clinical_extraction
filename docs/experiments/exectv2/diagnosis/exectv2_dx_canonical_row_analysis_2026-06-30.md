@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
+
 # Diagnosis canonical row-analysis — the Dx "consolidation" gap is gold quality, not genuine recall
 
 Status: **CLOSED (positive — reframes the manuscript's gap-mechanism claim for Diagnosis).**
