@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`exectv2_gepa_canon.md`](exectv2_gepa_canon.md). Hybrid vs GEPA decomposition (use canon for corrected attribution). Full detail retained below.
+
 # GEPA vs hybrid: the gap is LLM evidence retrieval, not deterministic rules
 
 Status: **CLOSED diagnostic. Diagnosis-specific framing CORRECTED (2026-06-30); SeizureFrequency

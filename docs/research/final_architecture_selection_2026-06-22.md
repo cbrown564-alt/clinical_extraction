@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`CLOSEOUT_EVIDENCE_CANON.md`](../experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md). Selected architecture set and closeout evidence. Full detail retained below.
+
 # Final Architecture Selection
 
 Date: 2026-06-22

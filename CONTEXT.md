@@ -23,10 +23,10 @@ sections below.
 
 | Thread | One-line | Start doc |
 | --- | --- | --- |
-| **T1 Reliability / The Wall** | Confident over-reading; no forward-observable abstention signal on binding residuals | `docs/research/gan2026/retrospectives/gan2026_research_closeout_synthesis_2026-06-17.md` |
-| **T2 Clinical recovery / capability-first** | `clinical_headline` primary; benchmark/CUI diagnostic; gold-quality ceiling on SF/Dx | `docs/research/exectv2_gold_representation_and_scoring_principles_2026-06-17.md` |
+| **T1 Reliability / The Wall** | Confident over-reading; no forward-observable abstention signal on binding residuals | `docs/research/gan2026/GAN2026_RESEARCH_CANON.md` |
+| **T2 Clinical recovery / capability-first** | `clinical_headline` primary; benchmark/CUI diagnostic; gold-quality ceiling on SF/Dx | `docs/research/exectv2_evaluation_canon.md` |
 | **T3 Architecture / component evidence** | Three families (rules / LLM-only / hybrid); ablatable component homes | `docs/design/architecture.md` |
-| **T4 Paper closeout / claims** | C1–C5 capability claims; frozen artifact index governs promotion | `docs/research/paper_claims_evidence_review_2026-07-01.md` |
+| **T4 Paper closeout / claims** | C1–C5 capability claims; frozen artifact index governs promotion | `docs/research/PAPER_CANON.md` |
 | **T5 Engineering / experiment governance** | Two-tree rule; registry; predeclare → ladder → frozen index | `docs/runbooks/documentation_lifecycle.md` |
 
 ## Language

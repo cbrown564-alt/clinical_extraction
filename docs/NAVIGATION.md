@@ -44,11 +44,17 @@ see [`THREAD_MAP.md`](THREAD_MAP.md) for full tables.
 | Forward implementation plans | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) (historical plans in [`docs/plans/`](plans/)) |
 | Metric definitions | [`docs/reference/`](reference/) |
 
-## Tier 3 — Paper and claims
+## Tier 3 — Paper, claims & canon summaries
 
 | Job | Path |
 | --- | --- |
+| **Paper claims register (start here for claims)** | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) |
+| ExECT evaluation & scoring surfaces | [`docs/research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md) |
+| Gan closeout & The Wall | [`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](research/gan2026/GAN2026_RESEARCH_CANON.md) |
+| ExECT closeout / frozen evidence tables | [`docs/experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) |
+| GEPA closed negative program | [`docs/research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) |
 | Manuscript source (markdown ahead of LaTeX) | [`docs/research/paper_manuscript_2026-06-26.md`](research/paper_manuscript_2026-06-26.md) |
+| Detailed claims gap analysis | [`docs/research/paper_claims_evidence_review_2026-07-01.md`](research/paper_claims_evidence_review_2026-07-01.md) |
 | Results drafts and synthesis | [`docs/research/`](research/) |
 | IEEE LaTeX draft | [`literature/IEEE/IEEE-conference-template-062824/`](../literature/IEEE/IEEE-conference-template-062824/) |
 | Curated experiment narratives | [`docs/experiments/`](experiments/) |

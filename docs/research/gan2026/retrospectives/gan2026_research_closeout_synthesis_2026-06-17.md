@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`GAN2026_RESEARCH_CANON.md`](../GAN2026_RESEARCH_CANON.md). Gan closeout, architecture arc, and The Wall. Full detail retained below.
+
 # Gan 2026 — Research Closeout Synthesis
 
 Date: 2026-06-17

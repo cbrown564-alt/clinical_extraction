@@ -1,8 +1,7 @@
 # Gan 2026 Research Docs
 
-**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1 (Reliability & The Wall).
-Definitive closeout:
-[`retrospectives/gan2026_research_closeout_synthesis_2026-06-17.md`](retrospectives/gan2026_research_closeout_synthesis_2026-06-17.md).
+**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canon:**
+[`GAN2026_RESEARCH_CANON.md`](GAN2026_RESEARCH_CANON.md).
 
 This directory holds durable Gan 2026 research material: synthesis, architecture
 interpretation, policy notes, major error analyses, retrospectives, and

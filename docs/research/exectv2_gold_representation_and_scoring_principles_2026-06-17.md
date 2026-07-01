@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`exectv2_evaluation_canon.md`](exectv2_evaluation_canon.md). Principles P1–P7 and scoring surface hierarchy. Full detail retained below.
+
 # ExECTv2 Gold Representation & Scoring — Principles
 
 Date: 2026-06-17

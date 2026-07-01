@@ -26,7 +26,8 @@ closed (negative result — LLM-only plateaus below hybrid).
 | --- | --- | --- |
 | **Manuscript evidence gaps (5 items)** | [`manuscript_evidence_gaps_closure_plan_2026-07-01.md`](manuscript_evidence_gaps_closure_plan_2026-07-01.md) | Close gaps from [`paper_claims_evidence_review_2026-07-01.md`](../research/paper_claims_evidence_review_2026-07-01.md): GEPA three-way write-up, cross-task ablation (already run 2026-06-27), SF+Dx gold-quality in abstract/§1, stale “gap” language |
 | **IEEE LaTeX re-sync** | [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md) § Now | Markdown manuscript includes 2026-06-30 Diagnosis gold-quality revision; LaTeX still at 2026-06-26 |
-| **Documentation consolidation Wave 1** | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) | Thread map + this roadmap + plan status headers (this PR) |
+| **Documentation consolidation Wave 1** | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) | Done — thread map, roadmap, plan headers |
+| **Documentation consolidation Wave 2** | See canon table in [`THREAD_MAP.md`](../THREAD_MAP.md) | Done — five canon documents + source stubs |
 
 ---
 
@@ -35,7 +36,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 | Item | Owner doc | Action |
 | --- | --- | --- |
 | **Calibration / review-routing manuscript framing** | [`calibration_abstention_review_routing_strengthening_plan_2026-07-01.md`](calibration_abstention_review_routing_strengthening_plan_2026-07-01.md) | Honest weak-pillar language (Brier Δ 0.0142; binding-slice AUROC 0.676) — framing only unless plan authorizes new runs |
-| **Documentation consolidation Wave 2** | (forthcoming work packages) | `PAPER_CANON.md`, `exectv2_evaluation_canon.md`, ExECT/Gan research canons — see THREAD_MAP consolidation note |
+| **Documentation consolidation Wave 2** | See [`docs/THREAD_MAP.md`](../THREAD_MAP.md) § Consolidation | **Done** — `PAPER_CANON`, `exectv2_evaluation_canon`, `GAN2026_RESEARCH_CANON`, `CLOSEOUT_EVIDENCE_CANON`, `exectv2_gepa_canon` |
 | **Predeclaration runbook** | (not yet written) | Template for frozen aggregate audits |
 
 ---

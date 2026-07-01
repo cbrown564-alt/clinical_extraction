@@ -1,8 +1,8 @@
 # Gan 2026 Experiment Docs
 
-**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) (T1 Reliability or T3
-Architecture paths). Durable synthesis lives in `docs/research/gan2026/`; future
-consolidation will add a validation750 / rq_series canon summary.
+**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canon:**
+[`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md).
+Future consolidation: validation750 / rq_series summaries.
 
 This directory holds human-readable Gan 2026 experiment history. Use it for
 predeclarations, protocols, run reports, validation-surface readouts, and
