@@ -202,9 +202,10 @@ also what the published ExECTv2 benchmark itself is, so beating it with rules is
 win. **LLM-only** is the upper bound on unaided model reasoning, bounded only by the schema and
 evidence gates. **Hybrid** tests the thesis that representation/normalization is best owned by
 deterministic stages while clinical judgment is best owned by the model. The Gan three-way
-comparison is reported in full (§4.2, Tables 1–2); the assembled ExECTv2 three-way comparison
-is an acknowledged gap (§5, S1), for which the available evidence is the hybrid assembly under a
-same-core model swap.
+comparison is reported in full (§4.2, Tables 1–2); the assembled ExECTv2 three-way comparison —
+the reliability thesis's "Target"-tier requirement (§7) — is now measured, via a separate
+LLM-only GEPA single-pass instantiation over the same clinical_headline surface, and reported
+as a negative result at the end of §4.2 (development-surface evidence; see also §5, S2).
 
 Three large language models occupy the generation lane: **GPT-4.1-mini** (the primary closed
 model the ExECTv2 component graph was developed against), **DeepSeek chat** (a second closed
@@ -530,6 +531,47 @@ operate on the full-200 split. These component-off deltas are conditional on a f
 scorer and inspection boundary; they are not causal claims that any single component
 is globally necessary.
 
+**The ExECTv2 three-way comparison: the thesis's Target tier, measured as a negative
+result.** *Evidence validity: dev140 development-surface, non-paper-comparable diagnostics
+(GEPA workstream, not a frozen full-200/holdout result). Source: `PROJECT_STATUS.md`
+("GEPA workstream closed out," 2026-06-28 to 2026-06-30);
+`docs/plans/exectv2_gepa_ev_recall_consolidation_reexamination_plan_2026-06-30.md` and its
+four phase-result docs.* The reliability thesis's §7 "Target" tier requires beating the
+published benchmark with all three architecture families on ExECTv2, mirroring the Gan
+three-way comparison above. A parallel LLM-only instantiation was built and closed out
+independently of this manuscript: a GEPA-optimized single-pass prompt (no deterministic
+scaffolding beyond ingestion) reaches dev140 `clinical_headline` F1 **≈0.731**
+(gpt-4.1-mini, best multi-family run) and **≈0.654** (Qwen 3.6 35B, underperforming its own
+hand-tuned ExECTv2 baseline of 0.694). Against the hybrid ceiling on the same surface
+(0.9155 dev140; Table R2/R3 report the full-200 aggregate), LLM-only sits **≈0.18–0.19
+below hybrid** and does not clear the published-benchmark surface either. This completes the
+thesis's missing three-way leg, and the result is a negative one: raw LLM capability, tuned
+directly on the scoring surface, does not approach what the deterministic/hybrid scaffolding
+achieves — the same direction as C2 and C4, now with a third independent leg, reinforcing
+that the architecture, not the model, is the primary carrier of extraction quality.
+
+The GEPA workstream's root-cause account for this gap has itself been revised and must be
+stated with the corrected, per-family attribution rather than a blanket claim. The original
+hypothesis — that the gap is producer evidence-recall rather than the hybrid's
+verify/arbitrate stages — is confirmed as **genuine** for Investigations (26–30% of its
+evidence-recall misses are H-inflated, i.e., mostly real retrieval failures) and **partially
+genuine** for Prescription (52.2% H-inflated, via a distinct mechanism: transcription-typo
+substring breaks, not gold multiplicity). For Diagnosis and SeizureFrequency, however, the
+same re-examination found the evidence-recall shortfall is **mostly an artifact of the gold
+consolidation convention already documented in §4.1.2** (93.5% and 61–83% H-inflated,
+respectively) — the identical gold-multiplicity mechanism that inflates the benchmark-surface
+gap for those two families. The honest statement is therefore: part of the LLM-only ceiling
+is genuine single-pass extraction-recall limitation (Investigations, partly Prescription), and
+part is the same-core LLM-only architecture being scored against the same gold-multiplicity
+convention that already narrows the hybrid's apparent margin on Diagnosis/SF elsewhere in this
+paper — meaning the *true* architectural gap is smaller than the raw 0.18–0.19 once both legs
+are corrected for gold convention, though by how much is not yet quantified and is not
+estimated here.
+
+*This is GEPA development-track evidence, not a frozen full-200 or holdout result, and must
+not be compared directly to Table R2/R3's frozen full-200 numbers without this dev140-vs-
+full200 caveat, consistent with how every other dev140-only figure is treated in this paper.*
+
 ---
 
 ### §4.3 What Generalizes
@@ -783,6 +825,7 @@ components.
 | ExECTv2 SF weakest across all models (0.75–0.76 full-200) | `clinical_headline` | Frozen aggregate full-200 | `exectv2_same_core_model_swap_full200_2026-06-25.md` |
 | Calibration: Brier 0.2245 vs base-rate 0.2387 | `clinical_headline` | Aggregate full-200 validation | ExECTv2 reliability scorecard 2026-06-22/2026-06-25 |
 | Cross-dataset wall-transfer mechanism | WALL TRANSFERS probe verdict (6/9 checks passed) | Dev140 aggregate model-swap + self-consistency replay | `exectv2_sf_wall_transfer_probe_2026-06-27.md`; External Risk AUROC 0.764 + 17.1% risk-coverage plateau (criterion 1); no gold-free separator on the binding gold-unknown over-reads, H0 retained (criterion 2); population-wide error entropy 0.287 vs 0.069 and agreement 21.8% vs 69.4% are the one noisier-than-Gan caveat |
+| Cross-task shared-component ablation: `evidence_validation` inert on both tasks (Δ = 0.0000 ExECTv2 dev140 / Δ = 0.0000 Gan validation750); `standard_dictionary`/`normalize` positive on both (+0.0389 ExECTv2, +0.0293 Gan) | `clinical_headline` (ExECTv2); Purist accuracy (Gan) | Validation-side, aggregate-only, no model calls, no new freeze | `cross_task_shared_component_ablation_2026-06-27.md` |
 
 ---
 
@@ -1043,17 +1086,41 @@ attribution within the SF stack is not auditable from catalog metadata alone. Th
 maintainability and audit-trail limitation, not a validity limitation on the reported
 aggregate figures.
 
-**S1 — Cross-task thesis-complete criterion unmeasured.** The reliability thesis §7 sets
-the thesis-complete criterion as "a shared core demonstrably reused across tasks." Structural
-reuse is real at the code level (49 ExECTv2 modules import `core`/`tasks.shared`/
-`tasks.seizure_frequency`), but the SeizureFrequency clinical machinery — the declared
-"bridge" — is re-implemented under `exectv2/deterministic/sf_state_projection.py` and
-`rules/seizure_free.py`; `assembly/lenses/seizure_frequency.py` does not import the Gan SF
+**S1 — Cross-task shared-component ablation: executed, partial dividend confirmed.** The
+reliability thesis §7 sets the thesis-complete criterion as "a shared core demonstrably reused
+across tasks." Structural reuse is real at the code level (49 ExECTv2 modules import
+`core`/`tasks.shared`/`tasks.seizure_frequency`), but the SeizureFrequency clinical machinery —
+the declared "bridge" — is re-implemented under `exectv2/deterministic/sf_state_projection.py`
+and `rules/seizure_free.py`; `assembly/lenses/seizure_frequency.py` does not import the Gan SF
 normalizer. The shared-component ablation that would measure the cross-task dividend (turn one
-shared component off, report delta on both tasks at once) is predeclared in the
-`exectv2_component_off_reliability_ablation_plan_2026-06-26.md` but not yet executed at
-cross-task scope. The modularity thesis is supported by structural evidence and the model-swap
-result; the quantified cross-task component dividend remains future work.
+shared component off, report delta on both tasks at once) was predeclared in
+`exectv2_component_off_reliability_ablation_plan_2026-06-26.md` and executed at cross-task
+scope on 2026-06-27 (`cross_task_shared_component_ablation_2026-06-27.md`; validation-side,
+aggregate-only, no model calls, no new freeze): the `evidence_validation` gate is inert on
+**both** tasks (Δ = 0.0000 ExECTv2 dev140; Δ = 0.0000 Gan2026 validation750), and
+`standard_dictionary`/Gan `normalize` shows a **positive** cross-task dividend (+0.0389
+ExECTv2, +0.0293 Gan validation750) — normalization buys score on both tasks, though the
+underlying mechanisms differ (CUI/dictionary matching vs. format-level Gan label
+normalization). The modularity thesis is now supported by structural evidence, the model-swap
+result, and a measured, positive cross-task shared-component dividend. What remains open is
+narrower than before: this dividend is validation-side only (no full-200/holdout cross-task
+ablation), and it does not by itself establish literal SF-machinery code sharing, which
+remains re-implemented per above.
+
+**S2 — ExECTv2 three-way architecture comparison (thesis §7 Target tier): measured,
+negative.** The thesis's Target tier requires beating the published benchmark with all three
+architecture families and a clean three-way comparison. This is now measured for ExECTv2 (§4.2,
+closing paragraph): a GEPA-optimized LLM-only single pass reaches dev140 `clinical_headline` F1
+≈0.731 (gpt-4.1-mini) / ≈0.654 (Qwen 3.6 35B), ≈0.18–0.19 below the hybrid ceiling (0.9155
+dev140) and short of the published-benchmark surface. The Target tier is therefore not met — the
+result is a negative one, consistent with C2/C4's direction that architecture, not model
+capability, carries the gain. Two caveats bound this claim: (i) it is dev140 development-surface
+evidence only, not a frozen full-200/holdout result; (ii) the root cause is not uniformly
+"evidence-recall limitation" — per-family re-examination shows this is genuine for
+Investigations and partially genuine for Prescription, but mostly a gold-consolidation-convention
+artifact for Diagnosis and SeizureFrequency (the same mechanism as §4.1.2's benchmark-gap
+finding), so the *true* architectural gap between LLM-only and hybrid is smaller than the raw
+number once both legs are corrected for gold convention — by an amount not yet quantified.
 
 **Wall mechanism transfers; population-wide observability is noisier than Gan.** The
 cross-dataset wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`, 6/9 checks
@@ -1075,6 +1142,17 @@ carried by the rule comes from external predeclared features (family identity, e
 provenance indicators, evidence-ambiguity flags), not from model-reported confidence, which
 is degenerate on the Gan strand and unused here. Holdout calibration confirmation has not
 been run.
+
+The practical consequence follows directly and is stated here rather than left for the reader
+to infer: the transparency/reliability pillar currently has **no working low-burden triage
+policy** on the broad ExECTv2 task (the review-routing gate fires on ~97% of cells to catch
+~90% of errors, Table R5) — and the one slice where a working signal would matter most
+clinically, the binding gold-`unknown` over-read cases (§4.3.2), has **no forward-observable
+separator at all** (best AUROC 0.676, below the paper's own 0.70 usefulness bar; H0 retained).
+This is an honest, pre-registered negative result, not a closed null: cross-model agreement,
+self-consistency entropy, and evidence support-quality are three signal sources already
+computed on this project's own data but not yet incorporated into the calibration rule or the
+review-routing trigger set, and closing that gap is active future work, not a settled question.
 
 ---
 
@@ -1130,8 +1208,16 @@ DeepSeek: +0.203), concentrated entirely on the SF family. This identifies SF no
 and projection as the operative shared clinical component across both tasks — not because the
 same module is imported (the ExECTv2 SF clinical machinery is re-implemented, not directly
 ported), but because the clinical task's structure, and the architecture's response to it,
-are parallel. The delta is a component-impact finding; the full cross-task shared-component
-dividend requires the predeclared cross-task ablation (S1; future work).
+are parallel. This ExECTv2-only delta is extended by a separate cross-task shared-component
+ablation (`cross_task_shared_component_ablation_2026-06-27.md`; validation-side,
+aggregate-only, no model calls, no new freeze) that genuinely spans both tasks at once: the
+evidence-validation gate is inert on **both** ExECTv2 dev140 (Δ = 0.0000) and Gan2026
+validation750 (Δ = 0.0000), and a shared normalization mechanism (`standard_dictionary` / Gan
+`normalize`) shows a positive dividend on **both** (+0.0389 ExECTv2, +0.0293 Gan) — the same
+normalization-buys-score direction on both tasks, via mechanisms that differ (CUI/dictionary
+matching vs. format-level label normalization). This is the first measured, positive
+cross-task component dividend reported in this work, and it upgrades C2 from a single-task
+finding with a promised follow-up (S1) to genuine cross-task evidence.
 
 ---
 
@@ -1212,10 +1298,11 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 | Contribution | Evidence level | Boundary |
 |---|---|---|
 | C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate | No full-200 published-benchmark surface computed |
-| C2 — Component ablation (gate inert; SF norm matters) | dev140 replay-only, aggregate | No model calls; cross-task ablation scope is future work (S1) |
+| C2 — Component ablation (gate inert; SF norm matters) + cross-task dividend | dev140 replay-only, aggregate (ExECTv2 single-task); validation-side cross-task ablation (ExECTv2 dev140 + Gan validation750) | No model calls; cross-task ablation is validation-side/aggregate-only, no new freeze — not a full-200/holdout cross-task result |
 | C3 — Wall cross-dataset | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1); wall-transfers probe 6/9 | Ceiling and wall mechanism transfer (external-risk plateau + no gold-free separator); population-wide observability noisier than Gan; no holdout on ExECTv2 |
 | C4 — Model-agnostic architecture | Frozen aggregate full-200, predeclared gate | No holdout on non-primary models; row-level attribution excluded |
 | C5 — Evaluation discipline | Validation-only + test450 aggregate (Gan); validation-only (ExECTv2) | No new experiments; retrospective characterization of completed work |
+| S2 — ExECTv2 three-way comparison (GEPA LLM-only vs. hybrid, thesis §7 Target tier) | dev140 development-surface, non-paper-comparable diagnostics | Not a frozen full-200/holdout result; per-family root-cause of the LLM-only-vs-hybrid gap corrected (H-inflated/gold-convention for Diagnosis+SF, genuine for Investigations, partial for Prescription) |
 
 ---
 
@@ -1235,3 +1322,4 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 - Cross-model agreement is a validated ExECTv2 reliability signal (unused; available artifact).
 - ExECTv2 SF reproduces Gan's population-wide error magnitude. The wall *mechanism* transfers (6/9 checks: External Risk plateau + no gold-free separator on the binding gold-unknown slice, H0 retained), but ExECTv2's population-wide error cells are noisier than Gan's degenerate P2.1 panel (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on errors vs 69.4% correct), so 3 of 9 checks — the population-magnitude ones — read `no`. Identical same-magnitude population-wide degeneracy is not claimed.
 - The shared SF machinery is literally identical across tasks (ExECTv2 re-implements projection; structural reuse is the accurate claim, not code identity).
+- The GEPA LLM-only ExECTv2 numbers (≈0.731 gpt-4.1-mini, ≈0.654 Qwen dev140 clinical_headline F1) are a promoted full-200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's frozen full-200 numbers without the dev140-vs-full200 caveat.
