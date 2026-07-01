@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 Verifier Candidate Surface V6
 
 Date: 2026-06-06

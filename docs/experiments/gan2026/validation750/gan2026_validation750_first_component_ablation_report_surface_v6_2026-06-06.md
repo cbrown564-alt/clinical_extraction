@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Component Ablation Report Surface V6
 
 Date: 2026-06-06

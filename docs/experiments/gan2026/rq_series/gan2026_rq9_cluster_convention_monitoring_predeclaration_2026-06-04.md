@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ9 Cluster/Convention Monitoring Predeclaration
 
 This is a validation-development predeclaration for monitoring cluster/convention rows left prediction-bearing by the v3 RQ9 selective-action router.

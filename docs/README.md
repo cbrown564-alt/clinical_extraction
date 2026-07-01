@@ -8,7 +8,7 @@ plane, design docs, paper material, and long tail.
 
 **Active work:** [`plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md).  
 **Reading by thread:** [`THREAD_MAP.md`](THREAD_MAP.md).  
-**Canon summaries (Wave 2):** [`research/PAPER_CANON.md`](research/PAPER_CANON.md), [`research/exectv2_evaluation_canon.md`](research/exectv2_evaluation_canon.md), [`research/gan2026/GAN2026_RESEARCH_CANON.md`](research/gan2026/GAN2026_RESEARCH_CANON.md), [`experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md), [`research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md).  
+**Canon summaries (Wave 2–3):** [`canon/README.md`](canon/README.md) — full index.  
 **Lifecycle rules:** [`runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md).
 
 ## Stable Design

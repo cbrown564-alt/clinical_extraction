@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ1 Candidate-Discovery Answer
 
 Date: 2026-06-04

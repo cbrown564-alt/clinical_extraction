@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ9 Selective-Action Evaluation Contract
 
 This is a validation-development follow-up contract derived from the human Gold

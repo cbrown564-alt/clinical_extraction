@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Component Ablation Table V6
 
 saved validation-development reset-stage component ablation summary only; it uses the reset inventory plus saved V5/V6 and candidate-trace route artifacts, authorizes no locked-test row-level inspection, no live model call, and no benchmark-comparable claim

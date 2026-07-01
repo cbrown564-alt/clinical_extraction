@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 First Verifier Post-Run Accounting V6
 
 validation-development first action-only verifier comparison/accounting against deterministic V0.

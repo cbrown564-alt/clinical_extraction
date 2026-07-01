@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Verifier Live Run Main29 V6
 
 Validation-development action-only verifier run over the main 29-row ambiguity V6 surface. This is not a scorer-label replacement protocol, does not authorize locked-test inspection, and excludes appendix and provenance-only rows from the retuning surface.

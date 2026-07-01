@@ -123,8 +123,8 @@ Operative rules: `docs/design/gan2026_rule_register.md`, `gan2026_resolve_label_
 
 | Topic | Where detail lives |
 | --- | --- |
-| validation750 verifier v6 iteration (~29 docs) | `docs/experiments/gan2026/validation750/` — future VALIDATION750_CANON |
-| RQ1–RQ10 answers | `docs/experiments/gan2026/rq_series/` — future COMPONENT_MECHANICS_CANON |
+| validation750 verifier v6 iteration (~31 docs) | [`docs/experiments/gan2026/VALIDATION750_CANON.md`](../experiments/gan2026/VALIDATION750_CANON.md) |
+| RQ1–RQ10 answers | [`docs/experiments/gan2026/COMPONENT_MECHANICS_CANON.md`](../experiments/gan2026/COMPONENT_MECHANICS_CANON.md) |
 | Row-level Gan error analysis | `docs/research/gan2026/error_analysis/` + closeout Part III |
 | Agentic redo (2026-07-01) | ExECT SF hard panel — task-dependent; see brief crosswalk |
 

@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 Null Reduction Proxy Slices Comparison
 
 baseline validation-development null reduction proxy slices; no holdout use

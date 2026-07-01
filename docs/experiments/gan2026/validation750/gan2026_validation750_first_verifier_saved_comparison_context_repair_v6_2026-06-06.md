@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Verifier Saved Comparison V6
 
 saved validation-development verifier comparison packet only; no live verifier model call, no locked-test inspection, no benchmark-comparable claim, and no replacement scorer-facing label generation are authorized

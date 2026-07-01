@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Verifier Live Run Clean29 V6
 
 Validation-development first action-only verifier run over the clean 56-row V6 surface. This is not a scorer-label replacement protocol, does not authorize locked-test inspection, and keeps provenance-only rows out of the main table.

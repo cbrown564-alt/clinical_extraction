@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ9 Abstention And Human-Review Predeclaration
 
 This is a pre-run validation-development contract for abstention and human-review routing using the saved RQ10 residual-miss classes.

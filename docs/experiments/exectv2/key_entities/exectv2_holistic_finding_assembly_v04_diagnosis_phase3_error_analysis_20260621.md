@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`HOLISTIC_ASSEMBLY_LADDER_CANON.md`](HOLISTIC_ASSEMBLY_LADDER_CANON.md). Full detail retained below.
+
 # ExECTv2 Holistic Assembly v04 Diagnosis Phase 3 Error Analysis
 
 - Date: `2026-06-21`

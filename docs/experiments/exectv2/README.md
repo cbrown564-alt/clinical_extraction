@@ -1,9 +1,10 @@
 # ExECTv2 Experiment Docs
 
-**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T2/T3. **Canon:**
-[`CLOSEOUT_EVIDENCE_CANON.md`](CLOSEOUT_EVIDENCE_CANON.md) (frozen evidence tables),
-[`docs/research/exectv2_evaluation_canon.md`](../../research/exectv2_evaluation_canon.md)
-(scoring). Production control: holistic finding assembly v08 (frozen).
+**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T2/T3. **Canons:**
+[`CLOSEOUT_EVIDENCE_CANON.md`](CLOSEOUT_EVIDENCE_CANON.md),
+[`key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md),
+[`docs/research/exectv2_evaluation_canon.md`](../../research/exectv2_evaluation_canon.md).
+Production control: v08 (frozen).
 
 ExECTv2 experiment reports are grouped by the clinical surface or component
 being iterated:

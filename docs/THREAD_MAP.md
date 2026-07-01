@@ -24,7 +24,7 @@ signals route it without gold?
 | 5 | [`docs/research/wall_transfer_forward_observable_feature_inventory_2026-06-27.md`](research/wall_transfer_forward_observable_feature_inventory_2026-06-27.md) | Cross-dataset feature inventory |
 | 6 | [`docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md`](experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md) | ExECTv2 SF wall-transfer probe |
 | 7 | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) § C3 | Paper claim boundary for wall transfer |
-| 8 | [`docs/experiments/gan2026/README.md`](experiments/gan2026/README.md) | Long tail: validation750, rq_series, frozen_test |
+| 8 | [`docs/experiments/gan2026/VALIDATION750_CANON.md`](experiments/gan2026/VALIDATION750_CANON.md) | Workstream canon; rq_series via COMPONENT_MECHANICS |
 
 **Start here if:** you are writing the reliability pillar or explaining why
 abstention routing failed on binding residuals.
@@ -42,7 +42,7 @@ abstention routing failed on binding residuals.
 | 3 | [`docs/research/PAPER_CANON.md`](research/PAPER_CANON.md) § C1 | Claim register for SF/Dx gold-quality |
 | 4 | [`docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`](decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md) | ADR: headline vs projection |
 | 5 | [`docs/decisions/0037-sf-state-profile-is-primary-clinical-metric.md`](decisions/0037-sf-state-profile-is-primary-clinical-metric.md) | ADR: SF `state_profile` for SF-family experiments |
-| 6 | [`docs/experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) | Frozen full-200 aggregates |
+| 6 | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) | v01→v08 assembly ladder (v08 frozen) |
 | 7 | [`docs/research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) | LLM-only ceiling (three-way negative) |
 | 8 | [`docs/experiments/exectv2/README.md`](experiments/exectv2/README.md) | Long tail: per-family iteration reports |
 
@@ -135,6 +135,16 @@ planning archive/cleanup without breaking frozen evidence.
 | ExECT closeout evidence | [`experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md`](experiments/exectv2/CLOSEOUT_EVIDENCE_CANON.md) |
 | GEPA negative program | [`research/exectv2_gepa_canon.md`](research/exectv2_gepa_canon.md) |
 
-**Wave 3 (planned):** validation750 / rq_series workstream canons; optional `docs/canon/` structural merge.
+**Wave 3 (2026-07-01):** Workstream canons + routing index:
 
-Frozen artifact paths are never renamed — only linked from canon docs.
+| Workstream canon | Path |
+| --- | --- |
+| Gan validation750 | [`experiments/gan2026/VALIDATION750_CANON.md`](experiments/gan2026/VALIDATION750_CANON.md) |
+| Gan RQ1–RQ10 | [`experiments/gan2026/COMPONENT_MECHANICS_CANON.md`](experiments/gan2026/COMPONENT_MECHANICS_CANON.md) |
+| ExECT holistic ladder | [`experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) |
+| Canon index | [`canon/README.md`](canon/README.md) |
+| Archive policy | [`archive/README.md`](archive/README.md) |
+
+~75 experiment iteration files stubbed (detail retained). Bulk file moves deferred.
+
+**Wave 4 (optional):** `docs/canon/` structural migration; pilot/ladder archive under `docs/archive/`.

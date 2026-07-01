@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ9 Trigger-Context Narrowing Predeclaration
 
 This is a validation-development predeclaration for a future RQ9 selective-action

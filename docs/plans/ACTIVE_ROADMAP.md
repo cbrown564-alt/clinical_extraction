@@ -36,7 +36,8 @@ closed (negative result — LLM-only plateaus below hybrid).
 | Item | Owner doc | Action |
 | --- | --- | --- |
 | **Calibration / review-routing manuscript framing** | [`calibration_abstention_review_routing_strengthening_plan_2026-07-01.md`](calibration_abstention_review_routing_strengthening_plan_2026-07-01.md) | Honest weak-pillar language (Brier Δ 0.0142; binding-slice AUROC 0.676) — framing only unless plan authorizes new runs |
-| **Documentation consolidation Wave 2** | See [`docs/THREAD_MAP.md`](../THREAD_MAP.md) § Consolidation | **Done** — `PAPER_CANON`, `exectv2_evaluation_canon`, `GAN2026_RESEARCH_CANON`, `CLOSEOUT_EVIDENCE_CANON`, `exectv2_gepa_canon` |
+| **Documentation consolidation Wave 2** | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) § Consolidation | Done — five cross-cutting canon docs |
+| **Documentation consolidation Wave 3** | [`docs/canon/README.md`](../canon/README.md) | Done — three workstream canons, ~75 stubs, archive policy |
 | **Predeclaration runbook** | (not yet written) | Template for frozen aggregate audits |
 
 ---
@@ -48,7 +49,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 | **Repo simplification / archive cleanup** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Freeze-and-index before delete; dedicated cleanup branch |
 | **MLflow dry-run sync** | [`mlflow_experiment_observability_implementation_plan_2026-06-25.md`](mlflow_experiment_observability_implementation_plan_2026-06-25.md) | Phases 0–2 complete; optional mirror only — registry remains claim-of-record |
 | **Thermo-nuclear code quality debt** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Incremental: agentic monoliths, YAML corpora — no big-bang refactor |
-| **Experiment narrative consolidation** | THREAD_MAP T3/T1 long tails | Collapse validation750 / rq_series / holistic v01–v07 to workstream canons |
+| **Experiment narrative consolidation** | [`docs/canon/README.md`](../canon/README.md) | Wave 3 done for validation750, rq_series, holistic v01–v07; other buckets remain |
 
 ---
 

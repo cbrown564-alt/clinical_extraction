@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 Forced-Choice Verifier Live Run Clean29 V6
 
 Validation-development forced-choice verifier run over the clean 56-row V6 surface.

@@ -1,8 +1,9 @@
 # Gan 2026 Experiment Docs
 
-**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canon:**
-[`docs/research/gan2026/GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md).
-Future consolidation: validation750 / rq_series summaries.
+**Start here:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md) T1. **Canons:**
+[`GAN2026_RESEARCH_CANON.md`](../../research/gan2026/GAN2026_RESEARCH_CANON.md),
+[`VALIDATION750_CANON.md`](VALIDATION750_CANON.md),
+[`COMPONENT_MECHANICS_CANON.md`](COMPONENT_MECHANICS_CANON.md).
 
 This directory holds human-readable Gan 2026 experiment history. Use it for
 predeclarations, protocols, run reports, validation-surface readouts, and

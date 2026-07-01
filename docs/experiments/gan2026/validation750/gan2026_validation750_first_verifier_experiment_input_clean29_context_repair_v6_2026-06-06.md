@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md). Full detail retained below.
+
 # Gan 2026 Validation750 First Verifier Experiment Input Clean29 V6
 
 First verifier experiment input surface only: 29-row ambiguity core plus abstain/upstream-policy/rendered-policy appendices. Provenance-only audit rows, gold labels, correctness fields, and audit W->C/C->W counts are excluded from verifier-visible inputs.

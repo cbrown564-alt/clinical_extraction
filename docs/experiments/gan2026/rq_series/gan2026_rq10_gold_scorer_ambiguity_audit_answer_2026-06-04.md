@@ -1,3 +1,5 @@
+> **Superseded for navigation —** canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md). Full detail retained below.
+
 # Gan 2026 RQ10 Gold/Scorer Ambiguity Audit Answer
 
 This is a validation-development no-call audit over saved replay artifacts. It does not change scorer policy, gold labels, prompts, rules, projection policy, or locked test claims.
