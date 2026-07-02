@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from clinical_extraction.core.scoring import PRF1, multiset_prf1, sum_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import _letters_by_id
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
 )
@@ -112,8 +111,12 @@ def _investigation_modality_key(
     performed = attrs.get(f"{modality}_Performed")
     result = attrs.get(f"{modality}_Results")
     eeg_type = attrs.get("EEG_Type") if modality == "EEG" else None
-    text_has_modality = modality.lower() in normalize_phrase(annotation.text).split()
-    if not any((performed, result, eeg_type, text_has_modality)):
+    # A bare-word modality mention with no performed/result/type attribute produces a
+    # (modality, None, None) key. Gold Investigations mentions always carry
+    # attributes, so such a key can never be a true positive -- it is structurally
+    # FP-only. Require at least one attribute so the text mention alone cannot emit a
+    # spurious headline key on a multi-modality prediction span.
+    if not any((performed, result, eeg_type)):
         return None
     return (
         modality,

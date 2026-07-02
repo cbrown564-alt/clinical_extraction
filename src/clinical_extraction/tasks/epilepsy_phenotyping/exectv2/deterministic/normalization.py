@@ -345,6 +345,24 @@ def _normalize_attribute_value(key: str, value: str) -> str:
     return value
 
 
+def concepts_hierarchically_related(first: str, second: str) -> bool:
+    """True when two Diagnosis concepts denote the same clinical fact at
+    different altitudes -- one is an ancestor/descendant of the other in
+    ``DIAGNOSIS_PARENT`` (or they are identical).
+
+    Reuses ``_has_specific_descendant`` so the scoring path's hierarchy-aware
+    match and the per-side specificity collapse share one relation definition:
+    ``collapse_diagnoses_to_most_specific`` drops a parent when a descendant is
+    present on the *same* side, and this predicate lets the match reconcile the
+    parent/descendant split that independent per-side collapse leaves across the
+    gold and prediction sides.
+    """
+
+    if first == second:
+        return True
+    return _has_specific_descendant(first, {second}) or _has_specific_descendant(second, {first})
+
+
 def _has_specific_descendant(concept: str, present: set[str]) -> bool:
     return any(_is_descendant(candidate, concept) for candidate in present if candidate != concept)
 

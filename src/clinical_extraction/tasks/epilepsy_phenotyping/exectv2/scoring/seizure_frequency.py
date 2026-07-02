@@ -215,11 +215,14 @@ def _frequency_type_key(annotation: ExectAnnotation) -> Hashable:
     return ("phrase", normalize_phrase(annotation.text))
 
 
-def _frequency_state(attributes: Mapping[str, str]) -> str:
-    """Convention-strict 3-way state used by ``clinical_headline`` (count-only).
+def _count_based_state(attributes: Mapping[str, str]) -> str | None:
+    """seizure-free / active-rate from counts alone, or ``None`` when none is present.
 
-    Kept count-only and ``FrequencyChange``-blind to preserve the frozen benchmark
-    key. The change-aware taxonomy lives in :func:`frequency_state_faithful`.
+    A zero count is only ``seizure-free`` when *no positive count co-occurs*: a
+    variable rate such as ``LowerNumberOfSeizures=0``/``UpperNumberOfSeizures=3`` is
+    an *active* rate (the patient still has seizures), not seizure freedom. The
+    prior ``any(value == "0")``-first test gave the zero precedence over the
+    positive bound and mislabelled such ranges as seizure-free.
     """
 
     count_values = [
@@ -227,11 +230,21 @@ def _frequency_state(attributes: Mapping[str, str]) -> str:
         attributes.get("LowerNumberOfSeizures"),
         attributes.get("UpperNumberOfSeizures"),
     ]
+    if any(value not in (None, "", "0") for value in count_values):
+        return "active-rate"
     if any(value == "0" for value in count_values if value is not None):
         return "seizure-free"
-    if any(value for value in count_values):
-        return "active-rate"
-    return "unknown"
+    return None
+
+
+def _frequency_state(attributes: Mapping[str, str]) -> str:
+    """Convention-strict 3-way state used by ``clinical_headline`` (count-only).
+
+    Kept count-only and ``FrequencyChange``-blind to preserve the frozen benchmark
+    key. The change-aware taxonomy lives in :func:`frequency_state_faithful`.
+    """
+
+    return _count_based_state(attributes) or "unknown"
 
 
 def frequency_state_faithful(attributes: Mapping[str, str]) -> str:
@@ -246,15 +259,9 @@ def frequency_state_faithful(attributes: Mapping[str, str]) -> str:
     ``state_profile`` clinical metric and the GEPA SF feedback labels.
     """
 
-    count_values = [
-        attributes.get("NumberOfSeizures"),
-        attributes.get("LowerNumberOfSeizures"),
-        attributes.get("UpperNumberOfSeizures"),
-    ]
-    if any(value == "0" for value in count_values if value is not None):
-        return "seizure-free"
-    if any(value for value in count_values):
-        return "active-rate"
+    state = _count_based_state(attributes)
+    if state is not None:
+        return state
     if attributes.get("FrequencyChange"):
         return "changed"
     return "unknown"
