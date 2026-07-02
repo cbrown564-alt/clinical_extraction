@@ -32,8 +32,8 @@
   {
     "letter_id": "EA0008",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0009",
@@ -169,7 +169,7 @@
   },
   {
     "letter_id": "EA0038",
-    "n_missed": 2,
+    "n_missed": 3,
     "n_spurious": 0,
     "letter_exact": false
   },
@@ -206,8 +206,8 @@
   {
     "letter_id": "EA0046",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0047",
@@ -356,8 +356,8 @@
   {
     "letter_id": "EA0087",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0088",
@@ -368,20 +368,20 @@
   {
     "letter_id": "EA0092",
     "n_missed": 0,
-    "n_spurious": 2,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0093",
-    "n_missed": 1,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_missed": 0,
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0096",
     "n_missed": 0,
-    "n_spurious": 2,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0100",
@@ -434,8 +434,8 @@
   {
     "letter_id": "EA0111",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0113",
@@ -445,7 +445,7 @@
   },
   {
     "letter_id": "EA0114",
-    "n_missed": 0,
+    "n_missed": 1,
     "n_spurious": 3,
     "letter_exact": false
   },
@@ -464,13 +464,13 @@
   {
     "letter_id": "EA0119",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0120",
     "n_missed": 0,
-    "n_spurious": 2,
+    "n_spurious": 1,
     "letter_exact": false
   },
   {
@@ -626,8 +626,8 @@
   {
     "letter_id": "EA0154",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0156",
@@ -680,8 +680,8 @@
   {
     "letter_id": "EA0166",
     "n_missed": 0,
-    "n_spurious": 1,
-    "letter_exact": false
+    "n_spurious": 0,
+    "letter_exact": true
   },
   {
     "letter_id": "EA0167",

@@ -2,59 +2,6 @@
   {
     "case_id": 1,
     "entity": "Prescription",
-    "letter_id": "EA0008",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '75', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Current-anti-epileptic-medication:-lamotrigine-75mg-bd-(to-reduce",
-        "text": "Current-anti-epileptic-medication:-lamotrigine-75mg-bd-(to-reduce",
-        "attributes": {
-          "DrugName": "lamotrigine",
-          "DrugDose": "75",
-          "DoseUnit": "mg",
-          "Frequency": "2",
-          "CUIPhrase": "lamotrigine",
-          "CUI": "C0064636"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Dear Dr,\n\nDiagnosis: symptomatic structural focal epilepsy\n\tPrevious meningioma resection 3rd January 2005\n\nSeizure type and frequency: focal seizures with altered awareness every 3 weeks\n\nCurrent anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below)\nTo start levetiracetam as detailed below\n\nI reviewed this 62 year old man together with his wife in clinic today. Unfortunately after the period of seizure freedom the seizures have returned. The seizures are very stereotyped and asked similar to the events he had before surgery. He will get a warning of an unusual burning taste and then lose awareness and contact for a few minutes. His wife said that he will stare and occasionally chew his lips during these events. He feels dizzy on the lamotrigine and is keen to change his medication. I therefore suggest that he starts levetiracetam at a dose of 250mg once-a-day, increasing by 250mg every fortnight. His target dose of levetiracetam should be 750 mg twice daily. At the same time he should reduce his lamotrigine every fortnight until it stops.\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 2,
-    "entity": "Prescription",
     "letter_id": "EA0021",
     "disagreement_type": "missed",
     "match_key": "('ordinary', 'sodium-valproate', '800', 'mg', '1')",
@@ -130,7 +77,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 3,
+    "case_id": 2,
     "entity": "Prescription",
     "letter_id": "EA0021",
     "disagreement_type": "spurious",
@@ -207,7 +154,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 4,
+    "case_id": 3,
     "entity": "Prescription",
     "letter_id": "EA0033",
     "disagreement_type": "missed",
@@ -272,7 +219,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 5,
+    "case_id": 4,
     "entity": "Prescription",
     "letter_id": "EA0038",
     "disagreement_type": "missed",
@@ -284,6 +231,131 @@
         "attributes": {
           "DrugName": "Carbamazepine",
           "DrugDose": "200",
+          "DoseUnit": "mg",
+          "Frequency": "1",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "Carbamazepine",
+        "text": "Carbamazepine",
+        "attributes": {
+          "DrugName": "Carbamazepine",
+          "DrugDose": "400",
+          "DoseUnit": "mg",
+          "Frequency": "1",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
+        }
+      },
+      {
+        "raw_text": "Carbamazepine-400mg",
+        "text": "Carbamazepine-400mg",
+        "attributes": {
+          "DrugName": "Carbamazepine",
+          "DrugDose": "400",
+          "DoseUnit": "mg",
+          "Frequency": "1",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
+        }
+      },
+      {
+        "raw_text": "Carbamazepine-400mg/400-mg/200mg",
+        "text": "Carbamazepine-400mg/400-mg/200mg",
+        "attributes": {
+          "DrugName": "Carbamazepine",
+          "DrugDose": "200",
+          "DoseUnit": "mg",
+          "Frequency": "1",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
+        }
+      },
+      {
+        "raw_text": "Zonisamide-50-mg-twice-a-day",
+        "text": "Zonisamide-50-mg-twice-a-day",
+        "attributes": {
+          "DrugName": "zonisamide",
+          "DrugDose": "50",
+          "DoseUnit": "mg",
+          "Frequency": "2",
+          "CUIPhrase": "zonisamide",
+          "CUI": "C0078844"
+        }
+      },
+      {
+        "raw_text": "Clobazam-10-mg-BD",
+        "text": "Clobazam-10-mg-BD",
+        "attributes": {
+          "DrugName": "clobazam",
+          "DrugDose": "10",
+          "DoseUnit": "mg",
+          "Frequency": "2",
+          "CUIPhrase": "clobazam",
+          "CUI": "C0055891"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "Zonisamide",
+        "attributes": {
+          "CUI": "C0078844",
+          "CUIPhrase": "zonisamide",
+          "DoseUnit": "mg",
+          "DrugDose": "50",
+          "DrugName": "zonisamide",
+          "Frequency": "2"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "Clobazam",
+        "attributes": {
+          "CUI": "C0055891",
+          "CUIPhrase": "clobazam",
+          "DoseUnit": "mg",
+          "DrugDose": "10",
+          "DrugName": "clobazam",
+          "Frequency": "2"
+        }
+      }
+    ],
+    "source_letter_text": "NHS No 677 230 1444\nClinic date: 03.11. 2014\n\nRT: Jane Jones  DOB: 16/10/ 1953\n\nDiagnosis:\n complex partial seizures\nSecondary generalised tonic clonic seizures\nPsychogenic nonepileptic attack disorder\nDiabetes\n\nCurrent anti epileptic medications:\nCarbamazepine 400mg/400 mg/200mg\nZonisamide 50 mg twice a day\nClobazam 10 mg BD\n\nI reviewed this 61 year old lady in clinic today. She has had a recent generalised tonic chronic seizure at home. She did not bite her tongue. Before the seizure she had been seizure free for 3 years. On the odd occasion, she might forget to take medication. Previously she has tried Levetiracetam but was quite depressed on this medication. Her mood has improved since stopping the levetiracetam.\n\nI suggest increasing the zonisamide to 75 mg twice a day. I will ask our epilepsy specialist nurses to get in touch.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 5,
+    "entity": "Prescription",
+    "letter_id": "EA0038",
+    "disagreement_type": "missed",
+    "match_key": "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+    "gold_mentions": [
+      {
+        "raw_text": "Carbamazepine",
+        "text": "Carbamazepine",
+        "attributes": {
+          "DrugName": "Carbamazepine",
+          "DrugDose": "400",
+          "DoseUnit": "mg",
+          "Frequency": "1",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
+        }
+      },
+      {
+        "raw_text": "Carbamazepine-400mg",
+        "text": "Carbamazepine-400mg",
+        "attributes": {
+          "DrugName": "Carbamazepine",
+          "DrugDose": "400",
           "DoseUnit": "mg",
           "Frequency": "1",
           "CUIPhrase": "carbamazepine",
@@ -512,83 +584,6 @@
   {
     "case_id": 7,
     "entity": "Prescription",
-    "letter_id": "EA0046",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'phenytoin', '100', 'mg', '1')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Phenytoin",
-        "attributes": {
-          "CUI": "C0031507",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "DrugDose": "100",
-          "DrugName": "phenytoin",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Levetiracetam-750mg-bd",
-        "text": "Levetiracetam-750mg-bd",
-        "attributes": {
-          "DrugName": "levetiracetam",
-          "DrugDose": "750",
-          "DoseUnit": "mg",
-          "Frequency": "2",
-          "CUIPhrase": "levetiracetam",
-          "CUI": "C0377265"
-        }
-      },
-      {
-        "raw_text": "Phenytoin-100mg-od-(reducing-as-detailed-below)",
-        "text": "Phenytoin-100mg-od-(reducing-as-detailed-below)",
-        "attributes": {
-          "DrugName": "phenytoin",
-          "DrugDose": "100",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUIPhrase": "phenytoin",
-          "CUI": "C0031507"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "750",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Phenytoin",
-        "attributes": {
-          "CUI": "C0031507",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "DrugDose": "100",
-          "DrugName": "phenytoin",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date 10/12/2019\n \nr.e. Llewleyn Richards. D.O.B. 23.10.1980\n \nDiagnosis:            Symptomatic structural epilepsy secondary to\n                                Significant traumatic brain injury 2005\n \nSeizure type and frequency:\n                                Focal to bilateral convulsive seizures, last event October 2019\n \nCurrent anti-epileptic medication:\n                                Levetiracetam 750mg bd\n                                Phenytoin 100mg od (reducing as detailed below)\n \nOther medication includes: sertraline\n \nInvestigations: MRI 2019 right frontal lobe gliosis\n \nI reviewed this 39 year old man by telephone clinic today. His wife also joined in the consultation. As you know he had a significant brain injury in 2005 when he was involved in a head on car crash at 40mph. He was unconscious and in hospital for a week at the time. He has been left with left sided weakness since the accident. He also has ongoing problems with his mood and has seen the community mental health team for this.\n \nOn 23rd September 2019 he remembers having unusual episodes of a strange \u201cout of body\u201d experience. He has several of these in the morning and then had another one in the afternoon before loosing consciousness. The next thing he remembers is waking up in hospital. He has not had any further events. His wife witnessed the events and said that his eyes were fixed looking in the left before he left out a scream and then lost consciousness. He went stiff and started shaking and his lips went blue. This lasted a few minutes before he started to recover but then he had another 3 evetns in quick sucession and was taken to hospital. Whilst in hospital he had a MRI scan which confirmed some structural brain changes due to his accident.\n \nHe hasn\u2019t been able to work since the accident but was an electrician before hand. He is a non-smoker but drinks around 25 units of alcohol per week and smokes ocassional cannabis. He was driving before this event. He had 2 febrile seizures at the ages of 14 and 18 months. He also had viral encephalitis when he was 18 years old. His paternal grandfather had epilepsy after a brain tumor.\n \nHis MRI in hospital showed some gliosis secondary to his brain injury and an EEG at the time showed some R sided sharp waves.\n \nImpression. Mr Richards has focal epilepsy secondary to his traumatic brain injury.\n \n\u00b7         I explained the diagnosis of epilepsy to Mr Richards\n\u00b7         Epilepsy is relatively common, affecting around 30,000 people in Wales. Epilepsy causes seizures which can be thought of as electrical disturbances in the brain. Although most seizures are uneventful sometimes seizures can cause injury and very rarely seizures can cause serious injury or even death (Sudden Death in Epilepsy \u2013 SUDEP).\n\u00b7         Given this it is important to treat the seizures with medication to reduce the risk of seizures happening. Overall there is around a 70% of treating the seizures successfully with medication.\n\u00b7         I would be grateful if you could continue to prescribe the levetiracetam. I have enclosed an information leaflet on levetiracetam with this letter. If Mr Richards has further seizures then I would increase it to 1000mg bd. It could be further increased after that to 1250mg bd\n\u00b7         Levetiracetam is generally well tolerated but occasionally can cause mood changes\n\u00b7         In terms of driving, I explained the current DVLA rules on driving with epilepsy. Mr Richards needs to stop driving and inform the DVLA of the diagnosis. He is not able to drive until he has been 1 year free of seizures.\n\u00b7         It would be important to consider safety in some activities where seizures could be dangerous. For example Mr Richards should not have baths alone and take showers instead and climbing ladders or operating some types of machinery could be dangerous. I also explained some first aid measure of what to do when a seizure happens.\n\u00b7         Having said this it is important to lead as normal life as possible and most people with epilepsy can do this.\n\u00b7         It is important though for yourself or Mr Richards to contact us via telephone or email (the details are at the top of this letter) if there are any problems or questions about the epilepsy at any stage. with him.\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 8,
-    "entity": "Prescription",
     "letter_id": "EA0047",
     "disagreement_type": "missed",
     "match_key": "('ordinary', 'clobazam', '10', 'mg', '1')",
@@ -700,7 +695,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 9,
+    "case_id": 8,
     "entity": "Prescription",
     "letter_id": "EA0047",
     "disagreement_type": "missed",
@@ -813,7 +808,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 10,
+    "case_id": 9,
     "entity": "Prescription",
     "letter_id": "EA0073",
     "disagreement_type": "spurious",
@@ -869,7 +864,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 11,
+    "case_id": 10,
     "entity": "Prescription",
     "letter_id": "EA0073",
     "disagreement_type": "spurious",
@@ -925,7 +920,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 12,
+    "case_id": 11,
     "entity": "Prescription",
     "letter_id": "EA0073",
     "disagreement_type": "spurious",
@@ -981,618 +976,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 13,
-    "entity": "Prescription",
-    "letter_id": "EA0087",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'levetiracetam', '1500', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "1500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Lamotrigine-50mg-am",
-        "text": "Lamotrigine-50mg-am",
-        "attributes": {
-          "DrugDose": "50",
-          "DoseUnit": "mg",
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "Frequency": "1",
-          "DrugName": "lamotrigine"
-        }
-      },
-      {
-        "raw_text": "Lamotrigine",
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUIPhrase": "lamotrigine",
-          "DrugName": "Lamotrigine",
-          "DoseUnit": "mg",
-          "CUI": "C0064636",
-          "Frequency": "1",
-          "DrugDose": "75"
-        }
-      },
-      {
-        "raw_text": "Medication:-Levetiracetam-1500mg-bd-(60mg/kg/day)",
-        "text": "Medication:-Levetiracetam-1500mg-bd-(60mg/kg/day)",
-        "attributes": {
-          "DrugDose": "1500",
-          "Frequency": "2",
-          "DoseUnit": "mg",
-          "CUIPhrase": "levetiracetam",
-          "DrugName": "levetiracetam",
-          "CUI": "C0377265"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "1500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "50",
-          "DrugName": "lamotrigine",
-          "Frequency": "1"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: 1st February 2012\nTyped: 3rd February 2012\n\nDear Dr Pooled\n\nRe: \tMiss. Angela Jones\tD.O.B: 5/03/1999 NHS 123 577 8645\n\nDiagnosis: Juvenile myoclonic epilepsy \n\nMedication: Levetiracetam 1500mg bd (60mg/kg/day)\n\t\tLamotrigine 50mg am, 75mg pm increasing by 25mg increments every 2 \nweeks to 75mg am, 100mg pm (3.5mg/kg/day)\n\nFollow: up 6 weeks\n\nI reviewed this young lady in the clinic today.  She felt that things were much better as her myoclonic jerks have almost stopped.  She thinks that she has about one a week and they invariably occur when she is stressed. Of rather more concern to her family, is that she is having more generalised tonic clonic seizures.  She has had four in the last three weeks but has had up to five weeks seizure free.  They usually occur in the early hours of the morning.  She wakes up and knows she is going to have one because her arms start jerking.  This carries on for 5 \u2013 10 minutes and then she will have a short-lived generalised tonic clonic seizure.  She is back to normal within half an hour.  \n\nAfter a long discussion, we have decided to increase her Lamotrigine as above but to leave her Levetiracetam the same.  I did suggest to them that they might like to consider using oral Buccal Midazolam to prevent having a generalised tonic clonic seizure in the night but his may lead to some hangover effect in the morning and therefore may make the seizures more intrusive.\n\nI have left them to go away and think about this.  We will review her as above.\n\n\nYours sincerely\n\n\n\n\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 14,
-    "entity": "Prescription",
-    "letter_id": "EA0092",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '50', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "50",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Medication:-Levetiracetam-500mg-bd-(36mg/kg/day)",
-        "text": "Medication:-Levetiracetam-500mg-bd-(36mg/kg/day)",
-        "attributes": {
-          "DrugName": "levetiracetam",
-          "DoseUnit": "mg",
-          "CUI": "C0377265",
-          "DrugDose": "500",
-          "CUIPhrase": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": "Lamotrigine-50mg-bd-increasing-by-5mg-each-dose-every-2-weeks-to-75mg-bd-(7mg/kg/day)",
-        "text": "Lamotrigine-50mg-bd-increasing-by-5mg-each-dose-every-2-weeks-to-75mg-bd-(7mg/kg/day)",
-        "attributes": {
-          "CUI": "C0064636",
-          "DrugDose": "50",
-          "Frequency": "2",
-          "CUIPhrase": "lamotrigine",
-          "DrugName": "lamotrigine",
-          "DoseUnit": "mg"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "50",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: 3rd April 2018\nTyped: 5th Arpil 2018\n\nDear Dr Pooled\n\nRe: \tMiss Rachel Handel\tD.O.B: 05/02/2010 NHS 123 123 5445\n\nDiagnosis: Genetic epilepsy\n\t\tASD\n\n\nMedication: Levetiracetam 500mg bd (36mg/kg/day)\nLamotrigine 50mg bd increasing by 5mg each dose every 2 weeks to 75mg bd (7mg/kg/day) \n\nFollow up: 2 months\n\nI reviewed this young lady in the clinic today.  She is 8 years old.  She has recently been in again with a further cluster of complex partial seizures, but we were able to control this rapidly with high dose Phenytoin.  \n\nHer mother\u2019s only concern about her medication is that her appetite is poor.  However, she has gained weight which is reassuring.  She is making slow steady progress in school and does not regress with her cluster of seizures.\n\nAfter a long discussion, we have decided to make no changes to her medication except for those that we had planned.  If she has no further admissions with breakthrough seizures, then we will consider withdrawing her Levetiracetam.\n\nYours sincerely\n\n\n\n\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 15,
-    "entity": "Prescription",
-    "letter_id": "EA0092",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'levetiracetam', '500', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Medication:-Levetiracetam-500mg-bd-(36mg/kg/day)",
-        "text": "Medication:-Levetiracetam-500mg-bd-(36mg/kg/day)",
-        "attributes": {
-          "DrugName": "levetiracetam",
-          "DoseUnit": "mg",
-          "CUI": "C0377265",
-          "DrugDose": "500",
-          "CUIPhrase": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": "Lamotrigine-50mg-bd-increasing-by-5mg-each-dose-every-2-weeks-to-75mg-bd-(7mg/kg/day)",
-        "text": "Lamotrigine-50mg-bd-increasing-by-5mg-each-dose-every-2-weeks-to-75mg-bd-(7mg/kg/day)",
-        "attributes": {
-          "CUI": "C0064636",
-          "DrugDose": "50",
-          "Frequency": "2",
-          "CUIPhrase": "lamotrigine",
-          "DrugName": "lamotrigine",
-          "DoseUnit": "mg"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "50",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: 3rd April 2018\nTyped: 5th Arpil 2018\n\nDear Dr Pooled\n\nRe: \tMiss Rachel Handel\tD.O.B: 05/02/2010 NHS 123 123 5445\n\nDiagnosis: Genetic epilepsy\n\t\tASD\n\n\nMedication: Levetiracetam 500mg bd (36mg/kg/day)\nLamotrigine 50mg bd increasing by 5mg each dose every 2 weeks to 75mg bd (7mg/kg/day) \n\nFollow up: 2 months\n\nI reviewed this young lady in the clinic today.  She is 8 years old.  She has recently been in again with a further cluster of complex partial seizures, but we were able to control this rapidly with high dose Phenytoin.  \n\nHer mother\u2019s only concern about her medication is that her appetite is poor.  However, she has gained weight which is reassuring.  She is making slow steady progress in school and does not regress with her cluster of seizures.\n\nAfter a long discussion, we have decided to make no changes to her medication except for those that we had planned.  If she has no further admissions with breakthrough seizures, then we will consider withdrawing her Levetiracetam.\n\nYours sincerely\n\n\n\n\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 16,
-    "entity": "Prescription",
-    "letter_id": "EA0093",
-    "disagreement_type": "missed",
-    "match_key": "('ordinary', 'sodium-valproate', '500', 'mg', '1')",
-    "gold_mentions": [
-      {
-        "raw_text": "-Episenta-500mg",
-        "text": "-Episenta-500mg",
-        "attributes": {
-          "DrugName": "SodiumValproate",
-          "DrugDose": "500",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUIPhrase": "episenta",
-          "CUI": "C0037567"
-        }
-      }
-    ],
-    "pred_mentions": [],
-    "gold_family_all": [
-      {
-        "raw_text": "-Episenta-500mg",
-        "text": "-Episenta-500mg",
-        "attributes": {
-          "DrugName": "SodiumValproate",
-          "DrugDose": "500",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUIPhrase": "episenta",
-          "CUI": "C0037567"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "valproate",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: 3rd April 2016\nTyped: 5th April 2016\n\nDear Dr Pooled\n\nRe: \tMiss Lucy Williams\tD.O.B: 25/02/2007 NHS 123 123 5445\n\nDiagnosis: Primary generalised epilepsy\n\nMedication: Levetiracetam ?dose \nValproate as Episenta 500mg nocte to withdraw by 100mg increments every \nweek starting next school holidays\n\nFollow up: 6 months\n\nI reviewed this young lady in the clinic today.  She has been very well and has had no seizures since Christmas 2015.  She is doing very well in Year 5 at School.\n\nShe has no side effects from her current medication.  Mother felt that as her medication was being withdrawn, she became very tearful but this has settled down.  Lucy today, was wary of reducing her medication further but we have persuaded her to do this slowly over the summer holidays.  \n\nI have asked out epilepsy nurse to clarify with you the actual dose of Levetiracetam that she is taking as mother was not entirely clear.\nYours sincerely\n\n\n\n\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 17,
-    "entity": "Prescription",
-    "letter_id": "EA0093",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'valproate', '500', 'mg', '1')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "valproate",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "-Episenta-500mg",
-        "text": "-Episenta-500mg",
-        "attributes": {
-          "DrugName": "SodiumValproate",
-          "DrugDose": "500",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUIPhrase": "episenta",
-          "CUI": "C0037567"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "500",
-          "DrugName": "valproate",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: 3rd April 2016\nTyped: 5th April 2016\n\nDear Dr Pooled\n\nRe: \tMiss Lucy Williams\tD.O.B: 25/02/2007 NHS 123 123 5445\n\nDiagnosis: Primary generalised epilepsy\n\nMedication: Levetiracetam ?dose \nValproate as Episenta 500mg nocte to withdraw by 100mg increments every \nweek starting next school holidays\n\nFollow up: 6 months\n\nI reviewed this young lady in the clinic today.  She has been very well and has had no seizures since Christmas 2015.  She is doing very well in Year 5 at School.\n\nShe has no side effects from her current medication.  Mother felt that as her medication was being withdrawn, she became very tearful but this has settled down.  Lucy today, was wary of reducing her medication further but we have persuaded her to do this slowly over the summer holidays.  \n\nI have asked out epilepsy nurse to clarify with you the actual dose of Levetiracetam that she is taking as mother was not entirely clear.\nYours sincerely\n\n\n\n\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 18,
-    "entity": "Prescription",
-    "letter_id": "EA0096",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'phenytoin', '120', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Phenytoin",
-        "attributes": {
-          "CUI": "C0031507",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "DrugDose": "120",
-          "DrugName": "phenytoin",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Phenytoin-120mg-bd-(10mg/kg/day)",
-        "text": "Phenytoin-120mg-bd-(10mg/kg/day)",
-        "attributes": {
-          "CUI": "C0031507",
-          "DrugDose": "120",
-          "DrugName": "phenytoin",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": "Topiramate",
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "DrugDose": "75",
-          "CUIPhrase": "topiramate",
-          "Frequency": "1",
-          "DoseUnit": "mg",
-          "DrugName": "Topiramate"
-        }
-      },
-      {
-        "raw_text": "Sodium-Valproate-440mg-bd-(30mg/kg/day)",
-        "text": "Sodium-Valproate-440mg-bd-(30mg/kg/day)",
-        "attributes": {
-          "Frequency": "2",
-          "CUIPhrase": "sodium-valproate",
-          "CUI": "C0037567",
-          "DrugName": "sodium-valproate",
-          "DrugDose": "440",
-          "DoseUnit": "mg"
-        }
-      },
-      {
-        "raw_text": "Topiramate-60mg-am",
-        "text": "Topiramate-60mg-am",
-        "attributes": {
-          "DrugDose": "60",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUI": "C0076829",
-          "DrugName": "topiramate"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Sodium Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "440",
-          "DrugName": "sodium valproate",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "DrugDose": "60",
-          "DrugName": "topiramate",
-          "Frequency": "1"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "topiramate",
-          "Frequency": "1"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Phenytoin",
-        "attributes": {
-          "CUI": "C0031507",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "DrugDose": "120",
-          "DrugName": "phenytoin",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: January 11th 2020\nTyped: January 13th 2020\n\nDear Dr Pooled\n\nRe: \tGary Evans\n\nDiagnosis: \tSevere epilepsy\n\t\tLearning disability\n\nMedication:\tSodium Valproate 440mg bd (30mg/kg/day)\n\t\tTopiramate 60mg am, 75mg pm (5mg/kg/day)\n\t\tPhenytoin 120mg bd (10mg/kg/day)\n\nFollow Up:\tDepending on results of Phenytoin level \n\nI reviewed Gary with his mother in the clinic today.  His mother told me that his seizure control has been variable but today was a good day.  Mother thought that overall, his control had been good until about a week ago when it had begun to slip.  On Sunday and Monday, he was having generalised tonic clonic seizures in the night and frequent drops and absences throughout the day.  In one of the drops, he had injured his face.  At one point, they found it very difficult to get his drugs down him as he was so \u201cout of it\u201d.  \n\nHis control had deteriorated prior to increasing the valproate but had then improved to the odd stare only.\n\nToday he walked in on his own and was his normal chatty, inquisitive self.  His gait was steady, and he wasn\u2019t dribbling.  I saw no overt seizures.  His weight had slightly dropped today to 24.3kg. \n\nWe have arranged for him to have a Phenytoin level done and will get in contact with mother with the result.   We agreed to continue reducing his Topiramte as previously arranged and will then consider reducing his Phenytoin.  \n\n\nYours sincerely\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 19,
-    "entity": "Prescription",
-    "letter_id": "EA0096",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'sodium-valproate', '440', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Sodium Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "440",
-          "DrugName": "sodium valproate",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Phenytoin-120mg-bd-(10mg/kg/day)",
-        "text": "Phenytoin-120mg-bd-(10mg/kg/day)",
-        "attributes": {
-          "CUI": "C0031507",
-          "DrugDose": "120",
-          "DrugName": "phenytoin",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": "Topiramate",
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "DrugDose": "75",
-          "CUIPhrase": "topiramate",
-          "Frequency": "1",
-          "DoseUnit": "mg",
-          "DrugName": "Topiramate"
-        }
-      },
-      {
-        "raw_text": "Sodium-Valproate-440mg-bd-(30mg/kg/day)",
-        "text": "Sodium-Valproate-440mg-bd-(30mg/kg/day)",
-        "attributes": {
-          "Frequency": "2",
-          "CUIPhrase": "sodium-valproate",
-          "CUI": "C0037567",
-          "DrugName": "sodium-valproate",
-          "DrugDose": "440",
-          "DoseUnit": "mg"
-        }
-      },
-      {
-        "raw_text": "Topiramate-60mg-am",
-        "text": "Topiramate-60mg-am",
-        "attributes": {
-          "DrugDose": "60",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "Frequency": "1",
-          "CUI": "C0076829",
-          "DrugName": "topiramate"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Sodium Valproate",
-        "attributes": {
-          "CUI": "C0037567",
-          "CUIPhrase": "sodium-valproate",
-          "DoseUnit": "mg",
-          "DrugDose": "440",
-          "DrugName": "sodium valproate",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "DrugDose": "60",
-          "DrugName": "topiramate",
-          "Frequency": "1"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Topiramate",
-        "attributes": {
-          "CUI": "C0076829",
-          "CUIPhrase": "topiramate",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "topiramate",
-          "Frequency": "1"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Phenytoin",
-        "attributes": {
-          "CUI": "C0031507",
-          "CUIPhrase": "phenytoin",
-          "DoseUnit": "mg",
-          "DrugDose": "120",
-          "DrugName": "phenytoin",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date: January 11th 2020\nTyped: January 13th 2020\n\nDear Dr Pooled\n\nRe: \tGary Evans\n\nDiagnosis: \tSevere epilepsy\n\t\tLearning disability\n\nMedication:\tSodium Valproate 440mg bd (30mg/kg/day)\n\t\tTopiramate 60mg am, 75mg pm (5mg/kg/day)\n\t\tPhenytoin 120mg bd (10mg/kg/day)\n\nFollow Up:\tDepending on results of Phenytoin level \n\nI reviewed Gary with his mother in the clinic today.  His mother told me that his seizure control has been variable but today was a good day.  Mother thought that overall, his control had been good until about a week ago when it had begun to slip.  On Sunday and Monday, he was having generalised tonic clonic seizures in the night and frequent drops and absences throughout the day.  In one of the drops, he had injured his face.  At one point, they found it very difficult to get his drugs down him as he was so \u201cout of it\u201d.  \n\nHis control had deteriorated prior to increasing the valproate but had then improved to the odd stare only.\n\nToday he walked in on his own and was his normal chatty, inquisitive self.  His gait was steady, and he wasn\u2019t dribbling.  I saw no overt seizures.  His weight had slightly dropped today to 24.3kg. \n\nWe have arranged for him to have a Phenytoin level done and will get in contact with mother with the result.   We agreed to continue reducing his Topiramte as previously arranged and will then consider reducing his Phenytoin.  \n\n\nYours sincerely\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 20,
+    "case_id": 12,
     "entity": "Prescription",
     "letter_id": "EA0104",
     "disagreement_type": "missed",
@@ -1669,84 +1053,102 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 21,
+    "case_id": 13,
     "entity": "Prescription",
-    "letter_id": "EA0111",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'brivaracetam', '100', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
+    "letter_id": "EA0114",
+    "disagreement_type": "missed",
+    "match_key": "('ordinary', 'carbamazepine', '400', 'mg', '2')",
+    "gold_mentions": [
       {
-        "raw_text": null,
-        "text": "Brivaracetam",
+        "raw_text": "Carbamazepine-Controlled-Release-400mgs-bd-to-reduce-to-200mgs-am",
+        "text": "Carbamazepine-Controlled-Release-400mgs-bd-to-reduce-to-200mgs-am",
         "attributes": {
-          "CUI": "C1699861",
-          "CUIPhrase": "brivaracetam",
+          "DrugName": "carbamazepine",
+          "DrugDose": "400",
           "DoseUnit": "mg",
-          "DrugDose": "100",
-          "DrugName": "brivaracetam",
-          "Frequency": "2"
+          "Frequency": "2",
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
         }
       }
     ],
+    "pred_mentions": [],
     "gold_family_all": [
       {
-        "raw_text": "Zonisamide-200mgs-bd",
-        "text": "Zonisamide-200mgs-bd",
+        "raw_text": "Levetiracetam-750mgs-bd",
+        "text": "Levetiracetam-750mgs-bd",
         "attributes": {
-          "DrugName": "zonisamide",
-          "DrugDose": "200",
+          "DrugName": "levetiracetam",
+          "DrugDose": "750",
           "DoseUnit": "mg",
           "Frequency": "2",
-          "CUIPhrase": "zonisamide",
-          "CUI": "C0078844"
+          "CUIPhrase": "levetiracetam",
+          "CUI": "C0377265"
         }
       },
       {
-        "raw_text": "Brivaracetam-100mgs-bd-to-increase-to-100mgs-am",
-        "text": "Brivaracetam-100mgs-bd-to-increase-to-100mgs-am",
+        "raw_text": "Carbamazepine-Controlled-Release-400mgs-bd-to-reduce-to-200mgs-am",
+        "text": "Carbamazepine-Controlled-Release-400mgs-bd-to-reduce-to-200mgs-am",
         "attributes": {
-          "DrugName": "brivaracetam",
-          "DrugDose": "100",
+          "DrugName": "carbamazepine",
+          "DrugDose": "400",
           "DoseUnit": "mg",
           "Frequency": "2",
-          "CUIPhrase": "brivaracetam",
-          "CUI": "C1699861"
+          "CUIPhrase": "carbamazepine",
+          "CUI": "C0006949"
         }
       }
     ],
     "pred_family_all": [
       {
         "raw_text": null,
-        "text": "Zonisamide",
+        "text": "Levetiracetam",
         "attributes": {
-          "CUI": "C0078844",
-          "CUIPhrase": "zonisamide",
+          "CUI": "C0377265",
+          "CUIPhrase": "levetiracetam",
           "DoseUnit": "mg",
-          "DrugDose": "200",
-          "DrugName": "zonisamide",
+          "DrugDose": "750",
+          "DrugName": "levetiracetam",
           "Frequency": "2"
         }
       },
       {
         "raw_text": null,
-        "text": "Brivaracetam",
+        "text": "Carbamazepine Controlled Release",
         "attributes": {
-          "CUI": "C1699861",
-          "CUIPhrase": "brivaracetam",
           "DoseUnit": "mg",
-          "DrugDose": "100",
-          "DrugName": "brivaracetam",
+          "DrugDose": "400",
+          "DrugName": "carbamazepine controlled release",
           "Frequency": "2"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "Carbamazepine Controlled Release",
+        "attributes": {
+          "DoseUnit": "mg",
+          "DrugDose": "200",
+          "DrugName": "carbamazepine controlled release",
+          "Frequency": "1"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "Carbamazepine Controlled Release",
+        "attributes": {
+          "DoseUnit": "mg",
+          "DrugDose": "400",
+          "DrugName": "carbamazepine controlled release",
+          "Frequency": "1"
         }
       }
     ],
-    "source_letter_text": "Clinic date 01/04/2020\n\nDear Dr,\n\nRe: \tMiss Magi Jones-Williams \t\t\tD.O.B: 23/10/1995\n8 Mission Place, Llanelli, SA39 6BZ   \n\nDiagnosis:\n\u2022\tRefractory focal epilepsy.  \n\u2022\tNocturnal generalised tonic clonic seizures with multifocal EEG abnormalities\n\u2022\tMRI negative\n\nMedication:\n\u2022\tZonisamide 200mgs bd\n\u2022\tBrivaracetam 100mgs bd to increase to 100mgs am, 150mgs pm and after 2 weeks to 150mgs bd\n\nI spoke to Magi today.  Things improved following the birth of her daughter.  She has formed a good bond with her and has now been sterilised.  \n\nMore recently she has suffered stress and insomnia and there has been an increase in her seizures.  She is currently having seizures on a weekly basis.  These sound like tonic clonic seizures, with tongue biting and facial injuries.  \nShe is tolerating her medication well.\n\nPlan:\n\nWe discussed the following:\n\n1.\tIt would be useful to review a seizure video if possible \n2.\tI have advised her to increase the Brivaracetam as shown above \n3.\tI will have a look through old letters and think about further drug options.  \n4.\tI have suggested that she makes an appointment to see you to consider being prescribed a SSRI to help with her mood.  This would not be contraindicated from an epilepsy point of view \n\nI will arrange to see her in 6 months\u2019 time  \n\nYours sincerely\n",
+    "source_letter_text": "Clinic date 31/05/2019\n\nDear Dr,\n\nRe: \tMr Happy Jones\tDOB 29/03/1991\n\nDiagnosis:\n\u2022\tFocal epilepsy ? right temporal lobe onset\nMedication:\n\u2022\tLevetiracetam 750mgs bd\n\u2022\tCarbamazepine Controlled Release 400mgs bd to reduce to 200mgs am, 400mgs pm\nI spoke to Happy in clinic today. He is still suffering from symptoms incuding dizziness and double vision which are worse an hour after his morning medication.  He has had a couple of focal impaired awareness seizures consisting of a rising epigastric sensation but no focal to bilateral tonic clonic seizures. He does not drive.\nThe EEG has shown focal slowing and sharpened waves, phase reversing over the right  temporal lobe leads\nPlan:\nI think these are medication side effects and are having more of an impact on him than the seizures. I have therefore suggested a small reduction in the morning dose of Carbamazepine as shown above.  He will let us know how he gets on.\n",
     "mechanism": "UNADJUDICATED",
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 22,
+    "case_id": 14,
     "entity": "Prescription",
     "letter_id": "EA0114",
     "disagreement_type": "spurious",
@@ -1839,7 +1241,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 23,
+    "case_id": 15,
     "entity": "Prescription",
     "letter_id": "EA0114",
     "disagreement_type": "spurious",
@@ -1932,7 +1334,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 24,
+    "case_id": 16,
     "entity": "Prescription",
     "letter_id": "EA0114",
     "disagreement_type": "spurious",
@@ -2025,7 +1427,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 25,
+    "case_id": 17,
     "entity": "Prescription",
     "letter_id": "EA0117",
     "disagreement_type": "missed",
@@ -2090,147 +1492,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 26,
-    "entity": "Prescription",
-    "letter_id": "EA0119",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '75', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Current-anti-epileptic-medication:-Levetiracetam-1500-milligrammes-BD",
-        "text": "Current-anti-epileptic-medication:-Levetiracetam-1500-milligrammes-BD",
-        "attributes": {
-          "DrugName": "levetiracetam",
-          "DrugDose": "1500",
-          "DoseUnit": "mg",
-          "Frequency": "2",
-          "CUIPhrase": "levetiracetam",
-          "CUI": "C0377265"
-        }
-      },
-      {
-        "raw_text": "Lamotrigine-75MG-BD-(to-increase-as-detailed-below)",
-        "text": "Lamotrigine-75MG-BD-(to-increase-as-detailed-below)",
-        "attributes": {
-          "DrugName": "lamotrigine",
-          "DrugDose": "75",
-          "DoseUnit": "mg",
-          "Frequency": "2",
-          "CUIPhrase": "lamotrigine",
-          "CUI": "C0064636"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Levetiracetam",
-        "attributes": {
-          "CUI": "C0377265",
-          "CUIPhrase": "levetiracetam",
-          "DoseUnit": "mg",
-          "DrugDose": "1500",
-          "DrugName": "levetiracetam",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Dear Dr,\n\nRe: \tMs Hannah Collins\tDOB 3/4/1972\n\nDiagnosis: focal epilepsy\n\nSeizure type and frequency: 1 seizure per week to 1 seizure every month\nFocal seizures with altered awareness \n\nCurrent anti epileptic medication: Levetiracetam 1500 milligrammes BD\nLamotrigine 75MG BD (to increase as detailed below)\n\nOther medication includes: olanzapine, diazepam and pregabalin. \n\nI reviewed this 48 year old woman in clinic today. I have previously spoken to her on the telephone. Adding the lamotrigine didn't really seem to helpful. She still seems to be getting fairly frequent seizures. She lives alone and so her seizures haven't been witnessed for some time. She thinks she has had this seizure when she in \u201dloses time\u201d. She doesn't really get any warning before hand.\n\nShe has had a normal MRI and a normal eeg since her last appointment. \n\nAs she is still having fairly frequent seizures I think it would be reasonable to increase her lamotragine in steps of 25 milligrammes every two weeks until she is on a dose of 150 milligrammes twice a day. \n\nWe will continue to follow her by phone consultation however it would be important for her to contact the epilepsy helpline on the number above should there be any issues before then.\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 27,
-    "entity": "Prescription",
-    "letter_id": "EA0120",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '75', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Medication:-lamotrigine-75mg-bd-(to-reduce",
-        "text": "Medication:-lamotrigine-75mg-bd-(to-reduce",
-        "attributes": {
-          "DrugName": "lamotrigine",
-          "DrugDose": "75",
-          "DoseUnit": "mg",
-          "Frequency": "2",
-          "CUIPhrase": "lamotrigine",
-          "CUI": "C0064636"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      },
-      {
-        "raw_text": null,
-        "text": "Mirtazapine",
-        "attributes": {
-          "DoseUnit": "mg",
-          "DrugDose": "15",
-          "DrugName": "mirtazapine",
-          "Frequency": "1"
-        }
-      }
-    ],
-    "source_letter_text": "Dear Dr,\n\nRe: \tMr Harry Harris DOB 30/3/1975\n\nDiagnosis: Dissociative seizures\n\t\tPost traumatic stress disorders\n\nMedication: lamotrigine 75mg bd (to reduce and stop as detailed below)\n\t\tMirtazapine 15mg od\n\nI reviewed this gentleman in clinic today. I was pleased to hear that things have generally improved. He is having fewer flashbacks . He has not had any further seizures since his last appointment. i explained his EEG results. During the EG he had a typical attack which was not accompanied by any eg changes. I explained that this was likely to be a dissociative seizure. Mr Harris was very open to this and was happy to reduce and stop his lamotrigine by 25mg every fortnight. I have left him with an open appointment in this clinic. \n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 28,
+    "case_id": 18,
     "entity": "Prescription",
     "letter_id": "EA0120",
     "disagreement_type": "spurious",
@@ -2291,7 +1553,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 29,
+    "case_id": 19,
     "entity": "Prescription",
     "letter_id": "EA0121",
     "disagreement_type": "missed",
@@ -2424,7 +1686,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 30,
+    "case_id": 20,
     "entity": "Prescription",
     "letter_id": "EA0132",
     "disagreement_type": "spurious",
@@ -2464,7 +1726,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 31,
+    "case_id": 21,
     "entity": "Prescription",
     "letter_id": "EA0133",
     "disagreement_type": "spurious",
@@ -2569,7 +1831,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 32,
+    "case_id": 22,
     "entity": "Prescription",
     "letter_id": "EA0133",
     "disagreement_type": "spurious",
@@ -2674,7 +1936,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 33,
+    "case_id": 23,
     "entity": "Prescription",
     "letter_id": "EA0133",
     "disagreement_type": "spurious",
@@ -2779,7 +2041,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 34,
+    "case_id": 24,
     "entity": "Prescription",
     "letter_id": "EA0135",
     "disagreement_type": "spurious",
@@ -2888,7 +2150,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 35,
+    "case_id": 25,
     "entity": "Prescription",
     "letter_id": "EA0146",
     "disagreement_type": "missed",
@@ -2989,7 +2251,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 36,
+    "case_id": 26,
     "entity": "Prescription",
     "letter_id": "EA0146",
     "disagreement_type": "spurious",
@@ -3090,7 +2352,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 37,
+    "case_id": 27,
     "entity": "Prescription",
     "letter_id": "EA0148",
     "disagreement_type": "spurious",
@@ -3130,7 +2392,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 38,
+    "case_id": 28,
     "entity": "Prescription",
     "letter_id": "EA0150",
     "disagreement_type": "missed",
@@ -3215,7 +2477,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 39,
+    "case_id": 29,
     "entity": "Prescription",
     "letter_id": "EA0152",
     "disagreement_type": "missed",
@@ -3276,7 +2538,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 40,
+    "case_id": 30,
     "entity": "Prescription",
     "letter_id": "EA0153",
     "disagreement_type": "spurious",
@@ -3316,60 +2578,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 41,
-    "entity": "Prescription",
-    "letter_id": "EA0154",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '75', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Medication:-Currently-Lamotrigine-75mg-bd-to-increase-over-the-following-weeks-to-125mg-bd",
-        "text": "Medication:-Currently-Lamotrigine-75mg-bd-to-increase-over-the-following-weeks-to-125mg-bd",
-        "attributes": {
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "75",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Clinic date 9/6/2018\n\u00a0\nDiagnosis: Epilepsy - focal onset\u00a0\nMedication: Currently Lamotrigine 75mg bd to increase over the following weeks to 125mg bd\n\u00a0\nWe met Joan and her partner David today in the nurse lead clinic following her recent diagnosis of epilepsy. Her seizures began last year. Joan does not really remember what happens during a seizure. She has been told that she sees sees things that aren\u2019t there and her speech is not normal.\u00a0\n\u00a0\nDavid says that she seems to panic, she may move her arms around start talking abnormally. After an event she will be confused and need to sleep. We discussed her diagnosis today in some detail. Her MRI has been reported as normal and she is awaiting an appointment for an EEG.\n\u00a0\nThere are lots of resources available to help explain epilepsy in the family .We briefly discussed SUEDEP. We discussed that sharing a bed reduces the risk of SUDEP.\n\u00a0\nJoan says the seizure frequency is roughly every 4 weeks at present. We explained that this will become less over time as the medication is increased. She tells us that the Lamotrigine has helped her recover after seizures. She has a good support network, however her family are some distance away. Daniel is currently working from home and he is there to support her and the children. We also discussed contraception and I explained that the depo injection and lamotrigine can interact.\n\u00a0\nAnother thing we discussed today is Joan\u2019s mood. She has had a low mood for several years and has previously been prescribed sertraline. We discussed today how depression is common in epilepsy. We have advised today that it would be beneficial to consider an anti-depressant she feels in the past the sertraline was not of much use. Please could you arrange to her in regards to her mental health.\n\u00a0\nWe have also explained to Joan that we run an open access service and we will not send her a routine follow up appointment with the epilepsy nurses. She knows that if she does need an appointment or need any support what so ever with her epilepsy she is free to call us whenever she wants.\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 42,
+    "case_id": 31,
     "entity": "Prescription",
     "letter_id": "EA0158",
     "disagreement_type": "missed",
@@ -3492,7 +2701,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 43,
+    "case_id": 32,
     "entity": "Prescription",
     "letter_id": "EA0158",
     "disagreement_type": "missed",
@@ -3613,60 +2822,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 44,
-    "entity": "Prescription",
-    "letter_id": "EA0166",
-    "disagreement_type": "spurious",
-    "match_key": "('ordinary', 'lamotrigine', '125', 'mg', '2')",
-    "gold_mentions": [],
-    "pred_mentions": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "125",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "gold_family_all": [
-      {
-        "raw_text": "Lamotrigine-125mg-twice-daily-(please-increase-with-immediate-effect-in",
-        "text": "Lamotrigine-125mg-twice-daily-(please-increase-with-immediate-effect-in",
-        "attributes": {
-          "DrugName": "lamotrigine",
-          "CUIPhrase": "lamotrigine",
-          "CUI": "C0064636",
-          "DrugDose": "125",
-          "DoseUnit": "mg",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "pred_family_all": [
-      {
-        "raw_text": null,
-        "text": "Lamotrigine",
-        "attributes": {
-          "CUI": "C0064636",
-          "CUIPhrase": "lamotrigine",
-          "DoseUnit": "mg",
-          "DrugDose": "125",
-          "DrugName": "lamotrigine",
-          "Frequency": "2"
-        }
-      }
-    ],
-    "source_letter_text": "Dear Dr Pooled\n\nRe: Miss Anna Helen Watkinson D.O.B: 21/04/1999\n9 Lincoln Street, Georgetown, Swansea, SA1 0OO\n\nDiagnosis:\t Juvenile Myoclonic Epilepsy\n\nMedication:\tLamotrigine 125mg twice daily (please increase with immediate effect in\n25mg, 2 weekly increments to 150mg twice daily)\n\nPlan: \t\tWeek 1&2: Lamotrigine 125mg AM, 150mg PM\nWeek 3 & Continue: Lamotrigine 150mg twice daily\n\nWe have had continued contact from Anna in our open access service. Although her jerks have\nimproved significantly they are still occurring around once a month. This seems to coincide with the\ntime that her period would usually start. I have discussed with our consultant and he advises a\nsmall increase in her Lamotrigine to 150mg twice daily (as per plan above), we would be most\ngrateful if you could amend her repeat prescription to accommodate this suggested change.\n\nAnna knows to contact us at any time in the open access service and we will do our best to help her.\n\nYours sincerely\n\n",
-    "mechanism": "UNADJUDICATED",
-    "verdict": "UNADJUDICATED"
-  },
-  {
-    "case_id": 45,
+    "case_id": 33,
     "entity": "Prescription",
     "letter_id": "EA0172",
     "disagreement_type": "missed",
@@ -3755,7 +2911,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 46,
+    "case_id": 34,
     "entity": "Prescription",
     "letter_id": "EA0182",
     "disagreement_type": "missed",
@@ -3832,7 +2988,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 47,
+    "case_id": 35,
     "entity": "Prescription",
     "letter_id": "EA0183",
     "disagreement_type": "missed",
@@ -3909,7 +3065,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 48,
+    "case_id": 36,
     "entity": "Prescription",
     "letter_id": "EA0183",
     "disagreement_type": "spurious",

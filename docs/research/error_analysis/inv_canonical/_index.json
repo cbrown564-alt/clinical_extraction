@@ -193,7 +193,7 @@
   },
   {
     "letter_id": "EA0044",
-    "n_missed": 1,
+    "n_missed": 2,
     "n_spurious": 0,
     "letter_exact": false
   },
@@ -205,7 +205,7 @@
   },
   {
     "letter_id": "EA0046",
-    "n_missed": 1,
+    "n_missed": 2,
     "n_spurious": 0,
     "letter_exact": false
   },
@@ -529,7 +529,7 @@
   },
   {
     "letter_id": "EA0132",
-    "n_missed": 1,
+    "n_missed": 2,
     "n_spurious": 0,
     "letter_exact": false
   },
@@ -835,7 +835,7 @@
   },
   {
     "letter_id": "EA0200",
-    "n_missed": 1,
+    "n_missed": 2,
     "n_spurious": 0,
     "letter_exact": false
   }

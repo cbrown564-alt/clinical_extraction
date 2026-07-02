@@ -345,6 +345,83 @@
   {
     "case_id": 7,
     "entity": "Investigations",
+    "letter_id": "EA0044",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 10th December 2019\n\nRe. Miss Amber Clarke D.O.B.: 29/06/2000\n\nDiagnosis: Generalised Epilepsy with tonic-clonic seizures alone\n\tDiabetes\n\nMedication: lamotrigine 75mg twice a day\n\nInvestigations: MRI 2019 normal\n\t\tEEG 2019: generalised spike and wave with photosensitivity\n\nI reviewed this 19 year old woman by telephone today. I was pleased to hear that she has not had any further seizures since her last clinic appointment and since starting the lamotrigine. We had a chat of the ongoing need to take medication. This is because of the risks that convulsive seizures have. I explained that the EEG changes, which show a generalised pattern, are in keeping with the syndrome of a generalised epilepsy with tonic clonic seizures alone. I explained that the EEG also showed evidence of photosensitivity. This means that Miss Clark should be careful around flashing lights and patterns of sunlight through trees which may provoke seizures.\n\nShe is planning to learn to drive when she has been a year free of seizures.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 8,
+    "entity": "Investigations",
     "letter_id": "EA0046",
     "disagreement_type": "missed",
     "match_key": "('MRI', 'Yes', 'Abnormal')",
@@ -450,7 +527,114 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 8,
+    "case_id": 9,
+    "entity": "Investigations",
+    "letter_id": "EA0046",
+    "disagreement_type": "missed",
+    "match_key": "('MRI', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C1319851",
+          "CUIPhrase": "mri abnormal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 10/12/2019\n \nr.e. Llewleyn Richards. D.O.B. 23.10.1980\n \nDiagnosis:            Symptomatic structural epilepsy secondary to\n                                Significant traumatic brain injury 2005\n \nSeizure type and frequency:\n                                Focal to bilateral convulsive seizures, last event October 2019\n \nCurrent anti-epileptic medication:\n                                Levetiracetam 750mg bd\n                                Phenytoin 100mg od (reducing as detailed below)\n \nOther medication includes: sertraline\n \nInvestigations: MRI 2019 right frontal lobe gliosis\n \nI reviewed this 39 year old man by telephone clinic today. His wife also joined in the consultation. As you know he had a significant brain injury in 2005 when he was involved in a head on car crash at 40mph. He was unconscious and in hospital for a week at the time. He has been left with left sided weakness since the accident. He also has ongoing problems with his mood and has seen the community mental health team for this.\n \nOn 23rd September 2019 he remembers having unusual episodes of a strange \u201cout of body\u201d experience. He has several of these in the morning and then had another one in the afternoon before loosing consciousness. The next thing he remembers is waking up in hospital. He has not had any further events. His wife witnessed the events and said that his eyes were fixed looking in the left before he left out a scream and then lost consciousness. He went stiff and started shaking and his lips went blue. This lasted a few minutes before he started to recover but then he had another 3 evetns in quick sucession and was taken to hospital. Whilst in hospital he had a MRI scan which confirmed some structural brain changes due to his accident.\n \nHe hasn\u2019t been able to work since the accident but was an electrician before hand. He is a non-smoker but drinks around 25 units of alcohol per week and smokes ocassional cannabis. He was driving before this event. He had 2 febrile seizures at the ages of 14 and 18 months. He also had viral encephalitis when he was 18 years old. His paternal grandfather had epilepsy after a brain tumor.\n \nHis MRI in hospital showed some gliosis secondary to his brain injury and an EEG at the time showed some R sided sharp waves.\n \nImpression. Mr Richards has focal epilepsy secondary to his traumatic brain injury.\n \n\u00b7         I explained the diagnosis of epilepsy to Mr Richards\n\u00b7         Epilepsy is relatively common, affecting around 30,000 people in Wales. Epilepsy causes seizures which can be thought of as electrical disturbances in the brain. Although most seizures are uneventful sometimes seizures can cause injury and very rarely seizures can cause serious injury or even death (Sudden Death in Epilepsy \u2013 SUDEP).\n\u00b7         Given this it is important to treat the seizures with medication to reduce the risk of seizures happening. Overall there is around a 70% of treating the seizures successfully with medication.\n\u00b7         I would be grateful if you could continue to prescribe the levetiracetam. I have enclosed an information leaflet on levetiracetam with this letter. If Mr Richards has further seizures then I would increase it to 1000mg bd. It could be further increased after that to 1250mg bd\n\u00b7         Levetiracetam is generally well tolerated but occasionally can cause mood changes\n\u00b7         In terms of driving, I explained the current DVLA rules on driving with epilepsy. Mr Richards needs to stop driving and inform the DVLA of the diagnosis. He is not able to drive until he has been 1 year free of seizures.\n\u00b7         It would be important to consider safety in some activities where seizures could be dangerous. For example Mr Richards should not have baths alone and take showers instead and climbing ladders or operating some types of machinery could be dangerous. I also explained some first aid measure of what to do when a seizure happens.\n\u00b7         Having said this it is important to lead as normal life as possible and most people with epilepsy can do this.\n\u00b7         It is important though for yourself or Mr Richards to contact us via telephone or email (the details are at the top of this letter) if there are any problems or questions about the epilepsy at any stage. with him.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 10,
     "entity": "Investigations",
     "letter_id": "EA0049",
     "disagreement_type": "missed",
@@ -507,7 +691,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 9,
+    "case_id": 11,
     "entity": "Investigations",
     "letter_id": "EA0050",
     "disagreement_type": "missed",
@@ -564,7 +748,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 10,
+    "case_id": 12,
     "entity": "Investigations",
     "letter_id": "EA0061",
     "disagreement_type": "missed",
@@ -631,7 +815,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 11,
+    "case_id": 13,
     "entity": "Investigations",
     "letter_id": "EA0067",
     "disagreement_type": "missed",
@@ -688,7 +872,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 12,
+    "case_id": 14,
     "entity": "Investigations",
     "letter_id": "EA0079",
     "disagreement_type": "missed",
@@ -724,7 +908,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 13,
+    "case_id": 15,
     "entity": "Investigations",
     "letter_id": "EA0082",
     "disagreement_type": "missed",
@@ -801,7 +985,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 14,
+    "case_id": 16,
     "entity": "Investigations",
     "letter_id": "EA0102",
     "disagreement_type": "missed",
@@ -868,7 +1052,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 15,
+    "case_id": 17,
     "entity": "Investigations",
     "letter_id": "EA0102",
     "disagreement_type": "spurious",
@@ -935,7 +1119,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 16,
+    "case_id": 18,
     "entity": "Investigations",
     "letter_id": "EA0104",
     "disagreement_type": "missed",
@@ -971,7 +1155,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 17,
+    "case_id": 19,
     "entity": "Investigations",
     "letter_id": "EA0111",
     "disagreement_type": "missed",
@@ -1028,7 +1212,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 18,
+    "case_id": 20,
     "entity": "Investigations",
     "letter_id": "EA0117",
     "disagreement_type": "missed",
@@ -1075,7 +1259,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 19,
+    "case_id": 21,
     "entity": "Investigations",
     "letter_id": "EA0117",
     "disagreement_type": "spurious",
@@ -1122,7 +1306,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 20,
+    "case_id": 22,
     "entity": "Investigations",
     "letter_id": "EA0120",
     "disagreement_type": "spurious",
@@ -1158,7 +1342,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 21,
+    "case_id": 23,
     "entity": "Investigations",
     "letter_id": "EA0123",
     "disagreement_type": "missed",
@@ -1215,7 +1399,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 22,
+    "case_id": 24,
     "entity": "Investigations",
     "letter_id": "EA0127",
     "disagreement_type": "missed",
@@ -1272,7 +1456,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 23,
+    "case_id": 25,
     "entity": "Investigations",
     "letter_id": "EA0131",
     "disagreement_type": "missed",
@@ -1329,7 +1513,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 24,
+    "case_id": 26,
     "entity": "Investigations",
     "letter_id": "EA0132",
     "disagreement_type": "missed",
@@ -1436,7 +1620,114 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 25,
+    "case_id": 27,
+    "entity": "Investigations",
+    "letter_id": "EA0132",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-is-abnormal",
+        "text": "EEG-is-abnormal",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "EEG",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-is-abnormal",
+        "text": "EEG-is-abnormal",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "EEG",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic Date 3/10/2018\n\nDear Dr,\n\nRe: \tMr Richard Hanson. DOB 31/02/1998\n\nDiagnosis:\tProbable focal epilepsy\n\nSeizure type and frequency:\tFocal seizures with altered awareness, several per month\n\nInvestigations:\tMRI 02/03/2018 normal\n\t\tEEG 24/09/2018 left sided temporal slow waves with spikes\n\nMedication:\tTo start eslicarbazepine as detailed below\n\nI spoke with this 20-year-old man by telephone today to explain his recent EEG results. The EEG is abnormal and it shows focal changes on the left side with some slow and sharp waves. Mr Hanson is continuing to get his sterotyped episodes of altered awareness where he has a difficult to describe feeling of familiarity as well as a strange feeling in his stomach. They are happening weekly. He has only ever had one episode of loss of consciousness which in hindsight was probably a focal to bilateral convulsive seizure.\n\nI think that the episodes that he is getting are focal seizures, I therefore think that he has epilepsy and the EEG is supportive of this.\n\nComments:\n\nI explained the diagnosis of epilepsy to Mr Hanson. I explained that epilepsy is relatively common, affecting around 1% of the population. Convulsive seizures can be dangerous, cause injury and even rarely death (sudden death in epilepsy). It is therefore important that we try and treat the seizures with medication.\nPlease can you prescribe eslicarbazepine 400mg od, increasing to 800mg od after 1 week. I explained that Mr Hansons will need to inform the DVLA and stop drving until he has been 1 year free of seizures. I explained some general safety measures. \nI will arrange follow up and a phone call from the epilepsy specialist nurses.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 28,
     "entity": "Investigations",
     "letter_id": "EA0146",
     "disagreement_type": "missed",
@@ -1523,7 +1814,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 26,
+    "case_id": 29,
     "entity": "Investigations",
     "letter_id": "EA0156",
     "disagreement_type": "missed",
@@ -1600,7 +1891,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 27,
+    "case_id": 30,
     "entity": "Investigations",
     "letter_id": "EA0179",
     "disagreement_type": "missed",
@@ -1657,7 +1948,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 28,
+    "case_id": 31,
     "entity": "Investigations",
     "letter_id": "EA0182",
     "disagreement_type": "missed",
@@ -1725,7 +2016,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 29,
+    "case_id": 32,
     "entity": "Investigations",
     "letter_id": "EA0182",
     "disagreement_type": "spurious",
@@ -1803,7 +2094,7 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 30,
+    "case_id": 33,
     "entity": "Investigations",
     "letter_id": "EA0188",
     "disagreement_type": "missed",
@@ -1880,7 +2171,84 @@
     "verdict": "UNADJUDICATED"
   },
   {
-    "case_id": 31,
+    "case_id": 34,
+    "entity": "Investigations",
+    "letter_id": "EA0200",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Problem: 2 episodes of transient loss of consciousness\n\nDiagnosis: genetic generalised epilepsy\n\nI reviewed this 23-year-old woman together with her mother in the consultant\u2019s clinic today. She remembers coming home from the office (she works for an insurance company) in the afternoon. She remembers telling her mother that she didn\u2019t feel right before loosing consciousness and then waking up in hospital. She had bitten her tongue and had muscles aches in her arms and legs the next day.\n\nHer mother was able to describe the event in more detail. She sad that she went stiff, gave out a shout before falling to the floor and convulsing for about a minute. She had a previous similar event around 8 months ago.\n\nThere is no history of events resembling focal seizures, absences or myoclonus. She was born prematurely at 32 weeks weighing 5lbs. She did not have febrile seizures, significant cerebral infections or significant head injuries. She has already started taking lamotrigine (current dose is 50mg twice a day) and does not take any other medication apart from the oral contraceptive pill.\n\nCharlotte did have a driving licence before these event but has surrounded it to the DVLA after informing them of the diagnosis. She drinks alcohol with her friends on the weekend but does not smoke. Her neurological examination and ECG was normal in clinic today.\n\nAn MRI brain performed last month was normal. An EEG from May shows paroxysms of generalised spike and wave activity but no photosensitivity.\n\nImpression. I think that the two events of loss of consciousness were generalised tonic-clonic seizures. This, together with the abnormal EEG mean that there is a diagnosis of epilepsy, namely genetic generalised epilepsy.\n\nComments. I explained the diagnosis to Charlotte and the need for long term treatment with epilepsy medication given the risk of injury and rare risk of death with epilepsy. The lamotrigine dose can be increased further should there be any further seizures.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 35,
     "entity": "Investigations",
     "letter_id": "EA0200",
     "disagreement_type": "missed",

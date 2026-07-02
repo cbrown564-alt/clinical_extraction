@@ -20,7 +20,7 @@
   },
   "decomposition_matches_official": true,
   "n_disagreement_letters": 28,
-  "n_disagreement_cases": 31,
-  "n_missed": 26,
+  "n_disagreement_cases": 35,
+  "n_missed": 30,
   "n_spurious": 5
 }
