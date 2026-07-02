@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import pytest
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
@@ -212,6 +213,79 @@ def test_prefix_full_span_behavior_would_have_flipped_membership() -> None:
     )
     assert _is_future_medication(future_clean_ann) is False
     assert _is_future_medication(future_pert_ann) is False
+
+
+def test_prescription_future_medication_diagnostic_key_is_clause_scoped() -> None:
+    """P6: the ``future_medication`` diagnostic key must depend only on the
+    future-plan clause, not on unrelated text preceding it in the same span.
+
+    Unlike the ``clinical_headline`` gate (fixed in Phase 1), the diagnostic
+    key *construction* for a fact already gated in as future-only still used
+    ``normalize_phrase(annotation.text)`` -- the whole span -- so two facts
+    that share the same future clause but differ in unrelated leading text
+    were spuriously treated as different keys. This diagnostic never feeds
+    ``clinical_headline``, so the fix is cosmetic to a diagnostic component,
+    not a citation-affecting change (see the Phase 4 guardrail doc, item P6).
+    """
+
+    future_only = _ann(
+        "Prescription",
+        "consider increasing lamotrigine to 300mg bd",
+        DrugName="Lamotrigine",
+        DrugDose="300",
+        DoseUnit="mg",
+        Frequency="2",
+    )
+    unrelated_prefix = _ann(
+        "Prescription",
+        "patient tolerating current regimen well, consider increasing lamotrigine to 300mg bd",
+        DrugName="Lamotrigine",
+        DrugDose="300",
+        DoseUnit="mg",
+        Frequency="2",
+    )
+
+    assert _is_future_medication(future_only) is True
+    assert _is_future_medication(unrelated_prefix) is True
+
+    key_a = _prescription_component_key(future_only, "future_medication")
+    key_b = _prescription_component_key(unrelated_prefix, "future_medication")
+    assert key_a is not None
+    assert key_a == key_b
+
+    # Load-bearing: the pre-P6 whole-span key construction would have differed.
+    assert normalize_phrase(future_only.text) != normalize_phrase(unrelated_prefix.text)
+
+
+def test_prescription_weight_based_dosing_diagnostic_key_is_clause_scoped() -> None:
+    """P6: same invariant as above, for the ``weight_based_dosing`` key."""
+
+    weight_only = _ann(
+        "Prescription",
+        "levetiracetam commenced at 60mg/kg/day",
+        DrugName="Levetiracetam",
+        DrugDose="60",
+        DoseUnit="mg",
+        Frequency="2",
+    )
+    unrelated_prefix = _ann(
+        "Prescription",
+        "patient reports good compliance, levetiracetam commenced at 60mg/kg/day",
+        DrugName="Levetiracetam",
+        DrugDose="60",
+        DoseUnit="mg",
+        Frequency="2",
+    )
+
+    assert _is_weight_based_dosing(weight_only) is True
+    assert _is_weight_based_dosing(unrelated_prefix) is True
+
+    key_a = _prescription_component_key(weight_only, "weight_based_dosing")
+    key_b = _prescription_component_key(unrelated_prefix, "weight_based_dosing")
+    assert key_a is not None
+    assert key_a == key_b
+
+    assert normalize_phrase(weight_only.text) != normalize_phrase(unrelated_prefix.text)
 
 
 def test_seizure_frequency_headline_key_invariant_to_trailing_text() -> None:

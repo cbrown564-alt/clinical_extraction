@@ -229,12 +229,14 @@ def _prescription_component_key(
         if not _is_future_medication(annotation):
             return None
         name = _prescription_component_key(annotation, "name", note_text)
-        return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
+        phrase = normalize_phrase(_future_medication_clause(annotation))
+        return (name or phrase, phrase)
     if component == "weight_based_dosing":
         if not _is_weight_based_dosing(annotation):
             return None
         name = _prescription_component_key(annotation, "name", note_text)
-        return (name or normalize_phrase(annotation.text), normalize_phrase(annotation.text))
+        phrase = normalize_phrase(_weight_based_dosing_clause(annotation))
+        return (name or phrase, phrase)
     raise ValueError(f"Unknown prescription component {component!r}")
 
 
@@ -311,6 +313,27 @@ def _is_weight_based_dosing(annotation: ExectAnnotation) -> bool:
     # (e.g. "1500mg bd (60mg/kg/day)") is the same current fact, not a weight-only
     # dose. Gate only when no absolute current dose precedes the mg/kg expression.
     return not _head_clause_has_current_dose(annotation, annotation.text[: match.start()])
+
+
+def _future_medication_clause(annotation: ExectAnnotation) -> str:
+    """The future/titration cue onward, not the whole span (P6, 2026-07-02).
+
+    ``_is_future_medication`` already clause-scopes its *membership* decision to
+    the cue onward; the diagnostic key built from a matched annotation used the
+    full span text, bundling an unrelated leading current-dose clause into the
+    identity of a fact whose distinguishing content is the future-plan tail.
+    """
+
+    match = _PRESCRIPTION_FUTURE_PLAN.search(annotation.text)
+    return annotation.text[match.start() :] if match else annotation.text
+
+
+def _weight_based_dosing_clause(annotation: ExectAnnotation) -> str:
+    """The mg/kg cue onward, not the whole span (P6, 2026-07-02). See
+    :func:`_future_medication_clause`."""
+
+    match = _PRESCRIPTION_WEIGHT_BASED_DOSE.search(annotation.text)
+    return annotation.text[match.start() :] if match else annotation.text
 
 
 def _prescription_drugname_cui_keys(
