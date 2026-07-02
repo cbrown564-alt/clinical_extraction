@@ -567,21 +567,20 @@ def _source_near_entity(
         pred_mentions = (
             list(pred_by_id[letter_id].entities(entity)) if letter_id in pred_by_id else []
         )
-        used_pred: set[int] = set()
+        matching = _match_gold_to_predictions(gold_mentions, pred_mentions)
 
-        for gold in gold_mentions:
-            pred_index = _first_overlapping_prediction(gold, pred_mentions, used_pred)
+        for gold_index, gold in enumerate(gold_mentions):
+            pred_index = matching.get(gold_index)
             if pred_index is None:
                 fn += 1
                 continue
 
             tp += 1
-            used_pred.add(pred_index)
             attr_total += 1
             if _attribute_key(gold, config) == _attribute_key(pred_mentions[pred_index], config):
                 attr_tp += 1
 
-        fp += len(pred_mentions) - len(used_pred)
+        fp += len(pred_mentions) - len(matching)
 
     attr_rate = attr_tp / attr_total if attr_total else 0.0
     return SourceNearEntityDiagnostic(
@@ -598,6 +597,12 @@ def _first_overlapping_prediction(
     predictions: Sequence[ExectAnnotation],
     used_pred: set[int],
 ) -> int | None:
+    """Greedy first-overlap probe (pre-F2 behavior), kept for callers that
+    explicitly want the sequential-claim semantics or need to reproduce it for
+    comparison. ``_source_near_entity`` itself now uses
+    :func:`_match_gold_to_predictions` instead -- see that function's docstring.
+    """
+
     gold_phrase = normalize_phrase(gold.text)
     if not gold_phrase:
         return None
@@ -608,3 +613,92 @@ def _first_overlapping_prediction(
         if pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase):
             return i
     return None
+
+
+def _phrase_overlap(gold_phrase: str, pred_phrase: str) -> bool:
+    return bool(gold_phrase and pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase))
+
+
+def _match_gold_to_predictions(
+    gold_mentions: Sequence[ExectAnnotation],
+    pred_mentions: Sequence[ExectAnnotation],
+) -> dict[int, int]:
+    """Maximum-cardinality bipartite match from gold index -> prediction index.
+
+    F2 (2026-07-02): the prior algorithm (``_first_overlapping_prediction``)
+    walked gold mentions in list order and greedily claimed the first unused,
+    phrase-overlapping prediction. Because the compatibility predicate is a
+    bidirectional substring check, a short generic gold phrase (e.g. "seizure")
+    can overlap the same prediction a longer, more specific gold phrase (e.g.
+    "focal seizure") would also match; whichever gold happened to be processed
+    first claimed it, silently degrading ``attribute_agreement`` (the wrong
+    gold/pred pair gets attribute-compared) and, in denser mention sets, could
+    leave a matchable gold/pred pair stranded that a different assignment would
+    have paired, understating recall.
+
+    This replaces per-gold sequential claiming with a single whole-letter
+    maximum matching (Kuhn's algorithm / augmenting paths, over the same
+    substring-overlap compatibility predicate the old code used), which
+    guarantees *maximum cardinality* regardless of gold processing order --
+    unlike the greedy walk it replaces.
+
+    An earlier version of this fix tried to also prefer exact normalized-
+    phrase pairs over substring-only pairs as a quality tie-break. Empirically
+    (dev140 Prescription replay) that made ``attribute_agreement`` *worse*: a
+    dominant real pattern is two mentions of the *same* drug distinguished
+    only by dose, which lives in ``attributes`` not ``text`` (e.g. two
+    "Carbamazepine" gold spans against two "Carbamazepine" predictions) --
+    whether a given gold span reads as an "exact" or "substring-only" match
+    against those predictions turns on incidental annotation-span framing
+    (e.g. a "Medication:" prefix), not on which dose it actually is, so exact-
+    first tiering scrambled a same-drug pairing the old greedy walk preserved
+    by coincidence of processing both lists in the same (document) order. The
+    tie-break used here instead is list-position proximity: gold and
+    prediction mention lists are both built by walking the same letter
+    top-to-bottom, so the closest-index compatible prediction is preferentially
+    the *same* real-world mention, for both the repeated-same-drug case and the
+    short-generic-vs-long-specific case the fix targets.
+    """
+
+    gold_phrases = [normalize_phrase(g.text) for g in gold_mentions]
+    pred_phrases = [normalize_phrase(p.text) for p in pred_mentions]
+
+    match_pred_for_gold: dict[int, int] = {}
+    match_gold_for_pred: dict[int, int] = {}
+
+    def candidates(gold_index: int, visited: set[int]) -> list[int]:
+        gold_phrase = gold_phrases[gold_index]
+        compatible = [
+            pred_index
+            for pred_index in range(len(pred_mentions))
+            if pred_index not in visited and _phrase_overlap(gold_phrase, pred_phrases[pred_index])
+        ]
+        compatible.sort(key=lambda pred_index: abs(pred_index - gold_index))
+        return compatible
+
+    def try_augment(gold_index: int, visited: set[int]) -> bool:
+        ranked = candidates(gold_index, visited)
+
+        # Pass 1: prefer an outright free compatible prediction, closest list
+        # position first.
+        for pred_index in ranked:
+            if match_gold_for_pred.get(pred_index) is None:
+                visited.add(pred_index)
+                match_pred_for_gold[gold_index] = pred_index
+                match_gold_for_pred[pred_index] = gold_index
+                return True
+
+        # Pass 2: no free slot -- only now try displacing an occupant via a
+        # standard augmenting path, which is what actually raises cardinality.
+        for pred_index in ranked:
+            visited.add(pred_index)
+            if try_augment(match_gold_for_pred[pred_index], visited):
+                match_pred_for_gold[gold_index] = pred_index
+                match_gold_for_pred[pred_index] = gold_index
+                return True
+        return False
+
+    for gold_index in range(len(gold_mentions)):
+        try_augment(gold_index, set())
+
+    return match_pred_for_gold

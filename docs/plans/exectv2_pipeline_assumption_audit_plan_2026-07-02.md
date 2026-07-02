@@ -27,6 +27,50 @@ Diagnosis gold-quality passages all updated). Canonical run overall
 re-prediction or schema change, documented in the Phase 4 guardrail doc): P6,
 SF-2, F2, P7, SF-5.
 
+**Parked items closed out 2026-07-02** (all 5, none costed, none touch a
+currently-cited headline number): **P6** (Rx `future_medication`/
+`weight_based_dosing` diagnostic-key clause scope) fixed and unit-tested;
+zero-impact on this run's diagnostic components (matches its own "no citation
+at risk" framing). **F2** (`match.py` greedy `_first_overlapping_prediction` →
+maximum-cardinality `_match_gold_to_predictions`) fixed after two design
+iterations (an exact-phrase-priority tie-break was tried and rejected — it
+degraded Prescription attribute-agreement by scrambling same-drug
+repeated-mention pairing; switched to list-position proximity, which recovers
+the old algorithm's Prescription pairing exactly while still fixing genuine
+cardinality loss); SF `source_near` recall 0.6150→0.6203 (+1 case, `EA0143`),
+zero change elsewhere. **SF-2** (direction-aware state schema + metric) added
+`frequency_state_directional` + a new `state_profile_directional` companion
+metric (additive-only, `clinical_headline`/`state_profile` untouched);
+dev140 F1 0.6810 vs `state_profile`'s 0.7200, making the SF Phase-6
+"model defaults every direction to Same" finding visible as a score delta.
+**P7** (Rx multi-dose weight-context whole-evidence bug) — the guardrail
+doc's own "needs re-prediction" classification was **wrong**: the producer
+operates on static gold-letter text, not live LLM output, so this was a free
+replay; fixed, isolated rules-only Prescription `clinical_headline`
+0.9386→0.9615 (+9 tp/-9 fn, dev140), 11 dose-iterations recovered across 7
+letters. **SF-5** (producer-side state-definition reconciliation) — same
+wrong-classification pattern as P7, both modules are documented replay layers;
+`sf_state_projection.py` reconciled to the canonical `frequency_state_faithful`
+(also incidentally fixes a pre-SF-1-era zero-count precedence bug in its local
+copy), zero regressions. `sf_unknown_suppression.py` deliberately **not**
+reconciled — its suppression predicate is keyed on the *old* "unknown"
+classification as a proxy for "this FrequencyChange is a false positive
+(drug-response/historical-context evidence)"; widening its state definition
+would silently disable suppression rather than improve it, a genuine
+predicate-redesign need distinct from the guardrail doc's original framing.
+Neither `sf_state_projection.py` nor `sf_unknown_suppression.py` feeds any
+currently-cited number (only the retired v01–v05 finding-assembly manifests
+reference them; v08/v09 use a different SF producer). Deliberately **not**
+attempted: re-running the full v08 hybrid assembly to see whether P7's fix
+moves the manuscript's cited headline numbers (0.9155 dev140 / 0.8502
+full-200) — P7's producer does feed the live `prescription_repair_v03` v08
+lane, so this is a real open question, but re-running the full multi-stage
+assembly is a much larger-blast-radius action than any of the five parked
+fixes and was left for an explicit decision rather than done unilaterally.
+All five: dev140-replay-verified (zero new LLM calls throughout), unit-tested,
+hypothesis-registry-recorded (all `CONFIRMED` except SF-5 `PARTIAL`), dossiers
+regenerated. Not yet committed.
+
 ## Why this plan exists
 
 The 2026-07-02 gold case ledger row-adjudicated Prescription and Investigations

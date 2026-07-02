@@ -24,6 +24,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     canonicalize_medication_name,
     clinical_headline_unit_keys,
+    frequency_state_directional,
     frequency_state_faithful,
     headline_duplicate_tags,
     match_key,
@@ -375,6 +376,72 @@ def test_state_profile_stays_state_sensitive_and_collapses_per_type_multiplicity
     # Gold presence {active-rate, changed}; pred {active-rate}: the change is a real miss.
     assert score.state_profile.precision == 1.0
     assert score.state_profile.recall == 0.5
+
+
+def test_frequency_state_directional_distinguishes_change_direction() -> None:
+    # Concrete counts behave exactly like frequency_state_faithful.
+    assert frequency_state_directional({"NumberOfSeizures": "0"}) == "seizure-free"
+    assert frequency_state_directional({"NumberOfSeizures": "3"}) == "active-rate"
+    assert frequency_state_directional({}) == "unknown"
+    # A concrete count is still more specific than a qualitative change descriptor.
+    assert (
+        frequency_state_directional({"NumberOfSeizures": "0", "FrequencyChange": "Decreased"})
+        == "seizure-free"
+    )
+    # Unlike frequency_state_faithful, each FrequencyChange value is its own state
+    # (SF-2, 2026-07-02) instead of collapsing to a single "changed" bucket.
+    assert frequency_state_directional({"FrequencyChange": "Increased"}) == "increased"
+    assert frequency_state_directional({"FrequencyChange": "Decreased"}) == "decreased"
+    assert frequency_state_directional({"FrequencyChange": "Frequent"}) == "frequent"
+    assert frequency_state_directional({"FrequencyChange": "Infrequent"}) == "infrequent"
+    assert frequency_state_directional({"FrequencyChange": "Same"}) == "same"
+
+
+def test_state_profile_directional_penalizes_wrong_direction_that_state_profile_forgives() -> None:
+    # Gold reports a worsening (Increased); the model reports an improvement
+    # (Decreased). The direction-blind state_profile scores this a match (both
+    # collapse to "changed"); the direction-sensitive companion must not.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Increased", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Decreased", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.state_profile.f1 == 1.0
+    assert score.state_profile_directional.f1 == 0.0
+
+
+def test_state_profile_directional_matches_state_profile_when_direction_agrees() -> None:
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Frequent", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Frequent", CUI="C0270834"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.state_profile.f1 == 1.0
+    assert score.state_profile_directional.f1 == 1.0
 
 
 def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> None:

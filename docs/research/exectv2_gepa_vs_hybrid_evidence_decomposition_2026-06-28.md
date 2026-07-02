@@ -42,6 +42,16 @@ structured attribute (CUI, dose, frequency) matches exactly between gold and pre
 measurement-mechanics finding distinct from the consolidation finding, pointing toward fuzzy/CUI-aware
 evidence matching rather than consolidation-aware re-keying as the fix.
 
+**Numbers corrected 2026-07-02 (F2, `docs/research/exectv2_pipeline_assumption_audit_phase4_guardrail_2026-07-02.md`):**
+the official `source_near` scorer's greedy first-overlap matching (which could let a short generic
+gold phrase steal the prediction a longer, more specific gold phrase should have matched) was fixed
+to a maximum-cardinality match. On the GEPA-best run the §4 table's `0.694` GEPA evidence-recall
+figure moves to **0.695** (tp 648→649 of 935 gold facts; one SeizureFrequency case, `EA0143`, already
+adjudicated in the SF companion doc above as exactly this cardinality artifact). Diagnosis,
+Prescription, and Investigations are each individually unchanged on this run. The magnitude is
+negligible and does not change any rounding-level framing in §4 ("69% of gold" is still 69%); noted
+here only for citation completeness, per this project's scorer-edit disclosure convention.
+
 The doc's text below is left unedited as the historical record of what was measured at the time
 (BP9), but its "genuine non-retrieval" framing should not be cited for Diagnosis, SeizureFrequency,
 or Prescription without these corrections — the §5 "actionable lever for GEPA is retrieval, not

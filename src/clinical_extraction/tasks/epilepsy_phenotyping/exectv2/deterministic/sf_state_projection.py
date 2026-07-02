@@ -32,6 +32,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
+    frequency_state_faithful,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.6"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
@@ -515,17 +518,18 @@ def _project_mentions(letter_id: str, mentions: Sequence[Mapping[str, Any]]) -> 
 
 
 def _state(mention: Mapping[str, Any]) -> str:
-    attrs = dict(mention.get("attributes") or {})
-    values = [
-        attrs.get("NumberOfSeizures"),
-        attrs.get("LowerNumberOfSeizures"),
-        attrs.get("UpperNumberOfSeizures"),
-    ]
-    if any(value == "0" for value in values if value is not None):
-        return "seizure-free"
-    if any(value for value in values):
-        return "active-rate"
-    return "unknown"
+    """Count-based state, or ``changed``/``unknown`` via the shared faithful
+    definition (SF-5, 2026-07-02).
+
+    Previously a local 3-way (seizure-free/active-rate/unknown) reimplementation
+    that discarded ``FrequencyChange`` entirely, silently collapsing every
+    genuinely reported qualitative change to ``unknown`` for this module's own
+    drop-rule/dedup/ownership logic (a separate defect from -- and now
+    reconciled with -- :func:`frequency_state_faithful`, the canonical scorer
+    definition). See the Phase 4 guardrail doc's SF-5 item.
+    """
+
+    return frequency_state_faithful(dict(mention.get("attributes") or {}))
 
 
 def _is_generic_type(mention: Mapping[str, Any]) -> bool:

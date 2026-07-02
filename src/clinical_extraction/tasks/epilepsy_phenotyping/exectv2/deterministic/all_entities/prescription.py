@@ -159,13 +159,20 @@ def _prescription_attribute_sets(
     for dose_index, dose in enumerate(dose_matches):
         if evidence[dose.end() : dose.end() + 4].lower().startswith("/kg"):
             continue
-        if _PRESCRIPTION_WEIGHT_BASED_CONTEXT.search(evidence):
-            continue
         local_right = (
             dose_matches[dose_index + 1].start()
             if dose_index + 1 < len(dose_matches)
             else len(evidence)
         )
+        # P7 (2026-07-02): scoped to this dose's own clause (its match start
+        # through the next dose, or end of evidence). The prior whole-evidence
+        # search let a weight-based restatement of ANY dose (e.g. a trailing
+        # "(8mg/kg/day)" total) silently drop every OTHER, unrelated current
+        # dose in the same multi-dose evidence blob before scoring ever saw
+        # them. ``search(evidence, pos, endpos)`` (not a sliced substring) so
+        # ``\b`` still sees the real surrounding characters at the window edge.
+        if _PRESCRIPTION_WEIGHT_BASED_CONTEXT.search(evidence, dose.start(), local_right):
+            continue
         between = evidence[dose.end() : local_right]
         prior_dose_region = evidence[dose_matches[0].end() : dose.start()]
         if dose_index > 0 and _PRESCRIPTION_PLAN_CONTEXT.search(prior_dose_region):

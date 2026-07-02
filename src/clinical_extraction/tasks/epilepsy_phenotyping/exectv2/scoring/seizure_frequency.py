@@ -37,6 +37,7 @@ class FrequencyStateScores(BaseModel):
 
     clinical_headline: PRF1
     state_profile: PRF1
+    state_profile_directional: PRF1
     active_rate: PRF1
     active_rate_fidelity: PRF1
     seizure_free: PRF1
@@ -56,6 +57,9 @@ def score_frequency_state(
             "clinical_headline",
         ),
         state_profile=_score_frequency_state_profile(gold_letters, pred_letters),
+        state_profile_directional=_score_frequency_state_profile_directional(
+            gold_letters, pred_letters
+        ),
         active_rate=_score_frequency_state_component(gold_letters, pred_letters, "active-rate"),
         active_rate_fidelity=_score_frequency_active_rate_fidelity(gold_letters, pred_letters),
         seizure_free=_score_frequency_state_component(gold_letters, pred_letters, "seizure-free"),
@@ -144,6 +148,46 @@ def _frequency_state_profile_keys(annotations: Iterable[ExectAnnotation]) -> lis
     """Per-letter presence set of change-aware states (deduplicated, type-agnostic)."""
 
     return list(dict.fromkeys(frequency_state_faithful(a.attributes) for a in annotations))
+
+
+def _score_frequency_state_profile_directional(
+    gold_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[ExectLetter],
+) -> PRF1:
+    """SF-2: direction-sensitive companion to :func:`_score_frequency_state_profile`.
+
+    Same per-letter presence-set shape, but keyed by :func:`frequency_state_directional`
+    instead of :func:`frequency_state_faithful`, so a directional disagreement
+    (e.g. gold ``increased`` vs. predicted ``same``) counts as a miss instead of
+    both collapsing to the same ``changed`` key and scoring a match.
+    """
+
+    gold_by_id = _letters_by_id(gold_letters)
+    pred_by_id = _letters_by_id(pred_letters)
+    all_ids = sorted(gold_by_id.keys() | pred_by_id.keys())
+    return sum_prf1(
+        multiset_prf1(
+            _frequency_state_profile_directional_keys(
+                gold_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in gold_by_id
+                else ()
+            ),
+            _frequency_state_profile_directional_keys(
+                pred_by_id[letter_id].entities("SeizureFrequency")
+                if letter_id in pred_by_id
+                else ()
+            ),
+        )
+        for letter_id in all_ids
+    )
+
+
+def _frequency_state_profile_directional_keys(
+    annotations: Iterable[ExectAnnotation],
+) -> list[Hashable]:
+    """Per-letter presence set of direction-aware states (deduplicated, type-agnostic)."""
+
+    return list(dict.fromkeys(frequency_state_directional(a.attributes) for a in annotations))
 
 
 def _frequency_state_keys(
@@ -264,4 +308,33 @@ def frequency_state_faithful(attributes: Mapping[str, str]) -> str:
         return state
     if attributes.get("FrequencyChange"):
         return "changed"
+    return "unknown"
+
+
+def frequency_state_directional(attributes: Mapping[str, str]) -> str:
+    """Direction-aware state: like :func:`frequency_state_faithful`, but the
+    undifferentiated ``changed`` bucket is replaced by gold's own five-way
+    ``FrequencyChange`` vocabulary (``increased``/``decreased``/``frequent``/
+    ``infrequent``/``same``) instead of collapsing every qualitative change to
+    one label.
+
+    SF-2 (2026-07-02): the SF Phase 6 changed-class row-adjudication found
+    direction neither modelled nor scored at *either* layer -- ``FrequencyChange``
+    is a first-class, populated contract attribute (``closed_vocab``
+    Decreased/Frequent/Increased/Infrequent/Same) that both the old headline key
+    and ``frequency_state_faithful`` discarded down to a single presence flag, so
+    a deterioration and an improvement scored identically (direction recovered in
+    0/12 gold-directional agreements on the adjudicated sample). See
+    ``docs/experiments/exectv2/seizure_frequency/exectv2_sf_changed_class_row_analysis_2026-06-29.md``
+    section 10's "direction-aware SF schema + direction-sensitive metric"
+    recommendation, which this implements on the scoring side (no re-prediction
+    needed -- ``FrequencyChange`` is already populated in stored predictions).
+    """
+
+    state = _count_based_state(attributes)
+    if state is not None:
+        return state
+    change = attributes.get("FrequencyChange")
+    if change:
+        return change.lower()
     return "unknown"

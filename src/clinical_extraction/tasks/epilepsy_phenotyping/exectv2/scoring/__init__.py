@@ -56,6 +56,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.prescription
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     FrequencyStateScores,
     _frequency_state_keys,
+    frequency_state_directional,
     frequency_state_faithful,
     score_frequency_state,
 )
@@ -94,6 +95,7 @@ __all__ = [
     "canonicalize_medication_name",
     "clinical_headline_unit_keys",
     "concept_keys",
+    "frequency_state_directional",
     "frequency_state_faithful",
     "frequency_state_keys",
     "headline_duplicate_tags",

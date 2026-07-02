@@ -4,6 +4,19 @@ Status: **CLOSED (H-inflated CONFIRMED under both readings: predeclared-formula 
 verdict-only 61.1% — both >> 50% threshold).** Date: 2026-06-30.
 Owner: ExECTv2 GEPA workstream / predecessor-lessons application follow-up.
 
+> **Numbers corrected 2026-07-02 (F2, `docs/research/exectv2_pipeline_assumption_audit_phase4_guardrail_2026-07-02.md`):**
+> the official `source_near` scorer's greedy first-overlap matching was fixed to a maximum-cardinality
+> match; on this exact run/entity it recovers **1 of the 72 misses below** — `EA0143`'s
+> `focal-seizures-with-altered-awareness` (row 54 in `_adjudication.csv`, already adjudicated
+> `H1_CARDINALITY` / `MODEL_DEFENSIBLE` with the reason *"greedy matching just credited it to the
+> other, generic 'seizure' gold tag instead - pure cardinality artifact"* — the fix mechanically
+> resolves exactly the artifact that case's own adjudication named). Corrected self-validation:
+> `tp=116/fn=71/recall=0.6203` (was `tp=115/fn=72/recall=0.6150`). Both decision-number readings move
+> by less than half a percentage point and the verdict is unchanged: predeclared-formula H-inflated
+> `59/71 = 83.1%` (was 83.3%), plain-verdict H-inflated `43/71 = 60.6%` (was 61.1%). The original
+> tables below are left as the historical 72-case record; treat the corrected `71`-case denominator as
+> current.
+
 Executes: `docs/plans/exectv2_gepa_ev_recall_consolidation_reexamination_plan_2026-06-30.md` Phase 3
 (SF extension, fresh predeclaration written into that plan's Phase 3 section same-day, per its own
 instruction not to port Phase 1's method directly).

@@ -254,6 +254,19 @@ This isolates whether the LLM-only route can reach the hybrid's 0.85R/1.00P on *
 the part of seizure frequency a clinician actually acts on — and which the current benchmark and
 schema both throw away.
 
+> **Metric half built 2026-07-02 (SF-2, `docs/research/exectv2_pipeline_assumption_audit_phase4_guardrail_2026-07-02.md`):**
+> the third bullet above (direction-sensitive metric) is now implemented as
+> `state_profile_directional` (`scoring/seizure_frequency.py`), an additive companion to
+> `state_profile` keyed by `frequency_state_directional` (each `FrequencyChange` value is its own
+> state instead of collapsing to `changed`). dev140 replay on the canonical multi-family run:
+> `state_profile_directional` F1 `0.6810` vs `state_profile` F1 `0.7200` — a `0.039` drop that makes
+> this doc's 0/12 direction-recovery finding directly visible as a score delta (the model predicts
+> only `Same` among its `changed`-class facts; gold's directional distribution is genuinely spread
+> across all five values). **The first two bullets (direction-aware schema for model *emission*, and
+> seizure-adjacency prompt discipline) remain open** — those are extraction-behavior changes needing
+> a live LLM probe, gated behind a separate predeclaration and user go-ahead, not covered by this
+> metric-side fix.
+
 ## 11. Artifacts
 
 - Substrate (full letter + gold/pred SF + lexeme scan, one md per letter):

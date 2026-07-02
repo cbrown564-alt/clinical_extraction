@@ -786,6 +786,30 @@ def test_prescription_suppresses_to_start_and_suggest_introducing_plans() -> Non
     assert prescriptions == []
 
 
+def test_prescription_weight_based_restatement_does_not_drop_other_current_doses() -> None:
+    """P7 (2026-07-02): a trailing mg/kg/day total for ONE dose must not silently
+    drop OTHER, unrelated current doses in the same multi-dose evidence span.
+
+    The whole-evidence weight-context search used to fire once per dose-loop
+    iteration regardless of which dose it actually described, so a single
+    trailing "(8mg/kg/day)" restatement suppressed every current dose in the
+    sentence, not just the weight-based one.
+    """
+
+    letter = ExectLetter(
+        "PRESC-MULTI-DOSE-WEIGHT-TAIL",
+        "Medications: Carbamazepine 100mg am, 200mg pm (8mg/kg/day).",
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    doses = sorted(m.attributes["DrugDose"] for m in prescriptions)
+    assert doses == ["100", "200"]
+    # The weight-only figure (8) must never surface as its own current dose.
+    assert "8" not in doses
+
+
 def test_prescription_handles_twice_aday_typo() -> None:
     letter = ExectLetter(
         "PRESC-TWICE-ADAY",
