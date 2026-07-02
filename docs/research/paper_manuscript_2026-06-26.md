@@ -474,10 +474,14 @@ distinction worth stating plainly. Source:
 **The same mechanism, more lopsided, on Diagnosis.** A parallel whole-corpus
 row-level adjudication on the official Diagnosis `clinical_headline` scorer
 (`score_concept_identity(...).concept_only` — entity-agnostic recall, home-tagged
-precision; self-validated to reproduce the scorer's aggregate exactly, F1 0.6617)
+precision; self-validated to reproduce the scorer's aggregate exactly, F1 0.6617 at
+that pass — the 2026-07-02 D1 hierarchy-match scorer-correctness fix has since raised
+the raw metric to 0.6779 by folding 5 parent/child gold-multiplicity pairs into it,
+reducing the disagreement base from 209 to 199)
 finds the same pattern, more pronounced. 88/140 letters carry at least one Diagnosis
-disagreement (92 missed + 117 spurious concepts, 209 total); adjudicating every one
-clinically, only **14.8% (31/209) are genuine model errors** (concentrated in two
+disagreement (92 missed + 117 spurious concepts, 209 total on the pre-D1 scorer);
+adjudicating every one clinically, only **14.8% (31/209) — 15.6% (31/199) on the
+post-D1 scorer — are genuine model errors** (concentrated in two
 narrow, fixable patterns: tagging an explicitly *negated* finding as a diagnosis, and
 mis-tagging an EEG/Investigations finding under the Diagnosis entity). The remaining
 **85.2%** are the model being clinically correct and scored wrong — dominantly *gold
@@ -485,8 +489,10 @@ multiplicity*: the gold tags both a generic/parent concept and a specific/co-pre
 concept (or splits one compound diagnostic phrase into separate atomic tags) from a
 single diagnostic statement, and the model's reasonable one-tag consolidation is
 scored as both a miss and a false positive. Recomputing precision/recall after
-crediting every clinically-defensible disagreement lifts Diagnosis from **F1 0.6617 to
-approximately 0.85–0.99 (point estimate ≈0.92)** — a larger absolute gap than
+crediting every clinically-defensible disagreement lifts Diagnosis from its raw metric
+(0.6617 at that pass, **0.6779** after the D1 fix) to **approximately 0.85–0.99 (point
+estimate ≈0.92)** — a ceiling essentially unchanged by D1, which folds already-defensible
+pairs into the metric rather than moving it, and a larger absolute gap than
 SeizureFrequency's even at the lower bound of this range. Diagnosis is therefore not a
 pure closeable-fidelity entity: it shares SeizureFrequency's gold-quality ceiling,
 just driven by annotation-granularity convention rather than inter-annotator
@@ -605,11 +611,23 @@ four phase-result docs.* The reliability thesis's §7 "Target" tier requires bea
 published benchmark with all three architecture families on ExECTv2, mirroring the Gan
 three-way comparison above. A parallel LLM-only instantiation was built and closed out
 independently of this manuscript: a GEPA-optimized single-pass prompt (no deterministic
-scaffolding beyond ingestion) reaches dev140 `clinical_headline` F1 **≈0.731**
-(gpt-4.1-mini, best multi-family run) and **≈0.654** (Qwen 3.6 35B, underperforming its own
+scaffolding beyond ingestion) reaches dev140 `clinical_headline` F1 **≈0.749**
+(gpt-4.1-mini, best multi-family run) and **≈0.679** (Qwen 3.6 35B, underperforming its own
 hand-tuned ExECTv2 baseline of 0.694). Against the hybrid ceiling on the same surface
-(0.9155 dev140; Table R2/R3 report the full-200 aggregate), LLM-only sits **≈0.18–0.19
-below hybrid** and does not clear the published-benchmark surface either. This completes the
+(0.9155 dev140; Table R2/R3 report the full-200 aggregate), LLM-only sits **≈0.17
+below hybrid** and does not clear the published-benchmark surface either.[^scorer-correction-2026-07-02]
+
+[^scorer-correction-2026-07-02]: The gpt-4.1-mini figure (≈0.749 overall; was ≈0.731) reflects
+the 2026-07-02 `clinical_headline` scorer-correctness fixes across all four families
+(Prescription 0.8766→0.9122 — clause-scoping of the future/weight gate plus a drug-lexicon
+valproate/brand unification; SeizureFrequency 0.5921→0.5982 — zero-count precedence; Diagnosis
+0.6617→0.6779 — the D1 hierarchy-aware match, reported on the concept_only clinical_headline
+surface that `clinical_headline_unit_keys` actually uses; Investigations unchanged at 0.8583;
+overall 0.7313→0.7416→0.7491); the pre-fix values were computed under scorer bugs. Predictions
+are unchanged; only the scorer changed. See
+`docs/research/exectv2_pipeline_assumption_audit_phase1_2026-07-02.md` and the completing
+re-score sweep `docs/research/exectv2_pipeline_assumption_audit_rescore_sweep_2026-07-02.md`.
+This completes the
 thesis's missing three-way leg, and the result is a negative one: raw LLM capability, tuned
 directly on the scoring surface, does not approach what the deterministic/hybrid scaffolding
 achieves — the same direction as C2 and C4, now with a third independent leg, reinforcing
@@ -1022,15 +1040,17 @@ corpus where the benchmark gap is a property of the gold, not the model (row-ana
 
 A fourth finding extends the same pattern to Diagnosis, more lopsidedly. A parallel
 whole-corpus adjudication on the official Diagnosis `clinical_headline` scorer
-(self-validated against the scorer's own aggregate, F1 0.6617) finds 88/140 letters
-carry a Diagnosis disagreement (209 missed-or-spurious concepts); of these only
-**14.8%** are genuine model errors (two narrow patterns: negation mis-read as
+(self-validated against the scorer's own aggregate, F1 0.6617 at that pass; 0.6779 after
+the 2026-07-02 D1 hierarchy-match fix folded 5 gold-multiplicity pairs into the metric)
+finds 88/140 letters carry a Diagnosis disagreement (209 missed-or-spurious concepts on
+the pre-D1 scorer, 199 after); of these only
+**14.8%** (15.6% post-D1) are genuine model errors (two narrow patterns: negation mis-read as
 diagnosis, and Investigations findings mis-tagged as Diagnosis). **85.2%** are gold
 *multiplicity* — splitting one diagnostic statement into a generic-plus-specific tag
 pair, or several atomic fragments — that the model's reasonable single-tag
 consolidation is scored against twice (once as a miss, once as a false positive).
-Crediting every clinically-defensible disagreement lifts Diagnosis from F1 0.6617 to
-approximately 0.85–0.99 (point estimate ≈0.92), a larger raw gap than SeizureFrequency's
+Crediting every clinically-defensible disagreement lifts Diagnosis from F1 0.6617 (0.6779
+post-D1) to approximately 0.85–0.99 (point estimate ≈0.92), a larger raw gap than SeizureFrequency's
 even at the range's lower bound. Diagnosis therefore is not a pure closeable-fidelity
 entity either; it shares the gold-quality-ceiling mechanism, driven by
 annotation-granularity convention rather than inter-annotator disagreement
@@ -1212,7 +1232,7 @@ remains re-implemented per above.
 negative.** The thesis's Target tier requires beating the published benchmark with all three
 architecture families and a clean three-way comparison. This is now measured for ExECTv2 (§4.2,
 closing paragraph): a GEPA-optimized LLM-only single pass reaches dev140 `clinical_headline` F1
-≈0.731 (gpt-4.1-mini) / ≈0.654 (Qwen 3.6 35B), ≈0.18–0.19 below the hybrid ceiling (0.9155
+≈0.749 (gpt-4.1-mini) / ≈0.679 (Qwen 3.6 35B), ≈0.17 below the hybrid ceiling (0.9155
 dev140) and short of the published-benchmark surface. The Target tier is therefore not met — the
 result is a negative one, consistent with C2/C4's direction that architecture, not model
 capability, carries the gain. Two caveats bound this claim: (i) it is dev140 development-surface
@@ -1285,7 +1305,7 @@ range 82.4–94.6%) where the metric credits 62.1%; for Diagnosis, the gold's te
 split one diagnostic statement into multiple co-present concepts leaves the single-pass
 extractor clinically defensible on the equivalent of F1 ≈0.85–0.99 (point estimate
 ≈0.92, revised from an original single-pass point estimate of 0.9501 by the same blinded
-replication check) where the metric credits 0.6617. Both of the benchmark's weakest cells
+replication check) where the metric credits 0.6617 (0.6779 after the 2026-07-02 D1 fix). Both of the benchmark's weakest cells
 are therefore in substantial part a gold-quality ceiling rather than a model deficit.
 A non-obvious inversion accompanies this finding: the deterministic rules pipeline beats the
 hybrid configuration on the published-benchmark surface for Diagnosis, Prescription, and
@@ -1425,5 +1445,5 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 - Cross-model agreement is a validated ExECTv2 reliability signal (unused; available artifact).
 - ExECTv2 SF reproduces Gan's population-wide error magnitude. The wall *mechanism* transfers (6/9 checks: External Risk plateau + no gold-free separator on the binding gold-unknown slice, H0 retained), but ExECTv2's population-wide error cells are noisier than Gan's degenerate P2.1 panel (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on errors vs 69.4% correct), so 3 of 9 checks — the population-magnitude ones — read `no`. Identical same-magnitude population-wide degeneracy is not claimed.
 - The shared SF machinery is literally identical across tasks (ExECTv2 re-implements projection; structural reuse is the accurate claim, not code identity).
-- The GEPA LLM-only ExECTv2 numbers (≈0.731 gpt-4.1-mini, ≈0.654 Qwen dev140 clinical_headline F1) are a promoted full-200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's frozen full-200 numbers without the dev140-vs-full200 caveat.
+- The GEPA LLM-only ExECTv2 numbers (≈0.749 gpt-4.1-mini, ≈0.679 Qwen dev140 clinical_headline F1; the mini figure reflects the 2026-07-02 four-family scorer-correctness fixes, see §4.2 footnote) are a promoted full-200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's frozen full-200 numbers without the dev140-vs-full200 caveat.
 - The C1 gold-quality blind replication (`exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`) is external clinical validation. It is a second internal pass (an LLM-based sub-agent blind to the original verdicts and to this project's conclusions, not a human clinician) that corroborates the aggregate magnitude and revises the Diagnosis point estimate to a range; a blinded board-certified neurologist/epileptologist review remains open future work.

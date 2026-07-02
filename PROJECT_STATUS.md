@@ -38,9 +38,11 @@ Current evidence stack:
   `0.5909`), while exact-source Gate 4 passed only as frozen aggregate evidence
   (`359/450`, `+16`, precision `0.6000`).
 - GEPA workstream closed out (06-28 to 06-30): single-pass GEPA plateaus
-  ~0.73 (mini) / ~0.65 (Qwen) on dev140 `clinical_headline`, ~0.15-0.19 below
+  ~0.74 (mini) / ~0.65 (Qwen) on dev140 `clinical_headline`, ~0.17-0.19 below
   the v08 hybrid (0.9155); root-caused to producer evidence-recall, not
-  verify/arbitrate stages
+  verify/arbitrate stages. (The mini figure was ~0.73 / 0.7313 before the
+  2026-07-02 four-family scorer-correctness fixes re-scored it to 0.7491 — see the
+  pipeline-assumption-audit entry under Now/Done Recently.)
   (`docs/research/exectv2_gepa_vs_hybrid_evidence_decomposition_2026-06-28.md`).
   Cross-model close-out: Qwen 3.6 35B underperforms mini on the identical
   architecture and does not clear its own hand-tuned baseline
@@ -67,6 +69,51 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-02: **Pipeline assumption audit — COMPLETE, all phases** (holistic
+  scorer-correctness re-assessment triggered by the medication follow-ups; the
+  remaining phases executed 2026-07-02 with five parallel sub-agents and user
+  go-ahead on the costed probes). Plan (now marked COMPLETE):
+  `docs/plans/exectv2_pipeline_assumption_audit_plan_2026-07-02.md`.
+  - Phase 0 (`..._audit_2026-07-02.md`): shared PRF1 reduction provably correct
+    (no systemic corruption); the seed defect *class* — a fact's scored
+    membership depending on text/facts outside its own scope — recurs in every
+    family.
+  - Phase 1, all four measurement bugs fixed under gating
+    (`..._phase1_2026-07-02.md`, `..._d1_diagnosis_2026-07-02.md`): Prescription
+    clause-scoping (0.8766→0.9073), SF zero-count precedence (0.5921→0.5982),
+    Investigations text-fallback gate (latent), and **D1 Diagnosis
+    hierarchy-aware match now landed** — the `concept_only` `clinical_headline`
+    surface `clinical_headline_unit_keys` actually uses moves 0.6617→0.6779 via 5
+    true ancestor/descendant recoveries (EA0002/06/07/35/153), zero spurious
+    cross-credits, kill criterion met; reinforces (does not threaten) the 85.2%
+    gold-artifact finding. `dx_specificity_collapse_cross_contamination_2026-07-02`
+    → CONFIRMED.
+  - Phase 2 (costed, `docs/experiments/exectv2/prescription/exectv2_rx_extraction_probes_2026-07-02.md`,
+    gpt-4.1-mini dev140, ~560 calls): **#2 current-vs-future dose conflation
+    CONFIRMED** (+0.0322 vs fresh matched baseline, recall-driven; EA0021
+    corrected); **#3 non-AED over-extraction CONFIRMED** (+0.0277,
+    precision-driven fp 18→7) with an honestly-recorded recall cost (the naive
+    AED-only gate also dropped genuine AEDs — a production version needs a tighter
+    gate). Both were dev140 hand-tuned instruction probes, not shipped.
+  - Phase 3 (`..._phase3_2026-07-02.md`): drug-lexicon valproate/brand gaps
+    (Rx 0.9073→0.9122, EA0093 unification), P4 note-window scope fix
+    (headline-neutral, `guideline_defaulted_frequency` diagnostic now functional),
+    and a gold-data-issue log stood up (`experiments/gold_data_issues.jsonl`,
+    seeded with EA0146 Perampanel/brivaracetam).
+  - Phase 4 (`..._phase4_guardrail_2026-07-02.md`): scorer scope-invariant +
+    scorer↔projection consistency property tests, an edit-triggers-predeclaration
+    gate (`scripts/check_scorer_edit_predeclaration.py` + runbook), the
+    mechanism-taxonomy standing lens, and the "all cited runs" re-score sweep
+    (`..._rescore_sweep_2026-07-02.md`): 13 dev140 runs + 1 full-200 aggregate
+    (0.8502→0.8616, holdout protocol respected) re-scored, all four dossiers +
+    frontend scorecard regenerated (contract test green). Parked with rationale:
+    P6, SF-2, F2, P7, SF-5 (diagnostic-scoped / need re-prediction or a schema
+    change).
+  Canonical run overall dev140 `clinical_headline` **0.7313→0.7416→0.7491**
+  (overwrite-with-disclosure: registry `primary_metrics` + disclosure, dossiers,
+  frontend snapshot, and manuscript §4.2 footnote + Diagnosis gold-quality
+  passages all updated). Every audit hypothesis in
+  `experiments/hypothesis_registry.jsonl` now carries a final verdict.
 - 2026-06-30: applying `docs/research/predecessor_lessons/` to the current
   evidence base (the packet's own absorption tables were stale relative to the
   GEPA/SF work done since 06-28). Five bounded items: (1) registry hygiene
@@ -90,14 +137,17 @@ Current evidence stack:
 
 ### Next
 
-- **NEW 2026-07-02:** four concrete follow-ups from the gold case ledger's
-  Prescription/Investigations row-adjudication (see Done Recently below and
-  `docs/canon/workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md`). None are
-  implemented yet — logged as an open queue (also tracked as OPEN entries in
-  `experiments/hypothesis_registry.jsonl`) rather than actioned silently,
-  since #1 changes a scorer historical F1 citations depend on and #2/#3
-  change model behavior, both of which this project's own conventions treat
-  as gated, predeclared changes, not drive-by fixes:
+- **RESOLVED 2026-07-02:** four concrete follow-ups from the gold case ledger's
+  Prescription/Investigations row-adjudication (see the pipeline-assumption-audit
+  entries under Now / Done Recently and
+  `docs/canon/workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md`). **All four are
+  now resolved under the audit:** #1 → Phase 1 scorer clause-scope fix
+  (Rx 0.8766→0.9073); #2/#3 → Phase 2 costed gpt-4.1-mini probes, both CONFIRMED
+  (current-vs-future +0.0322; AED-only +0.0277, with a recorded recall cost);
+  #4 → Phase 3 drug-lexicon unification (Rx →0.9122) plus the new gold-data-issue
+  log (EA0146). Every corresponding hypothesis in
+  `experiments/hypothesis_registry.jsonl` now carries a final verdict. Original
+  queue detail retained below for provenance:
   1. **Scorer bug (candidate fix, 11/48 = 22.9% of Prescription's
      disagreements)**: `_is_future_medication`/`_is_weight_based_dosing` in
      `scoring/prescription.py` regex-match the *entire* gold annotation span
@@ -257,6 +307,22 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-02: **Pipeline assumption audit, ALL phases (0–4) complete** (see Now
+  for the full entry). Phase 0 four parallel read-only audits confirmed the shared
+  PRF1 math is correct but the seed defect class is systemic. Phase 1 landed all
+  four scorer-correctness fixes under gating (Prescription clause-scope +0.0307,
+  SF zero-count +0.0061, Investigations latent, and — completed in this pass —
+  Diagnosis D1 hierarchy match `concept_only` 0.6617→0.6779). Phase 2 (costed,
+  user go-ahead) ran two gpt-4.1-mini extraction probes, both CONFIRMED. Phase 3
+  added drug-lexicon valproate/brand unification (Rx →0.9122), a headline-neutral
+  P4 note-window fix, and a gold-data-issue log. Phase 4 built the anti-recurrence
+  guardrail (scope-invariant + scorer↔projection property tests, an
+  edit-triggers-predeclaration gate, the mechanism-taxonomy lens) and the "all
+  cited runs" re-score sweep (13 dev140 + 1 full-200 aggregate), regenerating the
+  registry `primary_metrics` + disclosure, all four dossiers, and the frontend
+  scorecard. Canonical overall `clinical_headline` 0.7313→0.7416→0.7491. Executed
+  with five parallel sub-agents; every audit hypothesis now carries a final
+  verdict. Parked-with-rationale: P6, SF-2, F2, P7, SF-5.
 - 2026-07-02: Built the gold case ledger (`experiments/exectv2_ledger/`) — one
   shared mechanism taxonomy + schema replacing four independently-reimplemented
   "is this gold or model" scripts, plus a hypothesis registry
