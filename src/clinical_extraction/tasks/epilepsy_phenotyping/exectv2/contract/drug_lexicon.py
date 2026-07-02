@@ -19,10 +19,15 @@ def _normalize_phrase(text: str) -> str:
 
 
 #: Surface spellings that map to a known generic before benchmark/CUI lookup.
+#: Keys are already in ``_normalize_phrase`` form (lowercase, single-spaced,
+#: hyphens dropped). Values are the canonical generic *surface* (space form; the
+#: trailing ``.replace(" ", "-")`` in ``canonicalize_medication_name`` hyphenates).
 DRUG_SURFACE_ALIASES: dict[str, str] = {
     "brivetiracetam": "brivaracetam",
     "brivitiracetam": "brivaracetam",
+    "briviact": "brivaracetam",
     "buccal midazolam": "midazolam",
+    "buccolam": "midazolam",
     "carbamazapine": "carbamazepine",
     "carbmazapine": "carbamazepine",
     "epilim": "sodium valproate",
@@ -32,15 +37,25 @@ DRUG_SURFACE_ALIASES: dict[str, str] = {
     "episenta": "sodium valproate",
     "eplim": "sodium valproate",
     "eplim chrono": "sodium valproate",
+    "eslicarbazepine acetate": "eslicarbazepine",
     "eslicarbazepineacetate": "eslicarbazepine",
+    "frisium": "clobazam",
     "keppra": "levetiracetam",
     "lamictal": "lamotrigine",
     "lamtorigine": "lamotrigine",
+    "lyrica": "pregabalin",
+    "neurontin": "gabapentin",
     "phenobarbitone": "phenobarbital",
     "sodiumvalproate": "sodium valproate",
     "tegretaol": "carbamazepine",
     "tegretol": "carbamazepine",
     "tegretol retard": "carbamazepine",
+    "topamax": "topiramate",
+    "trileptal": "oxcarbazepine",
+    "valproate": "sodium valproate",
+    "valproate semisodium": "sodium valproate",
+    "valproic acid": "sodium valproate",
+    "vimpat": "lacosamide",
     "zobisamide": "zonisamide",
     "zonismaide": "zonisamide",
 }

@@ -17,6 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnn
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     annotation_clinical_concepts,
     collapse_concepts_to_most_specific,
+    concepts_hierarchically_related,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
@@ -30,6 +31,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize im
 DEFAULT_IGNORE_ATTRIBUTES: frozenset[str] = DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES
 
 _PRESCRIPTION_ENTITY = "Prescription"
+_DIAGNOSIS_ENTITY = "Diagnosis"
 
 # Families whose clinical_headline key list applies `dict.fromkeys` and therefore
 # collapses same-unit duplicates within a letter. Investigations and Prescription
@@ -421,8 +423,8 @@ def _score_concept_identity(
         recall_pool = Counter(_concept_keys(pred_mentions, entity, variant))
         home_pred = Counter(_concept_keys(home_pred_mentions, entity, variant))
 
-        precision_tp += sum((gold & home_pred).values())
-        recall_tp += sum((gold & recall_pool).values())
+        precision_tp += _concept_overlap_count(gold, home_pred, entity, variant)
+        recall_tp += _concept_overlap_count(gold, recall_pool, entity, variant)
         pred_count += sum(home_pred.values())
         gold_count += sum(gold.values())
 
@@ -432,6 +434,57 @@ def _score_concept_identity(
         pred_count=pred_count,
         gold_count=gold_count,
     )
+
+
+def _concept_overlap_count(
+    gold: Counter[Hashable],
+    pred: Counter[Hashable],
+    entity: str,
+    variant: str,
+) -> int:
+    """Count matched concept units between a gold and a prediction key multiset.
+
+    Exact-equal keys match as before. For the Diagnosis ``concept`` headline
+    (``clinical_headline``) the leftover keys are additionally reconciled across
+    the concept hierarchy: a gold concept and a predicted concept that are in an
+    ancestor/descendant relation denote the same clinical fact at different
+    altitudes and are credited as one match. This repairs the artifact where
+    ``collapse_diagnoses_to_most_specific`` runs independently on each side, so a
+    gold parent and a predicted descendant (or vice versa) that survived collapse
+    on opposite sides never met by exact key equality -- scoring a verbatim-
+    correct diagnosis as a paired FN+FP.
+
+    Matching is greedy and cardinality-bounded (each key matched ``min`` of the
+    remaining counts), so the returned count never exceeds either multiset's
+    size, and only true ancestor/descendant pairs (``concepts_hierarchically_
+    related``) are reconciled -- unrelated concepts never match. Every other
+    ``(entity, variant)`` keeps the exact multiset-intersection behaviour.
+    """
+
+    exact = sum((gold & pred).values())
+    if entity != _DIAGNOSIS_ENTITY or variant != "concept":
+        return exact
+
+    gold_remaining = gold - pred
+    pred_remaining = pred - gold
+    if not gold_remaining or not pred_remaining:
+        return exact
+
+    matched = exact
+    pred_items = list(pred_remaining.items())
+    for gold_key, gold_count in gold_remaining.items():
+        needed = gold_count
+        for index, (pred_key, pred_count) in enumerate(pred_items):
+            if needed == 0:
+                break
+            if pred_count <= 0:
+                continue
+            if concepts_hierarchically_related(gold_key[1], pred_key[1]):
+                take = min(needed, pred_count)
+                matched += take
+                needed -= take
+                pred_items[index] = (pred_key, pred_count - take)
+    return matched
 
 
 def _concept_keys(

@@ -252,65 +252,65 @@ def _prescription_component_keys(
 
 
 def _has_source_stated_frequency(annotation: ExectAnnotation, note_text: str = "") -> bool:
+    # P4 (rx_frequency_source_note_window_2026-07-02): decide source-stated vs
+    # guideline-defaulted frequency from the annotation's OWN span only. The prior
+    # implementation also searched a +/-48/+128-char window of the full note around
+    # the drug phrase, which let a *neighbouring* prescription's cadence reclassify
+    # this fact. ``note_text`` is retained for call-site symmetry with the other
+    # component builders but is intentionally not consulted here.
     return any(
         _PRESCRIPTION_SOURCE_FREQUENCY.search(candidate)
-        for candidate in _prescription_frequency_source_candidates(annotation, note_text)
+        for candidate in _prescription_frequency_source_candidates(annotation)
     )
 
 
 def _prescription_frequency_source_candidates(
     annotation: ExectAnnotation,
-    note_text: str,
 ) -> tuple[str, ...]:
     candidates = [annotation.text, annotation.text.replace("-", " ")]
     if annotation.raw_text and annotation.raw_text != annotation.text:
         candidates.extend([annotation.raw_text, annotation.raw_text.replace("-", " ")])
-    if note_text:
-        candidates.extend(_note_windows_for_annotation_phrase(annotation, note_text))
     return tuple(candidate for candidate in candidates if candidate)
 
 
-def _note_windows_for_annotation_phrase(
-    annotation: ExectAnnotation,
-    note_text: str,
-) -> tuple[str, ...]:
-    normalized_note = normalize_phrase(note_text)
-    windows: list[str] = []
-    for phrase in _annotation_frequency_search_phrases(annotation):
-        start = 0
-        while True:
-            index = normalized_note.find(phrase, start)
-            if index == -1:
-                break
-            windows.append(normalized_note[max(0, index - 48) : index + len(phrase) + 128])
-            start = index + max(1, len(phrase))
-    return tuple(windows)
+def _head_clause_has_current_dose(annotation: ExectAnnotation, head_text: str) -> bool:
+    """True when the fact's concrete current dose appears in ``head_text``.
 
+    The scored ``DrugDose``/``DoseUnit`` encode the *current* dose even when the
+    gold span bundles trailing titration or a weight-normalized restatement. If
+    that current dose is present in the clause *before* the future/weight cue, the
+    fact is a current prescription with trailing plan text, not a future- or
+    weight-only fact, and must not be excluded from the clinical headline.
+    """
 
-def _annotation_frequency_search_phrases(annotation: ExectAnnotation) -> tuple[str, ...]:
-    raw_terms = [
-        annotation.text,
-        annotation.raw_text or "",
-        annotation.attributes.get("DrugName", ""),
-        annotation.attributes.get("CUIPhrase", ""),
-        canonicalize_medication_name(annotation.attributes.get("DrugName", "")),
-    ]
-    phrases: list[str] = []
-    seen: set[str] = set()
-    for term in raw_terms:
-        phrase = normalize_phrase(term)
-        if phrase and phrase not in seen:
-            seen.add(phrase)
-            phrases.append(phrase)
-    return tuple(phrases)
+    dose = annotation.attributes.get("DrugDose")
+    unit = annotation.attributes.get("DoseUnit")
+    if not dose or not unit:
+        return False
+    head = head_text.replace("-", " ")
+    return re.search(rf"(?<!\d){re.escape(dose)}(?!\d)", head) is not None
 
 
 def _is_future_medication(annotation: ExectAnnotation) -> bool:
-    return bool(_PRESCRIPTION_FUTURE_PLAN.search(annotation.text))
+    match = _PRESCRIPTION_FUTURE_PLAN.search(annotation.text)
+    if match is None:
+        return False
+    # Clause-scope (mirrors deterministic/conventions/prescription.py's truncate-
+    # at-cue): a future-plan cue *after* the fact's current dose is trailing
+    # titration attached to a current prescription (the scored DrugDose is the
+    # current value), so the fact stays in the clinical headline. Only a fact
+    # whose current dose is absent from the pre-cue head clause is future-only.
+    return not _head_clause_has_current_dose(annotation, annotation.text[: match.start()])
 
 
 def _is_weight_based_dosing(annotation: ExectAnnotation) -> bool:
-    return bool(_PRESCRIPTION_WEIGHT_BASED_DOSE.search(annotation.text))
+    match = _PRESCRIPTION_WEIGHT_BASED_DOSE.search(annotation.text)
+    if match is None:
+        return False
+    # Same clause-scoping: a mg/kg restatement following a concrete current dose
+    # (e.g. "1500mg bd (60mg/kg/day)") is the same current fact, not a weight-only
+    # dose. Gate only when no absolute current dose precedes the mg/kg expression.
+    return not _head_clause_has_current_dose(annotation, annotation.text[: match.start()])
 
 
 def _prescription_drugname_cui_keys(
