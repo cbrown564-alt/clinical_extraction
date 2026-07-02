@@ -1,0 +1,26 @@
+{
+  "run_id": "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",
+  "entity": "Investigations",
+  "n_letters": 140,
+  "official_clinical_headline": {
+    "tp": 106,
+    "fp": 5,
+    "fn": 30,
+    "precision": 0.954954954954955,
+    "recall": 0.7794117647058824,
+    "f1": 0.8582995951417005
+  },
+  "replayed_clinical_headline": {
+    "tp": 106,
+    "fp": 5,
+    "fn": 30,
+    "precision": 0.954954954954955,
+    "recall": 0.7794117647058824,
+    "f1": 0.8582995951417005
+  },
+  "decomposition_matches_official": true,
+  "n_disagreement_letters": 28,
+  "n_disagreement_cases": 31,
+  "n_missed": 26,
+  "n_spurious": 5
+}

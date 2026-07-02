@@ -1,0 +1,74 @@
+[
+  {
+    "case_id": 13,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's own family_all entry 'Medication: Levetiracetam 1500mg bd (60mg/kg/day)' carries the identical dose (1500mg) and frequency (bd) the model predicted. The weight-based annotation '(60mg/kg/day)' bundled into that single gold mention's text trips the scorer's weight-based-dosing exclusion (_is_weight_based_dosing), which drops gold's own current-dose fact from clinical_headline scoring entirely, even though the model's narrower 'Levetiracetam' prediction states the exact same currently-prescribed regimen."
+  },
+  {
+    "case_id": 14,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's mention 'Lamotrigine 50mg bd increasing by 5mg each dose every 2 weeks to 75mg bd (7mg/kg/day)' bundles the current 50mg-bd starting dose together with future-titration wording ('increasing... to 75mg bd') and a weight-based rate '(7mg/kg/day)' in one span, so the scorer's future-plan and weight-based-dosing exclusions drop the whole mention from clinical_headline even though its DrugDose=50/Frequency=2 attributes are the CURRENT dose. The model's plain 'Lamotrigine' 50mg bd prediction states that same current fact."
+  },
+  {
+    "case_id": 15,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Same EA0092 letter: gold's 'Levetiracetam 500mg bd (36mg/kg/day)' mention is excluded purely because the weight-based-dosing regex matches '(36mg/kg/day)' inside its annotation text. The model's plain 'Levetiracetam' 500mg bd prediction states the identical current dose that gold's own attributes (DrugDose=500, Frequency=2) already record."
+  },
+  {
+    "case_id": 16,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "The letter reads 'Valproate as Episenta 500mg nocte'. Gold canonicalizes via the Episenta brand-name alias to DrugName 'SodiumValproate' -> match key 'sodium-valproate', but the model output the bare generic name 'Valproate' exactly as the letter phrased it. The drug lexicon (drug_lexicon.py) aliases 'episenta' -> 'sodium valproate' but has no entry unifying bare 'valproate' with 'sodium valproate', so the model's clinically-identical drug/dose/frequency lands on a different canonical key and is scored as a miss."
+  },
+  {
+    "case_id": 17,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Mirror image of case 16: the model's 'Valproate 500mg' (nocte, matching the letter's own wording 'Valproate as Episenta 500mg nocte') is the same clinical fact as gold's Episenta-derived 'sodium-valproate 500mg' mention; the canonicalization lexicon simply fails to unify 'valproate' and 'sodium valproate' as the same drug, producing a spurious FP alongside case 16's missed FN for what is a single genuine agreement."
+  },
+  {
+    "case_id": 18,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's 'Phenytoin 120mg bd (10mg/kg/day)' mention is excluded from clinical_headline purely by the weight-based-dosing regex matching '(10mg/kg/day)'. The model's plain 'Phenytoin' 120mg bd prediction matches the letter's stated current dose ('Medication: ... Phenytoin 120mg bd (10mg/kg/day)'), reinforced by the plan to check a 'Phenytoin level' before any dose change -- there is no indication this dose is anything but current."
+  },
+  {
+    "case_id": 19,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's 'Sodium Valproate 440mg bd (30mg/kg/day)' mention is excluded the same way, by the weight-based regex matching '(30mg/kg/day)'. The model's 'Sodium Valproate' 440mg bd prediction is the identical current dose (the letter's narrative also references 'increasing the valproate' as something already done to reach today's 440mg, not a still-pending change), so the model's assertion of the current dose is correct even though gold's bundled span was excluded."
+  },
+  {
+    "case_id": 20,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_multiplicity_consolidation",
+    "reason": "Gold tags the identical Lamotrigine 150mg bd fact twice in EA0104 -- once in the header 'Current medication Lamotrigine 150mg bd' and again in the narrative restatement 'At present she is taking lamotrigine 150 milligrammes twice a day' -- and Prescription's per-occurrence scoring convention counts both as distinct assertions requiring two predictions. The model produced one consolidated 'Lamotrigine' 150mg bd prediction, correctly capturing the single clinical fact once rather than duplicating it."
+  },
+  {
+    "case_id": 21,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's mention 'Brivaracetam 100mgs bd to increase to 100mgs am, 150mgs pm and after 2 weeks to 150mgs bd' bundles the CURRENT 100mg-bd dose together with the future titration plan in one span, tripping the future-plan exclusion on the word 'increase' and dropping the whole mention from clinical_headline. The model's plain 'Brivaracetam' 100mg bd prediction states only the current dose (matching gold's own DrugDose=100/Frequency=2 attributes) and correctly does not assert the not-yet-reached 150mg targets."
+  },
+  {
+    "case_id": 22,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter states 'Carbamazepine Controlled Release 400mgs bd to reduce to 200mgs am, 400mgs pm', and the plan explicitly frames this as not-yet-effective: 'I have therefore suggested a small reduction in the morning dose of Carbamazepine as shown above. He will let us know how he gets on.' The 200mg-AM figure is a planned future target dose, not the patient's current medication; the model incorrectly emitted it as a separate, currently-standing clinical_headline fact."
+  },
+  {
+    "case_id": 23,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Same reduction plan as case 22: '400mgs pm' is the PM half of the same not-yet-effective future target regimen ('to reduce to 200mgs am, 400mgs pm'), confirmed pending by 'He will let us know how he gets on.' The model incorrectly emitted this planned future dose as a current-regimen fact distinct from the genuinely current 400mg-bd dose."
+  },
+  {
+    "case_id": 24,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "This is the genuinely CURRENT dose -- 'Carbamazepine Controlled Release 400mgs bd', the first clause before 'to reduce to...' -- identical to gold's own captured attributes (DrugDose=400, Frequency=2). Gold's whole mention was dropped from clinical_headline only because the future-plan regex fired on the word 'reduce' occurring later in the same bundled annotation span; the 400mg-bd fact itself is presently accurate and the model's prediction states exactly that, unlike cases 22/23 which assert the not-yet-effective target doses."
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "case_id": 37,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_under_annotation",
+    "reason": "Letter reads 'Medication: to start sodium valproate (eplim chrono) 300mgs once a day...' for a treatment-naive patient with a brand-new diagnosis ('epilepsy unclassified'); gold tags zero Prescription mentions anywhere in this letter. The model's extraction of the explicitly stated starting dose is clinically accurate; gold appears to systematically omit not-yet-started medications rather than making an error specific to this drug."
+  },
+  {
+    "case_id": 38,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter states the patient 'is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).' The model correctly captured levetiracetam and lamotrigine but dropped clobazam entirely despite it being named in the same sentence as an existing PRN medication -- a genuine recall miss."
+  },
+  {
+    "case_id": 39,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The header explicitly lists 'anti-epileptic medication: Carbamazapine 400mg bd / Clobazam 10-20mg bd for seizure clusters.' The model captured Carbamazapine but omitted Clobazam entirely even though it is clearly listed with a dose range and indication -- a genuine recall miss."
+  },
+  {
+    "case_id": 40,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_under_annotation",
+    "reason": "Letter reads 'Medications: to start lamotrigine, as detailed below' and later 'Please start lamotrigine 25mg once a day, increasing by 25mg every fortnight to a target dose of 75mg bd' for a new-diagnosis, treatment-naive patient; gold tags zero Prescription mentions for this letter. Same pattern as case 37: the model's extraction of the stated starting dose is clinically accurate, and gold's omission looks like a systematic convention of not tagging not-yet-started medications."
+  },
+  {
+    "case_id": 41,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's single Prescription mention is the full header span 'Medication:-Currently-Lamotrigine-75mg-bd-to-increase-over-the-following-weeks-to-125mg-bd', which documents the CURRENT dose ('Currently...75mg bd') but also contains 'to increase', tripping the scorer's future-medication text filter (_is_future_medication) and silently dropping gold's own key from the ordinary_complete/clinical_headline count. The model's clean 'Lamotrigine' extraction at 75mg bd states the identical current fact and is not filtered because its shorter annotation text lacks the titration language."
+  },
+  {
+    "case_id": 42,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The header lists 'Current medication: Sodium valproate 1000mg bd / Lamotrigine 100mg bd / Perampanel 8mg on.' The model correctly extracted the first two but dropped Perampanel entirely with no textual reason (it is not future/proposed, it's a plainly stated current dose) -- a genuine recall miss."
+  },
+  {
+    "case_id": 43,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Same letter as case 42: 'Rescue medication: Clobazam 10mg bd as required / Buccal midazolam.' The model captured Clobazam as a rescue medication but dropped 'Buccal midazolam' entirely, even though its match key requires only drug name + as_required frequency (no dose) -- a genuine recall miss."
+  },
+  {
+    "case_id": 44,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "scorer_mechanics_artifact",
+    "reason": "Gold's single mention is the truncated header span 'Lamotrigine-125mg-twice-daily-(please-increase-with-immediate-effect-in', which documents the CURRENT stated dose (125mg twice daily) but the tagged span runs into 'please increase', tripping the future-medication filter and dropping gold's key. The model's clean 'Lamotrigine' 125mg/bd extraction states the same current fact and escapes the filter because it lacks the titration wording."
+  },
+  {
+    "case_id": 45,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The header lists 'Medication: Brivaracetam 100mg bd / Lamotrigine 200mg bd / Perampanel 4mg on.' The model captured Brivaracetam and Lamotrigine but dropped Perampanel entirely, despite it being in the same three-line current-medication list (and referenced again later as '...he increases his parampanel to 6mg at night') -- a genuine recall miss."
+  },
+  {
+    "case_id": 46,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_multiplicity_consolidation",
+    "reason": "Gold tags the same fact twice: once at the header 'Medication: Lamotrigine 150mg bd' and again in the narrative 'She is taking Lamotrigine 150 mg bd with no side effects.' The multiset scorer therefore expects 2 occurrences of this key; the model's single, correct 'Lamotrigine' 150mg/bd prediction only satisfies one occurrence, leaving the other counted as a miss even though nothing was actually omitted."
+  },
+  {
+    "case_id": 47,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The header states the current split regimen 'Sodium Valproate 700mg in the morning and 800mg nocte' (two separate once-daily doses, freq=1 each). The model correctly matched the 700mg morning dose but tagged the 800mg dose with Frequency=2 (bd) instead of the correct once-nightly reading, apparently conflating it with the later sentence describing a proposed FUTURE target ('...so that he is on Sodium Valproate 800mg bd') -- a genuine frequency-attribute error."
+  },
+  {
+    "case_id": 48,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Paired with case 47: the model's spurious 'sodium-valproate 800mg bd' entry is the same misattributed fact -- it reads as having been pulled from the letter's proposed future target dose ('I suggest that the dose should be increased by 100mg so that he is on Sodium Valproate 800mg bd') rather than the actual current 800mg-nocte dosing that gold correctly captured with Frequency=1."
+  }
+]

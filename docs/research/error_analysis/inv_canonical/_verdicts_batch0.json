@@ -1,0 +1,50 @@
+[
+  {
+    "case_id": 1,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Letter states \"An EEG in 2014 did show some temporal slowing\" alongside a normal MRI, but the model's pred_family_all contains only the MRI-Normal mention and zero EEG mentions of any form. Matches the known Investigations miss pattern: letter reports both MRI and EEG, model anchors on the MRI and drops the EEG entirely rather than mis-keying it."
+  },
+  {
+    "case_id": 2,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Header explicitly lists \"Investigations: MRI 2012 normal.\\nEEG 2012 generalised spike and wave.\" yet the model's pred_family_all has only the MRI-Normal mention, no EEG mention at all. Matches the co-occurring MRI+EEG total-omission pattern."
+  },
+  {
+    "case_id": 3,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_under_annotation",
+    "reason": "The letter explicitly says the mixed epileptic/nonepileptic events were \"confirmed with an EEG recording,\" a clear textual reference to a performed EEG with a diagnostic (abnormal/epileptiform) finding, yet gold_family_all is completely empty for this letter -- gold tagged zero Investigations mentions. The model correctly picked up an EEG that gold omitted entirely."
+  },
+  {
+    "case_id": 4,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Header reads \"Investigations: EEG – single burst of generalised spike and wave \\nMRI–normal\" -- EEG is listed first and is unambiguous, but the model's pred_family_all contains only MRI-Normal, zero EEG mentions. Matches the MRI-anchoring/EEG-omission pattern."
+  },
+  {
+    "case_id": 5,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Header states \"Investigations MRI– normal\\nEEG (2007) –generalised spike and wave activity and photosensitivity,\" a clearly abnormal EEG, but the model predicted only MRI-Normal with zero EEG mentions in pred_family_all. Matches the known MRI+EEG co-occurrence miss pattern."
+  },
+  {
+    "case_id": 6,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Header lists \"EEG 2019: generalised spike and wave with photosensitivity\" and the narrative restates it (\"I explained that the EEG changes... EEG also showed evidence of photosensitivity\") -- hence gold's two near-duplicate EEG mentions -- but the model's pred_family_all has only MRI-Normal and zero EEG mentions of any form. The double gold tagging is a header+narrative restatement of the same fact, but that is irrelevant here since the model's miss is total (not a partial multiplicity shortfall), matching the MRI-anchoring/EEG-omission pattern."
+  },
+  {
+    "case_id": 7,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_multiplicity_consolidation",
+    "reason": "Gold triple-tags the identical MRI finding: header \"Investigations: MRI 2019 right frontal lobe gliosis,\" narrative \"he had a MRI scan which confirmed some structural brain changes due to his accident,\" and narrative \"His MRI in hospital showed some gliosis secondary to his brain injury.\" The model's pred_family_all already contains a single consolidated MRI Yes/Abnormal mention (plus a correct EEG Yes/Abnormal mention) exactly matching the scored key -- the \"missed\" instances are just the two extra duplicate restatements of the same MRI study, not a genuine omission."
+  },
+  {
+    "case_id": 8,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "Header states \"Investigations: MRI 2015 normal\\nEEG 2014 generalised spike and wave with polyspikes,\" clearly abnormal EEG, but the model's pred_family_all contains only MRI-Normal with zero EEG mentions. Matches the MRI-anchoring/EEG-omission pattern."
+  }
+]

@@ -90,6 +90,47 @@ Current evidence stack:
 
 ### Next
 
+- **NEW 2026-07-02:** four concrete follow-ups from the gold case ledger's
+  Prescription/Investigations row-adjudication (see Done Recently below and
+  `docs/canon/workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md`). None are
+  implemented yet — logged as an open queue (also tracked as OPEN entries in
+  `experiments/hypothesis_registry.jsonl`) rather than actioned silently,
+  since #1 changes a scorer historical F1 citations depend on and #2/#3
+  change model behavior, both of which this project's own conventions treat
+  as gated, predeclared changes, not drive-by fixes:
+  1. **Scorer bug (candidate fix, 11/48 = 22.9% of Prescription's
+     disagreements)**: `_is_future_medication`/`_is_weight_based_dosing` in
+     `scoring/prescription.py` regex-match the *entire* gold annotation span
+     text, so a gold span that bundles a current dose with titration language
+     (e.g. "75mg bd, to reduce and stop") gets wrongly excluded from
+     `clinical_headline` scoring even when the model's current-dose
+     prediction is correct. Fix direction: scope the regex to the clause
+     containing the scored dose, not the full span. Needs a dev140 replay
+     confirming no regression on the letters this scoping *should* still
+     exclude (doses that are genuinely weight-based/future for their whole
+     span) before promoting — this retroactively changes historical
+     Prescription F1 citations, so treat like any other scorer edit: replay,
+     predeclare, don't just ship.
+  2. **Current-vs-future dose conflation (candidate model/prompt fix)**: the
+     model repeatedly asserts a letter's *proposed target* dose ("increase to
+     800mg") as the *current* prescription, dropping the true current dose in
+     the process (e.g. EA0021: model emits 800mg-bd, true current is
+     700mg-AM + 800mg-nocte). Needs a GEPA or hand-tuned instruction probe
+     specifically targeting "current medication" framing vs. titration/target
+     language; affects a meaningful share of Prescription's 29 genuine
+     errors.
+  3. **Non-AED over-extraction (candidate model/prompt fix)**: the model tags
+     cardiac/diabetes comorbidity medication (clopidogrel, ramipril,
+     metformin) as Prescription facts in letters that conclude a
+     non-epileptic cause; gold consistently excludes non-AED medication. An
+     explicit "AED-only" scoping instruction is a plausible, low-risk probe.
+  4. **Minor, lower-priority, not hypothesis-tracked**: a drug-name
+     canonicalization lexicon gap (bare "valproate" doesn't unify with
+     brand-derived "sodium valproate" in `contract/drug_lexicon.py`) and one
+     gold data-entry bug found in kind (EA0146's gold `DrugName` field says
+     "Perampanel" while its own `CUIPhrase`/`CUI` correctly resolve to
+     brivaracetam) — worth a lexicon entry and a gold-data correction
+     ticket respectively, neither score-moving enough to prioritize alone.
 - **NEW 2026-07-01:** audited the whole project against the original
   supervisor brief (training-free multi-agent epilepsy-letter extraction;
   Section/Timeline + Field Extractor + Verification + Aggregator roles;
@@ -216,6 +257,29 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-02: Built the gold case ledger (`experiments/exectv2_ledger/`) — one
+  shared mechanism taxonomy + schema replacing four independently-reimplemented
+  "is this gold or model" scripts, plus a hypothesis registry
+  (`experiments/hypothesis_registry.jsonl`) tracking predeclaration -> verdict
+  lifecycle. Backfilled Diagnosis/SF from their existing adjudications (zero
+  new cost) and, for the first time, row-adjudicated Prescription and
+  Investigations at the actual scored `clinical_headline` layer (previously
+  only a narrower `source_near` evidence-recall diagnostic existed for either).
+  Answers "why isn't medication F1 at 90%": **Prescription's disagreements are
+  60.4% genuine model error** (polypharmacy drug omissions, current-vs-future
+  dose conflation, non-AED over-extraction) — the opposite finding from
+  Diagnosis (14.8% genuine) and SeizureFrequency (28.8% genuine), where gold-quality
+  artifacts dominate. Also surfaced a genuine, previously-undocumented scorer
+  bug: the `_is_future_medication`/weight-based-dosing regex in
+  `scoring/prescription.py` matches anywhere in a gold annotation's full span
+  text, so gold spans that bundle a current dose with titration language get
+  wrongly excluded from `clinical_headline` scoring even when the model's
+  current-dose prediction is correct (11/48 = 22.9% of Prescription's
+  disagreements). Investigations: 67.7% genuine, concentrated in the
+  already-known MRI-crowds-out-EEG omission pattern. Generated dossiers:
+  `docs/canon/workstreams/{DIAGNOSIS,SEIZURE_FREQUENCY,PRESCRIPTION,INVESTIGATIONS}_CANONICAL_LEDGER_CANON.md`
+  (regenerate via `uv run python experiments/exectv2_ledger/render_dossier.py`,
+  never hand-edit).
 - 2026-07-01: Documentation consolidation Path A — added `docs/NAVIGATION.md`,
   `docs/runbooks/documentation_lifecycle.md`, CI doc-hygiene gate; relocated
   evidence-recall case files from root `_sf_ev_recall/` and `_rx_inv_ev_recall/`

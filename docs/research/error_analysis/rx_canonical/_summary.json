@@ -1,0 +1,26 @@
+{
+  "run_id": "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",
+  "entity": "Prescription",
+  "n_letters": 140,
+  "official_clinical_headline": {
+    "tp": 174,
+    "fp": 30,
+    "fn": 19,
+    "precision": 0.8529411764705882,
+    "recall": 0.9015544041450777,
+    "f1": 0.8765743073047859
+  },
+  "replayed_clinical_headline": {
+    "tp": 174,
+    "fp": 30,
+    "fn": 19,
+    "precision": 0.8529411764705882,
+    "recall": 0.9015544041450777,
+    "f1": 0.8765743073047859
+  },
+  "decomposition_matches_official": true,
+  "n_disagreement_letters": 32,
+  "n_disagreement_cases": 48,
+  "n_missed": 18,
+  "n_spurious": 30
+}

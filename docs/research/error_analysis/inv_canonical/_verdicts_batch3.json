@@ -1,0 +1,50 @@
+[
+  {
+    "case_id": 24,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_multiplicity_consolidation",
+    "reason": "The letter documents a single EEG finding, first in the structured header ('EEG 24/09/2018 left sided temporal slow waves with spikes') and then restated in the narrative ('The EEG is abnormal and it shows focal changes on the left side with some slow and sharp waves'). Gold splits this one fact into three separate mentions ('EEG-is-abnormal', 'EEG-', 'EEG-'), while the model's pred_family_all consolidates it into exactly one EEG-Abnormal mention alongside the MRI-Normal fact -- a correct, non-duplicated read."
+  },
+  {
+    "case_id": 25,
+    "verdict": "MODEL_DEFENSIBLE",
+    "mechanism": "gold_multiplicity_consolidation",
+    "reason": "The only investigations evidence in the letter is one sentence, 'A recent MRI and EEG in 2018 have been normal,' stating a single combined MRI+EEG-normal fact. Gold tags EEG-Normal twice from this one clause; the model's pred_family_all captures it once (plus the MRI-Normal), which is the clinically correct consolidation of a single reported fact."
+  },
+  {
+    "case_id": 26,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter reports two clinically distinct EEGs: 'her recent MRI and EEG were normal' and, separately, 'At the time of her diagnosis in 2002 an EEG showed generalised spike and wave with absence seizures captured during hyperventilation.' The model's pred_family_all only contains MRI-Normal and EEG-Normal (the recent study), completely dropping the historical abnormal diagnostic EEG that gold correctly tags. This is a genuine recall failure, not a duplication of the same fact."
+  },
+  {
+    "case_id": 27,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter states 'He had an MRI scan around 5 years ago which was normal ... I do not have the results of his recent EEG test,' clearly implying a recent EEG was performed with a result unknown to the clinician. pred_family_all contains only the MRI mention and zero EEG mentions of any form -- exactly the known pattern where the model anchors on a co-occurring MRI and produces no EEG mention at all."
+  },
+  {
+    "case_id": 28,
+    "verdict": "BOTH_DEFENSIBLE",
+    "mechanism": "iaa_ambiguity",
+    "reason": "The sentence 'Her EEG showed some minor temporal slowing but otherwise was reported as normal' is genuinely ambiguous: gold reads it as Abnormal because a finding (temporal slowing) was noted, while the model reads it as Normal, following the letter's own explicit characterization ('reported as normal'). Both readings are clinically defensible from the same sentence."
+  },
+  {
+    "case_id": 29,
+    "verdict": "BOTH_DEFENSIBLE",
+    "mechanism": "iaa_ambiguity",
+    "reason": "This spurious flag is the mirror of case 28's missed flag on the same letter: because the model classified the ambiguous first EEG ('minor temporal slowing... otherwise was reported as normal') as Normal rather than Abnormal, it ends up with two EEG-Normal mentions (that one plus the separately described sleep-deprived EEG, 'her sleep deprived EEG did not show any epileptic activity') against gold's 1-Abnormal/1-Normal split. The disagreement traces to the same defensible ambiguity, not a model fabrication."
+  },
+  {
+    "case_id": 30,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter states 'Previous MRI scans have been normal although some EEGs have shown a probable left occipital lobe focus' -- an explicit abnormal EEG finding. pred_family_all contains only two duplicated MRI-Normal mentions and zero EEG mentions, matching the known pattern of MRI captured while a co-occurring EEG is completely dropped."
+  },
+  {
+    "case_id": 31,
+    "verdict": "GOLD_RIGHT",
+    "mechanism": "genuine_model_error",
+    "reason": "The letter states 'An EEG from May shows paroxysms of generalised spike and wave activity but no photosensitivity' and later explicitly refers to 'the abnormal EEG' in the impression -- an unambiguous abnormal EEG finding. pred_family_all contains only the MRI-Normal mention and zero EEG mentions, again matching the known co-occurring MRI+EEG miss pattern."
+  }
+]

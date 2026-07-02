@@ -40,11 +40,11 @@ abstention routing failed on binding residuals.
 | 1 | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) § Active Priorities | `clinical_headline` primary; benchmark/CUI diagnostic |
 | 2 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | **Canon:** P1–P7, surface hierarchy, gold-quality ceiling |
 | 3 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) § C1 | Claim register for SF/Dx gold-quality |
-| 4 | [`docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`](decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md) | ADR: headline vs projection |
-| 5 | [`docs/decisions/0037-sf-state-profile-is-primary-clinical-metric.md`](decisions/0037-sf-state-profile-is-primary-clinical-metric.md) | ADR: SF `state_profile` for SF-family experiments |
-| 6 | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) | v01→v08 assembly ladder (v08 frozen) |
-| 7 | [`docs/canon/08_gepa.md`](canon/08_gepa.md) | LLM-only ceiling (three-way negative) |
-| 8 | [`docs/experiments/exectv2/README.md`](experiments/exectv2/README.md) | Long tail: per-family iteration reports |
+| 4 | [`docs/canon/README.md`](canon/README.md#gold-case-ledger-generated-per-family) § Gold case ledger | Generated, per-family genuine-vs-gold mechanism breakdown for all 4 `KEY_FAMILIES` (not just SF/Dx) |
+| 5 | [`docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`](decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md) | ADR: headline vs projection |
+| 6 | [`docs/decisions/0037-sf-state-profile-is-primary-clinical-metric.md`](decisions/0037-sf-state-profile-is-primary-clinical-metric.md) | ADR: SF `state_profile` for SF-family experiments |
+| 7 | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) | v01→v08 assembly ladder (v08 frozen) |
+| 8 | [`docs/canon/08_gepa.md`](canon/08_gepa.md) | LLM-only ceiling (three-way negative) |
 
 **Start here if:** you are interpreting F1 numbers, gold-quality row adjudication,
 or the SF/Diagnosis “plateau” reframing.

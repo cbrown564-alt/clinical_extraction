@@ -42,6 +42,31 @@ Wave 4 archived iteration narratives under [`docs/archive/`](../archive/README.m
 
 ---
 
+## Gold case ledger (generated, per-family)
+
+Row-level `clinical_headline` disagreement ledger with one shared mechanism taxonomy
+across all four `KEY_FAMILIES` — replaces four independently-reimplemented "is this
+gold or model" scripts. **Never hand-edited**: regenerate with
+`uv run python experiments/exectv2_ledger/render_dossier.py` after any new
+adjudication lands. See [`experiments/exectv2_ledger/`](../../experiments/exectv2_ledger/)
+for the schema/taxonomy/builder code and `experiments/hypothesis_registry.jsonl` for
+the predeclaration → verdict lifecycle these dossiers cite.
+
+| Family | Dossier | Genuine-model-error share |
+| --- | --- | ---: |
+| Diagnosis | [`workstreams/DIAGNOSIS_CANONICAL_LEDGER_CANON.md`](workstreams/DIAGNOSIS_CANONICAL_LEDGER_CANON.md) | 14.8% |
+| SeizureFrequency | [`workstreams/SEIZURE_FREQUENCY_CANONICAL_LEDGER_CANON.md`](workstreams/SEIZURE_FREQUENCY_CANONICAL_LEDGER_CANON.md) | 28.8% |
+| Prescription | [`workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md`](workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md) | 60.4% |
+| Investigations | [`workstreams/INVESTIGATIONS_CANONICAL_LEDGER_CANON.md`](workstreams/INVESTIGATIONS_CANONICAL_LEDGER_CANON.md) | 67.7% |
+
+Diagnosis/SeizureFrequency rows are backfilled from their pre-existing canonical row
+analyses (concept/state-level, no re-adjudication); Prescription/Investigations rows
+are freshly built at full mention-level fidelity (2026-07-02) — the first row-level
+adjudication either family has had at the actual scored `clinical_headline` layer
+(previously only a narrower `source_near` evidence-recall diagnostic existed for them).
+
+---
+
 ## Control plane
 
 | Doc | Path |

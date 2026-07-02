@@ -59,6 +59,7 @@ see [`THREAD_MAP.md`](THREAD_MAP.md) for full tables.
 | ExECT holistic assembly ladder | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) |
 | ExECT Diagnosis family ladder | [`docs/canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md`](canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md) |
 | ExECT SF adjudicator ladder | [`docs/canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md`](canon/workstreams/SF_ADJUDICATOR_LADDER_CANON.md) |
+| Gold case ledger (all 4 families, per-family genuine-vs-gold breakdown) | [`docs/canon/README.md`](canon/README.md#gold-case-ledger-generated-per-family) |
 | Self-consistency / entropy reliability | [`docs/canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md`](canon/workstreams/SELF_CONSISTENCY_RELIABILITY_CANON.md) |
 | Archived iteration narratives | [`docs/archive/ARCHIVE_INDEX.md`](archive/ARCHIVE_INDEX.md) |
 | Manuscript source (markdown ahead of LaTeX) | [`docs/research/paper_manuscript_2026-06-26.md`](research/paper_manuscript_2026-06-26.md) |

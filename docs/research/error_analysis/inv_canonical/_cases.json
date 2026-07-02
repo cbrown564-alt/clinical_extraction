@@ -1,0 +1,1959 @@
+[
+  {
+    "case_id": 1,
+    "entity": "Investigations",
+    "letter_id": "EA0004",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "mri-normal",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nDiagnosis: epilepsy \u2013 probable focal\n\nCurrent antiepileptic medication: Lamotrigine 125 milligrams twice a day\nSeizure taking frequency: Uncertain, several seizures since the last clinic appointment\n\nI reviewed this 68-year-old man alone in clinic today. He lives with his son and has no recollection of his seizures. Unfortunately, his son was not able to give a witness account of the seizures over the telephone today. It seems as if he\u2019s definitely having a few seizures per year though. \n\nI note to previous MRI has been normal. An EEG in 2014 did show some temporal slowing.\n\nWe discussed previous things about epilepsy management including the risk of seizures but Mr Williams was not keen on changing his medication today.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 2,
+    "entity": "Investigations",
+    "letter_id": "EA0005",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI-2012-normal",
+        "text": "MRI-2012-normal",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "mri-normal",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nDiagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone.\n\nCurrent medication: sodium valproate 500 mg twice a day\nCarbamazepine 200 mg twice a day\n\nSeizure type and frequency: Generalised tonic clonic seizure-last event July 2016. Previous event December 2015.\n\nInvestigations: MRI 2012 normal.\nEEG 2012 generalised spike and wave.\n\nI reviewed this 32 year old teacher alone in clinic today. His last seizure coincided with forgetting to take his medication. As you know his seizures started in 2010 and he has had roughly two seizures per year since then. He has not had any events which resemble absences, myoclonus or focal seizures. He has no side effects of this medication.\n\nThere is no relevant family history, he does not smoke and he does not drink any alcohol. He lives with his partner.\n\nImpression: as he has only ever had generalised tonic chronic seizures I think he has the syndrome of epilepsy with generalised tonic clonic seizure alone.\n\nComments: we had a discussion about epilepsy in general. Mr Williams is aware that seizures involving loss of consciousness have a risk of serious injury or even rarely death (sudden death in epilepsy). He is aware of the current DVLA driving regulations. He knows he can contact us should he run into problems and we will make an appointment for him.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 3,
+    "entity": "Investigations",
+    "letter_id": "EA0015",
+    "disagreement_type": "spurious",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [],
+    "pred_mentions": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "gold_family_all": [],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "I reviewed this 36-year-old lady in clinic.\u00a0 She had a mild sub-arachnoid haemorrhage around 12 years ago.\u00a0 She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording.\u00a0\u00a0\n\u00a0\nCurrently she is taking Tegretol 500 mg BD and levetiracetam 250 mg BD.\u00a0 She is also on fluoxetine for depression of 10 mg.\n\u00a0\nI have made no changes to her treatment.\u00a0 I Will review her in 12 months time.\n\u00a0\n\u00a0\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 4,
+    "entity": "Investigations",
+    "letter_id": "EA0026",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "EEG_Type": "Standard",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "EEG_Type": "Standard",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic Date 01.02.2019\n\nFlora Chauncey. D.O.B. 04.05.1992 \n\nDiagnosis: generalised tonic clonic seizures with myoclonic jerks, possible JME\n\nInvestigations: EEG \u2013 single burst of generalised spike and wave \nMRI\u2013normal\n\nMedication: sodium valproate 700 mg in the night (to reduce)\ntopiramate 100 mg twice a day\n\nMrs Chauncey is still having approximately 15 seizures over 4 months which all happen during sleep. she is having quite a lot of side-effects from the sodium valproate\u2013 Weight gain and hair loss and would like to come off it. She has had a hysterectomy in the past. Previously she has tried carbamazepine and levetiracetam.\n\nI would suggest replacing the sodium valproate by topiramate. Please start topiramate at 25 mg once a day, increasing by 25 mg every 2 weeks until she\u2019s on a maintenance dose of 100 mg twice a day. I explain the side-effects of topiramate today.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 5,
+    "entity": "Investigations",
+    "letter_id": "EA0033",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI\u2013-normal",
+        "text": "MRI\u2013-normal",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "mri-normal",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Diagnosis: juvenile myoclonic epilepsy\n\nComorbidities: nil\n\nMedication: sodium valproate 1 g twice a day\nClobazam 10 mg as required\n\nInvestigations MRI\u2013 normal\nEEG (2007) \u2013generalised spike and wave activity and photosensitivity\n\nMany thanks for referring this 28 year old gentleman was previously seen by Prof Davis. His epilepsy started at the age of 14. History is consistent with juvenile myoclonic epilepsy presenting with generalised tonic clonic seizures, absences and myoclonic jerks.\n\nIn the past he has tried lamotrigine and topiramate without any good therapeutic benefit. There has been significant stress and anxiety in the last year.\n\nWe discussed changing his medication. Sodium valproate is the best medication for juvenile myoclonic epilepsy. Mr Jones can try more clobazam when he gets clusters of myoclonic jerks. I will ask the epilepsy specialist nurses to contact him.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 6,
+    "entity": "Investigations",
+    "letter_id": "EA0044",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 10th December 2019\n\nRe. Miss Amber Clarke D.O.B.: 29/06/2000\n\nDiagnosis: Generalised Epilepsy with tonic-clonic seizures alone\n\tDiabetes\n\nMedication: lamotrigine 75mg twice a day\n\nInvestigations: MRI 2019 normal\n\t\tEEG 2019: generalised spike and wave with photosensitivity\n\nI reviewed this 19 year old woman by telephone today. I was pleased to hear that she has not had any further seizures since her last clinic appointment and since starting the lamotrigine. We had a chat of the ongoing need to take medication. This is because of the risks that convulsive seizures have. I explained that the EEG changes, which show a generalised pattern, are in keeping with the syndrome of a generalised epilepsy with tonic clonic seizures alone. I explained that the EEG also showed evidence of photosensitivity. This means that Miss Clark should be careful around flashing lights and patterns of sunlight through trees which may provoke seizures.\n\nShe is planning to learn to drive when she has been a year free of seizures.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 7,
+    "entity": "Investigations",
+    "letter_id": "EA0046",
+    "disagreement_type": "missed",
+    "match_key": "('MRI', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C1319851",
+          "CUIPhrase": "mri abnormal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 10/12/2019\n \nr.e. Llewleyn Richards. D.O.B. 23.10.1980\n \nDiagnosis:            Symptomatic structural epilepsy secondary to\n                                Significant traumatic brain injury 2005\n \nSeizure type and frequency:\n                                Focal to bilateral convulsive seizures, last event October 2019\n \nCurrent anti-epileptic medication:\n                                Levetiracetam 750mg bd\n                                Phenytoin 100mg od (reducing as detailed below)\n \nOther medication includes: sertraline\n \nInvestigations: MRI 2019 right frontal lobe gliosis\n \nI reviewed this 39 year old man by telephone clinic today. His wife also joined in the consultation. As you know he had a significant brain injury in 2005 when he was involved in a head on car crash at 40mph. He was unconscious and in hospital for a week at the time. He has been left with left sided weakness since the accident. He also has ongoing problems with his mood and has seen the community mental health team for this.\n \nOn 23rd September 2019 he remembers having unusual episodes of a strange \u201cout of body\u201d experience. He has several of these in the morning and then had another one in the afternoon before loosing consciousness. The next thing he remembers is waking up in hospital. He has not had any further events. His wife witnessed the events and said that his eyes were fixed looking in the left before he left out a scream and then lost consciousness. He went stiff and started shaking and his lips went blue. This lasted a few minutes before he started to recover but then he had another 3 evetns in quick sucession and was taken to hospital. Whilst in hospital he had a MRI scan which confirmed some structural brain changes due to his accident.\n \nHe hasn\u2019t been able to work since the accident but was an electrician before hand. He is a non-smoker but drinks around 25 units of alcohol per week and smokes ocassional cannabis. He was driving before this event. He had 2 febrile seizures at the ages of 14 and 18 months. He also had viral encephalitis when he was 18 years old. His paternal grandfather had epilepsy after a brain tumor.\n \nHis MRI in hospital showed some gliosis secondary to his brain injury and an EEG at the time showed some R sided sharp waves.\n \nImpression. Mr Richards has focal epilepsy secondary to his traumatic brain injury.\n \n\u00b7         I explained the diagnosis of epilepsy to Mr Richards\n\u00b7         Epilepsy is relatively common, affecting around 30,000 people in Wales. Epilepsy causes seizures which can be thought of as electrical disturbances in the brain. Although most seizures are uneventful sometimes seizures can cause injury and very rarely seizures can cause serious injury or even death (Sudden Death in Epilepsy \u2013 SUDEP).\n\u00b7         Given this it is important to treat the seizures with medication to reduce the risk of seizures happening. Overall there is around a 70% of treating the seizures successfully with medication.\n\u00b7         I would be grateful if you could continue to prescribe the levetiracetam. I have enclosed an information leaflet on levetiracetam with this letter. If Mr Richards has further seizures then I would increase it to 1000mg bd. It could be further increased after that to 1250mg bd\n\u00b7         Levetiracetam is generally well tolerated but occasionally can cause mood changes\n\u00b7         In terms of driving, I explained the current DVLA rules on driving with epilepsy. Mr Richards needs to stop driving and inform the DVLA of the diagnosis. He is not able to drive until he has been 1 year free of seizures.\n\u00b7         It would be important to consider safety in some activities where seizures could be dangerous. For example Mr Richards should not have baths alone and take showers instead and climbing ladders or operating some types of machinery could be dangerous. I also explained some first aid measure of what to do when a seizure happens.\n\u00b7         Having said this it is important to lead as normal life as possible and most people with epilepsy can do this.\n\u00b7         It is important though for yourself or Mr Richards to contact us via telephone or email (the details are at the top of this letter) if there are any problems or questions about the epilepsy at any stage. with him.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 8,
+    "entity": "Investigations",
+    "letter_id": "EA0049",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "letter date 30.5.2018\nEfan Evans. D.O.B. 3.6.1995\nDear Doctor,\nDiagnosis: juvenile myoclonic epilepsy\nSeizure type and frequency: \tgeneralised tonic clonic seizures 1 to 2 every month\nMyoclonic jerks daily.\nOccasional absences.\n\nCurrent anti epileptic medication: \tlamotrigine 250 mg BD\nSodium valproate 700 mg BD\n\nInvestigations: MRI 2015 normal\nEEG 2014 generalised spike and wave with polyspikes.\nI reviewed this 23-year-old man by telephone for the first time. Previously his epilepsy has been looked after at balmoral Hospital. His epilepsy started at the age of 12. He remembers spilling things at breakfast time due to jerks in his arms. With hindsight these were myoclonic seizures. He had his first generalised tonic chronic seizure at the age of 14. He frequently gets myoclonic jerks before the generalised tonic chronic seizures. Although the generalised tonic clonic seizures were infrequent at first they are now happening frequently. He is having one to 2 generalised tonic clonic seizures every month.\nUnfortunately Efan suffers with his mental-health. He gets a lot of anxiety which makes it difficult to sleep at the moment. In the past he has found clobazam useful when he gets clusters of seizures. Interestingly a paternal aunt probably had absence epilepsy. He currently lives with his partner.\nImpression: mr Evans has juvenile myoclonic epilepsy.\nComments: it may be that the lamotrigine is making the jerks worse and I would suggest slowly reducing it by 25 mg every month.\nI would be very grateful if you would assess Mr Evans\u2019s anxiety and consider treating it. There is no contraindication to using antidepressants in epilepsy and indeed it may improve his seizures. I will review him again in clinic in a few months time but if there is a problem with his epilepsy in the meantime he should contact the epilepsy helpline.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 9,
+    "entity": "Investigations",
+    "letter_id": "EA0050",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "letter date 30.10.2018\nEfan Evans. D.O.B. 3.6.1995\nDear Doctor,\nDiagnosis: juvenile myoclonic epilepsy\nSeizure type and frequency: \tgeneralised tonic clonic seizures, 1 since previous appointment\nMyoclonic jerks weekly\nOccasional absences.\n\nCurrent anti epileptic medication: \tlamotrigine 100 mg BD\nSodium valproate 700 mg BD\n\nInvestigations: MRI 2015 normal\nEEG 2014 generalised spike and wave with polyspikes.\nI reviewed Mr Evans by telephone today. I was pleased to hear that his seizures have improved since reducing the lamotrigine. You have also prescribed him some venlafaxine which has helped his anxiety, this has also improved his epilepsy.\nIn the past, clobazam has helped for seizure clusters and therefore I would be very grateful if you could prescribe this. He can have 10 to 20 mg at night for up to 5 days for seizure clusters. The main side effect will be tiredness. I will continue to follow him up in this clinic.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 10,
+    "entity": "Investigations",
+    "letter_id": "EA0061",
+    "disagreement_type": "missed",
+    "match_key": "('MRI', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "abnormal-mri",
+          "CUI": "C1319851"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C1319851",
+          "CUIPhrase": "mri abnormal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "Our Ref ABC/SW/T4888786\nNHS No 4221549987\nClinic Date 19/9/2017\n\nThe Epilepsy service\n\nDear Dr\n\nr.e. Mr Owen Owens\n34, Terrible Road, Nicetown. SA2 4II\n\nDiagnosis: focal epilepsy, probable parietal onset\n\u00a0\nSeizure type and frequency: focal seizures with altered awareness (unusual arm sensation), last event 3 years ago\nfocal to bilateral seizures 2 events in total, last event 10 years ago.\n\u00a0\nCurrent anti-epileptic medication: lamtorigine 250mg bd (to reduce as detailed below)\n\u00a0\nPrevious medication tried include topiramate.\n\u00a0\nInvestigations: MRI, right parietal focal cortical dysplasia\n\u00a0\nI reviewed the 36 year old salesman today in clinic. I had not met him before. He was born in Scotland and has only lived in Wales for the last two years. His previous epilepsy investigations and care has been in Scotland. His epilepsy started when he was 10 years old. He had a febrile seizure at the age of 3. He has got episodic migraine for which he take sumitryptan. There is no family history of epilepsy. He has been back driving for the last year\n\u00a0\nHis seizures are quite stereotyped in that he gets a strange sensation in his left arm which rises towards his face. On the two occasions he has had bigger seizures they have started in the same way before he has lost consciousness.\n\u00a0\nHe has forgotten to take his medication a few times recently and felt a lot clearer and more alert and so he asked about stopping his medication. We had a long discussion about the risks of further seizures and given the clear changes on his MRI scan he would be a relatively high risk of further seizures in the future which would affect his ability to drive. So we decided to try a slightly reduced dose of the lamotrigine. I would suggest reducing by 25 mg every fortnight until he is on a dose of 200mg twice a day. I explained that the DVLA do recommend refraining from driving whilst changes are being made to medication.\n\u00a0\nHe knows to contact us if there are any problems\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 11,
+    "entity": "Investigations",
+    "letter_id": "EA0067",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "abnormal-eeg"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "MRI_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "abnormal-eeg"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "NHS No 496 496 4486\nDate 11/03/2015\nClinic Date 9/03/2015\n\nThe Epilepsy service\n\nDear Dr\n\nr.e. Ms June Jones D.O.B: 09/01/1980\nFlat 2, Cartref, 67 Station Road, Hendre. SA76 2HW\n\nDiagnosis: Temporal lobe epilepsy\n\tChronic migraine\n\nMedication: Carbamazepine 400mg bd\n\t\tBrivetiracetam 50mg bd (to increase as detailed below)\n\nInvestigations: MRI 10/02/2014: normal\n\t\tPrevious EEGs: left temporal lobe discharges\n\nSeizure type and frequency: Secondary generalised seizures, 2 per month in clusters\n\u00a0\n I reviewed this 35 year old in clinic today. The brivetiracetam seems to have helped her seizures and she doesn\u2019t seem to have many side effects from it. As you know previously levetiracetam seemed to cause irritability.\n\nI would therefore suggest increasing the brivetiracetam by 25mg every fortnight until she is taking 75mg twice a day. It might be useful to add in amitriptyline as a migraine prophylactic agent.\n\nI will review her in 6 months time.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 12,
+    "entity": "Investigations",
+    "letter_id": "EA0079",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      }
+    ],
+    "pred_family_all": [],
+    "source_letter_text": "Department of neurology\nNHS No:\t4521888894\nDate: \t\t16/11/2010\nClinic Date \t15/11/2010\n\n\nDear Dr\n\nre: Mr Owen Evans D.O.B: 17/11/1972\n34, Rain drive, Raintown, Mid glamorgan CF29 8JH\n\u00a0\nI review Owen without the benefit of his old case notes. His epilepsy started at the age of 3 years. He has nocturnal generalised tonic clonic seizures which are associated with mild learnind difficulties. He has symptomatic epilepsy. EEGs in the past have shown sharpened waveforms in the frontal leads. I do not have the results of his previous brain imaging.\n\nHis epilepsy has been stable over the last few years and he gets around 1 generlised tonic clonic seizure in his sleep per month. He has previously tried topiramate and phenytoin and he is currently taking levetiracetam 1250mg twice a day and carbamazepine 400mg twice a day.\n\nI suggest that he increases the carbamazepine by 200mg every two weeks until he is taking 600mg twice a day. If there is no improvement in his seizure frequency then we would consider a different anti-convulsant medication. He is not keen on epilepsy surgery at the moment.\n\nAs he has been on carbamazepine for a while I will check his bone profile.\n\nYours\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 13,
+    "entity": "Investigations",
+    "letter_id": "EA0082",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal",
+          "MRI_Performed": "Yes",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "abnormal-eeg",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "eeg-normal",
+          "EEG_Results": "Normal",
+          "CUI": "C0560017"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Epilepsy service\nOur ref:\tRE/AS/Q12453\nNHS No:\t4785326658\nDate: \t\t10/03/2017\nClinic Date \t10/03/2017\n\n\nDear Dr\n\nre: Mr Hebert Llewelyn D.O.B: 3/1/1997\n53, Rich Terrace, Hightown. CF10 8DJ\n\nDiagnosis:\tJuvenile absence epilepsy\n\t\tDissociative seizures\n\nMedication:\tSodium valproate 500mg bd\n\t\tClobazam 10mg od\n\t\tZonisamide 50mg bd\n\nInvestigations:\tMRI 2016 normal\n\t\tEEG 2016 normal\n\t\tEEG 2015 frequent generalised spike and wave\n\nI reviewed this 20-year-old man today in clinic. He is relatively well although the absences continue fairly frequent, he probably gets 2-3 per day. His last generalised tonic clonic seizure was two years ago. He continues to get some clinical photosensitivity where sunlight through trees can make him feel uncomfortable and sometimes trigger absences. Changing the levetiracetam to zonisamide has helped his mood.\n\nHe understands the DVLA laws on driving with epilepsy. I was glad to hear that Herbert is going to study engineering in college shortly and I wish him luck with that. In the mean time I would suggest increasing the zonismaide to 75mg bd. If he has further clusters then the clobazam can also be increased.\n\nYours\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 14,
+    "entity": "Investigations",
+    "letter_id": "EA0102",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Normal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal",
+          "CUIPhrase": "eeg-normal",
+          "CUI": "C0560017"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal",
+          "CUIPhrase": "eeg-normal",
+          "CUI": "C0560017"
+        }
+      },
+      {
+        "raw_text": "normal-MRI",
+        "text": "normal-MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Date 30/2/2016\nNHS No: 102 455 7893\n\nDear Dr\n\nRe: \tHelen\tTroy\tD.O.B. 20/06/1980\n\nDiagnosis:\tnon-epileptic psychogenic seizures\n\t\tanxiety\n\nMedication:\tEplim 200mg twice a day\n\nI had a telephone consultation with miss Troy today. She has been diagnosed with non epileptic psychogenic seizures which is confirmed on EEG.In the past she has had a normal MRI . She also has significant anxiety. \n\nShe has been seizure free for more than five years. She only drinks a small amount of alcohol and doesn't take any recreational drugs. \n\nShe does continue to take sodium valproate 200 milligrammes twice a day. She feels that when the sodium valproate was reduced she started having episodes of shakiness without losing consciousness and it had to be restarted. \n\nComments: I think she should have counselling from the mental health services for anxiety. She does not need to take her epilim for epilepsy as she has non epileptic seizures . I would recommend that her epilim is slowly reduced and stopped. \n\nYours sincerely\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 15,
+    "entity": "Investigations",
+    "letter_id": "EA0102",
+    "disagreement_type": "spurious",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [],
+    "pred_mentions": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal",
+          "CUIPhrase": "eeg-normal",
+          "CUI": "C0560017"
+        }
+      },
+      {
+        "raw_text": "normal-MRI",
+        "text": "normal-MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Date 30/2/2016\nNHS No: 102 455 7893\n\nDear Dr\n\nRe: \tHelen\tTroy\tD.O.B. 20/06/1980\n\nDiagnosis:\tnon-epileptic psychogenic seizures\n\t\tanxiety\n\nMedication:\tEplim 200mg twice a day\n\nI had a telephone consultation with miss Troy today. She has been diagnosed with non epileptic psychogenic seizures which is confirmed on EEG.In the past she has had a normal MRI . She also has significant anxiety. \n\nShe has been seizure free for more than five years. She only drinks a small amount of alcohol and doesn't take any recreational drugs. \n\nShe does continue to take sodium valproate 200 milligrammes twice a day. She feels that when the sodium valproate was reduced she started having episodes of shakiness without losing consciousness and it had to be restarted. \n\nComments: I think she should have counselling from the mental health services for anxiety. She does not need to take her epilim for epilepsy as she has non epileptic seizures . I would recommend that her epilim is slowly reduced and stopped. \n\nYours sincerely\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 16,
+    "entity": "Investigations",
+    "letter_id": "EA0104",
+    "disagreement_type": "missed",
+    "match_key": "('MRI', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Abnormal",
+          "CUIPhrase": "mri-abnormal",
+          "CUI": "C1319851"
+        }
+      }
+    ],
+    "pred_family_all": [],
+    "source_letter_text": "Typed 4 April 2013\n\nDear Dr\n\nRE\tFrey Little DOB:\t12-APR-1972\n\nDate seen: \t02-APR-2013\nDiagnosis:\tSimple partial seizures with occasional secondary generalisation\nMRI 2009:\tTemporal lobe cavernoma\nPast medical history:\tDepression\nCurrent medication\tLamotrigine 150mg bd\n\t\t\tRecommend add Topiramate\nFollow up\t4 months.\n\nI reviewed this 41 year old right handed woman in clinic today. She has previously been under the care of my colleague. Her seizures started at the age of 15 and consist of an unusual, difficult to describe sensation and taste. This can last up to a minute. Sometimes this is followed by a collapse after which she feels very tired. The smaller versions of the attacks can happen several times per week. The best period of seizure freedom that she has had is probably around three years of seizure freedom which she had in her early 30s. \n\nAt present she is taking lamotrigine 150 milligrammes twice a day. In the past she has tried levetiracetam which didn't really affect her seizures but seemed to make her mood worse. She has had depression in the past. She drinks around 2 bottles of wine per week but does not smoke. She stays at home to look after her three children. His father has a history of epilepsy. \n\nHer examination today was normal and her blood pressure was 122 slash 72. \n\nThe aim would be to get better seizure control. I would be grateful if you could prescribe topiramate starting at 25 milligrammes daily for two weeks followed by 25 milligrammes twice a day. This should further be increased by 25 milligrammes every fortnight until a total dose of 200MG twice a day is reached. \n\nWe will request an up to date EEG and I will review her again in clinic in around six months time. \n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 17,
+    "entity": "Investigations",
+    "letter_id": "EA0111",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-abnormalities",
+        "text": "EEG-abnormalities",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-abnormalities",
+        "text": "EEG-abnormalities",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "MRI-negative",
+        "text": "MRI-negative",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "mri-normal",
+          "CUI": "C0436481"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 01/04/2020\n\nDear Dr,\n\nRe: \tMiss Magi Jones-Williams \t\t\tD.O.B: 23/10/1995\n8 Mission Place, Llanelli, SA39 6BZ   \n\nDiagnosis:\n\u2022\tRefractory focal epilepsy.  \n\u2022\tNocturnal generalised tonic clonic seizures with multifocal EEG abnormalities\n\u2022\tMRI negative\n\nMedication:\n\u2022\tZonisamide 200mgs bd\n\u2022\tBrivaracetam 100mgs bd to increase to 100mgs am, 150mgs pm and after 2 weeks to 150mgs bd\n\nI spoke to Magi today.  Things improved following the birth of her daughter.  She has formed a good bond with her and has now been sterilised.  \n\nMore recently she has suffered stress and insomnia and there has been an increase in her seizures.  She is currently having seizures on a weekly basis.  These sound like tonic clonic seizures, with tongue biting and facial injuries.  \nShe is tolerating her medication well.\n\nPlan:\n\nWe discussed the following:\n\n1.\tIt would be useful to review a seizure video if possible \n2.\tI have advised her to increase the Brivaracetam as shown above \n3.\tI will have a look through old letters and think about further drug options.  \n4.\tI have suggested that she makes an appointment to see you to consider being prescribed a SSRI to help with her mood.  This would not be contraindicated from an epilepsy point of view \n\nI will arrange to see her in 6 months\u2019 time  \n\nYours sincerely\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 18,
+    "entity": "Investigations",
+    "letter_id": "EA0117",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0013819",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Unknown"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nRe: \tMiss Sharon Benson \tD.O.B: 13/05/1991\n23 Hilly Terrace, Gorseinon  Swansea  \n\nDiagnosis:\n\u2022\tMixture of focal epilepsy and dissociative seizures\n\nMedication:\n\u2022\tLacosamide 100mg bd \n\u2022\tPerampanel 8mgs\n\nI reviewed Sharon in clinic today.  Unfortunately, she is still struggling with seizures, which are occurring on a weekly basis.  It sounds like a mixture of focal impaired awareness seizures and dissociative seizures.  \n\nThe formed consist of an olfactory aura, followed by her staring blankly and not responding. There is some lip smacking and she recovers after a few minutes but feels tired after. The latter are different and consist of asynchronous shaking with retained awareness which fluctuates in frequency and intensity over anything up to 30 minutes, Her and her family are aware of the differences. \n\nWe discussed the following:\n\n1. I think she is suffering a mixture of focal impaired awareness seizures and dissociative seizures. Both have been captured on EEG in the past. I have asked her if she could try and get one of her family members to video some of her attacks and send it through to the above secure e-mail advice line for us to review and advise about medication.\n3.\tGiven the combination of medications that she is taking, it is important that she knows to avoid pregnancy\n4.\tI have left the appointment open and she knows to contact us via the open access service as and when she needs any advice.  \nYours sincerely\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 19,
+    "entity": "Investigations",
+    "letter_id": "EA0117",
+    "disagreement_type": "spurious",
+    "match_key": "('EEG', 'Yes', 'Unknown')",
+    "gold_mentions": [],
+    "pred_mentions": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0013819",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Unknown"
+        }
+      }
+    ],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0013819",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Unknown"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nRe: \tMiss Sharon Benson \tD.O.B: 13/05/1991\n23 Hilly Terrace, Gorseinon  Swansea  \n\nDiagnosis:\n\u2022\tMixture of focal epilepsy and dissociative seizures\n\nMedication:\n\u2022\tLacosamide 100mg bd \n\u2022\tPerampanel 8mgs\n\nI reviewed Sharon in clinic today.  Unfortunately, she is still struggling with seizures, which are occurring on a weekly basis.  It sounds like a mixture of focal impaired awareness seizures and dissociative seizures.  \n\nThe formed consist of an olfactory aura, followed by her staring blankly and not responding. There is some lip smacking and she recovers after a few minutes but feels tired after. The latter are different and consist of asynchronous shaking with retained awareness which fluctuates in frequency and intensity over anything up to 30 minutes, Her and her family are aware of the differences. \n\nWe discussed the following:\n\n1. I think she is suffering a mixture of focal impaired awareness seizures and dissociative seizures. Both have been captured on EEG in the past. I have asked her if she could try and get one of her family members to video some of her attacks and send it through to the above secure e-mail advice line for us to review and advise about medication.\n3.\tGiven the combination of medications that she is taking, it is important that she knows to avoid pregnancy\n4.\tI have left the appointment open and she knows to contact us via the open access service as and when she needs any advice.  \nYours sincerely\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 20,
+    "entity": "Investigations",
+    "letter_id": "EA0120",
+    "disagreement_type": "spurious",
+    "match_key": "('EEG', 'Yes', 'Normal')",
+    "gold_mentions": [],
+    "pred_mentions": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "gold_family_all": [],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nRe: \tMr Harry Harris DOB 30/3/1975\n\nDiagnosis: Dissociative seizures\n\t\tPost traumatic stress disorders\n\nMedication: lamotrigine 75mg bd (to reduce and stop as detailed below)\n\t\tMirtazapine 15mg od\n\nI reviewed this gentleman in clinic today. I was pleased to hear that things have generally improved. He is having fewer flashbacks . He has not had any further seizures since his last appointment. i explained his EEG results. During the EG he had a typical attack which was not accompanied by any eg changes. I explained that this was likely to be a dissociative seizure. Mr Harris was very open to this and was happy to reduce and stop his lamotrigine by 25mg every fortnight. I have left him with an open appointment in this clinic. \n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 21,
+    "entity": "Investigations",
+    "letter_id": "EA0123",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "eeg-",
+        "text": "eeg-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "CT-scan",
+        "text": "CT-scan",
+        "attributes": {
+          "CUI": "C0744602",
+          "CT_Performed": "Yes",
+          "CT_Results": "Normal",
+          "CUIPhrase": "normal-ct"
+        }
+      },
+      {
+        "raw_text": "eeg-",
+        "text": "eeg-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "CT",
+        "attributes": {
+          "CT_Performed": "Yes",
+          "CT_Results": "Normal",
+          "CUI": "C0560017",
+          "CUIPhrase": "ct normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr,\n\nRe: \tMrs Lorna Liver DOB 29/05/1972\n\nDiagnosis: longstanding epilepsy with generalised tonic clonic seizures \n\nMedication: epilim 200 milligrammes in the morning and 400 milligrammes nokte \n\nMany thanks for asking me to see this 43 year old lady who was diagnosed with epilepsy around 16 years ago by doctor Hampton. History is consistent with generalised tonic clonic seizures. She has never had any aura. When she gets seizures she can get incontinence and some confusion afterwards for around 30 minutes. There is no history of any myoclonic jerks or absences. \n\nHer birth was normal and so were her developmental milestones. No history of febrile seizures, head injury, brain infections or family history of epilepsy. She has not got any significant medical problems.\n\nInvestigations in the past have included a normal ECG and CT scan. She told me that her eeg has shown evidence of epilepsy in the past. \n\nShe has been treated with epilim from the onset. Her seizure frequency has reduced from about once a year  to. 1 seizure every two to three years whilst taking the Eplim. Her longest period without seizures has been 4 years.\n\nShe is married and has no children. She works as a barmaid in a local restaurant . She normally drinks about four cans of cider in a week. \n\nHer examination today was normal, heart rate was 48 beats per minute and regular , her neurologic examination is essentially normal.\n\nShe has longstanding infrequent generalised tonic-clonic seizures. I will investigate further with an EEG and MRI scan of the brain. I had a long discussion with her regarding the side effects of epilim especially the effects of the unborn baby. We did discuss alternative medicine but she would like to stay on Eplim. I would suggest that she increases the dose to 400 milligrammes in the morning, 200 milligrammes in the lunchtime and 400 milligrammes in the evening \t\n \nYours sincerely,\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 22,
+    "entity": "Investigations",
+    "letter_id": "EA0127",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "-EEG",
+        "text": "-EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "-MRI",
+        "text": "-MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "normal-mri",
+          "CUI": "C0436481"
+        }
+      },
+      {
+        "raw_text": "-EEG",
+        "text": "-EEG",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Complex partial seizures with secondary generalised tonic clonic seizures\n\u00a0\nInvestigations:\u00a0 MRI-normal\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 EEG 2002 - left temporal slwoing with focal sharp waves\n\u00a0\nMedications:\u00a0\u00a0\u00a0\u00a0 Sodium valproate 400mg twice a day\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Lamotrigine 100mg twice\u00a0 aday\n\u00a0\nIt was nice to see Julian in clinic today. I am happy to report that he remains seizures free. His last seizure was in February 2005. He seems to have no problems with the medication or any side effects. i will arrange follow up in the nurse led clinic\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 23,
+    "entity": "Investigations",
+    "letter_id": "EA0131",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-abnormalities",
+        "text": "EEG-abnormalities",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-abnormalities",
+        "text": "EEG-abnormalities",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal",
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic Date 2/09/2015\n\nDear Dr,\n\nRe: \tMs Julie Johilst\t31/07/1988\n\nIt was nice to meet this 27 year-old woman in clinic again. She has a primary generalised epilepsy with frequent EEG abnormalities. Previous MRI scans in June 2008 and Novemeber 2010 have been normal. \n\nHer epilepsy was not well controlled on carbamazepine monotherapy. However switching to sodium valproate at 400mg twice a day has made a big difference.\n\nUnfortunately seizures have been worse in the last year. She is having quite a number of generalised tonic clonic seizures which her partner described to me today.\n\nI think the only option here really is to increase the sodium valproate. We did discuss the risks of sodium valproate in pregnancy and in child development and Ms Johilst is well aware of the risks. Howevere this has to be balanced against the risks of frequent convulsive seizures which do carry the risk of serious injury and death.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 24,
+    "entity": "Investigations",
+    "letter_id": "EA0132",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-is-abnormal",
+        "text": "EEG-is-abnormal",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "EEG",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-is-abnormal",
+        "text": "EEG-is-abnormal",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "EEG",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "eeg abnormal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Abnormal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic Date 3/10/2018\n\nDear Dr,\n\nRe: \tMr Richard Hanson. DOB 31/02/1998\n\nDiagnosis:\tProbable focal epilepsy\n\nSeizure type and frequency:\tFocal seizures with altered awareness, several per month\n\nInvestigations:\tMRI 02/03/2018 normal\n\t\tEEG 24/09/2018 left sided temporal slow waves with spikes\n\nMedication:\tTo start eslicarbazepine as detailed below\n\nI spoke with this 20-year-old man by telephone today to explain his recent EEG results. The EEG is abnormal and it shows focal changes on the left side with some slow and sharp waves. Mr Hanson is continuing to get his sterotyped episodes of altered awareness where he has a difficult to describe feeling of familiarity as well as a strange feeling in his stomach. They are happening weekly. He has only ever had one episode of loss of consciousness which in hindsight was probably a focal to bilateral convulsive seizure.\n\nI think that the episodes that he is getting are focal seizures, I therefore think that he has epilepsy and the EEG is supportive of this.\n\nComments:\n\nI explained the diagnosis of epilepsy to Mr Hanson. I explained that epilepsy is relatively common, affecting around 1% of the population. Convulsive seizures can be dangerous, cause injury and even rarely death (sudden death in epilepsy). It is therefore important that we try and treat the seizures with medication.\nPlease can you prescribe eslicarbazepine 400mg od, increasing to 800mg od after 1 week. I explained that Mr Hansons will need to inform the DVLA and stop drving until he has been 1 year free of seizures. I explained some general safety measures. \nI will arrange follow up and a phone call from the epilepsy specialist nurses.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 25,
+    "entity": "Investigations",
+    "letter_id": "EA0146",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Normal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0560017",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Normal",
+          "CUI": "C0560017",
+          "CUIPhrase": "eeg-normal",
+          "EEG_Performed": "Yes"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0560017",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "MRI_Results": "Normal",
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "EEG_Results": "Normal",
+          "CUI": "C0560017",
+          "CUIPhrase": "eeg-normal",
+          "EEG_Performed": "Yes"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Clinic date 03/03/2020\n\u00a0\nRe\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Mr Tudour Terrance Treadwell\tDOB 2/2/1972\n\u00a0\nDear doctor,\n\nProblemL\tRecurrent episodes of altered awareness and consciousness\n\nDiagnosis:\tDissociative seizures\n\t\tEpilepsy\n\t\tDepression\n\nCurrent medication:\tCarbamazepine 600mg bd\n\t\t\tBrivetiracetam 50mg bd\n\t\t\tClobazam 5mg bd\n\t\t\tSertraline\n\nPrevious medications include: Levetiracetam, sodium valproate\n\nI reviewed this 48-year-old man by telephone consultation today. He has previously seen other neurologists in the past and has ongoing episodes. There are two main different types of episodes. 1) He will get \u201cgrand mal\u201d episodes which happen without warning. There are no witness descriptions of these events, previously he has injured himself during these attacks and he has been told he will shake all over. He has had around 6 of these during the last year. During them he is aware of his surroundings and can hear people. They can last up to 20 minutes.\n2) He also gets \u201cmini shakes\u201d these are like electric shocks where his arms and legs might jerk. These happen a few times every month.\n\nHe lives alone and also has a diagnosis of depression. His family live close by. He doesn\u2019t drive, smokes around 20 cigarettes a day and drinks ocassional alcohol only. A recent MRI and EEG in 2018 have been normal. During the EEG he did have several jerk like episodes which were not accompanied by any EEG changes and so would be consistent with dissociative seizures.\n\nI think it would be useful to capture some of these seizures on videotelemetry and so I will request some videotelemetry today. I will review his old notes. I will request a face to face clinic review with the results of the above.\n\t\t\t\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 26,
+    "entity": "Investigations",
+    "letter_id": "EA0156",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0151611",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "abnormal"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI-",
+        "text": "MRI-",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri-normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG-were-normal",
+        "text": "EEG-were-normal",
+        "attributes": {
+          "CUIPhrase": "eeg-normal",
+          "CUI": "C0560017",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0151611",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "abnormal"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Date 02-Nov-2017\n\nRachel Helen Howells\tDoB: 19-Apr-1994\n\nDiagnosis Juvenile Absence Epilepsy\nMedication: Levetiracetam 1250mg BD, Topiramate 75mg BD\n\nI met Rachel and her mother in clinic. She has remained seizure free since the beginning of July. She has tolerated the introduction of topiramate well with only a slight loss of weight and no other side effects.\n\nAs you know her recent MRI and EEG were normal. At the time of her diagnosis in 2002 an EEG showed generalised spike and wave with absence seizures captured during hyperventilation. \n\nI was pleased to hear that Rachel has settled in well to her job at a solictor\u2019s company and is enjoying the work. She understands that she needs to be a year free of seizures before she is allowed to drive.\n\nI will review her again in 4 months time.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 27,
+    "entity": "Investigations",
+    "letter_id": "EA0179",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Unknown')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0013819",
+          "EEG_Results": "Unknown",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0013819",
+          "EEG_Results": "Unknown",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal",
+          "CUIPhrase": "mri-normal"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Episodes of loss of consciousness ?syncope ? complex partial seizures\n\u00a0\nThanks for referring this gentleman to the epilepsy clinic. He has mild learning disabilities. As a child he had seizures and was on medication between the ages of 5 and 10. He had two febrile convulsions at the age of around 3. There is no relevant family history.\n\u00a0\nHe describes a typical episode of loss of consciousness where he will start feeling tired and had an unusual headache. He then will not be able to answer questions and will go pale and sweaty before loosing consciousness.\n\u00a0\nHe had an MRI scan around 5 years ago which was normal although I have not seen the report. I do not have the results of his recent EEG test.\n\u00a0\nHis neurological examination was normal today and he does not have any other medical problems.\n\u00a0\nComments:\nI dont have a definite conclusion as to the cause of his episodes of loss of consciousness. I thought today that the episodes sounded more like syncope however he does have learning disabilities and has previously had seizures and so epilepsy needs to be borne in mind.\nHe has already been started on sodium valproate 300mg bd which has stopped the episodes.\nI will review cardiology notes and the previous EEG.\nHe doesnt drive but understands the driving regulations.\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 28,
+    "entity": "Investigations",
+    "letter_id": "EA0182",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "EEG",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "EEG",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0560017",
+          "EEG_Results": "Normal",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Type": "SleepDeprived"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr Xxxx\nRe:  Ms Yyy Xxxxx, D.O.B: 01/01/1987, NHS No. 000 000 0000\n1 Old Road  Old Town XX1 1XX \nDiagnosis: Probable Complex Partial Seizures - ?TLE \nMedication: Lamotrigine 150mg bd\nThis young lady returned to my clinic today accompanied by her mother. She reports having a single seizure some 3 weeks ago. This episode was very similar to the seizures she described previously, starting with the sensation of butterflies in her stomach followed by darkness, as if somebody turned off the lights, but no loss of consciousness. Her Mother confirmed that she is fully conscious during the episodes and in fact is able to communicate. \nHer EEG showed some minor temporal slowing but otherwise was reported as normal. She has not yest received her MRI appointment and I today agreed to chase it up. \nShe is taking Lamotrigine 150 mg bd with no side effects. She says that on occasions she misses the dose. We discussed the importance of  good drug compliance. \nShe reports that she had been stressed recently with her work and her studies. She has been asked to do extra shifts at work which then affects her course work and makes her stressed. She previously reported a sleep related movement disorder and we discussed this again today. It does not appear to be epileptic in nature and her sleep deprived EEG did not show any epileptic activity. \nShe is not keen on seeking help from Mental Health Services regarding stress. \nKind regards, \nYours sincerely\nDr Xyz\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 29,
+    "entity": "Investigations",
+    "letter_id": "EA0182",
+    "disagreement_type": "spurious",
+    "match_key": "('EEG', 'Yes', 'Normal')",
+    "gold_mentions": [],
+    "pred_mentions": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0151611",
+          "CUIPhrase": "EEG",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG-",
+        "text": "EEG-",
+        "attributes": {
+          "CUI": "C0560017",
+          "EEG_Results": "Normal",
+          "CUIPhrase": "EEG",
+          "EEG_Performed": "Yes",
+          "EEG_Type": "SleepDeprived"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "EEG",
+        "attributes": {
+          "CUI": "C0744602",
+          "CUIPhrase": "eeg normal",
+          "EEG_Performed": "Yes",
+          "EEG_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Dear Dr Xxxx\nRe:  Ms Yyy Xxxxx, D.O.B: 01/01/1987, NHS No. 000 000 0000\n1 Old Road  Old Town XX1 1XX \nDiagnosis: Probable Complex Partial Seizures - ?TLE \nMedication: Lamotrigine 150mg bd\nThis young lady returned to my clinic today accompanied by her mother. She reports having a single seizure some 3 weeks ago. This episode was very similar to the seizures she described previously, starting with the sensation of butterflies in her stomach followed by darkness, as if somebody turned off the lights, but no loss of consciousness. Her Mother confirmed that she is fully conscious during the episodes and in fact is able to communicate. \nHer EEG showed some minor temporal slowing but otherwise was reported as normal. She has not yest received her MRI appointment and I today agreed to chase it up. \nShe is taking Lamotrigine 150 mg bd with no side effects. She says that on occasions she misses the dose. We discussed the importance of  good drug compliance. \nShe reports that she had been stressed recently with her work and her studies. She has been asked to do extra shifts at work which then affects her course work and makes her stressed. She previously reported a sleep related movement disorder and we discussed this again today. It does not appear to be epileptic in nature and her sleep deprived EEG did not show any epileptic activity. \nShe is not keen on seeking help from Mental Health Services regarding stress. \nKind regards, \nYours sincerely\nDr Xyz\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 30,
+    "entity": "Investigations",
+    "letter_id": "EA0188",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "CUI": "C0151611",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEGs",
+        "text": "EEGs",
+        "attributes": {
+          "CUI": "C0151611",
+          "EEG_Results": "Abnormal",
+          "EEG_Performed": "Yes",
+          "CUIPhrase": "eeg-abnormal"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal",
+          "CUI": "C0436481"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Diagnosis Focal epilepsy, probable occipital lobe onset\nMRI negative\n\u00a0\nMedication:\nZonismaide 100mg bd\nBrivitiracetam 50mg bd\n\u00a0\nI reviewed this 48 year old lady together with her husband in clinic today. She has a complicated epilepsy history and I did not have the full medical notes with me today and so I will need to review those. She was born slightly prematurely at 34 weeks but had a normal development. Her seizures started at the age of 11 and have continued ever since. Previous MRI scans have been normal although some EEGs have shown a probable left occipital lobe focus.\n\u00a0\nCurrently she is getting around 1 seizure per day. Her normal seizures consist of coloured blobbs in the right side of her version. She might stare and be unresponsive later for a few minutes. About once a month she will have a secondary generalised seizure which start like her normal seizure but then will progress to involve loss of consciousness with limb shaking.\n\u00a0\nShe also has asthma and hypertensions. She lives with her husband and 4 year old son. CUrrently she is working part time as a cleaner. She smoker 10 menthol cigarettes a day and enjoys a tot of rum and blackcurrant in the evening.\n\u00a0\nHer neurological examination was normal\n\u00a0\nImpression it does seem that this lady has a drug refractory focal (occipital lobe) epilepsy.\n\u00a0\nPlan I will review her old notes\nI think it worthwhile having an up to date MRI and EEG which I will request\nI would suggest increasing the briviteracetam by 25mg every two weeks to a maximum of 100mg twice a day.\nIn the future we can consider an increase in the lamotrigine\nI will review her in clinic in around 3 months time\n\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  },
+  {
+    "case_id": 31,
+    "entity": "Investigations",
+    "letter_id": "EA0200",
+    "disagreement_type": "missed",
+    "match_key": "('EEG', 'Yes', 'Abnormal')",
+    "gold_mentions": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_mentions": [],
+    "gold_family_all": [
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Results": "Abnormal",
+          "CUI": "C0151611",
+          "EEG_Performed": "Yes"
+        }
+      },
+      {
+        "raw_text": "MRI",
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "MRI_Performed": "Yes",
+          "CUIPhrase": "mri-normal",
+          "MRI_Results": "Normal"
+        }
+      },
+      {
+        "raw_text": "EEG",
+        "text": "EEG",
+        "attributes": {
+          "EEG_Results": "Abnormal",
+          "CUIPhrase": "eeg-abnormal",
+          "EEG_Performed": "Yes",
+          "CUI": "C0151611"
+        }
+      }
+    ],
+    "pred_family_all": [
+      {
+        "raw_text": null,
+        "text": "MRI",
+        "attributes": {
+          "CUI": "C0436481",
+          "CUIPhrase": "mri normal",
+          "MRI_Performed": "Yes",
+          "MRI_Results": "Normal"
+        }
+      }
+    ],
+    "source_letter_text": "Problem: 2 episodes of transient loss of consciousness\n\nDiagnosis: genetic generalised epilepsy\n\nI reviewed this 23-year-old woman together with her mother in the consultant\u2019s clinic today. She remembers coming home from the office (she works for an insurance company) in the afternoon. She remembers telling her mother that she didn\u2019t feel right before loosing consciousness and then waking up in hospital. She had bitten her tongue and had muscles aches in her arms and legs the next day.\n\nHer mother was able to describe the event in more detail. She sad that she went stiff, gave out a shout before falling to the floor and convulsing for about a minute. She had a previous similar event around 8 months ago.\n\nThere is no history of events resembling focal seizures, absences or myoclonus. She was born prematurely at 32 weeks weighing 5lbs. She did not have febrile seizures, significant cerebral infections or significant head injuries. She has already started taking lamotrigine (current dose is 50mg twice a day) and does not take any other medication apart from the oral contraceptive pill.\n\nCharlotte did have a driving licence before these event but has surrounded it to the DVLA after informing them of the diagnosis. She drinks alcohol with her friends on the weekend but does not smoke. Her neurological examination and ECG was normal in clinic today.\n\nAn MRI brain performed last month was normal. An EEG from May shows paroxysms of generalised spike and wave activity but no photosensitivity.\n\nImpression. I think that the two events of loss of consciousness were generalised tonic-clonic seizures. This, together with the abnormal EEG mean that there is a diagnosis of epilepsy, namely genetic generalised epilepsy.\n\nComments. I explained the diagnosis to Charlotte and the need for long term treatment with epilepsy medication given the risk of injury and rare risk of death with epilepsy. The lamotrigine dose can be increased further should there be any further seizures.\n",
+    "mechanism": "UNADJUDICATED",
+    "verdict": "UNADJUDICATED"
+  }
+]
