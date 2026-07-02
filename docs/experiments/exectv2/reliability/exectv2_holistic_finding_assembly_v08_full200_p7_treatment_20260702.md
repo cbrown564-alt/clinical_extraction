@@ -1,0 +1,91 @@
+# ExECTv2 Holistic Finding Assembly Replay
+
+- Generated: `2026-07-02`
+- Split/stage: `full_200_authorized` / `full_200_authorized200`
+- Candidate: `exectv2_holistic_finding_assembly_v08_full200_p7_treatment`
+- Gate decision: **do-not-promote**
+- Claim boundary: P7 follow-up treatment: the archived 2026-06-24 full-200 currentcode manifest with ONLY prescription_repair_v03 swapped for a P7-fixed regeneration. Every other producer is the unchanged 20260624 artifact -- zero new LLM calls.
+- JSON: `experiments/exectv2_holistic_finding_assembly_v08_full200_p7_treatment_20260702.json`
+- JSONL: `experiments/exectv2_holistic_finding_assembly_v08_full200_p7_treatment_20260702.jsonl`
+
+## Finding Assembly
+
+This replay builds a per-letter clinical finding store, applies entity-specific lenses, and renders scoring views from the same final findings. It is a structural replay over frozen artifacts; it introduces no live model calls.
+
+| Entity | Producer | Lens | Ownership |
+| --- | --- | --- | --- |
+| Diagnosis | `experiments/exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl` | `diagnosis_heading_recovery_residual_benchmark_v05` | `hybrid_diagnosis_route` |
+| SeizureFrequency | `experiments/exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl` | `sf_state_union_arbitration_v08` | `hybrid_sf_route+deterministic_union_arbitration` |
+| Prescription | `experiments/exectv2_deterministic_prescription_repair_v03_full200_p7fix_20260702.jsonl` | `prescription_regimen_v01` | `deterministic_prescription_repair_v03` |
+| Investigations | `experiments/exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl` | `investigations_result_v01` | `llm_investigations_verifier+deterministic_investigations_arbitration` |
+
+## Score Views
+
+| View | Legacy surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| raw_candidate | `raw_lane_score` | 0.8117 | 0.7818 | 0.6592 | 0.9278 | 0.9213 |
+| evidence_valid | `evidence_valid_score` | 0.8383 | 0.8546 | 0.6592 | 0.9278 | 0.9213 |
+| benchmark_cui | `cui_projection_companion` | 0.8383 | 0.8546 | 0.6592 | 0.9278 | 0.9213 |
+| clinical_headline | `headline_target` | 0.8680 | 0.8546 | 0.7842 | 0.9278 | 0.9213 |
+
+## Materialized Intermediate Surfaces
+
+| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `source_scored` | 0.8117 | 0.7818 | 0.6592 | 0.9278 | 0.9213 |
+| `evidence_valid` | 0.8117 | 0.7818 | 0.6592 | 0.9278 | 0.9213 |
+| `protocol_model_preserving_canonical` | 0.8117 | 0.7818 | 0.6592 | 0.9278 | 0.9213 |
+| `dictionary_normalized` | 0.8329 | 0.8406 | 0.6592 | 0.9278 | 0.9213 |
+| `residual_benchmark_added` | 0.8383 | 0.8546 | 0.6592 | 0.9278 | 0.9213 |
+
+## Fact-Origin Accounting
+
+| Surface | post_model_rescue | target_model_generated |
+| --- | ---: | ---: |
+| `source_scored` | 0 | 1448 |
+| `evidence_valid` | 0 | 1448 |
+| `protocol_model_preserving_canonical` | 0 | 1448 |
+| `dictionary_normalized` | 0 | 1378 |
+| `residual_benchmark_added` | 64 | 1378 |
+
+## Benchmark And Fidelity Views
+
+| Surface | Value |
+| --- | ---: |
+| Benchmark raw | 0.4154 |
+| Benchmark after CUI/projection | 0.4379 |
+| Diagnosis.concept_negation | 0.8360 |
+| SeizureFrequency.active_rate_fidelity | 0.5502 |
+
+## Gate Summary
+
+| Gate | Status | Detail |
+| --- | --- | --- |
+| Prescription control regression | pass | delta vs v0.42 control +0.1064; floor -0.0100 |
+| Investigations control regression | pass | delta vs v0.42 control +0.0598; floor -0.0100 |
+| Diagnosis headline | pass | 0.8546; must beat 0.6693 and tie/beat 0.7127 |
+| Diagnosis concept_negation | pass | 0.8360; baseline 0.6693 |
+| SeizureFrequency headline | pass | 0.7842; must beat 0.5572 and tie/beat 0.6321 |
+| SeizureFrequency active_rate_fidelity | pass | 0.5502; baseline 0.2887 |
+| Prescription changed-row control | fail | 190 changed rows |
+| Investigations changed-row control | fail | 59 changed rows |
+
+## Lens Diagnostics
+
+| Entity | Call failures | Parse/schema failures | Evidence-invalid dropped | Exact evidence rate |
+| --- | ---: | ---: | ---: | ---: |
+| Diagnosis | 0 | 0 | 1 | 1.0000 |
+| SeizureFrequency | 0 | 0 | 0 | 1.0000 |
+| Prescription | 0 | 0 | 0 | 1.0000 |
+| Investigations | 0 | 0 | 0 | 1.0000 |
+
+## Changed Rows
+
+| Comparison | Indicator | Changed rows | Categories |
+| --- | --- | ---: | --- |
+| versus_v042_default_quarantine | Diagnosis | 179 | assertion_or_negation_change=120, hierarchy_reconciliation_or_duplicate_collapse=120, hierarchy_reconciliation=58, projection_only=2 |
+| versus_v042_default_quarantine | SeizureFrequency | 140 | active_rate=106, seizure_free=73, unknown_or_change_state=43, projection_action=32, generic_vs_specific=5, reject_or_drop=7 |
+| versus_v042_default_quarantine | Prescription | 190 | model_output=190 |
+| versus_v042_default_quarantine | Investigations | 59 | model_output=59 |
+
+Every row-level mention carries source artifact, source lane, ownership, producer provenance, lens provenance, evidence-valid status, and the rendered scoring view can be reconstructed from the JSONL.

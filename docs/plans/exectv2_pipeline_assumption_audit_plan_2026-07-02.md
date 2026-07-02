@@ -60,16 +60,32 @@ would silently disable suppression rather than improve it, a genuine
 predicate-redesign need distinct from the guardrail doc's original framing.
 Neither `sf_state_projection.py` nor `sf_unknown_suppression.py` feeds any
 currently-cited number (only the retired v01–v05 finding-assembly manifests
-reference them; v08/v09 use a different SF producer). Deliberately **not**
-attempted: re-running the full v08 hybrid assembly to see whether P7's fix
-moves the manuscript's cited headline numbers (0.9155 dev140 / 0.8502
-full-200) — P7's producer does feed the live `prescription_repair_v03` v08
-lane, so this is a real open question, but re-running the full multi-stage
-assembly is a much larger-blast-radius action than any of the five parked
-fixes and was left for an explicit decision rather than done unilaterally.
+reference them; v08/v09 use a different SF producer).
 All five: dev140-replay-verified (zero new LLM calls throughout), unit-tested,
 hypothesis-registry-recorded (all `CONFIRMED` except SF-5 `PARTIAL`), dossiers
-regenerated. Not yet committed.
+regenerated.
+
+**P7 v08 propagation — DONE 2026-07-02, same day, user go-ahead:** the
+"deliberately not attempted" item above (re-running the full v08 hybrid
+assembly to see whether P7's fix moves the manuscript's cited headline
+numbers) was actioned as an explicit follow-up. Regenerated
+`prescription_repair_v03` for dev140 and full-200 (zero new LLM calls, never
+overwriting the archived artifact in place — that dev140 file is shared by
+five other manifests), swapped only that producer into the existing v08
+manifest, and built a same-day baseline+treatment pair on each split through
+today's scorer to isolate P7's effect. dev140 `0.9130`→`0.9189` (+0.0059,
+Prescription `0.9386`→`0.9615`); full-200 `0.8616`→`0.8680` (+0.0064,
+Prescription `0.9033`→`0.9278`); Diagnosis/SF/Investigations byte-identical to
+baseline on both splits. New hypothesis
+`rx_p7_v08_hybrid_headline_propagation_2026-07-02` (CONFIRMED), two new
+registry entries (dev140 is the first-ever registry-tracked v08 dev140
+number — the historical "0.9155" was never itself registry-tracked), prior
+full-200 currentcode entry marked superseded, `docs/canon/08_gepa.md` +
+`10_paper_provenance.md` + `PROJECT_STATUS.md` citations corrected with
+disclosure. Script: `scripts/run_exectv2_v08_p7_prescription_refresh_audit.py`.
+
+Working tree not yet committed (this P7-propagation follow-up; the five
+parked-item fixes above were committed separately at `c4a65e75`).
 
 ## Why this plan exists
 

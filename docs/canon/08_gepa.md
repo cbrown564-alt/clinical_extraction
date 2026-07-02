@@ -14,7 +14,12 @@ No active GEPA optimization — see [`ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMA
 [`exectv2_gepa_verify_stage_credit_assignment_2026-07-01.md`](exectv2_gepa_verify_stage_credit_assignment_2026-07-01.md).
 
 **Paper:** [`10_paper_provenance.md`](10_paper_provenance.md) § Three-way comparison  
-**Hybrid baseline:** v08 dev140 **0.9155** `clinical_headline`
+**Hybrid baseline:** v08 dev140 **0.9189** `clinical_headline` (was 0.9155; corrected
+2026-07-02 by the P7 fix, `rx_p7_v08_hybrid_headline_propagation_2026-07-02` in
+`experiments/hypothesis_registry.jsonl` — a same-day re-run of the unmodified manifest
+under today's scorer actually measures 0.9130, since "0.9155" predates several
+since-landed scorer fixes and was never itself registry-tracked; +0.0059 from P7 alone,
+registry run `exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702`)
 
 ---
 

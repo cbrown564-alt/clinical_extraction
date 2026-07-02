@@ -81,7 +81,7 @@ External Risk AUROC 0.764 on ExECT SF probe; binding-slice abstention AUROC 0.67
 
 ## Three-way architecture comparison (thesis §7 gap — now measured)
 
-ExECTv2 **LLM-only** (GEPA single-pass) plateaus ~**0.731** (mini) / ~**0.654** (Qwen) vs hybrid v08 **0.9155** on dev140 `clinical_headline`. This **is** the missing three-way leg — a **negative** result.
+ExECTv2 **LLM-only** (GEPA single-pass) plateaus ~**0.731** (mini) / ~**0.654** (Qwen) vs hybrid v08 **0.9189** (was 0.9155; corrected 2026-07-02, see `08_gepa.md`) on dev140 `clinical_headline`. This **is** the missing three-way leg — a **negative** result.
 
 **Per-family GEPA attribution (corrected 2026-06-30):**
 

@@ -17,8 +17,13 @@ been re-synced with the 2026-06-30 Diagnosis gold-quality revision below).
 
 Current evidence stack:
 
-- ExECTv2 `clinical_headline` is primary. Full-200 GPT-4.1-mini v08 is `0.8502`;
-  no-verifier `0.8431`; lean 2-call no-SF `0.8356` overall / `0.7525` SF.
+- ExECTv2 `clinical_headline` is primary. Full-200 GPT-4.1-mini v08 is `0.8680`
+  (was `0.8502`; the 2026-07-02 four-family scorer-correctness sweep moved it to
+  `0.8616` first, then the same-day P7 producer fix moved it again — see the
+  pipeline-assumption-audit entries under Now/Done Recently, and registry run
+  `exectv2_holistic_finding_assembly_v08_full200_p7fix_gpt41mini_20260702`);
+  no-verifier `0.8431`; lean 2-call no-SF `0.8356` overall / `0.7525` SF (these
+  two are not yet re-scored/re-run under the current-code scorer or P7 fix).
 - Same-core full-200 aggregate-only: GPT-4.1-mini `0.8356`; DeepSeek `0.8566`
   overall / `0.7602` SF with `1` accepted Diagnosis caveat; Qwen repair v02
   `0.8197` overall / `0.7020` SF with `0` call/parse failures, structured
@@ -39,9 +44,14 @@ Current evidence stack:
   (`359/450`, `+16`, precision `0.6000`).
 - GEPA workstream closed out (06-28 to 06-30): single-pass GEPA plateaus
   ~0.74 (mini) / ~0.65 (Qwen) on dev140 `clinical_headline`, ~0.17-0.19 below
-  the v08 hybrid (0.9155); root-caused to producer evidence-recall, not
-  verify/arbitrate stages. (The mini figure was ~0.73 / 0.7313 before the
-  2026-07-02 four-family scorer-correctness fixes re-scored it to 0.7491 — see the
+  the v08 hybrid (`0.9189`, was `0.9155`; corrected 2026-07-02 by the P7
+  producer fix propagated through the full assembly — the historical `0.9155`
+  was never itself registry-tracked and predates several since-landed scorer
+  fixes; registry run
+  `exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702`);
+  root-caused to producer evidence-recall, not verify/arbitrate stages. (The
+  mini figure was ~0.73 / 0.7313 before the 2026-07-02 four-family
+  scorer-correctness fixes re-scored it to 0.7491 — see the
   pipeline-assumption-audit entry under Now/Done Recently.)
   (`docs/research/exectv2_gepa_vs_hybrid_evidence_decomposition_2026-06-28.md`).
   Cross-model close-out: Qwen 3.6 35B underperforms mini on the identical
@@ -69,6 +79,30 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-02: **P7 propagated through the full v08 hybrid assembly** (the
+  scope note deliberately left open in the parked-items closure below,
+  actioned same-day after user go-ahead). Regenerated `prescription_repair_v03`
+  with the P7 fix (deterministic, zero new LLM calls) for both dev140 and
+  full-200, swapped only that one producer into the existing v08 manifest
+  (`dataclasses.replace`, never overwriting an archived artifact in place —
+  the dev140 cached file is shared by 5 other manifests, v09/v09b/v09h1-3, not
+  touched). Built a same-day baseline (unmodified manifest, today's scorer)
+  alongside the treatment for both splits, isolating P7's effect from
+  unrelated scorer drift: dev140 baseline `0.9130` -> treatment `0.9189`
+  (+0.0059); full-200 baseline `0.8616` (reproduces the earlier rescore-sweep
+  number exactly) -> treatment `0.8680` (+0.0064). Both splits: Prescription
+  moved (dev140 `0.9386`->`0.9615`, full-200 `0.9033`->`0.9278`),
+  Diagnosis/SF/Investigations byte-identical to baseline on both — confirms
+  clean isolation, recall-driven, zero precision cost, matches the isolated
+  rules-only replay's shape exactly. Two new registry entries
+  (`exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702`,
+  `..._full200_p7fix_gpt41mini_20260702`; the prior full-200 currentcode entry
+  marked superseded), a new hypothesis
+  (`rx_p7_v08_hybrid_headline_propagation_2026-07-02`, CONFIRMED), dossiers
+  regenerated, canon docs (`08_gepa.md`, `10_paper_provenance.md`) and this
+  file's own `0.9155`/`0.8502` citations corrected with disclosure. Script:
+  `scripts/run_exectv2_v08_p7_prescription_refresh_audit.py`. Not yet
+  committed.
 - 2026-07-02: **Pipeline assumption audit parked items — all 5 closed** (P6, F2,
   SF-2, P7, SF-5; picked back up same-day after the audit above). None costed
   (zero new LLM calls, all dev140-replay-verified), none touch a currently-cited
