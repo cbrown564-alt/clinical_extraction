@@ -1,6 +1,6 @@
 {
   "dataset": "exectv2",
-  "generated_on": "2026-06-26",
+  "generated_on": "2026-07-02",
   "source_scorecard": "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md",
   "source_cross_model_report": "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md",
   "evidence_set": [
@@ -733,8 +733,8 @@
       "overall": {
         "pair_count": 6,
         "cell_count": 3360,
-        "exact_cell_agreement_rate": 0.8,
-        "mean_pairwise_jaccard": 0.8852
+        "exact_cell_agreement_rate": 0.7991,
+        "mean_pairwise_jaccard": 0.8825
       },
       "by_family": [
         {
@@ -747,11 +747,11 @@
         },
         {
           "family": "Prescription",
-          "mean_pairwise_jaccard": 0.9051
+          "mean_pairwise_jaccard": 0.8926
         },
         {
           "family": "SeizureFrequency",
-          "mean_pairwise_jaccard": 0.8524
+          "mean_pairwise_jaccard": 0.8538
         }
       ],
       "pairwise": [
@@ -801,15 +801,15 @@
           "family": "SeizureFrequency",
           "cells": 140,
           "exact_cell_agreement_rate": 0.7214,
-          "mean_jaccard": 0.8264
+          "mean_jaccard": 0.8276
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
           "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "family": "Prescription",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.8214,
-          "mean_jaccard": 0.8701
+          "exact_cell_agreement_rate": 0.8071,
+          "mean_jaccard": 0.8511
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
@@ -832,16 +832,16 @@
           "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "family": "SeizureFrequency",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.6643,
-          "mean_jaccard": 0.8054
+          "exact_cell_agreement_rate": 0.6786,
+          "mean_jaccard": 0.8095
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
           "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "family": "Prescription",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.8071,
-          "mean_jaccard": 0.8695
+          "exact_cell_agreement_rate": 0.7929,
+          "mean_jaccard": 0.8511
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v08_dev140",
@@ -865,15 +865,15 @@
           "family": "SeizureFrequency",
           "cells": 140,
           "exact_cell_agreement_rate": 0.7214,
-          "mean_jaccard": 0.8264
+          "mean_jaccard": 0.8276
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "right_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
           "family": "Prescription",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.8214,
-          "mean_jaccard": 0.8701
+          "exact_cell_agreement_rate": 0.8071,
+          "mean_jaccard": 0.8511
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
@@ -896,16 +896,16 @@
           "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "family": "SeizureFrequency",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.6643,
-          "mean_jaccard": 0.8054
+          "exact_cell_agreement_rate": 0.6786,
+          "mean_jaccard": 0.8095
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
           "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "family": "Prescription",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.8071,
-          "mean_jaccard": 0.8695
+          "exact_cell_agreement_rate": 0.7929,
+          "mean_jaccard": 0.8511
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
@@ -928,8 +928,8 @@
           "right_candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
           "family": "SeizureFrequency",
           "cells": 140,
-          "exact_cell_agreement_rate": 0.7571,
-          "mean_jaccard": 0.8506
+          "exact_cell_agreement_rate": 0.7643,
+          "mean_jaccard": 0.8488
         },
         {
           "left_candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
@@ -967,16 +967,16 @@
         "deterministic_action_count",
         "prediction_count"
       ],
-      "cell_count": 1706,
+      "cell_count": 1719,
       "fold_count": 5,
       "bin_count": 5,
-      "expected_calibration_error": 0.0264,
-      "brier_score": 0.177,
-      "constant_base_rate_brier_score": 0.1874,
-      "brier_improvement_vs_base_rate": 0.0104,
-      "overall_accuracy": 0.7503,
-      "mean_calibrated_confidence": 0.7487,
-      "max_adjacent_bin_reversal": 0.0024,
+      "expected_calibration_error": 0.0245,
+      "brier_score": 0.1752,
+      "constant_base_rate_brier_score": 0.1867,
+      "brier_improvement_vs_base_rate": 0.0116,
+      "overall_accuracy": 0.7516,
+      "mean_calibrated_confidence": 0.7502,
+      "max_adjacent_bin_reversal": 0.0087,
       "leakage_audit": {
         "surface": "dev140 rich-schema holistic assembly reliability scorecard",
         "group_key": "letter_id",
@@ -990,38 +990,38 @@
       },
       "heuristic_baseline": {
         "definition": "External no-call confidence proxy from family, evidence validity, source-to-final changes, confidence labels, and deterministic action burden.",
-        "cell_count": 1706,
+        "cell_count": 1719,
         "bin_count": 4,
-        "expected_calibration_error": 0.1451,
-        "brier_score": 0.2031,
+        "expected_calibration_error": 0.1485,
+        "brier_score": 0.2042,
         "bins": [
           {
             "bin": "very_high",
-            "cells": 88,
-            "avg_confidence_proxy": 0.8236,
-            "accuracy": 0.6023,
-            "mean_cell_f1": 0.7018
+            "cells": 91,
+            "avg_confidence_proxy": 0.8242,
+            "accuracy": 0.5824,
+            "mean_cell_f1": 0.6786
           },
           {
             "bin": "high",
-            "cells": 796,
+            "cells": 803,
             "avg_confidence_proxy": 0.6985,
-            "accuracy": 0.8467,
-            "mean_cell_f1": 0.9331
+            "accuracy": 0.8431,
+            "mean_cell_f1": 0.9266
           },
           {
             "bin": "medium",
-            "cells": 552,
-            "avg_confidence_proxy": 0.5726,
-            "accuracy": 0.6395,
-            "mean_cell_f1": 0.8571
+            "cells": 556,
+            "avg_confidence_proxy": 0.5725,
+            "accuracy": 0.6475,
+            "mean_cell_f1": 0.8688
           },
           {
             "bin": "low",
-            "cells": 270,
-            "avg_confidence_proxy": 0.4701,
-            "accuracy": 0.7407,
-            "mean_cell_f1": 0.9026
+            "cells": 269,
+            "avg_confidence_proxy": 0.4702,
+            "accuracy": 0.7509,
+            "mean_cell_f1": 0.9013
           }
         ]
       },
@@ -1029,72 +1029,72 @@
         {
           "bin": "q1",
           "confidence_range": [
-            0.5085,
-            0.6423
+            0.5547,
+            0.6364
           ],
-          "cells": 341,
-          "avg_confidence_proxy": 0.6027,
-          "avg_calibrated_confidence": 0.6027,
-          "accuracy": 0.5543,
-          "calibration_gap": -0.0484,
-          "ece_contribution": 0.0097,
-          "mean_cell_f1": 0.8644
+          "cells": 343,
+          "avg_confidence_proxy": 0.5954,
+          "avg_calibrated_confidence": 0.5954,
+          "accuracy": 0.5714,
+          "calibration_gap": -0.024,
+          "ece_contribution": 0.0048,
+          "mean_cell_f1": 0.8625
         },
         {
           "bin": "q2",
           "confidence_range": [
-            0.6423,
-            0.747
+            0.6364,
+            0.7534
           ],
-          "cells": 341,
-          "avg_confidence_proxy": 0.7167,
-          "avg_calibrated_confidence": 0.7167,
-          "accuracy": 0.7537,
-          "calibration_gap": 0.0369,
-          "ece_contribution": 0.0074,
-          "mean_cell_f1": 0.8964
+          "cells": 344,
+          "avg_confidence_proxy": 0.7153,
+          "avg_calibrated_confidence": 0.7153,
+          "accuracy": 0.689,
+          "calibration_gap": -0.0264,
+          "ece_contribution": 0.0053,
+          "mean_cell_f1": 0.8592
         },
         {
           "bin": "q3",
           "confidence_range": [
-            0.7492,
-            0.797
+            0.7534,
+            0.804
           ],
-          "cells": 341,
-          "avg_confidence_proxy": 0.774,
-          "avg_calibrated_confidence": 0.774,
-          "accuracy": 0.7977,
-          "calibration_gap": 0.0236,
-          "ece_contribution": 0.0047,
-          "mean_cell_f1": 0.889
+          "cells": 344,
+          "avg_confidence_proxy": 0.7831,
+          "avg_calibrated_confidence": 0.7831,
+          "accuracy": 0.8198,
+          "calibration_gap": 0.0367,
+          "ece_contribution": 0.0073,
+          "mean_cell_f1": 0.8944
         },
         {
           "bin": "q4",
           "confidence_range": [
-            0.797,
-            0.8232
+            0.804,
+            0.8266
           ],
-          "cells": 341,
-          "avg_confidence_proxy": 0.8148,
-          "avg_calibrated_confidence": 0.8148,
-          "accuracy": 0.824,
-          "calibration_gap": 0.0093,
-          "ece_contribution": 0.0019,
-          "mean_cell_f1": 0.9059
+          "cells": 344,
+          "avg_confidence_proxy": 0.8151,
+          "avg_calibrated_confidence": 0.8151,
+          "accuracy": 0.843,
+          "calibration_gap": 0.0279,
+          "ece_contribution": 0.0056,
+          "mean_cell_f1": 0.9195
         },
         {
           "bin": "q5",
           "confidence_range": [
-            0.8232,
-            0.8554
+            0.8266,
+            0.8687
           ],
-          "cells": 342,
-          "avg_confidence_proxy": 0.835,
-          "avg_calibrated_confidence": 0.835,
-          "accuracy": 0.8216,
-          "calibration_gap": -0.0134,
-          "ece_contribution": 0.0027,
-          "mean_cell_f1": 0.903
+          "cells": 344,
+          "avg_confidence_proxy": 0.8418,
+          "avg_calibrated_confidence": 0.8418,
+          "accuracy": 0.8343,
+          "calibration_gap": -0.0075,
+          "ece_contribution": 0.0015,
+          "mean_cell_f1": 0.9184
         }
       ],
       "per_family": [
@@ -1102,54 +1102,54 @@
           "family": "Diagnosis",
           "cells": 520,
           "accuracy": 0.6519,
-          "mean_calibrated_confidence": 0.661,
-          "expected_calibration_error": 0.0695,
-          "brier_score": 0.2092,
-          "constant_base_rate_brier_score": 0.2368,
+          "mean_calibrated_confidence": 0.6608,
+          "expected_calibration_error": 0.0535,
+          "brier_score": 0.2095,
+          "constant_base_rate_brier_score": 0.2369,
           "bin_count": 4
         },
         {
           "family": "SeizureFrequency",
           "cells": 421,
-          "accuracy": 0.7363,
-          "mean_calibrated_confidence": 0.7436,
-          "expected_calibration_error": 0.0502,
-          "brier_score": 0.1977,
-          "constant_base_rate_brier_score": 0.1943,
+          "accuracy": 0.7411,
+          "mean_calibrated_confidence": 0.7482,
+          "expected_calibration_error": 0.0486,
+          "brier_score": 0.1949,
+          "constant_base_rate_brier_score": 0.1919,
           "bin_count": 4
         },
         {
           "family": "Prescription",
-          "cells": 450,
-          "accuracy": 0.8333,
-          "mean_calibrated_confidence": 0.8158,
-          "expected_calibration_error": 0.0627,
-          "brier_score": 0.1361,
-          "constant_base_rate_brier_score": 0.1459,
+          "cells": 463,
+          "accuracy": 0.8315,
+          "mean_calibrated_confidence": 0.8165,
+          "expected_calibration_error": 0.0387,
+          "brier_score": 0.1324,
+          "constant_base_rate_brier_score": 0.1466,
           "bin_count": 4
         },
         {
           "family": "Investigations",
           "cells": 315,
           "accuracy": 0.8127,
-          "mean_calibrated_confidence": 0.8045,
-          "expected_calibration_error": 0.0304,
-          "brier_score": 0.1547,
-          "constant_base_rate_brier_score": 0.1561,
+          "mean_calibrated_confidence": 0.8033,
+          "expected_calibration_error": 0.0208,
+          "brier_score": 0.1551,
+          "constant_base_rate_brier_score": 0.156,
           "bin_count": 4
         }
       ]
     },
     "review_routing": {
       "definition": "Predeclared dev-only review triggers over evidence-invalid cells, high proxy risk, source-to-final changes, and family-specific ambiguity cues.",
-      "eligible_cells": 1706,
-      "reviewed_cells": 1605,
-      "review_burden": 0.9408,
-      "total_error_cells": 426,
-      "caught_error_cells": 379,
-      "catch_rate": 0.8897,
-      "false_alarm_cells": 1226,
-      "missed_error_cells": 47,
+      "eligible_cells": 1719,
+      "reviewed_cells": 1610,
+      "review_burden": 0.9366,
+      "total_error_cells": 427,
+      "caught_error_cells": 372,
+      "catch_rate": 0.8712,
+      "false_alarm_cells": 1238,
+      "missed_error_cells": 55,
       "operating_points": [
         {
           "id": "high_recall_predeclared",
@@ -1161,15 +1161,15 @@
             "family-specific ambiguity cue"
           ],
           "validation_status": "dev replay only; not a promoted policy",
-          "eligible_cells": 1706,
-          "reviewed_cells": 1605,
-          "review_burden": 0.9408,
-          "total_error_cells": 426,
-          "caught_error_cells": 379,
-          "catch_rate": 0.8897,
-          "false_alarm_cells": 1226,
-          "false_alarm_rate": 0.7639,
-          "missed_error_cells": 47,
+          "eligible_cells": 1719,
+          "reviewed_cells": 1610,
+          "review_burden": 0.9366,
+          "total_error_cells": 427,
+          "caught_error_cells": 372,
+          "catch_rate": 0.8712,
+          "false_alarm_cells": 1238,
+          "false_alarm_rate": 0.7689,
+          "missed_error_cells": 55,
           "review_burden_delta_vs_high_recall": 0.0,
           "catch_rate_delta_vs_high_recall": 0.0
         },
@@ -1180,17 +1180,17 @@
             "risk >= 0.30"
           ],
           "validation_status": "dev replay threshold scan",
-          "eligible_cells": 1706,
-          "reviewed_cells": 1241,
-          "review_burden": 0.7274,
-          "total_error_cells": 426,
-          "caught_error_cells": 335,
-          "catch_rate": 0.7864,
-          "false_alarm_cells": 906,
-          "false_alarm_rate": 0.7301,
-          "missed_error_cells": 91,
-          "review_burden_delta_vs_high_recall": -0.2134,
-          "catch_rate_delta_vs_high_recall": -0.1033
+          "eligible_cells": 1719,
+          "reviewed_cells": 1246,
+          "review_burden": 0.7248,
+          "total_error_cells": 427,
+          "caught_error_cells": 330,
+          "catch_rate": 0.7728,
+          "false_alarm_cells": 916,
+          "false_alarm_rate": 0.7352,
+          "missed_error_cells": 97,
+          "review_burden_delta_vs_high_recall": -0.2118,
+          "catch_rate_delta_vs_high_recall": -0.0984
         },
         {
           "id": "balanced_dev_candidate",
@@ -1202,17 +1202,17 @@
             "investigation result-state cue"
           ],
           "validation_status": "dev-tuned candidate; needs frozen validation",
-          "eligible_cells": 1706,
-          "reviewed_cells": 1283,
-          "review_burden": 0.7521,
-          "total_error_cells": 426,
-          "caught_error_cells": 342,
-          "catch_rate": 0.8028,
-          "false_alarm_cells": 941,
-          "false_alarm_rate": 0.7334,
+          "eligible_cells": 1719,
+          "reviewed_cells": 1293,
+          "review_burden": 0.7522,
+          "total_error_cells": 427,
+          "caught_error_cells": 343,
+          "catch_rate": 0.8033,
+          "false_alarm_cells": 950,
+          "false_alarm_rate": 0.7347,
           "missed_error_cells": 84,
-          "review_burden_delta_vs_high_recall": -0.1887,
-          "catch_rate_delta_vs_high_recall": -0.0869
+          "review_burden_delta_vs_high_recall": -0.1844,
+          "catch_rate_delta_vs_high_recall": -0.0679
         },
         {
           "id": "transition_focus",
@@ -1224,24 +1224,24 @@
             "Investigation result-state cue"
           ],
           "validation_status": "dev-tuned candidate; needs frozen validation",
-          "eligible_cells": 1706,
-          "reviewed_cells": 1069,
-          "review_burden": 0.6266,
-          "total_error_cells": 426,
-          "caught_error_cells": 320,
-          "catch_rate": 0.7512,
-          "false_alarm_cells": 749,
-          "false_alarm_rate": 0.7007,
-          "missed_error_cells": 106,
-          "review_burden_delta_vs_high_recall": -0.3142,
-          "catch_rate_delta_vs_high_recall": -0.1385
+          "eligible_cells": 1719,
+          "reviewed_cells": 1077,
+          "review_burden": 0.6265,
+          "total_error_cells": 427,
+          "caught_error_cells": 318,
+          "catch_rate": 0.7447,
+          "false_alarm_cells": 759,
+          "false_alarm_rate": 0.7047,
+          "missed_error_cells": 109,
+          "review_burden_delta_vs_high_recall": -0.3101,
+          "catch_rate_delta_vs_high_recall": -0.1265
         }
       ],
       "trigger_counts": {
         "diagnosis_convention_or_assertion_repair": 517,
-        "high_proxy_risk": 827,
+        "high_proxy_risk": 830,
         "investigations_result_state": 235,
-        "prescription_current_vs_plan": 440,
+        "prescription_current_vs_plan": 445,
         "sf_state_or_rate_fidelity": 404
       },
       "by_family": [
@@ -1269,25 +1269,25 @@
         },
         {
           "family": "Prescription",
-          "reviewed_cells": 440,
-          "false_alarm_cells": 375,
-          "eligible_cells": 450,
-          "caught_error_cells": 65,
-          "total_error_cells": 75,
-          "missed_error_cells": 10,
-          "review_burden": 0.9778,
-          "catch_rate": 0.8667
+          "reviewed_cells": 445,
+          "false_alarm_cells": 385,
+          "eligible_cells": 463,
+          "caught_error_cells": 60,
+          "total_error_cells": 78,
+          "missed_error_cells": 18,
+          "review_burden": 0.9611,
+          "catch_rate": 0.7692
         },
         {
           "family": "SeizureFrequency",
           "reviewed_cells": 413,
-          "false_alarm_cells": 310,
+          "false_alarm_cells": 312,
           "eligible_cells": 421,
           "missed_error_cells": 8,
-          "total_error_cells": 111,
-          "caught_error_cells": 103,
+          "total_error_cells": 109,
+          "caught_error_cells": 101,
           "review_burden": 0.981,
-          "catch_rate": 0.9279
+          "catch_rate": 0.9266
         }
       ]
     },
@@ -1424,28 +1424,28 @@
           "arm_id": "targeted_failure_control",
           "label": "Targeted failure control",
           "overall": {
-            "precision": 0.4444,
-            "recall": 0.4444,
-            "f1": 0.4444,
-            "precision_tp": 4,
-            "recall_tp": 4,
+            "precision": 0.5556,
+            "recall": 0.5556,
+            "f1": 0.5556,
+            "precision_tp": 5,
+            "recall_tp": 5,
             "pred_count": 9,
             "gold_count": 9,
-            "fp": 5,
-            "fn": 5
+            "fp": 4,
+            "fn": 4
           },
           "by_family": [
             {
-              "tp": 1,
-              "precision_tp": 1,
-              "recall_tp": 1,
-              "fp": 1,
-              "fn": 1,
+              "tp": 2,
+              "precision_tp": 2,
+              "recall_tp": 2,
+              "fp": 0,
+              "fn": 0,
               "pred_count": 2,
               "gold_count": 2,
-              "precision": 0.5,
-              "recall": 0.5,
-              "f1": 0.5,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0,
               "family": "Diagnosis",
               "companion_metrics": {
                 "assertion_f1": 0.0,
@@ -1516,7 +1516,7 @@
           "call_failures": 0,
           "parse_schema_failures": 0,
           "delta_vs_reference_oracle": {
-            "overall_f1": -0.5556,
+            "overall_f1": -0.4444,
             "schema_validity_rate": 0.0,
             "evidence_validity_rate": -0.2222
           }
@@ -1613,17 +1613,17 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase4_decision_table_sf_inv_dev140_gpt41mini_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.7316,
-        "precision": 0.7557,
-        "recall": 0.7091,
+        "clinical_headline_f1": 0.7494,
+        "precision": 0.7814,
+        "recall": 0.72,
         "strict_benchmark_f1": 0.13,
         "evidence_validity": 0.9694,
         "call_failures": 0,
         "parse_errors": 250,
         "family_f1": {
-          "Diagnosis": 0.6809,
-          "SeizureFrequency": 0.5556,
-          "Prescription": 0.8616,
+          "Diagnosis": 0.7041,
+          "SeizureFrequency": 0.5614,
+          "Prescription": 0.8889,
           "Investigations": 0.8826
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
@@ -1634,17 +1634,17 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.7472,
-        "precision": 0.7217,
-        "recall": 0.7746,
+        "clinical_headline_f1": 0.7643,
+        "precision": 0.7441,
+        "recall": 0.7856,
         "strict_benchmark_f1": 0.128,
         "evidence_validity": 0.9617,
         "call_failures": 0,
         "parse_errors": 24,
         "family_f1": {
-          "Diagnosis": 0.6886,
-          "SeizureFrequency": 0.6744,
-          "Prescription": 0.7981,
+          "Diagnosis": 0.7081,
+          "SeizureFrequency": 0.6802,
+          "Prescription": 0.8298,
           "Investigations": 0.8981
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
@@ -1655,17 +1655,17 @@
         "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
         "rows": 140,
         "surface": "active_llm_only_decision_table_sf_inv_clinical_headline",
-        "clinical_headline_f1": 0.6995,
-        "precision": 0.6866,
-        "recall": 0.7128,
+        "clinical_headline_f1": 0.7206,
+        "precision": 0.7139,
+        "recall": 0.7274,
         "strict_benchmark_f1": 0.1274,
         "evidence_validity": 0.9418,
         "call_failures": 0,
         "parse_errors": 213,
         "family_f1": {
-          "Diagnosis": 0.6426,
-          "SeizureFrequency": 0.5623,
-          "Prescription": 0.8049,
+          "Diagnosis": 0.6826,
+          "SeizureFrequency": 0.5681,
+          "Prescription": 0.823,
           "Investigations": 0.8372
         },
         "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
