@@ -79,6 +79,47 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-03: **Inversion-generalization probe — REFUTED on both tracks, sharpens the architecture-of-record story.**
+  Generalized the 07-03 Rx split-dependent inversion to Investigations + SF to
+  test whether the inversion is a *general property* of the v08 deterministic-
+  vs-LLM lane choice or a Prescription-specific quirk. Both tracks REFUTED, but
+  for informative reasons. **Track A (Investigations):** built the precision-
+  side analog (the recall-side MRI-crowds-EEG probe was already REFUTED at
+  hypothesis 2026-07-01) — an LLM-tuned Inv extractor with a completed-neuro-
+  investigations-only precision gate, run through the v08 assembly with same-day
+  isolation. The hybrid Inv lane wins **both** splits with the **identical
+  mechanism**: dev140 0.9132 vs 0.8949 (Δ −0.0183), full-200 0.9213 vs 0.9080
+  (Δ −0.0133) — the LLM precision probe trades recall for precision and loses
+  net on both. The Rx inversion required a pure-deterministic producer with a
+  lexicon blind spot; Inv's hybrid arbitration already covers both recall and
+  precision, so there is no exploitable asymmetry. Hypothesis
+  `inv_llm_precision_vs_hybrid_inversion_2026-07-03` REFUTED. **Track B (SF
+  direction):** the pre-work free replay (zero LLM calls) established the v08
+  hybrid SF is NOT direction-blind — it scores **0.8897** on
+  `state_profile_directional` (dev140) by sourcing directions from
+  `deterministic/rules/change.py`; the 0/12 direction-blindness finding is a
+  property of the *raw* SF-verify LLM program, not the production pipeline. B1
+  (28 post-hoc adjudication calls) showed the model CAN judge direction in
+  isolation (+12/30 gold-directional facts recovered, 0.6552 → 0.7254); B2
+  (full two-stage direction-aware extraction, ~680 calls) REFUTED — adding a
+  direction field to the extraction task regressed ALL metrics both splits
+  (dev140 −0.0775 directional / −0.1548 state_profile; trails hybrid by ~0.30).
+  The capacity-vs-execution gap (model can *judge* direction but cannot *emit*
+  it as part of structured extraction — the new field's cognitive load degrades
+  the others) is the same task-overload pattern as the Rx probe #3 over-drop.
+  Hypothesis `sf_direction_extraction_probe_2026-07-03` REFUTED. **Combined
+  finding for the paper:** the Rx inversion is Prescription-specific (a lexicon
+  blind spot in the pure-deterministic producer), not a general property; the
+  hybrid lanes (Dx/SF/Inv) are robust to LLM-only replacement, and on SF the
+  deterministic direction arbitration is genuinely superior. The v08 hybrid
+  design is *vindicated* by the failed generalization. Synthesis:
+  `docs/research/exectv2_inversion_generalization_synthesis_2026-07-03.md`;
+  Inv: `docs/experiments/exectv2/investigations/exectv2_inv_llm_vs_hybrid_comparator_2026-07-03.md`;
+  SF: `docs/experiments/exectv2/seizure_frequency/exectv2_sf_direction_probe_results_2026-07-03.md`.
+  Drivers: `scripts/run_exectv2_v08_inv_llm_vs_hybrid.py`,
+  `scripts/run_exectv2_sf_direction_probe.py`,
+  `scripts/register_inv_sf_inversion_hypotheses.py`. ~1090 calls total (most
+  dev140 cached).
 - 2026-07-03: **LLM-vs-deterministic Rx comparator run for the paper**
   (reframes the earlier "Section C cancelled" entry — that was about
   *replacing* the deterministic producer; the paper needs the *comparison*).
@@ -319,6 +360,95 @@ Current evidence stack:
 
 ### Next
 
+- **NEW 2026-07-03:** three follow-up pathways from the Rx split-dependent
+  inversion, now sharpened by the 07-03 inversion-generalization probe (which
+  REFUTED the inversion on Inv and SF — see the Now entry and the synthesis at
+  `docs/research/exectv2_inversion_generalization_synthesis_2026-07-03.md`).
+  The generalization probe is the key new context for these: the inversion is
+  now known to be **Prescription-specific** (Inv's hybrid arbitration already
+  covers both recall and precision, so there is no exploitable asymmetry; SF's
+  direction axis is genuinely better handled by the deterministic
+  `rules/change.py` than by any LLM-only direction-aware program). That bounds
+  pathways #1 and #2 to Prescription and reframes their value: they are no
+  longer "validate a general property of the architecture," they are "close
+  the one family where the inversion actually lives." Pathway #4 gains weight
+  from the same finding — the methodological gap it names is now the *only*
+  route to mechanistic validation of the Rx inversion, since row-level test
+  inspection stays off-limits.
+  1. **Quantify the prevalence mechanism (turn the Rx inversion's qualitative
+     story into a measured one). Mostly free (dev140 replay).** The current
+     mechanism explanation is prose: "multi-dose weight-context suppression
+     concentrated in dev140" vs "non-AED comorbidity-drug over-extraction more
+     prevalent in the 60 test letters." Measure it directly on dev140
+     (inspect-on-limits allows): count dev140 letters carrying multi-dose
+     weight-context (the P7-fix target — recoverable from the P7 audit's
+     isolated rules-only replay, +9 tp/-9 fn across 7 letters) and count
+     dev140 letters carrying non-AED comorbidity meds the deterministic lexicon
+     over-captures. The full-200 prevalence of the non-AED mode is the
+     inspect-off-limits quantity (pathway #4's proxy target); the dev140
+     prevalence of both modes is measurable now. If the dev140 prevalence gap
+     is consistent with the inversion magnitude (+0.0089 dev loss / +0.0214
+     full-200 gain), the mechanism is confirmed quantitatively and the paper's
+     claim becomes defensible rather than asserted. If it isn't, there's a
+     more interesting story hiding — e.g., the deterministic lexicon's
+     over-capture is a dev140-underrepresented failure mode that the full-200
+     surface exposes, which would mean the inversion is a *sampling* artifact
+     of dev140, not a true recall-vs-precision tradeoff. Zero new LLM calls;
+     the data already exists in the P7 audit artifacts and the gold ledger.
+     Outcome feeds the manuscript's §4.2 mechanism paragraph.
+  2. **Test a hybrid Prescription producer (does combining both fixes beat
+     both?). Costed (live LLM), but the design is predeclared by the inversion
+     itself.** The scientifically obvious next question the Rx inversion
+     forces — and, post-generalization-probe, the *only* family where it
+     forces it (Inv's two fixes target the same precision/recall axis and
+     don't compose; SF's "fix" already lives in the deterministic lane). The
+     Rx deterministic P7-fix targets recall (multi-dose weight-context
+     recovery); the LLM AED-only gate targets precision (non-AED
+     over-extraction). A producer that uses the deterministic lane as a recall
+     floor and the LLM AED-only judgment as a precision filter (union of
+     deterministic + LLM-AED-only, or LLM-AED-only intersected with the
+     deterministic lexicon) could in principle capture both advantages. Two
+     predeclared outcomes: **(a) the hybrid beats both on full-200** — a
+     genuine architectural contribution (a deterministic-LLM ensemble with a
+     non-trivial complementarity argument, and a concrete production
+     improvement to the cited v08 Rx number); **(b) the two fixes interfere**
+     — an equally interesting negative result about why orthogonal failure
+     modes don't compose (e.g., the LLM's precision drops genuine AEDs the
+     deterministic lane emits, so the intersection costs more recall than the
+     union gains precision — the same over-drop pattern the 07-02 probe #3
+     exhibited before its emit-if-unsure fix, and the same one the 07-03 Inv
+     precision probe hit on both splits). The Inv REFUTED result is the prior
+     here: if two fixes targeting the *same* axis don't compose on Inv, two
+     fixes targeting *different* axes on Rx are the cleaner test of whether
+     complementarity is achievable at all in this architecture. Reuses the
+     existing Rx LLM-tuned artifact
+     (`experiments/exectv2_llm_rx_tuned_extractor_*_20260703.jsonl`) for one
+     arm; ~200 calls for the union/intersection scoring sweep.
+  3. **Address the methodological tension the inversion exposes — validate a
+     split-dependent mechanism when the test surface is inspect-off-limits.
+     Free design work; possible small costed proxy validation.** The standing
+     protocol says "no holdout/full-200 row inspection" (all row-level work on
+     dev140). But the Rx inversion was *discovered* in the full-200 aggregate
+     and its *mechanism* (non-AED over-extraction more prevalent on test) can
+     only be validated at row level — on the inspect-off-limits surface. This
+     is a genuine methodological gap, and it is now sharper: the
+     generalization probe confirmed the inversion is Prescription-specific, so
+     the paper will lean on the Rx mechanism claim as a *family-level* finding
+     rather than a general one, which raises the bar for defending it. Resolve
+     this by building a **dev140 prevalence-proxy that predicts the test
+     inversion without looking at it**: e.g., a transferable classifier for
+     "letter carries a non-AED comorbidity med in a non-epileptic-conclusion
+     context" trained/characterized on dev140 (where row inspection is
+     allowed) and applied as an *aggregate count* on full-200 (no row-level
+     ground-truth needed — only the prevalence estimate). If the proxy's
+     full-200 prevalence estimate is consistent with the observed +0.0214
+     precision-driven gain, the mechanism is validated without ever inspecting
+     a test row. This both strengthens the paper and yields a reusable
+     instrument for the next split-dependent finding (the B1 capacity-vs-SF
+     execution gap from the 07-03 probe is a model of the kind of finding that
+     benefits from this kind of no-look validation). Outputs: a proxy
+     definition + dev140 validation + a one-number full-200 aggregate
+     prevalence estimate; no test-row inspection.
 - **RESOLVED 2026-07-02:** four concrete follow-ups from the gold case ledger's
   Prescription/Investigations row-adjudication (see the pipeline-assumption-audit
   entries under Now / Done Recently and
