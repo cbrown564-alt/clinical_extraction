@@ -79,6 +79,38 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-03: **Re-finalized the Rx/Inv gold case ledger after the scorer-correctness
+  sweep** (rescore-sweep discrepancy flag #2). The 07-02 sweep regenerated
+  `_cases.json` under the finalized scorer (48->36 Rx, 31->35 Inv), but
+  `finalize_rx_inv_canonical.py` joined verdicts to cases by *positional*
+  `case_id` — renumbering silently mis-paired Rx and crashed Inv. Two findings:
+  (1) the durable fix is content-keying (`letter_id + match_key +
+  disagreement_type`) via a git-recovered pre-sweep case-set bridge, which
+  recovers verdicts that survive the renumbering; (2) **5 of the 6 rows the
+  direct ledger reconciliation had orphaned as `unadjudicated` were already
+  adjudicated** under the same content key in the pre-sweep set — the
+  reconciliation just failed to match them. Only **EA0114** (carbamazepine
+  400/2, whose form flipped from spurious-FP to missed-FN under CUI-unification
+  + clause-scope) was genuinely new; it inherits the clinical logic of pre-sweep
+  case 24 (`MODEL_DEFENSIBLE`/`scorer_mechanics_artifact` — the model got the
+  drug right, the disagreement is a key-construction artifact). Result: 0
+  unadjudicated rows. Corrected genuine-error shares under the finalized
+  scorer: **Prescription 26/36 = 72.2%** (was 60.4% on the pre-clause-scope
+  48-case set; the fix dropped 12 scorer-artifact disagreements, concentrating
+  the remainder on genuine errors), **Investigations 23/35 = 65.7%** (was
+  67.7% on 31). Dossiers regenerated.
+- 2026-07-03: **Re-scored the 5 stale `exectv2_2call_no_sf_adjudicator_*` runs**
+  under the finalized scorer (rescore-sweep discrepancy flag #1). The 07-02
+  sweep left these out of scope believing their cached predictions absent; they
+  are present. Built a committed harness
+  (`scripts/rescore_model_swap_runs.py`) that replays the deterministic
+  finding-assembly over each run's saved-jsonl producers — zero new LLM calls,
+  the exact historical computation path (CUI-projected `concept_only` for Dx).
+  dev140: deepseek 0.8596->0.8643, gpt41mini 0.8396->0.8526 (Inv 0.8347->0.8487
+  from F2/I1 on the structured-direct lane), qwen36 0.8018->0.8191,
+  qwen36_repair_v02 0.8319->0.8423. full200 (qwen36_repair_v02) 0.8197->0.8318
+  (overall-only per the aggregate-only mandate). Hypothesis
+  `rx_2call_no_sf_rescore_finalization_2026-07-03` CONFIRMED.
 - 2026-07-02: **P7 propagated through the full v08 hybrid assembly** (the
   scope note deliberately left open in the parked-items closure below,
   actioned same-day after user go-ahead). Regenerated `prescription_repair_v03`
@@ -421,7 +453,10 @@ Current evidence stack:
   wrongly excluded from `clinical_headline` scoring even when the model's
   current-dose prediction is correct (11/48 = 22.9% of Prescription's
   disagreements). Investigations: 67.7% genuine, concentrated in the
-  already-known MRI-crowds-out-EEG omission pattern. Generated dossiers:
+  already-known MRI-crowds-out-EEG omission pattern. *(Shares are on the
+  pre-07-02-clause-scope 48/31 case sets; see the 2026-07-03 re-finalization
+  below for the corrected 36/35 shares under the finalized scorer: Rx 72.2%,
+  Inv 65.7%.)* Generated dossiers:
   `docs/canon/workstreams/{DIAGNOSIS,SEIZURE_FREQUENCY,PRESCRIPTION,INVESTIGATIONS}_CANONICAL_LEDGER_CANON.md`
   (regenerate via `uv run python experiments/exectv2_ledger/render_dossier.py`,
   never hand-edit).
