@@ -14,7 +14,12 @@ DEFAULT_DATA_DIR = Path("data/ExECTv2 (2025)")
 DEFAULT_JSON_DIR = DEFAULT_DATA_DIR / "Json"
 DEFAULT_TEXT_DIR = DEFAULT_DATA_DIR / "Gold1-200_corrected_spelling"
 DEFAULT_SPLITS_DIR = DEFAULT_DATA_DIR / "splits"
-DEFAULT_SPLIT_MANIFEST = DEFAULT_SPLITS_DIR / "exectv2_split_v1.json"
+# Split v2 (2026-07-01): dev unchanged at 140; test 60->59 (EA0159 dropped — the
+# only duplicate-annotation-consistency-check pair split across dev/test in v1;
+# see docs/experiments/exectv2/exectv2_test60_split_dedupe_fix_2026-07-01.md).
+# v1 is left on disk as the historical record; any prior run that materialized
+# against v1 keeps its provenance.
+DEFAULT_SPLIT_MANIFEST = DEFAULT_SPLITS_DIR / "exectv2_split_v2.json"
 
 # Entity names are sourced from the registry (``contract.entities``); callers
 # that need a name string reference ``<EntitySpec>.name`` directly.
