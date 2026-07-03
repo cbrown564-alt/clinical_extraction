@@ -429,18 +429,54 @@ nondeterminism, so SF figures are reported as bands.
 \textbf{Prescription} is the exception: \textbf{72.2\%} (26/36) of its
 disagreements are genuine model errors (polypharmacy drug omissions,
 current-vs-future dose conflation, non-AED over-extraction) --- the opposite
-pattern, where the model is the bottleneck, not the gold. Notably the
-production deterministic Prescription producer (AED-only by lexicon
-construction, with per-clause current-vs-future gating) scores 0.9615 on
-dev140, sidestepping these LLM failure modes structurally.
+pattern, where the model is the bottleneck, not the gold.
+
+\textbf{Deterministic vs LLM-tuned Prescription (comparator).} The v08
+architecture uses a deterministic Prescription lane (AED-only by lexicon
+construction, with per-clause current-vs-future gating). A best-effort LLM
+extractor (the canonical evolved instruction plus current-vs-future and
+AED-only behavior probes, the latter with an emit-if-unsure safety clause)
+was run through the same assembly as a comparator. The result is
+split-dependent: on dev140 the deterministic producer wins (0.9615 vs
+0.9526, recall-driven); on full-200 the LLM-tuned extractor wins
+(0.9492 vs 0.9278 Rx F1; 0.8730 vs 0.8680 overall, precision+recall). The
+two approaches fix different failure modes with different dev/test
+prevalence --- the deterministic P7 fix targets multi-dose weight-context
+over-suppression (recall); the LLM AED-only gate targets non-AED
+comorbidity-drug over-extraction (precision) that the deterministic lexicon
+does not fully handle on the broader test surface. The deterministic lane is
+competitive with, not strictly dominant over, a tuned LLM on Prescription;
+the full-200 LLM overall advantage (+0.0050) is within run-to-run variance
+and is not over-claimed. Table~\ref{tab:rx-comparator}.
+
+\begin{table}[tbp]
+\caption{Deterministic vs LLM-tuned Prescription producer through the v08 assembly (Rx \code{clinical\_headline}).}
+\label{tab:rx-comparator}
+\centering
+\scriptsize
+\begin{tabular}{llrrrr}
+\toprule
+Split & Producer & F1 & P & R & TP/FP/FN \\
+\midrule
+dev140 & Deterministic pre-P7 & 0.9386 & 0.9502 & 0.9272 & 191/10/15 \\
+dev140 & LLM-tuned & 0.9526 & 0.9795 & 0.9272 & 191/4/15 \\
+dev140 & \textbf{Deterministic P7-fixed} & \textbf{0.9615} & 0.9524 & 0.9709 & 200/10/6 \\
+\midrule
+full-200 & Deterministic pre-P7 & 0.9033 & 0.9312 & 0.8771 & 257/19/36 \\
+full-200 & Deterministic P7-fixed & 0.9278 & 0.9343 & 0.9215 & 270/19/23 \\
+full-200 & \textbf{LLM-tuned} & \textbf{0.9492} & 0.9748 & 0.9249 & 271/7/22 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \textbf{Investigations:} \textbf{65.7\%} (23/35) genuine, concentrated in the
 MRI-crowds-out-EEG recall omission pattern.
 
 The implication for benchmark interpretation: a per-family F1 gap is not
 interchangeable with a model deficit. Two of four families are bounded by gold
-quality, not model capacity; one is bounded by the model and already mitigated
-by the deterministic lane; one is a genuine recall target. Full provenance:
+quality, not model capacity; one (Prescription) is bounded by the model and
+mitigated by the deterministic lane on dev but not strictly dominated by it at
+full-200; one is a genuine recall target. Full provenance:
 \code{docs/canon/workstreams/*\_CANONICAL\_LEDGER\_CANON.md}.
 
 \section{Discussion}

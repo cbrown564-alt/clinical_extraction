@@ -79,6 +79,25 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-03: **LLM-vs-deterministic Rx comparator run for the paper**
+  (reframes the earlier "Section C cancelled" entry — that was about
+  *replacing* the deterministic producer; the paper needs the *comparison*).
+  Built the best-possible LLM-tuned Prescription extractor (canonical GEPA
+  instruction + probe #2 current-vs-future + probe #3 AED-only **with the
+  emit-if-unsure safety clause** fixing the documented probe #3 over-drop),
+  ran it through the v08 assembly with same-day baseline+treatment isolation.
+  **Split-dependent inversion:** dev140 deterministic P7-fix (0.9615) beats
+  LLM (0.9526) by +0.0089 (recall-driven); **full-200 LLM (0.9492 Rx /
+  0.8730 overall) beats deterministic P7-fix (0.9278 Rx / 0.8680 overall) by
+  +0.0214 Rx / +0.0050 overall** (precision+recall: the LLM's contextual
+  AED judgment fixes non-AED over-extraction the deterministic lexicon
+  doesn't fully handle on the test surface). The two fixes target different
+  failure modes with different dev/test prevalence. Finding:
+  `docs/experiments/exectv2/prescription/exectv2_rx_llm_vs_deterministic_comparator_2026-07-03.md`;
+  hypothesis `rx_llm_vs_deterministic_comparator_2026-07-03` PARTIAL. The
+  full-200 LLM overall advantage (+0.0050) is within run-to-run variance and
+  must not be over-claimed. Partially revises the 07-03 isolated-producer
+  feasibility finding (which compared dev140 only).
 - 2026-07-03: **Section C cancelled — deterministic Prescription producer
   already wins** (head-to-head feasibility finding,
   `docs/experiments/exectv2/prescription/exectv2_rx_headtohead_feasibility_finding_2026-07-03.md`).
