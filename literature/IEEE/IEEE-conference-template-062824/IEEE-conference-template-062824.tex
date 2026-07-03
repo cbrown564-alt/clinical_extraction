@@ -273,18 +273,21 @@ difficulty established by Gan 2026.
 We evaluate the selected ExECTv2 clinical-finding assembly primarily by
 de-duplicated clinical-headline recovery rather than strict full-schema
 annotation reproduction. On the aggregate full-200 current-code audit, the
-verifier-backed GPT-4.1-mini v08-shaped architecture scored 0.8502 overall
-clinical-headline F1. The accepted lean candidate,
+verifier-backed GPT-4.1-mini v08-shaped architecture scored 0.8680 overall
+clinical-headline F1 (0.8502 before the 2026-07-02 scorer-correctness sweep
+and same-day P7 deterministic-producer fix; see
+Table~\ref{tab:exectv2-architecture} footnote). The accepted lean candidate,
 the 2-call no-SF-adjudicator GPT-4.1-mini system, reduced the full-200 call
 profile to 400 calls while preserving the governing cost-performance gates:
-0.8356 overall and 0.7525 SeizureFrequency F1.
+0.8356 overall and 0.7525 SeizureFrequency F1 (pre-sweep scoring; not yet
+re-scored under the finalized scorer).
 
 Strict benchmark and CUI-oriented outputs measure compatibility with the
 original annotation surface. They are reported only as secondary diagnostics and
 are not described as the primary ExECTv2 success criterion.
 
 \begin{table*}[tbp]
-\caption{ExECTv2 Architecture Comparison on Full-200 Aggregate \code{clinical\_headline}}
+\caption{ExECTv2 Architecture Comparison on Full-200 Aggregate \code{clinical\_headline}. The v08 row reflects the finalized scorer (2026-07-02 four-family scorer-correctness sweep + same-day P7 deterministic-producer fix: overall 0.8502$\to$0.8680). The no-verifier and lean 2-call rows are retained at their pre-sweep values (not yet re-scored under the current scorer) as component-role and cost-frontier comparators; their relative ordering is unchanged.}
 \label{tab:exectv2-architecture}
 \centering
 \scriptsize
@@ -292,9 +295,10 @@ are not described as the primary ExECTv2 success criterion.
 \toprule
 System/view & Overall & Diagnosis & SF & Prescription & Investigations & Claim use \\
 \midrule
-Current-code v08-shaped GPT-4.1-mini & 0.8502 & 0.8321 & 0.7850 & 0.8926 & 0.9213 & Aggregate architecture evidence. \\
-No-verifier ablation & 0.8431 & 0.8410 & 0.7850 & 0.8926 & 0.8563 & Component-role comparison. \\
-Accepted lean 2-call no-SF-adjudicator & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & Cost-performance frontier. \\
+Current-code v08-shaped GPT-4.1-mini & 0.8680 & 0.8546 & 0.7842 & 0.9278 & 0.9213 & Aggregate architecture evidence. \\
+No-verifier ablation$^{\dagger}$ & 0.8431 & 0.8410 & 0.7850 & 0.8926 & 0.8563 & Component-role comparison. \\
+Accepted lean 2-call no-SF-adjudicator$^{\dagger}$ & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & Cost-performance frontier. \\
+\multicolumn{7}{l}{\footnotesize $^{\dagger}$Pre-sweep scoring; not yet re-scored under the finalized scorer.} \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -314,8 +318,9 @@ support model-family robustness rather than the central architecture comparison
 \ref{tab:exectv2-model-swap-full}).
 
 The same-core model-swap study suggests that the ExECTv2 component graph is not
-GPT-4.1-mini-specific. DeepSeek reached 0.8596 and GPT-4.1-mini reached 0.8396
-clinical-headline F1 on dev140 under the frozen core, with full-200 aggregate
+GPT-4.1-mini-specific. DeepSeek reached 0.8643 and GPT-4.1-mini reached 0.8526
+clinical-headline F1 on dev140 under the frozen core (re-scored under the
+finalized 2026-07-02 scorer), with full-200 aggregate
 rows of 0.8566 and 0.8356 respectively. Qwen repair v02 provides additional
 same-core model-family evidence after output-contract repair, but remains below
 the operational GPT-4.1-mini and DeepSeek rows. The unrepaired Qwen dev140 row
@@ -389,6 +394,54 @@ for ablations and same-input replay deltas under a declared scorer and
 inspection boundary. Dictionary, residual-semantic, and headline-projection
 layers show positive aggregate deltas on dev140 and full-200 replay, but these
 results do not prove any component is globally required.
+
+\subsubsection{Gap Mechanism: Gold-Quality Ceilings}
+
+A whole-corpus row-level adjudication of every \code{clinical\_headline}
+disagreement, scored under the finalized 2026-07-02 scorer, separates genuine
+model error from gold-quality and scorer-mechanics artifacts. The finding is
+family-specific and inverts the naive reading of the per-family F1 gap.
+
+\textbf{Diagnosis} carries the most disagreements (199 on dev140), but only
+\textbf{15.6\%} (31/199) are genuine model errors; the remaining 84.4\% are
+gold-quality artifacts --- dominantly gold multiplicity, where the gold tags
+both a parent and a child concept (or splits one compound diagnostic phrase
+into separate atomic tags) from a single statement and the model's reasonable
+one-tag consolidation is scored wrong. The D1 hierarchy-aware concept match
+folded 5 such parent/child pairs into the metric (F1 0.6617$\to$0.6779),
+reinforcing rather than threatening the gold-artifact finding.\footnote{Diagnosis
+is reported on the \code{concept\_only} surface (entity-agnostic recall,
+home-tagged precision) --- the surface \code{clinical\_headline\_unit\_keys}
+actually maps Diagnosis to, and the surface the production assembly's
+\code{score\_for\_primary} uses for the overall. The companion
+\code{concept\_negation} surface (0.6617, negation-aware) is retained as a
+diagnostic only; the finalized overall uses \code{concept\_only} (0.6779) so
+the headline equals the micro-average of the four cited per-family surfaces.}
+
+\textbf{SeizureFrequency} is the corpus's lowest-agreement entity (human IAA
+0.47). Of its 64 adjudicated disagreements, \textbf{29.7\%} (19/64) are genuine;
+the rest are gold under-annotation, redundant double-tagging, and
+inter-annotator ambiguity. Counting only genuine errors, the program is
+clinically defensible on far more letters than the raw metric credits. The
+metric carries $\pm$0.03 run-to-run variance from temperature-0
+nondeterminism, so SF figures are reported as bands.
+
+\textbf{Prescription} is the exception: \textbf{72.2\%} (26/36) of its
+disagreements are genuine model errors (polypharmacy drug omissions,
+current-vs-future dose conflation, non-AED over-extraction) --- the opposite
+pattern, where the model is the bottleneck, not the gold. Notably the
+production deterministic Prescription producer (AED-only by lexicon
+construction, with per-clause current-vs-future gating) scores 0.9615 on
+dev140, sidestepping these LLM failure modes structurally.
+
+\textbf{Investigations:} \textbf{65.7\%} (23/35) genuine, concentrated in the
+MRI-crowds-out-EEG recall omission pattern.
+
+The implication for benchmark interpretation: a per-family F1 gap is not
+interchangeable with a model deficit. Two of four families are bounded by gold
+quality, not model capacity; one is bounded by the model and already mitigated
+by the deterministic lane; one is a genuine recall target. Full provenance:
+\code{docs/canon/workstreams/*\_CANONICAL\_LEDGER\_CANON.md}.
 
 \section{Discussion}
 

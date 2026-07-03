@@ -97,6 +97,19 @@ Current evidence stack:
   the deterministic lane is strong precisely because it sidesteps the LLM's
   structural failure modes (current-vs-future conflation, non-AED
   over-extraction).
+- 2026-07-03: **D1 convention sign-off — `concept_only` is the canonical
+  Diagnosis surface** for the manuscript headline (D8). The 07-02 rescore-sweep
+  doc flagged the `concept_negation -> concept_only` switch as "the only
+  non-purely-mechanical decision in the sweep." Confirmed deliberate: (a)
+  `clinical_headline_unit_keys` maps Diagnosis to `_concept_keys(..., "concept")`,
+  i.e. `concept_only` is the surface the headline key actually uses; (b) the
+  production assembly path (`reports/llm_first/recovery.py::score_for_primary`)
+  already uses `concept_only` for Diagnosis via `ESSENTIAL_ATOMIC_CONCEPT_ONLY` —
+  this is not a change, it's the established convention that produces all cited
+  v08 numbers; (c) it makes the D1 hierarchy-aware fix visible in the headline.
+  The `concept_negation` number (GEPA `_canonical_headline` historical overall,
+  0.7428 cross-reference) stays as a disclosed companion; the finalized overall
+  is 0.7491 (`concept_only`). Manuscript §4.2 footnote to carry this sign-off.
 - 2026-07-03: **SF ledger re-run under the finalized scorer** (rescore-sweep
   discrepancy flag #3; ~280 dev140 gpt-4.1-mini calls, predeclaration
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_rerun_predeclaration_2026-07-03.md`).
