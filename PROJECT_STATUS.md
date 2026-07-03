@@ -79,6 +79,27 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-03: **SF ledger re-run under the finalized scorer** (rescore-sweep
+  discrepancy flag #3; ~280 dev140 gpt-4.1-mini calls, predeclaration
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_rerun_predeclaration_2026-07-03.md`).
+  Re-ran the two-stage SF-verify program on dev140 to bring the SF gold case
+  ledger onto a current, self-consistent prediction basis. Result: stage-2
+  `state_profile` F1 **0.7793** (vs the registered 0.7483 and the documented
+  0.7724 06-29 re-run — temp-0 nondeterminism); **stage2 reproduces stored
+  jsonl 99/140**, exactly the documented irreducible ceiling (the original
+  06-28 completions were never cached, so gpt-4.1-mini temp-0 cross-session
+  nondeterminism caps faithful reproduction). Reconciliation: the new re-run's
+  disagreement set is nearly identical to the existing ledger's (52/53 letters
+  overlap, 0 new disagreements); the only change is **EA0121 now resolved**
+  (its 2 `scorer_mechanics_artifact` rows were exactly the SF-1 zero-count
+  fix's target — the 0/3 variable range is now correctly `active-rate`).
+  Ledger 66->64 rows, 0 unadjudicated, genuine share 28.8%->29.7%. **Two-basis
+  condition (deliberate, documented):** the SF dossier's F1 ladder shows the
+  registered 0.7483 (live-queried from the registry, the scored surface of
+  record); its mechanism table is built on the 0.7793 re-run (the substrate
+  the adjudications were authored against). The registered 0.7483 number's
+  own row-level substrate cannot be reconstructed (completions gone); it
+  keeps its existing disclosure and is not overwritten.
 - 2026-07-03: **Re-finalized the Rx/Inv gold case ledger after the scorer-correctness
   sweep** (rescore-sweep discrepancy flag #2). The 07-02 sweep regenerated
   `_cases.json` under the finalized scorer (48->36 Rx, 31->35 Inv), but
