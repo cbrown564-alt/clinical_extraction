@@ -79,6 +79,24 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-03: **Section C cancelled — deterministic Prescription producer
+  already wins** (head-to-head feasibility finding,
+  `docs/experiments/exectv2/prescription/exectv2_rx_headtohead_feasibility_finding_2026-07-03.md`).
+  The planned LLM-vs-deterministic head-to-head + holdout eval was predicated
+  on the deterministic producer dropping the LLM probes' recall gains. A free
+  scorer-replay probe refutes this: the deterministic producer already emits
+  every fact the probes recovered (EA0038 carbamazepine 5/5, EA0021 nocte
+  split 2/2) and scores **0.9615** on dev140 Rx `clinical_headline` — *higher
+  than the LLM probe combined arm (0.9526)* and far above the GEPA LLM
+  canonical (0.9122). The probes compared the LLM against itself (a weak 0.9073
+  baseline), never against the deterministic producer v08 actually uses.
+  Introducing an LLM producer would regress Rx by -0.0089 at real cost. Both
+  Section C hypotheses (`rx_llm_producer_into_v08_2026-07-03`,
+  `rx_deterministic_rule_harden_2026-07-03`) REFUTED; C2/C3 cancelled, saving
+  ~760 planned LLM calls. This *reinforces* the audit's Prescription finding:
+  the deterministic lane is strong precisely because it sidesteps the LLM's
+  structural failure modes (current-vs-future conflation, non-AED
+  over-extraction).
 - 2026-07-03: **SF ledger re-run under the finalized scorer** (rescore-sweep
   discrepancy flag #3; ~280 dev140 gpt-4.1-mini calls, predeclaration
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_rerun_predeclaration_2026-07-03.md`).
