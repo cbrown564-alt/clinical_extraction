@@ -58,5 +58,9 @@ def test_phase4_exectv2_frontend_keeps_projection_separate_from_prediction_beari
     assert 'return "deterministic_projection";' in adapter
     assert "fetchExectv2ComponentAblation" in surface
     # The surface delegates rendering to the shared cumulative stage-ladder seam.
+    # Since P3-5 (8ce784ae) it builds via the shared createComponentImpactSurface
+    # factory, which mounts ComponentLadderSurface internally.
+    assert "createComponentImpactSurface" in surface
     assert "adaptExectv2Ladder" in surface
-    assert "ComponentLadderSurface" in surface
+    factory = _read("frontend/components/laboratory/createComponentImpactSurface.tsx")
+    assert "ComponentLadderSurface" in factory

@@ -254,7 +254,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split projection render repair cases",
     ),
     "test_exectv2_scoring.py": AllowlistEntry(
-        1469,
+        1641,
         "P0-6/Wave-C-S1: megatest — split scoring scenario tables",
     ),
     "test_gan2026_fresh_evidence_reasoner.py": AllowlistEntry(
@@ -306,7 +306,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split projection render cases",
     ),
     "test_exectv2_deterministic_all9.py": AllowlistEntry(
-        816,
+        840,
         "P0-6/Wave-C-S1: megatest — split all9 deterministic rule cases",
     ),
 }

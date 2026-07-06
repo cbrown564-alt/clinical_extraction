@@ -1,0 +1,62 @@
+{
+  "run_date": "20260706",
+  "model": "openai/gpt-4.1-mini",
+  "temperature": 0.0,
+  "split": "dev140",
+  "n_letters_changed": 28,
+  "n_adjudicator_calls_per_arm": 28,
+  "baseline_raw_directional_f1": 0.6551724137931035,
+  "baseline_raw_state_profile_f1": 0.7482517482517483,
+  "letters_with_deterministic_cue": 11,
+  "total_highlight_spans": 19,
+  "arms": {
+    "A": {
+      "arm": "A",
+      "directional_f1": 0.727891156462585,
+      "directional_tp": 107,
+      "directional_fp": 47,
+      "directional_fn": 33,
+      "state_profile_f1": 0.7482517482517483,
+      "direction_counts_non_same": {
+        "Decreased": 10,
+        "Increased": 13,
+        "Frequent": 6,
+        "Infrequent": 2
+      },
+      "pred_jsonl": "experiments\\exectv2_sf_verify_retrieval_highlight_A_dev140_20260706.jsonl"
+    },
+    "B": {
+      "arm": "B",
+      "directional_f1": 0.7210884353741497,
+      "directional_tp": 106,
+      "directional_fp": 48,
+      "directional_fn": 34,
+      "state_profile_f1": 0.7482517482517483,
+      "direction_counts_non_same": {
+        "Decreased": 10,
+        "Increased": 12,
+        "Frequent": 8,
+        "Infrequent": 1
+      },
+      "pred_jsonl": "experiments\\exectv2_sf_verify_retrieval_highlight_B_dev140_20260706.jsonl"
+    },
+    "C": {
+      "arm": "C",
+      "directional_f1": 0.696551724137931,
+      "directional_tp": 101,
+      "directional_fp": 49,
+      "directional_fn": 39,
+      "state_profile_f1": 0.7482517482517483,
+      "direction_counts_non_same": {
+        "Frequent": 7,
+        "Decreased": 4,
+        "Increased": 1
+      },
+      "pred_jsonl": "experiments\\exectv2_sf_verify_retrieval_highlight_C_dev140_20260706.jsonl"
+    }
+  },
+  "arm_b_minus_arm_a_directional": -0.006802721088435271,
+  "arm_c_minus_arm_b_directional": -0.0245367112362187,
+  "verdict": "HIGHLIGHT IS NOT THE LEVER (Arm B - Arm A < +0.02; Gan finding does not transfer)",
+  "mechanism": "LOOKUP (Arm C ~= Arm B; retrieval works by direct lookup, different from Gan)"
+}

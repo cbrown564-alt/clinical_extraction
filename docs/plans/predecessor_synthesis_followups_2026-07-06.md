@@ -1,6 +1,6 @@
 # Implementation plan — predecessor-synthesis follow-ups (7 items)
 
-Status: **DRAFT for review.** Date: 2026-07-06.
+Status: **IN PROGRESS — items 1, 2, 3, 4, 6, 7 done; 5 pending.** Date: 2026-07-06.
 Owner: ExECTv2 + Gan2026 workstreams.
 Branch context: `exectv2-capacity-execution-gap-generalization`.
 Provenance: triggered by the 2026-07-06 read of the four predecessor-lessons
@@ -17,6 +17,28 @@ experiments that each warrant their **own separately-frozen predeclaration**
 research protocol: dev140 / labelled synthetic panel only; Gan test450 and
 ExECT holdout/full-200 row-level inspection remain blocked.
 
+> **Status snapshot (2026-07-06 close):** items **1** (`/gold-noise` tab),
+> **6** (`multiple` sentinel audit), **7** (policy-wall audit), **2**
+> (closed-option direction selector), **4** (no-model medication oracle), and
+> **3** (retrieval-highlight salience priming) are **complete**. Item 5 remains
+> pending. The three headline outcomes so far: **item 2 refutes the
+> "fundamental" framing** of the SF capacity-vs-execution gap (closed-option
+> recovers +0.0552 dev140 `state_profile_directional` where the free-write
+> family regressed); **item 4 confirms the dspy medication-ceiling framing** —
+> deterministic-only (`_extract_prescriptions` as the final system, zero LLM)
+> reproduces the cited hybrid `clinical_headline` **exactly** (0.9615 dev140 /
+> 0.9278 full-200, gap +0.0000 on both), so the LLM contributes **zero** to the
+> Prescription headline; **item 3 is the diversifying negative on the input
+> axis** — retrieval-highlight priming does *not* move direction (Arm B − Arm A
+> = −0.0068 dev140 `state_profile_directional`, < the +0.02 kill band), so the
+> gap **survives a change of input** even though item 2 showed it does *not*
+> survive a change of generation contract. Combined cross-family claim: the
+> SF-direction gap is **contract-sensitive but input-robust** (not fundamental;
+> the lever is the closed-option contract, not input salience-priming; on this
+> surface retrieval works by lookup, not priming). See the per-item status
+> stamps and outcome notes below, and the linked audit/experiment docs.
+> Remaining: item 5 (raw-vs-projected decomposition, zero LLM).
+
 ---
 
 ## How the seven items relate (read this first)
@@ -24,26 +46,38 @@ ExECT holdout/full-200 row-level inspection remain blocked.
 The seven items are not independent. They form three groups plus two audits:
 
 - **Group A — the SF-direction research bet (items 2 + 3).** Both test whether
-  the capacity-vs-execution gap, currently bounded by four measured negatives
+  the capacity-vs-execution gap, previously bounded by four measured negatives
   *all in the free-write-then-arbitrate architecture family*, survives a
-  *different* architecture. Item 2 = closed-option selector (dspy pattern);
-  item 3 = retrieval-highlight input-priming (dissertation-recursive pattern).
-  Either outcome hardens or refutes our "fundamental" claim across architecture
-  families rather than within one. These are the highest-leverage items and the
-  reason the predecessor material matters most.
+  *different* architecture. Item 2 = closed-option selector (dspy pattern) —
+  **DONE 2026-07-06, REFUTES "fundamental"** (+0.0552; the gap does not survive a
+  change of *generation contract*); item 3 = retrieval-highlight input-priming
+  (dissertation-recursive pattern) — **DONE 2026-07-06, HIGHLIGHT IS NOT THE
+  LEVER** (Arm B − Arm A = −0.0068 < the +0.02 kill band; the gap **does** survive
+  a change of *input*). The two legs have **opposite outcomes on the two axes**:
+  contract-sensitive, input-robust. Combined claim: the gap is not fundamental;
+  the lever that deploys the capacity is the closed-option contract, not input
+  salience-priming (on this surface retrieval works by lookup, not priming).
 - **Group B — honest-headline infrastructure (items 1, 4, 5).** Item 5
   decomposes the cited 0.9189 into raw-LLM vs deterministic; item 4 establishes
-  the no-model medication ceiling; item 1 surfaces all gold-quality evidence in
-  a dedicated frontend tab. Together they answer the dspy "bridge-inflation"
-  critique and make the gold-noise story (corroborated at ~28–29% across three
-  codebases) inspectable rather than merely cited.
+  the no-model medication ceiling — **DONE 2026-07-06, confirms dspy framing
+  (deterministic-only == cited hybrid headline, gap +0.0000 on both splits)**;
+  item 1 surfaces all gold-quality evidence in a dedicated frontend tab —
+  **DONE 2026-07-06**. Together they answer the dspy "bridge-inflation" critique
+  and make the gold-noise story (corroborated at ~28–29% across three codebases)
+  inspectable rather than merely cited.
 - **The two audits (items 6, 7).** Both are cheap, both can change framing, so
-  both run before the Group A predeclarations are finalized.
+  both ran before the Group A predeclarations were finalized. **Both DONE
+  2026-07-06.** Item 6's outcome (unknown-vs-counted divergence dominates, not
+  2-vs-3) is absorbed into item 2's predeclaration; item 7's outcome (2 of 32
+  evolved seeds clear the policy wall; research-only, not the production path)
+  bounds item 2's framing to the un-walled raw program.
 
-Sequencing recommendation: **6 → 7 → 5 → 4 → 1 (parallel) → 2 (predeclare) → 3
-(predeclare).** Items 1 and 5 have no LLM cost and no split-discipline risk;
-item 4 is a zero-LLM ceiling probe; items 2 and 3 are the only costed,
-fresh-protocol experiments.
+Sequencing recommendation (original): **6 → 7 → 5 → 4 → 1 (parallel) → 2
+(predeclare) → 3 (predeclare).** Items 1 and 5 have no LLM cost and no
+split-discipline risk; item 4 is a zero-LLM ceiling probe; items 2 and 3 are the
+only costed, fresh-protocol experiments. **Actual execution order:** 6 → 7 → 2
+(per the user's "run 6 & 7 first" direction); items 1 and 4 landed separately
+earlier on 2026-07-06. Items 5 (zero-LLM) and item 3 (costed) remain.
 
 ---
 
@@ -168,7 +202,51 @@ letter text, so dossiers are supplementary).
 
 ---
 
-## Item 2 — Build our own candidate-substrate (closed-option selector) for ExECTv2 SF direction
+## Item 2 — Build our own candidate-substrate (closed-option selector) for ExECTv2 SF direction  ✅ DONE (2026-07-06) — REFUTES "fundamental"
+
+> **Outcome.** The closed-option selector recovered **+0.0552** dev140
+> `state_profile_directional` (0.6552 → 0.7103, +8/30 gold-directional facts)
+> with `state_profile` byte-identical (0.7483, no regression), clearing the
+> predeclared +0.05 threshold. **Per the frozen predeclaration this REFUTES the
+> "fundamental" framing:** the SF capacity-vs-execution gap was an artifact of
+> the *free-write generation contract*, not a capacity limit. All four prior
+> negatives lived in the free-write-then-arbitrate family; this is a fifth
+> measurement in a different family (closed-option select-or-abstain) and it is
+> positive. The dspy G32 principle (closed-option > free-write-then-arbitrate)
+> transfers to the ExECTv2 SF direction surface. The "fundamental" claim is
+> downgraded to **"free-write-family-specific."** Lands between B1 free-write
+> post-hoc (+0.07) and B2 free-write hard-emission (−0.0775); succeeds where the
+> architecturally-comparable B2 failed because the closed menu avoids the
+> cognitive load B2's free-write direction field imposed on the other SF axes.
+>
+> **Design note (deviation from the umbrella text above).** The plan's described
+> menu (`{Increasing, Decreasing, Stable, Same, None}`) used a vocab that does
+> not exist in this codebase; the actual closed gold vocab everywhere in
+> code/gold/scorer is `{Decreased, Frequent, Increased, Infrequent, Same}`
+> (`change.py:3`, `frequency_state_directional`). The frozen predeclaration and
+> the driver use the real 5-value vocab, with `Same` doubling as the abstain
+> outcome. Additionally the menu was made to carry the **full** 5-label vocab +
+> ABSTAIN always (not a regex-gated subset): `rules/change.py` regexes match
+> only 7/28 disagreement letters, so gating would have collapsed the experiment
+> into a no-op for 21 letters. The closed-option contract constrains the
+> *output* (pick from the menu, never free-write), not the *options* — that is
+> the honest test of the G32 principle.
+>
+> **Framing absorbed from prerequisite audits.** Item 6 (unknown-vs-counted
+> divergence dominates cross-project comparison, not 2-vs-3) → item 2's claim is
+> stated in within-architecture-delta terms (raw 0.6552 → closed-option 0.7103),
+> not vs dspy's 90.3% absolute rate. Item 7 (2 evolved seeds clear the policy
+> wall; research-only, not the production path) → item 2 ran on the *raw*
+> SF-verify program (no evolved seed), so the four motivating negatives are not
+> policy-wall artifacts and the refute is clean.
+>
+> **Artifacts.** Predeclaration:
+> `docs/experiments/exectv2/seizure_frequency/exectv2_sf_closed_option_direction_predeclaration_2026-07-06.md`;
+> results:
+> `docs/experiments/exectv2/seizure_frequency/exectv2_sf_closed_option_direction_results_2026-07-06.md`;
+> driver: `scripts/run_exectv2_sf_closed_option_direction_probe.py`;
+> hypothesis `sf_closed_option_direction_selector_2026-07-06` (registry entry
+> 32). 28 gpt-4.1-mini calls, dev140 only, cached.
 
 **Motivating predecessor finding.** dspy's G32 architecture rests on a principle
 we have never tested: **the LLM never free-writes a rate; it picks a label
@@ -251,7 +329,41 @@ temp 0 to match B1/B2), and a row-level before/after ledger.
 
 ---
 
-## Item 3 — Retrieval-highlight salience priming
+## Item 3 — Retrieval-highlight salience priming  ✅ DONE (2026-07-06)
+
+Landed as `scripts/run_exectv2_sf_retrieval_highlight_probe.py` (3-arm probe,
+~84 gpt-4.1-mini calls, dev140, temp 0, cached) + predeclaration
+(`exectv2_sf_retrieval_highlight_predeclaration_2026-07-06.md`) + results
+(`exectv2_sf_retrieval_highlight_results_2026-07-06.md`) + registry entry 33.
+**Outcome: HIGHLIGHT IS NOT THE LEVER (diversifying negative on the input
+axis).** Arm B (full letter + deterministic `CHANGE_RULES`/`TEMPORAL_RULES`
+spans wrapped in `[[HL]]...[[/HL]]`) scored 0.7211 dev140
+`state_profile_directional` vs Arm A (raw-letter control, B1 reproduction)
+0.7279 — delta **−0.0068**, well inside the `< +0.02` kill band; `state_profile`
+byte-identical (0.7483) across all arms (no regression). Arm A reproduced B1
+(0.7254 → 0.7279, tp 107 = 107), so the within-run control is valid. Arm C
+(highlight-only ablation) 0.6966 — Arm C − Arm B = −0.0245 (within ~0.05) →
+**LOOKUP, not priming**: retrieval works by direct lookup on this surface
+(different from dissertation-recursive's −32pp priming signature). Mechanism:
+the deterministic `CHANGE_RULES` emit `attributes={"FrequencyChange":"..."}`
+verbatim, so highlighting a span that *states* the direction for an LLM that
+then free-writes the same label is ~no-op (cue and conclusion are the same
+string); cue coverage is also partial (11/28 letters, 17/35 mentions). Combined
+with item 2, the cross-family claim is now precise: the SF-direction gap is
+**contract-sensitive (item 2 refutes) but input-robust (item 3 survives)** — not
+fundamental; the lever is the closed-option generation contract, not input
+salience-priming. Item 6/7 framings absorbed (within-architecture delta; raw
+not policy-walled surface). 12 pytest cases for the deterministic span helpers
+(`tests/test_exectv2_sf_retrieval_highlight_probe.py`).
+
+> **Status note (post item 2).** Item 2 already delivered the cross-family
+> *refute* of the "fundamental" claim via the closed-option contract. Item 3 is
+> therefore now the **diversifying second leg** — it tests the same null
+> hypothesis ("the gap is fundamental") along an orthogonal axis (input priming
+> vs generation contract). Running it would give a *second* cross-family data
+> point from an independent lever. Its value is now corroborative rather than
+> thesis-moving: item 2 already changed the claim's status. It remains the only
+> other costed fresh-protocol experiment in this plan (~84 calls, dev140).
 
 **Motivating predecessor finding.** dissertation-recursive's Gan winner was
 `gpt_5_5 + Gan_retrieval_highlight` (Pragmatic µF1 0.840 vs 0.760 for
@@ -317,7 +429,31 @@ leg.
 
 ---
 
-## Item 4 — Our own no-model medication oracle
+## Item 4 — Our own no-model medication oracle  ✅ DONE (2026-07-06)
+
+Landed as a zero-LLM deterministic replay probe
+(`experiments/exectv2_medication_no_model_oracle_2026-07-06.py`) + results doc
+(`docs/experiments/exectv2/prescription/exectv2_medication_no_model_oracle_2026-07-06.md`).
+**Outcome: dspy framing confirmed, and sharper than the plan anticipated.** Two
+surfaces scored through the same scorers as the hybrid lane: `gold_as_prediction`
+(gold copied through the pipeline) = **1.0000** on both splits (scorer-integrity
+ceiling holds — the 206 dev140 / 293 full-200 gold counts are preserved
+end-to-end); `deterministic_only` (`_extract_prescriptions` run as the final
+system, no lens/bridge/LLM) = **0.9615 dev140 / 0.9278 full-200** — **identical
+to the cited hybrid `clinical_headline` on both splits (gap +0.0000 / +0.0000).**
+The LLM lane contributes **zero** to the Prescription `clinical_headline` on
+either split; the cited headline is deterministic-owned to four decimals. dspy's
+framing ("deterministic solves it; the LLM sits at-or-below the oracle")
+transfers; the literal 47/47 / 100% does not, and the difference is traced:
+dev140 residual is 6 FN + 10 FP across 13 letters, one of which (EA0146) is an
+irrecoverable gold defect (DrugName says perampanel, every other field says
+brivaracetam — see `gold_data_issues.jsonl`), the rest are deterministic
+lexicon/context limits the LLM-tuned arm does *not* clear on dev140 either
+(comparator: LLM 0.9526 < deterministic 0.9615). The LLM's genuine medication
+value is a **full-200 precision** effect (FP 19→7), localized to non-AED
+comorbidity over-capture — not a headline contribution. Manuscript reframing
+required: Prescription is a deterministic-owned ceiling, not an LLM extraction
+result.
 
 **Motivating predecessor finding.** dspy reports that a **no-model annotation-
 derived payload reproduces 47/47 medication gold labels (100% F1)** — an
@@ -369,7 +505,7 @@ ceiling is deterministic-owned and the LLM lane's value is elsewhere.
 
 ---
 
-## Item 5 — State the raw-extraction number alongside the headline
+## Item 5 — State the raw-extraction number alongside the headline  ⏳ PENDING (zero LLM)
 
 **Motivating predecessor finding.** dspy's most uncomfortable finding for us:
 **raw S1 extraction is 68.6% micro-F1; after benchmark bridges the same surface
@@ -426,7 +562,37 @@ inherits dspy's critique; surfacing it preempts the critique.
 
 ---
 
-## Item 6 — Resolve the "multiple" sentinel contradiction (RUN EARLY)
+## Item 6 — Resolve the "multiple" sentinel contradiction (RUN EARLY)  ✅ DONE (2026-07-06)
+
+> **Outcome (framing-changing).** The cross-project divergence is **not** the
+> 2-vs-3 distinction this section originally emphasized — it is the
+> **unknown-vs-counted** distinction. This repo resolves bare
+> `multiple per <period>` to the **unknown** bin (monthly 1000.0,
+> `FrequencyLabelKind.UNRESOLVED_MULTIPLE`); both predecessors assign a real
+> count (dissertation-recursive 2.0, dissertation-experiments/dspy 3.0).
+> Measured on Gan **validation750** (predictions held fixed; gold re-resolved
+> three ways): the unknown-vs-counted axis moves Purist accuracy **~5pp** /
+> Pragmatic **~4.8pp**; the 2-vs-3 axis moves **<0.3pp Purist / 0pp Pragmatic**.
+> Of 46 fixed-2 bin-crossers, 41 are bare `multiple per <period>` rows (the
+> unknown-vs-counted axis); only 3 are cluster-format rows (the period-dependent
+> axis). Our cluster-format resolution is additionally period-dependent
+> ({2,8,18,2} by week/month/year/day) — a third scheme neither predecessor uses
+> — but it affects only 5 validation rows. **Conclusion:** our Gan numbers are
+> not directly comparable to dspy's 90.3% without disclosing the resolution
+> rule. Cite `../dissertation-recursive/src/gan_frequency.py:66` (2.0) and
+> `../dissertation-experiments/src/clinical_extraction/normalizers/seizure_frequency.py:21,36`
+> (3.0, Gan §2.6.1).
+>
+> **Note on the original plan text.** This section below describes the audit as
+> it was scoped; the executed audit matched that scope (end-to-end trace,
+> sensitivity re-scoring, disclosure note) but its headline finding re-prioritized
+> which axis matters. The recommended disclosure language lives in the audit
+> doc. **Correction to the plan's loose "Gan validation set" phrasing:** the
+> audit used **validation750**, not test450 (test450 is frozen/blocked per split
+> discipline).
+>
+> **Artifacts.** `docs/research/gan_multiple_sentinel_audit_2026-07.md`;
+> driver: `scripts/run_gan_multiple_sentinel_audit.py`. Zero LLM calls.
 
 **Motivating predecessor finding.** The four predecessors disagree on the
 `multiple` count sentinel: dspy and dissertation-experiments use **3.0** ("Gan
@@ -472,7 +638,42 @@ is not a clean comparison without the disclosure. Better to know now.
 
 ---
 
-## Item 7 — Did our evolved seed land on a policy-wall? (RUN EARLY)
+## Item 7 — Did our evolved seed land on a policy-wall? (RUN EARLY)  ✅ DONE (2026-07-06)
+
+> **Outcome (yes, but narrower than the plan implies).** **2 of 32** evolved
+> GEPA seeds clear dspy's 14,639-char policy wall:
+> `exectv2_gepa_multistage_verifystage_dedup_gpt41mini_20260701.instruction.txt`
+> (18,638 chars / 125 policy-clauses) and
+> `exectv2_gepa_multistage_dedup_gpt41mini_20260628.instruction.txt`
+> (16,119 chars / 101 clauses) — both multistage combined 8-block artifacts.
+> GEPA grew the verify-stage seed from ~0.7k chars / 3 clauses → 18.6k / 125
+> (~25× length, ~40× clause density) — the policy-wall signature in pure form.
+> Both over-threshold seeds embed dev-set-specific drug+dose worked examples
+> ("Levetiracetam 750mg", "Carbamazepine 400mg", "Valproate 500mg"…) — the
+> overfit shape dissertation-experiments warned about. Notably the largest
+> (18,638) is the same seed the root-cause doc flagged as having "drifted into
+> reformatting, not verifying" — a direct policy-wall signature.
+>
+> **Scope correction.** The evolved seeds are **research-workstream artifacts
+> only** — the v08 production hybrid does not consume them (confirmed by
+> exhaustive grep). So the policy-wall does **not** contaminate the 0.9189
+> headline or any cited hybrid number; it reframes the GEPA close-out (the
+> ~0.18 gap to hybrid is partly an overfitting artifact, not purely a capacity
+> gap). **Cross-check nuance:** the root-cause doc's "producer evidence-recall"
+> verdict is itself partially retracted for SF (representation, not recall) and
+> Dx (gold multiplicity), so the cross-check's spine is weaker than the plan
+> assumes — the GEPA plateau is *over-determined* by overfitting mechanisms,
+> none a fundamental capacity limit.
+>
+> **Implication absorbed into item 2.** Item 2 runs on the *raw* SF-verify
+> program (no evolved seed), so its four motivating negatives are not policy-
+> wall artifacts and its refute is clean.
+>
+> **Artifacts.** `docs/research/exectv2_gepa_policy_wall_audit_2026-07.md`;
+> driver: `scripts/run_gepa_policy_wall_audit.py`;
+> `experiments/gepa_policy_wall_audit_2026-07-06.json`. Zero LLM calls.
+> Tokenization via `tiktoken cl100k_base` (a transitive dep of `dspy>=2.5.0`,
+> not pinned in `pyproject.toml`).
 
 **Motivating predecessor finding.** dspy **rejected G30 GEPA** (scored 41/50 on
 std50) specifically because "its accepted instruction ballooned to 14,639
@@ -524,22 +725,23 @@ before they predeclare, because if GEPA's plateau is policy-wall-shaped, the
 
 ## Sequencing, dependencies, and cost summary
 
-| Item | Type | LLM cost | Split risk | Depends on | Recommended order |
-| --- | --- | --- | --- | --- | --- |
-| 6 — `multiple` sentinel audit | Audit | 0 | none | — | **1st** (framing for 2/3) |
-| 7 — policy-wall check | Audit | 0 | none | — | **2nd** (framing for 2/3) |
-| 5 — raw-extraction decomposition | Infra | 0 | none (re-score) | — | **3rd** |
-| 4 — no-model medication oracle | Ceiling probe | 0 | none (replay) | — | **4th** (parallel with 1) |
-| 1 — gold-noise frontend tab | Infra | 0 | none | — | **parallel** |
-| 2 — closed-option SF-direction selector | Experiment | ~28–56 calls | dev140 only | 6, 7 | **5th** (own predeclaration) |
-| 3 — retrieval-highlight priming | Experiment | ~84 calls | dev140 only | 6, 7 | **6th** (own predeclaration) |
+| Item | Type | LLM cost | Split risk | Depends on | Status | Outcome |
+| --- | --- | --- | --- | --- | --- | --- |
+| 6 — `multiple` sentinel audit | Audit | 0 | none | — | ✅ DONE 2026-07-06 | Dominant axis is unknown-vs-counted (~5pp), not 2-vs-3 (<0.3pp); disclosure needed for dspy comparison |
+| 7 — policy-wall check | Audit | 0 | none | — | ✅ DONE 2026-07-06 | 2/32 evolved seeds clear the 14,639-char wall (18,638 / 16,119); research-only, not production path |
+| 1 — gold-noise frontend tab | Infra | 0 | none | — | ✅ DONE 2026-07-06 | `/gold-noise` route landed (read-only, 3 levels) |
+| 2 — closed-option SF-direction selector | Experiment | 28 calls (ran) | dev140 only | 6, 7 | ✅ DONE 2026-07-06 | **REFUTES "fundamental"** — +0.0552 dev140 directional, no regression |
+| 5 — raw-extraction decomposition | Infra | 0 | none (re-score) | — | ⏳ PENDING | — |
+| 4 — no-model medication oracle | Ceiling probe | 0 | none (replay) | — | ✅ DONE 2026-07-06 | **Confirms dspy framing** — deterministic-only == cited hybrid headline (0.9615 dev / 0.9278 full, gap +0.0000 both); LLM adds zero to Rx headline |
+| 3 — retrieval-highlight priming | Experiment | 84 calls (ran) | dev140 only | 6, 7 | ✅ DONE 2026-07-06 | **HIGHLIGHT IS NOT THE LEVER** — Arm B − Arm A = −0.0068 dev140 directional (< +0.02 kill band); gap survives input change; LOOKUP not priming (Arm C ≈ Arm B) |
 
-Only items 2 and 3 are costed fresh-protocol experiments. Everything else is
-zero-LLM audit/infrastructure. The two audits (6, 7) deliberately run first
-because their outcomes can change how 2 and 3 are predeclared — specifically,
-if 6 reveals our Gan numbers aren't cleanly comparable to dspy's, or if 7
-reveals our GEPA plateau is policy-wall-shaped, the "fundamental gap" framing
-that items 2 and 3 test needs to absorb that before the predeclarations freeze.
+Only items 2 and 3 are costed fresh-protocol experiments; both are spent (item 2
+28 calls, item 3 84 calls). Everything else is zero-LLM audit/infrastructure;
+item 5 remains. The two audits (6, 7) ran first per design and their outcomes
+were absorbed into item 2's frozen predeclaration: item 6's unknown-vs-counted
+finding → item 2 states its claim in within-architecture-delta terms; item 7's
+policy-wall finding (research-only) → item 2 ran on the un-walled raw program,
+so its refute is clean.
 
 ## Cross-cutting research-protocol compliance
 
@@ -565,15 +767,31 @@ that items 2 and 3 test needs to absorb that before the predeclarations freeze.
 
 ## Open questions for the user before predeclaring items 2/3
 
-1. **Item 2 scope:** build the closed-option direction selector as a standalone
+1. **Item 2 scope:** ~~build the closed-option direction selector as a standalone
    probe (cleanest attribution), or wire it into the existing gan2026
-   `CandidateSet` substrate (reuses infrastructure but couples the experiment
-   to that codebase)? Recommendation: standalone probe first, substrate
-   integration as a follow-up if it works.
-2. **Item 3 ablation:** include Arm C (highlight-only) to replicate
+   `CandidateSet` substrate?~~ **RESOLVED 2026-07-06 — standalone probe chosen
+   and run.** It worked (+0.0552, refutes "fundamental"), so per the original
+   recommendation the substrate-integration follow-up is now candidate work:
+   wire the closed-option selector into gan2026's `CandidateSet` as a candidate
+   direction source feeding the hybrid arbitration, and re-score against the
+   0.8897 hybrid reference. Not started.
+2. **Item 3 ablation:** ~~include Arm C (highlight-only) to replicate
    dissertation-recursive's −32pp mechanism result, or run only A vs B to save
-   calls? Recommendation: include Arm C — it is the mechanism-localizing leg
-   and the call cost is small (~28 calls).
-3. **Item 4 extent:** medication oracle only (parallel to dspy E6), or extend
-   the same probe to Investigations and the SF candidate substrate in one pass?
-   Recommendation: medication only first (template validation), extend after.
+   calls?~~ **RESOLVED 2026-07-06 — Arm C included, per the original
+   recommendation.** It was decisive for the *mechanism* reading: Arm C ≈ Arm B
+   (−0.0245, within ~0.05) → LOOKUP, not priming — a cross-surface mechanism
+   difference from dissertation-recursive (whose −32pp drop signaled priming).
+   Without Arm C the run would only say "highlight doesn't help"; with it, the run
+   also localizes *why* (the deterministic spans state the direction verbatim, so
+   retrieval is lookup on this surface).
+3. **Item 4 extent:** ~~medication oracle only (parallel to dspy E6), or extend
+   the same probe to Investigations and the SF candidate substrate in one pass?~~
+   **RESOLVED 2026-07-06 — medication only, per the original recommendation.**
+   The probe validated the template (the dspy E6 isolated-ceiling shape works in
+   this codebase) and produced a sharper-than-anticipated result
+   (deterministic-only *equals* the cited hybrid headline on both splits, not
+   just approaches it). The extension to Investigations (where dspy found
+   90.4–96.7% near-ceiling) and the SF candidate substrate is now candidate work
+   — the medication probe's two-surface design (`gold_as_prediction` scorer
+   ceiling + `deterministic_only` extraction ceiling) is the reusable template.
+   Not started.

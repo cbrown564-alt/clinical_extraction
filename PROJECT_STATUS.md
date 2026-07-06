@@ -102,6 +102,58 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-06: **Predecessor-synthesis follow-up item 3 — retrieval-highlight
+  salience priming landed (84 gpt-4.1-mini calls, dev140, temp 0, cached).**
+  Plan: `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 3. The
+  orthogonal *input-axis* leg of the cross-family bet (item 2 was the
+  generation-contract leg). Three arms on the same SF disagreement set (28
+  letters, 35 changed mentions): Arm A (raw letter, B1-reproduction control),
+  Arm B (full letter + deterministic `CHANGE_RULES`/`TEMPORAL_RULES` spans wrapped
+  in `[[HL]]...[[/HL]]`), Arm C (highlight-only ablation, dissertation-recursive's
+  priming-vs-lookup mechanism test). **Outcome: HIGHLIGHT IS NOT THE LEVER.** Arm
+  B − Arm A = **−0.0068** dev140 `state_profile_directional` (0.7279 → 0.7211), well
+  inside the `< +0.02` kill band; `state_profile` byte-identical (0.7483, no
+  regression). Arm A reproduced B1 (0.7254 → 0.7279, tp 107 = 107). Arm C ≈ Arm B
+  (−0.0245, within ~0.05) → **LOOKUP, not priming**: retrieval works by direct
+  lookup on this surface, different from dissertation-recursive's −32pp priming
+  signature. Mechanism: the deterministic `CHANGE_RULES` emit the direction label
+  verbatim (`attributes={"FrequencyChange":"Increased"}`), so highlighting a span
+  that *states* the direction for an LLM that then free-writes the same label is
+  ~no-op; cue coverage is also partial (11/28 letters, 17/35 mentions).
+  **Combined cross-family claim (the manuscript framing shift):** item 2 showed
+  the gap does *not* survive a change of generation contract (refutes
+  "fundamental"); item 3 shows it *does* survive a change of input. The gap is
+  **contract-sensitive but input-robust** — not fundamental; the lever that
+  deploys capacity is the closed-option contract, not input salience-priming.
+  Hypothesis `sf_retrieval_highlight_priming_2026-07-06` registered (entry 33).
+  Driver: `scripts/run_exectv2_sf_retrieval_highlight_probe.py`; results:
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_retrieval_highlight_results_2026-07-06.md`;
+  12 pytest cases for the deterministic span helpers.
+- 2026-07-06: **Predecessor-synthesis follow-up item 4 — no-model medication
+  oracle landed (zero LLM calls).** Plan:
+  `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 4. Ran
+  `_extract_prescriptions` alone (no lens, no bridge, no LLM) as the final system
+  over dev140 + full-200 and scored through the *same* scorers as the hybrid
+  lanes. **Outcome confirms the dspy medication-ceiling framing, and sharper than
+  the plan anticipated:** `deterministic_only` reproduces the cited hybrid Rx
+  `clinical_headline` **exactly** — 0.9615 dev140 / 0.9278 full-200, gap +0.0000
+  on both splits. The LLM lane contributes **zero** to the Prescription headline.
+  (The separate LLM-vs-deterministic comparator already showed the LLM arm *below*
+  deterministic on dev140, 0.9526 < 0.9615; the LLM's real Rx value is a full-200
+  precision effect, FP 19→7, not a headline contribution.) A `gold_as_prediction`
+  control surface scored 1.0000 on both splits (206 dev140 / 293 full-200 gold
+  counts preserved end-to-end — rules out a scorer artifact). dspy's literal
+  47/47 / 100% does **not** transfer: the dev140 residual is 6 FN + 10 FP across
+  13 letters, one irrecoverable gold defect (EA0146: DrugName says perampanel,
+  every other field says brivaracetam — see `experiments/gold_data_issues.jsonl`),
+  the rest deterministic lexicon/context limits. **Manuscript implication:**
+  Prescription is a deterministic-owned ceiling, not an LLM extraction result —
+  the manuscript must state the deterministic-only number alongside the headline
+  (this *is* the attribution-discipline deliverable for Prescription per the
+  research protocol). Driver + JSON:
+  `experiments/exectv2_medication_no_model_oracle_2026-07-06.{py,json}`; results
+  doc:
+  `docs/experiments/exectv2/prescription/exectv2_medication_no_model_oracle_2026-07-06.md`.
 - 2026-07-06: **Predecessor-synthesis follow-ups items 6, 7, 2 — all landed.
   Item 2 REFUTES the "fundamental" framing of the SF capacity-vs-execution gap.**
   Plan: `docs/plans/predecessor_synthesis_followups_2026-07-06.md`. The two
@@ -680,6 +732,21 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-06: **Predecessor-synthesis follow-up item 3 — retrieval-highlight
+  salience priming complete** (see Now for the full entry). 84 calls dev140.
+  HIGHLIGHT IS NOT THE LEVER — Arm B − Arm A = −0.0068 (< +0.02 kill band);
+  LOOKUP not priming (Arm C ≈ Arm B). Combined with item 2: the SF-direction gap
+  is contract-sensitive (item 2 refutes) but input-robust (item 3 survives) —
+  not fundamental. Hypothesis `sf_retrieval_highlight_priming_2026-07-06`
+  registered (entry 33). Results:
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_retrieval_highlight_results_2026-07-06.md`.
+- 2026-07-06: **Predecessor-synthesis follow-up item 4 — no-model medication
+  oracle complete** (see Now for the full entry). Zero LLM calls;
+  deterministic-only Rx `clinical_headline` == cited hybrid on both splits
+  (0.9615 dev / 0.9278 full, gap +0.0000); LLM adds zero to the Rx headline;
+  dspy framing confirmed. `gold_as_prediction` control = 1.0000 (scorer clean).
+  Manuscript reframing required (Prescription is deterministic-owned). Results:
+  `docs/experiments/exectv2/prescription/exectv2_medication_no_model_oracle_2026-07-06.md`.
 - 2026-07-06: **Predecessor-synthesis follow-ups items 6, 7, 2 — complete** (see
   Now for the full entry). Item 6 `multiple`-sentinel audit (zero LLM): the
   cross-project divergence is unknown-vs-counted (~5pp on validation750), not

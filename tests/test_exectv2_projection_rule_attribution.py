@@ -54,7 +54,7 @@ def test_projection_rule_sidecar_counts_same_raw_corrections_and_fidelity_effect
         {
             "letter_id": "EA-DX",
             "gate_warnings": [
-                "Diagnosis: normalized_diagnosis_text: 'focal epilepsy' -> "
+                "Diagnosis: normalized_diagnosis_text: 'cardiac syncope' -> "
                 "'temporal lobe epilepsy'"
             ],
             "gold_mentions": [
@@ -71,7 +71,7 @@ def test_projection_rule_sidecar_counts_same_raw_corrections_and_fidelity_effect
             "raw_mentions": [
                 {
                     "entity": "Diagnosis",
-                    "text": "focal epilepsy",
+                    "text": "cardiac syncope",
                     "attributes": {
                         "DiagCategory": "Epilepsy",
                         "Certainty": "5",
