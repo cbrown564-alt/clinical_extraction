@@ -8,7 +8,7 @@ This document proposes the two next Gan 2026 seizure-frequency architectures
 that best fit the evidence from:
 
 - `docs/decisions/0007-llm-heavy-clinical-selection-deterministic-adapters.md`
-- ``
+- `docs/research/gan2026/architecture/gan2026_architecture_space_2026-06-01.md`
 - `experiments/gan2026_hybrid_llm_deterministic_boundary_report_2026-06-02.md`
 
 These are not benchmark claims. They are architecture predeclarations under

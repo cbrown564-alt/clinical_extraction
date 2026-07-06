@@ -1,11 +1,39 @@
 # Gan Component Mechanics Canon (RQ1–RQ10)
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
-**Scope:** Numbered research-question program on **what each pipeline component
-owns** on validation750 (June 2026).  
-**Claim boundary:** Validation-development / saved-replay evidence — not
-production promotion, not benchmark-comparable holdout claims.
+## What this is
+
+The **RQ1–RQ10 series** is a numbered research program that asks **which part of
+the pipeline owns which job** on validation750 (June 2026): candidate discovery,
+evidence selection, projection, rendering, selective LLM value, hidden-family
+transfer, and gold/scorer ambiguity. Each question isolates one component with
+saved-output replay and explicit change accounting.
+
+**Legend:** **W→C** = wrong-to-correct (a previously wrong label became right);
+**C→W** = correct-to-wrong (a regression).
+
+**V12** (used throughout this workstream) is the **fresh-evidence reasoner**
+hybrid: a full GPT-4.1 model reads exact note spans and owns the final label,
+while deterministic code and saved structured-event traces only scaffold prompts,
+evidence checks, and safety gates. Best completed frozen test450 result:
+379/450 Purist — a research comparator, not the validation-only selector line.
+
+## Selector version map (consensus + fresh agreement family)
+
+| Version | One-line summary |
+| --- | --- |
+| **v0.2** | Suppress no-reference and unknown/seizure-free churn; raise changed-label precision |
+| **v0.3** | Unknown-frequency discipline — block ambiguous `other` and unsafe boundary switches |
+| **v0.4** | Cluster-cadence gate — agreement cannot demote or change cluster cadence |
+| **v0.5** | Narrow fresh-evidence rescue for seizure-free ↔ no-reference boundary overreach |
+| **v0.6** | Fresh-boundary-profile guards so rescues need evidence shape, not label family alone |
+| **v0.7** | Explicit count-plus-window gate for deterministic-unknown origins |
+| **v0.8** | Parseable denominator/window refinement for parser-compatible `other` labels |
+| **v0.9** | Normalized-equivalent disagreement + specific-rate-to-unknown uncertainty cleanup |
+
+**Scope:** Validation-development / saved-replay evidence — not production
+promotion, not benchmark-comparable holdout claims.
 
 **Parent canon:** [`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md)  
 **Companion:** [`VALIDATION750_CANON.md`](VALIDATION750_CANON.md)  

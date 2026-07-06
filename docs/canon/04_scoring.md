@@ -1,6 +1,6 @@
 # ExECTv2 Evaluation Canon — Gold, Surfaces & Scoring
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
 **Absorbs (detail in source stubs):**  
 [`../research/exectv2_gold_representation_and_scoring_principles_2026-06-17.md`](../research/exectv2_gold_representation_and_scoring_principles_2026-06-17.md),  
@@ -11,6 +11,25 @@ gold-quality revisions in [`../research/paper_drafts/`](../research/paper_drafts
 
 **Paper claims:** [`10_paper_provenance.md`](10_paper_provenance.md) C1, C2, C4.  
 **Architecture context:** [`../research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`](../research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md).
+
+> **Plain-language primer**
+>
+> **`clinical_headline`** — the project's primary scoreboard: did we recover the right
+> clinical facts across Diagnosis, SeizureFrequency, Prescription, and Investigations,
+> after de-duplication?
+>
+> **Benchmark surface** — a stricter, paper-comparable layer (exact normalized phrase +
+> attributes + UMLS CUI). Useful for like-for-like comparison to Fonferko-Shadrach; often
+> *lower* than clinical recovery when hybrids change output format without changing clinical
+> meaning.
+>
+> **`state_profile`** (`frequency_state_faithful`) — SeizureFrequency-only scoring that
+> matches consolidated clinical burden (one rate/state per letter), not per-type CUI
+> multiplicity. **Primary metric for SF-family experiments** (ADR 0037).
+>
+> **Why multiple F1 numbers?** Target representation, scorer design, and extractor output
+> unit are fused unless you report the layer ladder (`phrase_only` → `semantic` →
+> `benchmark`). Never quote benchmark F1 alone as “extractor quality.”
 
 ---
 

@@ -3,9 +3,10 @@
 Date: 2026-06-27
 Workstream: Wave 4 · P6c (Discussion + Contributions rewrite)
 Status: writing-only draft; no new model calls, no holdout rows read, no new experiments
-Evidence validity: validation-only replay (dev140) + frozen aggregate full-200; stated
-per-claim below. All figures carry the same evidence-boundary discipline as the primary
-result artifacts they cite.
+Evidence validity: validation-only replay (`dev140`) + frozen aggregate-only (`full-200`);
+stated per-claim below. All figures carry the same evidence-boundary discipline as the primary
+result artifacts they cite. Tasks: **Gan 2026** deep seizure-frequency labeling; **ExECTv2**
+broad multi-entity phenotyping on clinical letters.
 
 Sources consumed:
 - `docs/research/paper_drafts/benchmark_surface_reconciliation_subsection_2026-06-27.md`
@@ -54,9 +55,9 @@ already enforce the evidence contract before the gate fires.
 
 Third, the structured-event extraction discipline itself — not the evidence-validation gate,
 not the selector apparatus, but the forcing function that keeps the LLM source-near — is
-where the Gan strand found most of its reliable value. On the Gan benchmark, the single GPT
-structured-event pass achieved **0.809 test450 Purist** versus the full V12 hybrid's
-**0.842**, a difference of only +15 test rows for a stack of four LLM calls and a
+where the Gan 2026 seizure-frequency strand found most of its reliable value. On the Gan
+benchmark, the single GPT structured-event pass achieved **0.809 `test450` Purist** versus
+the multi-trace fresh-evidence hybrid pipeline's **0.842**, a difference of only +15 test rows for a stack of four LLM calls and a
 rule-guarded replace mechanism. The lesson is architectural: evidence-grounded intermediate
 state, deterministic rendering, and a disciplined claim about what the LLM is allowed to
 change are the primary sources of correctness. Orchestration complexity adds incrementally at
@@ -67,8 +68,8 @@ best.
 ### D.2  The Benchmark-Surface Inversion and Its Honest Interpretation
 
 The manuscript reports headline performance on a clinical-recovery surface
-(`clinical_headline`, four families: Diagnosis, SeizureFrequency, Prescription,
-Investigations) that does not match the published ExECTv2 benchmark's per-item F1 scorer
+(`clinical_headline`—Diagnosis, SeizureFrequency, Prescription, and Investigations)
+that does not match the published ExECTv2 benchmark's per-item F1 scorer
 (nine entities, CUI codes, full attribute bundles). This choice has a principled basis:
 gold character-offset annotations were made against the original unprocessed clinical
 letters; subsequent spelling correction altered the text without updating the offsets (thesis
@@ -109,15 +110,16 @@ legacy delegation audit, 2026-06-27).
 
 ---
 
-### D.3  The Wall and What It Means for the Architecture's Ceiling
+### D.3  The Confident Over-Reading Limit (the Wall) and What It Means for the Architecture's Ceiling
 
-The Gan strand's central negative result — the honest ceiling of **0.842 test450 Purist**
-for the V12 hybrid and **0.809** for the single structured-event pass — is not a failure of
-optimization effort. It is a characterization of a clinical-reasoning limit that no
-forward-observable signal can safely breach: the model over-reads ambiguous
-seizure-frequency evidence as quantified rates with high confidence, and the signal
-distinguishing *withhold-to-unknown* from *emit-rate* is absent from every inference-time
-feature (selector oracle 739/750; 11 rows with no Purist-correct component;
+The Gan 2026 seizure-frequency strand's central negative result — the honest **holdout**
+ceiling of **0.842 `test450` Purist** for the multi-trace fresh-evidence hybrid pipeline
+and **0.809** for the single structured-event pass — is not a failure of
+optimization effort. It is a characterization of a **confident over-reading limit (the
+Wall)**: on the hardest rows the model over-reads ambiguous seizure-frequency evidence as
+quantified rates with high confidence, and no forward-observable signal can safely breach it:
+the signal distinguishing *withhold-to-unknown* from *emit-rate* is absent from every
+inference-time feature (selector oracle 739/750; 11 rows with no Purist-correct component;
 structural-impossibility finding from C7, which showed the no-correct residual rows are
 feature-identical to genuine-rate rows on every observable dimension — only hidden gold
 separates them).
@@ -143,8 +145,8 @@ reducible by targeted post-processing that corrects the base extraction residual
 eliminated at the base extraction level.
 
 The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140
-self-consistency artifacts and returned a **partial verdict** (3/6 checks passed). The
-cross-dataset claim can now be stated with evidence: **43.6% of SF error cells are
+self-consistency artifacts and returned a **partial verdict (3 of 6 pre-registered checks
+passed)**. The cross-dataset claim can now be stated with evidence: **43.6% of SF error cells are
 temperature-unanimous wrong** (4/4 same wrong answer), confirming that a material
 confident-error component is present — consistent with the Gan pattern. However, the full
 Gan H0_confident_over_reading mechanism does not transfer: SF error entropy is elevated
@@ -229,7 +231,7 @@ shared component off, report delta on both tasks at once) is predeclared in the
 cross-task scope. The modularity thesis is supported by structural evidence and the model-swap
 result; the quantified cross-task component dividend remains future work.
 
-**Partial wall mechanism — ExECTv2 probe returned PARTIAL verdict (3/6 checks).** The
+**Partial wall mechanism — ExECTv2 probe returned 3 of 6 pre-registered checks passed.** The
 wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140
 self-consistency artifacts. Task-bound ceiling is confirmed: SF is the weakest family
 across all three LLMs and both splits, and 43.6% of SF error cells are
@@ -305,8 +307,9 @@ dividend requires the predeclared cross-task ablation (S1; future work).
 **Contribution 3: The wall as a cross-dataset confident-over-reading phenomenon — partial
 mechanism transfer with structural confirmation.**
 
-We characterize the Gan 2026 seizure-frequency ceiling (**0.842 test450 Purist**, V12
-hybrid) as a confident, architecturally unresolvable over-reading of ambiguous evidence: the
+We characterize the Gan 2026 seizure-frequency **holdout** ceiling (**0.842 `test450`
+Purist**, multi-trace fresh-evidence hybrid pipeline) as a confident, architecturally
+unresolvable over-reading of ambiguous evidence: the
 model commits to rate-like interpretations of genuinely ambiguous clinical text without
 uncertainty and with no forward-observable signal separating wrong over-reads from correct
 rate extractions. A pre-registered semantic-entropy probe (P2.1: k=4 at temperatures
@@ -318,8 +321,8 @@ the persistently weakest extraction family under a frozen same-core architecture
 three tested LLMs (GPT-4.1-mini **0.7525**, DeepSeek chat **0.7602**, frozen full-200
 aggregate), with the same signatures — model-independent gap, 1.0000 evidence rate
 (faithful-but-wrong, not unfaithful), and correctability by task-specific adjudication
-(dev140 with SF adjudicator: 0.9053). The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) returned a
-**partial verdict** (3/6 checks passed; dev140 self-consistency artifact replay): 43.6% of
+(dev140 with SF adjudicator: 0.9053). The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) returned a partial verdict (**3 of 6 pre-registered checks passed**;
+`dev140` self-consistency artifact replay): 43.6% of
 SF error cells are temperature-unanimous wrong, confirming a material confident-error
 component. However, SF error entropy is elevated (0.287 vs 0.069 correct) and cross-model
 agreement is lower on error cells (21.8%) than correct cells (69.4%), establishing that the
@@ -384,7 +387,7 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 |---|---|---|
 | C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate | No full-200 published-benchmark surface computed |
 | C2 — Component ablation (gate inert; SF norm matters) | dev140 replay-only, aggregate | No model calls; cross-task ablation scope is future work (S1) |
-| C3 — Wall cross-dataset (partial mechanism) | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1); dev140 self-consistency artifact replay (wall-transfer probe) | Task-bound ceiling confirmed; Gan H0 mechanism partially differs (PARTIAL probe 3/6; error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct); no holdout on ExECTv2 |
+| C3 — Wall cross-dataset (partial mechanism) | Frozen aggregate `full-200` (ExECTv2); validation-only probe (Gan P2.1); `dev140` self-consistency artifact replay (wall-transfer probe) | Task-bound ceiling confirmed; Gan H0 mechanism partially differs (3 of 6 pre-registered checks passed; error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct); no holdout on ExECTv2 |
 | C4 — Model-agnostic architecture | Frozen aggregate full-200, predeclared gate | No holdout on non-primary models; row-level attribution excluded |
 | C5 — Evaluation discipline | Validation-only + test450 aggregate (Gan); validation-only (ExECTv2) | No new experiments; retrospective characterization of completed work |
 

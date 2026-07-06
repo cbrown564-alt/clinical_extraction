@@ -3,7 +3,8 @@
 Date: 2026-06-27
 Author: paper-writing workstream (P2)
 Status: draft — writing only, no new data or model calls
-Evidence validity: validation-only replay (dev140) + frozen aggregate-only full-200 read
+Evidence validity: validation-only replay (`dev140`, 140-letter development split) +
+frozen aggregate-only `full-200` (200-letter aggregate split) read
 
 ---
 
@@ -21,7 +22,8 @@ promoted, not buried, and drafts the framing and text for that promotion.
 
 ## 1. What the Numbers Actually Show
 
-### dev140 (validation only, four-family `clinical_headline` scorer)
+### dev140 (validation only, four-family `clinical_headline`—Diagnosis,
+SeizureFrequency, Prescription, and Investigations)
 
 Source: `catalog.yaml` (`active_llm_only_runs`);
 reconciliation in `benchmark_surface_reconciliation_2026-06-27.md` Table 1.
@@ -207,7 +209,7 @@ section, paired with the wall-transfer finding:
 | Capability | Gan evidence | ExECTv2 evidence |
 | --- | --- | --- |
 | LLM adds value over rules | Three-way table (Tables 1–2) | [Three-way table pending] |
-| Architecture is model-agnostic | [Wall transfers to ExECTv2 SF] | **Model-swap: DeepSeek ≥ GPT** |
+| Architecture is model-agnostic | [Confident over-reading limit transfers to ExECTv2 SF] | **Model-swap: DeepSeek ≥ GPT** |
 | Reliable abstention signal | External Risk Score (AUROC 0.781) | Cross-model agreement [unused] |
 
 Promoting the DeepSeek finding thus also strengthens the capability-first

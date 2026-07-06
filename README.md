@@ -11,6 +11,14 @@ This is also a research codebase. The intended paper contribution is not only hi
 **Authoritative steering:** [`PROJECT_STATUS.md`](PROJECT_STATUS.md) and
 [`docs/plans/ACTIVE_ROADMAP.md`](docs/plans/ACTIVE_ROADMAP.md).
 
+The repo runs two parallel extraction tracks. **Track 1 (Gan 2026)** asks a single
+question per letter: what is the patient's current seizure frequency? Its held-out
+test set (`test450`) is frozen — cite aggregate scores only, not row-level tuning.
+**Track 2 (ExECTv2)** extracts several epilepsy phenotypes (diagnosis, seizure
+frequency, prescriptions, investigations) from de-identified letters; this track is
+still active. Primary scoreboards: **Purist** on Gan `test450`; **`clinical_headline`**
+composite on ExECT.
+
 Active work (2026-07-01):
 
 - **ExECTv2:** `clinical_headline` de-duplicated clinical recovery as the headline
@@ -20,7 +28,8 @@ Active work (2026-07-01):
   [`docs/research/paper_manuscript_2026-06-26.md`](docs/research/paper_manuscript_2026-06-26.md);
   IEEE LaTeX re-sync pending after 2026-06-30 Diagnosis gold-quality revision.
 - **Gan 2026:** holdout frozen (test450 aggregate-only); reliability closeout and
-  The Wall documented in research synthesis — not an active tuning target.
+  confident over-reading limit (The Wall) documented in research synthesis — not
+  an active tuning target.
 
 **Reading by thread:** [`docs/THREAD_MAP.md`](docs/THREAD_MAP.md) (five paths, ≤8
 hops each).
@@ -39,7 +48,7 @@ covers broad epilepsy phenotyping on de-identified letters.
 - Make notebooks a forcing function for reproducible learning, not a side artifact.
 - Treat deterministic rules as explicit, categorized, testable, and ablatable components.
 - Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
-- Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 purist F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
+- Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 Purist (strict Gan scorer) F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
 
 ## Research Thesis
 
@@ -85,6 +94,8 @@ tests/                          Focused tests for data contracts and determinist
 
 ## Resuming Work
 
+- **Collaborator onboarding:** [docs/collaborator_onboarding.html](docs/collaborator_onboarding.html) (markdown: [docs/collaborator_onboarding.md](docs/collaborator_onboarding.md))
+- **Plain-language glossary:** [docs/reference/plain_language_glossary.md](docs/reference/plain_language_glossary.md)
 - **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
 - **Thread map (pick your narrative):** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
 - **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)

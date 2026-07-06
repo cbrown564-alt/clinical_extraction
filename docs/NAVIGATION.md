@@ -9,9 +9,11 @@ new documents belong and how they retire.
 
 | Job | Path |
 | --- | --- |
+| Collaborator onboarding (markdown + interactive HTML) | [`collaborator_onboarding.md`](collaborator_onboarding.md) · [`collaborator_onboarding.html`](collaborator_onboarding.html) |
 | Onboarding and repo layout | [`README.md`](../README.md) |
 | Active objective, work board, guardrails | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) |
 | Domain vocabulary (~80 terms) | [`CONTEXT.md`](../CONTEXT.md) |
+| Plain-language glossary (display names, Gan vs ExECT) | [`docs/reference/plain_language_glossary.md`](reference/plain_language_glossary.md) |
 | Active experiment scan order | [`experiments/README.md`](../experiments/README.md) |
 | Machine run registry | [`experiments/registry.jsonl`](../experiments/registry.jsonl) |
 | Human scan of registry | [`experiments/RUN_INDEX.md`](../experiments/RUN_INDEX.md) |

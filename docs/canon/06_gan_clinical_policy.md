@@ -1,6 +1,6 @@
 # Gan 2026 Research Canon — Closeout, Architecture & The Wall
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
 **Absorbs:** [`../research/gan2026/retrospectives/gan2026_research_closeout_synthesis_2026-06-17.md`](../research/gan2026/retrospectives/gan2026_research_closeout_synthesis_2026-06-17.md),  
 [`../research/gan2026/syntheses/gan2026_closeoff_report_2026-06-12.md`](../research/gan2026/syntheses/gan2026_closeoff_report_2026-06-12.md),  
@@ -15,7 +15,11 @@ Last updated: 2026-07-01
 
 ## Frozen recommendation (unchanged)
 
-| Role | Architecture | test450 Purist | Status |
+**Architectures in one line:** **SE** = LLM structured-event extraction + deterministic
+render (`GPT-4.1-mini`). **V12** = same stack + full `GPT-4.1` fresh-evidence reasoner
+(3-trace corroboration). **Floor** = rules-only deterministic baseline.
+
+| Role | Architecture | test450 Purist[^purist] | Status |
 | --- | --- | ---: | --- |
 | **Production / go-forward** | Single GPT structured-event (mini) | **364/450 = 0.809** | Promoted |
 | **Ceiling comparator** | V12 fresh-evidence hybrid (full gpt-4.1 reasoner) | **379/450 = 0.842** | Best holdout; +15 rows over SE |
@@ -23,6 +27,10 @@ Last updated: 2026-07-01
 
 No further 0.90 optimization on current model family. Forward implementation focus
 moved to ExECTv2. **Holdout row-level inspection blocked** — aggregate citation only.
+
+[^purist]: **Purist** = strict 12-band label match on rendered seizure-frequency
+category; **Pragmatic** = coarser boundary-band match (six `BOUNDARY_BANDS`). See
+[`gan2026_rule_register.md`](../design/gan2026_rule_register.md) §1.4.
 
 ---
 
@@ -49,6 +57,14 @@ moved to ExECTv2. **Holdout row-level inspection blocked** — aggregate citatio
 5. **Provenance caveat** — V12 reasoner on full gpt-4.1; chosen SE pass **mini-verified** on test450.
 
 ---
+
+> **The Wall (plain language)**
+>
+> On the hardest Gan seizure-frequency rows, the model is **confidently wrong**: it
+> outputs a specific rate when *unknown* is correct, or stays at *unknown* when a rate is
+> warranted. Nothing the system can observe at run time reliably tells those cases apart —
+> only the hidden gold label can. That is why ~**0.842** Purist on test450 is treated as a
+> **ceiling prior**, not a knob to tune toward 0.90.
 
 ## The Wall (reliability headline)
 
@@ -86,8 +102,15 @@ Demonstrated instances (not asserted):
 
 - Held-out-family CV caught v0.6 overfit before holdout  
 - v0.7 test450 regression (−106 rows) caught by protocol  
-- Gate 1–4 frozen promotion ladder with explicit stop rules  
+- Gate 1–4 frozen promotion ladder with explicit stop rules (table below)  
 - Predeclared adversarial / hard-slice panels  
+
+| Gate | Plain description | Pass authorizes |
+| --- | --- | --- |
+| **Gate 1** | Validation hard-slice audit — no brittle regressions in known weak families (changed-label precision, zero correct→wrong) | Gate 2 only; not holdout |
+| **Gate 2** | Synthetic/source-near stress panels — selector or mechanism behaves on adversarial component states | Gate 3 only; not holdout |
+| **Gate 3** | Test source-symmetry preflight — locked-test components match validation roles; artifacts hash-pinned | Gate 4 only, with explicit user authorization |
+| **Gate 4** | Locked test450 aggregate audit — frozen holdout readout; no row-level failure inspection for development | Recording final-evaluation evidence only |
 
 Gate 4: consensus/fresh constrained **failed** holdout; exact-source Gate 4 passed
 **aggregate only** (359/450, precision 0.60). Consensus/fresh selector **CUT**
@@ -112,10 +135,14 @@ Deterministic canonical fourth stage: **Evidence Trace Check** (ADR 0014) — no
 
 ## Selection precedence (canonical rules)
 
-- **C1:** Current positive rate supersedes coexisting current seizure-free (ADR 0016)  
-- **C2:** Ontology over-inference guard is graph-path-only (ADR 0017)  
+Renamed **R1/R2** (formerly C1/C2 in this canon) to avoid collision with paper claims
+C1–C5 ([`10_paper_provenance.md`](10_paper_provenance.md)).
+
+- **R1:** Current positive rate supersedes coexisting current seizure-free (ADR 0016)  
+- **R2:** Ontology over-inference guard is graph-path-only (ADR 0017)  
 
 Operative rules: `docs/design/gan2026_rule_register.md`, `gan2026_resolve_label_spec.md`.
+Code and ADR comments may still say “C1/C2” for the same rules.
 
 ---
 

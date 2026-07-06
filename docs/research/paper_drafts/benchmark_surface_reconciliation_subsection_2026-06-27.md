@@ -1,6 +1,6 @@
 # Benchmark-Surface Reconciliation
 *Paper subsection draft — 2026-06-27*
-*Evidence validity: validation-only (dev140) + frozen aggregate full-200 four-family read*
+*Evidence validity: validation-only (`dev140`, 140-letter development split) + frozen aggregate `full-200` (200-letter aggregate split) four-family read*
 *Row-inspection policy: aggregate_only_no_full200_or_holdout_row_level_inspection*
 *Consumes: M1 (benchmark_surface_reconciliation_2026-06-27.md) + I1 (sf_registry_legacy_delegation_audit_2026-06-27.md)*
 
@@ -10,10 +10,11 @@
 
 ### 4.x.1  The Two Surfaces and Why They Diverge
 
-ExECTv2 reports performance on two distinct scoring surfaces that measure different
-things and cannot be directly compared:
+ExECT multi-entity phenotyping (ExECTv2; Fonferko-Shadrach 2024) reports performance on
+two distinct scoring surfaces that measure different things and cannot be directly compared:
 
-**Clinical-headline surface** (`clinical_headline` four-family scorer). Matches entity
+**Clinical-headline surface** (`clinical_headline`—Diagnosis, SeizureFrequency,
+Prescription, and Investigations; four-family scorer). Matches entity
 type, normalized phrase, and clinical attributes; disregards raw character offsets and
 CUI codes. This is the surface used for the headline F1 figures throughout §4.2 (GPT-4.1-mini
 dev140 0.9155; full-200 0.8356–0.8566 across models).

@@ -1,7 +1,8 @@
 ﻿# Clinical Extraction
 
-This context covers the Gan 2026 seizure-frequency extraction work and its
-evaluation surfaces.
+This context covers **both** workstreams: Gan 2026 seizure-frequency extraction and
+ExECTv2 broad epilepsy phenotyping. For plain-language display names and split
+definitions, see [`docs/reference/plain_language_glossary.md`](docs/reference/plain_language_glossary.md).
 
 ## Repo layout / resumption
 
@@ -28,6 +29,34 @@ sections below.
 | **T3 Architecture / component evidence** | Three families (rules / LLM-only / hybrid); ablatable component homes | `docs/design/architecture.md` |
 | **T4 Paper closeout / claims** | C1–C5 capability claims; frozen artifact index governs promotion | `docs/canon/10_paper_provenance.md` |
 | **T5 Engineering / experiment governance** | Two-tree rule; registry; predeclare → ladder → frozen index | `docs/runbooks/documentation_lifecycle.md` |
+
+## Cross-cutting terms (plain names)
+
+**Purist**: Strict Gan label match after deterministic render — primary holdout metric
+on `test450` (450-letter locked test set). **Pragmatic**: Lenient Gan match allowing
+controlled equivalence classes; secondary readout only.
+
+**test450**: Gan held-out test set (450 letters); aggregate citation only, no row-level
+tuning. **validation750**: Gan development set (~750 letters); not holdout.
+**dev140**: ExECT primary development evaluation set (140 letters).
+**full-200**: ExECT locked evaluation set (200 letters); aggregate-only for promotion.
+
+**v0_reference**: Promoted Gan production baseline — single GPT-4.1-mini structured-event
+pass + deterministic render (364/450 Purist). **V12**: Best Gan holdout comparator —
+multi-trace fresh-evidence hybrid using full GPT-4.1 reasoner (379/450); not production.
+
+**Plan 11 / v08**: ExECT production pipeline — per-family producers → lenses → finding
+store → headline projection; **v08** is the frozen production control.
+
+**clinical_headline**: ExECT primary composite clinical-recovery score (de-duplicated
+across Diagnosis, SeizureFrequency, Prescription, Investigations). **state_profile**:
+SF-only faithful state metric; primary for SF-family experiments, not the project headline.
+
+**Gold-quality ceiling**: ExECT annotation-format ceiling — strict benchmark F1
+penalizes label multiplicity and format fidelity, not missing clinical concepts (paper C1).
+
+**Capability-first claims C1–C5**: Paper claim register in `docs/canon/10_paper_provenance.md`
+(not the Gan selection rules R1/R2 in `docs/canon/06_gan_clinical_policy.md`).
 
 ## Language
 

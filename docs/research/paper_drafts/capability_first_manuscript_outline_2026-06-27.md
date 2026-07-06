@@ -13,7 +13,8 @@ Parent task: `closing_campaign_orchestration_plan_2026-06-27.md` Wave 4 / P6.
 ## Spine Structure
 
 Five capability-anchored sections replace the current task-parallel layout
-(§4.1 Gan | §4.2 ExECTv2). Cross-references to the source drafts that supply
+(§4.1 Gan 2026 seizure-frequency labeling | §4.2 ExECTv2 multi-entity phenotyping).
+Cross-references to the source drafts that supply
 content are given per subsection; key numbers are quoted with their evidence
 validity at point of citation.
 
@@ -101,18 +102,18 @@ is an acknowledged gap.*
 
 ### 2.1  Gan Strand: Rules / LLM-Only / Hybrid (Three-Way Table)
 
-**Content source:** Existing manuscript Tables 1–2 (Gan three-way comparison,
-validation750 and test450 held-out aggregate). No new material required.
+**Content source:** Existing manuscript Tables 1–2 (Gan 2026 seizure-frequency three-way
+comparison, validation750 and `test450` held-out aggregate). No new material required.
 
-**Key numbers** (validation750 / test450; no-call replay / frozen aggregate):
-- Deterministic floor: validation ~0.636 (purist); test450 0.343/0.450 (det floor)
-- LLM-only (single SE, gpt-4.1-mini): validation 0.9093 purist; test450 0.809
-- Hybrid V12 ceiling: validation 0.9787 (oracle selector 739/750 = 0.9853 ceiling);
-  test450 **0.842**
+**Key numbers** (validation750 / `test450`; no-call replay / frozen aggregate):
+- Deterministic floor: validation ~0.636 (Purist); `test450` 0.343/0.450 (det floor)
+- LLM-only (single SE, gpt-4.1-mini): validation 0.9093 Purist; `test450` 0.809
+- Multi-trace fresh-evidence hybrid pipeline holdout ceiling: validation 0.9787 (oracle
+  selector 739/750 = 0.9853 ceiling); `test450` **0.842**
 - Finding: LLM adds ~+0.17 over deterministic on validation; hybrid adds ~+0.03
-  over LLM-only on test (ceiling-limited; critique §What Is Solid)
+  over LLM-only on test (holdout ceiling-limited; critique §What Is Solid)
 
-**Evidence validity:** test450 = frozen holdout; validation = frozen aggregate.
+**Evidence validity:** `test450` = frozen holdout; validation = frozen aggregate.
 
 ### 2.2  ExECTv2 Strand: The Two Surfaces and the Like-for-Like Number
 
@@ -124,15 +125,15 @@ subsections.
 **Key facts:**
 - Thesis §7 minimum bar: beat ExECTv2 per-item / per-letter F1 benchmark
   `0.87` / `0.90`.
-- Manuscript delivers `clinical_headline` F1 (four-family, label-based) —
-  a *different surface*.
+- Manuscript delivers `clinical_headline` F1 (Diagnosis, SeizureFrequency,
+  Prescription, and Investigations; label-based) — a *different surface*.
 - Non-reproducibility reason: gold character-offset annotations were made
   on unprocessed text; subsequent spelling correction shifted offsets without
   updating them (thesis §5). Offset-tuned published pipeline score is not
   reproducible on corrected text. This is the honest reconciliation; the
   "metric-is-an-artifact" defense is weaker and reviewer-visible.
 
-#### 2.2.2  The Like-for-Like Number (dev140, frozen aggregate)
+#### 2.2.2  The Like-for-Like Number (`dev140`, frozen aggregate)
 
 *Evidence validity: validation-only, frozen aggregate. Source:
 `exectv2_hybrid_benchmark_overall_bestof_dev_20260618.json`.*
@@ -250,14 +251,15 @@ This belongs in §4 apparatus language, not in the headline framing. (P2 §4)
 ### 3.2  Wall Transfer: Task-Bound Ceiling (Cross-Dataset Confident Over-Reading)
 
 **Content source:** P3 (`wall_transfer_cross_dataset_2026-06-27.md`), all
-sections. Probe returned **PARTIAL verdict** (3/6 checks passed; task-bound ceiling
-confirmed; Gan H0 mechanism partially differs — see §3.2.3).
+sections. Probe returned **3 of 6 pre-registered cross-dataset checks passed**
+(task-bound ceiling confirmed; Gan H0 mechanism partially differs — see §3.2.3).
 
-#### 3.2.1  The Gan Wall Defined (Confirmed Finding)
+#### 3.2.1  The Confident Over-Reading Limit (the Wall) on Gan (Confirmed Finding)
 
-*Evidence validity: Gan test450 frozen holdout (score); validation-only probe (entropy).*
+*Evidence validity: Gan `test450` frozen holdout (score); validation-only probe (entropy).*
 
-- Ceiling: **0.842** (V12 hybrid test450); single-SE production: **0.809**.
+- Holdout ceiling: **0.842** (multi-trace fresh-evidence hybrid pipeline, `test450`
+  Purist); single structured-event pass: **0.809**.
 - Selector oracle ceiling: 739/750 validation rows; 11 structurally unresolvable
   residual rows.
 - Mechanism (P2.1 semantic entropy probe, n=150, k=4 at temps [0.3, 0.5, 0.7, 1.0]):
@@ -283,10 +285,11 @@ confirmed; Gan H0 mechanism partially differs — see §3.2.3).
   event-indexed, or temporally-ambiguous prose — precisely the illegitimate
   evidence shapes the Gan wall analysis catalogued.
 
-#### 3.2.3  Cross-Dataset Claim — Probe Complete (PARTIAL Verdict)
+#### 3.2.3  Cross-Dataset Claim — Probe Complete (3 of 6 Checks Passed)
 
-*Source: `exectv2_sf_wall_transfer_probe_2026-06-27.md` — **PARTIAL** (3/6 checks
-passed). Dev140 self-consistency artifact replay; no new model calls; no holdout.*
+*Source: `exectv2_sf_wall_transfer_probe_2026-06-27.md` — **3 of 6 pre-registered
+cross-dataset checks passed**. `dev140` self-consistency artifact replay; no new model
+calls; no holdout.*
 
 **Task-bound ceiling confirmed.** SF is the weakest family on every evaluation surface
 and every LLM tested. The gap is structural, not model-specific, and not addressable by
@@ -430,8 +433,8 @@ headline (see §3.1.3). Evidence rate 1.0000 for all completed rows across model
 - Verdict: **H0_confirmed (confident over-reading)** — raw prose varies across
   temperatures; rendered label/kind does not. Consistency rating restores to 4/5.
 
-ExECTv2 equivalent: probe returned **PARTIAL verdict** (3/6 checks; task-bound ceiling
-confirmed; error entropy elevated 0.287 vs correct 0.069; cross-model agreement lower on
+ExECTv2 equivalent: probe returned **3 of 6 pre-registered checks passed**
+(task-bound ceiling confirmed; error entropy elevated 0.287 vs correct 0.069; cross-model agreement lower on
 errors 21.8% than correct 69.4% — mechanism partially differs from Gan H0). See §3.2.3.
 
 ---
@@ -565,7 +568,7 @@ the closeout. The closeout headline stands alone.
 | C1 | §4.1.2 subsection (consensus/fresh Gate 4 audits) | §4.1.2 |
 | C2 | Table 3 (consensus/fresh Gate 4 result table) | Table 3 |
 | C3 | Exact-source "frozen exact v0.9 selector holdout" from promoted-result prose | §4.1 promoted results |
-| C4 | Selector rows in architecture comparison tables (alongside single SE and V12) | Any comparison table listing selector as a promoted row |
+| C4 | Selector rows in architecture comparison tables (alongside single SE and multi-trace hybrid) | Any comparison table listing selector as a promoted row |
 | C5 | Reference to selector as a headline or promoted result in the abstract/conclusions | Abstract, §7 conclusions |
 
 **Permitted retention (one sentence maximum, appendix only):**
@@ -597,7 +600,7 @@ the closeout. The closeout headline stands alone.
 |---|------------|-----------------|----------------------------------|
 | 1 Shared architecture | 1.1–1.3 | Decomp review; P1 §4.x.6; definitions.yaml | Code audit; dev140 replay |
 | 2 What LLM adds | 2.1–2.3 | Existing Gan tables; P1 full | Frozen holdout (Gan test450); frozen aggregate full-200 (ExECTv2); dev140 validation-only (like-for-like) |
-| 3 What generalizes | 3.1–3.3 | P2; P3; P2.1 | Frozen aggregate full-200; validation-only probe (entropy); wall-transfer probe PARTIAL (3/6) — task-bound ceiling confirmed; mechanism partially differs |
+| 3 What generalizes | 3.1–3.3 | P2; P3; P2.1 | Frozen aggregate `full-200`; validation-only probe (entropy); wall-transfer probe 3 of 6 pre-registered checks passed — task-bound ceiling confirmed; mechanism partially differs |
 | 4 Unified reliability | 4.1–4.5 | P4; M2; Gan scorecard; RUN_INDEX | Aggregate full-200 validation; validation750; test450 frozen holdout (Gan only) |
 | 5 Component impact | 5.1–5.4 | M3; P1 §4.x.4–5; gan2026 ladder | Dev140 replay; frozen aggregate full-200; validation750 replay |
 
@@ -619,8 +622,8 @@ the closeout. The closeout headline stands alone.
 
 ## Open Actions Before P6b (Full Draft)
 
-1. **[PROBE COMPLETE — PARTIAL]** `exectv2_sf_wall_transfer_probe_2026-06-27.md` returned
-   3/6 checks passed. Task-bound ceiling confirmed; Gan H0_confident_over_reading does not
+1. **[PROBE COMPLETE — 3 of 6 checks passed]** `exectv2_sf_wall_transfer_probe_2026-06-27.md` returned
+   3 of 6 pre-registered cross-dataset checks passed. Task-bound ceiling confirmed; Gan H0_confident_over_reading does not
    fully transfer (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on
    errors vs 69.4% correct; 43.6% error cells unanimous wrong). §3.2.3 updated to reflect
    partial verdict; use P3 §3a "task-bound ceiling transfers; mechanism partially differs"
