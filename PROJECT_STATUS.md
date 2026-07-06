@@ -2,6 +2,26 @@
 
 Last updated: 2026-07-01
 
+## Plain-language snapshot (5 bullets)
+
+- **Two tasks:** Track 1 (Gan) extracts one label — seizure frequency — from
+  synthetic letters; Track 2 (ExECT) extracts diagnosis, seizure frequency,
+  prescriptions, and investigations from de-identified epilepsy letters.
+- **Frozen vs active:** Gan `test450` holdout is frozen (aggregate citations only,
+  no tuning); ExECTv2 holistic assembly v08 is the live production control on
+  dev140 / full-200.
+- **Primary scores:** Gan — **Purist** (strict matcher) on `test450`; ExECT —
+  **`clinical_headline`** de-duplicated recovery (strict benchmark/CUI stays
+  diagnostic).
+- **Main negative findings:** Gan hit a **confident over-reading limit (The Wall)**
+  — on ambiguous letters the model commits to a rate when it should abstain (~84%
+  ceiling, not a tuning target). ExECT shows a **gold-quality / annotation-format
+  ceiling** — many benchmark “errors” are label multiplicity or format fidelity,
+  not missing clinical concepts.
+- **Start here:** [collaborator onboarding (HTML)](docs/collaborator_onboarding.html)
+  or [markdown](docs/collaborator_onboarding.md); term definitions in
+  [plain-language glossary](docs/reference/plain_language_glossary.md).
+
 ## Active Objective
 
 ExECTv2 is in a reliability/component-evidence phase after the Satellite 13
@@ -14,6 +34,9 @@ IEEE LaTeX draft in `literature/IEEE/IEEE-conference-template-062824/`
 been re-synced with the 2026-06-30 Diagnosis gold-quality revision below).
 
 ## Current Read
+
+*Maintainer detail — dense evidence stack for people updating this board; new
+collaborators should read the plain-language snapshot above first.*
 
 Current evidence stack:
 

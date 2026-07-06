@@ -39,6 +39,20 @@ def render_run_registry_markdown(entries: Sequence[RunRegistryEntry]) -> str:
         "Generated from `experiments/registry.jsonl`. The JSONL file remains the canonical "
         "machine-readable registry.",
         "",
+        "**Start here for humans:** [`experiments/KEY_EXPERIMENTS.md`](../../KEY_EXPERIMENTS.md) "
+        "— one-screen summaries of the ~12 runs that matter. "
+        "Term definitions: [`docs/reference/plain_language_glossary.md`](../../docs/reference/plain_language_glossary.md).",
+        "",
+        "### Gan holdout promotion ladder (Gates 1–4)",
+        "",
+        "- **Gate 1 — Validation hard-slice audit:** Selector gains must not hide brittle "
+        "behavior in weak families.",
+        "- **Gate 2 — Robustness panels:** Stress-test gates on adversarial component states "
+        "before holdout spend.",
+        "- **Gate 3 — Test source-symmetry preflight:** Hash-pin every test450 component role.",
+        "- **Gate 4 — Locked test450 aggregate audit:** User-authorized, aggregate-only readout "
+        "after Gates 1–3; no row-level tuning.",
+        "",
     ]
     ordered_decisions = [
         *DECISION_RENDER_ORDER,

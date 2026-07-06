@@ -1481,7 +1481,7 @@
         <div class="overview-hero">
           <p class="hero-kicker">Start here</p>
           <h1>We read epilepsy clinic letters and extract structured clinical facts</h1>
-          <p class="hero-dek">Each pipeline combines a language model (which finds mentions in free text) with fixed rules (which pick, format, and score the answer). Plain numbers first; project vocabulary comes later.</p>
+          <p class="hero-dek">Each pipeline combines a language model (which finds mentions in free text) with fixed rules (which pick, format, and score the answer). Plain numbers first; project vocabulary comes later. <a href="reference/plain_language_glossary.md">Term definitions (glossary)</a></p>
 
           <div class="headline-grid" aria-label="Headline results">
             <div class="headline-card gan">
@@ -1778,6 +1778,23 @@ Result: CORRECT (364/450)</code></pre>
                 <div class="bar-row"><span class="bar-label">Our pipeline</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">81%</span></div>
                 <div class="bar-row"><span class="bar-label">Rules-only baseline</span><div class="bar-track"><div class="bar-fill blue" style="width:76.2%"></div></div><span class="bar-value">76%</span></div>
                 <p style="font-size:13px;color:var(--muted)">The gap between 81% and 84% is mostly hard cases where the model confidently picks the wrong rate — see <button type="button" class="tab-jump" data-tab-target="limits" data-limits-step="wall">Limits</button> for <dfn>The Wall</dfn>.</p>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Production vs ceiling vs floor (what each architecture is)</summary>
+                  <div class="disclosure-body">
+                    <div class="table-wrap">
+                      <table>
+                        <thead><tr><th>Role</th><th>What it is</th><th>test450 Purist</th><th>Notes</th></tr></thead>
+                        <tbody>
+                          <tr><td><strong>Production</strong></td><td>Single GPT-4.1-mini structured-event extractor + deterministic render</td><td>364/450 (81%)</td><td>Promoted go-forward; frozen reference (<code>v0_reference</code>)</td></tr>
+                          <tr><td><strong>Ceiling</strong></td><td>Multi-trace fresh-evidence hybrid — full GPT-4.1 reasoner with 3-trace corroboration</td><td>379/450 (84%)</td><td>Best holdout comparator; not production</td></tr>
+                          <tr><td><strong>Floor</strong></td><td>Rules-only baseline — no LLM clinical facts</td><td>343/450 (76%)</td><td>Controlled lower bound</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p style="font-size:13px">Source: <a href="canon/06_gan_clinical_policy.md">canon/06</a> · <a href="reference/plain_language_glossary.md">plain-language glossary</a></p>
+                  </div>
+                </details>
 
                 <details class="disclosure" style="margin-top:16px">
                   <summary>Compare pipeline designs (rules-only vs AI-only vs hybrid)</summary>
@@ -2342,7 +2359,7 @@ Dx field ← dx_producer → reconcile_dx_lens
     <section class="section" id="more">
       <div class="section-label">Reference</div>
       <h2>Glossary, evidence, and engineering</h2>
-      <p class="lede">Project-specific names, artifact paths, and setup commands — open only when you need them.</p>
+      <p class="lede">Project-specific names, artifact paths, and setup commands — open only when you need them. Full glossary: <a href="reference/plain_language_glossary.md">docs/reference/plain_language_glossary.md</a></p>
 
       <details class="disclosure">
         <summary>Project glossary</summary>
@@ -2351,8 +2368,11 @@ Dx field ← dx_producer → reconcile_dx_lens
             <table>
               <thead><tr><th>Term</th><th>Plain meaning</th></tr></thead>
               <tbody>
-                <tr><td><dfn>The Wall</dfn></td><td>~84% ceiling on Track 1 from confidently wrong answers on ambiguous letters; not fixable by prompt tuning alone</td></tr>
-                <tr><td><dfn>Gold-quality ceiling</dfn></td><td>Track 2 gap between strict benchmark scores and clinician review — mostly label format, not extraction failure</td></tr>
+                <tr><td><dfn>The Wall</dfn></td><td>Confident over-reading limit (Track 1): ~84% cap from confidently wrong answers on ambiguous letters; not fixable by prompt tuning alone</td></tr>
+                <tr><td><dfn>Gold-quality ceiling</dfn></td><td>Annotation-format ceiling (Track 2): strict benchmark scores low when gold lists facts differently than consolidated clinical answers</td></tr>
+                <tr><td><code>v0_reference</code> / V12</td><td>Production baseline layer vs best holdout comparator architecture (see glossary)</td></tr>
+                <tr><td>Binding residual</td><td>Rows where gold is unknown but the model emits a rate — the failure mode The Wall describes</td></tr>
+                <tr><td>Forward-observable</td><td>Signals visible at run time (confidence, agreement, entropy) without peeking at gold labels</td></tr>
                 <tr><td><dfn>Structured events</dfn></td><td>AI output listing candidate facts (with quotes and timing) instead of a final label</td></tr>
                 <tr><td><code>Purist</code> / <code>test450</code></td><td>Track 1 strict scorer and 450-letter held-out test set</td></tr>
                 <tr><td><code>clinical_headline</code></td><td>Track 2 primary composite quality score (86% headline on 200 letters)</td></tr>

@@ -6,11 +6,16 @@ registry rows, row-level case files).
 
 **Control plane first:** [`README.md`](../README.md) → [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) → this map.
 
+| Don't know which thread? | Start with [`collaborator_onboarding.md`](collaborator_onboarding.md) / [`.html`](collaborator_onboarding.html), then return here. |
+| --- | --- |
+
 Full consolidation roadmap: [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md).
 
 ---
 
 ## T1 — Reliability & The Wall
+
+*Confident over-reading on ambiguous seizure-frequency letters.*
 
 **Question:** Where does confident over-reading live, and can forward-observable
 signals route it without gold?
@@ -115,9 +120,10 @@ planning archive/cleanup without breaking frozen evidence.
 
 | Persona | Path |
 | --- | --- |
+| **Don't know which thread?** | [`collaborator_onboarding.md`](collaborator_onboarding.md) / [`.html`](collaborator_onboarding.html) first → return here |
 | **New collaborator** | [`collaborator_onboarding.md`](collaborator_onboarding.md) / [`.html`](collaborator_onboarding.html) → THREAD_MAP (pick thread) |
 | **New engineer** | `collaborator_onboarding.md` / `.html` → README → NAVIGATION → THREAD_MAP (pick thread) → `architecture.md` → ACTIVE_ROADMAP |
-| **Paper author** | PAPER_CANON → evaluation_canon → CLOSEOUT_EVIDENCE_CANON → GAN2026_RESEARCH_CANON (4 canon docs) |
+| **Paper author** | [`canon/10_paper_provenance.md`](canon/10_paper_provenance.md) → [`canon/04_scoring.md`](canon/04_scoring.md) → [`canon/07_exect_plan11.md`](canon/07_exect_plan11.md) → [`canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md) |
 | **Experiment runner** | T5 path → relevant thread (T2 or T3) → bucket README under `docs/experiments/` |
 
 ---

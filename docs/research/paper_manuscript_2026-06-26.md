@@ -43,11 +43,14 @@ prediction. We argue that a **modular, stage-owned clinical-extraction architect
 any particular large language model — is the primary carrier of extraction quality, and we
 demonstrate this by holding one decomposed architecture fixed while varying both the task and
 the generation model. We evaluate on two complementary epilepsy-letter tasks that share a
-component spine: deep single-concept seizure-frequency labeling (Gan 2026) and broad
-multi-entity phenotyping (ExECTv2, Fonferko-Shadrach 2024). On Gan 2026 a single GPT
-structured-event pass reaches 364/450 (0.809) Purist accuracy on a locked holdout, within 15
-rows of a far more complex hybrid ceiling (379/450, 0.842). On ExECTv2 de-duplicated
-`clinical_headline` recovery reaches 0.8197–0.8566 F1 across three qualitatively different
+component spine: deep single-concept seizure-frequency labeling on the Gan synthetic
+seizure-frequency benchmark (Gan 2026) and broad multi-entity phenotyping on clinical
+letters (ExECT multi-entity phenotyping task, ExECTv2; Fonferko-Shadrach 2024). On the Gan
+benchmark a single GPT structured-event pass reaches 364/450 (0.809) Purist accuracy on a
+locked holdout, within 15 rows of a far more complex multi-trace hybrid pipeline that peaks
+at 379 correct labels of 450 (0.842). On ExECTv2, recovery of the four headline entity
+families (`clinical_headline`—Diagnosis, SeizureFrequency, Prescription, and Investigations)
+reaches 0.8197–0.8566 F1 across three qualitatively different
 LLMs under a frozen component graph, with a non-development model (DeepSeek) leading the
 development model (GPT-4.1-mini) by +0.021 — the predicted signature of a model-agnostic
 architecture — while the open-weight model (Qwen 3.6 35B) trails both by a modest,
@@ -55,10 +58,11 @@ diagnosed margin concentrated in the corpus's hardest family (SeizureFrequency),
 uniformly or left unexplained. We reconcile our label-based surface with the published benchmark honestly: on
 the comparable like-for-like surface we reach 0.3877 per item / 0.6972 per letter against the
 paper's 0.87 / 0.90, a gap we locate in deterministic CUI-and-attribute-bundle fidelity that
-was explicitly deprioritised, not in concept recall. The central negative result — a
-confident, architecturally unresolvable over-reading ceiling on seizure frequency —
-transfers across datasets: a forward-observable-feature probe finds the wall mechanism
-reproduces on ExECTv2 (WALL TRANSFERS, 6/9 checks passed; external-risk failure AUROC 0.764
+was explicitly deprioritised, not in concept recall. The central negative result — a confident over-reading limit (the Wall): an
+architecturally unresolvable ceiling on seizure frequency where the model commits to
+quantified rates on ambiguous evidence — transfers across datasets: a forward-observable-feature
+probe finds this mechanism reproduces on ExECTv2 (6 of 9 pre-registered cross-dataset checks
+passed; external-risk failure AUROC 0.764
 with a 17.1% irreducible risk-coverage plateau, and no gold-free separator on the binding
 over-read slice), establishing a task-bound rather than system-bound limit. The durable
 contribution is the evaluation discipline — predeclared adversarial panels, held-out-family
@@ -82,10 +86,12 @@ The central claim of this work is that a **modular, auditable clinical-extractio
 architecture** delivers both, and that this can be *demonstrated* rather than asserted by
 holding the architecture fixed while varying the two factors that usually confound reliability
 claims in this literature: (i) the task and dataset, and (ii) the architecture family. We
-apply one stage-owned component spine to two distinct epilepsy-letter tasks, and for each task
-we situate the result against rules-based, LLM-only, and hybrid instantiations over the same
-shared core. Holding the task fixed and varying the family isolates *what the LLM adds*;
-holding the family fixed and varying the task isolates *what generalizes*.
+apply one stage-owned component spine to two distinct epilepsy-letter tasks — the Gan
+synthetic seizure-frequency benchmark and ExECT multi-entity phenotyping on clinical
+letters — and for each task we situate the result against rules-based, LLM-only, and hybrid
+instantiations over the same shared core. Holding the task fixed and varying the family
+isolates *what the LLM adds*; holding the family fixed and varying the task isolates *what
+generalizes*.
 
 The two tasks are deliberately complementary. **Gan 2026** is deep single-concept extraction —
 seizure frequency, the hardest single epilepsy indicator, demanding clinical reasoning (which
@@ -529,6 +535,9 @@ cases where pattern-matching rules are brittle.
 
 **Table 1. Gan 2026 three-way comparison on validation750 (`gpt-4.1-mini`).**
 
+*Purist accuracy counts a prediction correct only when the extracted label exactly matches the
+gold label (strict match).*
+
 | Architecture | Rendered | Purist of rendered | Pragmatic of rendered | Reading |
 | --- | ---: | ---: | ---: | --- |
 | `deterministic_canonical_pipeline` | 741/750 | 673/741 (0.908) | 681/741 (0.919) | High validation score; large holdout drop. |
@@ -537,6 +546,9 @@ cases where pattern-matching rules are brittle.
 | `llm_only_canonical_pipeline` | 750/750 | 582/750 (0.776) | 614/750 (0.819) | Comparator; below hybrid structured events. |
 
 **Table 2. Gan 2026 frozen `test450` aggregate audit (`gpt-4.1-mini`).**
+
+*Purist accuracy counts a prediction correct only when the extracted label exactly matches the
+gold label (strict match).*
 
 | Architecture | Rendered | Purist of rendered | Pragmatic of rendered | Claim use |
 | --- | ---: | ---: | ---: | --- |
@@ -719,24 +731,25 @@ validation-only and are not holdout estimates.
 
 #### §4.3.2 Wall Transfer: The Seizure-Frequency Ceiling Is Task-Bound
 
-*Evidence validity: Gan — frozen test450 aggregate (V12 0.842) + validation-only
-semantic-entropy probe (P2.1, n=150). ExECTv2 — frozen aggregate full-200 model-swap +
-dev140 aggregate model-swap + self-consistency replay (wall-transfer probe). Probe verdict:
-**WALL TRANSFERS** (6/9 checks passed; task-bound ceiling and wall mechanism confirmed;
-population-wide error observability noisier than Gan). Source: P3
-`wall_transfer_cross_dataset_2026-06-27.md`.*
+*Evidence validity: Gan — frozen test450 aggregate (multi-trace fresh-evidence hybrid,
+0.842) + validation-only semantic-entropy probe (P2.1, n=150). ExECTv2 — frozen aggregate
+full-200 model-swap + dev140 aggregate model-swap + self-consistency replay (wall-transfer
+probe). Probe checklist: 6 of 9 pre-registered cross-dataset checks passed (task-bound
+ceiling and wall mechanism confirmed; population-wide error observability noisier than Gan).
+Source: P3 `wall_transfer_cross_dataset_2026-06-27.md`.*
 
 The central negative result of the Gan strand does not stay on the Gan dataset.
 
-**The Gan wall.** On the Gan 2026 seizure-frequency benchmark, the best architecture
-achieves a frozen holdout ceiling of **0.842** (V12 hybrid, test450 Purist). Exhaustive
-ablation established that this ceiling is generator-bound: the model over-reads
-ambiguous frequency evidence as quantified rates or seizure-free durations with high
-confidence, and no forward-observable signal — self-consistency, self-confidence,
-sampling entropy — separates the over-read rows from correct extractions at inference
-time. The selector oracle is exhausted at 739/750: of the 11 binding residual rows
-(no Purist-correct component), 8/11 fall in `band_unknown`, and the signal
-distinguishing *withhold-to-unknown* from *emit-rate* is absent from every
+**The Gan confident over-reading limit (the Wall).** On the Gan 2026 seizure-frequency
+benchmark, the best architecture achieves a frozen holdout ceiling of **0.842**
+(multi-trace fresh-evidence hybrid pipeline, test450 Purist). Exhaustive ablation
+established that this ceiling is generator-bound: the model over-reads ambiguous frequency
+evidence as quantified rates or seizure-free durations with high confidence, and no
+forward-observable signal — self-consistency, self-confidence, sampling entropy — separates
+the over-read rows from correct extractions at inference time. No remaining selector
+headroom: on validation750, 739 of 750 rows have at least one Purist-correct component; of
+the 11 binding residual rows (no Purist-correct component), 8/11 fall in `band_unknown`,
+and the signal distinguishing *withhold-to-unknown* from *emit-rate* is absent from every
 inference-time feature.
 
 Semantic-entropy probing at k=4 across temperatures [0.3, 0.5, 0.7, 1.0] confirmed
@@ -781,10 +794,12 @@ temporally ambiguous. The illegitimate evidence shapes that drive Gan over-readi
 last-event-only anchors, open-ended temporal qualifiers, vague counts read as habitual
 rates — are present in real clinical letters too.
 
-**Probe result (WALL TRANSFERS — 6/9 checks passed).** The wall-transfer probe
-(`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140 aggregate model-swap and
-self-consistency artifacts and was extended to compute the two acceptance criteria the base
-probe left blank. Both confirm transfer:
+**Probe result (6 of 9 pre-registered cross-dataset checks passed).** The wall-transfer
+probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) applied a nine-item checklist
+comparing Gan and ExECTv2 seizure-frequency failure signatures; six items passed (task-bound
+ceiling and wall mechanism confirmed; population-wide error observability noisier than Gan).
+It ran on dev140 aggregate model-swap and self-consistency artifacts and was extended to
+compute the two acceptance criteria the base probe left blank. Both confirm transfer:
 
 > SeizureFrequency is the weakest ExECTv2 family under a frozen same-core architecture
 > across all tested LLMs (GPT-4.1-mini 0.7525, DeepSeek chat 0.7602, full-200 aggregate;
@@ -1057,16 +1072,17 @@ legacy delegation audit, 2026-06-27).
 
 ### D.3 The Wall and What It Means for the Architecture's Ceiling
 
-The Gan strand's central negative result — the honest ceiling of **0.842 test450 Purist**
-for the V12 hybrid and **0.809** for the single structured-event pass — is not a failure of
-optimization effort. It is a characterization of a clinical-reasoning limit that no
-forward-observable signal can safely breach: the model over-reads ambiguous
-seizure-frequency evidence as quantified rates with high confidence, and the signal
-distinguishing *withhold-to-unknown* from *emit-rate* is absent from every inference-time
-feature (selector oracle 739/750; 11 rows with no Purist-correct component;
-structural-impossibility finding from C7, which showed the no-correct residual rows are
-feature-identical to genuine-rate rows on every observable dimension — only hidden gold
-separates them).
+The Gan strand's central negative result — a performance plateau at **0.842 test450 Purist**
+for the multi-trace fresh-evidence hybrid pipeline and **0.809** for the single
+structured-event pass — is not a failure of optimization effort. It reflects a task-ambiguity
+floor: when documentation is genuinely ambiguous about current seizure burden, the model
+over-specifies a definite rate rather than withholding, and no forward-observable signal can
+safely breach that limit. The model over-reads ambiguous seizure-frequency evidence as
+quantified rates with high confidence, and every inference-time feature fails to distinguish
+*withhold-to-unknown* from *emit-rate*. On validation750, only 11 binding rows lack any
+Purist-correct component (739 of 750 rows have at least one correct path); those 11 are
+structurally indistinguishable from genuine-rate rows on every observable dimension — only
+hidden gold separates them (structural-impossibility finding from C7).
 
 The mechanism was established, not merely hypothesized, by a pre-registered semantic-entropy
 probe (P2.1) at k=4 samples across temperatures {0.3, 0.5, 0.7, 1.0} on 150 validation
@@ -1090,8 +1106,9 @@ eliminated at the base extraction level.
 
 The wall-transfer probe (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140
 aggregate model-swap and self-consistency artifacts and, extended to compute the two
-acceptance criteria the base probe left blank, returned a **wall-transfers verdict** (6/9
-checks passed). The cross-dataset claim can now be stated with evidence on two fronts. First,
+acceptance criteria the base probe left blank, returned a checklist result of **6 of 9
+pre-registered cross-dataset checks passed**. The cross-dataset claim can now be stated with
+evidence on two fronts. First,
 the frozen External Risk composite validated on Gan P0.2 ranks ExECTv2 SF errors at
 failure-prediction AUROC **0.764** (Gan 0.781), and its risk-coverage curve **plateaus** — the
 safest-ranked SF tier still carries an irreducible **17.1%** selective risk (95% CI 8.5–31.3%,

@@ -1,23 +1,19 @@
 # ExECTv2 Holistic Finding Assembly Ladder Canon
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
-**Scope:** Plan 11 holistic assembly replays v01–v08 on dev140 (June 2026).  
-**Claim boundary:** Dev-only component-attributed evidence unless noted frozen.
+## What this is
 
-**Production control (frozen):** v08 — see [`docs/canon/07_exect_plan11.md`](../../canon/07_exect_plan11.md)  
+The **v01–v08 ladder** replays the same frozen per-family producer outputs on
+**dev140** (140 development letters) with **no live model calls**. Each step
+changes only **which lens stack** scores Diagnosis, SeizureFrequency,
+Prescription, and Investigations — same producers, different assembly rules.
+
+**v08** is the **production control** (frozen performance baseline). Unless a
+section explicitly cites full-200 or holdout work, all headline numbers here are
+**dev140 only**.
+
 **Long tail:** 15 files in [`key_entities/`](.) (v01–v07 + phase error analyses stubbed)
-
----
-
-## What the ladder is
-
-Each version replays the same **clinical finding store** pattern: frozen per-family
-producer JSONL → entity lens → scoring views. Versions differ by **which lens
-stack** is wired for each of the four key families (Diagnosis, SeizureFrequency,
-Prescription, Investigations).
-
-No live model calls in replay — structural evidence for Plan 11 assembly (ADR 0032).
 
 ---
 
@@ -87,6 +83,6 @@ residuals for each ladder step. Use when debugging a specific family regression;
 
 ## Related reading
 
-- [`docs/canon/07_exect_plan11.md`](../../canon/07_exect_plan11.md) — v08 + full-200  
+- [`docs/canon/07_exect_plan11.md`](../../canon/07_exect_plan11.md) — v08 production control + full-200  
 - [`docs/canon/04_scoring.md`](../../canon/04_scoring.md) — scoring surfaces  
-- [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](../../../decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md)
+- [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](../../../decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md) — ADR 0032 (Plan 11 assembly spine)

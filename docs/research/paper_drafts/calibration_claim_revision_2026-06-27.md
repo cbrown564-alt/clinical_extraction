@@ -2,22 +2,23 @@
 
 Date: 2026-06-27  
 Workstream: Wave 2 · P4 (paper writing)  
-Evidence validity: validation-only (aggregate full-200); no holdout rows read; no new model calls.  
+Evidence validity: validation-only (aggregate `full-200`); no holdout rows read; no new model calls.  
 Decision: revise — tighten language to match evidence; drop Qwen apologetic footnote.
 
 ---
 
 ## Purpose
 
-This note revises the calibration claim in the ExECTv2 results section to match what the
-evidence actually shows, consuming three inputs:
+This note revises the calibration claim in the ExECTv2 multi-entity phenotyping results
+section to match what the evidence actually shows, consuming three inputs:
 
 - **M2 audit findings** — `docs/experiments/reliability/evidence_validity_audit_2026-06-27.md`
   (Qwen REPAIRED_* characterisation)
 - **ECE/Brier figures** — `docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md`
   §Calibration (dimension 4)
 - **Critique brief** — `docs/research/closing_stage_research_critique_2026-06-27.md` §2 (calibration
-  suspicion) and the Gan reliability scorecard (`docs/experiments/gan2026/reliability/
+  suspicion) and the Gan 2026 seizure-frequency reliability scorecard
+  (`docs/experiments/gan2026/reliability/
   gan2026_reliability_scorecard_and_phased_plan_2026-06-17.md` §Calibration, P0.3) on external
   signal versus degenerate self-confidence
 
@@ -25,7 +26,7 @@ evidence actually shows, consuming three inputs:
 
 ## Before Claim (current draft language)
 
-> A grouped cross-validated no-call scoring rule scores 1,706 dev140 candidate-family cells using
+> A grouped cross-validated no-call scoring rule scores 1,706 `dev140` candidate-family cells using
 > only predeclared family, provenance, and evidence-ambiguity features grouped by `letter_id` to
 > avoid train/test leakage; dev-only ECE is `0.0277` and Brier is `0.1774` versus `0.1874` for the
 > grouped constant-base-rate comparator. The aggregate-only full-200 validation audit promotes the
@@ -38,7 +39,7 @@ evidence actually shows, consuming three inputs:
 **Problems with the before claim:**
 
 1. ECE `0.0432` sounds well-calibrated in isolation; the paired Brier improvement of `0.0142` (= `0.2387` − `0.2245`) is suppressed.
-2. The claim does not state what *kind* of signal drives the scoring rule, leaving the reader to assume self-reported model confidence — which is degenerate on the Gan strand and is not what the rule uses.
+2. The claim does not state what *kind* of signal drives the scoring rule, leaving the reader to assume self-reported model confidence — which is degenerate on the Gan 2026 seizure-frequency strand and is not what the rule uses.
 3. The Qwen footnote apologises for a 74.8% exact evidence rate as if it reflects model quality. The M2 audit establishes that 53.7% of Qwen hybrid and 61.4% of Qwen LLM-only exact-invalid strings are recoverable `REPAIRED_ELLIPSIS` formatting collation artifacts (grounded rates: 94.7% and 90.9% respectively). This framing misleads rather than informs.
 
 ---
@@ -51,7 +52,8 @@ evidence actually shows, consuming three inputs:
 > evidence of well-calibrated predictive confidence. The signal carried by the rule comes entirely
 > from external, predeclared features — family identity, evidence-provenance indicators, and
 > evidence-ambiguity flags — not from model-reported confidence scores, which were not used.
-> This is consistent with the Gan strand's finding that self-reported confidence is degenerate
+> This is consistent with the Gan 2026 seizure-frequency strand's finding that self-reported
+> confidence is degenerate
 > (749/750 validation rows "high", statistically indistinguishable buckets) and that only
 > external corroboration carries calibration-relevant signal.
 > Per-family ECE: Diagnosis `0.1424`, SeizureFrequency `0.1292`, Prescription `0.1214`,
@@ -81,7 +83,7 @@ remove the footnote entirely without replacement.
 ## Evidence Validity Statement
 
 All figures cited here carry the following validity label:
-**validation-only (aggregate full-200); replay-only; no holdout rows inspected; no model calls.**
+**validation-only (aggregate `full-200`); replay-only; no holdout rows inspected; no model calls.**
 
 Specific artifact chain:
 
@@ -115,7 +117,7 @@ exact) is noted as a limitation of the Qwen comparator arm.
 **After (2 sentences):** The scoring rule is near-base-rate calibrated — Brier `0.2245` versus
 constant base-rate `0.2387` (Δ = `0.0142`), ECE `0.0432` — with all signal coming from external
 predeclared features (family, provenance, evidence-ambiguity indicators), not model-reported
-confidence, which is degenerate on the Gan strand and unused here. The Qwen exact evidence gap
-(`74.8%` raw vs `94.7%` grounded) is a metric artifact of ellipsis-formatting collation
+confidence, which is degenerate on the Gan 2026 seizure-frequency strand and unused here.
+The Qwen exact evidence gap (`74.8%` raw vs `94.7%` grounded) is a metric artifact of ellipsis-formatting collation
 (`REPAIRED_ELLIPSIS` accounts for 53.7% of Qwen hybrid exact-invalid strings) and is not a
 calibration limitation.

@@ -1,10 +1,30 @@
 # Gan Validation750 Workstream Canon
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
-**Scope:** Reset-thread validation750 verifier iteration (v6 cluster, June 2026).
-**Claim boundary:** Validation-development only — not benchmark-comparable, not
-holdout promotion.
+> **Not a holdout claim.** Every number here comes from the **750-letter Gan
+> development set** (June 2026). It guides verifier and rule design on
+> validation only — it does **not** authorize benchmark promotion or locked-test
+> claims.
+
+## What this is
+
+**Validation750** is the 750-letter development split used to tune the reset
+hybrid seizure-frequency pipeline after the architecture reset. The **v6 thread**
+(June 2026) added the first routed verifier and promoted two narrow deterministic
+projection rules on top of the pre-baseline pipeline.
+
+**Bottom line:** The saved v6 bundle raised Purist accuracy from **84.1% → 86.9%**
+(+16 correct labels on scored rows) while **coverage stayed flat** (580 rendered,
+170 null). Gains came from fixing individual labels, not from rendering more
+letters.
+
+## Version map
+
+| Version | What it is |
+| --- | --- |
+| **v0** | Pre-baseline — reset pipeline before verifier iteration and promoted rules |
+| **v6** | Verifier + rules thread — first action-only verifier, cluster-cadence and YTD denominator rules |
 
 **Parent canon:** [`docs/canon/06_gan_clinical_policy.md`](../../canon/06_gan_clinical_policy.md)  
 **Long tail:** 31 files in [`validation750/`](validation750/) (stubbed; detail retained)
@@ -13,9 +33,9 @@ holdout promotion.
 
 ## What this workstream tested
 
-After the architecture reset, the validation750 surface became the primary
-**stage-owned hybrid** development ladder: clinical assessment → projection →
-render → routed verifier actions. The v6 thread asked:
+After the architecture reset, validation750 became the primary development ladder:
+clinical assessment → projection → render → routed verifier actions. The v6
+thread asked:
 
 1. Does a **first verifier** improve Purist accuracy without changing coverage?
 2. Should verifier policy be **action-only** or **forced-choice**?
@@ -40,10 +60,10 @@ Coverage stable; gains are **narrow label corrections**, not new renders.
 
 ### Promoted rules (visible aggregate)
 
-| Rule | Rows touched | Purist W→C | Purist C→W |
-| --- | ---: | ---: | ---: |
-| `cluster_cadence_default_multiple_per_cluster_v0` | 30 | 13 | 3 |
-| `date_anchored_ytd_denominator_v0` | 8 | 6 | 0 |
+| Rule | Plain English | Rows touched | Purist W→C | Purist C→W |
+| --- | --- | ---: | ---: | ---: |
+| `cluster_cadence_default_multiple_per_cluster_v0` | When cluster count and period are known but seizures-per-cluster is missing, render as “X cluster per Y period, multiple per cluster” instead of a plain event rate | 30 | 13 | 3 |
+| `date_anchored_ytd_denominator_v0` | For year-to-date phrases with a reference date, use elapsed months from 1 Jan of that year as the denominator instead of a full year | 8 | 6 | 0 |
 
 Fresh workspace replay (498 Purist correct) confirms saved bundle is reproducible
 within small drift — not a promotion artifact.

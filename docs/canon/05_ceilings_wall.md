@@ -1,8 +1,31 @@
 # 05 — Ceilings & The Wall
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
 **Structural canon slot:** the two disjoint ceiling mechanisms — do not conflate.
+
+> **Plain-language glossary (both ceilings)**
+>
+> **The Wall (Gan)** — On some hard seizure-frequency rows the model confidently picks a
+> numeric rate when the honest answer is *unknown* (or the reverse). No
+> **forward-observable** signal at prediction time separates abstaining from guessing a
+> rate; only hidden gold can tell. Caps Purist accuracy around ~84%.
+>
+> **Gold-quality ceiling (ExECT)** — On dev140, many “errors” are metric/annotation
+> disagreements (one consolidated clinical state vs multiple gold CUIs), not extractor
+> mistakes. Adjusted adjudication lifts apparent F1 without changing model output.
+>
+> **Binding residual** — validation rows where no pipeline component is Purist-correct;
+> the irreducible Wall slice (11 rows in the closeout).
+>
+> **Forward-observable** — anything visible at run time (model outputs, confidence,
+> cross-model agreement) without peeking at gold labels.
+>
+> **Withhold-to-unknown vs emit-rate** — two failure modes on binding rows: stay at
+> *unknown* vs output a specific frequency band/rate; they look alike to the model.
+>
+> **`band_unknown`** — Purist category for clinically unquantified burden; Wall over-reads
+> often land here when the model emits a rate instead.
 
 ---
 
@@ -32,12 +55,18 @@ separate withhold-to-unknown from emit-rate; only hidden gold distinguishes them
 **Irreducible residual:** 11 validation rows, 8/11 `band_unknown` — no Purist-correct
 component without gold.
 
-**Holdout ceiling:** V12 fresh-evidence hybrid **379/450 = 0.842** test450 — prior,
-not tuning target.
+**Holdout ceiling:** **V12** = multi-trace fresh-evidence hybrid using the full GPT-4.1
+reasoner on top of structured-event extraction; **379/450 = 0.842** test450 — best
+holdout comparator, not the production default; prior, not a tuning target.
 
 ---
 
 ## Gold-quality ceiling (ExECT)
+
+In plain terms: **SF** — the metric penalizes one consolidated clinical rate when gold
+lists multiple per-type CUIs; most “misses” are representation, not wrong clinical reading.
+**Dx** — gold often lists several equivalent diagnoses separately; the model’s merged read
+is usually clinically right but scores as wrong until adjudication.
 
 Row adjudication on dev140 disagreements (same pipeline caveat in Methods):
 

@@ -10,6 +10,9 @@ to grasp without context.
 in a browser for layered architecture diagrams, inspectable evidence panels, and
 explorable deep-dives on The Wall, gold-quality ceilings, and pipeline stages.
 
+**Term definitions:** [`docs/reference/plain_language_glossary.md`](reference/plain_language_glossary.md)
+— plain display names for codenames (The Wall, ceilings, splits, version codes).
+
 ---
 
 ## What this project is
@@ -19,7 +22,8 @@ unstructured epilepsy letters. The long-term goal is a reusable Python package;
 the active research phase combines:
 
 1. **Gan 2026** — single-label seizure-frequency extraction on synthetic letters
-   (holdout evidence **frozen**; reliability and The Wall are the headline findings).
+   (holdout evidence **frozen**; reliability and the confident over-reading limit
+   (The Wall) are the headline findings).
 2. **ExECTv2** — broad epilepsy phenotyping on de-identified letters (active
    development; `clinical_headline` recovery is the primary scoreboard).
 
@@ -46,6 +50,14 @@ From [`docs/research/contribution_thesis.md`](research/contribution_thesis.md):
 The paper pivots to **capability-first claims (C1–C5)**, not benchmark dominance.
 See [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md).
 
+| Claim | Plain summary |
+| --- | --- |
+| **C1** | Many benchmark “errors” are label-format issues, not bad extractions (SF ~89% clinically OK vs ~62% strict; diagnosis similar). |
+| **C2** | Shared components help both tracks — medical dictionary normalization lifts both; evidence gate does not. |
+| **C3** | Track 1’s “confident mistake” pattern may appear in Track 2 seizures (early signal only; automatic abstention not yet useful). |
+| **C4** | The pipeline design works across language models — swap models, keep architecture; scores stay in the same band. |
+| **C5** | Experiments are pre-registered and test results frozen before claiming them (validation ladder, locked splits, audit policy). |
+
 ---
 
 ## Two workstreams at a glance
@@ -55,8 +67,8 @@ See [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md).
 | **Task** | Seizure frequency (single label) | Diagnosis, SF, Rx, Investigations |
 | **Data** | Synthetic letters, locked split | De-identified clinical letters |
 | **Status** | Holdout frozen; no tuning | v08 holistic assembly is production control |
-| **Headline score** | Purist / Pragmatic on test450 | `clinical_headline` composite |
-| **Key negative** | The Wall (0.842 ceiling) | Gold-quality ceiling on SF/Dx |
+| **Headline score** | Purist (strict Gan matcher) / Pragmatic on `test450` | `clinical_headline` composite |
+| **Key negative** | Confident over-reading limit (The Wall), ~84% Purist ceiling | Annotation-format / gold-quality ceiling on SF & diagnosis |
 | **Promoted architecture** | LLM structured-event + deterministic render | Holistic finding assembly v08 |
 
 ---
@@ -88,7 +100,7 @@ headline or benchmark surfaces.
 letter → clinical assessment → structured events → projection/render → Purist score
 ```
 
-### ExECTv2 Plan 11 (production control)
+### ExECTv2 production pipeline (internal: Plan 11)
 
 ```text
 letter → per-family producers → family lenses (Dx/SF/Rx/Inv) → finding store → headline projection
@@ -102,11 +114,11 @@ See [`docs/canon/02_pipeline_spine.md`](canon/02_pipeline_spine.md).
 
 ### Gan holdout (aggregate-only)
 
-| Role | Architecture | test450 Purist | Evidence |
+| Role | What it is | Score (Purist / test450) | Notes |
 | --- | --- | ---: | --- |
-| Production | Single GPT structured-event (mini) | **364/450 = 0.809** | v0_reference |
-| Ceiling | V12 fresh-evidence hybrid | **379/450 = 0.842** | Best holdout comparator |
-| Floor | rules_only | 343/450 = 0.762 | Controlled baseline |
+| **Production** | Single GPT-4.1-mini structured-event extractor + deterministic render — the promoted Gan architecture | **364/450 = 0.809** | Frozen reference run (`v0_reference` artifact family) |
+| **Ceiling** | V12 fresh-evidence hybrid — best holdout comparator, not production | **379/450 = 0.842** | Upper bound under frozen protocol; gap to production is mostly confident over-reading |
+| **Floor** | Rules-only baseline — no LLM clinical facts | 343/450 = 0.762 | Controlled lower bound |
 
 Source: [`docs/canon/06_gan_clinical_policy.md`](canon/06_gan_clinical_policy.md).
 
@@ -142,9 +154,21 @@ Source: `docs/experiments/reliability/cross_task_shared_component_ablation_2026-
 
 ### The Wall (Gan reliability)
 
+**Plain English:** On the hardest Gan letters, the model is **confidently wrong** —
+it picks a seizure rate when the note is ambiguous and the correct answer is
+“unknown.” No signal we can see at inference time (without peeking at gold labels)
+reliably tells us when to abstain. That caps Purist around **~84%**; it is a
+**prior** about the task, not a knob to tune away.
+
+**Binding residual** — letters where the gold label is “unknown” but the model emits
+a specific rate anyway (the failure mode The Wall describes).
+
+**Forward-observable** — anything you can measure from the model’s outputs and
+intermediate artifacts at run time (confidence, agreement across models, entropy,
+etc.) — as opposed to hidden gold labels used only for evaluation.
+
 On binding residual rows, **every forward-observable feature** fails to separate
-withhold-to-unknown from emit-rate; only hidden gold distinguishes them. ~0.842 is
-a **prior**, not a tuning target.
+withhold-to-unknown from emit-rate; only hidden gold distinguishes them.
 
 - P0.2: External Risk Score (cross-model agreement strongest leg)
 - P2.1: Semantic entropy flat → over-reading is **confident**, not uncertain
@@ -154,9 +178,13 @@ Thread: T1 in [`docs/THREAD_MAP.md`](THREAD_MAP.md).
 
 ### Gold-quality ceiling (ExECT scoring)
 
-Distinct from The Wall. Benchmark F1 fuses target representation, scorer design,
-and extractor output unit. Many "errors" are annotation multiplicity or format
-fidelity gaps, not missing clinical concepts.
+**Plain English:** Distinct from The Wall. The benchmark scorer expects a specific
+annotation shape; the model often recovers the right clinical idea in a different
+format. Strict F1 then penalizes “format mismatch” as if the concept were missing.
+
+Benchmark F1 fuses target representation, scorer design, and extractor output unit.
+Many "errors" are annotation multiplicity or format fidelity gaps, not missing
+clinical concepts.
 
 **SF trap:** rescoring same predictions under `state_profile` lifts SF without
 changing model output — a representation effect, not recall.
@@ -244,6 +272,7 @@ From paper canon — preserve these boundaries:
 | Document | Role |
 | --- | --- |
 | [`CONTEXT.md`](../CONTEXT.md) | Vocabulary and domain terms |
+| [`docs/reference/plain_language_glossary.md`](reference/plain_language_glossary.md) | Plain-language term definitions |
 | [`README.md`](../README.md) | Repository overview |
 | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) | Live control board |
 | [`docs/NAVIGATION.md`](NAVIGATION.md) | Documentation tier model |

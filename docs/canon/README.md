@@ -1,6 +1,6 @@
 # Documentation Canon Index
 
-Last updated: 2026-07-01
+Last updated: 2026-07-06
 
 Routing index for **structural canons (01–10)** and **workstream canons** produced
 by the documentation consolidation program. Full tier model:
@@ -46,6 +46,7 @@ Wave 4 archived iteration narratives under [`docs/archive/`](../archive/README.m
 
 | Doc | Path |
 | --- | --- |
+| Plain-language glossary | [`docs/reference/plain_language_glossary.md`](../reference/plain_language_glossary.md) |
 | Thread map (5 reading paths) | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) |
 | Active roadmap | [`docs/plans/ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md) |
 | Design spine index | [`docs/design/README.md`](../design/README.md) |

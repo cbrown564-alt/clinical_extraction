@@ -1,4 +1,4 @@
-# Benchmark-reconciliation revision — Diagnosis joins the gold-quality-ceiling mechanism (2026-06-30)
+# Benchmark-reconciliation revision — Diagnosis joins the gold-quality ceiling mechanism (2026-06-30)
 
 **Status:** Revision note to the P1 benchmark-reconciliation subsection, extending the
 2026-06-29 SF revision (`benchmark_reconciliation_sf_gold_quality_revision_2026-06-29.md`)
@@ -14,8 +14,9 @@ followed up: "the Diagnosis 'consolidation' finding is the same mechanism [as SF
 ## What changed and why
 
 The 2026-06-29 SF revision split the benchmark gap into two mechanisms (A: closeable format
-fidelity; B: non-closeable gold-quality ceiling) but treated Diagnosis as purely mechanism A,
-alongside Prescription and Investigations. The Diagnosis row-analysis shows that account is
+fidelity; B: non-closeable **gold-quality ceiling** — a limit imposed by annotation
+convention and inter-annotator disagreement, not by system capability) but treated Diagnosis
+as purely mechanism A, alongside Prescription and Investigations. The Diagnosis row-analysis shows that account is
 **incomplete for Diagnosis** too — and the effect is larger in absolute terms than SF's.
 
 - **A — Format fidelity** (offset-drift + CUI + attribute-bundle strictness). Closeable
@@ -23,7 +24,7 @@ alongside Prescription and Investigations. The Diagnosis row-analysis shows that
   Investigations only**.
 - **B — Gold-quality ceiling** (low inter-annotator agreement for SF; annotation-granularity
   convention for Diagnosis). Not closeable by engineering. Dominant for **SeizureFrequency
-  and Diagnosis**.
+  and Diagnosis** on the published-benchmark surface.
 
 Diagnosis's mechanism-B driver is structurally different from SF's: not inter-annotator
 *disagreement* (no IAA figure was computed for Diagnosis here) but annotation-granularity
@@ -34,7 +35,7 @@ and a false positive.
 
 ## The numbers (from the canonical row-analysis, official `concept_only` scorer)
 
-- Official scorer wrong on **62.9%** of dev140 letters (88/140 carry a Diagnosis
+- Official scorer wrong on **62.9%** of `dev140` letters (88/140 carry a Diagnosis
   disagreement); aggregate F1 **0.6617** (self-validated bit-for-bit against the registry's
   recorded number for this run).
 - 209 individual missed/spurious concept disagreements adjudicated (92 missed, 117 spurious).

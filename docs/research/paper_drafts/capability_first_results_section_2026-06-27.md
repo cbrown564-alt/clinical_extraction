@@ -26,8 +26,9 @@ which task it did it on first.
 
 #### §4.1.1 Architecture
 
-Both clinical-extraction tasks — Gan 2026 seizure-frequency labeling and ExECTv2
-multi-family clinical-finding recovery — run on the same stage-owned component spine.
+Both clinical-extraction tasks — **Gan 2026** deep single-concept seizure-frequency
+labeling and **ExECTv2** broad multi-entity phenotyping on clinical letters — run on
+the same stage-owned component spine.
 The spine comprises deterministic ingestion and normalization stages, a
 structured-evidence extraction pass, task-specific assembly lenses, and a shared
 post-processing projection layer. Forty-nine ExECTv2 modules import from
@@ -44,14 +45,16 @@ Lift from Observatory laboratory page. Not reproduced here.)*
 
 #### §4.1.2 Scoring Surfaces and Benchmark Reconciliation
 
-*Evidence validity: dev140 validation-only (like-for-like read); frozen aggregate
-full-200 (four-family clinical-headline only). Source: P1
+*Evidence validity: `dev140` validation-only (140-letter development split;
+like-for-like read); frozen aggregate `full-200` (200-letter aggregate split;
+four-family clinical-headline only). Source: P1
 `benchmark_surface_reconciliation_subsection_2026-06-27.md`.*
 
 ExECTv2 reports performance on two distinct scoring surfaces that measure different
 things and cannot be compared directly.
 
-**Clinical-headline surface** (`clinical_headline`, four-family scorer). Matches
+**Clinical-headline surface** (`clinical_headline`—Diagnosis, SeizureFrequency,
+Prescription, and Investigations; four-family scorer). Matches
 entity type, normalized phrase, and clinical attributes; disregards raw character
 offsets and CUI codes. This is the surface used for all headline F1 figures in §4.2
 and §4.3.
@@ -117,9 +120,10 @@ recoverable from clinical facts alone.
 
 ### §4.2 What the LLM Adds
 
-*Evidence validity: Gan three-way table — frozen test450 aggregate (V12) + dev/validation
-replay. ExECTv2 component-off replay — dev140 (validation-only) + frozen aggregate
-full-200. Source: P1 §4.x.4–5; existing manuscript Tables 1–2 (Gan); Table 8 (ExECTv2
+*Evidence validity: Gan three-way table — frozen `test450` holdout aggregate
+(multi-trace fresh-evidence hybrid pipeline) + dev/validation replay. ExECTv2
+component-off replay — `dev140` (validation-only) + frozen aggregate `full-200`.
+Source: P1 §4.x.4–5; existing manuscript Tables 1–2 (Gan); Table 8 (ExECTv2
 component-off).*
 
 Both tasks admit a three-way comparison of deterministic-only, LLM-only, and hybrid
@@ -128,8 +132,8 @@ a strong recall floor; LLM-only extraction adds semantic generalization that rul
 miss; hybrid assembly combines both and delivers the headline score.
 
 **On Gan seizure-frequency labeling:** rules alone, LLM-only, and hybrid achieve
-progressively higher test450 Purist accuracy (see manuscript Tables 1–2; not
-reproduced here). The decisive LLM contribution is in resolving frequency-qualifier
+progressively higher `test450` holdout **Purist** label accuracy (see manuscript
+Tables 1–2; not reproduced here). The decisive LLM contribution is in resolving frequency-qualifier
 ambiguity and in abstracting across orthographic and syntactic variation — exactly the
 cases where pattern-matching rules are brittle.
 
@@ -183,8 +187,9 @@ is globally necessary.
 
 #### §4.3.1 Model-Agnostic Architecture: DeepSeek ≥ GPT-4.1-mini
 
-*Evidence validity: dev140 four-family `clinical_headline` validation-only; frozen
-aggregate full-200 same-core model-swap. Source: P2
+*Evidence validity: `dev140` (140-letter validation split) four-family `clinical_headline`
+validation-only; frozen aggregate `full-200` (200-letter aggregate split) same-core
+model-swap. Source: P2
 `deepseek_model_agnostic_evidence_2026-06-27.md`.*
 
 A model-agnostic architecture predicts that no single LLM should be necessary: swap
@@ -234,17 +239,19 @@ validation-only and are not holdout estimates.
 
 #### §4.3.2 Wall Transfer: The Seizure-Frequency Ceiling Is Task-Bound
 
-*Evidence validity: Gan — frozen test450 aggregate (V12 0.842) + validation-only
-semantic-entropy probe (P2.1, n=150). ExECTv2 — frozen aggregate full-200 model-swap +
-dev140 self-consistency artifact replay (wall-transfer probe). Probe verdict: **PARTIAL**
-(3/6 checks passed; task-bound ceiling confirmed; Gan H0 mechanism partially differs).
-Source: P3 `wall_transfer_cross_dataset_2026-06-27.md`.*
+*Evidence validity: Gan — frozen `test450` holdout aggregate (multi-trace fresh-evidence
+hybrid pipeline, 0.842) + validation-only semantic-entropy probe (P2.1, n=150). ExECTv2 —
+frozen aggregate `full-200` model-swap + `dev140` self-consistency artifact replay
+(wall-transfer probe). Probe checklist: **3 of 6 pre-registered cross-dataset checks
+passed** (task-bound ceiling confirmed; Gan H0 mechanism partially differs). Source: P3
+`wall_transfer_cross_dataset_2026-06-27.md`.*
 
 The central negative result of the Gan strand does not stay on the Gan dataset.
 
-**The Gan wall.** On the Gan 2026 seizure-frequency benchmark, the best architecture
-achieves a frozen holdout ceiling of **0.842** (V12 hybrid, test450 Purist). Exhaustive
-ablation established that this ceiling is generator-bound: the model over-reads
+**The Gan confident over-reading limit (the Wall).** On the Gan 2026 seizure-frequency
+benchmark, the best architecture achieves a frozen **holdout** ceiling of **0.842**
+(multi-trace fresh-evidence hybrid pipeline, `test450` Purist). Exhaustive ablation
+established that this holdout ceiling is generator-bound: the model over-reads
 ambiguous frequency evidence as quantified rates or seizure-free durations with high
 confidence, and no forward-observable signal — self-consistency, self-confidence,
 sampling entropy — separates the over-read rows from correct extractions at inference
@@ -295,7 +302,7 @@ temporally ambiguous. The illegitimate evidence shapes that drive Gan over-readi
 last-event-only anchors, open-ended temporal qualifiers, vague counts read as habitual
 rates — are present in real clinical letters too.
 
-**Probe result (PARTIAL — 3/6 checks passed).** The wall-transfer probe
+**Probe result (3 of 6 pre-registered checks passed).** The wall-transfer probe
 (`exectv2_sf_wall_transfer_probe_2026-06-27.md`) ran on dev140 self-consistency artifacts
 and returned a partial verdict. The cross-dataset claim is:
 
@@ -334,7 +341,7 @@ tasks.
 
 | Dimension | Gan (test450 / validation) | ExECTv2 (full-200 aggregate) |
 |-----------|---------------------------|------------------------------|
-| Evidence grounding | Gold-grounded evidence rate 1.0000 on V12 hybrid (validation750); enforced by evidence-contract gate | Same-core model-swap: min exact evidence rate 1.0000 across all three LLMs |
+| Evidence grounding | Gold-grounded evidence rate 1.0000 on multi-trace fresh-evidence hybrid pipeline (validation750); enforced by evidence-contract gate | Same-core model-swap: min exact evidence rate 1.0000 across all three LLMs |
 | Calibration | Self-confidence degenerate: 749/750 validation rows "high"; external corroboration is the only calibration-carrying signal; External Risk Score AUROC 0.781 | Near-base-rate: Brier 0.2245 vs constant base-rate 0.2387 (Δ = 0.0142), ECE 0.0432, five populated monotone bins. External predeclared features (family, provenance, evidence-ambiguity) carry the signal; model-reported confidence not used |
 | Abstention / review routing | External Risk Score risk–coverage AUC 0.040 (oracle 0.007); selective risk 0.8% at 16% coverage; irreducible plateau at low-risk tier | High-recall routing point validated; no promoted low-burden triage policy |
 | Robustness | Adversarial battery (P1 OOD, minimal pairs, source-near): Panel C 87.5% PASS; Panels A, B FAIL — cluster-axis and rate-withholding failures | Hard-slice F1 0.8336 across 414 eligible family cells vs 0.8503 overall (current-code v08) |
@@ -416,11 +423,11 @@ components.
 | Rules > hybrid on SF benchmark (+0.34 per-item) | Published-benchmark | Validation-only, frozen aggregate | `exectv2_benchmark_surface_overall_2026-06-18.md` |
 | Format-layer delta ~+0.04 stable across models | `clinical_headline` | Frozen aggregate full-200, component-off replay | `exectv2_component_off_replay_full200_20260626.json` |
 | DeepSeek ≥ GPT full-200 (+0.021) | `clinical_headline` | Frozen aggregate full-200 | same |
-| Gan wall: 0.842 ceiling, selector oracle 739/750 | Purist accuracy | Frozen test450 | orchestrator state; closeout synthesis |
+| Gan wall: 0.842 holdout ceiling, selector oracle 739/750 | Purist label accuracy | Frozen `test450` holdout | orchestrator state; closeout synthesis |
 | Gan P2.1: mean label entropy 0.012; band_unknown 0.000 | Purist label entropy | Validation-only probe (n=150) | `gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.md` |
 | ExECTv2 SF weakest across all models (0.75–0.76 full-200) | `clinical_headline` | Frozen aggregate full-200 | `exectv2_same_core_model_swap_full200_2026-06-25.md` |
 | Calibration: Brier 0.2245 vs base-rate 0.2387 | `clinical_headline` | Aggregate full-200 validation | ExECTv2 reliability scorecard 2026-06-22/2026-06-25 |
-| Cross-dataset wall-transfer mechanism | PARTIAL probe verdict (3/6 checks passed) | Dev140 self-consistency artifact replay | `exectv2_sf_wall_transfer_probe_2026-06-27.md`; task-bound ceiling confirmed; Gan H0 mechanism partially differs (error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct; 43.6% error cells temperature-unanimous wrong) |
+| Cross-dataset wall-transfer mechanism | 3 of 6 pre-registered checks passed | `dev140` self-consistency artifact replay | `exectv2_sf_wall_transfer_probe_2026-06-27.md`; task-bound ceiling confirmed; Gan H0 mechanism partially differs (error entropy 0.287 vs 0.069; cross-model agreement 21.8% on errors vs 69.4% correct; 43.6% error cells temperature-unanimous wrong) |
 
 **Do not claim:**
 - Holdout validation of ExECTv2 performance on any split.

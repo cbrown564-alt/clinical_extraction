@@ -9,7 +9,7 @@ produced after the closing campaign closed (2026-06-27), supplies a gap mechanis
 
 ## What changed and why
 
-The 06-27 reconciliation attributed the **entire** benchmark gap (like-for-like dev140
+The 06-27 reconciliation attributed the **entire** benchmark gap (like-for-like `dev140`
 0.3877/item vs paper 0.87) to **one** mechanism: offset-drift non-reproducibility plus
 closeable CUI / attribute-bundle fidelity engineering — i.e. "the gap is closeable
 fidelity, not a broken metric." The SF canonical row-analysis shows that account is
@@ -22,14 +22,16 @@ The benchmark gap is now stated as **two distinct mechanisms**:
   Closeable deterministic engineering, explicitly deprioritised. Dominant for
   Diagnosis, Prescription, Investigations.
 - **B — Gold-quality ceiling** (low inter-annotator agreement). **Not** closeable by
-  any engineering. Dominant for SeizureFrequency.
+  any engineering. Dominant for SeizureFrequency on the published-benchmark surface —
+  a limit imposed by annotation quality, distinct from the Gan **holdout** confident
+  over-reading limit (the Wall).
 
 SF is the corpus's cleanest worked example of mechanism B: a clinically-correct reader
 is scored wrong on ~⅓ of letters because the gold under-annotates / double-tags.
 
 ## The numbers (from the canonical row-analysis, two-stage SF program, state_profile metric)
 
-- Verifier-stage per-letter answer wrong on **37.9%** of dev140 (F1 **0.772**).
+- Verifier-stage per-letter answer wrong on **37.9%** of `dev140` (F1 **0.772**).
 - Of 53 metric-errors: **15 (28%) genuine model error**; **22 (42%) model defensible,
   gold under-annotated (13) or redundantly double-tagged (9)**; **16 (30%) genuine
   IAA/convention coin-flips**.
@@ -58,17 +60,19 @@ is scored wrong on ~⅓ of letters because the gold under-annotates / double-tag
 4. **§4.1.2** — the new mechanism-B paragraph's first mention of the metric now anchors
    it: "primary SF state-set metric (a per-letter clinical-recovery scorer over
    {active-rate, seizure-free, changed, unknown} — finer than four-family
-   `clinical_headline`, not the published-benchmark surface)." Removes the third-surface
+   `clinical_headline`—Diagnosis, SeizureFrequency, Prescription, and Investigations;
+   not the published-benchmark surface)." Removes the third-surface
    ambiguity.
 5. **D.2 "Benchmark-Surface Inversion"** — qualified "the gap is not a measurement
    artifact" to "for most entities…", flagged SF as the exception, and added a third
    paragraph carrying the gold-quality decomposition (28/42/30 split, 89.3% vs 62.1%,
    ±0.03 band). Makes D.2 consistent with §4.1.2 (it previously told the single-mechanism
    story).
-6. **D.3 "The Wall"** — added a "Reconciling the wall and the gold-quality ceiling"
-   paragraph: the wall (confident over-reading) is the ~28% genuine-error slice; the
-   other ~72% is gold-quality noise; both converge on "SF ceiling = task/annotation, not
-   system." Also clarifies the 0.9053 adjudicated figure is the `clinical_headline`
+6. **D.3 "The Confident Over-Reading Limit (the Wall)"** — added a "Reconciling the wall
+   and the gold-quality ceiling" paragraph: the wall (confident over-reading on the
+   `test450` holdout) is the ~28% genuine-error slice; the other ~72% is gold-quality
+   noise on the published-benchmark surface; both converge on "SF ceiling = task/annotation,
+   not system." Also clarifies the 0.9053 adjudicated figure is the `clinical_headline`
    surface / partly in-sample, so it does not contradict the state-set gold ceiling.
    Resolves the C3↔C1 tension the gold-quality edit introduced.
 
