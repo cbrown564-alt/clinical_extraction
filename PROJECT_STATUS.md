@@ -102,6 +102,44 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-06: **Predecessor-synthesis follow-ups items 6, 7, 2 — all landed.
+  Item 2 REFUTES the "fundamental" framing of the SF capacity-vs-execution gap.**
+  Plan: `docs/plans/predecessor_synthesis_followups_2026-07-06.md`. The two
+  prerequisite audits (zero-LLM) ran first per the plan's sequencing and both
+  reframed item 2's predeclaration. **Item 6 (`multiple` sentinel audit,
+  `docs/research/gan_multiple_sentinel_audit_2026-07.md`):** the cross-project
+  divergence is **not** the 2-vs-3 distinction the plan emphasized — it is the
+  **unknown-vs-counted** distinction. Our scorer sends bare `multiple per
+  <period>` to the unknown bin (1000.0) while both predecessors count it; on
+  validation750 (predictions held fixed) this moves Purist acc ~5pp / Pragmatic
+  ~4.8pp, while the 2-vs-3 axis moves <0.3pp Purist / 0pp Pragmatic. Our Gan
+  numbers are not directly comparable to dspy's 90.3% without disclosing this.
+  **Item 7 (policy-wall audit, `docs/research/exectv2_gepa_policy_wall_audit_2026-07.md`):**
+  **2 of 32** evolved GEPA seeds clear dspy's 14,639-char policy wall
+  (`multistage_verifystage` 18,638 chars / 125 clauses; `multistage_dedup`
+  16,119 / 101) and both embed dev-set-specific drug+dose worked examples
+  (the overfit signature). Notably the largest is the same seed the root-cause
+  doc flagged as "drifted into reformatting, not verifying." The evolved seeds
+  are research-workstream only — **the v08 hybrid does not consume them**, so
+  the policy-wall does not contaminate the 0.9189 headline. **Item 2 (the
+  cross-family test, `docs/experiments/exectv2/seizure_frequency/exectv2_sf_closed_option_direction_results_2026-07-06.md`,
+  28 gpt-4.1-mini calls dev140):** a closed-option direction selector (LLM
+  picks a `candidate_id` verbatim from the full closed 5-label vocab
+  {Increased,Decreased,Frequent,Infrequent,Same} + ABSTAIN, never free-writes;
+  abstention-validated contract mirroring gan2026 `selected_fact.py`)
+  recovered **+0.0552** `state_profile_directional` (0.6552 → 0.7103, +8/30
+  gold-directional facts) with `state_profile` byte-identical (0.7483). Per
+  the frozen predeclaration this **REFUTES "fundamental"**: the gap was an
+  artifact of the free-write generation contract, not a capacity limit. All
+  four prior negatives lived in the free-write-then-arbitrate family; this is
+  a fifth measurement in a different family (closed-option select-or-abstain)
+  and it is positive. The "fundamental" claim is downgraded to "free-write-
+  family-specific" — the dspy G32 outcome (closed-option > free-write) transfers
+  to ExECTv2 SF. Hypothesis `sf_closed_option_direction_selector_2026-07-06`
+  registered. Lands between B1 free-write post-hoc (+0.07) and B2 free-write
+  hard-emission (−0.0775); succeeds where the architecturally-comparable B2
+  failed because the closed menu avoids the cognitive load B2's free-write
+  direction field imposed.
 - 2026-07-03: **Inversion-generalization probe — REFUTED on both tracks, sharpens the architecture-of-record story.**
   Generalized the 07-03 Rx split-dependent inversion to Investigations + SF to
   test whether the inversion is a *general property* of the v08 deterministic-
@@ -642,6 +680,20 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-06: **Predecessor-synthesis follow-ups items 6, 7, 2 — complete** (see
+  Now for the full entry). Item 6 `multiple`-sentinel audit (zero LLM): the
+  cross-project divergence is unknown-vs-counted (~5pp on validation750), not
+  2-vs-3 (<0.3pp); our Gan numbers need a disclosure note to compare to dspy's
+  90.3%. Item 7 policy-wall audit (zero LLM): 2 of 32 evolved GEPA seeds clear
+  dspy's 14,639-char wall (18,638 / 16,119 chars, both multistage, both with
+  dev-set drug+dose overfit cues); research-workstream only, not the v08
+  production path. Item 2 closed-option direction selector (28 calls dev140):
+  REFUTES "fundamental" — +0.0552 `state_profile_directional` (0.6552→0.7103),
+  no `state_profile` regression; the SF capacity-vs-execution gap is free-write-
+  family-specific, not a capacity limit. Hypothesis
+  `sf_closed_option_direction_selector_2026-07-06` registered (entry 32).
+  Audits: `docs/research/{gan_multiple_sentinel,exectv2_gepa_policy_wall}_audit_2026-07.md`;
+  experiment: `docs/experiments/exectv2/seizure_frequency/exectv2_sf_closed_option_direction_results_2026-07-06.md`.
 - 2026-07-06: **Item 1 of the predecessor-synthesis follow-ups — `/gold-noise`
   frontend tab landed** (zero LLM calls, zero ledger/scorer changes). Read-only
   three-level inspection surface making the gold-quality evidence we cite as four
