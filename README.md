@@ -85,6 +85,7 @@ tests/                          Focused tests for data contracts and determinist
 
 ## Resuming Work
 
+- **Collaborator onboarding:** [docs/collaborator_onboarding.md](docs/collaborator_onboarding.md) (interactive: [docs/collaborator_onboarding.html](docs/collaborator_onboarding.html))
 - **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
 - **Thread map (pick your narrative):** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
 - **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)

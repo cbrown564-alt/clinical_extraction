@@ -9,6 +9,7 @@ new documents belong and how they retire.
 
 | Job | Path |
 | --- | --- |
+| Collaborator onboarding (markdown + interactive HTML) | [`collaborator_onboarding.md`](collaborator_onboarding.md) · [`collaborator_onboarding.html`](collaborator_onboarding.html) |
 | Onboarding and repo layout | [`README.md`](../README.md) |
 | Active objective, work board, guardrails | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) |
 | Domain vocabulary (~80 terms) | [`CONTEXT.md`](../CONTEXT.md) |
