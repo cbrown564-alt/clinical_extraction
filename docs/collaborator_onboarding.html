@@ -340,11 +340,164 @@
       cursor: pointer;
     }
 
-    /* ── Limits sub-steps (mobile) ── */
-    .limits-screens { margin-top: 24px; }
+    /* ── Limits (metaphor-first storytelling) ── */
+    .limits-hub { margin-top: 28px; }
 
-    .limits-screen { display: none; }
-    .limits-screen.active { display: block; }
+    .limits-type-picker {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .limit-type-btn {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 16px 18px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--page);
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .limit-type-btn:hover { border-color: var(--line-strong); }
+    .limit-type-btn.active { box-shadow: 0 0 0 3px var(--teal-soft); }
+    .limit-type-btn[data-limits="wall"].active { border-color: #d4a0a0; box-shadow: 0 0 0 3px rgba(139, 51, 51, 0.12); }
+    .limit-type-btn[data-limits="gold"].active { border-color: #d4c4a0; box-shadow: 0 0 0 3px rgba(138, 98, 24, 0.12); }
+
+    .limit-type-btn strong { display: block; font-size: 16px; margin-bottom: 2px; }
+    .limit-type-btn span { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
+
+    .limit-type-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+    }
+
+    .limit-type-btn[data-limits="wall"] .limit-type-icon { background: var(--red-soft); }
+    .limit-type-btn[data-limits="gold"] .limit-type-icon { background: var(--gold-soft); }
+
+    .limits-story { display: none; }
+    .limits-story.active { display: block; animation: pipe-ex-in 0.25s ease; }
+
+    .limit-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .limit-metaphor {
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line-strong);
+      background: var(--page);
+      box-shadow: var(--shadow);
+    }
+
+    .limit-metaphor.wall-tone { background: linear-gradient(160deg, #fdf8f8, #fff); border-color: #e8c4c4; }
+    .limit-metaphor.gold-tone { background: linear-gradient(160deg, #fdfaf3, #fff); border-color: #e8dcc0; }
+
+    .limit-metaphor figcaption {
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink-soft);
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .limit-metaphor svg { display: block; width: 100%; height: auto; }
+
+    .limit-body h3 { margin: 0 0 10px; font-size: 22px; }
+
+    .limit-intuition {
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .limit-example-card {
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line-strong);
+      background: #fafbfc;
+      margin-bottom: 20px;
+    }
+
+    .limit-example-card .ex-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .limit-example-card .ex-letter {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .limit-example-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .limit-ex-outcome {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .limit-ex-outcome.model { background: var(--red-soft); border: 1px solid #e8c4c4; }
+    .limit-ex-outcome.gold { background: var(--green-soft); border: 1px solid #c4dcc0; }
+    .limit-ex-outcome.strict { background: var(--red-soft); border: 1px solid #e8c4c4; }
+    .limit-ex-outcome.clinical { background: var(--green-soft); border: 1px solid #c4dcc0; }
+
+    .limit-ex-outcome .out-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      opacity: 0.85;
+    }
+
+    .limit-ex-outcome strong { font-size: 14px; }
+
+    .limit-numbers {
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .limit-numbers .numbers-caption {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
 
     .limits-step-nav {
       display: none;
@@ -611,57 +764,224 @@
     .dot.det { background: var(--det-soft); border: 2px solid var(--det); }
     .dot.score { background: var(--gold-soft); border: 2px solid var(--gold); }
 
-    /* ── Pipeline explorer ── */
-    .pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
-
-    .pipe-step {
-      position: relative;
-      padding: 16px 12px;
-      border: 1px solid var(--line);
+    /* ── Pipeline walkthrough (vertical diagram + example sidebar) ── */
+    .pipeline-walkthrough {
+      display: grid;
+      grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+      margin-top: 24px;
+      border: 1px solid var(--line-strong);
       border-radius: var(--radius);
+      overflow: hidden;
       background: var(--page);
+      box-shadow: var(--shadow);
+      min-height: 440px;
+    }
+
+    .pipeline-vflow {
+      padding: 20px 14px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f4f7fa 100%);
+      border-right: 1px solid var(--line);
+    }
+
+    .pipeline-vflow > strong {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      padding: 0 6px;
+    }
+
+    .vflow-connector {
+      width: 2px;
+      height: 10px;
+      background: var(--line-strong);
+      margin-left: 29px;
+    }
+
+    .vflow-step {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: start;
+      width: 100%;
+      padding: 10px 10px 10px 6px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
       cursor: pointer;
       font: inherit;
       text-align: left;
-      width: 100%;
-      transition: border-color 0.15s, box-shadow 0.15s;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
     }
 
-    .pipe-step:hover { border-color: var(--teal); }
-    .pipe-step.active { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
-    .pipe-step.kind-llm { border-left: 4px solid var(--llm); background: var(--llm-soft); }
-    .pipe-step.kind-det { border-left: 4px solid var(--det); background: var(--det-soft); }
-    .pipe-step.kind-score { border-left: 4px solid var(--gold); }
-
-    .pipe-step .kind-badge {
-      display: inline-block;
+    .vflow-step:hover { background: rgba(255, 255, 255, 0.7); border-color: var(--line); }
+    .vflow-step.active { background: var(--page); border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+    .vflow-step[data-essential="true"] .step-num::after {
+      content: "★";
+      position: absolute;
+      top: -6px;
+      right: -6px;
       font-size: 9px;
+      color: var(--gold);
+    }
+
+    .vflow-step .step-num {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink-soft);
+      background: var(--page);
+      border: 2px solid var(--line-strong);
+      flex-shrink: 0;
+    }
+
+    .vflow-step.kind-llm .step-num { border-color: var(--llm); background: var(--llm-soft); color: var(--llm); }
+    .vflow-step.kind-det .step-num { border-color: var(--det); background: var(--det-soft); color: var(--det); }
+    .vflow-step.kind-score .step-num { border-color: var(--gold); background: var(--gold-soft); color: var(--gold); }
+    .vflow-step.active .step-num { border-color: var(--teal); background: var(--teal-soft); color: var(--teal); }
+
+    .vflow-step .step-body { min-width: 0; }
+
+    .vflow-step .kind-badge {
+      display: inline-block;
+      font-size: 8px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 3px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .kind-badge.llm { background: var(--llm); color: #fff; }
     .kind-badge.det { background: var(--det); color: #fff; }
     .kind-badge.score { background: var(--gold); color: #fff; }
 
-    .pipe-step .name { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; }
-    .pipe-step .hint { display: block; margin-top: 4px; font-size: 11px; color: var(--quiet); }
+    .vflow-step .name { display: block; font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--ink); }
+    .vflow-step .hint { display: block; margin-top: 3px; font-size: 11px; color: var(--quiet); line-height: 1.35; }
 
-    .pipe-detail {
-      margin-top: 16px;
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #f8fafc;
-      display: none;
+    .pipeline-example-panel {
+      padding: 22px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
     }
 
-    .pipe-detail.active { display: block; }
-    .pipe-detail h4 { margin-top: 0; }
+    .pipe-ex-stage { display: none; animation: pipe-ex-in 0.2s ease; }
+    .pipe-ex-stage.active { display: block; }
+
+    @keyframes pipe-ex-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pipe-ex-kicker {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .pipe-ex-stage h4 { margin: 0 0 8px; font-size: 17px; line-height: 1.3; }
+    .pipe-ex-stage > p { margin: 0 0 14px; font-size: 14px; color: var(--muted); max-width: none; }
+
+    .pipe-ex-snippet {
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fafbfc;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .pipe-ex-snippet .hl-past,
+    .pipe-ex-snippet .hl-current,
+    .pipe-ex-snippet .hl-dx,
+    .pipe-ex-snippet .hl-sf { padding: 1px 3px; border-radius: 3px; }
+
+    .pipe-ex-io {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .pipe-ex-box {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .pipe-ex-box.label-in { background: var(--blue-soft); border-color: #b8cfe8; }
+    .pipe-ex-box.label-out { background: var(--green-soft); border-color: #c4dcc0; }
+    .pipe-ex-box.label-warn { background: var(--red-soft); border-color: #e8c4c4; }
+    .pipe-ex-box.label-neutral { background: #f4f7fa; }
+
+    .pipe-ex-box .box-tag {
+      display: block;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    .pipe-ex-box pre {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .pipe-ex-verdict {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pipe-ex-verdict.ok { background: var(--green-soft); color: var(--green); }
+    .pipe-ex-verdict.bad { background: var(--red-soft); color: var(--red); }
+
+    .pipe-ex-arrow {
+      text-align: center;
+      font-size: 18px;
+      color: var(--quiet);
+      line-height: 1;
+      margin: 4px 0;
+    }
+
+    .pipe-ex-essential-note {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--gold);
+      background: var(--gold-soft);
+      font-size: 12px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
 
     /* ── Annotated clinical letter ── */
     .letter-doc {
@@ -1108,19 +1428,18 @@
     footer p { max-width: none; }
 
     @media (max-width: 960px) {
-      .headline-grid, .fork-grid, .compare-grid, .row-compare, .pipeline, .letter-doc, .extract-grid { grid-template-columns: 1fr; }
+      .headline-grid, .fork-grid, .compare-grid, .row-compare, .letter-doc, .extract-grid,
+      .pipeline-walkthrough, .limit-layout, .limits-type-picker, .limit-example-grid { grid-template-columns: 1fr; }
+      .pipeline-vflow { border-right: 0; border-bottom: 1px solid var(--line); }
       .letter-pane { border-right: 0; border-bottom: 1px solid var(--line); }
       .limits-step-nav { display: flex; }
+      .limits-type-picker { display: none; }
+      .limits-story { display: none; }
+      .limits-story.active { display: block; }
     }
 
     @media (min-width: 961px) {
-      .limits-screens {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-      .limits-screen { display: block; }
-      .limits-screen.active { display: block; }
+      .limits-step-nav { display: none; }
     }
 
     @media (max-width: 640px) {
@@ -1324,76 +1643,118 @@
               <section class="section">
                 <div class="section-label">Track 1 · Pipeline</div>
                 <h2>Facts first, then rules finish the job</h2>
-                <p class="lede">The language model lists candidate facts from the letter (with quotes and past vs present). Fixed code picks the current fact and formats the single benchmark label.</p>
+                <p class="lede">The language model lists candidate facts from the letter (with quotes and past vs present). Fixed code picks the current fact and formats the single benchmark label. The diagram shows every stage at once — click a step to see what happens on a real letter.</p>
 
-                <figure class="diagram" data-diagram="gan-flow">
-                  <div class="diagram-fallback" aria-label="Gan pipeline">
-                    <svg viewBox="0 0 720 72" width="720" height="72" role="img">
-                      <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#5c6b78"/></marker></defs>
-                      <rect x="4" y="16" width="110" height="40" rx="6" fill="#dce8f7" stroke="#b8c5d0"/><text x="59" y="41" text-anchor="middle" font-size="11">Letter</text>
-                      <line x1="114" y1="36" x2="134" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
-                      <rect x="134" y="16" width="130" height="40" rx="6" fill="#d6ecf4" stroke="#1a5f7a" stroke-width="2"/><text x="199" y="41" text-anchor="middle" font-size="10">AI finds facts</text>
-                      <line x1="264" y1="36" x2="284" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
-                      <rect x="284" y="16" width="120" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="344" y="41" text-anchor="middle" font-size="10">Pick current</text>
-                      <line x1="404" y1="36" x2="424" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
-                      <rect x="424" y="16" width="120" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="484" y="41" text-anchor="middle" font-size="10">Format label</text>
-                      <line x1="544" y1="36" x2="564" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
-                      <rect x="564" y="16" width="150" height="40" rx="6" fill="#f3e8cc" stroke="#8a6218"/><text x="639" y="41" text-anchor="middle" font-size="10">Grade answer</text>
-                    </svg>
-                  </div>
-                  <div class="mermaid">flowchart LR
-  N["Clinical letter"] --> SE["AI extracts candidate facts"]
-  SE --> SEL["Rules pick current fact"]
-  SEL --> R["Rules format label"]
-  R --> S["Benchmark scorer"]</div>
-                </figure>
-                <div class="arch-legend">
+                <div class="arch-legend" style="margin-top:16px">
                   <span><i class="dot llm"></i> Language model step</span>
                   <span><i class="dot det"></i> Fixed rules step</span>
                   <span><i class="dot score"></i> Scoring step</span>
+                  <span style="color:var(--gold)">★ = most important stage</span>
                 </div>
 
-                <details class="disclosure" style="margin-top:16px">
-                  <summary>Explore pipeline stages — click any box</summary>
-                  <div class="disclosure-body">
-                    <div class="pipeline-stack" data-pipeline-stack="gan">
-                      <div class="pipeline" data-pipeline="gan" role="tablist">
-                        <button type="button" class="pipe-step kind-det active" data-step="gan-1"><span class="kind-badge det">Rules</span><span class="name">Load letter</span><span class="hint">Fixed train/test split</span></button>
-                        <button type="button" class="pipe-step kind-llm" data-step="gan-2"><span class="kind-badge llm">AI</span><span class="name">Find facts</span><span class="hint">Not the final label</span></button>
-                        <button type="button" class="pipe-step kind-det" data-step="gan-3"><span class="kind-badge det">Rules</span><span class="name">Pick current fact</span><span class="hint">Past vs present</span></button>
-                        <button type="button" class="pipe-step kind-det" data-step="gan-4"><span class="kind-badge det">Rules</span><span class="name">Format label</span><span class="hint">Counts &amp; bands</span></button>
-                        <button type="button" class="pipe-step kind-score" data-step="gan-5"><span class="kind-badge score">Score</span><span class="name">Grade</span><span class="hint">Match gold label</span></button>
+                <div class="pipeline-walkthrough" data-pipeline-walkthrough="gan">
+                  <nav class="pipeline-vflow" aria-label="Pipeline stages">
+                    <strong>Pipeline flow</strong>
+                    <button type="button" class="vflow-step kind-det" data-step="gan-1" aria-selected="false">
+                      <span class="step-num">1</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Load letter</span><span class="hint">Locked train/test split</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-llm" data-step="gan-2" aria-selected="false">
+                      <span class="step-num">2</span>
+                      <span class="step-body"><span class="kind-badge llm">AI</span><span class="name">Find facts</span><span class="hint">Quotes + past vs present — not the final label</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-det active" data-step="gan-3" data-essential="true" aria-selected="true">
+                      <span class="step-num">3</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Pick current fact</span><span class="hint">Ignore historical rates when current status is clear</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-det" data-step="gan-4" aria-selected="false">
+                      <span class="step-num">4</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Format label</span><span class="hint">Counts, bands, seizure-free phrasing</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-score" data-step="gan-5" aria-selected="false">
+                      <span class="step-num">5</span>
+                      <span class="step-body"><span class="kind-badge score">Score</span><span class="name">Grade</span><span class="hint">Match against gold label</span></span>
+                    </button>
+                  </nav>
+                  <div class="pipeline-example-panel" aria-live="polite">
+                    <div class="pipe-ex-stage" data-ex="gan-1">
+                      <div class="pipe-ex-kicker">Step 1 · Load letter</div>
+                      <h4>A letter enters from the locked dataset</h4>
+                      <p>Each letter is a synthetic clinic note. We never tune on the final 450-letter test set — only validate on smaller splits first.</p>
+                      <div class="pipe-ex-snippet">
+                        <strong>Epilepsy clinic follow-up</strong><br>
+                        Patient: 34-year-old woman · Visit: 12 March 2024<br><br>
+                        …full letter text follows in the next steps…
                       </div>
-                      <div class="pipe-details">
-                        <div class="pipe-detail active" data-detail="gan-1"><h4>Load letter</h4><p>Letters come from a locked dataset split. We validate on smaller sets before ever touching the final 450-letter test set.</p><span class="term-note">Project term: <code>gan2026_split_v1</code></span></div>
-                        <div class="pipe-detail" data-detail="gan-2"><h4>Find facts (language model)</h4><p>The model returns a list of mentions — e.g. a rate, a seizure-free statement, or unknown — each tied to a quote and marked historical or current. It does <em>not</em> output the final scored label.</p><span class="term-note">Project term: <dfn>structured events</dfn> (also called structured-event extraction)</span></div>
-                        <div class="pipe-detail" data-detail="gan-3"><h4>Pick the current fact (rules)</h4><p>When the letter mentions both an old seizure rate and current seizure freedom, rules prefer the current clinically relevant rate (unless policy says otherwise).</p></div>
-                        <div class="pipe-detail" data-detail="gan-4"><h4>Format the label (rules)</h4><p>Code converts the chosen fact into the exact string the benchmark expects — counts, time windows, seizure-free phrasing, etc.</p><span class="term-note">Project term: deterministic <dfn>render</dfn></span></div>
-                        <div class="pipe-detail" data-detail="gan-5"><h4>Grade against gold</h4><p>We compare to the reference label using the benchmark author's strict matcher. Production result: 364 correct of 450 (81%).</p><span class="term-note">Project term: <dfn>Purist</dfn> scorer on <code>test450</code></span></div>
+                      <div class="pipe-ex-box label-neutral"><span class="box-tag">What happens</span>Letter ID + text loaded from <code>gan2026_split_v1</code></div>
+                    </div>
+                    <div class="pipe-ex-stage" data-ex="gan-2">
+                      <div class="pipe-ex-kicker">Step 2 · AI finds facts</div>
+                      <h4>The model lists mentions — it does not pick the answer</h4>
+                      <p>Output is a structured list: each fact has a quote, a type, and whether it is historical or current.</p>
+                      <div class="pipe-ex-snippet">On review, <span class="hl-past">she previously had 2–3 seizures per month on the old regimen</span>. <span class="hl-current">She is currently seizure-free and has remained so for 6 months</span> since switching to levetiracetam.</div>
+                      <div class="pipe-ex-io">
+                        <div class="pipe-ex-box label-in"><span class="box-tag">AI structured events</span><pre>Fact A · past   · "2–3 seizures per month"
+Fact B · current · "seizure-free … 6 months"</pre></div>
+                      </div>
+                      <div class="pipe-ex-essential-note">If we stopped here and asked the AI for one label, it often latched onto Fact A — the past rate.</div>
+                    </div>
+                    <div class="pipe-ex-stage active" data-ex="gan-3">
+                      <div class="pipe-ex-kicker">Step 3 · Pick current fact ★</div>
+                      <h4>Rules choose the clinically current fact</h4>
+                      <p>When a letter mentions both an old rate and current seizure freedom, fixed policy prefers the current status. This is why we separate “find facts” from “pick answer.”</p>
+                      <div class="pipe-ex-io">
+                        <div class="pipe-ex-box label-neutral"><span class="box-tag">Candidate facts</span><pre>Fact A (past):    2–3 per month      ✗ skip
+Fact B (current): seizure-free 6 mo  ✓ selected</pre></div>
+                        <div class="pipe-ex-arrow">↓</div>
+                        <div class="pipe-ex-box label-out"><span class="box-tag">Chosen fact</span><pre>Current seizure-free status (6 months)</pre></div>
+                      </div>
+                      <div class="pipe-ex-essential-note"><strong>Why this stage matters:</strong> Hybrid (facts + rules) fixed hundreds of validation errors that AI-only direct labeling could not.</div>
+                    </div>
+                    <div class="pipe-ex-stage" data-ex="gan-4">
+                      <div class="pipe-ex-kicker">Step 4 · Format label</div>
+                      <h4>Code converts the fact into the exact benchmark string</h4>
+                      <p>Deterministic rendering handles counts, time windows, and seizure-free phrasing — no more AI guessing at format.</p>
+                      <div class="pipe-ex-io">
+                        <div class="pipe-ex-box label-in"><span class="box-tag">Chosen fact</span><pre>seizure-free · 6 months</pre></div>
+                        <div class="pipe-ex-arrow">↓ render</div>
+                        <div class="pipe-ex-box label-out"><span class="box-tag">Benchmark label</span><pre>"seizure-free (6 months)"</pre></div>
                       </div>
                     </div>
+                    <div class="pipe-ex-stage" data-ex="gan-5">
+                      <div class="pipe-ex-kicker">Step 5 · Grade</div>
+                      <h4>Strict matcher compares prediction to gold</h4>
+                      <p>On this letter the prediction matches. Across all 450 held-out letters: <strong>364 correct (81%)</strong>.</p>
+                      <div class="pipe-ex-io">
+                        <div class="pipe-ex-box label-out"><span class="box-tag">Predicted</span><pre>seizure-free (6 months)</pre></div>
+                        <div class="pipe-ex-box label-out"><span class="box-tag">Gold label</span><pre>seizure-free (6 months)</pre></div>
+                      </div>
+                      <span class="pipe-ex-verdict ok">✓ Correct on this letter</span>
+                    </div>
                   </div>
-                </details>
+                </div>
 
-                <details class="disclosure">
-                  <summary>Worked example — why facts-first wins</summary>
+                <details class="disclosure" style="margin-top:20px">
+                  <summary>Why not ask the AI for the final label directly?</summary>
                   <div class="disclosure-body">
-                    <p style="font-size:14px;color:var(--muted);max-width:var(--measure)">Same letter as the Task screen — two ways to run the AI. Only the second matches how we handle past vs present.</p>
                     <div class="row-compare">
                       <div class="row-outcome bad">
-                        <span class="outcome-tag" style="color:var(--red)">Bad · ask AI for the final label</span>
+                        <span class="outcome-tag" style="color:var(--red)">AI-only · direct label</span>
                         <pre><code>Input: whole letter
 AI output: "2-3 per month"
 Correct label: seizure-free
 Result: WRONG</code></pre>
-                        <p style="margin-top:8px;font-size:12px;color:var(--muted)">The model latched onto the highlighted past rate. This pattern broke hundreds of validation letters.</p>
+                        <p style="margin-top:8px;font-size:12px;color:var(--muted)">329 validation rows got worse with this design.</p>
                       </div>
                       <div class="row-outcome good">
-                        <span class="outcome-tag" style="color:var(--green)">Good · facts first, then rules</span>
-                        <pre><code>Fact A (past): "2-3 per month"
-Fact B (current): "seizure-free 6 months"
-Rules pick B → format label
-Result: CORRECT</code></pre>
+                        <span class="outcome-tag" style="color:var(--green)">Hybrid · facts then rules</span>
+                        <pre><code>Fact A (past) + Fact B (current)
+Rules pick B → format → grade
+Result: CORRECT (364/450)</code></pre>
                       </div>
                     </div>
                   </div>
@@ -1554,80 +1915,117 @@ Result: CORRECT</code></pre>
               <section class="section">
                 <div class="section-label">Track 2 · Pipeline</div>
                 <h2>Extractors propose, rules reconcile</h2>
-                <p class="lede">Several extractors each read the letter for their topic. Rules collect all proposals, reconcile conflicts, and produce both a clinician-facing summary score and a stricter benchmark view for debugging.</p>
+                <p class="lede">Several extractors each read the letter for their topic. Rules collect all proposals, reconcile conflicts, and produce both a clinician-facing summary and a stricter benchmark view. Click any stage to see the same letter flow through it.</p>
 
-                <figure class="diagram" data-diagram="exect-flow">
-                  <div class="diagram-fallback" aria-label="ExECT pipeline">
-                    <svg viewBox="0 0 820 72" width="820" height="72" role="img">
-                      <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#5c6b78"/></marker></defs>
-                      <rect x="4" y="16" width="70" height="40" rx="6" fill="#dce8f7" stroke="#b8c5d0"/><text x="39" y="41" text-anchor="middle" font-size="11">Letter</text>
-                      <line x1="74" y1="36" x2="94" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
-                      <rect x="94" y="16" width="100" height="40" rx="6" fill="#d6ecf4" stroke="#1a5f7a" stroke-width="2"/><text x="144" y="41" text-anchor="middle" font-size="10">Extractors</text>
-                      <line x1="194" y1="36" x2="214" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
-                      <rect x="214" y="16" width="100" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="264" y="41" text-anchor="middle" font-size="10">Collect</text>
-                      <line x1="314" y1="36" x2="334" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
-                      <rect x="334" y="16" width="110" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="389" y="41" text-anchor="middle" font-size="10">Reconcile</text>
-                      <line x1="444" y1="36" x2="464" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
-                      <rect x="464" y="16" width="110" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="519" y="41" text-anchor="middle" font-size="10">Summarize</text>
-                      <line x1="574" y1="36" x2="594" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
-                      <rect x="594" y="16" width="220" height="40" rx="6" fill="#f3e8cc" stroke="#8a6218"/><text x="704" y="41" text-anchor="middle" font-size="10">Primary quality score</text>
-                    </svg>
-                  </div>
-                  <div class="mermaid">flowchart LR
-  L["Letter"] --> P["AI/hybrid extractors"]
-  P --> F["Collect all findings"]
-  F --> E["Reconcile by topic"]
-  E --> V["Clinician-facing view"]
-  V --> H["Primary quality score"]</div>
-                </figure>
-                <div class="arch-legend">
+                <div class="arch-legend" style="margin-top:16px">
                   <span><i class="dot llm"></i> Extractors (language model)</span>
                   <span><i class="dot det"></i> Collection, reconciliation, dictionaries</span>
                   <span><i class="dot score"></i> Primary composite score</span>
+                  <span style="color:var(--gold)">★ = most important stage</span>
                 </div>
 
-                <details class="disclosure" style="margin-top:16px">
-                  <summary>Explore pipeline stages — click any box</summary>
-                  <div class="disclosure-body">
-                    <div class="pipeline-stack" data-pipeline-stack="exect">
-                      <div class="pipeline" data-pipeline="exect" role="tablist">
-                        <button type="button" class="pipe-step kind-llm active" data-step="ex-1"><span class="kind-badge llm">AI</span><span class="name">Extractors</span><span class="hint">One per topic</span></button>
-                        <button type="button" class="pipe-step kind-det" data-step="ex-2"><span class="kind-badge det">Rules</span><span class="name">Collect findings</span><span class="hint">Shared store</span></button>
-                        <button type="button" class="pipe-step kind-det" data-step="ex-3"><span class="kind-badge det">Rules</span><span class="name">Reconcile</span><span class="hint">Dx / SF / Rx / tests</span></button>
-                        <button type="button" class="pipe-step kind-det" data-step="ex-4"><span class="kind-badge det">Rules</span><span class="name">Views</span><span class="hint">Summary vs strict</span></button>
-                        <button type="button" class="pipe-step kind-score" data-step="ex-5"><span class="kind-badge score">Trace</span><span class="name">Provenance</span><span class="hint">Who said what</span></button>
-                      </div>
-                      <div class="pipe-details">
-                        <div class="pipe-detail active" data-detail="ex-1"><h4>Extractors (language model)</h4><p>Separate passes (or hybrid steps) propose findings — e.g. a diagnosis mention, a seizure-free statement, a drug dose — each with supporting text from the letter.</p><span class="term-note">Project term: <dfn>producers</dfn> / <code>CandidateProducer</code></span></div>
-                        <div class="pipe-detail" data-detail="ex-2"><h4>Collect findings (rules)</h4><p>All proposals land in one per-letter store so we can turn components on/off and measure what each layer contributes.</p><span class="term-note">Project term: <code>ClinicalFindingStore</code></span></div>
-                        <div class="pipe-detail" data-detail="ex-3"><h4>Reconcile by topic (rules)</h4><p>Topic-specific logic merges duplicates, handles negation, and picks clinically coherent states — e.g. seizure-free vs active rate for the seizure-frequency field.</p><span class="term-note">Project term: <dfn>entity lenses</dfn></span></div>
-                        <div class="pipe-detail" data-detail="ex-4"><h4>Build views (rules)</h4><p>We can project the same findings into a clinician-facing summary (used for the 86% headline) or a strict legacy benchmark (useful for debugging format gaps).</p><span class="term-note">Project term: <code>clinical_headline</code> vs benchmark/CUI surfaces</span></div>
-                        <div class="pipe-detail" data-detail="ex-5"><h4>Provenance (rules)</h4><p>Every emitted finding records which extractor and rule step produced it — needed for component ablation claims.</p></div>
+                <div class="pipeline-walkthrough" data-pipeline-walkthrough="exect">
+                  <nav class="pipeline-vflow" aria-label="Pipeline stages">
+                    <strong>Pipeline flow</strong>
+                    <button type="button" class="vflow-step kind-llm" data-step="ex-1" aria-selected="false">
+                      <span class="step-num">1</span>
+                      <span class="step-body"><span class="kind-badge llm">AI</span><span class="name">Extractors</span><span class="hint">One pass per topic — Dx, SF, Rx, tests</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-det" data-step="ex-2" aria-selected="false">
+                      <span class="step-num">2</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Collect findings</span><span class="hint">All proposals in one store</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-det" data-step="ex-3" aria-selected="false">
+                      <span class="step-num">3</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Reconcile</span><span class="hint">Merge duplicates, handle negation</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-det active" data-step="ex-4" data-essential="true" aria-selected="true">
+                      <span class="step-num">4</span>
+                      <span class="step-body"><span class="kind-badge det">Rules</span><span class="name">Build views</span><span class="hint">Clinical summary vs strict benchmark</span></span>
+                    </button>
+                    <div class="vflow-connector" aria-hidden="true"></div>
+                    <button type="button" class="vflow-step kind-score" data-step="ex-5" aria-selected="false">
+                      <span class="step-num">5</span>
+                      <span class="step-body"><span class="kind-badge score">Trace</span><span class="name">Provenance</span><span class="hint">Which extractor produced each fact</span></span>
+                    </button>
+                  </nav>
+                  <div class="pipeline-example-panel" aria-live="polite">
+                    <div class="pipe-ex-stage" data-ex="ex-1">
+                      <div class="pipe-ex-kicker">Step 1 · Extractors</div>
+                      <h4>Each topic gets its own AI pass over the letter</h4>
+                      <p>Extractors propose findings with supporting quotes — diagnosis, seizure frequency, prescriptions, investigations.</p>
+                      <div class="pipe-ex-snippet"><span class="hl-dx">Diagnosis: focal epilepsy, likely temporal lobe origin.</span> <span class="hl-inv">MRI confirms left hippocampal sclerosis.</span><br><br><span class="hl-sf">No focal or generalised tonic-clonic seizures since last review.</span> She reports occasional myoclonic jerks only.<br><br><span class="hl-rx">Levetiracetam 1 g twice daily and lamotrigine 200 mg at night.</span></div>
+                      <div class="pipe-ex-box label-in"><span class="box-tag">Raw proposals (simplified)</span><pre>Dx:  focal epilepsy · temporal lobe
+SF:  no GTC/focal seizures · myoclonic jerks
+Rx:  levetiracetam 1g BD · lamotrigine 200mg
+Inv: hippocampal sclerosis · temporal slowing</pre></div>
+                    </div>
+                    <div class="pipe-ex-stage" data-ex="ex-2">
+                      <div class="pipe-ex-kicker">Step 2 · Collect findings</div>
+                      <h4>Everything lands in one per-letter store</h4>
+                      <p>This shared store lets us turn components on/off and measure what each layer contributes.</p>
+                      <div class="pipe-ex-box label-neutral"><span class="box-tag">ClinicalFindingStore (4 topics)</span><pre>diagnosis        → 2 candidate mentions
+seizure_frequency → 2 candidate mentions
+prescriptions    → 2 drug rows
+investigations   → MRI + EEG findings</pre></div>
+                    </div>
+                    <div class="pipe-ex-stage" data-ex="ex-3">
+                      <div class="pipe-ex-kicker">Step 3 · Reconcile</div>
+                      <h4>Topic rules merge and clean up proposals</h4>
+                      <p>Entity lenses handle duplicates, negation, and clinically coherent states per field.</p>
+                      <div class="pipe-ex-io">
+                        <div class="pipe-ex-box label-in"><span class="box-tag">Before reconcile</span><pre>Dx: "focal epilepsy" + "temporal lobe origin"
+SF: "no GTC seizures" + "myoclonic jerks"</pre></div>
+                        <div class="pipe-ex-arrow">↓ entity lenses</div>
+                        <div class="pipe-ex-box label-out"><span class="box-tag">After reconcile</span><pre>Dx: Focal epilepsy (temporal lobe)
+SF: Seizure-free (GTC/focal); myoclonic jerks noted</pre></div>
                       </div>
                     </div>
+                    <div class="pipe-ex-stage active" data-ex="ex-4">
+                      <div class="pipe-ex-kicker">Step 4 · Build views ★</div>
+                      <h4>Same facts, two ways to score them</h4>
+                      <p>The clinician-facing view consolidates equivalent statements. The strict legacy benchmark expects separate rows per seizure type — so the same output can look right clinically but fail the benchmark.</p>
+                      <div class="pipe-ex-snippet"><span class="hl-sf">No focal or generalised tonic-clonic seizures since last review.</span> She reports occasional myoclonic jerks only.</div>
+                      <div class="limit-example-grid" style="margin-top:12px">
+                        <div class="limit-ex-outcome strict">
+                          <span class="out-label">Strict benchmark view</span>
+                          <strong>Marked WRONG</strong>
+                          <p style="margin:6px 0 0;font-size:12px">Gold wants separate rows per seizure type; model merged into one state.</p>
+                        </div>
+                        <div class="limit-ex-outcome clinical">
+                          <span class="out-label">Clinical review</span>
+                          <strong>Defensible</strong>
+                          <p style="margin:6px 0 0;font-size:12px">Seizure-free for major events; jerks documented. ~89% of flagged SF rows look like this.</p>
+                        </div>
+                      </div>
+                      <div class="pipe-ex-essential-note"><strong>Why this stage matters:</strong> The 86% headline uses <code>clinical_headline</code> — not the strict legacy matcher. See Limits for the gold-quality ceiling.</div>
+                    </div>
+                    <div class="pipe-ex-stage" data-ex="ex-5">
+                      <div class="pipe-ex-kicker">Step 5 · Provenance</div>
+                      <h4>Every fact records its source</h4>
+                      <p>Needed for component ablation: we can trace which extractor and rule step produced each field.</p>
+                      <div class="pipe-ex-box label-neutral"><span class="box-tag">Trace (abbreviated)</span><pre>SF field ← hybrid_sf_producer → reconcile_sf_lens
+Dx field ← dx_producer → reconcile_dx_lens
+…</pre></div>
+                    </div>
                   </div>
-                </details>
+                </div>
 
-                <details class="disclosure">
-                  <summary>Worked example — when scoring disagrees</summary>
+                <details class="disclosure" style="margin-top:20px">
+                  <summary>Scoring surfaces — which number to cite</summary>
                   <div class="disclosure-body">
-                    <p style="font-size:14px;color:var(--muted);max-width:var(--measure)">For the highlighted seizure-frequency sentence, the model’s consolidated output can look clinically right but fail a strict row-by-row benchmark.</p>
-                    <div class="row-compare">
-                      <div class="row-outcome bad">
-                        <span class="outcome-tag" style="color:var(--red)">Strict benchmark view</span>
-                        <pre><code>Gold expects separate rows per seizure type
-Model: one consolidated seizure-free state
-Benchmark: marked WRONG
-(Track-wide SF accuracy ~62%)</code></pre>
-                      </div>
-                      <div class="row-outcome good">
-                        <span class="outcome-tag" style="color:var(--green)">Clinical review</span>
-                        <pre><code>Output: seizure-free for major events;
-  myoclonic jerks documented
-Clinician review: defensible
-(~89% of flagged SF rows)</code></pre>
-                        <p style="margin-top:8px;font-size:12px;color:var(--muted)">Only about 15 of 53 flagged seizure-frequency rows are genuine model mistakes.</p>
-                      </div>
+                    <div class="table-wrap">
+                      <table>
+                        <thead><tr><th>Name</th><th>Plain meaning</th><th>When to use</th></tr></thead>
+                        <tbody>
+                          <tr><td><code>clinical_headline</code></td><td>Primary overall quality (86% headline)</td><td>Papers, status updates, model comparisons</td></tr>
+                          <tr><td><code>state_profile</code></td><td>Seizure-frequency-specific view</td><td>SF-only experiments</td></tr>
+                          <tr><td>benchmark / CUI</td><td>Strict legacy matcher</td><td>Debugging format gaps — not headline quality</td></tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </details>
@@ -1687,64 +2085,150 @@ Clinician review: defensible
     <section class="section" id="ceilings">
       <div class="section-label">Important limits</div>
       <h2>Why scores stop improving</h2>
-      <p class="lede">Both tracks hit ceilings — but for different reasons. One is a model that is <em>confidently wrong</em>; the other is a scoreboard that counts answers differently than a clinician would. Do not mix up the two stories.</p>
+      <p class="lede">Both tracks hit ceilings — but for different reasons. Start with the picture: one is a <strong>wall the model runs into</strong>; the other is a <strong>low ceiling on the scoreboard</strong> even when the clinical answer is fine. Do not mix up the two stories.</p>
 
-      <div class="limits-screens" data-limits-stepper>
-        <div class="limits-screen active" id="limits-wall" data-limits="wall">
-        <div class="compare-card wall">
-          <span class="tag">Track 1 · seizure frequency</span>
-          <h3>Confident mistakes on ambiguous letters</h3>
-          <p style="margin-top:12px;font-size:14px">On the hardest remaining letters, the model picks a specific seizure rate even when a clinician would say “unknown.” Nothing in the model’s own confidence scores reliably flags these cases ahead of time.</p>
-          <div class="bar-row" style="margin-top:16px"><span class="bar-label">Best seen (~84%)</span><div class="bar-track"><div class="bar-fill gold" style="width:84.2%"></div></div><span class="bar-value">84%</span></div>
-          <div class="bar-row"><span class="bar-label">Our pipeline (81%)</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">81%</span></div>
-          <p style="font-size:13px;color:var(--muted);margin-top:12px">We call this limit <dfn>The Wall</dfn> — a research prior (~84%), not a target to prompt-tune toward.</p>
-          <details class="disclosure" style="margin-top:16px">
-            <summary>Example pattern</summary>
-            <div class="disclosure-body">
-              <div class="note-excerpt" style="font-style:normal">The letter hints at past seizure burden but never states a current countable rate. The model outputs a frequency band anyway; the gold label is “unknown.” Uncertainty metrics stay flat — the mistake looks confident.</div>
-            </div>
-          </details>
-          <details class="disclosure">
-            <summary>Project vocabulary &amp; metrics</summary>
-            <div class="disclosure-body">
-              <ul style="font-size:13px;color:var(--muted);padding-left:1.2em">
-                <li><strong>Binding residuals:</strong> rows where only the hidden gold label tells you the model should abstain</li>
-                <li>P2.1: semantic entropy flat on residuals → over-reading is confident</li>
-                <li>11 irreducible validation rows; external risk AUROC 0.781</li>
-              </ul>
-            </div>
-          </details>
+      <div class="limits-hub" data-limits-stepper>
+        <div class="limits-type-picker" role="tablist" aria-label="Choose a limit type">
+          <button type="button" class="limit-type-btn active" data-limits-goto="wall" role="tab" aria-selected="true">
+            <span class="limit-type-icon" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 40 40"><rect x="26" y="8" width="10" height="28" rx="1" fill="#c47878"/><rect x="4" y="22" width="22" height="6" rx="2" fill="#0f6b6d"/><circle cx="15" cy="18" r="5" fill="#8b3333"/><path d="M15 23 L15 28" stroke="#8b3333" stroke-width="2"/></svg>
+            </span>
+            <span><strong><dfn>The Wall</dfn></strong><span>Track 1 · model commits when it should abstain</span></span>
+          </button>
+          <button type="button" class="limit-type-btn" data-limits-goto="gold" role="tab" aria-selected="false">
+            <span class="limit-type-icon" aria-hidden="true">
+              <svg width="40" height="40" viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="2" fill="#f3e8cc" stroke="#c4a86a"/><rect x="4" y="22" width="32" height="4" fill="#8a6218"/><circle cx="20" cy="16" r="4" fill="#3d6b3a"/><line x1="20" y1="20" x2="20" y2="21" stroke="#3d6b3a" stroke-width="2"/></svg>
+            </span>
+            <span><strong><dfn>Gold-quality ceiling</dfn></strong><span>Track 2 · scoreboard counts differently than clinicians</span></span>
+          </button>
         </div>
-        </div>
-        <div class="limits-screen" id="limits-gold" data-limits="gold">
-        <div class="compare-card gold">
-          <span class="tag">Track 2 · full profile</span>
-          <h3>Scoreboard vs clinical judgment</h3>
-          <p style="margin-top:12px;font-size:14px">The strict benchmark expects facts listed the way annotators encoded them. The model often merges equivalent statements — clinically fine, but marked wrong by the strict matcher.</p>
-          <div class="bar-row" style="margin-top:16px"><span class="bar-label">Clinically OK</span><div class="bar-track"><div class="bar-fill green" style="width:89.3%"></div></div><span class="bar-value">89%</span></div>
-          <div class="bar-row"><span class="bar-label">Strict benchmark</span><div class="bar-track"><div class="bar-fill red" style="width:62.1%"></div></div><span class="bar-value">62%</span></div>
-          <p style="font-size:13px;color:var(--muted);margin-top:12px">We call this the <dfn>gold-quality ceiling</dfn> — most apparent “errors” are representation mismatch, not missing clinical concepts.</p>
-          <details class="disclosure" style="margin-top:16px">
-            <summary>Example pattern — diagnosis</summary>
-            <div class="disclosure-body">
-              <div class="note-excerpt" style="font-style:normal">Gold lists “focal epilepsy” and “temporal lobe epilepsy” as two rows; the model outputs one merged diagnosis. A clinician would accept the merge; the strict benchmark does not. ~85% of diagnosis disagreements look like this.</div>
+
+        <div class="limits-story active" id="limits-wall" data-limits="wall" role="tabpanel">
+          <div class="limit-layout">
+            <figure class="limit-metaphor wall-tone">
+              <svg viewBox="0 0 300 220" role="img" aria-labelledby="wall-metaphor-title">
+                <title id="wall-metaphor-title">Progress climbs to 81% then hits a wall at 84%</title>
+                <rect width="300" height="220" fill="transparent"/>
+                <line x1="40" y1="190" x2="280" y2="190" stroke="#b8c5d0" stroke-width="2"/>
+                <rect x="40" y="190" width="0" height="0"/>
+                <rect x="40" y="58" width="175" height="132" rx="2" fill="url(#wallGrad)" stroke="#c47878" stroke-width="2"/>
+                <defs><linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5dede"/><stop offset="100%" stop-color="#e8b4b4"/></linearGradient></defs>
+                <text x="127" y="48" text-anchor="middle" font-size="11" font-weight="bold" fill="#8b3333">~84% research ceiling</text>
+                <text x="127" y="115" text-anchor="middle" font-size="10" fill="#8b3333" font-weight="650">THE WALL</text>
+                <path d="M40 190 L215 58" stroke="#0f6b6d" stroke-width="4" fill="none"/>
+                <circle cx="198" cy="72" r="6" fill="#0f6b6d"/>
+                <text x="198" y="88" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f6b6d">81%</text>
+                <text x="40" y="206" font-size="9" fill="#5c6b78">0%</text>
+                <text x="198" y="206" text-anchor="middle" font-size="9" fill="#5c6b78">our pipeline</text>
+                <text x="40" y="175" font-size="9" fill="#8b3333" transform="rotate(-38 55 175)">model keeps pushing…</text>
+              </svg>
+              <figcaption>Like running into a wall: the letter never states a current rate, but the model commits to one anyway.</figcaption>
+            </figure>
+            <div class="limit-body">
+              <span class="tag" style="display:inline-block;margin-bottom:8px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;background:var(--red-soft);color:var(--red)">Track 1 · seizure frequency</span>
+              <h3>Confident mistakes on ambiguous letters</h3>
+              <p class="limit-intuition"><strong>The intuition:</strong> Imagine asking “how many seizures per month?” when the letter only describes vague past burden and “well controlled” today. A clinician would say <em>unknown</em>. Our model often outputs a specific band anyway — and looks confident doing it. Prompt tuning cannot punch through this wall.</p>
+
+              <div class="limit-example-card">
+                <div class="ex-label">Real pattern (illustrative letter)</div>
+                <div class="ex-letter">“Had frequent seizures in childhood. <em>Currently well controlled on medication</em> with no reported events in clinic.”</div>
+                <div class="limit-example-grid">
+                  <div class="limit-ex-outcome model">
+                    <span class="out-label">Model output</span>
+                    <strong>“~1 per month”</strong>
+                    <p style="margin:6px 0 0;font-size:12px">Confident — uncertainty metrics stay flat</p>
+                  </div>
+                  <div class="limit-ex-outcome gold">
+                    <span class="out-label">Gold label</span>
+                    <strong>Unknown</strong>
+                    <p style="margin:6px 0 0;font-size:12px">Only the hidden label tells you to abstain</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="limit-numbers">
+                <p class="numbers-caption">Now the bars make sense: we are close to the wall, not far from perfect extraction.</p>
+                <div class="bar-row"><span class="bar-label">Research ceiling</span><div class="bar-track"><div class="bar-fill gold" style="width:84.2%"></div></div><span class="bar-value">84%</span></div>
+                <div class="bar-row"><span class="bar-label">Our pipeline</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">81%</span></div>
+              </div>
+
+              <details class="disclosure">
+                <summary>Project vocabulary &amp; metrics (peel back the onion)</summary>
+                <div class="disclosure-body">
+                  <ul style="font-size:13px;color:var(--muted);padding-left:1.2em;margin:0">
+                    <li><strong>Binding residuals:</strong> rows where only the hidden gold label tells you the model should abstain</li>
+                    <li>P2.1: semantic entropy flat on residuals → over-reading is confident</li>
+                    <li>11 irreducible validation rows; external risk AUROC 0.781</li>
+                    <li>~84% is a research prior, not a tuning target</li>
+                  </ul>
+                </div>
+              </details>
             </div>
-          </details>
-          <details class="disclosure">
-            <summary>Project vocabulary &amp; caveats</summary>
-            <div class="disclosure-body">
-              <ul style="font-size:13px;color:var(--muted);padding-left:1.2em">
-                <li>Rescoring under <code>state_profile</code> can raise seizure-frequency scores without changing model output</li>
-                <li>Diagnosis adjusted F1 0.95 vs strict benchmark 0.66</li>
-                <li>Adjudication was done by the same team — note in methods</li>
-              </ul>
-            </div>
-          </details>
+          </div>
         </div>
+
+        <div class="limits-story" id="limits-gold" data-limits="gold" role="tabpanel" hidden>
+          <div class="limit-layout">
+            <figure class="limit-metaphor gold-tone">
+              <svg viewBox="0 0 300 220" role="img" aria-labelledby="gold-metaphor-title">
+                <title id="gold-metaphor-title">Clinical headroom is high but the scoreboard ceiling is low</title>
+                <rect x="20" y="20" width="260" height="180" rx="6" fill="#faf6ee" stroke="#e8dcc0"/>
+                <rect x="20" y="118" width="260" height="6" fill="#8a6218"/>
+                <text x="150" y="112" text-anchor="middle" font-size="10" font-weight="bold" fill="#8a6218">Strict benchmark ceiling · 62%</text>
+                <line x1="20" y1="118" x2="280" y2="118" stroke="#8a6218" stroke-width="1" stroke-dasharray="4 3"/>
+                <circle cx="150" cy="72" r="8" fill="#3d6b3a"/>
+                <line x1="150" y1="80" x2="150" y2="100" stroke="#3d6b3a" stroke-width="3"/>
+                <text x="150" y="58" text-anchor="middle" font-size="10" font-weight="bold" fill="#3d6b3a">Clinical judgment · 89%</text>
+                <text x="150" y="155" text-anchor="middle" font-size="9" fill="#5c6b78">Plenty of clinical headroom above</text>
+                <text x="150" y="175" text-anchor="middle" font-size="9" fill="#8a6218">Scoreboard stops you here</text>
+              </svg>
+              <figcaption>Like a low ceiling in a tall room: the answer is clinically fine, but the benchmark’s format rules mark it wrong.</figcaption>
+            </figure>
+            <div class="limit-body">
+              <span class="tag" style="display:inline-block;margin-bottom:8px;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;background:var(--gold-soft);color:var(--gold)">Track 2 · full profile</span>
+              <h3>Scoreboard vs clinical judgment</h3>
+              <p class="limit-intuition"><strong>The intuition:</strong> Imagine a room with plenty of headroom — that is clinical judgment on the extraction. But the benchmark scoreboard has a low ceiling: it expects facts listed exactly the way annotators encoded them. Merge two equivalent diagnoses into one row? Clinically fine. Strict matcher says wrong.</p>
+
+              <div class="limit-example-card">
+                <div class="ex-label">Real pattern — diagnosis field</div>
+                <div class="ex-letter">Letter says: “<span class="hl-dx">focal epilepsy, likely temporal lobe origin.</span>”</div>
+                <div class="limit-example-grid">
+                  <div class="limit-ex-outcome gold" style="background:var(--gold-soft);border-color:#e8dcc0">
+                    <span class="out-label">Gold expects (2 rows)</span>
+                    <strong>focal epilepsy</strong><br><strong>temporal lobe epilepsy</strong>
+                  </div>
+                  <div class="limit-ex-outcome clinical">
+                    <span class="out-label">Model output (1 merged row)</span>
+                    <strong>Focal epilepsy (temporal lobe)</strong>
+                    <p style="margin:6px 0 0;font-size:12px">~85% of diagnosis disagreements look like this</p>
+                  </div>
+                </div>
+                <p style="margin:14px 0 0;font-size:12px;color:var(--muted)">Same story for seizure frequency: consolidated “seizure-free for major events; jerks noted” vs separate gold rows per seizure type.</p>
+              </div>
+
+              <div class="limit-numbers">
+                <p class="numbers-caption">The gap is mostly representation mismatch — not missing clinical concepts.</p>
+                <div class="bar-row"><span class="bar-label">Clinically OK</span><div class="bar-track"><div class="bar-fill green" style="width:89.3%"></div></div><span class="bar-value">89%</span></div>
+                <div class="bar-row"><span class="bar-label">Strict benchmark</span><div class="bar-track"><div class="bar-fill red" style="width:62.1%"></div></div><span class="bar-value">62%</span></div>
+              </div>
+
+              <details class="disclosure">
+                <summary>Project vocabulary &amp; caveats (peel back the onion)</summary>
+                <div class="disclosure-body">
+                  <ul style="font-size:13px;color:var(--muted);padding-left:1.2em;margin:0">
+                    <li>Rescoring under <code>state_profile</code> can raise SF scores without changing model output</li>
+                    <li>Diagnosis adjusted F1 0.95 vs strict benchmark 0.66</li>
+                    <li>Only ~15 of 53 flagged seizure-frequency rows are genuine model mistakes</li>
+                    <li>Adjudication was done by the same team — note in methods</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="limits-step-nav" aria-label="Limits carousel">
+      <div class="limits-step-nav" aria-label="Limits carousel (mobile)">
         <button type="button" class="step-nav-btn" data-limits-goto="wall" data-limits-dir="prev" disabled>← The Wall</button>
         <div class="limits-dots" role="tablist" aria-label="Ceiling type">
           <button type="button" class="limits-dot active" data-limits-goto="wall" aria-label="Track 1 — The Wall"></button>
@@ -1753,30 +2237,19 @@ Clinician review: defensible
         <button type="button" class="step-nav-btn" data-limits-goto="gold" data-limits-dir="next">Gold ceiling →</button>
       </div>
 
-      <details class="disclosure" style="margin-top:20px">
-        <summary>Side-by-side ceiling diagram</summary>
+      <details class="disclosure" style="margin-top:24px">
+        <summary>Side-by-side — two different ceilings</summary>
         <div class="disclosure-body">
-      <figure class="diagram" data-diagram="ceilings">
-        <div class="diagram-fallback" aria-label="Two different ceilings">
-          <svg viewBox="0 0 640 160" width="640" height="160" role="img">
-            <rect x="20" y="20" width="280" height="120" rx="8" fill="#fdf5f5" stroke="#e8c4c4"/>
-            <text x="160" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#8b3333">Confident model mistakes</text>
-            <text x="40" y="72" font-size="10" fill="#5c6b78">Ambiguous letter → model commits → ~84% cap</text>
-            <rect x="340" y="20" width="280" height="120" rx="8" fill="#fdfaf0" stroke="#e8dcc0"/>
-            <text x="480" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#8a6218">Scoring mismatch</text>
-            <text x="360" y="72" font-size="10" fill="#5c6b78">Strict matcher → "wrong" but clinically fine</text>
-          </svg>
-        </div>
-        <div class="mermaid">flowchart TB
-  subgraph wall ["Track 1 — The Wall"]
-    W1["Ambiguous letter"] --> W2["Model picks a rate"]
-    W2 --> W3["~84% research ceiling"]
-  end
-  subgraph gold ["Track 2 — gold-quality ceiling"]
-    G1["Strict benchmark"] --> G2["Format / multiplicity gap"]
-    G2 --> G3["Clinical review much higher"]
-  end</div>
-      </figure>
+          <div class="compare-grid">
+            <div class="compare-card wall" style="margin:0">
+              <h3 style="font-size:17px">The Wall</h3>
+              <p style="font-size:13px;margin-top:8px">Ambiguous letter → model commits a rate → ~84% cap. Fix: abstention research, not more prompts.</p>
+            </div>
+            <div class="compare-card gold" style="margin:0">
+              <h3 style="font-size:17px">Gold-quality ceiling</h3>
+              <p style="font-size:13px;margin-top:8px">Strict matcher → format/multiplicity gap → clinical review much higher. Fix: scoring surfaces, not model retraining alone.</p>
+            </div>
+          </div>
         </div>
       </details>
 
@@ -2043,8 +2516,16 @@ python -m pytest</code></pre>
     if (!LIMITS_STEPS.includes(stepId)) stepId = 'wall';
     activeLimitsStep = stepId;
 
-    document.querySelectorAll('.limits-screen').forEach(screen => {
-      screen.classList.toggle('active', screen.dataset.limits === stepId);
+    document.querySelectorAll('.limits-story').forEach(story => {
+      const on = story.dataset.limits === stepId;
+      story.classList.toggle('active', on);
+      story.hidden = !on;
+    });
+
+    document.querySelectorAll('.limit-type-btn').forEach(btn => {
+      const on = btn.dataset.limitsGoto === stepId;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
     });
 
     document.querySelectorAll('.limits-dot').forEach(dot => {
@@ -2171,15 +2652,19 @@ python -m pytest</code></pre>
     selectTab(tab, { step, limitsStep, anchor, pushHash: false });
   })();
 
-  // Pipeline steps
-  document.querySelectorAll('.pipeline-stack').forEach(stack => {
-    const pipeline = stack.querySelector('[data-pipeline]');
-    const details = stack.querySelectorAll('.pipe-detail');
-    pipeline.querySelectorAll('.pipe-step').forEach(step => {
+  // Pipeline walkthrough (vertical diagram + example sidebar)
+  document.querySelectorAll('.pipeline-walkthrough').forEach(walkthrough => {
+    const steps = walkthrough.querySelectorAll('.vflow-step');
+    const examples = walkthrough.querySelectorAll('.pipe-ex-stage');
+    steps.forEach(step => {
       step.addEventListener('click', () => {
         const id = step.dataset.step;
-        pipeline.querySelectorAll('.pipe-step').forEach(s => s.classList.toggle('active', s === step));
-        details.forEach(d => d.classList.toggle('active', d.dataset.detail === id));
+        steps.forEach(s => {
+          const on = s === step;
+          s.classList.toggle('active', on);
+          s.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        examples.forEach(ex => ex.classList.toggle('active', ex.dataset.ex === id));
       });
     });
   });
