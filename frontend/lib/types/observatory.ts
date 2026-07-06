@@ -135,4 +135,74 @@ export interface RunSummary {
     rowCount: number;
   };
   rows?: RowScore[];
+}
+
+// ── Gold noise (read-only gold-quality inspection) ──
+//
+// Companion to the gold-audit block above. The /gold-noise tab is read-only:
+// it surfaces the per-item gold-vs-pred evidence the four ExECT ledgers and the
+// Gan RQ10 audit already carry. No write-back.
+
+export interface GoldNoiseItem {
+  family: string;
+  letter_id: string;
+  row_id: string;
+  disagreement_type: "missed" | "spurious" | string;
+  match_key: string;
+  mechanism: string;
+  verdict: string;
+  gold: Record<string, unknown> | null;
+  pred: Record<string, unknown> | null;
+  reason: string;
+  run_id: string;
+  source_letter_text?: string;
+  source: string;
+}
+
+export interface GoldNoiseFamilySummary {
+  family: string;
+  total: number;
+  /** verdict == "gold_right": the genuine-model-error ceiling (n/total). */
+  gold_right: number;
+  model_defensible: number;
+  both_defensible: number;
+  unadjudicated: number;
+  by_verdict: Record<string, number>;
+  by_mechanism: Record<string, number>;
+  rows: GoldNoiseItem[];
+}
+
+export interface GoldNoiseLedgersResponse {
+  families: GoldNoiseFamilySummary[];
+}
+
+export interface GoldNoiseGanAuditResponse {
+  /** The full RQ10 audit JSON, or null when the file is absent. */
+  audit: Record<string, unknown> | null;
+  /** Always "rq10_class" — distinct from ExECT's Mechanism enum. */
+  taxonomy: string;
+  taxonomy_note: string;
+}
+
+export interface GoldNoiseIssuesResponse {
+  count: number;
+  issues: Record<string, unknown>[];
+}
+
+export interface GoldNoiseHypothesis {
+  hypothesis_id: string;
+  family: string;
+  statement: string;
+  predeclaration_doc: string;
+  kill_criterion: string;
+  verdict: string;
+  date: string;
+  owner: string;
+  notes?: string;
+}
+
+export interface GoldNoiseHypothesesResponse {
+  count: number;
+  by_family: Record<string, GoldNoiseHypothesis[]>;
+  entries: GoldNoiseHypothesis[];
 }

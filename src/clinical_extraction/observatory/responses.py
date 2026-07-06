@@ -77,6 +77,55 @@ class GoldAuditNextResponse(BaseModel):
     message: str | None = None
 
 
+# ── Gold noise (read-only gold-quality inspection) ──
+#
+# Mirrors the gold-audit block but is read-only: the ledgers are produced by
+# the offline canonical adjudicators, not by this surface. Payloads are kept
+# permissive (``dict[str, Any]``) so the API does not couple to the full
+# ``GoldCaseRow`` schema, which lives in the un-installed ``exectv2_ledger``
+# script namespace under ``experiments/``.
+
+
+class GoldNoiseLedgersResponse(BaseModel):
+    families: list[dict[str, Any]]
+
+
+class GoldNoiseRowResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    # A single normalized ``GoldNoiseItem``. Kept permissive (extra allowed)
+    # because the shape is the unified adapter output, not a fixed enum.
+    family: str
+    letter_id: str
+    row_id: str
+    disagreement_type: str
+    match_key: str
+    mechanism: str
+    verdict: str
+    gold: dict[str, Any] | None = None
+    pred: dict[str, Any] | None = None
+    reason: str = ""
+    run_id: str = ""
+    source: str
+
+
+class GoldNoiseGanAuditResponse(BaseModel):
+    audit: dict[str, Any] | None
+    taxonomy: str
+    taxonomy_note: str
+
+
+class GoldNoiseIssuesResponse(BaseModel):
+    count: int
+    issues: list[dict[str, Any]]
+
+
+class GoldNoiseHypothesesResponse(BaseModel):
+    count: int
+    by_family: dict[str, list[dict[str, Any]]]
+    entries: list[dict[str, Any]]
+
+
 # ── Gan execution & catalog ──
 
 
