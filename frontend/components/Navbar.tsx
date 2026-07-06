@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Microscope, FileCheck } from "lucide-react";
+import { Microscope, FileCheck, AlertTriangle } from "lucide-react";
 import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET } from "@/lib/datasets";
 import DatasetSwitcher from "@/components/shell/DatasetSwitcher";
 import { SURFACE_META, SURFACE_ORDER, SURFACE_TONE_ACTIVE } from "@/components/surface";
@@ -63,6 +63,18 @@ export default function Navbar() {
           >
             <FileCheck className="h-3 w-3" />
             Audit
+          </Link>
+
+          <Link
+            href="/gold-noise"
+            className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
+              pathname === "/gold-noise"
+                ? "text-error bg-error/10 border border-error/20"
+                : "text-muted border-transparent hover:text-foreground hover:bg-surface-raised"
+            }`}
+          >
+            <AlertTriangle className="h-3 w-3" />
+            Gold noise
           </Link>
 
           {/* Sticky dataset context selector */}

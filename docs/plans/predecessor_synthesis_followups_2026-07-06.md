@@ -47,7 +47,24 @@ fresh-protocol experiments.
 
 ---
 
-## Item 1 — Dedicated "gold noise" frontend tab
+## Item 1 — Dedicated "gold noise" frontend tab  ✅ DONE (2026-07-06)
+
+Landed as the read-only `/gold-noise` route. Backend:
+`src/clinical_extraction/observatory/routers/gold_noise.py` (5 GET endpoints
+over the 4 ExECT ledgers + Gan RQ10 audit + gold-data issues + hypothesis
+registry, behind a unified `GoldNoiseItem` adapter) + response models in
+`responses.py` + registration in `api.py`. Frontend: `app/gold-noise/page.tsx`
++ `components/observatory/GoldNoisePanel.tsx` (orchestrator) +
+`GoldNoiseViews.tsx` (matrix/views, split to respect the 600-line frontend
+gate) + types in `lib/types/observatory.ts` + fetchers in `lib/api/index.ts` +
+mock data under `frontend/public/mock-data/gold-noise/` + Navbar chip.
+**Implementation note:** the spec's four "ceiling" percentages are the live
+`verdict == "gold_right"` fraction of each ledger (SF 19/64=29.7%, Dx
+31/199=15.6%, Rx 26/36=72.2%, Inv 23/35=65.7%), derived at request time rather
+than hard-coded — verified to reproduce against the on-disk ledgers. 12 pytest
+cases in `tests/test_observatory_gold_noise.py`; tsc/eslint/jest green.
+
+---
 
 **Motivating predecessor finding.** All four predecessors independently report
 that SF gold is noisy: dissertation-recursive 29.2% oracle failure; dspy 13.13%

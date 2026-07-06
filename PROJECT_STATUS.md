@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-07-02
+Last updated: 2026-07-06
 
 ## Plain-language snapshot (5 bullets)
 
@@ -642,6 +642,21 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-06: **Item 1 of the predecessor-synthesis follow-ups — `/gold-noise`
+  frontend tab landed** (zero LLM calls, zero ledger/scorer changes). Read-only
+  three-level inspection surface making the gold-quality evidence we cite as four
+  bare percentages inspectable: summary ceiling tiles + cross-project
+  corroboration strip (dissertation-recursive 29.2% / dspy 13.13% / this repo
+  29.7%), a mechanism × family matrix, and item-level letter inspection with
+  gold/pred-mention highlighting. **Key finding baked into the design:** the four
+  "ceiling" numbers are the live `verdict == "gold_right"` fraction of each
+  ledger (SF 19/64=29.7%, Dx 31/199=15.6%, Rx 26/36=72.2%, Inv 23/35=65.7%),
+  derived at request time so the tab cannot drift from the ledgers. Backend
+  `src/clinical_extraction/observatory/routers/gold_noise.py` (5 read-only
+  endpoints) + `responses.py` models + `api.py` registration; 12 pytest cases.
+  Frontend `app/gold-noise/page.tsx` + `GoldNoisePanel.tsx`/`GoldNoiseViews.tsx`
+  + types/fetchers/mock-data + Navbar chip (error tone). Plan:
+  `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 1.
 - 2026-07-02: **Pipeline assumption audit, ALL phases (0–4) complete** (see Now
   for the full entry). Phase 0 four parallel read-only audits confirmed the shared
   PRF1 math is correct but the seed defect class is systemic. Phase 1 landed all

@@ -198,6 +198,16 @@ export async function fetchMockData<T>(path: string, init?: RequestInit): Promis
     mockPath = "/mock-data/gold-audit/rows.json";
   } else if (path.startsWith("/gold-audit/decisions")) {
     mockPath = "/mock-data/gold-audit/decisions.json";
+  } else if (path.startsWith("/gold-noise/ledgers")) {
+    mockPath = "/mock-data/gold-noise/ledgers.json";
+  } else if (path.startsWith("/gold-noise/gan-audit")) {
+    mockPath = "/mock-data/gold-noise/gan-audit.json";
+  } else if (path.startsWith("/gold-noise/issues")) {
+    mockPath = "/mock-data/gold-noise/issues.json";
+  } else if (path.startsWith("/gold-noise/hypotheses")) {
+    mockPath = "/mock-data/gold-noise/hypotheses.json";
+  } else if (path.startsWith("/gold-noise/row")) {
+    mockPath = "/mock-data/gold-noise/row.json";
   } else if (path.startsWith("/records/")) {
     const parts = path.split("/");
     const split = parts[2];

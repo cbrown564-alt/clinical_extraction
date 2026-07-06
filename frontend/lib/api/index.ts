@@ -151,6 +151,33 @@ export function fetchGoldAuditNext(split: string = "validation") {
   );
 }
 
+// ── Gold noise (read-only inspection) ──
+
+export function fetchGoldNoiseLedgers() {
+  return request<import("../types").GoldNoiseLedgersResponse>("/gold-noise/ledgers");
+}
+
+export function fetchGoldNoiseGanAudit() {
+  return request<import("../types").GoldNoiseGanAuditResponse>("/gold-noise/gan-audit");
+}
+
+export function fetchGoldNoiseIssues() {
+  return request<import("../types").GoldNoiseIssuesResponse>("/gold-noise/issues");
+}
+
+export function fetchGoldNoiseRow(family: string, rowId: string) {
+  const params = new URLSearchParams({ family, row_id: rowId });
+  return request<import("../types").GoldNoiseItem>(
+    `/gold-noise/row?${params.toString()}`
+  );
+}
+
+export function fetchGoldNoiseHypotheses() {
+  return request<import("../types").GoldNoiseHypothesesResponse>(
+    "/gold-noise/hypotheses"
+  );
+}
+
 export function fetchPromptTemplate(moduleName: string) {
   return request<import("../types").PromptTemplateResponse>(`/prompts/${moduleName}/template`);
 }

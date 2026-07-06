@@ -14,7 +14,14 @@ from fastapi import FastAPI
 
 from clinical_extraction.observatory.helpers import discover_repo_root, resolve_under_root
 from clinical_extraction.observatory.models import ObservatorySettings
-from clinical_extraction.observatory.routers import exectv2, gan2026, gold_audit, meta, registry
+from clinical_extraction.observatory.routers import (
+    exectv2,
+    gan2026,
+    gold_audit,
+    gold_noise,
+    meta,
+    registry,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     DEFAULT_DATA_PATH,
     DEFAULT_SPLIT_MANIFEST_PATH,
@@ -61,6 +68,7 @@ def create_app(
     app.include_router(gan2026.router)
     app.include_router(registry.router)
     app.include_router(gold_audit.router)
+    app.include_router(gold_noise.router)
 
     return app
 

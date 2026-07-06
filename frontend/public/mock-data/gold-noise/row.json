@@ -1,0 +1,15 @@
+{
+  "family": "Diagnosis",
+  "letter_id": "EA0002",
+  "row_id": "Dx:EA0002:spurious:awareness",
+  "disagreement_type": "spurious",
+  "match_key": "change in awareness",
+  "mechanism": "gold_multiplicity_consolidation",
+  "verdict": "both_defensible",
+  "gold": null,
+  "pred": { "normalized_text": "change in awareness", "raw_text": null, "attributes": {} },
+  "reason": "Granularity coin-flip: the awareness-status variant may restate the already-credited focal episode.",
+  "run_id": "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",
+  "source_letter_text": "Diagnosis: focal epilepsy. During her focal seizures she may have a strange taste and a change in awareness.",
+  "source": "exectv2_gold_case_ledger"
+}
