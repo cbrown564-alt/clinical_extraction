@@ -27,49 +27,364 @@
       --red-soft: #f5dede;
       --violet: #4a3d7a;
       --violet-soft: #e8e2f5;
+      --llm: #1a5f7a;
+      --llm-soft: #d6ecf4;
+      --det: #3d5c3a;
+      --det-soft: #e2eedf;
       --hero-bg: #0c1218;
       --hero-ink: #f4f7fa;
       --shadow: 0 28px 90px rgba(18, 24, 32, 0.14);
       --radius: 10px;
       --measure: 760px;
-      --max: 1320px;
-      --sidebar: 280px;
+      --max: 1200px;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+    html { height: 100%; }
 
     body {
       margin: 0;
+      height: 100%;
+      overflow: hidden;
       background: var(--paper);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 16px;
       line-height: 1.62;
-      letter-spacing: 0;
     }
+
+    /* ── App shell (tabs) ── */
+    .app {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .app-header {
+      flex-shrink: 0;
+      background: var(--hero-bg);
+      color: var(--hero-ink);
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .app-header-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .app-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(212, 236, 236, 0.85);
+    }
+
+    .app-scores {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .score-pill {
+      font-size: 12px;
+      font-weight: 650;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(244, 247, 250, 0.9);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score-pill.gan { border-color: rgba(212, 236, 236, 0.35); }
+    .score-pill.exect { border-color: rgba(220, 235, 216, 0.35); }
+
+    .tab-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      background: var(--page);
+      border-bottom: 1px solid var(--line-strong);
+      padding: 0 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-btn {
+      flex-shrink: 0;
+      padding: 14px 18px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn:hover { color: var(--ink); }
+
+    .tab-btn.active,
+    .tab-btn[aria-selected="true"] {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    .tab-panels {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .tab-panel {
+      display: none;
+      height: 100%;
+    }
+
+    .tab-panel.active { display: block; }
+
+    .panel-scroll {
+      height: 100%;
+      overflow-y: auto;
+      padding: 0 32px 48px;
+      max-width: var(--max);
+      margin: 0 auto;
+      scroll-behavior: smooth;
+    }
+
+    .panel-scroll > .section:first-child { padding-top: 32px; }
+
+    /* ── Track sub-steps ── */
+    .track-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      padding-bottom: 0;
+    }
+
+    .step-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: 4px;
+      padding: 16px 0 12px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 0;
+    }
+
+    .step-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--page);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+    }
+
+    .step-btn:hover { border-color: var(--teal); color: var(--ink); }
+
+    .step-btn.active,
+    .step-btn[aria-selected="true"] {
+      border-color: var(--teal);
+      color: var(--teal);
+      box-shadow: 0 0 0 3px var(--teal-soft);
+    }
+
+    .track-screens {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .track-screen {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .track-screen.active { display: flex; }
+
+    .screen-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-top: 24px;
+    }
+
+    .screen-body .section-label { margin-bottom: 8px; }
+
+    .screen-body h2 { font-size: clamp(24px, 3vw, 34px); }
+
+    .screen-body .section { margin-bottom: 0; }
+
+    .screen-body h3 { margin-top: 24px; font-size: 20px; }
+
+    .step-nav {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0 20px;
+      border-top: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .step-nav-btn {
+      padding: 10px 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--page);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .step-nav-btn:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+    .step-nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .step-nav-btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .step-nav-btn.primary:hover:not(:disabled) { background: #0d5c5e; border-color: #0d5c5e; color: #fff; }
+
+    .step-nav-spacer { flex: 1; }
+
+    .letter-crop {
+      margin-top: 20px;
+      padding: 20px 24px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--page);
+      box-shadow: var(--shadow);
+    }
+
+    .letter-crop-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .letter-crop .letter-body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink);
+      max-width: none;
+    }
+
+    .letter-crop .letter-body p { margin: 0; max-width: none; }
+
+    .extract-inline {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 2px solid var(--teal);
+      border-radius: var(--radius);
+      background: var(--page);
+      box-shadow: 0 0 0 3px var(--teal-soft);
+    }
+
+    .extract-inline .ec-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .extract-inline .ec-value {
+      font-size: 16px;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .extract-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .extract-grid .extract-card { margin-bottom: 0; }
+
+    .tab-jump {
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-size: inherit;
+      color: var(--blue);
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+      cursor: pointer;
+    }
+
+    /* ── Limits sub-steps (mobile) ── */
+    .limits-screens { margin-top: 24px; }
+
+    .limits-screen { display: none; }
+    .limits-screen.active { display: block; }
+
+    .limits-step-nav {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .limits-dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .limits-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 0;
+      padding: 0;
+      background: var(--line-strong);
+      cursor: pointer;
+    }
+
+    .limits-dot.active { background: var(--teal); }
 
     a { color: var(--blue); text-underline-offset: 0.18em; }
 
-    /* ── Hero ── */
-    .hero {
-      position: relative;
-      overflow: hidden;
+    /* ── Overview hero (inside Overview tab) ── */
+    .overview-hero {
+      margin: 0 -32px 36px;
+      padding: 40px 32px 36px;
       background:
-        radial-gradient(ellipse 80% 60% at 85% 10%, rgba(15, 107, 109, 0.35), transparent 55%),
-        radial-gradient(ellipse 50% 40% at 10% 90%, rgba(30, 79, 138, 0.25), transparent 50%),
-        linear-gradient(165deg, #0a1016 0%, #121820 45%, #1a2430 100%);
+        radial-gradient(ellipse 70% 50% at 90% 0%, rgba(15, 107, 109, 0.4), transparent 55%),
+        linear-gradient(165deg, #0a1016 0%, #121820 100%);
       color: var(--hero-ink);
-      padding: 56px 32px 72px;
-    }
-
-    .hero-grid {
-      max-width: var(--max);
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
-      gap: 48px;
-      align-items: end;
     }
 
     .hero-kicker {
@@ -77,121 +392,75 @@
       font-weight: 800;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(212, 236, 236, 0.75);
-      margin: 0 0 20px;
+      color: rgba(212, 236, 236, 0.7);
+      margin: 0 0 16px;
     }
 
     .hero h1 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(42px, 6.5vw, 82px);
+      font-size: clamp(28px, 4vw, 42px);
       font-weight: 500;
-      line-height: 0.95;
-      max-width: 820px;
+      line-height: 1.15;
+      max-width: 720px;
     }
 
-    .hero-dek {
-      margin: 28px 0 0;
-      max-width: 640px;
-      font-size: clamp(17px, 2vw, 21px);
-      line-height: 1.5;
-      color: rgba(244, 247, 250, 0.78);
-    }
-
-    .hero-signals {
+    .headline-grid {
       display: grid;
-      gap: 0;
-      border-left: 1px solid rgba(255,255,255,0.12);
-      padding-left: 28px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 36px;
     }
 
-    .signal {
-      display: grid;
-      grid-template-columns: 92px 1fr;
-      gap: 14px;
-      align-items: baseline;
-      padding: 18px 0;
-      border-top: 1px solid rgba(255,255,255,0.08);
+    .headline-card {
+      padding: 28px 28px 24px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
     }
 
-    .signal:first-child { border-top: 0; padding-top: 0; }
+    .headline-card.gan { border-color: rgba(212, 236, 236, 0.35); }
+    .headline-card.exect { border-color: rgba(220, 235, 216, 0.35); }
 
-    .signal strong {
-      font-size: clamp(26px, 3.5vw, 44px);
+    .headline-card .track {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(212, 236, 236, 0.65);
+      margin-bottom: 8px;
+    }
+
+    .headline-card .score {
+      font-size: clamp(48px, 7vw, 72px);
+      font-weight: 600;
       line-height: 1;
       font-variant-numeric: tabular-nums;
       color: #fff;
     }
 
-    .signal span {
-      font-size: 14px;
-      line-height: 1.4;
-      color: rgba(244, 247, 250, 0.68);
+    .headline-card .detail {
+      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1.45;
+      color: rgba(244, 247, 250, 0.72);
     }
 
-    .hero-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 36px;
-    }
-
-    .chip {
-      padding: 7px 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 650;
-      color: rgba(244,247,250,0.82);
-      background: rgba(255,255,255,0.04);
-    }
-
-    /* ── Layout shell ── */
-    .shell {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 32px 100px;
-      display: grid;
-      grid-template-columns: var(--sidebar) minmax(0, 1fr);
-      gap: 44px;
-      align-items: start;
-    }
-
-    .sidebar {
-      position: sticky;
-      top: 24px;
-      padding-top: 36px;
-    }
-
-    .sidebar-label {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .sidebar nav a {
-      display: block;
-      padding: 9px 0;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      text-decoration: none;
+    .headline-card .arch {
+      margin-top: 10px;
       font-size: 13px;
-      line-height: 1.35;
-      transition: color 0.15s;
+      color: rgba(212, 236, 236, 0.85);
     }
 
-    .sidebar nav a:hover, .sidebar nav a.active { color: var(--ink); }
-
-    .content { min-width: 0; padding-top: 36px; }
-
-    /* ── Sections ── */
-    .section {
-      margin-bottom: 72px;
-      scroll-margin-top: 88px;
+    .hero-dek {
+      margin: 24px 0 0;
+      max-width: 640px;
+      font-size: 17px;
+      line-height: 1.5;
+      color: rgba(244, 247, 250, 0.7);
     }
+
+    .section { margin-bottom: 48px; scroll-margin-top: 16px; }
 
     .section-label {
       font-size: 11px;
@@ -199,29 +468,27 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--teal);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     h2 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(32px, 4vw, 48px);
+      font-size: clamp(28px, 3.5vw, 40px);
       font-weight: 500;
-      line-height: 1.08;
-      letter-spacing: 0;
+      line-height: 1.1;
     }
 
     h3 {
-      margin: 36px 0 0;
+      margin: 32px 0 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 500;
-      line-height: 1.15;
     }
 
     h4 {
-      margin: 28px 0 0;
-      font-size: 13px;
+      margin: 24px 0 0;
+      font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -229,161 +496,164 @@
     }
 
     .lede {
-      margin: 18px 0 0;
+      margin: 14px 0 0;
       max-width: var(--measure);
       color: var(--muted);
-      font-size: 18px;
+      font-size: 17px;
       line-height: 1.55;
     }
 
-    p { margin: 16px 0 0; max-width: var(--measure); }
+    p { margin: 14px 0 0; max-width: var(--measure); }
 
-    /* ── Cards & panels ── */
-    .card-grid {
+    /* ── Workstream fork ── */
+    .fork-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      margin-top: 28px;
-      background: var(--line-strong);
-      border: 1px solid var(--line-strong);
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .fork-card {
+      padding: 24px;
+      border: 2px solid var(--line-strong);
       border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .card {
-      padding: 22px;
       background: var(--page);
-      min-height: 140px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
     }
 
-    .card strong {
-      display: block;
-      font-size: 11px;
+    .fork-card:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .fork-card.active { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+
+    .fork-card .fork-tag {
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 10px;
+      color: var(--teal);
     }
 
-    .card p {
-      margin: 0;
+    .fork-card strong {
+      display: block;
+      margin-top: 8px;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .fork-card .fork-score {
+      margin-top: 10px;
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+
+    .fork-card span.desc {
+      display: block;
+      margin-top: 8px;
       font-size: 14px;
-      line-height: 1.48;
       color: var(--muted);
-      max-width: none;
+      line-height: 1.45;
     }
 
-    .card.teal strong { color: var(--teal); }
-    .card.blue strong { color: var(--blue); }
-    .card.gold strong { color: var(--gold); }
+    .fork-card em {
+      display: block;
+      margin-top: 12px;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      color: var(--teal);
+    }
 
-    .panel {
-      margin-top: 28px;
+    .branch-banner {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .branch-banner.gan { background: var(--teal-soft); border: 1px solid #a8d4d4; }
+    .branch-banner.exect { background: var(--green-soft); border: 1px solid #b8d4b4; }
+
+    /* ── Architecture strip ── */
+    figure.diagram {
+      margin: 24px 0 0;
+      padding: 20px;
       border: 1px solid var(--line-strong);
       border-radius: var(--radius);
-      background: var(--page);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      background: #fbfcfd;
     }
 
-    .panel-head {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--line);
-      background: #f8fafc;
+    .diagram-fallback { width: 100%; overflow-x: auto; }
+    .diagram-fallback svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+    .mermaid { display: none; }
+    figure.diagram.mermaid-ready .diagram-fallback { display: none; }
+    figure.diagram.mermaid-ready .mermaid-live { display: flex; justify-content: center; overflow-x: auto; }
+    .diagram-error { margin-top: 8px; font-size: 12px; color: var(--quiet); text-align: center; }
+
+    .arch-legend {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
       flex-wrap: wrap;
-    }
-
-    .panel-head h3 { margin: 0; font-size: 20px; }
-
-    .panel-body { padding: 22px; }
-
-    /* ── Tabs ── */
-    .tabs { margin-top: 28px; }
-
-    .tab-bar {
-      display: flex;
-      gap: 0;
-      border-bottom: 2px solid var(--line-strong);
-      overflow-x: auto;
-    }
-
-    .tab-btn {
-      padding: 14px 22px;
-      border: 0;
-      background: transparent;
-      font: inherit;
-      font-size: 14px;
-      font-weight: 650;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 12px;
       color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s;
     }
 
-    .tab-btn:hover { color: var(--ink); }
-    .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+    .arch-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; }
+    .dot.llm { background: var(--llm-soft); border: 2px solid var(--llm); }
+    .dot.det { background: var(--det-soft); border: 2px solid var(--det); }
+    .dot.score { background: var(--gold-soft); border: 2px solid var(--gold); }
 
-    .tab-panel { display: none; padding: 28px 0 0; }
-    .tab-panel.active { display: block; }
-
-    /* ── Pipeline steps ── */
-    .pipeline {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-top: 28px;
-    }
+    /* ── Pipeline explorer ── */
+    .pipeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
 
     .pipe-step {
       position: relative;
-      padding: 18px 14px;
+      padding: 16px 12px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--page);
       cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      font: inherit;
+      text-align: left;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
     .pipe-step:hover { border-color: var(--teal); }
-    .pipe-step.active {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px var(--teal-soft);
-      transform: translateY(-2px);
-    }
+    .pipe-step.active { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-soft); }
+    .pipe-step.kind-llm { border-left: 4px solid var(--llm); background: var(--llm-soft); }
+    .pipe-step.kind-det { border-left: 4px solid var(--det); background: var(--det-soft); }
+    .pipe-step.kind-score { border-left: 4px solid var(--gold); }
 
-    .pipe-step .num {
-      font-size: 10px;
+    .pipe-step .kind-badge {
+      display: inline-block;
+      font-size: 9px;
       font-weight: 800;
-      letter-spacing: 0.1em;
-      color: var(--teal);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-bottom: 6px;
     }
 
-    .pipe-step .name {
-      display: block;
-      margin-top: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1.3;
-    }
+    .kind-badge.llm { background: var(--llm); color: #fff; }
+    .kind-badge.det { background: var(--det); color: #fff; }
+    .kind-badge.score { background: var(--gold); color: #fff; }
 
-    .pipe-step .hint {
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--quiet);
-      line-height: 1.35;
-    }
+    .pipe-step .name { display: block; font-size: 13px; font-weight: 700; line-height: 1.3; }
+    .pipe-step .hint { display: block; margin-top: 4px; font-size: 11px; color: var(--quiet); }
 
     .pipe-detail {
-      margin-top: 20px;
-      padding: 22px;
+      margin-top: 16px;
+      padding: 20px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: #f8fafc;
@@ -391,186 +661,247 @@
     }
 
     .pipe-detail.active { display: block; }
-
     .pipe-detail h4 { margin-top: 0; }
 
-    /* ── Tables ── */
-    .table-wrap {
-      overflow-x: auto;
+    /* ── Annotated clinical letter ── */
+    .letter-doc {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 240px;
       margin-top: 24px;
       border: 1px solid var(--line-strong);
       border-radius: var(--radius);
+      overflow: hidden;
       background: var(--page);
+      box-shadow: var(--shadow);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      line-height: 1.42;
+    .letter-pane {
+      padding: 28px 32px 32px;
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 40%);
+      border-right: 1px solid var(--line);
     }
 
-    th, td {
-      padding: 12px 14px;
+    .letter-pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
       border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    th {
-      background: #eef3f7;
+    .letter-pane-header strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 4px;
+    }
+
+    .letter-body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--ink);
+      max-width: none;
+    }
+
+    .letter-body p { margin: 0 0 14px; max-width: none; }
+
+    .hl {
+      position: relative;
+      padding: 1px 4px;
+      border-radius: 4px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .hl-past {
+      background: rgba(138, 151, 163, 0.22);
+      border-bottom: 2px solid var(--quiet);
+    }
+
+    .hl-current {
+      background: rgba(61, 107, 58, 0.18);
+      border-bottom: 2px solid var(--green);
+    }
+
+    .hl-dx { background: rgba(74, 61, 122, 0.14); border-bottom: 2px solid var(--violet); }
+    .hl-sf { background: rgba(15, 107, 109, 0.14); border-bottom: 2px solid var(--teal); }
+    .hl-rx { background: rgba(30, 79, 138, 0.14); border-bottom: 2px solid var(--blue); }
+    .hl-inv { background: rgba(138, 98, 24, 0.14); border-bottom: 2px solid var(--gold); }
+
+    .ann {
+      display: block;
+      margin: 6px 0 14px 0;
+      padding: 8px 10px 8px 12px;
+      border-left: 3px solid var(--line-strong);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    .ann-past { border-left-color: var(--quiet); }
+    .ann-current { border-left-color: var(--green); }
+    .ann-dx { border-left-color: var(--violet); }
+    .ann-sf { border-left-color: var(--teal); }
+    .ann-rx { border-left-color: var(--blue); }
+    .ann-inv { border-left-color: var(--gold); }
+
+    .ann strong {
+      display: block;
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--ink-soft);
+      margin-bottom: 2px;
     }
 
-    tr:last-child td { border-bottom: 0; }
+    .letter-sidebar {
+      padding: 20px 16px;
+      background: #f4f7fa;
+      font-size: 13px;
+    }
 
-    .num-cell { font-variant-numeric: tabular-nums; font-weight: 650; }
-
-    /* ── Bar charts ── */
-    .bar-chart { margin-top: 28px; }
-
-    .bar-row {
-      display: grid;
-      grid-template-columns: 140px 1fr 72px;
-      gap: 14px;
-      align-items: center;
+    .letter-sidebar > strong {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
       margin-bottom: 14px;
     }
 
-    .bar-label {
-      font-size: 13px;
-      font-weight: 650;
-      color: var(--ink-soft);
-    }
-
-    .bar-track {
-      height: 28px;
-      background: #eef2f6;
-      border-radius: 4px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-      min-width: 2px;
-    }
-
-    .bar-fill.teal { background: linear-gradient(90deg, var(--teal), #1a8a8c); }
-    .bar-fill.blue { background: linear-gradient(90deg, var(--blue), #3a7bc8); }
-    .bar-fill.gold { background: linear-gradient(90deg, var(--gold), #c4922a); }
-    .bar-fill.green { background: linear-gradient(90deg, var(--green), #5a9456); }
-    .bar-fill.red { background: linear-gradient(90deg, var(--red), #b85555); }
-
-    .bar-value {
-      font-size: 14px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-    }
-
-    /* ── Accordion / evidence ── */
-    .accordion { margin-top: 24px; }
-
-    .acc-item {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
+    .extract-card {
+      padding: 12px 14px;
       margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--page);
+    }
+
+    .extract-card:last-child { margin-bottom: 0; }
+
+    .extract-card .ec-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .extract-card .ec-value {
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .extract-card .ec-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--quiet);
+      line-height: 1.4;
+    }
+
+    .extract-card.primary {
+      border-width: 2px;
+      box-shadow: 0 0 0 3px var(--teal-soft);
+    }
+
+    .extract-card.ec-dx .ec-label { color: var(--violet); }
+    .extract-card.ec-sf .ec-label { color: var(--teal); }
+    .extract-card.ec-rx .ec-label { color: var(--blue); }
+    .extract-card.ec-inv .ec-label { color: var(--gold); }
+    .extract-card.ec-target .ec-label { color: var(--teal); }
+
+    .letter-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .letter-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .leg-swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* ── Example rows ── */
+    .example-panel {
+      margin-top: 24px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
       overflow: hidden;
       background: var(--page);
     }
 
-    .acc-trigger {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border: 0;
+    .example-panel .ex-head {
+      padding: 14px 20px;
       background: #f8fafc;
-      font: inherit;
-      text-align: left;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .acc-trigger:hover { background: #eef3f7; }
-
-    .acc-trigger strong {
-      font-size: 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
       font-weight: 700;
-      color: var(--ink);
     }
 
-    .acc-trigger .meta {
-      font-size: 12px;
-      color: var(--quiet);
-      font-weight: 500;
-    }
+    .example-panel .ex-body { padding: 20px; }
 
-    .acc-trigger .chevron {
-      font-size: 18px;
-      color: var(--muted);
-      transition: transform 0.2s;
-    }
-
-    .acc-item.open .acc-trigger .chevron { transform: rotate(180deg); }
-
-    .acc-body {
-      display: none;
-      padding: 0 20px 20px;
-      border-top: 1px solid var(--line);
-    }
-
-    .acc-item.open .acc-body { display: block; }
-
-    .evidence-path {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 12px;
-      padding: 6px 12px;
+    .note-excerpt {
+      padding: 14px 16px;
+      border-left: 3px solid var(--blue);
       background: var(--blue-soft);
-      border-radius: 6px;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      color: var(--blue);
+      font-size: 14px;
+      font-style: italic;
+      color: var(--ink-soft);
+      line-height: 1.5;
     }
 
-    .copy-btn {
-      padding: 3px 8px;
+    .row-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .row-outcome {
+      padding: 16px;
+      border-radius: var(--radius);
       border: 1px solid var(--line);
-      border-radius: 4px;
-      background: var(--page);
-      font-size: 11px;
-      cursor: pointer;
-      color: var(--muted);
+      font-size: 13px;
     }
 
-    .copy-btn:hover { color: var(--ink); border-color: var(--line-strong); }
+    .row-outcome.bad { background: var(--red-soft); border-color: #e8c4c4; }
+    .row-outcome.good { background: var(--green-soft); border-color: #c4dcc0; }
+    .row-outcome.neutral { background: var(--gold-soft); border-color: #e8dcc0; }
+
+    .row-outcome .outcome-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
 
     pre {
       overflow: auto;
-      margin: 16px 0 0;
-      padding: 16px;
+      margin: 10px 0 0;
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: 6px;
       background: #f0f4f8;
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 11px;
+      line-height: 1.45;
       max-width: none;
     }
 
-    pre code {
-      font-family: "SFMono-Regular", Consolas, monospace;
-    }
+    pre code { font-family: "SFMono-Regular", Consolas, monospace; }
 
     code {
       padding: 0.08em 0.32em;
@@ -581,41 +912,45 @@
       font-size: 0.86em;
     }
 
-    /* ── Concept compare ── */
-    .compare-grid {
+    /* ── Results mini bars ── */
+    .bar-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 28px;
+      grid-template-columns: 130px 1fr 64px;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
+    .bar-label { font-size: 13px; font-weight: 650; color: var(--ink-soft); }
+    .bar-track { height: 24px; background: #eef2f6; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; min-width: 2px; }
+    .bar-fill.teal { background: linear-gradient(90deg, var(--teal), #1a8a8c); }
+    .bar-fill.green { background: linear-gradient(90deg, var(--green), #5a9456); }
+    .bar-fill.gold { background: linear-gradient(90deg, var(--gold), #c4922a); }
+    .bar-fill.blue { background: linear-gradient(90deg, var(--blue), #3a7bc8); }
+    .bar-fill.red { background: linear-gradient(90deg, var(--red), #b85555); }
+    .bar-value { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+
+    /* ── Ceilings compare ── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+
     .compare-card {
-      padding: 24px;
+      padding: 22px;
       border-radius: var(--radius);
       border: 1px solid var(--line-strong);
     }
 
-    .compare-card.wall {
-      background: linear-gradient(145deg, #fdf5f5, #fff);
-      border-color: #e8c4c4;
-    }
+    .compare-card.wall { background: linear-gradient(145deg, #fdf5f5, #fff); border-color: #e8c4c4; }
+    .compare-card.gold { background: linear-gradient(145deg, #fdfaf0, #fff); border-color: #e8dcc0; }
 
-    .compare-card.gold {
-      background: linear-gradient(145deg, #fdfaf0, #fff);
-      border-color: #e8dcc0;
-    }
-
-    .compare-card h3 {
-      margin: 0;
-      font-size: 22px;
-    }
+    .compare-card h3 { margin: 0; font-size: 20px; }
 
     .compare-card .tag {
       display: inline-block;
-      margin-top: 10px;
+      margin-top: 8px;
       padding: 4px 10px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -624,186 +959,147 @@
     .compare-card.wall .tag { background: var(--red-soft); color: var(--red); }
     .compare-card.gold .tag { background: var(--gold-soft); color: var(--gold); }
 
-    /* ── Codebase tree ── */
-    .codebase {
+    /* ── Claims ── */
+    .claim-row { border-bottom: 1px solid var(--line); }
+
+    .claim-trigger {
+      width: 100%;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 28px;
-    }
-
-    .tree {
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #0f1419;
-      color: #c8d4e0;
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      line-height: 1.55;
-      overflow: auto;
-    }
-
-    .tree .dir { color: #7ec8e3; }
-    .tree .file { color: #a8b8c8; }
-    .tree .highlight { color: #f0c674; font-weight: 650; }
-
-    .module-cards {
-      display: grid;
-      gap: 12px;
-    }
-
-    .module-card {
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--page);
+      grid-template-columns: 44px 1fr auto;
+      gap: 14px;
+      padding: 14px 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      text-align: left;
       cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .module-card:hover, .module-card.active {
-      border-color: var(--teal);
-      background: var(--teal-soft);
-    }
-
-    .module-card strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .module-card span {
-      display: block;
-      margin-top: 4px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    /* ── Thread cards ── */
-    .thread-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 28px;
-    }
-
-    .thread-card {
-      padding: 22px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--page);
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-
-    .thread-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow);
-      border-color: var(--line-strong);
-    }
-
-    .thread-card .tid {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      color: var(--teal);
-    }
-
-    .thread-card h4 {
-      margin: 8px 0 0;
-      font-size: 17px;
-      font-family: Georgia, serif;
-      font-weight: 500;
-      letter-spacing: 0;
-      text-transform: none;
-      color: var(--ink);
-    }
-
-    .thread-card p {
-      margin: 8px 0 0;
-      font-size: 13px;
-      color: var(--muted);
-      max-width: none;
-    }
-
-    /* ── Claims register ── */
-    .claim-row {
-      display: grid;
-      grid-template-columns: 48px 1fr 100px;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--line);
       align-items: start;
     }
 
+    .claim-trigger:hover { background: #f8fafc; }
+    .claim-detail { display: none; padding: 0 0 14px 58px; font-size: 13px; color: var(--muted); }
+    .claim-row.open .claim-detail { display: block; }
+    .claim-row.open .claim-chevron { transform: rotate(180deg); }
+
     .claim-id {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
       border-radius: 8px;
-      font-size: 13px;
-      font-weight: 800;
-      background: var(--violet-soft);
-      color: var(--violet);
+      font-size: 12px; font-weight: 800;
+      background: var(--violet-soft); color: var(--violet);
     }
 
-    .strength {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 4px;
-      text-align: center;
-    }
-
+    .claim-chevron { font-size: 14px; color: var(--quiet); transition: transform 0.2s; }
+    .strength { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; white-space: nowrap; }
     .strength.strong { background: var(--green-soft); color: var(--green); }
     .strength.soft { background: var(--gold-soft); color: var(--gold); }
     .strength.bounded { background: var(--blue-soft); color: var(--blue); }
 
-    /* ── Diagram ── */
-    figure.diagram {
-      margin: 28px 0 0;
-      padding: 24px;
-      border: 1px solid var(--line-strong);
+    /* ── Progressive disclosure (details) ── */
+    .disclosure {
+      margin-top: 16px;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fbfcfd;
+      background: var(--page);
+      overflow: hidden;
     }
 
-    .mermaid { display: flex; justify-content: center; overflow-x: auto; }
+    .disclosure + .disclosure { margin-top: 10px; }
 
-    /* ── Callout ── */
+    .disclosure summary {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+
+    .disclosure summary::-webkit-details-marker { display: none; }
+    .disclosure summary::after { content: "▾"; color: var(--muted); font-size: 16px; }
+    .disclosure[open] summary::after { transform: rotate(180deg); }
+    .disclosure summary:hover { background: #eef3f7; }
+
+    .disclosure-body { padding: 0 20px 20px; border-top: 1px solid var(--line); }
+    .disclosure-body > *:first-child { margin-top: 16px; }
+
+    .panel {
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--page);
+      overflow: hidden;
+    }
+
+    .panel-body { padding: 8px 20px 16px; }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--page);
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef3f7; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+
+    .acc-item { border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 8px; overflow: hidden; background: var(--page); }
+    .acc-trigger {
+      width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding: 14px 18px; border: 0; background: #f8fafc; font: inherit; text-align: left; cursor: pointer;
+    }
+    .acc-trigger:hover { background: #eef3f7; }
+    .acc-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--line); }
+    .acc-item.open .acc-body { display: block; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-chevron { transition: transform 0.2s; color: var(--muted); }
+
+    .evidence-path {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 10px;
+      padding: 6px 12px; background: var(--blue-soft); border-radius: 6px;
+      font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; color: var(--blue);
+    }
+
+    .copy-btn {
+      padding: 3px 8px; border: 1px solid var(--line); border-radius: 4px;
+      background: var(--page); font-size: 11px; cursor: pointer; color: var(--muted);
+    }
+
     .callout {
-      margin-top: 24px;
-      padding: 18px 22px;
+      margin-top: 20px;
+      padding: 16px 20px;
       border-left: 4px solid var(--teal);
       background: var(--teal-soft);
       border-radius: 0 var(--radius) var(--radius) 0;
       max-width: var(--measure);
     }
 
-    .callout.warn {
-      border-left-color: var(--red);
-      background: var(--red-soft);
-    }
-
-    .callout strong {
-      display: block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
+    .callout.warn { border-left-color: var(--red); background: var(--red-soft); }
+    .callout strong { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
     .callout p { margin: 0; font-size: 14px; max-width: none; }
 
-    /* ── Footer ── */
+    dfn, .term {
+      font-style: normal;
+      font-weight: 650;
+      color: var(--ink-soft);
+    }
+
+    .term-note {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--quiet);
+      font-weight: 400;
+    }
+
     footer {
-      margin-top: 80px;
-      padding: 32px 0;
+      margin-top: 48px;
+      padding: 24px 0;
       border-top: 2px solid var(--ink);
       font-size: 13px;
       color: var(--muted);
@@ -811,623 +1107,1131 @@
 
     footer p { max-width: none; }
 
-    @media (max-width: 1080px) {
-      .shell { grid-template-columns: 1fr; }
-      .sidebar { position: static; }
-      .sidebar nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 20px; }
-      .hero-grid { grid-template-columns: 1fr; }
-      .hero-signals { border-left: 0; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 28px; }
-      .card-grid, .compare-grid, .codebase, .thread-grid { grid-template-columns: 1fr; }
-      .pipeline { grid-template-columns: 1fr; }
+    @media (max-width: 960px) {
+      .headline-grid, .fork-grid, .compare-grid, .row-compare, .pipeline, .letter-doc, .extract-grid { grid-template-columns: 1fr; }
+      .letter-pane { border-right: 0; border-bottom: 1px solid var(--line); }
+      .limits-step-nav { display: flex; }
+    }
+
+    @media (min-width: 961px) {
+      .limits-screens {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .limits-screen { display: block; }
+      .limits-screen.active { display: block; }
     }
 
     @media (max-width: 640px) {
-      .shell, .hero { padding-left: 20px; padding-right: 20px; }
-      .bar-row { grid-template-columns: 1fr; gap: 6px; }
-      .bar-value { text-align: left; }
+      .panel-scroll { padding-left: 20px; padding-right: 20px; }
+      .overview-hero { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+      .tab-btn { padding: 12px 14px; font-size: 12px; }
+      .bar-row { grid-template-columns: 1fr; gap: 4px; }
     }
   </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="hero-grid">
-    <div>
-      <p class="hero-kicker">Clinical Extraction Research · Collaborator Onboarding</p>
-      <h1>Hybrid pipelines for auditable clinical extraction</h1>
-      <p class="hero-dek">A self-contained guide to two workstreams — Gan 2026 seizure frequency and ExECTv2 epilepsy phenotyping — with inspectable evidence, architecture deep-dives, and the hard concepts that trip up every new collaborator.</p>
-      <div class="hero-chips">
-        <span class="chip">Gan holdout frozen</span>
-        <span class="chip">ExECT v08 production control</span>
-        <span class="chip">Capability-first claims C1–C5</span>
-        <span class="chip">Three architecture families</span>
+<div class="app">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <span class="app-title">Clinical Extraction · Collaborator guide</span>
+      <div class="app-scores" aria-label="Headline results">
+        <span class="score-pill gan">Track 1 · 81%</span>
+        <span class="score-pill exect">Track 2 · 86%</span>
       </div>
     </div>
-    <div class="hero-signals" aria-label="Headline metrics">
-      <div class="signal"><strong>0.809</strong><span>Gan test450 Purist — promoted structured-event pass (364/450)</span></div>
-      <div class="signal"><strong>0.8566</strong><span>ExECT full-200 clinical_headline — DeepSeek same-core leads overall</span></div>
-      <div class="signal"><strong>0.842</strong><span>Gan ceiling (V12 reasoner) — The Wall prior, not a tuning target</span></div>
-      <div class="signal"><strong>89.3%</strong><span>ExECT SF clinically defensible on dev140 vs 62.1% metric surface</span></div>
-    </div>
-  </div>
-</header>
+  </header>
 
-<div class="shell">
-  <aside class="sidebar">
-    <div class="sidebar-label">On this page</div>
-    <nav aria-label="Section navigation">
-      <a href="#overview">Overview</a>
-      <a href="#workstreams">Two workstreams</a>
-      <a href="#architecture">Architecture families</a>
-      <a href="#pipelines">Pipeline explorer</a>
-      <a href="#results">Key results</a>
-      <a href="#ceilings">The Wall vs gold ceiling</a>
-      <a href="#claims">Paper claims C1–C5</a>
-      <a href="#codebase">Codebase map</a>
-      <a href="#evidence">Evidence inspector</a>
-      <a href="#threads">Reading threads</a>
-      <a href="#boundaries">Claim boundaries</a>
-    </nav>
-  </aside>
+  <nav class="tab-bar" role="tablist" aria-label="Main navigation">
+    <button type="button" class="tab-btn active" role="tab" id="tab-btn-overview" aria-selected="true" aria-controls="tab-overview" data-tab="overview">Overview</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-btn-track1" aria-selected="false" aria-controls="tab-track1" data-tab="track1">Track 1</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-btn-track2" aria-selected="false" aria-controls="tab-track2" data-tab="track2">Track 2</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-btn-limits" aria-selected="false" aria-controls="tab-limits" data-tab="limits">Limits</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-btn-claims" aria-selected="false" aria-controls="tab-claims" data-tab="claims">Claims</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-btn-reference" aria-selected="false" aria-controls="tab-reference" data-tab="reference">Reference</button>
+  </nav>
 
-  <main class="content">
+  <div class="tab-panels">
 
-    <!-- OVERVIEW -->
-    <section class="section" id="overview">
-      <div class="section-label">Start here</div>
-      <h2>What this repository is</h2>
-      <p class="lede">Hybrid deterministic–LLM pipelines for extracting structured clinical data from unstructured epilepsy letters. The long-term goal is a reusable Python package; the active research combines a frozen single-label benchmark (Gan) with broad phenotyping (ExECTv2).</p>
+    <!-- ═══ OVERVIEW ═══ -->
+    <section class="tab-panel active" id="tab-overview" role="tabpanel" aria-labelledby="tab-btn-overview" tabindex="0">
+      <div class="panel-scroll">
 
-      <div class="card-grid">
-        <div class="card teal">
-          <strong>Modular breadth</strong>
-          <p>Task-specific code under <code>tasks/</code>; reusable primitives in <code>core/</code>. Gan is the deep single-label surface; ExECT covers Dx, SF, Rx, Investigations.</p>
-        </div>
-        <div class="card blue">
-          <strong>Evidence-first evaluation</strong>
-          <p>Intermediate schemas, evidence spans, row-level error artifacts, and predeclared frozen audits — not just final F1 numbers.</p>
-        </div>
-        <div class="card gold">
-          <strong>Rules as science</strong>
-          <p>Deterministic behavior is categorized (general, clinical, task-specific, benchmark-format), testable, and ablatable — never hidden preprocessing.</p>
-        </div>
-      </div>
+        <div class="overview-hero">
+          <p class="hero-kicker">Start here</p>
+          <h1>We read epilepsy clinic letters and extract structured clinical facts</h1>
+          <p class="hero-dek">Each pipeline combines a language model (which finds mentions in free text) with fixed rules (which pick, format, and score the answer). Plain numbers first; project vocabulary comes later.</p>
 
-      <div class="callout">
-        <strong>Control plane</strong>
-        <p>Live steering: <code>PROJECT_STATUS.md</code> → <code>docs/plans/ACTIVE_ROADMAP.md</code> → <code>docs/THREAD_MAP.md</code>. Structural truth lives in <code>docs/canon/01–10</code>.</p>
-      </div>
-    </section>
-
-    <!-- WORKSTREAMS -->
-    <section class="section" id="workstreams">
-      <div class="section-label">Parallel research tracks</div>
-      <h2>Two workstreams at a glance</h2>
-      <p class="lede">Both share modular hybrid architecture but differ in task scope, data, status, and headline findings.</p>
-
-      <div class="tabs" data-tabs="workstreams">
-        <div class="tab-bar" role="tablist">
-          <button class="tab-btn active" data-tab="gan" role="tab">Gan 2026 — Seizure frequency</button>
-          <button class="tab-btn" data-tab="exect" role="tab">ExECTv2 — Phenotyping</button>
-        </div>
-        <div class="tab-panel active" data-panel="gan">
-          <div class="table-wrap">
-            <table>
-              <tbody>
-                <tr><th scope="row">Task</th><td>Single-label seizure frequency from synthetic letters</td></tr>
-                <tr><th scope="row">Status</th><td><strong>Holdout frozen</strong> — no further 0.90 optimization on current model family</td></tr>
-                <tr><th scope="row">Headline score</th><td>Purist / Pragmatic on locked test450 (aggregate-only citation)</td></tr>
-                <tr><th scope="row">Promoted architecture</th><td>LLM structured-event extraction + deterministic render (staged hybrid)</td></tr>
-                <tr><th scope="row">Key negative</th><td><strong>The Wall</strong> — 0.842 ceiling from confident over-reading; no forward-observable abstention signal on binding residuals</td></tr>
-                <tr><th scope="row">Package path</th><td><code>src/clinical_extraction/tasks/seizure_frequency/gan2026/</code></td></tr>
-              </tbody>
-            </table>
-          </div>
-          <figure class="diagram">
-            <div class="mermaid">flowchart LR
-  N["Clinical note"] --> SE["LLM structured events"]
-  SE --> R["Deterministic render"]
-  R --> S["Purist / Pragmatic scorer"]
-  S --> A["Reliability scorecard + frozen audit"]</div>
-          </figure>
-        </div>
-        <div class="tab-panel" data-panel="exect">
-          <div class="table-wrap">
-            <table>
-              <tbody>
-                <tr><th scope="row">Task</th><td>Diagnosis, SeizureFrequency, Prescription, Investigations on de-identified letters</td></tr>
-                <tr><th scope="row">Status</th><td><strong>Active</strong> — holistic finding assembly v08 is production control on dev140</td></tr>
-                <tr><th scope="row">Headline score</th><td><code>clinical_headline</code> composite (ADR 0027); benchmark/CUI is diagnostic only</td></tr>
-                <tr><th scope="row">Promoted architecture</th><td>Manifest-driven clinical finding assembly — producers → entity lenses → finding store → headline projection</td></tr>
-                <tr><th scope="row">Key reframing</th><td><strong>Gold-quality ceiling</strong> — SF/Dx benchmark gaps are mostly annotation multiplicity, not model deficit (C1)</td></tr>
-                <tr><th scope="row">Package path</th><td><code>src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/</code></td></tr>
-              </tbody>
-            </table>
-          </div>
-          <figure class="diagram">
-            <div class="mermaid">flowchart LR
-  L["Letter"] --> P["Per-family producers"]
-  P --> E["Entity lenses Dx/SF/Rx/Inv"]
-  E --> F["ClinicalFindingStore"]
-  F --> V["Headline projection view"]
-  V --> H["clinical_headline scorer"]</div>
-          </figure>
-        </div>
-      </div>
-    </section>
-
-    <!-- ARCHITECTURE -->
-    <section class="section" id="architecture">
-      <div class="section-label">Experimental ontology</div>
-      <h2>Three architecture families</h2>
-      <p class="lede">Every experiment belongs to one family. Pipeline names describe research roles, not the order ideas were tried.</p>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Family</th><th>Clinical fact owner</th><th>Format / render</th><th>Example</th><th>Gan verdict</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><code>rules_only</code></td>
-              <td>Deterministic rules</td>
-              <td>Adapters only</td>
-              <td><code>rules_only_v1</code></td>
-              <td>Floor: 343/450 test450 (0.762)</td>
-            </tr>
-            <tr>
-              <td><code>llm_only</code></td>
-              <td>LLM (single/multi-pass)</td>
-              <td>Adapters only</td>
-              <td><code>llm_only_direct_labeler</code></td>
-              <td><span class="num-cell" style="color:var(--red)">Rejected</span> — 329 correct→wrong vs 26 wrong→correct on val</td>
-            </tr>
-            <tr>
-              <td><code>hybrid</code></td>
-              <td>Split: producers, verifiers, adjudicators</td>
-              <td>Explicit projection stages</td>
-              <td><code>hybrid_structured_events</code></td>
-              <td><span class="num-cell" style="color:var(--green)">Promoted</span> — 364/450 test450</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>Five Gan mechanism-level findings</h3>
-      <div class="accordion">
-        <div class="acc-item open">
-          <button class="acc-trigger" type="button"><strong>1. Direct-label prediction is unsafe</strong><span class="meta">Purist scoring</span><span class="chevron">▾</span></button>
-          <div class="acc-body"><p>LLM output must be candidates only. Direct note→label over-reads historical frequency. Evidence: 329 val rows regressed vs 26 recovered when using direct labeler.</p></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button"><strong>2. Structured-event extraction was the breakthrough</strong><span class="meta">Intermediate state</span><span class="chevron">▾</span></button>
-          <div class="acc-body"><p>Source-near events with evidence, kind, temporality suppress over-reading. Inspectable intermediate state is the key architectural move — not another prompt patch.</p></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button"><strong>3. Hybrid/ensemble/guard buys little</strong><span class="meta">+6/750 guard</span><span class="chevron">▾</span></button>
-          <div class="acc-body"><p>Most lift comes from disciplined replace with 3-trace agreement, not broad ensemble stacking. Safety floor gate v0: combined selective gate +8 test450 rows with 0 correct→wrong.</p></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button"><strong>4. Corroboration is non-linear</strong><span class="meta">Reasoner traces</span><span class="chevron">▾</span></button>
-          <div class="acc-body"><p>GPT-only reasoner −51 rows; GPT+DeepSeek −30; full 3-trace +21. V12 ceiling at 379/450 requires full corroboration stack.</p></div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button"><strong>5. GEPA LLM-only plateaus far below hybrid</strong><span class="meta">ExECT negative</span><span class="chevron">▾</span></button>
-          <div class="acc-body"><p>Single-pass GEPA ~0.73 (mini) / ~0.65 (Qwen) vs hybrid v08 0.9155 on dev140 clinical_headline. Root cause is per-family: mostly gold multiplicity (Dx 93.5% H-inflated), not uniform producer recall gap.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PIPELINES -->
-    <section class="section" id="pipelines">
-      <div class="section-label">Interactive deep-dive</div>
-      <h2>Pipeline explorer</h2>
-      <p class="lede">Click each stage to see what it owns, what it must not do, and where failures localize. Two spines share cross-task layers (dictionary normalization, evidence gate).</p>
-
-      <h4>Gan 2026 spine (frozen)</h4>
-      <div class="pipeline" data-pipeline="gan">
-        <div class="pipe-step active" data-step="gan-1"><span class="num">Stage 1</span><span class="name">Letter ingest</span><span class="hint">Loader + split contract</span></div>
-        <div class="pipe-step" data-step="gan-2"><span class="num">Stage 2</span><span class="name">Structured events</span><span class="hint">LLM extraction</span></div>
-        <div class="pipe-step" data-step="gan-3"><span class="num">Stage 3</span><span class="name">Clinical selection</span><span class="hint">Current fact choice</span></div>
-        <div class="pipe-step" data-step="gan-4"><span class="num">Stage 4</span><span class="name">Projection / render</span><span class="hint">Deterministic</span></div>
-        <div class="pipe-step" data-step="gan-5"><span class="num">Stage 5</span><span class="name">Purist score</span><span class="hint">Author eval code</span></div>
-      </div>
-      <div class="pipe-detail active" data-detail="gan-1"><h4>Letter ingest</h4><p><code>gan2026_split_v1</code> locked protocol. Validation ladder: 1 → 25 → 50 → 250 → 750 before holdout. Row quality and source artifacts preserved for evidence substring checks.</p></div>
-      <div class="pipe-detail" data-detail="gan-2"><h4>Structured events (LLM)</h4><p>LLM emits source-near candidates: evidence span, kind (<code>frequency</code>/<code>seizure_free</code>/<code>unknown</code>), temporality, assertion. Must <em>not</em> parse counts, ranges, or scorer-facing labels — that is deterministic normalization's job.</p></div>
-      <div class="pipe-detail" data-detail="gan-3"><h4>Clinical selection</h4><p><code>SelectedClinicalFact</code> chooses the clinically relevant fact from a <code>CandidateSet</code>, or abstains. Selection precedence: C1 current positive rate supersedes coexisting seizure-free (ADR 0016).</p></div>
-      <div class="pipe-detail" data-detail="gan-4"><h4>Projection / render</h4><p>Deterministic code expands phrases into parsed counts, time periods, canonical states, Gan label grammar. Evidence Trace Check (ADR 0014) is a canonical fourth stage — distinct from hybrid Verify vocabulary.</p></div>
-      <div class="pipe-detail" data-detail="gan-5"><h4>Purist / Pragmatic score</h4><p>Compatible with author-provided evaluation code. Purist is strict; Pragmatic allows format tolerance. Holdout citation is aggregate-only — row-level inspection blocked.</p></div>
-
-      <h4 style="margin-top:48px">ExECTv2 Plan 11 spine (production control)</h4>
-      <div class="pipeline" data-pipeline="exect">
-        <div class="pipe-step active" data-step="ex-1"><span class="num">Stage 1</span><span class="name">Producers</span><span class="hint">JSONL replay</span></div>
-        <div class="pipe-step" data-step="ex-2"><span class="num">Stage 2</span><span class="name">Finding store</span><span class="hint">Raw + scored</span></div>
-        <div class="pipe-step" data-step="ex-3"><span class="num">Stage 3</span><span class="name">Entity lenses</span><span class="hint">Dx/SF/Rx/Inv</span></div>
-        <div class="pipe-step" data-step="ex-4"><span class="num">Stage 4</span><span class="name">Views</span><span class="hint">Headline / benchmark</span></div>
-        <div class="pipe-step" data-step="ex-5"><span class="num">Stage 5</span><span class="name">Attribution</span><span class="hint">Provenance sidecar</span></div>
-      </div>
-      <div class="pipe-detail active" data-detail="ex-1"><h4>Candidate producers</h4><p><code>CandidateProducer</code> proposes <code>ClinicalFinding</code> objects with entity, text, attributes, evidence, provenance. Frozen LLM/hybrid artifacts replay through JSONL adapters — v08 is behavior-preserving structural cleanup.</p></div>
-      <div class="pipe-detail" data-detail="ex-2"><h4>ClinicalFindingStore</h4><p>Per-letter collection of raw and scored findings from all producers. Enables component-off ablation: dictionary (+0.019–0.029), residual semantic lens (+0.010–0.012), headline projection (+0.030–0.035) on full-200.</p></div>
-      <div class="pipe-detail" data-detail="ex-3"><h4>Entity lenses</h4><p><code>EntityLens</code> reconciles per entity: Diagnosis hierarchy/negation, SF state adjudication, Prescription regimen, Investigations result lenses. SF uses <code>state_profile</code> as primary metric for SF-family experiments (ADR 0037).</p></div>
-      <div class="pipe-detail" data-detail="ex-4"><h4>Finding views</h4><p>Surface hierarchy: phrase_only → semantic → benchmark. <code>clinical_headline</code> is primary scoreboard. Benchmark F1 fuses three layers — never quote alone as extractor quality.</p></div>
-      <div class="pipe-detail" data-detail="ex-5"><h4>Attribution sidecar</h4><p>Row-level <code>FindingSource</code> and <code>ProvenanceEvent</code> preserve producer ownership, deterministic actions, evidence status. Component evidence contract governs promotion.</p></div>
-    </section>
-
-    <!-- RESULTS -->
-    <section class="section" id="results">
-      <div class="section-label">Evidence-backed numbers</div>
-      <h2>Key results dashboard</h2>
-      <p class="lede">Every figure links to a frozen artifact. Expand panels below for inspectable JSON excerpts.</p>
-
-      <h3>Gan holdout (test450, aggregate-only)</h3>
-      <div class="bar-chart" aria-label="Gan test450 Purist scores">
-        <div class="bar-row"><span class="bar-label">V12 ceiling</span><div class="bar-track"><div class="bar-fill gold" style="width:84.2%"></div></div><span class="bar-value">0.842</span></div>
-        <div class="bar-row"><span class="bar-label">Promoted SE</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">0.809</span></div>
-        <div class="bar-row"><span class="bar-label">rules_only floor</span><div class="bar-track"><div class="bar-fill blue" style="width:76.2%"></div></div><span class="bar-value">0.762</span></div>
-      </div>
-
-      <h3>ExECT full-200 clinical_headline (same-core)</h3>
-      <div class="bar-chart" aria-label="ExECT full-200 overall scores">
-        <div class="bar-row"><span class="bar-label">DeepSeek</span><div class="bar-track"><div class="bar-fill green" style="width:85.66%"></div></div><span class="bar-value">0.8566</span></div>
-        <div class="bar-row"><span class="bar-label">GPT-4.1-mini</span><div class="bar-track"><div class="bar-fill teal" style="width:83.56%"></div></div><span class="bar-value">0.8356</span></div>
-        <div class="bar-row"><span class="bar-label">Qwen repair v02</span><div class="bar-track"><div class="bar-fill blue" style="width:81.97%"></div></div><span class="bar-value">0.8197</span></div>
-      </div>
-
-      <h3>Gold-quality ceiling (dev140 row adjudication)</h3>
-      <div class="compare-grid">
-        <div class="panel" style="box-shadow:none">
-          <div class="panel-head"><h3>SeizureFrequency</h3></div>
-          <div class="panel-body">
-            <div class="bar-row"><span class="bar-label">Metric surface</span><div class="bar-track"><div class="bar-fill red" style="width:62.1%"></div></div><span class="bar-value">62.1%</span></div>
-            <div class="bar-row"><span class="bar-label">Clinically defensible</span><div class="bar-track"><div class="bar-fill green" style="width:89.3%"></div></div><span class="bar-value">89.3%</span></div>
-            <p style="font-size:13px;color:var(--muted)">15/53 metric-errors are genuine model mistakes.</p>
+          <div class="headline-grid" aria-label="Headline results">
+            <div class="headline-card gan">
+              <div class="track">Track 1 · Seizure frequency</div>
+              <div class="score">81%</div>
+              <div class="detail"><strong>364 of 450</strong> letters scored correctly on a held-out test set we no longer tune against</div>
+              <div class="arch">One fact per letter: how often seizures occur now (or seizure-free / unknown)</div>
+            </div>
+            <div class="headline-card exect">
+              <div class="track">Track 2 · Full epilepsy profile</div>
+              <div class="score">86%</div>
+              <div class="detail"><strong>Best overall score</strong> across diagnosis, seizure frequency, prescriptions, and investigations on 200 real letters</div>
+              <div class="arch">Many facts per letter, reconciled and scored as one clinically meaningful result</div>
+            </div>
           </div>
         </div>
-        <div class="panel" style="box-shadow:none">
-          <div class="panel-head"><h3>Diagnosis</h3></div>
-          <div class="panel-body">
-            <div class="bar-row"><span class="bar-label">Benchmark F1</span><div class="bar-track"><div class="bar-fill red" style="width:66.17%"></div></div><span class="bar-value">0.6617</span></div>
-            <div class="bar-row"><span class="bar-label">Adjusted F1</span><div class="bar-track"><div class="bar-fill green" style="width:95.01%"></div></div><span class="bar-value">0.9501</span></div>
-            <p style="font-size:13px;color:var(--muted)">85.2% of disagreements are gold multiplicity artifacts.</p>
-          </div>
-        </div>
-      </div>
 
-      <h3>Cross-task component ablation</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Component</th><th>ExECT dev140 Δ</th><th>Gan validation750 Δ</th><th>Interpretation</th></tr></thead>
-          <tbody>
-            <tr><td><code>evidence_validation</code> gate</td><td class="num-cell">0.0000</td><td class="num-cell">0.0000</td><td>Structurally inert on both stacks</td></tr>
-            <tr><td><code>standard_dictionary</code></td><td class="num-cell" style="color:var(--green)">+0.0389</td><td class="num-cell" style="color:var(--green)">+0.0293</td><td>Cross-task component dividend (C2)</td></tr>
-          </tbody>
-        </table>
+        <section class="section" id="headlines">
+          <div class="section-label">What we built</div>
+          <h2>What this project does</h2>
+          <p class="lede">Doctors write clinic letters in free text. We build software that turns those letters into structured fields a computer can use — seizure counts, diagnoses, drug names, test results. We do not ask a model to jump straight to the final answer; we split the work so each step can be inspected.</p>
+
+          <div class="compare-grid" style="margin-top:24px">
+            <div class="panel">
+              <div class="panel-body">
+                <h4 style="margin-top:8px">Track 1 — one label per letter</h4>
+                <p style="font-size:14px;margin-top:8px">On synthetic letters, we extract <strong>seizure frequency</strong> only. The main lesson: extract facts first, then let rules choose the clinically current answer. Some hard cases still fail even when the model is confident — we call that limit <dfn>The Wall</dfn> (see Limits tab).</p>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-body">
+                <h4 style="margin-top:8px">Track 2 — many fields per letter</h4>
+                <p style="font-size:14px;margin-top:8px">On real de-identified letters, we extract a <strong>full epilepsy profile</strong>. The main lesson: a strict benchmark score can look much worse than clinical judgment because gold labels list facts differently than a clinician would consolidate them — we call that the <dfn>gold-quality ceiling</dfn> (see Limits tab).</p>
+              </div>
+            </div>
+          </div>
+
+          <details class="disclosure" style="margin-top:20px">
+            <summary>Precise headline numbers (for citations)</summary>
+            <div class="disclosure-body">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Track</th><th>Score</th><th>Internal name</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Gan 2026</td><td>0.809 (364/450)</td><td><code>Purist</code> on <code>test450</code></td><td>Held-out set; cite aggregate totals only</td></tr>
+                    <tr><td>ExECTv2</td><td>0.8566 overall</td><td><code>clinical_headline</code> on full-200</td><td>Best model in same-architecture swap; primary scoreboard</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="section" id="fork">
+          <div class="section-label">Choose a path</div>
+          <h2>Two parallel research tracks</h2>
+          <p class="lede">Same broad idea — AI finds mentions, rules finish the job — but different tasks and datasets. Pick one to open its dedicated tab with pipeline walkthrough and results.</p>
+
+          <div class="fork-grid" aria-label="Workstream selection">
+            <button type="button" class="fork-card" data-tab-target="track1">
+              <span class="fork-tag">Track 1</span>
+              <strong>Seizure frequency</strong>
+              <span class="fork-score">81% correct</span>
+              <span class="desc">One answer per synthetic letter · benchmark closed to further tuning · reliability focus</span>
+              <em>Open Track 1 tab →</em>
+            </button>
+            <button type="button" class="fork-card" data-tab-target="track2">
+              <span class="fork-tag">Track 2</span>
+              <strong>Full epilepsy profile</strong>
+              <span class="fork-score">86% overall</span>
+              <span class="desc">Diagnosis, seizures, meds, and tests on real letters · active development</span>
+              <em>Open Track 2 tab →</em>
+            </button>
+          </div>
+        </section>
+
       </div>
     </section>
+
+    <!-- ═══ TRACK 1 ═══ -->
+    <section class="tab-panel" id="tab-track1" role="tabpanel" aria-labelledby="tab-btn-track1" tabindex="0" hidden>
+      <div class="panel-scroll track-panel" data-track="track1">
+
+        <div class="step-bar" role="tablist" aria-label="Track 1 steps">
+          <button type="button" class="step-btn active" role="tab" aria-selected="true" data-track="track1" data-step="task">Task</button>
+          <button type="button" class="step-btn" role="tab" aria-selected="false" data-track="track1" data-step="pipeline">Pipeline</button>
+          <button type="button" class="step-btn" role="tab" aria-selected="false" data-track="track1" data-step="results">Results</button>
+        </div>
+
+        <div class="track-screens">
+          <div class="track-screen active" id="track1-task" data-track="track1" data-screen="task" role="tabpanel">
+            <div class="screen-body">
+              <section class="section" id="branch-gan">
+                <div class="section-label">Track 1</div>
+                <h2>One label per letter — pick current vs past</h2>
+                <p class="lede">Every letter is reduced to a <strong>single answer</strong>: current seizure frequency, seizure-free status, or unknown. Letters often mention old rates and current status together — the software must pick what matters <em>now</em>.</p>
+
+                <div class="letter-crop" aria-label="Key excerpt from clinic letter">
+                  <div class="letter-crop-label">Key paragraph</div>
+                  <div class="letter-body">
+                    <p>On review, <span class="hl hl-past">she previously had 2–3 seizures per month on the old regimen</span>. <span class="hl hl-current">She is currently seizure-free and has remained so for 6 months</span> since switching to levetiracetam 500&nbsp;mg twice daily.</p>
+                  </div>
+                </div>
+
+                <div class="extract-inline">
+                  <div class="ec-label">Extract this → seizure frequency</div>
+                  <div class="ec-value">Seizure-free (6 months)</div>
+                </div>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Benchmark policy &amp; full annotated letter</summary>
+                  <div class="disclosure-body">
+                    <div class="branch-banner gan">This benchmark is <strong>closed</strong>: we report 364/450 on the final test set but do not inspect individual test rows or keep tuning prompts against it.</div>
+                    <div class="letter-doc" aria-label="Annotated clinic letter for seizure frequency task">
+                      <div class="letter-pane">
+                        <div class="letter-pane-header">
+                          <div><strong>Document</strong>Synthetic epilepsy clinic letter (illustrative)</div>
+                          <div style="text-align:right"><strong>Your job</strong>Extract one label →</div>
+                        </div>
+                        <div class="letter-body">
+                          <p><strong>Epilepsy clinic follow-up</strong><br>Patient: 34-year-old woman · Visit date: 12 March 2024</p>
+                          <p>Thank you for ongoing care of this patient with generalised epilepsy.</p>
+                          <p>On review, <span class="hl hl-past">she previously had 2–3 seizures per month on the old regimen</span>. <span class="hl hl-current">She is currently seizure-free and has remained so for 6 months</span> since switching to levetiracetam 500&nbsp;mg twice daily.</p>
+                          <p>No adverse effects reported. Plan: continue current treatment; review in six months.</p>
+                        </div>
+                        <span class="ann ann-past"><strong>Past rate (ignore for final answer)</strong>Historical frequency — relevant clinically, but not the current benchmark label.</span>
+                        <span class="ann ann-current"><strong>Current status (extract this)</strong>The pipeline should end up with a seizure-free label, not the old monthly rate.</span>
+                      </div>
+                      <aside class="letter-sidebar">
+                        <strong>What we extract</strong>
+                        <div class="extract-card ec-target primary">
+                          <div class="ec-label">Seizure frequency</div>
+                          <div class="ec-value">Seizure-free (6 months)</div>
+                          <div class="ec-note">Only field scored on this track — everything else in the letter is ignored.</div>
+                        </div>
+                        <div class="extract-card">
+                          <div class="ec-label" style="color:var(--quiet)">Not extracted here</div>
+                          <div class="ec-value" style="font-weight:500;color:var(--muted)">Diagnosis, medications, tests</div>
+                          <div class="ec-note">Track 2 handles those — this task is deliberately narrow.</div>
+                        </div>
+                      </aside>
+                    </div>
+                    <div class="letter-legend">
+                      <span><i class="leg-swatch" style="background:rgba(138,151,163,0.4);border:1px solid var(--quiet)"></i> Past / historical mention</span>
+                      <span><i class="leg-swatch" style="background:rgba(61,107,58,0.25);border:1px solid var(--green)"></i> Current fact → final label</span>
+                    </div>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <span class="step-nav-spacer"></span>
+              <button type="button" class="step-nav-btn primary" data-track="track1" data-goto-step="pipeline">Next: Pipeline →</button>
+            </div>
+          </div>
+
+          <div class="track-screen" id="track1-pipeline" data-track="track1" data-screen="pipeline" role="tabpanel" hidden>
+            <div class="screen-body">
+              <section class="section">
+                <div class="section-label">Track 1 · Pipeline</div>
+                <h2>Facts first, then rules finish the job</h2>
+                <p class="lede">The language model lists candidate facts from the letter (with quotes and past vs present). Fixed code picks the current fact and formats the single benchmark label.</p>
+
+                <figure class="diagram" data-diagram="gan-flow">
+                  <div class="diagram-fallback" aria-label="Gan pipeline">
+                    <svg viewBox="0 0 720 72" width="720" height="72" role="img">
+                      <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#5c6b78"/></marker></defs>
+                      <rect x="4" y="16" width="110" height="40" rx="6" fill="#dce8f7" stroke="#b8c5d0"/><text x="59" y="41" text-anchor="middle" font-size="11">Letter</text>
+                      <line x1="114" y1="36" x2="134" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
+                      <rect x="134" y="16" width="130" height="40" rx="6" fill="#d6ecf4" stroke="#1a5f7a" stroke-width="2"/><text x="199" y="41" text-anchor="middle" font-size="10">AI finds facts</text>
+                      <line x1="264" y1="36" x2="284" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
+                      <rect x="284" y="16" width="120" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="344" y="41" text-anchor="middle" font-size="10">Pick current</text>
+                      <line x1="404" y1="36" x2="424" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
+                      <rect x="424" y="16" width="120" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="484" y="41" text-anchor="middle" font-size="10">Format label</text>
+                      <line x1="544" y1="36" x2="564" y2="36" stroke="#5c6b78" marker-end="url(#arr)"/>
+                      <rect x="564" y="16" width="150" height="40" rx="6" fill="#f3e8cc" stroke="#8a6218"/><text x="639" y="41" text-anchor="middle" font-size="10">Grade answer</text>
+                    </svg>
+                  </div>
+                  <div class="mermaid">flowchart LR
+  N["Clinical letter"] --> SE["AI extracts candidate facts"]
+  SE --> SEL["Rules pick current fact"]
+  SEL --> R["Rules format label"]
+  R --> S["Benchmark scorer"]</div>
+                </figure>
+                <div class="arch-legend">
+                  <span><i class="dot llm"></i> Language model step</span>
+                  <span><i class="dot det"></i> Fixed rules step</span>
+                  <span><i class="dot score"></i> Scoring step</span>
+                </div>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Explore pipeline stages — click any box</summary>
+                  <div class="disclosure-body">
+                    <div class="pipeline-stack" data-pipeline-stack="gan">
+                      <div class="pipeline" data-pipeline="gan" role="tablist">
+                        <button type="button" class="pipe-step kind-det active" data-step="gan-1"><span class="kind-badge det">Rules</span><span class="name">Load letter</span><span class="hint">Fixed train/test split</span></button>
+                        <button type="button" class="pipe-step kind-llm" data-step="gan-2"><span class="kind-badge llm">AI</span><span class="name">Find facts</span><span class="hint">Not the final label</span></button>
+                        <button type="button" class="pipe-step kind-det" data-step="gan-3"><span class="kind-badge det">Rules</span><span class="name">Pick current fact</span><span class="hint">Past vs present</span></button>
+                        <button type="button" class="pipe-step kind-det" data-step="gan-4"><span class="kind-badge det">Rules</span><span class="name">Format label</span><span class="hint">Counts &amp; bands</span></button>
+                        <button type="button" class="pipe-step kind-score" data-step="gan-5"><span class="kind-badge score">Score</span><span class="name">Grade</span><span class="hint">Match gold label</span></button>
+                      </div>
+                      <div class="pipe-details">
+                        <div class="pipe-detail active" data-detail="gan-1"><h4>Load letter</h4><p>Letters come from a locked dataset split. We validate on smaller sets before ever touching the final 450-letter test set.</p><span class="term-note">Project term: <code>gan2026_split_v1</code></span></div>
+                        <div class="pipe-detail" data-detail="gan-2"><h4>Find facts (language model)</h4><p>The model returns a list of mentions — e.g. a rate, a seizure-free statement, or unknown — each tied to a quote and marked historical or current. It does <em>not</em> output the final scored label.</p><span class="term-note">Project term: <dfn>structured events</dfn> (also called structured-event extraction)</span></div>
+                        <div class="pipe-detail" data-detail="gan-3"><h4>Pick the current fact (rules)</h4><p>When the letter mentions both an old seizure rate and current seizure freedom, rules prefer the current clinically relevant rate (unless policy says otherwise).</p></div>
+                        <div class="pipe-detail" data-detail="gan-4"><h4>Format the label (rules)</h4><p>Code converts the chosen fact into the exact string the benchmark expects — counts, time windows, seizure-free phrasing, etc.</p><span class="term-note">Project term: deterministic <dfn>render</dfn></span></div>
+                        <div class="pipe-detail" data-detail="gan-5"><h4>Grade against gold</h4><p>We compare to the reference label using the benchmark author's strict matcher. Production result: 364 correct of 450 (81%).</p><span class="term-note">Project term: <dfn>Purist</dfn> scorer on <code>test450</code></span></div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="disclosure">
+                  <summary>Worked example — why facts-first wins</summary>
+                  <div class="disclosure-body">
+                    <p style="font-size:14px;color:var(--muted);max-width:var(--measure)">Same letter as the Task screen — two ways to run the AI. Only the second matches how we handle past vs present.</p>
+                    <div class="row-compare">
+                      <div class="row-outcome bad">
+                        <span class="outcome-tag" style="color:var(--red)">Bad · ask AI for the final label</span>
+                        <pre><code>Input: whole letter
+AI output: "2-3 per month"
+Correct label: seizure-free
+Result: WRONG</code></pre>
+                        <p style="margin-top:8px;font-size:12px;color:var(--muted)">The model latched onto the highlighted past rate. This pattern broke hundreds of validation letters.</p>
+                      </div>
+                      <div class="row-outcome good">
+                        <span class="outcome-tag" style="color:var(--green)">Good · facts first, then rules</span>
+                        <pre><code>Fact A (past): "2-3 per month"
+Fact B (current): "seizure-free 6 months"
+Rules pick B → format label
+Result: CORRECT</code></pre>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <button type="button" class="step-nav-btn" data-track="track1" data-goto-step="task">← Task</button>
+              <button type="button" class="step-nav-btn primary" data-track="track1" data-goto-step="results">Next: Results →</button>
+            </div>
+          </div>
+
+          <div class="track-screen" id="track1-results" data-track="track1" data-screen="results" role="tabpanel" hidden>
+            <div class="screen-body">
+              <section class="section">
+                <div class="section-label">Track 1 · Results</div>
+                <h2>81% on the held-out 450-letter test set</h2>
+                <p class="lede">Production result on a benchmark we no longer tune against: <strong>364 of 450</strong> letters scored correctly under the strict <dfn>Purist</dfn> matcher.</p>
+
+                <div class="bar-row" style="margin-top:20px"><span class="bar-label">Research ceiling</span><div class="bar-track"><div class="bar-fill gold" style="width:84.2%"></div></div><span class="bar-value">84%</span></div>
+                <div class="bar-row"><span class="bar-label">Our pipeline</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">81%</span></div>
+                <div class="bar-row"><span class="bar-label">Rules-only baseline</span><div class="bar-track"><div class="bar-fill blue" style="width:76.2%"></div></div><span class="bar-value">76%</span></div>
+                <p style="font-size:13px;color:var(--muted)">The gap between 81% and 84% is mostly hard cases where the model confidently picks the wrong rate — see <button type="button" class="tab-jump" data-tab-target="limits" data-limits-step="wall">Limits</button> for <dfn>The Wall</dfn>.</p>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Compare pipeline designs (rules-only vs AI-only vs hybrid)</summary>
+                  <div class="disclosure-body">
+                    <div class="table-wrap">
+                      <table>
+                        <thead><tr><th>Design</th><th>Outcome</th><th>test450</th></tr></thead>
+                        <tbody>
+                          <tr><td>Hybrid — facts then rules</td><td style="color:var(--green)">Production choice</td><td>364/450</td></tr>
+                          <tr><td>AI-only — direct label</td><td style="color:var(--red)">Rejected</td><td>329 validation rows got worse</td></tr>
+                          <tr><td>Rules-only</td><td>Baseline floor</td><td>343/450</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p style="font-size:13px">Internal names: <code>hybrid_structured_events</code>, <code>llm_only_direct_labeler</code>, <code>rules_only_v1</code>. Sources: <a href="canon/06_gan_clinical_policy.md">canon/06</a></p>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <button type="button" class="step-nav-btn" data-track="track1" data-goto-step="pipeline">← Pipeline</button>
+              <span class="step-nav-spacer"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ TRACK 2 ═══ -->
+    <section class="tab-panel" id="tab-track2" role="tabpanel" aria-labelledby="tab-btn-track2" tabindex="0" hidden>
+      <div class="panel-scroll track-panel" data-track="track2">
+
+        <div class="step-bar" role="tablist" aria-label="Track 2 steps">
+          <button type="button" class="step-btn active" role="tab" aria-selected="true" data-track="track2" data-step="task">Task</button>
+          <button type="button" class="step-btn" role="tab" aria-selected="false" data-track="track2" data-step="pipeline">Pipeline</button>
+          <button type="button" class="step-btn" role="tab" aria-selected="false" data-track="track2" data-step="results">Results</button>
+        </div>
+
+        <div class="track-screens">
+          <div class="track-screen active" id="track2-task" data-track="track2" data-screen="task" role="tabpanel">
+            <div class="screen-body">
+              <section class="section" id="branch-exect">
+                <div class="section-label">Track 2</div>
+                <h2>Four topics per letter — one structured profile</h2>
+                <p class="lede">Each letter yields diagnosis, seizure frequency, prescriptions, and investigations. Different parts of the letter feed different fields — the software reconciles them into one clinically meaningful profile.</p>
+
+                <div class="letter-crop" aria-label="Key excerpts from clinic letter">
+                  <div class="letter-crop-label">Key excerpts</div>
+                  <div class="letter-body">
+                    <p><span class="hl hl-dx">Diagnosis: focal epilepsy, likely temporal lobe origin.</span> <span class="hl hl-inv">MRI confirms left hippocampal sclerosis.</span></p>
+                    <p style="margin-top:12px"><span class="hl hl-sf">No focal or generalised tonic-clonic seizures since last review.</span> She reports occasional myoclonic jerks only — no convulsive events.</p>
+                  </div>
+                </div>
+
+                <div class="extract-grid">
+                  <div class="extract-card ec-dx">
+                    <div class="ec-label">Diagnosis</div>
+                    <div class="ec-value">Focal epilepsy (temporal lobe)</div>
+                  </div>
+                  <div class="extract-card ec-sf">
+                    <div class="ec-label">Seizure frequency</div>
+                    <div class="ec-value">Seizure-free (GTC/focal); myoclonic jerks noted</div>
+                  </div>
+                  <div class="extract-card ec-rx">
+                    <div class="ec-label">Prescriptions</div>
+                    <div class="ec-value">Levetiracetam 1 g BD; lamotrigine 200 mg nocte</div>
+                  </div>
+                  <div class="extract-card ec-inv">
+                    <div class="ec-label">Investigations</div>
+                    <div class="ec-value">MRI: hippocampal sclerosis · EEG: temporal slowing</div>
+                  </div>
+                </div>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Scoring note &amp; full annotated letter</summary>
+                  <div class="disclosure-body">
+                    <div class="branch-banner exect">We extract <strong>diagnosis, seizure frequency, prescriptions, and investigations</strong> from de-identified clinic letters. The number to cite for overall quality is our primary composite score (86% on 200 letters) — not the stricter legacy benchmark alone.</div>
+                    <div class="letter-doc" aria-label="Annotated clinic letter for full profile task">
+                      <div class="letter-pane">
+                        <div class="letter-pane-header">
+                          <div><strong>Document</strong>De-identified clinic letter (illustrative)</div>
+                          <div style="text-align:right"><strong>Your job</strong>Extract four topic areas →</div>
+                        </div>
+                        <div class="letter-body">
+                          <p><strong>Epilepsy outpatient clinic</strong><br>Re: 28-year-old with known epilepsy · Letter date: 4 June 2024</p>
+                          <p><span class="hl hl-dx">Diagnosis: focal epilepsy, likely temporal lobe origin.</span> <span class="hl hl-inv">MRI confirms left hippocampal sclerosis.</span></p>
+                          <p><span class="hl hl-sf">No focal or generalised tonic-clonic seizures since last review.</span> She reports occasional myoclonic jerks only — no convulsive events.</p>
+                          <p><span class="hl hl-rx">Medications unchanged: levetiracetam 1 g twice daily and lamotrigine 200 mg at night.</span> Good adherence, no side effects.</p>
+                          <p><span class="hl hl-inv">EEG last month showed left temporal slowing; no epileptiform discharges on the recording.</span> Plan: continue current regimen; review in 12 months.</p>
+                        </div>
+                        <span class="ann ann-dx"><strong>Diagnosis</strong>Epilepsy type and anatomical context — may merge overlapping terms clinically.</span>
+                        <span class="ann ann-sf"><strong>Seizure frequency</strong>Seizure-free for major events; minor jerks noted — often scored differently by strict vs clinical views.</span>
+                        <span class="ann ann-rx"><strong>Prescriptions</strong>Drug names, doses, and regimen — usually the most straightforward field.</span>
+                        <span class="ann ann-inv"><strong>Investigations</strong>Test results (imaging, EEG) — linked to findings in the letter text.</span>
+                      </div>
+                      <aside class="letter-sidebar">
+                        <strong>Structured output</strong>
+                        <div class="extract-card ec-dx">
+                          <div class="ec-label">Diagnosis</div>
+                          <div class="ec-value">Focal epilepsy (temporal lobe)</div>
+                        </div>
+                        <div class="extract-card ec-sf">
+                          <div class="ec-label">Seizure frequency</div>
+                          <div class="ec-value">Seizure-free (GTC/focal); myoclonic jerks noted</div>
+                        </div>
+                        <div class="extract-card ec-rx">
+                          <div class="ec-label">Prescriptions</div>
+                          <div class="ec-value">Levetiracetam 1 g BD; lamotrigine 200 mg nocte</div>
+                        </div>
+                        <div class="extract-card ec-inv">
+                          <div class="ec-label">Investigations</div>
+                          <div class="ec-value">MRI: hippocampal sclerosis · EEG: temporal slowing</div>
+                        </div>
+                      </aside>
+                    </div>
+                    <div class="letter-legend">
+                      <span><i class="leg-swatch" style="background:rgba(74,61,122,0.25);border:1px solid var(--violet)"></i> Diagnosis</span>
+                      <span><i class="leg-swatch" style="background:rgba(15,107,109,0.2);border:1px solid var(--teal)"></i> Seizure frequency</span>
+                      <span><i class="leg-swatch" style="background:rgba(30,79,138,0.2);border:1px solid var(--blue)"></i> Prescriptions</span>
+                      <span><i class="leg-swatch" style="background:rgba(138,98,24,0.2);border:1px solid var(--gold)"></i> Investigations</span>
+                    </div>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <span class="step-nav-spacer"></span>
+              <button type="button" class="step-nav-btn primary" data-track="track2" data-goto-step="pipeline">Next: Pipeline →</button>
+            </div>
+          </div>
+
+          <div class="track-screen" id="track2-pipeline" data-track="track2" data-screen="pipeline" role="tabpanel" hidden>
+            <div class="screen-body">
+              <section class="section">
+                <div class="section-label">Track 2 · Pipeline</div>
+                <h2>Extractors propose, rules reconcile</h2>
+                <p class="lede">Several extractors each read the letter for their topic. Rules collect all proposals, reconcile conflicts, and produce both a clinician-facing summary score and a stricter benchmark view for debugging.</p>
+
+                <figure class="diagram" data-diagram="exect-flow">
+                  <div class="diagram-fallback" aria-label="ExECT pipeline">
+                    <svg viewBox="0 0 820 72" width="820" height="72" role="img">
+                      <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#5c6b78"/></marker></defs>
+                      <rect x="4" y="16" width="70" height="40" rx="6" fill="#dce8f7" stroke="#b8c5d0"/><text x="39" y="41" text-anchor="middle" font-size="11">Letter</text>
+                      <line x1="74" y1="36" x2="94" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
+                      <rect x="94" y="16" width="100" height="40" rx="6" fill="#d6ecf4" stroke="#1a5f7a" stroke-width="2"/><text x="144" y="41" text-anchor="middle" font-size="10">Extractors</text>
+                      <line x1="194" y1="36" x2="214" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
+                      <rect x="214" y="16" width="100" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="264" y="41" text-anchor="middle" font-size="10">Collect</text>
+                      <line x1="314" y1="36" x2="334" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
+                      <rect x="334" y="16" width="110" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="389" y="41" text-anchor="middle" font-size="10">Reconcile</text>
+                      <line x1="444" y1="36" x2="464" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
+                      <rect x="464" y="16" width="110" height="40" rx="6" fill="#e2eedf" stroke="#3d5c3a" stroke-width="2"/><text x="519" y="41" text-anchor="middle" font-size="10">Summarize</text>
+                      <line x1="574" y1="36" x2="594" y2="36" stroke="#5c6b78" marker-end="url(#arr2)"/>
+                      <rect x="594" y="16" width="220" height="40" rx="6" fill="#f3e8cc" stroke="#8a6218"/><text x="704" y="41" text-anchor="middle" font-size="10">Primary quality score</text>
+                    </svg>
+                  </div>
+                  <div class="mermaid">flowchart LR
+  L["Letter"] --> P["AI/hybrid extractors"]
+  P --> F["Collect all findings"]
+  F --> E["Reconcile by topic"]
+  E --> V["Clinician-facing view"]
+  V --> H["Primary quality score"]</div>
+                </figure>
+                <div class="arch-legend">
+                  <span><i class="dot llm"></i> Extractors (language model)</span>
+                  <span><i class="dot det"></i> Collection, reconciliation, dictionaries</span>
+                  <span><i class="dot score"></i> Primary composite score</span>
+                </div>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Explore pipeline stages — click any box</summary>
+                  <div class="disclosure-body">
+                    <div class="pipeline-stack" data-pipeline-stack="exect">
+                      <div class="pipeline" data-pipeline="exect" role="tablist">
+                        <button type="button" class="pipe-step kind-llm active" data-step="ex-1"><span class="kind-badge llm">AI</span><span class="name">Extractors</span><span class="hint">One per topic</span></button>
+                        <button type="button" class="pipe-step kind-det" data-step="ex-2"><span class="kind-badge det">Rules</span><span class="name">Collect findings</span><span class="hint">Shared store</span></button>
+                        <button type="button" class="pipe-step kind-det" data-step="ex-3"><span class="kind-badge det">Rules</span><span class="name">Reconcile</span><span class="hint">Dx / SF / Rx / tests</span></button>
+                        <button type="button" class="pipe-step kind-det" data-step="ex-4"><span class="kind-badge det">Rules</span><span class="name">Views</span><span class="hint">Summary vs strict</span></button>
+                        <button type="button" class="pipe-step kind-score" data-step="ex-5"><span class="kind-badge score">Trace</span><span class="name">Provenance</span><span class="hint">Who said what</span></button>
+                      </div>
+                      <div class="pipe-details">
+                        <div class="pipe-detail active" data-detail="ex-1"><h4>Extractors (language model)</h4><p>Separate passes (or hybrid steps) propose findings — e.g. a diagnosis mention, a seizure-free statement, a drug dose — each with supporting text from the letter.</p><span class="term-note">Project term: <dfn>producers</dfn> / <code>CandidateProducer</code></span></div>
+                        <div class="pipe-detail" data-detail="ex-2"><h4>Collect findings (rules)</h4><p>All proposals land in one per-letter store so we can turn components on/off and measure what each layer contributes.</p><span class="term-note">Project term: <code>ClinicalFindingStore</code></span></div>
+                        <div class="pipe-detail" data-detail="ex-3"><h4>Reconcile by topic (rules)</h4><p>Topic-specific logic merges duplicates, handles negation, and picks clinically coherent states — e.g. seizure-free vs active rate for the seizure-frequency field.</p><span class="term-note">Project term: <dfn>entity lenses</dfn></span></div>
+                        <div class="pipe-detail" data-detail="ex-4"><h4>Build views (rules)</h4><p>We can project the same findings into a clinician-facing summary (used for the 86% headline) or a strict legacy benchmark (useful for debugging format gaps).</p><span class="term-note">Project term: <code>clinical_headline</code> vs benchmark/CUI surfaces</span></div>
+                        <div class="pipe-detail" data-detail="ex-5"><h4>Provenance (rules)</h4><p>Every emitted finding records which extractor and rule step produced it — needed for component ablation claims.</p></div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <details class="disclosure">
+                  <summary>Worked example — when scoring disagrees</summary>
+                  <div class="disclosure-body">
+                    <p style="font-size:14px;color:var(--muted);max-width:var(--measure)">For the highlighted seizure-frequency sentence, the model’s consolidated output can look clinically right but fail a strict row-by-row benchmark.</p>
+                    <div class="row-compare">
+                      <div class="row-outcome bad">
+                        <span class="outcome-tag" style="color:var(--red)">Strict benchmark view</span>
+                        <pre><code>Gold expects separate rows per seizure type
+Model: one consolidated seizure-free state
+Benchmark: marked WRONG
+(Track-wide SF accuracy ~62%)</code></pre>
+                      </div>
+                      <div class="row-outcome good">
+                        <span class="outcome-tag" style="color:var(--green)">Clinical review</span>
+                        <pre><code>Output: seizure-free for major events;
+  myoclonic jerks documented
+Clinician review: defensible
+(~89% of flagged SF rows)</code></pre>
+                        <p style="margin-top:8px;font-size:12px;color:var(--muted)">Only about 15 of 53 flagged seizure-frequency rows are genuine model mistakes.</p>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <button type="button" class="step-nav-btn" data-track="track2" data-goto-step="task">← Task</button>
+              <button type="button" class="step-nav-btn primary" data-track="track2" data-goto-step="results">Next: Results →</button>
+            </div>
+          </div>
+
+          <div class="track-screen" id="track2-results" data-track="track2" data-screen="results" role="tabpanel" hidden>
+            <div class="screen-body">
+              <section class="section">
+                <div class="section-label">Track 2 · Results</div>
+                <h2>86% overall — same pipeline, different models</h2>
+                <p class="lede">We held the pipeline fixed and only changed which AI model powers the extractors. Scores are overall quality on the primary <code>clinical_headline</code> composite (200 letters).</p>
+
+                <div class="bar-row" style="margin-top:20px"><span class="bar-label">Best model</span><div class="bar-track"><div class="bar-fill green" style="width:85.66%"></div></div><span class="bar-value">86%</span></div>
+                <div class="bar-row"><span class="bar-label">Development model</span><div class="bar-track"><div class="bar-fill teal" style="width:83.56%"></div></div><span class="bar-value">84%</span></div>
+                <div class="bar-row"><span class="bar-label">Third model (diagnostic)</span><div class="bar-track"><div class="bar-fill blue" style="width:81.97%"></div></div><span class="bar-value">82%</span></div>
+                <p style="font-size:13px;color:var(--muted)">Strict legacy benchmark scores can look much lower — see <button type="button" class="tab-jump" data-tab-target="limits" data-limits-step="gold">Limits</button> for the <dfn>gold-quality ceiling</dfn>.</p>
+
+                <details class="disclosure" style="margin-top:16px">
+                  <summary>Scoring surfaces — which number to cite when</summary>
+                  <div class="disclosure-body">
+                    <div class="table-wrap">
+                      <table>
+                        <thead><tr><th>Name</th><th>Plain meaning</th><th>When to use</th></tr></thead>
+                        <tbody>
+                          <tr><td><code>clinical_headline</code></td><td>Primary overall quality (86% headline)</td><td>Papers, status updates, model comparisons</td></tr>
+                          <tr><td><code>state_profile</code></td><td>Seizure-frequency-specific view</td><td>SF-only experiments</td></tr>
+                          <tr><td>benchmark / CUI</td><td>Strict legacy matcher</td><td>Debugging format gaps — not headline quality</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p style="font-size:13px"><a href="canon/04_scoring.md">canon/04_scoring.md</a> · Model names (DeepSeek, GPT-4.1-mini, Qwen) and internal experiment name: same-core model swap on full-200</p>
+                  </div>
+                </details>
+              </section>
+            </div>
+            <div class="step-nav">
+              <button type="button" class="step-nav-btn" data-track="track2" data-goto-step="pipeline">← Pipeline</button>
+              <span class="step-nav-spacer"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ LIMITS ═══ -->
+    <section class="tab-panel" id="tab-limits" role="tabpanel" aria-labelledby="tab-btn-limits" tabindex="0" hidden>
+      <div class="panel-scroll">
 
     <!-- CEILINGS -->
     <section class="section" id="ceilings">
-      <div class="section-label">Do not conflate these</div>
-      <h2>The Wall vs gold-quality ceiling</h2>
-      <p class="lede">Two disjoint mechanisms limit apparent F1. Narratives converge but live on different datasets and scoring surfaces.</p>
+      <div class="section-label">Important limits</div>
+      <h2>Why scores stop improving</h2>
+      <p class="lede">Both tracks hit ceilings — but for different reasons. One is a model that is <em>confidently wrong</em>; the other is a scoreboard that counts answers differently than a clinician would. Do not mix up the two stories.</p>
 
-      <div class="compare-grid">
+      <div class="limits-screens" data-limits-stepper>
+        <div class="limits-screen active" id="limits-wall" data-limits="wall">
         <div class="compare-card wall">
-          <span class="tag">Gan · The Wall</span>
-          <h3>Confident over-reading</h3>
-          <p style="margin-top:14px;font-size:14px">On binding residual rows, every <strong>forward-observable feature</strong> fails to separate withhold-to-unknown from emit-rate. Only hidden gold distinguishes them.</p>
-          <ul style="font-size:13px;color:var(--muted);margin-top:12px;padding-left:1.2em">
-            <li>Irreducible residual: 11 val rows, 8/11 <code>band_unknown</code></li>
-            <li>P2.1 semantic entropy flat → over-reading is <em>confident</em></li>
-            <li>Self-confidence degenerate (99.2% one bucket)</li>
-            <li>External Risk AUROC 0.781 — strongest leg is cross-model agreement</li>
-          </ul>
+          <span class="tag">Track 1 · seizure frequency</span>
+          <h3>Confident mistakes on ambiguous letters</h3>
+          <p style="margin-top:12px;font-size:14px">On the hardest remaining letters, the model picks a specific seizure rate even when a clinician would say “unknown.” Nothing in the model’s own confidence scores reliably flags these cases ahead of time.</p>
+          <div class="bar-row" style="margin-top:16px"><span class="bar-label">Best seen (~84%)</span><div class="bar-track"><div class="bar-fill gold" style="width:84.2%"></div></div><span class="bar-value">84%</span></div>
+          <div class="bar-row"><span class="bar-label">Our pipeline (81%)</span><div class="bar-track"><div class="bar-fill teal" style="width:80.9%"></div></div><span class="bar-value">81%</span></div>
+          <p style="font-size:13px;color:var(--muted);margin-top:12px">We call this limit <dfn>The Wall</dfn> — a research prior (~84%), not a target to prompt-tune toward.</p>
+          <details class="disclosure" style="margin-top:16px">
+            <summary>Example pattern</summary>
+            <div class="disclosure-body">
+              <div class="note-excerpt" style="font-style:normal">The letter hints at past seizure burden but never states a current countable rate. The model outputs a frequency band anyway; the gold label is “unknown.” Uncertainty metrics stay flat — the mistake looks confident.</div>
+            </div>
+          </details>
+          <details class="disclosure">
+            <summary>Project vocabulary &amp; metrics</summary>
+            <div class="disclosure-body">
+              <ul style="font-size:13px;color:var(--muted);padding-left:1.2em">
+                <li><strong>Binding residuals:</strong> rows where only the hidden gold label tells you the model should abstain</li>
+                <li>P2.1: semantic entropy flat on residuals → over-reading is confident</li>
+                <li>11 irreducible validation rows; external risk AUROC 0.781</li>
+              </ul>
+            </div>
+          </details>
         </div>
+        </div>
+        <div class="limits-screen" id="limits-gold" data-limits="gold">
         <div class="compare-card gold">
-          <span class="tag">ExECT · Gold-quality</span>
-          <h3>Annotation multiplicity</h3>
-          <p style="margin-top:14px;font-size:14px">Benchmark F1 fuses target representation, scorer design, and extractor output unit. Many "errors" are format fidelity or gold consolidation artifacts.</p>
-          <ul style="font-size:13px;color:var(--muted);margin-top:12px;padding-left:1.2em">
-            <li>SF: metric counts per-type CUI; model consolidates clinically</li>
-            <li>Dx: gold lists multiple equivalent diagnoses; model merges</li>
-            <li>SF trap: rescoring under <code>state_profile</code> lifts without changing preds</li>
-            <li>Methods caveat: same-team adjudication — label internally adjudicated</li>
-          </ul>
+          <span class="tag">Track 2 · full profile</span>
+          <h3>Scoreboard vs clinical judgment</h3>
+          <p style="margin-top:12px;font-size:14px">The strict benchmark expects facts listed the way annotators encoded them. The model often merges equivalent statements — clinically fine, but marked wrong by the strict matcher.</p>
+          <div class="bar-row" style="margin-top:16px"><span class="bar-label">Clinically OK</span><div class="bar-track"><div class="bar-fill green" style="width:89.3%"></div></div><span class="bar-value">89%</span></div>
+          <div class="bar-row"><span class="bar-label">Strict benchmark</span><div class="bar-track"><div class="bar-fill red" style="width:62.1%"></div></div><span class="bar-value">62%</span></div>
+          <p style="font-size:13px;color:var(--muted);margin-top:12px">We call this the <dfn>gold-quality ceiling</dfn> — most apparent “errors” are representation mismatch, not missing clinical concepts.</p>
+          <details class="disclosure" style="margin-top:16px">
+            <summary>Example pattern — diagnosis</summary>
+            <div class="disclosure-body">
+              <div class="note-excerpt" style="font-style:normal">Gold lists “focal epilepsy” and “temporal lobe epilepsy” as two rows; the model outputs one merged diagnosis. A clinician would accept the merge; the strict benchmark does not. ~85% of diagnosis disagreements look like this.</div>
+            </div>
+          </details>
+          <details class="disclosure">
+            <summary>Project vocabulary &amp; caveats</summary>
+            <div class="disclosure-body">
+              <ul style="font-size:13px;color:var(--muted);padding-left:1.2em">
+                <li>Rescoring under <code>state_profile</code> can raise seizure-frequency scores without changing model output</li>
+                <li>Diagnosis adjusted F1 0.95 vs strict benchmark 0.66</li>
+                <li>Adjudication was done by the same team — note in methods</li>
+              </ul>
+            </div>
+          </details>
+        </div>
         </div>
       </div>
 
-      <figure class="diagram">
+      <div class="limits-step-nav" aria-label="Limits carousel">
+        <button type="button" class="step-nav-btn" data-limits-goto="wall" data-limits-dir="prev" disabled>← The Wall</button>
+        <div class="limits-dots" role="tablist" aria-label="Ceiling type">
+          <button type="button" class="limits-dot active" data-limits-goto="wall" aria-label="Track 1 — The Wall"></button>
+          <button type="button" class="limits-dot" data-limits-goto="gold" aria-label="Track 2 — gold-quality ceiling"></button>
+        </div>
+        <button type="button" class="step-nav-btn" data-limits-goto="gold" data-limits-dir="next">Gold ceiling →</button>
+      </div>
+
+      <details class="disclosure" style="margin-top:20px">
+        <summary>Side-by-side ceiling diagram</summary>
+        <div class="disclosure-body">
+      <figure class="diagram" data-diagram="ceilings">
+        <div class="diagram-fallback" aria-label="Two different ceilings">
+          <svg viewBox="0 0 640 160" width="640" height="160" role="img">
+            <rect x="20" y="20" width="280" height="120" rx="8" fill="#fdf5f5" stroke="#e8c4c4"/>
+            <text x="160" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#8b3333">Confident model mistakes</text>
+            <text x="40" y="72" font-size="10" fill="#5c6b78">Ambiguous letter → model commits → ~84% cap</text>
+            <rect x="340" y="20" width="280" height="120" rx="8" fill="#fdfaf0" stroke="#e8dcc0"/>
+            <text x="480" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#8a6218">Scoring mismatch</text>
+            <text x="360" y="72" font-size="10" fill="#5c6b78">Strict matcher → "wrong" but clinically fine</text>
+          </svg>
+        </div>
         <div class="mermaid">flowchart TB
-  subgraph wall ["The Wall (Gan binding residual)"]
-    W1["Forward-observable features"] --> W2{"Separate withhold vs emit?"}
-    W2 -->|"No signal"| W3["Irreducible residual"]
-    W3 --> W4["0.842 ceiling prior"]
+  subgraph wall ["Track 1 — The Wall"]
+    W1["Ambiguous letter"] --> W2["Model picks a rate"]
+    W2 --> W3["~84% research ceiling"]
   end
-  subgraph gold ["Gold-quality ceiling (ExECT SF/Dx)"]
-    G1["Benchmark scorer"] --> G2["Multiplicity / format gaps"]
-    G2 --> G3["Metric F1 depressed"]
-    G3 --> G4["Adjusted F1 much higher"]
+  subgraph gold ["Track 2 — gold-quality ceiling"]
+    G1["Strict benchmark"] --> G2["Format / multiplicity gap"]
+    G2 --> G3["Clinical review much higher"]
   end</div>
       </figure>
+        </div>
+      </details>
 
       <div class="callout warn">
-        <strong>Wall transfer (C3) — bounded</strong>
-        <p>ExECT SF probe: 6/9 checks pass; External Risk AUROC 0.764; binding-slice abstention AUROC 0.676 (below 0.70 bar). Suggestive, not definitive — small-n slice.</p>
+        <strong>Cross-track note (claim C3)</strong>
+        <p>Early evidence suggests Track 1’s “confident mistake” pattern may appear in Track 2 seizure-frequency errors too — but abstention signals are not yet strong enough to act on automatically.</p>
       </div>
     </section>
+
+      </div>
+    </section>
+
+    <!-- ═══ CLAIMS ═══ -->
+    <section class="tab-panel" id="tab-claims" role="tabpanel" aria-labelledby="tab-btn-claims" tabindex="0" hidden>
+      <div class="panel-scroll">
 
     <!-- CLAIMS -->
     <section class="section" id="claims">
-      <div class="section-label">Paper register</div>
-      <h2>Capability claims C1–C5</h2>
-      <p class="lede">The manuscript pivots from benchmark dominance to capability-first claims. Each has explicit boundaries.</p>
+      <div class="section-label">For the paper</div>
+      <h2>What we claim — and what we do not</h2>
+      <p class="lede">Five capability claims (C1–C5) replace “we beat the benchmark.” Summaries are in plain language; expand a row for evidence paths and wording boundaries.</p>
 
       <div class="panel">
-        <div class="panel-body" style="padding-top:8px">
-          <div class="claim-row">
-            <div class="claim-id">C1</div>
-            <div><strong>Benchmark gap is substantially gold noise on SF/Dx</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">SF 89.3% vs 62.1%; Dx F1 0.9501 adjusted. Circular adjudication caveat required.</p></div>
-            <span class="strength soft">Soft, load-bearing</span>
+        <div class="panel-body">
+          <div class="claim-row" id="claim-c1">
+            <button type="button" class="claim-trigger" aria-expanded="false">
+              <div class="claim-id">C1</div>
+              <div><strong>Many benchmark “errors” are label-format issues, not bad extractions</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Seizure frequency ~89% clinically OK vs ~62% strict; diagnosis similar.</p></div>
+              <span class="strength soft">Nuanced</span>
+            </button>
+            <div class="claim-detail">
+              <p><strong>Evidence:</strong> SF row analysis 2026-06-29; Dx 2026-06-30 · <a href="canon/10_paper_provenance.md">canon/10 § C1</a></p>
+              <p><strong>Do not say:</strong> “We beat the 0.87/0.90 benchmark” without explaining scoring surfaces.</p>
+            </div>
           </div>
-          <div class="claim-row">
-            <div class="claim-id">C2</div>
-            <div><strong>Cross-task component dividend</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Dictionary +0.029–0.039; evidence gate Δ=0 both tasks.</p></div>
-            <span class="strength strong">Strong</span>
+          <div class="claim-row" id="claim-c2">
+            <button type="button" class="claim-trigger" aria-expanded="false">
+              <div class="claim-id">C2</div>
+              <div><strong>Shared components help both tracks</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Medical dictionary normalization lifts both; evidence gate does not.</p></div>
+              <span class="strength strong">Strong</span>
+            </button>
+            <div class="claim-detail">
+              <p><strong>Evidence:</strong> <a href="experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md">cross-task ablation</a> · dictionary +3–4 pts on composite score</p>
+            </div>
           </div>
-          <div class="claim-row">
-            <div class="claim-id">C3</div>
-            <div><strong>Wall mechanism transfers to ExECT SF (bounded)</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">6/9 probe checks; abstention AUROC below usefulness bar.</p></div>
-            <span class="strength bounded">Bounded</span>
+          <div class="claim-row" id="claim-c3">
+            <button type="button" class="claim-trigger" aria-expanded="false">
+              <div class="claim-id">C3</div>
+              <div><strong>Track 1’s “confident mistake” pattern may appear in Track 2 seizures (early signal only)</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Suggestive probe; automatic abstention not yet useful.</p></div>
+              <span class="strength bounded">Early evidence</span>
+            </button>
+            <div class="claim-detail">
+              <p><strong>Evidence:</strong> <a href="experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md">SF wall-transfer probe</a></p>
+              <p><strong>Do not say:</strong> Definitive proof that The Wall transfers — abstention AUROC below usefulness bar.</p>
+            </div>
           </div>
-          <div class="claim-row">
-            <div class="claim-id">C4</div>
-            <div><strong>Model-agnostic architecture (DeepSeek ≥ GPT on frozen core)</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Qwen 0.8197 diagnostic — explain in text, not headline.</p></div>
-            <span class="strength strong">Strong, asymmetric</span>
+          <div class="claim-row" id="claim-c4">
+            <button type="button" class="claim-trigger" aria-expanded="false">
+              <div class="claim-id">C4</div>
+              <div><strong>The pipeline design works across language models</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Swap models, keep architecture — scores stay in the same band; one model leads slightly.</p></div>
+              <span class="strength strong">Strong</span>
+            </button>
+            <div class="claim-detail">
+              <p><strong>Evidence:</strong> <code>experiments/exectv2_same_core_model_swap_full200_20260625.json</code> (same-core model swap, full-200)</p>
+              <p><strong>Do not say:</strong> Every model is interchangeable on every field — asymmetry exists (Qwen weaker on seizures).</p>
+            </div>
           </div>
-          <div class="claim-row" style="border-bottom:0">
-            <div class="claim-id">C5</div>
-            <div><strong>Evaluation discipline</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Held-out-family CV, v0.7 regression catch, Gate 1–4 ladder, predeclarations.</p></div>
-            <span class="strength strong">Strong</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CODEBASE -->
-    <section class="section" id="codebase">
-      <div class="section-label">Repository map</div>
-      <h2>Codebase at a glance</h2>
-      <p class="lede">Click a module card to highlight its path. The package grows from concrete benchmarks toward reusable clinical extraction primitives.</p>
-
-      <div class="codebase">
-        <div class="tree" id="code-tree"><span class="dir">src/clinical_extraction/</span>
-├── <span class="highlight">core/</span>          <span class="file">pipeline, schema, evidence, validation</span>
-├── <span class="dir">tasks/</span>
-│   ├── <span class="highlight">seizure_frequency/gan2026/</span>
-│   │   ├── contract/     <span class="file">data + label policy</span>
-│   │   ├── deterministic/ <span class="file">rules_only, normalize, render</span>
-│   │   ├── llm/          <span class="file">structured events, claim table</span>
-│   │   ├── hybrid/       <span class="file">staged assembly, adjudicators</span>
-│   │   └── cli/          <span class="file">gan2026-* experiment drivers</span>
-│   └── <span class="highlight">epilepsy_phenotyping/exectv2/</span>
-│       ├── assembly/     <span class="file">finding store, lenses, views</span>
-│       ├── llm/pipelines/ <span class="file">per-family producers</span>
-│       ├── deterministic/ <span class="file">rules, projection, SF registry</span>
-│       └── gepa/         <span class="file">LLM-only optimizer (closed negative)</span>
-└── <span class="highlight">observatory/</span>     <span class="file">FastAPI artifact inspection server</span>
-
-<span class="dir">docs/canon/01–10</span>   <span class="file">structural truth</span>
-<span class="dir">experiments/</span>       <span class="file">registry.jsonl + run outputs</span></div>
-        <div class="module-cards">
-          <div class="module-card active" data-module="core"><strong>core/</strong><span>Task-neutral pipeline protocols, evidence-span utilities, validation types, scoring primitives. Shared across Gan and ExECT.</span></div>
-          <div class="module-card" data-module="gan"><strong>tasks/seizure_frequency/gan2026/</strong><span>Gan loader, Purist/Pragmatic scoring, deterministic rule families, LLM structured-event pipelines, reliability scorecard drivers.</span></div>
-          <div class="module-card" data-module="exect"><strong>tasks/epilepsy_phenotyping/exectv2/</strong><span>Clinical finding assembly v08, entity lenses (Dx/SF/Rx/Inv), headline projection, component-off ablation replay.</span></div>
-          <div class="module-card" data-module="obs"><strong>observatory/</strong><span>FastAPI server for browsing experiment artifacts, row errors, and gold audit samples without reading raw JSONL by hand.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- EVIDENCE -->
-    <section class="section" id="evidence">
-      <div class="section-label">Inspectable artifacts</div>
-      <h2>Evidence inspector</h2>
-      <p class="lede">Frozen JSON excerpts from the experiment registry. Copy paths to locate full artifacts in the repo.</p>
-
-      <div class="accordion">
-        <div class="acc-item open">
-          <button class="acc-trigger" type="button">
-            <strong>ExECT same-core model swap (full-200)</strong>
-            <span class="meta">2026-06-25 · aggregate-only</span>
-            <span class="chevron">▾</span>
-          </button>
-          <div class="acc-body">
-            <span class="evidence-path">experiments/exectv2_same_core_model_swap_full200_20260625.json<button class="copy-btn" data-copy="experiments/exectv2_same_core_model_swap_full200_20260625.json">Copy</button></span>
-            <pre><code>{
-  "artifact_kind": "exectv2_same_core_model_swap_full200",
-  "architecture_core_id": "exectv2_2call_no_sf_adjudicator_model_swap",
-  "claim_boundary": "Full-200 aggregate-only same-core validation…",
-  "model_rows": [
-    { "candidate_id": "…gpt41mini_full200", "clinical_headline_overall": 0.8356, "sf_family": 0.7525 },
-    { "candidate_id": "…deepseek_full200", "clinical_headline_overall": 0.8566, "sf_family": 0.7602 },
-    { "candidate_id": "…qwen_repair_v02", "clinical_headline_overall": 0.8197, "sf_family": 0.7020 }
-  ]
-}</code></pre>
-            <p style="font-size:13px;color:var(--muted)">Canonical source for C4 model-agnostic comparison. Qwen is diagnostic only — 0 parse failures, exact evidence 1.0000.</p>
-          </div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button">
-            <strong>Component-off replay (full-200)</strong>
-            <span class="meta">2026-06-26 · component impact</span>
-            <span class="chevron">▾</span>
-          </button>
-          <div class="acc-body">
-            <span class="evidence-path">experiments/exectv2_component_off_replay_full200_20260626.json<button class="copy-btn" data-copy="experiments/exectv2_component_off_replay_full200_20260626.json">Copy</button></span>
-            <pre><code>{
-  "artifact_kind": "exectv2_component_off_full200_readout_set",
-  "scorer_view": "clinical_headline",
-  "selected_components": [
-    { "component_id": "standard_dictionary", "baseline_surface": "dictionary_normalized" },
-    { "component_id": "residual_semantic_lens", "prediction_bearing_status": "yes" },
-    { "component_id": "headline_projection", "prediction_bearing_status": "no" }
-  ],
-  "stop_rule_outcome": "all_selected_component_deltas_positive_limited_claim"
-}</code></pre>
-            <p style="font-size:13px;color:var(--muted)">Separate from Reliability Scorecard — different split, scorer, inspection policy.</p>
-          </div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button">
-            <strong>Gan reliability master scorecard</strong>
-            <span class="meta">2026-06-17 · P0–P2 complete</span>
-            <span class="chevron">▾</span>
-          </button>
-          <div class="acc-body">
-            <span class="evidence-path">experiments/gan2026_reliability_master_scorecard_2026-06-17.md<button class="copy-btn" data-copy="experiments/gan2026_reliability_master_scorecard_2026-06-17.md">Copy</button></span>
-            <pre><code>Subject Purist: 0.881 val / 0.809 test
-P0.2 risk-coverage AUC: 0.0404 (oracle 0.0073)
-P2.1 semantic entropy on residual: mean 0.018 (band_unknown 0.000)
-→ H0_confident_over_reading
-Self-confidence: degenerate (99.2% one bucket)
-External confidence ECE: 0.080, failure AUROC: 0.781</code></pre>
-          </div>
-        </div>
-        <div class="acc-item">
-          <button class="acc-trigger" type="button">
-            <strong>Gan selective safety floor gate (test450 audit)</strong>
-            <span class="meta">2026-06-03 · frozen audit</span>
-            <span class="chevron">▾</span>
-          </button>
-          <div class="acc-body">
-            <span class="evidence-path">experiments/gan2026_selective_safety_floor_gate_v0_test450_frozen_audit_first_readout_2026-06-03.json<button class="copy-btn" data-copy="experiments/gan2026_selective_safety_floor_gate_v0_test450_frozen_audit_first_readout_2026-06-03.json">Copy</button></span>
-            <pre><code>combined_selective_gate_v0:
-  purist_correct: 351/450 (+8 vs baseline 343)
-  correct_to_wrong: 0
-  changed_label_precision: 0.8889
-  changed_rows: 14
-
-competing_frequency_uncertainty (counterexample):
-  purist_correct: 270/450
-  correct_to_wrong: 67  ← why naive uncertainty gates fail</code></pre>
+          <div class="claim-row" id="claim-c5" style="border-bottom:0">
+            <button type="button" class="claim-trigger" aria-expanded="false">
+              <div class="claim-id">C5</div>
+              <div><strong>We pre-register experiments and freeze test results before claiming them</strong><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Validation ladder, locked test sets, documented audit policy.</p></div>
+              <span class="strength strong">Strong</span>
+            </button>
+            <div class="claim-detail">
+              <p><strong>Evidence:</strong> <a href="../experiments/README.md">experiments/README</a> · Gan selective gate audit · registry.jsonl</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- THREADS -->
-    <section class="section" id="threads">
-      <div class="section-label">Pick your narrative</div>
-      <h2>Five reading threads</h2>
-      <p class="lede">Each thread is ≤8 hops to frozen evidence. Full hop lists in <code>docs/THREAD_MAP.md</code>.</p>
-
-      <div class="thread-grid">
-        <a class="thread-card" href="canon/06_gan_clinical_policy.md"><span class="tid">T1 · Reliability</span><h4>The Wall &amp; abstention routing</h4><p>Where does confident over-reading live? Can forward-observable signals route it without gold?</p></a>
-        <a class="thread-card" href="canon/04_scoring.md"><span class="tid">T2 · Clinical recovery</span><h4>Headline vs benchmark F1</h4><p>What is the headline score? Why is strict benchmark F1 not it? Gold-quality row adjudication.</p></a>
-        <a class="thread-card" href="design/architecture.md"><span class="tid">T3 · Architecture</span><h4>Component evidence &amp; ablation</h4><p>What does each pipeline stage own? Rules vs LLM-only vs hybrid comparison.</p></a>
-        <a class="thread-card" href="canon/10_paper_provenance.md"><span class="tid">T4 · Paper closeout</span><h4>Claims C1–C5 &amp; provenance</h4><p>What can the manuscript assert? Frozen artifact index governs promotion.</p></a>
-        <a class="thread-card" href="runbooks/documentation_lifecycle.md"><span class="tid">T5 · Engineering</span><h4>Experiment governance</h4><p>Predeclare → validation ladder → frozen index. Registry hygiene and archive policy.</p></a>
       </div>
     </section>
 
-    <!-- BOUNDARIES -->
-    <section class="section" id="boundaries">
-      <div class="section-label">Guardrails</div>
-      <h2>Claims you must not make</h2>
-      <p class="lede">Preserve these boundaries in papers, slides, and status updates.</p>
+    <!-- ═══ REFERENCE ═══ -->
+    <section class="tab-panel" id="tab-reference" role="tabpanel" aria-labelledby="tab-btn-reference" tabindex="0" hidden>
+      <div class="panel-scroll">
 
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Do not claim</th><th>Why</th><th>Instead say</th></tr></thead>
-          <tbody>
-            <tr><td>Unqualified "beat 0.87/0.90 benchmark"</td><td>Benchmark surface is format-fidelity diagnostic; gap is mostly representation</td><td>clinical_headline recovery + gold-quality reconciliation (C1)</td></tr>
-            <tr><td>Row-level test450 / full-200 inspection</td><td>Predeclared aggregate-only audit policy</td><td>Aggregate frozen readout with claim boundary citation</td></tr>
-            <tr><td>LLM-only as production control</td><td>GEPA ~0.73 vs hybrid ~0.92 on dev140</td><td>Three-way negative result with per-family attribution</td></tr>
-            <tr><td>Conflate The Wall and gold-quality ceiling</td><td>Disjoint datasets and scoring surfaces</td><td>Name the mechanism and slice explicitly</td></tr>
-            <tr><td>Consensus/fresh selector promotion</td><td>Gate 4 failed holdout (348/450, precision 0.59)</td><td>CUT — documented in selector fate memo</td></tr>
-            <tr><td>Qwen in abstract headline range</td><td>0.8197 diagnostic; underperforms mini on identical architecture</td><td>Per-family table with asymmetry explanation (C4)</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- MORE (progressive disclosure) -->
+    <section class="section" id="more">
+      <div class="section-label">Reference</div>
+      <h2>Glossary, evidence, and engineering</h2>
+      <p class="lede">Project-specific names, artifact paths, and setup commands — open only when you need them.</p>
 
-      <div class="callout" style="margin-top:32px">
-        <strong>Getting started (engineering)</strong>
-        <p><code>python -m venv .venv && source .venv/bin/activate && pip install -e ".[dev]" && pytest</code> — First milestone: reproduce Gan-compatible loading, normalization, and evaluation locally.</p>
-      </div>
+      <details class="disclosure">
+        <summary>Project glossary</summary>
+        <div class="disclosure-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Term</th><th>Plain meaning</th></tr></thead>
+              <tbody>
+                <tr><td><dfn>The Wall</dfn></td><td>~84% ceiling on Track 1 from confidently wrong answers on ambiguous letters; not fixable by prompt tuning alone</td></tr>
+                <tr><td><dfn>Gold-quality ceiling</dfn></td><td>Track 2 gap between strict benchmark scores and clinician review — mostly label format, not extraction failure</td></tr>
+                <tr><td><dfn>Structured events</dfn></td><td>AI output listing candidate facts (with quotes and timing) instead of a final label</td></tr>
+                <tr><td><code>Purist</code> / <code>test450</code></td><td>Track 1 strict scorer and 450-letter held-out test set</td></tr>
+                <tr><td><code>clinical_headline</code></td><td>Track 2 primary composite quality score (86% headline on 200 letters)</td></tr>
+                <tr><td>Same-core model swap</td><td>Experiment that changes only the language model while holding pipeline code fixed</td></tr>
+                <tr><td>Producers / entity lenses</td><td>Extractors that propose findings; rules that reconcile them per topic</td></tr>
+                <tr><td>Gan 2026 / ExECTv2</td><td>Internal names for Track 1 and Track 2 codebases</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>Frozen evidence inspector</summary>
+        <div class="disclosure-body">
+          <div class="acc-item open" id="evidence-exect-swap">
+            <button class="acc-trigger" type="button"><strong>Track 2 model comparison (200 letters)</strong><span class="acc-chevron">▾</span></button>
+            <div class="acc-body">
+              <span class="evidence-path">experiments/exectv2_same_core_model_swap_full200_20260625.json<button class="copy-btn" data-copy="experiments/exectv2_same_core_model_swap_full200_20260625.json">Copy</button></span>
+              <pre><code>{ "clinical_headline_overall": [0.8356, 0.8566, 0.8197] }
+GPT-4.1-mini / DeepSeek / Qwen repair v02</code></pre>
+            </div>
+          </div>
+          <div class="acc-item" id="evidence-gan-scorecard">
+            <button class="acc-trigger" type="button"><strong>Track 1 reliability analysis</strong><span class="acc-chevron">▾</span></button>
+            <div class="acc-body">
+              <span class="evidence-path">experiments/gan2026_reliability_master_scorecard_2026-06-17.md<button class="copy-btn" data-copy="experiments/gan2026_reliability_master_scorecard_2026-06-17.md">Copy</button></span>
+              <pre><code>Subject Purist: 0.881 val / 0.809 test
+P2.1 semantic entropy on residual: mean 0.018
+→ H0_confident_over_reading</code></pre>
+            </div>
+          </div>
+          <div class="acc-item" id="evidence-component-off">
+            <button class="acc-trigger" type="button"><strong>Component-off replay (full-200)</strong><span class="acc-chevron">▾</span></button>
+            <div class="acc-body">
+              <span class="evidence-path">experiments/exectv2_component_off_replay_full200_20260626.json<button class="copy-btn" data-copy="experiments/exectv2_component_off_replay_full200_20260626.json">Copy</button></span>
+              <pre><code>standard_dictionary: +0.0389 clinical_headline
+evidence_validation gate: Δ=0</code></pre>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>Codebase map</summary>
+        <div class="disclosure-body">
+          <pre><code>src/clinical_extraction/
+  core/                              shared pipeline, evidence, validation
+  tasks/seizure_frequency/gan2026/   Gan loader, SE pipelines, Purist scorer
+  tasks/epilepsy_phenotyping/exectv2/ assembly v08, lenses, producers
+  observatory/                       FastAPI artifact browser
+
+docs/canon/01–10                     structural truth
+experiments/registry.jsonl           run outputs</code></pre>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>Getting started (engineering)</summary>
+        <div class="disclosure-body">
+          <pre><code>python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+python -m pytest</code></pre>
+          <p style="font-size:14px">First milestone: reproduce data loading, label normalization, and scoring for Track 1 before changing pipelines. See <a href="../experiments/README.md">experiments/README.md</a>.</p>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>Reading threads &amp; navigation</summary>
+        <div class="disclosure-body">
+          <p style="font-size:14px">Five curated hop lists (T1 reliability → T5 engineering) in <a href="THREAD_MAP.md">THREAD_MAP.md</a>. Control plane: <a href="../PROJECT_STATUS.md">PROJECT_STATUS.md</a> → <a href="plans/ACTIVE_ROADMAP.md">ACTIVE_ROADMAP.md</a>.</p>
+        </div>
+      </details>
+
+      <details class="disclosure">
+        <summary>Phrasing to avoid in papers and slides</summary>
+        <div class="disclosure-body">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Avoid</th><th>Say instead</th></tr></thead>
+              <tbody>
+                <tr><td>“We beat the benchmark” (unqualified)</td><td>Primary composite score + clinical review of apparent errors</td></tr>
+                <tr><td>Inspecting individual held-out test rows</td><td>Aggregate frozen totals with documented audit policy</td></tr>
+                <tr><td>“LLM-only is production-ready”</td><td>Hybrid beats LLM-only by a wide margin on Track 2</td></tr>
+                <tr><td>Mixing up The Wall and gold-quality ceiling</td><td>Name which track and which mechanism you mean</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </section>
 
     <footer>
-      <p><strong>Source documents:</strong> <code>docs/collaborator_onboarding.md</code> · <code>PROJECT_STATUS.md</code> · <code>docs/canon/01–10</code> · <code>docs/THREAD_MAP.md</code></p>
-      <p>Generated 2026-07-06. Open this file locally or serve from the repo — no build step required. Mermaid diagrams render via CDN on first load.</p>
+      <p><strong>Sources:</strong> <code>docs/collaborator_onboarding.md</code> · <code>docs/canon/01–10</code> · frozen experiment registry</p>
+      <p>Serve: <code>python3 -m http.server 8765 --directory docs</code> → <code>/collaborator_onboarding.html</code></p>
     </footer>
-  </main>
+
+      </div>
+    </section>
+
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" async onerror="window.__mermaidFailed=true"></script>
 <script>
-  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+  const TAB_IDS = ['overview', 'track1', 'track2', 'limits', 'claims', 'reference'];
+  const TRACK_STEPS = ['task', 'pipeline', 'results'];
+  const LIMITS_STEPS = ['wall', 'gold'];
 
-  // Tabs
-  document.querySelectorAll('[data-tabs]').forEach(group => {
-    group.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        group.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-        group.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
-      });
+  const HASH_TO_TAB = {
+    overview: 'overview',
+    headlines: 'overview',
+    fork: 'overview',
+    'branch-gan': 'track1',
+    track1: 'track1',
+    'branch-exect': 'track2',
+    track2: 'track2',
+    ceilings: 'limits',
+    limits: 'limits',
+    claims: 'claims',
+    more: 'reference',
+    reference: 'reference',
+  };
+
+  let activeLimitsStep = 'wall';
+
+  function parseHash() {
+    const raw = location.hash.slice(1);
+    if (!raw) return { tab: 'overview', step: null, limitsStep: null, anchor: null };
+
+    const trackStep = raw.match(/^track([12])-(task|pipeline|results)$/);
+    if (trackStep) return { tab: 'track' + trackStep[1], step: trackStep[2], limitsStep: null, anchor: null };
+
+    if (raw === 'limits-wall' || raw === 'limits-gold') {
+      return { tab: 'limits', step: null, limitsStep: raw.slice('limits-'.length), anchor: null };
+    }
+
+    if (HASH_TO_TAB[raw]) {
+      const tab = HASH_TO_TAB[raw];
+      const step = (tab === 'track1' || tab === 'track2') ? 'task' : null;
+      const limitsStep = tab === 'limits' ? 'wall' : null;
+      return { tab, step, limitsStep, anchor: null };
+    }
+
+    if (raw.startsWith('claim-')) return { tab: 'claims', step: null, limitsStep: null, anchor: '#' + raw };
+    if (raw.startsWith('evidence-')) return { tab: 'reference', step: null, limitsStep: null, anchor: '#' + raw };
+
+    return { tab: 'overview', step: null, limitsStep: null, anchor: null };
+  }
+
+  function buildHash(tabId, step, limitsStep) {
+    if (tabId === 'track1' || tabId === 'track2') {
+      return step && step !== 'task' ? tabId + '-' + step : tabId;
+    }
+    if (tabId === 'limits' && limitsStep && limitsStep !== 'wall') return 'limits-' + limitsStep;
+    return tabId;
+  }
+
+  function selectLimitsStep(stepId, { pushHash = true } = {}) {
+    if (!LIMITS_STEPS.includes(stepId)) stepId = 'wall';
+    activeLimitsStep = stepId;
+
+    document.querySelectorAll('.limits-screen').forEach(screen => {
+      screen.classList.toggle('active', screen.dataset.limits === stepId);
+    });
+
+    document.querySelectorAll('.limits-dot').forEach(dot => {
+      dot.classList.toggle('active', dot.dataset.limitsGoto === stepId);
+    });
+
+    const prevBtn = document.querySelector('[data-limits-dir="prev"]');
+    const nextBtn = document.querySelector('[data-limits-dir="next"]');
+    if (prevBtn) prevBtn.disabled = stepId === 'wall';
+    if (nextBtn) nextBtn.disabled = stepId === 'gold';
+
+    if (pushHash) history.replaceState(null, '', '#' + buildHash('limits', null, stepId));
+  }
+
+  function selectTrackStep(trackId, stepId, { pushHash = true } = {}) {
+    if (!TRACK_STEPS.includes(stepId)) stepId = 'task';
+
+    const panel = document.getElementById('tab-' + trackId);
+    if (!panel) return;
+
+    panel.querySelectorAll('.step-btn').forEach(btn => {
+      const on = btn.dataset.step === stepId;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+
+    panel.querySelectorAll('.track-screen').forEach(screen => {
+      const on = screen.dataset.screen === stepId;
+      screen.classList.toggle('active', on);
+      screen.hidden = !on;
+      if (on) screen.querySelector('.screen-body')?.scrollTo(0, 0);
+    });
+
+    if (pushHash) history.replaceState(null, '', '#' + buildHash(trackId, stepId, null));
+  }
+
+  function selectTab(tabId, { step = null, limitsStep = null, anchor = null, pushHash = true } = {}) {
+    if (!TAB_IDS.includes(tabId)) tabId = 'overview';
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const on = btn.dataset.tab === tabId;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+      const on = panel.id === 'tab-' + tabId;
+      panel.classList.toggle('active', on);
+      panel.hidden = !on;
+    });
+
+    if (tabId === 'track1' || tabId === 'track2') {
+      selectTrackStep(tabId, step || 'task', { pushHash: false });
+    }
+
+    if (tabId === 'limits') {
+      selectLimitsStep(limitsStep || activeLimitsStep || 'wall', { pushHash: false });
+    }
+
+    if (pushHash) {
+      const hash = anchor ? anchor.slice(1) : buildHash(tabId, step, limitsStep);
+      history.replaceState(null, '', '#' + hash);
+    }
+
+    const panel = document.getElementById('tab-' + tabId);
+    const scroll = panel?.querySelector('.panel-scroll');
+
+    if (anchor && panel) {
+      const target = panel.querySelector(anchor);
+      if (target) {
+        requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        return;
+      }
+    }
+
+    if (scroll && tabId !== 'track1' && tabId !== 'track2') scroll.scrollTop = 0;
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      const step = (tab === 'track1' || tab === 'track2') ? 'task' : null;
+      const limitsStep = tab === 'limits' ? activeLimitsStep : null;
+      selectTab(tab, { step, limitsStep });
     });
   });
+
+  document.querySelectorAll('.fork-card[data-tab-target]').forEach(card => {
+    card.addEventListener('click', () => selectTab(card.dataset.tabTarget, { step: 'task' }));
+  });
+
+  document.querySelectorAll('.tab-jump[data-tab-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const limitsStep = btn.dataset.limitsStep || null;
+      selectTab(btn.dataset.tabTarget, { limitsStep: limitsStep || undefined, step: null });
+    });
+  });
+
+  document.querySelectorAll('.step-btn[data-track]').forEach(btn => {
+    btn.addEventListener('click', () => selectTrackStep(btn.dataset.track, btn.dataset.step));
+  });
+
+  document.querySelectorAll('.step-nav-btn[data-goto-step]').forEach(btn => {
+    btn.addEventListener('click', () => selectTrackStep(btn.dataset.track, btn.dataset.gotoStep));
+  });
+
+  document.querySelectorAll('[data-limits-goto]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.limitsDir === 'prev' || btn.dataset.limitsDir === 'next') {
+        selectLimitsStep(btn.dataset.limitsGoto);
+        return;
+      }
+      selectLimitsStep(btn.dataset.limitsGoto);
+    });
+  });
+
+  window.addEventListener('hashchange', () => {
+    const { tab, step, limitsStep, anchor } = parseHash();
+    selectTab(tab, { step, limitsStep, anchor, pushHash: false });
+  });
+
+  (function initFromHash() {
+    const { tab, step, limitsStep, anchor } = parseHash();
+    selectTab(tab, { step, limitsStep, anchor, pushHash: false });
+  })();
 
   // Pipeline steps
-  document.querySelectorAll('[data-pipeline]').forEach(pipeline => {
-    const prefix = pipeline.dataset.pipeline === 'gan' ? 'gan' : 'ex';
+  document.querySelectorAll('.pipeline-stack').forEach(stack => {
+    const pipeline = stack.querySelector('[data-pipeline]');
+    const details = stack.querySelectorAll('.pipe-detail');
     pipeline.querySelectorAll('.pipe-step').forEach(step => {
       step.addEventListener('click', () => {
-        pipeline.querySelectorAll('.pipe-step').forEach(s => s.classList.remove('active'));
-        step.classList.add('active');
         const id = step.dataset.step;
-        document.querySelectorAll('.pipe-detail').forEach(d => {
-          d.classList.toggle('active', d.dataset.detail === id);
-        });
+        pipeline.querySelectorAll('.pipe-step').forEach(s => s.classList.toggle('active', s === step));
+        details.forEach(d => d.classList.toggle('active', d.dataset.detail === id));
       });
     });
   });
 
-  // Accordions
-  document.querySelectorAll('.acc-trigger').forEach(trigger => {
-    trigger.addEventListener('click', () => {
-      trigger.closest('.acc-item').classList.toggle('open');
+  // Claims
+  document.querySelectorAll('.claim-trigger').forEach(t => {
+    t.addEventListener('click', () => {
+      const row = t.closest('.claim-row');
+      row.classList.toggle('open');
+      t.setAttribute('aria-expanded', row.classList.contains('open') ? 'true' : 'false');
     });
   });
 
-  // Module cards
-  document.querySelectorAll('.module-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.module-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-    });
+  // Accordions in evidence
+  document.querySelectorAll('.acc-trigger').forEach(t => {
+    t.addEventListener('click', () => t.closest('.acc-item').classList.toggle('open'));
   });
 
-  // Copy buttons
+  // Copy
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       navigator.clipboard.writeText(btn.dataset.copy).then(() => {
-        const orig = btn.textContent;
+        const o = btn.textContent;
         btn.textContent = 'Copied';
-        setTimeout(() => btn.textContent = orig, 1500);
+        setTimeout(() => btn.textContent = o, 1500);
       });
     });
   });
 
-  // Sidebar active section on scroll
-  const sections = [...document.querySelectorAll('.section[id]')];
-  const navLinks = [...document.querySelectorAll('.sidebar nav a')];
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
-      }
+  // Mermaid
+  function initMermaid() {
+    if (window.__mermaidFailed || typeof mermaid === 'undefined') return;
+    mermaid.initialize({ startOnLoad: false, theme: 'neutral', securityLevel: 'loose' });
+    document.querySelectorAll('figure.diagram').forEach(async fig => {
+      const src = fig.querySelector('.mermaid');
+      if (!src) return;
+      try {
+        const { svg } = await mermaid.render('mmd-' + Math.random().toString(36).slice(2), src.textContent.trim());
+        const live = document.createElement('div');
+        live.className = 'mermaid-live';
+        live.innerHTML = svg;
+        src.replaceWith(live);
+        fig.classList.add('mermaid-ready');
+      } catch (_) { /* SVG fallback stays */ }
     });
-  }, { rootMargin: '-40% 0px -50% 0px' });
-  sections.forEach(s => observer.observe(s));
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initMermaid, 100));
+  } else {
+    setTimeout(initMermaid, 100);
+  }
 </script>
 </body>
 </html>
