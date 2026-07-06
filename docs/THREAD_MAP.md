@@ -115,6 +115,7 @@ planning archive/cleanup without breaking frozen evidence.
 
 | Persona | Path |
 | --- | --- |
+| **New collaborator** | [`collaborator_onboarding.md`](collaborator_onboarding.md) / [`.html`](collaborator_onboarding.html) → THREAD_MAP (pick thread) |
 | **New engineer** | `collaborator_onboarding.md` / `.html` → README → NAVIGATION → THREAD_MAP (pick thread) → `architecture.md` → ACTIVE_ROADMAP |
 | **Paper author** | PAPER_CANON → evaluation_canon → CLOSEOUT_EVIDENCE_CANON → GAN2026_RESEARCH_CANON (4 canon docs) |
 | **Experiment runner** | T5 path → relevant thread (T2 or T3) → bucket README under `docs/experiments/` |

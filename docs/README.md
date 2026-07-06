@@ -6,6 +6,9 @@ written.
 **Start here:** [`NAVIGATION.md`](NAVIGATION.md) — tiered routing to the control
 plane, design docs, paper material, and long tail.
 
+**New collaborators:** [`collaborator_onboarding.md`](collaborator_onboarding.md) (interactive: [`.html`](collaborator_onboarding.html)) —
+45-minute curated path, architecture diagram, and paper story brief.
+
 **Active work:** [`plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md).  
 **Reading by thread:** [`THREAD_MAP.md`](THREAD_MAP.md).  
 **Canon summaries (Wave 2–3):** [`canon/README.md`](canon/README.md) — full index.  
