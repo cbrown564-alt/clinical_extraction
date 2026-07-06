@@ -21,6 +21,8 @@ from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
 )
 

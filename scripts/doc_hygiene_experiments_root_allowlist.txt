@@ -132,3 +132,4 @@ gan2026_test450_phase4_frozen_audit_llm_only_canonical_pipeline_gpt41mini_2026-0
 gan2026_v07_test450_hybrid_structured_events_deepseek_reasoner_thinking_maxtok32000_20260625.md
 README.md
 RUN_INDEX.md
+KEY_EXPERIMENTS.md

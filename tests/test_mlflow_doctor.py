@@ -19,6 +19,11 @@ def test_doctor_report_flags_missing_mlflow_and_registry(tmp_path: Path, monkeyp
     monkeypatch.delenv("CLINICAL_EXTRACTION_MLFLOW_DISABLED", raising=False)
     monkeypatch.delenv("CLINICAL_EXTRACTION_MLFLOW_STRICT", raising=False)
     monkeypatch.delenv("MLFLOW_TRACKING_URI", raising=False)
+    # mlflow is a declared dev/runtime dependency, so it is installed in the
+    # project's own environment. Pin the "not installed" code path under test
+    # rather than depending on the real install state (matches the pattern in
+    # test_core_mlflow_tracking.py).
+    monkeypatch.setattr(mlflow_doctor, "mlflow_available", lambda: False)
 
     report = build_doctor_report(repo_root=tmp_path)
 

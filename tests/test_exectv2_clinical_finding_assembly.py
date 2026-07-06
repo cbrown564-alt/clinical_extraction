@@ -576,15 +576,18 @@ def test_holistic_manifest_reproduces_dev140_score_ladder() -> None:
     benchmark = run.report["score_ladder"]["benchmark"]
     companions = run.report["score_ladder"]["fidelity_companions"]
     assert run.report["gate_decision"]["decision"] == "promote-dev-holistic-finding-assembly"
-    assert headline["overall"]["f1"] == 0.8043
-    assert headline["by_indicator"]["Diagnosis"]["f1"] == 0.7572
-    assert headline["by_indicator"]["SeizureFrequency"]["f1"] == 0.8068
-    assert headline["by_indicator"]["Prescription"]["f1"] == 0.8367
-    assert headline["by_indicator"]["Investigations"]["f1"] == 0.8615
+    # Headline F1 baselines re-frozen after the four-family scorer-scope fixes
+    # (7949a9d4) and parked-item closures (c4a65e75). Benchmark and the Diagnosis
+    # concept_negation companion are unchanged by those fixes.
+    assert headline["overall"]["f1"] == 0.823
+    assert headline["by_indicator"]["Diagnosis"]["f1"] == 0.777
+    assert headline["by_indicator"]["SeizureFrequency"]["f1"] == 0.8125
+    assert headline["by_indicator"]["Prescription"]["f1"] == 0.871
+    assert headline["by_indicator"]["Investigations"]["f1"] == 0.8682
     assert benchmark["raw"] == 0.2968
     assert benchmark["after_cui_projection"] == 0.3786
     assert companions["Diagnosis"]["concept_negation"]["f1"] == 0.7572
-    assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.3931
+    assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.3908
 
 
 def _manifest(

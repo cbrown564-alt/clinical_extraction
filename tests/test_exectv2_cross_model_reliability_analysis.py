@@ -83,10 +83,10 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
         row["id"]: row
         for row in analysis["review_routing"]["operating_points"]
     }
-    assert operating_points["high_recall_predeclared"]["review_burden"] == 0.9408
-    assert operating_points["high_recall_predeclared"]["catch_rate"] == 0.8897
-    assert operating_points["balanced_dev_candidate"]["review_burden"] == 0.7521
-    assert operating_points["balanced_dev_candidate"]["catch_rate"] == 0.8028
+    assert operating_points["high_recall_predeclared"]["review_burden"] == 0.9366
+    assert operating_points["high_recall_predeclared"]["catch_rate"] == 0.8712
+    assert operating_points["balanced_dev_candidate"]["review_burden"] == 0.7522
+    assert operating_points["balanced_dev_candidate"]["catch_rate"] == 0.8033
     assert (
         operating_points["balanced_dev_candidate"][
             "review_burden_delta_vs_high_recall"

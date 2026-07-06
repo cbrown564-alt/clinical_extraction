@@ -17,10 +17,10 @@ def test_review_routing_validation_runs_current_code_surface_without_promotion()
     assert audit["stop_rule_outcome"]["promotion_decision"] == "not_promoted"
 
     candidates = {row["id"]: row for row in audit["candidate_operating_points"]}
-    assert candidates["high_recall_predeclared"]["review_burden"] == 0.9408
-    assert candidates["high_recall_predeclared"]["catch_rate"] == 0.8897
-    assert candidates["balanced_dev_candidate"]["review_burden"] == 0.7521
-    assert candidates["balanced_dev_candidate"]["catch_rate"] == 0.8028
+    assert candidates["high_recall_predeclared"]["review_burden"] == 0.9366
+    assert candidates["high_recall_predeclared"]["catch_rate"] == 0.8712
+    assert candidates["balanced_dev_candidate"]["review_burden"] == 0.7522
+    assert candidates["balanced_dev_candidate"]["catch_rate"] == 0.8033
     assert candidates["balanced_dev_candidate"]["false_alarms_per_caught_error"] < (
         candidates["high_recall_predeclared"]["false_alarms_per_caught_error"]
     )
