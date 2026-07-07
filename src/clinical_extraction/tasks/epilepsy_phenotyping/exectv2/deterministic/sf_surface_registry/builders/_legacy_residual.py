@@ -3,6 +3,7 @@
 .. deprecated::
     Extracted from ``_legacy_impl``; behavior-preserving.
 """
+# ruff: noqa: F405 — legacy regex constants are star-imported from ``_legacy_constants``.
 
 from __future__ import annotations
 

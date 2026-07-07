@@ -4,6 +4,7 @@
 (canonical owner since P1-1 Phase 1). Quarantine metadata lives in
 ``sf_surface_registry/catalog/projection_sf.yaml``; ``policy.py`` reads the catalog.
 """
+# ruff: noqa: F401 — re-exports ``EVERY_N_TO_M_PERIODS`` imported by other modules.
 
 from __future__ import annotations
 
@@ -17,6 +18,7 @@ from .policy import (
     QUARANTINED_TARGET_PROJECTION_FAMILIES,
     TARGET_PROJECTION_AUDIT_REPLAY_SWITCHES,
 )
+
 DIAGNOSIS_ALLOWED_CORE = re.compile(
     r"\b(epilep\w*|seizures?|jme|absence|absences|myoclonic|tonic|clonic|"
     r"convulsive|partial|focal|generalised|generalized|status|grand mal)\b",

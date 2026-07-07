@@ -6,29 +6,31 @@ helpers and the ``parse_json_payload_with_schema_repair`` / ``write_jsonl``
 pass-throughs are also re-exported because other modules import this module as
 ``structured`` and access those attributes directly.
 """
+# ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (
-    ALLOWED_EVENT_FAMILIES,
-    COMPONENT_OWNER,
-    DspyKeyEntitiesStructuredExtractor,
-    EventFamily,
-    ExECTv2KeyEntitiesStructuredSignature,
-    KEY_ENTITY_ITEM_F1_TARGET,
-    KEY_ENTITY_NAMES,
-    MentionForEvidence,
-    PIPELINE_FAMILY,
-    PROMPT_VERSION,
-    PUBLISHED_PER_ENTITY_ITEM_F1,
-    PromptProfile,
-    QWEN_COMPACT_PROMPT_VERSION,
-    RenderedMentionRecord,
-    StructuredClinicalEvent,
-    StructuredExtractionRecord,
     _DIAGNOSIS_RE,
     _INVESTIGATION_RE,
     _MEDICATION_RE,
     _SEIZURE_STATE_RE,
     _SF_STATE_ATTRS,
+    ALLOWED_EVENT_FAMILIES,
+    COMPONENT_OWNER,
+    KEY_ENTITY_ITEM_F1_TARGET,
+    KEY_ENTITY_NAMES,
+    PIPELINE_FAMILY,
+    PROMPT_VERSION,
+    PUBLISHED_PER_ENTITY_ITEM_F1,
+    QWEN_COMPACT_PROMPT_VERSION,
+    DspyKeyEntitiesStructuredExtractor,
+    EventFamily,
+    ExECTv2KeyEntitiesStructuredSignature,
+    MentionForEvidence,
+    PromptProfile,
+    RenderedMentionRecord,
+    StructuredClinicalEvent,
+    StructuredExtractionRecord,
+    __all__,
     _apply_render_safety_gates,
     _attribute_vocabulary,
     _build_qwen_compact_prompt_input,
@@ -77,9 +79,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     to_predicted_letter,
     write_jsonl,
     write_report,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (
-    __all__,
 )
 
 __all__ = list(__all__)

@@ -1,15 +1,16 @@
 """Shared prescription normalization helpers and regex patterns."""
+# ruff: noqa: F401 — re-exports lexicon symbols imported by ``conventions/__init__``.
 
 from __future__ import annotations
 
 import re
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
+    PRESCRIPTION_CONCEPT_BY_PHRASE,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
     DRUG_SURFACE_ALIASES,
     resolve_drug_surface,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
-    PRESCRIPTION_CONCEPT_BY_PHRASE,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 

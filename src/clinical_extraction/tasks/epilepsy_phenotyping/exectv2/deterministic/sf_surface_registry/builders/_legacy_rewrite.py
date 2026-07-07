@@ -4,6 +4,7 @@
     Extracted from ``_legacy_impl``; behavior-preserving. Prefer
     ``sf_surface_registry.adapters.convention`` for new imports.
 """
+# ruff: noqa: F405 — legacy regex constants are star-imported from ``_legacy_constants``.
 
 from __future__ import annotations
 
@@ -12,6 +13,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 from ._legacy_constants import *  # noqa: F401,F403 (legacy regex constants)
 
 
@@ -143,9 +145,8 @@ def sf_convention_rewrite(
         attrs["CUIPhrase"] = "absences"
         attrs.pop("NumberOfSeizures", None)
         return "absences", attrs, "rewrite_absence_phrase_to_unknown_absences"
-    if (
-        phrase == "focal to bilateral convulsive seizure"
-        and _SF_FTB_GENERIC_LAST_EVENT_RE.search(evidence)
+    if phrase == "focal to bilateral convulsive seizure" and _SF_FTB_GENERIC_LAST_EVENT_RE.search(
+        evidence
     ):
         attrs["CUI"] = "C0877017"
         attrs["CUIPhrase"] = "focal to bilateral convulsive seizures"
@@ -255,9 +256,8 @@ def sf_convention_rewrite(
         attrs["NumberOfSeizures"] = "0"
         attrs.pop("FrequencyChange", None)
         return "focal seizures", attrs, "rewrite_focal_under_control_to_seizure_free"
-    if (
-        phrase == "epileptic seizures"
-        and re.search(r"\bwell controlled\b", evidence, re.IGNORECASE)
+    if phrase == "epileptic seizures" and re.search(
+        r"\bwell controlled\b", evidence, re.IGNORECASE
     ):
         attrs["CUI"] = "C0036572"
         attrs["CUIPhrase"] = "seizures"
@@ -362,18 +362,16 @@ def _sf_operand_format_rewrite(
         attrs.pop("LowerNumberOfSeizures", None)
         rule_ids.append("collapse_lower_zero_to_exact_zero_count")
 
-    if (
-        attrs.get("LowerNumberOfSeizures")
-        and attrs.get("LowerNumberOfSeizures") == attrs.get("UpperNumberOfSeizures")
+    if attrs.get("LowerNumberOfSeizures") and attrs.get("LowerNumberOfSeizures") == attrs.get(
+        "UpperNumberOfSeizures"
     ):
         attrs["NumberOfSeizures"] = attrs["LowerNumberOfSeizures"]
         attrs.pop("LowerNumberOfSeizures", None)
         attrs.pop("UpperNumberOfSeizures", None)
         rule_ids.append("collapse_equal_seizure_count_range")
 
-    if (
-        attrs.get("LowerNumberOfTimePeriods")
-        and attrs.get("LowerNumberOfTimePeriods") == attrs.get("UpperNumberOfTimePeriods")
+    if attrs.get("LowerNumberOfTimePeriods") and attrs.get("LowerNumberOfTimePeriods") == attrs.get(
+        "UpperNumberOfTimePeriods"
     ):
         attrs["NumberOfTimePeriods"] = attrs["LowerNumberOfTimePeriods"]
         attrs.pop("LowerNumberOfTimePeriods", None)

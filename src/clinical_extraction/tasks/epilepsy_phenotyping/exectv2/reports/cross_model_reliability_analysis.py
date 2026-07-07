@@ -8,6 +8,8 @@ trust evidence. It deliberately keeps two surfaces separate:
 
 No model calls are made here, and no full-200 or holdout rows are loaded.
 """
+# ruff: noqa: F401 — re-exports ``FAMILIES`` / ``_CALIBRATION_FEATURES`` accessed via the
+# ``reliability`` alias in calibration/robustness/review-routing validation modules.
 
 from __future__ import annotations
 
@@ -27,6 +29,25 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.cells import (
     iter_reliability_cells,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.consistency import (
+    active_llm_only_readout,
+    deterministic_replay_stability,
+    same_prompt_consistency,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
+    _CALIBRATION_FEATURES,
+    ACTIVE_LLM_ONLY_RUNS,
+    FAMILIES,
+    RICH_SCHEMA_RUNS,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import (
+    REPO_ROOT,
+    load_json,
+    load_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.review_routing import (
+    review_routing,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     aggregate_scores,
     review_triggers,
@@ -36,25 +57,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     row_has_call_error,
     row_parse_error_count,
     score_dict,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.consistency import (
-    active_llm_only_readout,
-    deterministic_replay_stability,
-    same_prompt_consistency,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
-    ACTIVE_LLM_ONLY_RUNS,
-    FAMILIES,
-    RICH_SCHEMA_RUNS,
-    _CALIBRATION_FEATURES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import (
-    REPO_ROOT,
-    load_json,
-    load_jsonl,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.review_routing import (
-    review_routing,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.summary import (
     coverage_update,
@@ -105,18 +107,14 @@ def build_cross_model_reliability_analysis(
 
     from . import robustness_panels
 
-    rich_rows = {
-        run.candidate: load_jsonl(repo_root / run.rows_path)
-        for run in RICH_SCHEMA_RUNS
-    }
+    rich_rows = {run.candidate: load_jsonl(repo_root / run.rows_path) for run in RICH_SCHEMA_RUNS}
     rich_summaries = {
         run.candidate: load_json(repo_root / run.summary_path)
         for run in RICH_SCHEMA_RUNS
         if run.summary_path is not None
     }
     active_rows = {
-        run.candidate: load_jsonl(repo_root / run.rows_path)
-        for run in ACTIVE_LLM_ONLY_RUNS
+        run.candidate: load_jsonl(repo_root / run.rows_path) for run in ACTIVE_LLM_ONLY_RUNS
     }
 
     cells = list(iter_reliability_cells(rich_rows))
@@ -136,8 +134,7 @@ def build_cross_model_reliability_analysis(
             include_case_text=False
         ),
         "active_llm_only_readout": [
-            active_llm_only_readout(run, active_rows[run.candidate])
-            for run in ACTIVE_LLM_ONLY_RUNS
+            active_llm_only_readout(run, active_rows[run.candidate]) for run in ACTIVE_LLM_ONLY_RUNS
         ],
         "same_prompt_consistency": same_prompt_consistency(active_rows),
         "deterministic_replay_stability": deterministic_replay_stability(rich_rows),

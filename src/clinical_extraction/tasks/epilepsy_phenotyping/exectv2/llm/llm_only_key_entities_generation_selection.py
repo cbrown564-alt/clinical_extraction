@@ -3,9 +3,13 @@
 Thin facade over the ``pipelines/key_entities_generation_selection/`` package.
 Every public symbol is re-exported so existing importers keep working.
 """
+# ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection import (
     COMPONENT_OWNER,
+    FACT_ORIGIN,
+    PIPELINE_FAMILY,
+    PROMPT_VERSION,
     DedupClinicalFactRecord,
     DedupClinicalFactsRecord,
     ExECTv2DedupClinicalFactsSignature,
@@ -13,9 +17,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     ExECTv2KeyEntitiesMentionIdSelectionSignature,
     ExECTv2KeyEntitiesMentionSelectionSignature,
     ExECTv2KeyEntitiesPoolAdjudicationSignature,
-    FACT_ORIGIN,
-    PIPELINE_FAMILY,
-    PROMPT_VERSION,
     QwenGenerationSelectionExtractor,
     QwenPoolAdjudicationExtractor,
     QwenSingleCallDedupFactsExtractor,
@@ -27,6 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     StructuredMentionSelectionRecord,
     StructuredPoolAdjudicationRecord,
     StructuredPoolGroupAdjudicationRecord,
+    __all__,
     build_generation_prompt_input,
     build_generation_prompt_payload,
     build_qwen_pool_adjudication_prompt_input,
@@ -86,9 +88,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     to_predicted_letter_from_mentions,
     write_jsonl,
     write_report,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection import (
-    __all__,
 )
 
 __all__ = list(__all__)

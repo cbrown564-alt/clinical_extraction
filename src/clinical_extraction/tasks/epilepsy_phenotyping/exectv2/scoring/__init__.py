@@ -4,12 +4,13 @@ from clinical_extraction.core.scoring import multiset_prf1, prf1_from_counts
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
     canonicalize_medication_name,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.investigations import (
     InvestigationsComponentScores,
     _investigation_component_keys,
     score_investigations_components,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (  # noqa: F401
     DEFAULT_IGNORE_ATTRIBUTES,
     HEADLINE_DEDUPLICATED,
     HEADLINE_DISTINCT_ASSERTION,
@@ -41,7 +42,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
     semantic_ignore_for,
     source_near_diagnostic,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
 )

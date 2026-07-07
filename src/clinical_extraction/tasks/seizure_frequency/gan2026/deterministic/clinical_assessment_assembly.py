@@ -1,4 +1,6 @@
 """Deterministic clinical-assessment assembly from model-owned drafts."""
+# ruff: noqa: F401 — some imported helpers are re-exported and accessed via module attribute
+# (e.g. ``_assembly._frequency_burden_from_multi_month_bucket_phrase`` in assessment_probe).
 
 from __future__ import annotations
 
@@ -15,11 +17,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     SeizureFreeInstrumentation,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden_normalization import (
-    normalize_assessment_burden,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden_normalization import (
     _frequency_burden_from_multi_month_bucket_phrase,
     _is_unrenderable_seizure_free_burden,
+    normalize_assessment_burden,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
     DISABLED_SWITCH_ISSUE_PREFIX,
@@ -83,8 +83,7 @@ def assemble_clinical_assessment(
     seizure_free_instrumentation: SeizureFreeInstrumentation | None = None
     if (
         draft.assessment_kind == "seizure_free"
-        and "normalize_seizure_free_duration_date_instrumentation"
-        not in disabled_switches
+        and "normalize_seizure_free_duration_date_instrumentation" not in disabled_switches
     ):
         (
             normalized_burden,
@@ -99,14 +98,11 @@ def assemble_clinical_assessment(
         normalization_issues.extend(instrumentation_issues)
     elif (
         draft.assessment_kind == "seizure_free"
-        and "normalize_seizure_free_duration_date_instrumentation"
-        in disabled_switches
+        and "normalize_seizure_free_duration_date_instrumentation" in disabled_switches
         and _is_unrenderable_seizure_free_burden(normalized_burden)
     ):
         normalization_issues.append(
-            _disabled_switch_issue(
-                "normalize_seizure_free_duration_date_instrumentation"
-            )
+            _disabled_switch_issue("normalize_seizure_free_duration_date_instrumentation")
         )
     normalization_issues = [
         *role_repair_issues,
