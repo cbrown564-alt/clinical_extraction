@@ -19,20 +19,27 @@ def test_cross_model_reliability_analysis_uses_latest_runs_by_surface() -> None:
         surface["surface_id"]: surface for surface in analysis["latest_run_check"]["surfaces"]
     }
 
+    def by_model(latest_runs: list[dict], needle: str) -> dict:
+        return next(run for run in latest_runs if needle in run["model_label"].lower())
+
     rich_schema = by_surface["rich_schema_reliability"]
-    assert rich_schema["latest_deepseek"]["candidate"] == (
+    assert by_model(rich_schema["latest_runs"], "deepseek")["candidate"] == (
         "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140"
     )
-    assert rich_schema["latest_qwen"]["candidate"] == (
+    assert by_model(rich_schema["latest_runs"], "qwen")["candidate"] == (
         "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140"
+    )
+    # Control runs are excluded from the latest-model array.
+    assert not any(
+        "control" in run.get("role", "").lower() for run in rich_schema["latest_runs"]
     )
     assert rich_schema["replacement_policy"] == "same-surface comparators retained"
 
     llm_only = by_surface["active_llm_only"]
-    assert llm_only["latest_deepseek"]["rows_path"].endswith(
+    assert by_model(llm_only["latest_runs"], "deepseek")["rows_path"].endswith(
         "phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl"
     )
-    assert llm_only["latest_qwen"]["rows_path"].endswith(
+    assert by_model(llm_only["latest_runs"], "qwen")["rows_path"].endswith(
         "phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl"
     )
     assert llm_only["replacement_policy"] == "reported separately; different claim surface"

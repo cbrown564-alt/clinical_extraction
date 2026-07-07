@@ -325,8 +325,13 @@ export interface Exectv2ReliabilityRunRef {
 export interface Exectv2ReliabilityLatestSurface {
   surface_id: string;
   surface_label: string;
-  latest_deepseek: Exectv2ReliabilityRunRef;
-  latest_qwen: Exectv2ReliabilityRunRef;
+  /**
+   * Latest-model run references for this surface, one per non-control model.
+   * The backend derives these from the reliability catalog (catalog.yaml), so
+   * adding a new model to the catalog surfaces a column here automatically —
+   * no model-name hardcoding. Render one column per distinct `model_label`.
+   */
+  latest_runs: Exectv2ReliabilityRunRef[];
   replacement_policy: string;
   rationale: string;
 }

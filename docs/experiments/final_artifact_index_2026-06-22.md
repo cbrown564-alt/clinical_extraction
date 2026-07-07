@@ -73,6 +73,25 @@ Stable hashes:
 | `experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl` | `d2998dcacb06df24a19257b03ee019611a899b2b6291dcb7d77f6c853b3049f4` |
 | `experiments/exectv2_holistic_finding_assembly_v08_error_ledger_dev140_20260621.json` | `22ffdec5a67cb2efc18f928e33983ef62faf2c26d333906ae3ecacca2bba02b6` |
 
+### ExECTv2 v08 P7 Prescription Rescore Dev140 Control
+
+| Field | Value |
+| --- | --- |
+| Candidate | `exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702` |
+| Model | `openai/gpt-4.1-mini` holistic finding assembly with a P7-fixed `prescription_repair_v03` regeneration; deterministic, zero LLM calls |
+| Split and row count | `dev140`, 140 letters |
+| Scorer/view | `headline_target` clinical headline; companion views include evidence-valid, raw-lane, benchmark/CUI, and fidelity surfaces |
+| Config | `configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml` |
+| Report | `docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.md` |
+| JSON | `experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.json` |
+| JSONL | `experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl` |
+| Claim boundary | Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim |
+| Promotion decision | Current ExECTv2 performance control (P7 rescore); supersedes the 2026-06-21 baseline on the same manifest |
+| Row-level inspection | Dev140 row-level inspection allowed; holdout/full-200 row-level inspection not allowed without frozen protocol |
+
+Headline scores: overall `0.9189`; Diagnosis `0.8984`; SeizureFrequency
+`0.908`; Prescription `0.9615`; Investigations `0.9132`.
+
 ### ExECTv2 v09 Partial Hybrid Simplification
 
 | Field | Value |

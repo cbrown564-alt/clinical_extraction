@@ -14,11 +14,16 @@ import {
   fetchRecords,
   fetchRecord,
   fetchPipelineFamilies,
+  fetchRegistry,
   runAblation,
   fetchPrompts,
 } from "./api";
 import type { RunNoteResponse, AblationConfigPayload, TraceStage } from "./types";
 import { useArchitectStore } from "./stores";
+import {
+  isBareFamilyName,
+  resolveFamilyDefaultRun,
+} from "./registryResolver";
 
 export function useHealth() {
   return useQuery({
@@ -137,20 +142,6 @@ export function useRunAblation(
   });
 }
 
-const LEGACY_FAMILY_DEFAULT_RUN: Record<string, string> = {
-  rules_only: "rules_only",
-  hybrid_structured_events:
-    "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07",
-  llm_only_canonical_pipeline:
-    "gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07",
-};
-
-function resolveRunId(value: string | null): string | null {
-  if (!value) return null;
-  if (value in LEGACY_FAMILY_DEFAULT_RUN) return LEGACY_FAMILY_DEFAULT_RUN[value];
-  return value;
-}
-
 export function useArchitectUrlSync() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -174,9 +165,17 @@ export function useArchitectUrlSync() {
     setReplayRowIndex,
   } = useArchitectStore();
 
+  // Registry is the single source of run identity. Bare family names in the
+  // URL (?pipeline=hybrid_structured_events) are resolved to the current
+  // canonical run for that family once the registry is loaded.
+  const { data: registryData } = useQuery({
+    queryKey: ["registry"],
+    queryFn: fetchRegistry,
+  });
+
   // Restore from URL on mount
   useEffect(() => {
-    const runParam = resolveRunId(searchParams.get("run") ?? searchParams.get("pipeline"));
+    const rawParam = searchParams.get("run") ?? searchParams.get("pipeline");
     const splitParam = searchParams.get("split");
     const rowParam = searchParams.get("row");
     const ablationParam = searchParams.get("ablation");
@@ -184,11 +183,18 @@ export function useArchitectUrlSync() {
     const replayRunIdParam = searchParams.get("replayRunId");
     const replayRowIndexParam = searchParams.get("replayRowIndex");
 
-    if (runParam) {
-      const legacyFamily = Object.entries(LEGACY_FAMILY_DEFAULT_RUN).find(
-        ([, runId]) => runId === runParam
-      )?.[0];
-      setSelectedRunId(runParam, legacyFamily ?? runParam);
+    if (rawParam) {
+      // If the URL carries a bare family name, defer to the registry resolver;
+      // it picks the production winner / test split. If the registry has not
+      // loaded yet, fall back to the bare value (re-resolved in the effect
+      // below once registryData arrives).
+      const runs = registryData?.runs ?? [];
+      const resolved =
+        isBareFamilyName(rawParam) && runs.length > 0
+          ? resolveFamilyDefaultRun(runs, rawParam) ?? rawParam
+          : rawParam;
+      const family = isBareFamilyName(rawParam) ? rawParam : resolved;
+      setSelectedRunId(resolved, family);
     }
     if (splitParam) setSplit(splitParam);
     if (rowParam) setSourceRowIndex(parseInt(rowParam, 10));
@@ -198,6 +204,23 @@ export function useArchitectUrlSync() {
     if (replayRowIndexParam) setReplayRowIndex(parseInt(replayRowIndexParam, 10));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Once the registry loads, resolve any bare family name that the mount
+  // effect had to leave unresolved (or that resolved to a fallback).
+  useEffect(() => {
+    const runs = registryData?.runs;
+    if (!runs || runs.length === 0) return;
+    // Only the production winner should re-resolve the store default; explicit
+    // full run ids in the URL are left as-is.
+    if (!isBareFamilyName(selectedRunId) && !isBareFamilyName(pipelineFamily)) return;
+    const family = isBareFamilyName(pipelineFamily) ? pipelineFamily : selectedRunId;
+    if (!family || !isBareFamilyName(family)) return;
+    const resolved = resolveFamilyDefaultRun(runs, family);
+    if (resolved && resolved !== selectedRunId) {
+      setSelectedRunId(resolved, family);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [registryData?.runs]);
 
   // Sync to URL when state changes
   useEffect(() => {

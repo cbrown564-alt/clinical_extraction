@@ -317,42 +317,46 @@
         {
           "surface_id": "rich_schema_reliability",
           "surface_label": "Rich-schema holistic finding assembly reliability scorecard",
-          "latest_deepseek": {
-            "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
-            "model_label": "DeepSeek chat",
-            "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl",
-            "role": "hosted non-GPT diagnostic",
-            "claim_boundary": "diagnostic same-raw DeepSeek v0910 through v0916 dictionary dev140",
-            "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
-          },
-          "latest_qwen": {
-            "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
-            "model_label": "Qwen 3.6 35B",
-            "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl",
-            "role": "local-model diagnostic",
-            "claim_boundary": "local Qwen compact dev140 standard-dictionary residual repair",
-            "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
-          },
+          "latest_runs": [
+            {
+              "candidate": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+              "model_label": "DeepSeek chat",
+              "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl",
+              "role": "hosted non-GPT diagnostic",
+              "claim_boundary": "diagnostic same-raw DeepSeek v0910 through v0916 dictionary dev140",
+              "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
+            },
+            {
+              "candidate": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+              "model_label": "Qwen 3.6 35B",
+              "rows_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl",
+              "role": "local-model diagnostic",
+              "claim_boundary": "local Qwen compact dev140 standard-dictionary residual repair",
+              "summary_path": "experiments/_archive/exectv2_richschema_iterations/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
+            }
+          ],
           "replacement_policy": "same-surface comparators retained",
           "rationale": "These are the final dev140 non-GPT diagnostics for the 2026-06-22 scorecard surface."
         },
         {
           "surface_id": "active_llm_only",
           "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
-          "latest_deepseek": {
-            "candidate": "decision_table_sf_inv_deepseek_chat_dev140",
-            "model_label": "DeepSeek chat",
-            "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
-            "role": "latest DeepSeek LLM-only transfer",
-            "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
-          },
-          "latest_qwen": {
-            "candidate": "decision_table_sf_inv_qwen36_side11435_dev140",
-            "model_label": "Qwen 3.6 35B",
-            "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
-            "role": "latest Qwen LLM-only transfer",
-            "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
-          },
+          "latest_runs": [
+            {
+              "candidate": "decision_table_sf_inv_deepseek_chat_dev140",
+              "model_label": "DeepSeek chat",
+              "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_deepseek_chat_20260624.jsonl",
+              "role": "latest DeepSeek LLM-only transfer",
+              "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+            },
+            {
+              "candidate": "decision_table_sf_inv_qwen36_side11435_dev140",
+              "model_label": "Qwen 3.6 35B",
+              "rows_path": "experiments/exectv2_llm_only_key_entities_generation_selection_single_call_dedup_facts_per_family_phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl",
+              "role": "latest Qwen LLM-only transfer",
+              "claim_boundary": "dev140 de-duplicated clinical-fact clinical_headline"
+            }
+          ],
           "replacement_policy": "reported separately; different claim surface",
           "rationale": "Phase 6 uses model-emitted de-duplicated clinical facts, not rich-schema holistic assembly, so it should not replace the archived scorecard comparators."
         }

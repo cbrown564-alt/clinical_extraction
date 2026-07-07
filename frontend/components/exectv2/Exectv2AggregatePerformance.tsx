@@ -19,12 +19,14 @@ import {
   useExectv2Runs,
   useExectv2Selection,
 } from "./useExectv2";
+import { splitLabel as plainSplitLabel } from "@/lib/plainLanguageLabels";
 
 const FAMILY_IDS = EXECTV2_FAMILIES.map((f) => f.id as Exectv2Entity);
 
-/** Distinct split prefix(es) present in a group, e.g. "dev140" or "dev25 + dev140". */
-function splitLabel(runs: Exectv2RunSummary[]): string {
-  return Array.from(new Set(runs.map((r) => r.split))).sort().join(" + ");
+/** Distinct split(s) present in a group, rendered with plain split names. */
+function groupSplitLabel(runs: Exectv2RunSummary[]): string {
+  const splits = Array.from(new Set(runs.map((r) => r.split))).sort();
+  return splits.map((s) => plainSplitLabel(s)).join(" + ");
 }
 
 function SelectBox({ selected, indeterminate = false }: { selected: boolean; indeterminate?: boolean }) {
@@ -212,16 +214,16 @@ export default function Exectv2AggregatePerformance() {
       }
     >
       <RunGroup
-        title={`${splitLabel(controls)} controls`}
-        caption="performance & simplicity controls (claimable boundary)"
+        title={`${groupSplitLabel(controls)} controls`}
+        caption="Performance & simplicity controls (claimable boundary)"
         runs={controls}
         selectedIds={selectedIds}
         onToggle={toggle}
         onToggleGroup={toggleGroup}
       />
       <RunGroup
-        title={`${splitLabel(diagnostics)} diagnostics`}
-        caption="cross-model comparators — diagnostic only, not promoted"
+        title={`${groupSplitLabel(diagnostics)} diagnostics`}
+        caption="Cross-model comparators — diagnostic only, not promoted"
         runs={diagnostics}
         selectedIds={selectedIds}
         onToggle={toggle}

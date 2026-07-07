@@ -1,4 +1,4 @@
-import type { CategoryMetrics } from "./shared";
+import type { CategoryMetrics, LaneId } from "./shared";
 
 // ── Gold Audit ──
 
@@ -135,6 +135,8 @@ export interface RunSummary {
     rowCount: number;
   };
   rows?: RowScore[];
+  /** Production / ceiling / floor lane, derived from the entry's registry_roles. */
+  lane?: LaneId;
 }
 
 // ── Gold noise (read-only gold-quality inspection) ──

@@ -5,6 +5,7 @@
  */
 
 import type { RegistryEntry } from "@/lib/types";
+import { laneForRun } from "@/lib/observatoryLanes";
 
 /** Parse a run ID into a human-readable variant string. */
 export function parseRunVariant(runId: string, family: string): string {
@@ -35,6 +36,17 @@ export function parseSplitSize(split: string): number {
 export function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
   const selected = new Set<string>();
 
+  // Lane-tagged runs (production winner, ceiling/floor comparators) are always
+  // part of the default selection so the production architecture is shown in
+  // context. They are exempt from the selection cap below.
+  const laneRunIds = new Set<string>();
+  for (const run of runs) {
+    if (laneForRun(run) && run.artifact_paths.some((p) => p.endsWith(".jsonl"))) {
+      selected.add(run.run_id);
+      laneRunIds.add(run.run_id);
+    }
+  }
+
   for (const run of runs) {
     if (run.split?.includes("validation+test") || run.split?.includes("test")) {
       if (run.artifact_paths.some((p) => p.endsWith(".jsonl"))) {
@@ -61,9 +73,14 @@ export function getDefaultSelections(runs: RegistryEntry[]): Set<string> {
     }
   }
 
+  // Cap non-lane selections at 6; lane-tagged runs are always retained.
   if (selected.size > 6) {
-    const arr = Array.from(selected);
-    return new Set(arr.slice(0, 6));
+    const kept = new Set<string>(laneRunIds);
+    for (const id of selected) {
+      if (kept.size >= 6 && !laneRunIds.has(id)) continue;
+      kept.add(id);
+    }
+    return kept;
   }
 
   return selected;

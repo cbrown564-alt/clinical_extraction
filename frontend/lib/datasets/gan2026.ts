@@ -33,16 +33,16 @@ export const gan2026Dataset: DatasetDescriptor = {
   metrics: [
     {
       id: "purist_accuracy",
-      label: "Purist Accuracy",
-      shortLabel: "Purist",
+      label: "Strict label match",
+      shortLabel: "Strict",
       kind: "headline",
       format: "rate",
       description: "Exact seizure-frequency category match.",
     },
     {
       id: "pragmatic_accuracy",
-      label: "Pragmatic Accuracy",
-      shortLabel: "Pragmatic",
+      label: "Lenient label match",
+      shortLabel: "Lenient",
       kind: "headline",
       format: "rate",
       description: "Clinically-adjacent category match.",
@@ -101,7 +101,7 @@ export const gan2026Dataset: DatasetDescriptor = {
     {
       id: "scorer",
       label: "Scorer",
-      description: "Purist/Pragmatic scoring surface.",
+      description: "Strict / lenient label-match scoring surface.",
       tone: "muted",
     },
   ],
@@ -112,5 +112,5 @@ export const gan2026Dataset: DatasetDescriptor = {
     { id: "under_estimate", label: "Under-estimate", description: "Predicted lower than gold.", tone: "deterministic-alt" },
     { id: "near_miss", label: "Near miss", description: "Off by one category bucket.", tone: "muted" },
   ],
-  claimBoundaries: ["validation", "test450 holdout"],
+  claimBoundaries: ["Gan validation (750)", "Gan holdout (450)"],
 };

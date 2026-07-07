@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react";
 import { Telescope, Check, Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
 import type { RegistryEntry } from "@/lib/types";
+import { laneMetaForRun } from "@/lib/observatoryLanes";
+import { familyLabel, splitLabel } from "@/lib/plainLanguageLabels";
 import { parseRunVariant } from "./useObservatoryData";
 
 interface RunSelectorProps {
@@ -16,20 +18,6 @@ interface RunSelectorProps {
 
 type SortKey = "family" | "split" | "rows" | "decision" | "date";
 type SortDir = "asc" | "desc";
-
-const FAMILY_LABELS: Record<string, string> = {
-  rules_only: "Rules",
-  llm_only_direct_labeler: "LLM Direct",
-  hybrid_structured_events: "LLM Events",
-  llm_structured_events: "LLM Events",
-  llm_first_direct_extractor: "LLM Direct",
-  llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
-  llm_heavy_evidence_selection_with_deterministic_adapters: "LLM Heavy+Det",
-  llm_replacement_postprocessing_ablation: "LLM Repl",
-  reset_clinical_assessment_pipeline: "Reset Hybrid",
-  hybrid_clinical_frequency_state_graph: "Hybrid Graph",
-  dspy_final_selection_adjudicator: "DSPY Adjudicator",
-};
 
 const FAMILY_ORDER = [
   "rules_only",
@@ -261,7 +249,7 @@ export default function RunSelector({
               <option value="all">All families</option>
               {FAMILY_ORDER.filter((f) => runs.some((r) => r.pipeline_family === f)).map((f) => (
                 <option key={f} value={f}>
-                  {FAMILY_LABELS[f] ?? f}
+                  {familyLabel(f)}
                 </option>
               ))}
             </select>
@@ -355,7 +343,7 @@ export default function RunSelector({
                       </div>
                     </button>
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${familyColorClass(family)}`}>
-                      {FAMILY_LABELS[family] ?? family}
+                      {familyLabel(family)}
                     </span>
                     <span className="text-[10px] text-muted">{familyRuns.length} runs</span>
                     {collapsed ? <ChevronDown className="h-3 w-3 text-muted" /> : <ChevronUp className="h-3 w-3 text-muted" />}
@@ -367,6 +355,7 @@ export default function RunSelector({
                       const loading = loadingIds.has(run.run_id);
                       const error = errors.get(run.run_id);
                       const variant = parseRunVariant(run.run_id, run.pipeline_family);
+                      const lane = laneMetaForRun(run);
 
                       return (
                         <div
@@ -386,11 +375,21 @@ export default function RunSelector({
                               {selected && <Check className="h-2 w-2 text-white" strokeWidth={3} />}
                             </div>
                           </div>
-                          <span className="text-[11px] font-medium text-foreground truncate">
-                            {FAMILY_LABELS[run.pipeline_family] ?? run.pipeline_family}
+                          <span className="flex items-center gap-1 truncate">
+                            <span className="text-[11px] font-medium text-foreground truncate">
+                              {familyLabel(run.pipeline_family)}
+                            </span>
+                            {lane && (
+                              <span
+                                className={`shrink-0 rounded border px-1 py-0 text-[8px] font-semibold ${lane.badgeClass} ${lane.textClass}`}
+                                title={lane.title}
+                              >
+                                {lane.label}
+                              </span>
+                            )}
                           </span>
                           <span className="text-[10px] text-muted truncate">
-                            {run.split ?? "—"}
+                            {splitLabel(run.split)}
                           </span>
                           <span className="text-[10px] font-mono text-foreground">
                             {run.row_count}

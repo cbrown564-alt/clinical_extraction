@@ -5,6 +5,7 @@ import type {
   Exectv2Entity,
   Gan2026ComponentAblationResponse,
 } from "@/lib/types";
+import { exectv2ArchitectureLabel, splitLabel } from "@/lib/plainLanguageLabels";
 
 /**
  * Dataset-agnostic "component ladder" view-model.
@@ -60,7 +61,7 @@ export interface ComponentLadder {
   method: string;
   /** Provenance line shown under the method (split, replay policy, …). */
   methodNote: string;
-  /** The metric the ladder scores ("Clinical F1", "Purist accuracy"). */
+  /** The metric the ladder scores ("Clinical F1", "Strict label match"). */
   metricLabel: string;
   claimBoundary: string;
   generatedOn: string;
@@ -78,20 +79,6 @@ function resolveComponentType(
     label: match?.label ?? componentType.replace(/_/g, " "),
     tone: match?.tone ?? "muted",
   };
-}
-
-const EXECTV2_ARCH_LABELS: Array<[string, string]> = [
-  ["v09_partial_hybrid", "v09 partial hybrid"],
-  ["v0916_deepseek", "DeepSeek v0.9.16"],
-  ["v0922_qwen", "Qwen v0.9.22"],
-  ["v08", "v08 control"],
-];
-
-function exectv2ArchLabel(runId: string): string {
-  for (const [needle, label] of EXECTV2_ARCH_LABELS) {
-    if (runId.includes(needle)) return label;
-  }
-  return runId.replace("exectv2_holistic_finding_assembly_", "");
 }
 
 /**
@@ -154,7 +141,7 @@ export function adaptExectv2Ladder(
     });
     return {
       id: arch.run_id,
-      label: exectv2ArchLabel(arch.run_id),
+      label: exectv2ArchitectureLabel(arch.run_id),
       model: arch.model,
       decision: arch.decision,
       finalScore: arch.final_score.overall.f1,
@@ -166,7 +153,7 @@ export function adaptExectv2Ladder(
   return {
     dataset: "exectv2",
     method: "Cumulative stage ladder",
-    methodNote: `dev140 · replay only · no model calls · ${payload.generated_on}`,
+    methodNote: `${splitLabel("dev140")} · replay only · no model calls · ${payload.generated_on}`,
     metricLabel: "Clinical F1",
     claimBoundary: payload.claim_boundary,
     generatedOn: payload.generated_on,

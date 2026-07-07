@@ -140,10 +140,10 @@ export default function ReportBuilder() {
       "Family",
       "Split",
       "Rows",
-      "Purist Acc",
-      "Purist F1",
-      "Pragmatic Acc",
-      "Pragmatic F1",
+      "Strict Acc",
+      "Strict F1",
+      "Lenient Acc",
+      "Lenient F1",
       "Val→Test Gap",
     ],
     []
@@ -194,7 +194,7 @@ export default function ReportBuilder() {
         <SurfaceHeader
           surface="observatory"
           dataset={gan2026Dataset}
-          description="Compare pipeline runs side by side: purist/pragmatic accuracy, micro-F1, and the validation→test generalisation gap."
+          description="Compare pipeline runs side by side: strict/lenient label match, micro-F1, and the validation→test generalisation gap."
         />
       }
     >

@@ -41,7 +41,7 @@ describe("adaptGan2026Ladder", () => {
 
   it("maps the payload onto the shared ComponentLadder shape", () => {
     expect(ladder.dataset).toBe("gan2026");
-    expect(ladder.metricLabel).toBe("Purist accuracy");
+    expect(ladder.metricLabel).toBe("Strict label match");
     // One control ladder plus three model runs per architecture family.
     expect(ladder.architectures).toHaveLength(7);
     expect(ladder.architectures.filter((a) => a.id.includes("hybrid_structured_events"))).toHaveLength(

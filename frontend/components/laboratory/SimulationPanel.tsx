@@ -173,13 +173,13 @@ export default function SimulationPanel({
 
           <div className="grid grid-cols-2 gap-3">
             <ScoreCard
-              label="Purist"
+              label="Strict"
               accuracy={result.summary.purist.accuracy}
               f1={result.summary.purist.f1}
               color="deterministic"
             />
             <ScoreCard
-              label="Pragmatic"
+              label="Lenient"
               accuracy={result.summary.pragmatic.accuracy}
               f1={result.summary.pragmatic.f1}
               color="success"

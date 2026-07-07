@@ -170,9 +170,9 @@ export const exectv2Dataset: DatasetDescriptor = {
     },
   ],
   claimBoundaries: [
-    "dev25 diagnostic",
-    "dev140 control",
-    "full-200 (not authorized here)",
-    "holdout (not authorized here)",
+    "ExECT dev (25) diagnostic",
+    "ExECT dev (140) control",
+    "ExECT full (200) — not authorized here",
+    "Holdout — not authorized here",
   ],
 };

@@ -2,6 +2,8 @@
 
 import { Rocket } from "lucide-react";
 import type { RunSummary } from "@/lib/types";
+import { LANE_META, type LaneId } from "@/lib/observatoryLanes";
+import { familyLabel, splitLabel } from "@/lib/plainLanguageLabels";
 
 interface RunLadderProps {
   summaries: RunSummary[];
@@ -36,20 +38,6 @@ function familyTextClass(family: string): string {
   return "text-llm";
 }
 
-const FAMILY_LABELS: Record<string, string> = {
-  rules_only: "Rules",
-  llm_only_direct_labeler: "LLM Direct",
-  hybrid_structured_events: "LLM Events",
-  llm_structured_events: "LLM Events",
-  llm_first_direct_extractor: "LLM Direct",
-  llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
-  llm_heavy_evidence_selection_with_deterministic_adapters: "LLM Heavy+Det",
-  llm_replacement_postprocessing_ablation: "LLM Repl",
-  reset_clinical_assessment_pipeline: "Reset Hybrid",
-  hybrid_clinical_frequency_state_graph: "Hybrid Graph",
-  dspy_final_selection_adjudicator: "DSPY Adjudicator",
-};
-
 export default function RunLadder({ summaries }: RunLadderProps) {
   if (summaries.length === 0) {
     return (
@@ -60,8 +48,14 @@ export default function RunLadder({ summaries }: RunLadderProps) {
     );
   }
 
-  // Sort by row count ascending (smoke → signal → decision gate → full)
-  const ordered = [...summaries].sort((a, b) => a.rowCount - b.rowCount);
+  // Sort: lane-tagged runs first (production → ceiling → floor), then by row
+  // count ascending (smoke → signal → decision gate → full).
+  const ordered = [...summaries].sort((a, b) => {
+    const la = a.lane ? LANE_META[a.lane].order : Number.MAX_SAFE_INTEGER;
+    const lb = b.lane ? LANE_META[b.lane].order : Number.MAX_SAFE_INTEGER;
+    if (la !== lb) return la - lb;
+    return a.rowCount - b.rowCount;
+  });
 
   return (
     <div className="space-y-3">
@@ -78,33 +72,44 @@ export default function RunLadder({ summaries }: RunLadderProps) {
       <div className="flex items-stretch gap-3 overflow-x-auto pb-2">
         {ordered.map((summary) => {
           const saturated = isSaturated(summary);
-          const familyLabel = FAMILY_LABELS[summary.pipelineFamily] ?? summary.pipelineFamily;
+          const archFamily = familyLabel(summary.pipelineFamily);
+          const lane = summary.lane ? LANE_META[summary.lane as LaneId] : null;
 
           return (
             <div
               key={summary.runId}
               className={`relative flex min-w-[200px] max-w-[260px] flex-1 flex-col rounded-lg border p-3 transition-all ${familyColorClass(
                 summary.pipelineFamily
-              )} ${saturated ? "ring-1 ring-success/30" : ""}`}
+              )} ${saturated ? "ring-1 ring-success/30" : ""} ${lane ? lane.ringClass : ""}`}
             >
               {saturated && (
                 <div className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-br from-success/5 to-transparent" />
               )}
 
               <div className="relative z-10 flex flex-1 flex-col gap-2">
-                {/* Top row: family + badge */}
+                {/* Top row: family + lane/saturated badge */}
                 <div className="flex items-start justify-between gap-2">
                   <span className={`text-[10px] font-semibold uppercase tracking-wider ${familyTextClass(summary.pipelineFamily)}`}>
-                    {familyLabel}
+                    {archFamily}
                   </span>
-                  {saturated && (
-                    <span
-                      className="shrink-0 rounded bg-success/12 px-1.5 py-0 text-[9px] font-medium text-success"
-                      title="Saturated surface — low information content"
-                    >
-                      Saturated
-                    </span>
-                  )}
+                  <div className="flex shrink-0 items-center gap-1">
+                    {lane && (
+                      <span
+                        className={`rounded border px-1.5 py-0 text-[9px] font-semibold ${lane.badgeClass} ${lane.textClass}`}
+                        title={lane.title}
+                      >
+                        {lane.label}
+                      </span>
+                    )}
+                    {saturated && (
+                      <span
+                        className="rounded bg-success/12 px-1.5 py-0 text-[9px] font-medium text-success"
+                        title="Saturated surface — low information content"
+                      >
+                        Saturated
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Run ID */}
@@ -115,7 +120,7 @@ export default function RunLadder({ summaries }: RunLadderProps) {
                 {/* Meta row */}
                 <div className="flex items-center gap-1.5 text-[10px] text-muted">
                   <span className="rounded bg-surface-raised px-1 py-0 border border-border">
-                    {summary.split}
+                    {splitLabel(summary.split)}
                   </span>
                   <span>{summary.rowCount.toLocaleString()} rows</span>
                 </div>
@@ -123,14 +128,14 @@ export default function RunLadder({ summaries }: RunLadderProps) {
                 {/* Metrics */}
                 <div className="mt-auto grid grid-cols-2 gap-2">
                   <div className="rounded bg-surface p-2 border border-border">
-                    <div className="text-[9px] uppercase tracking-wider text-muted">Purist</div>
+                    <div className="text-[9px] uppercase tracking-wider text-muted">Strict</div>
                     <div className={`text-sm font-semibold ${familyTextClass(summary.pipelineFamily)}`}>
                       {formatPct(summary.puristAccuracy)}
                     </div>
                     <div className="text-[9px] text-muted">F1 {formatPct(summary.puristF1)}</div>
                   </div>
                   <div className="rounded bg-surface p-2 border border-border">
-                    <div className="text-[9px] uppercase tracking-wider text-muted">Pragmatic</div>
+                    <div className="text-[9px] uppercase tracking-wider text-muted">Lenient</div>
                     <div className={`text-sm font-semibold ${familyTextClass(summary.pipelineFamily)}`}>
                       {formatPct(summary.pragmaticAccuracy)}
                     </div>
