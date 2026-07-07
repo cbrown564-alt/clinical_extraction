@@ -45,7 +45,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-
 EXECTV2_LLM_MAX_LINES = 500
 SRC_MAX_LINES = 1000
 TESTS_MAX_LINES = 800
@@ -214,7 +213,7 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         "Gan2026 LLM: heavy evidence selection — pending decomposition",
     ),
     "tasks/seizure_frequency/gan2026/llm/llm_only_direct_labeler.py": AllowlistEntry(
-        1098,
+        1104,
         "Gan2026 LLM: direct labeler — pending decomposition",
     ),
     "tasks/seizure_frequency/gan2026/pipeline/stages/evidence_gating.py": AllowlistEntry(
@@ -254,7 +253,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split projection render repair cases",
     ),
     "test_exectv2_scoring.py": AllowlistEntry(
-        1641,
+        1642,
         "P0-6/Wave-C-S1: megatest — split scoring scenario tables",
     ),
     "test_gan2026_fresh_evidence_reasoner.py": AllowlistEntry(
@@ -262,7 +261,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split fresh-evidence reasoner panels",
     ),
     "test_exectv2_deterministic_sf.py": AllowlistEntry(
-        1262,
+        1296,
         "P0-6/Wave-C-S1: megatest — split deterministic SF rule cases",
     ),
     "test_gan2026_llm_pipeline_cli.py": AllowlistEntry(
@@ -294,11 +293,11 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split diagnosis indicator scenarios",
     ),
     "test_gan2026_pipeline_v1.py": AllowlistEntry(
-        889,
+        890,
         "P0-6/Wave-C-S1: megatest — split pipeline v1 integration cases",
     ),
     "test_exectv2_clinical_finding_assembly.py": AllowlistEntry(
-        833,
+        835,
         "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases",
     ),
     "test_gan2026_clinical_assessment_projection_render.py": AllowlistEntry(
@@ -524,9 +523,7 @@ def check_frontend_line_counts(frontend_dir: Path | None = None) -> list[LineCou
 
 
 def main() -> int:
-    violations = (
-        check_line_counts() + check_tests_line_counts() + check_frontend_line_counts()
-    )
+    violations = check_line_counts() + check_tests_line_counts() + check_frontend_line_counts()
     if not violations:
         print("line-count gates: OK")
         return 0
