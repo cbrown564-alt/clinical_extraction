@@ -29,8 +29,8 @@ import dspy
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as gepa_data
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifamily import (
-    GepaPerFamilyExtractor,
     _FAMILY_PREDICTORS,
+    GepaPerFamilyExtractor,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multistage import (
     parse_combined_instruction,
@@ -39,10 +39,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.run_gepa import
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 ROOT = Path(__file__).resolve().parents[1]
-SEED_INSTRUCTION_PATH = ROOT / "experiments" / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+SEED_INSTRUCTION_PATH = (
+    ROOT / "experiments" / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+)
 MODEL = "deepseek/deepseek-chat"
 OUT_JSON = ROOT / "experiments" / "exectv2_deepseek_precision_profile_probe_2026-06-30.json"
-OUT_MD = ROOT / "docs" / "experiments" / "exectv2" / "reliability" / "exectv2_deepseek_precision_profile_probe_2026-06-30.md"
+OUT_MD = (
+    ROOT
+    / "docs"
+    / "experiments"
+    / "exectv2"
+    / "reliability"
+    / "exectv2_deepseek_precision_profile_probe_2026-06-30.md"
+)
 
 PRECISION_ADDENDUM = (
     " Precision discipline: only emit a fact when the evidence text itself directly states or "
@@ -96,8 +105,10 @@ def main() -> None:
     base_f1 = results["baseline"]["clinical_headline"]["overall_f1"]
     addendum_f1 = results["precision_addendum"]["clinical_headline"]["overall_f1"]
     delta = addendum_f1 - base_f1
-    print(f"\nDeepSeek baseline headline F1   : {base_f1:.4f} (Phase 0c comparator: "
-          f"{COMPARATORS['deepseek_phase0c_model_swap_only_headline']})")
+    print(
+        f"\nDeepSeek baseline headline F1   : {base_f1:.4f} (Phase 0c comparator: "
+        f"{COMPARATORS['deepseek_phase0c_model_swap_only_headline']})"
+    )
     print(f"DeepSeek + precision addendum F1: {addendum_f1:.4f}")
     print(f"delta: {delta:+.4f}")
 
@@ -131,7 +142,7 @@ def write_report(out: dict, delta: float) -> None:
         f"Model: `{out['model']}`. Seed instructions: the mini-evolved per-family 0.731 run "
         f"(`{out['seed_instruction_source']}`), unchanged except for the addendum below.",
         "",
-        f"Added clause (every family, appended verbatim): \"{out['addendum'].strip()}\"",
+        f'Added clause (every family, appended verbatim): "{out["addendum"].strip()}"',
         "",
         "## Result",
         "",

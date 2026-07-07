@@ -10,23 +10,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     EvidenceSpan,
     ExtractedCandidate,
     FrequencyDetails,
-    PriorEncounterContext,
-    ReferenceDateContext,
-    RowContext,
-    SeizureFreeDetails,
-    SourcePhraseOnlyDetails,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
-    ClinicalAssessment,
-    NormalizedBurden,
-)
-
 from tests.helpers.gan2026_projection_render_fixtures import (
     candidate_set as _candidate_set,
-    row_context as _row_context,
-    seizure_free_candidate as _seizure_free_candidate,
-    unknown_candidate as _unknown_candidate,
 )
+from tests.helpers.gan2026_projection_render_fixtures import (
+    seizure_free_candidate as _seizure_free_candidate,
+)
+
 
 def test_build_projection_render_row_contains_both_schema_objects() -> None:
     row = {
@@ -42,9 +33,7 @@ def test_build_projection_render_row_contains_both_schema_objects() -> None:
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "single_fact",
-            "normalized_burden": {
-                "source_normalized_phrase": "two seizures per month"
-            },
+            "normalized_burden": {"source_normalized_phrase": "two seizures per month"},
         },
     }
 
@@ -73,9 +62,7 @@ def test_build_projection_render_repairs_duplicate_and_overlapping_role_ids() ->
             "supporting_candidate_ids": ["llm:23:1"],
             "rejected_candidate_ids": ["llm:23:1"],
             "aggregation_policy": "single_fact",
-            "normalized_burden": {
-                "source_normalized_phrase": "two seizures per month"
-            },
+            "normalized_burden": {"source_normalized_phrase": "two seizures per month"},
         },
     }
 
@@ -133,9 +120,7 @@ def test_build_projection_render_repairs_frequency_values_from_primary_candidate
         "frequency_rate_values_repaired_from_primary_candidate"
         in assessment["normalization_issues"]
     )
-    assert assessment["normalized_burden"]["source_normalized_phrase"] == (
-        "two seizures per month"
-    )
+    assert assessment["normalized_burden"]["source_normalized_phrase"] == ("two seizures per month")
     assert artifact_row["final_rendered_label"]["rendered_label"] == "2 per month"
 
 
@@ -357,8 +342,9 @@ def test_build_projection_render_repairs_three_seizures_nightly_from_primary_can
     assert artifact_row["final_rendered_label"]["rendered_label"] == "3 per day"
 
 
-def test_build_projection_render_repairs_several_occasions_each_week_from_primary_candidate(
-) -> None:
+def test_build_projection_render_repairs_several_occasions_each_week_from_primary_candidate() -> (
+    None
+):
     row = {
         "source_row_index": 31,
         "split": "validation",
@@ -384,8 +370,7 @@ def test_build_projection_render_repairs_several_occasions_each_week_from_primar
             31: _candidate_set(
                 31,
                 evidence=(
-                    "Brief staring spells with loss of awareness on several "
-                    "occasions each week."
+                    "Brief staring spells with loss of awareness on several occasions each week."
                 ),
             )
         },
@@ -488,8 +473,9 @@ def test_build_projection_render_repairs_several_seizures_each_week_as_weekly_no
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per week"
 
 
-def test_build_projection_render_repairs_several_seizures_typical_month_from_primary_candidate(
-) -> None:
+def test_build_projection_render_repairs_several_seizures_typical_month_from_primary_candidate() -> (
+    None
+):
     row = {
         "source_row_index": 34,
         "split": "validation",
@@ -609,8 +595,9 @@ def test_build_projection_render_relative_only_trend_stays_unrendered() -> None:
     )
 
 
-def test_build_projection_render_conditional_only_trigger_missed_medication_stays_unrendered(
-) -> None:
+def test_build_projection_render_conditional_only_trigger_missed_medication_stays_unrendered() -> (
+    None
+):
     row = {
         "source_row_index": 37,
         "split": "validation",
@@ -904,8 +891,8 @@ def test_build_projection_render_can_disable_current_summary_rate_priority() -> 
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert "explicit_summary_rate_over_long_period_average" not in (
-        assessment["normalization_issues"]
+    assert (
+        "explicit_summary_rate_over_long_period_average" not in (assessment["normalization_issues"])
     )
     assert (
         "ablation_switch_disabled:project_current_summary_rate_priority"
@@ -991,14 +978,12 @@ def test_build_projection_render_can_disable_previous_month_active_rate_policy()
                 ),
             )
         },
-        disabled_ablation_switches={
-            "project_previous_active_month_over_current_month_zero"
-        },
+        disabled_ablation_switches={"project_previous_active_month_over_current_month_zero"},
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert "previous_month_active_rate_over_current_zero" not in (
-        assessment["normalization_issues"]
+    assert (
+        "previous_month_active_rate_over_current_zero" not in (assessment["normalization_issues"])
     )
     assert (
         "ablation_switch_disabled:"
@@ -1008,8 +993,9 @@ def test_build_projection_render_can_disable_previous_month_active_rate_policy()
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
 
-def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero(
-) -> None:
+def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this_month_zero() -> (
+    None
+):
     row = {
         "source_row_index": 44,
         "split": "validation",
@@ -1052,8 +1038,9 @@ def test_build_projection_render_repairs_last_month_active_rate_over_so_far_this
     assert artifact_row["final_rendered_label"]["rendered_label"] == "multiple per month"
 
 
-def test_build_projection_render_prioritizes_major_recent_relapse_over_background_aura_rate(
-) -> None:
+def test_build_projection_render_prioritizes_major_recent_relapse_over_background_aura_rate() -> (
+    None
+):
     row = {
         "source_row_index": 45,
         "split": "validation",
@@ -1187,9 +1174,7 @@ def test_build_projection_render_can_disable_major_recent_relapse_priority() -> 
                 source_row_index=145,
                 candidate_kind="frequency_rate",
                 event_type="seizure",
-                frequency=FrequencyDetails(
-                    source_phrase="three tonic-clonic seizures yesterday"
-                ),
+                frequency=FrequencyDetails(source_phrase="three tonic-clonic seizures yesterday"),
                 temporality="current",
                 certainty="certain",
                 assertion_status="asserted",
@@ -1211,8 +1196,7 @@ def test_build_projection_render_can_disable_major_recent_relapse_priority() -> 
                 event_type="seizure",
                 frequency=FrequencyDetails(
                     source_phrase=(
-                        "interictal brief auras occurring approximately "
-                        "once or twice per week"
+                        "interictal brief auras occurring approximately once or twice per week"
                     )
                 ),
                 temporality="current",
@@ -1235,23 +1219,19 @@ def test_build_projection_render_can_disable_major_recent_relapse_priority() -> 
     artifact_row = projection_render.build_projection_render_row(
         row,
         candidate_sets={145: candidate_set},
-        disabled_ablation_switches={
-            "project_major_recent_relapse_over_background_frequency"
-        },
+        disabled_ablation_switches={"project_major_recent_relapse_over_background_frequency"},
     )
 
     assessment = artifact_row["clinical_assessment"]
     assert assessment["primary_candidate_ids"] == ["llm:145:2"]
-    assert "major_recent_relapse_over_background_frequency" not in (
-        assessment["normalization_issues"]
+    assert (
+        "major_recent_relapse_over_background_frequency" not in (assessment["normalization_issues"])
     )
     assert (
         "ablation_switch_disabled:project_major_recent_relapse_over_background_frequency"
         in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "1 to 2 per week"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("1 to 2 per week")
 
 
 def test_build_projection_render_marks_non_exact_selected_evidence_trace() -> None:
@@ -1310,9 +1290,7 @@ def test_build_projection_render_marks_invalid_source_id_for_exact_trace() -> No
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "single_fact",
-            "normalized_burden": {
-                "source_normalized_phrase": "having 2 seizures per week"
-            },
+            "normalized_burden": {"source_normalized_phrase": "having 2 seizures per week"},
         },
     }
 
@@ -1332,9 +1310,7 @@ def test_build_projection_render_marks_invalid_source_id_for_exact_trace() -> No
                         source_row_index=47,
                         candidate_kind="frequency_rate",
                         event_type="seizure",
-                        frequency=FrequencyDetails(
-                            source_phrase="having 2 seizures per week"
-                        ),
+                        frequency=FrequencyDetails(source_phrase="having 2 seizures per week"),
                         temporality="current",
                         certainty="certain",
                         assertion_status="asserted",
@@ -1412,9 +1388,7 @@ def test_build_projection_render_repairs_seizure_free_duration_from_primary_cand
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "currently seizure free"
-            },
+            "normalized_burden": {"source_normalized_phrase": "currently seizure free"},
         },
     }
 
@@ -1444,6 +1418,4 @@ def test_build_projection_render_repairs_seizure_free_duration_from_primary_cand
     assert assessment["normalized_burden"]["source_normalized_phrase"] == (
         "She has had no seizures for seven months."
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 7 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 7 month")

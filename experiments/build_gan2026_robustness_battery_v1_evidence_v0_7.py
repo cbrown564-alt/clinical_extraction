@@ -21,16 +21,16 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
 )
@@ -45,9 +45,7 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 CASES_PATH = EXPERIMENTS / "gan2026_robustness_battery_v1_cases.json"
-PREDECLARATION_PATH = (
-    EXPERIMENTS / "gan2026_label_binding_v0_7_predeclaration_2026-06-15.md"
-)
+PREDECLARATION_PATH = EXPERIMENTS / "gan2026_label_binding_v0_7_predeclaration_2026-06-15.md"
 
 RUN_ID = "gan2026_robustness_battery_v1_evidence_v0_7_gpt41mini_2026-06-15"
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
@@ -105,9 +103,7 @@ def main() -> None:
         "panels": panel_results,
         "summary": summary,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(summary)
     print(json.dumps(summary, indent=2, sort_keys=True))
@@ -140,7 +136,7 @@ def _build_record(panel: str, case: dict[str, Any]) -> GanFrequencyRecord:
 
 def _run_panel(panel: str, cases: list[dict[str, Any]]) -> dict[str, Any]:
     records = [_build_record(panel, case) for case in cases]
-    index_to_case = {rec.source_row_index: case for rec, case in zip(records, cases)}
+    index_to_case = {rec.source_row_index: case for rec, case in zip(records, cases, strict=False)}
 
     checkpoint_jsonl = CHECKPOINT_DIR / f"{RUN_ID}_{panel}.jsonl"
     checkpoint_report = CHECKPOINT_DIR / f"{RUN_ID}_{panel}.md"
@@ -256,8 +252,7 @@ def _judge(panel_results: dict[str, Any]) -> dict[str, Any]:
 
     a_pairs = a["pairs"]
     a_pass = (
-        a_pairs["both_correct_pairs"] == a_pairs["pairs"]
-        and a_pairs["overfit_only_pairs"] == 0
+        a_pairs["both_correct_pairs"] == a_pairs["pairs"] and a_pairs["overfit_only_pairs"] == 0
     )
     b_pass = b["purist_correct"] >= PANEL_B_MIN_CORRECT
     c_fraction = c["purist_correct"] / c["cases"] if c["cases"] else 0.0
@@ -445,9 +440,7 @@ def _tri(value: bool | None) -> str:
 
 def _register(summary: dict[str, Any]) -> None:
     decision = "promote" if summary["verdict"] == "transfers" else "revise"
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,

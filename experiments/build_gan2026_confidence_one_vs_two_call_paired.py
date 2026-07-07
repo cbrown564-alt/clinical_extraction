@@ -39,8 +39,8 @@ import dspy
 from clinical_extraction.core import run_resume
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.confidence_reviewer import (
     CONFIDENCE_REVIEWER_VERSION,
-    ConfidenceReviewer,
     VARIANT_D_INSTRUCTIONS,
+    ConfidenceReviewer,
     _clamp,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
@@ -133,16 +133,16 @@ def is_residual(note_text: str, gold_pm: float | None) -> bool:
 
 # ── Phase 1: joint pass (resumable per source_row_index) ────────────────────────
 
+
 def run_joint_pass(records, checkpoint: Path) -> dict[int, str]:
     """Live joint SE+confidence pass; returns {source_row_index: raw_output}."""
     done_rows, completed = run_resume.read_completed(checkpoint, key="source_row_index")
-    pending = run_resume.pending_items(
-        records, completed, key_of=lambda r: str(r.source_row_index)
-    )
+    pending = run_resume.pending_items(records, completed, key_of=lambda r: str(r.source_row_index))
     print(f"joint pass: {len(records)} rows · {len(completed)} cached · {len(pending)} pending")
     if pending:
-        lm = build_dspy_lm(MODEL, temperature=0.0, max_tokens=1200, cache=False, num_retries=2,
-                           timeout=120)
+        lm = build_dspy_lm(
+            MODEL, temperature=0.0, max_tokens=1200, cache=False, num_retries=2, timeout=120
+        )
         predict = dspy.Predict(JointExtractorWithConfidenceSignature)
         rows = list(done_rows)
         for i, record in enumerate(pending, 1):
@@ -153,8 +153,9 @@ def run_joint_pass(records, checkpoint: Path) -> dict[int, str]:
                 err = None
             except Exception as exc:  # pragma: no cover - live API only
                 raw, err = "", f"{type(exc).__name__}: {exc}"
-            rows.append({"source_row_index": record.source_row_index, "raw_output": raw,
-                         "call_error": err})
+            rows.append(
+                {"source_row_index": record.source_row_index, "raw_output": raw, "call_error": err}
+            )
             if i % 25 == 0 or i == len(pending):
                 ordered = run_resume.merge_rows(
                     rows, [str(r.source_row_index) for r in records], key="source_row_index"
@@ -170,6 +171,7 @@ def run_joint_pass(records, checkpoint: Path) -> dict[int, str]:
 
 # ── Phase 2: decoupled reviewer over the joint answers ──────────────────────────
 
+
 def load_prior_reviews(path: Path) -> dict[int, dict[str, Any]]:
     if not path.exists():
         return {}
@@ -182,6 +184,7 @@ def load_prior_reviews(path: Path) -> dict[int, dict[str, Any]]:
 
 
 # ── Statistics ──────────────────────────────────────────────────────────────────
+
 
 def arm_metrics(pairs: list[tuple[float, bool]]) -> dict[str, Any]:
     """pairs = (p_correct, is_correct). Risk = 1-p; failure = not correct."""
@@ -206,7 +209,12 @@ def arm_metrics(pairs: list[tuple[float, bool]]) -> dict[str, Any]:
 
 
 def bootstrap_auroc_diff(
-    joint_p: list[float], dec_p: list[float], correct: list[bool], *, reps: int = 1000, seed: int = 7
+    joint_p: list[float],
+    dec_p: list[float],
+    correct: list[bool],
+    *,
+    reps: int = 1000,
+    seed: int = 7,
 ) -> dict[str, float]:
     """Paired row-bootstrap of (AUROC_decoupled - AUROC_joint). Same resampled rows
     for both arms each rep, so the difference CI is paired."""
@@ -229,8 +237,12 @@ def bootstrap_auroc_diff(
     lo = diffs[int(0.025 * len(diffs))]
     hi = diffs[int(0.975 * len(diffs))]
     point = rc.auroc(d_risk, fail) - rc.auroc(j_risk, fail)
-    return {"point_diff_decoupled_minus_joint": point, "ci95_lo": lo, "ci95_hi": hi,
-            "reps_used": len(diffs)}
+    return {
+        "point_diff_decoupled_minus_joint": point,
+        "ci95_lo": lo,
+        "ci95_hi": hi,
+        "reps_used": len(diffs),
+    }
 
 
 def main() -> None:
@@ -314,8 +326,8 @@ def main() -> None:
     boot = bootstrap_auroc_diff(paired_joint_p, paired_dec_p, paired_correct)
 
     def _resid(pvals, corr, flags, want):
-        sel_p = [p for p, f in zip(pvals, flags) if f == want]
-        sel_c = [c for c, f in zip(corr, flags) if f == want]
+        sel_p = [p for p, f in zip(pvals, flags, strict=False) if f == want]
+        sel_c = [c for c, f in zip(corr, flags, strict=False) if f == want]
         mp = sum(sel_p) / len(sel_p) if sel_p else float("nan")
         acc = sum(1 for c in sel_c if c) / len(sel_c) if sel_c else float("nan")
         return {"n": len(sel_p), "mean_p": mp, "accuracy": acc}
@@ -337,7 +349,8 @@ def main() -> None:
         "n_no_comparison": n_no_comparison,
         "n_failures": sum(1 for c in paired_correct if not c),
         "joint_arm_purist_accuracy": (n_purist_correct / (len(rows) - n_no_comparison))
-        if (len(rows) - n_no_comparison) else float("nan"),
+        if (len(rows) - n_no_comparison)
+        else float("nan"),
         "se_baseline_purist_accuracy_comparator": 0.881,
         "external_signal_comparator_auroc": 0.781,
         "decoupled_on_frozen_SE_comparator_auroc": 0.684,
@@ -365,10 +378,14 @@ def main() -> None:
     out_json.write_text(json.dumps(result, indent=2), encoding="utf-8")
     out_md.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {out_json}")
-    print(f"  joint(1-call) AUROC {joint_m['failure_prediction_auroc']:.3f} · "
-          f"decoupled(2-call) AUROC {dec_m['failure_prediction_auroc']:.3f}")
-    print(f"  paired diff (dec - joint) {boot['point_diff_decoupled_minus_joint']:+.3f} "
-          f"CI [{boot['ci95_lo']:+.3f}, {boot['ci95_hi']:+.3f}]")
+    print(
+        f"  joint(1-call) AUROC {joint_m['failure_prediction_auroc']:.3f} · "
+        f"decoupled(2-call) AUROC {dec_m['failure_prediction_auroc']:.3f}"
+    )
+    print(
+        f"  paired diff (dec - joint) {boot['point_diff_decoupled_minus_joint']:+.3f} "
+        f"CI [{boot['ci95_lo']:+.3f}, {boot['ci95_hi']:+.3f}]"
+    )
 
 
 def render_md(r: dict[str, Any]) -> str:

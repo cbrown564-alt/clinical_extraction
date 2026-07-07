@@ -11,41 +11,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
-    DedupFactFamily,
     PromptProfile,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.constants import (
-    PROMPT_VERSION,
     _ARCHITECTURE,
-    _CLEAN_RENDER_ID_OUTPUT_SCHEMA,
-    _INVENTORY_OUTPUT_SCHEMA,
-    _MENTION_ID_OUTPUT_SCHEMA,
-    _MENTION_OUTPUT_SCHEMA,
-    _MODEL_ORIGIN_CONTRACT,
-    _OUTPUT_SCHEMA,
     _POOL_ADJUDICATION_OUTPUT_SCHEMA,
     _POOL_GROUP_ADJUDICATION_OUTPUT_SCHEMA,
-    _RENDER_ID_OUTPUT_SCHEMA,
-    _TYPED_MENTION_OUTPUT_SCHEMA,
-    _dedup_fact_decision_tables,
-    _dedup_fact_output_schema,
+    PROMPT_VERSION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
     coerce_mention_list,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
-    _coerce_record,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.prompt_content import (
-    _clean_render_text_policy,
     _clinical_rules,
-    _dedup_fact_guidance,
-    _dedup_fact_worked_examples,
     _forbidden_attribute_combinations,
     _mention_attribute_contract,
-    _render_text_policy,
     _worked_examples,
 )
+
 
 def build_qwen_pool_adjudication_prompt_payload(
     letter: ExectLetter,
@@ -82,10 +65,7 @@ def build_qwen_pool_adjudication_prompt_payload(
                 "selected mention text, attributes, evidence, confidence, and "
                 "rationale stay unchanged."
             ),
-            (
-                "Do not assume any precomputed span list, regex hit list, or "
-                "upstream target."
-            ),
+            ("Do not assume any precomputed span list, regex hit list, or upstream target."),
             "Return only the JSON object; do not include chain-of-thought or private reasoning.",
         ],
         "selection_instructions": [

@@ -17,9 +17,6 @@ import argparse
 import json
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
-    write_artifact_bundle,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
     load_finding_assembly_manifest,
 )
@@ -32,6 +29,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     INVESTIGATIONS,
     PRESCRIPTION,
     SEIZURE_FREQUENCY,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.artifact_io import (
+    write_artifact_bundle,
 )
 
 _ENTITIES = (DIAGNOSIS.name, SEIZURE_FREQUENCY.name, PRESCRIPTION.name, INVESTIGATIONS.name)

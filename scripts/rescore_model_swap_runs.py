@@ -26,13 +26,11 @@ exectv2_same_core_full200_predeclaration_2026-06-25.md boundary.
 from __future__ import annotations
 
 import argparse
-import json
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.registry import (
-    RunRegistryEntry,
     load_run_registry,
     write_run_registry,
 )
@@ -127,9 +125,7 @@ def _new_disclosure_tail(
             ("investigations_f1", "Investigations"),
         ):
             if fam_key in stale:
-                family_pairs.append(
-                    f"{fam_name} {stale[fam_key]}->{rescored[fam_name]}"
-                )
+                family_pairs.append(f"{fam_name} {stale[fam_key]}->{rescored[fam_name]}")
         parts.append(", " + ", ".join(family_pairs) + ".")
         parts.append(" Predictions (.jsonl) unchanged.")
     return "".join(parts)
@@ -168,9 +164,7 @@ def rescore_all(registry_path: Path = REGISTRY_PATH, *, dry_run: bool = False) -
         new_tail = _new_disclosure_tail(run_id, stale, rescored, is_full200)
         base_notes = _strip_stale_tail(entry.claim_language_notes)
         new_notes = base_notes + " " + new_tail
-        updated = replace(
-            entry, primary_metrics=new_primary, claim_language_notes=new_notes
-        )
+        updated = replace(entry, primary_metrics=new_primary, claim_language_notes=new_notes)
         by_id[run_id] = updated
         # Faithfulness self-check (informational, not gating): the audit's I1
         # Inv text-fallback fix is latent on the GEPA canonical run, but these
@@ -193,7 +187,11 @@ def rescore_all(registry_path: Path = REGISTRY_PATH, *, dry_run: bool = False) -
         changes.append(
             f"  {run_id}: overall {stale['clinical_headline_f1']}->{rescored['overall']} "
             f"({'+' if delta >= 0 else ''}{delta:.4f})"
-            + ("" if is_full200 else f" | Inv {stale.get('investigations_f1')}->{rescored['Investigations']}")
+            + (
+                ""
+                if is_full200
+                else f" | Inv {stale.get('investigations_f1')}->{rescored['Investigations']}"
+            )
         )
 
     print("=== re-score summary ===")

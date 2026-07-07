@@ -38,14 +38,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    fresh_evidence_reasoner,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    fresh_evidence_reasoner,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -236,9 +236,7 @@ def main() -> None:
         "summary": summary,
         "records": records,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(payload)
     print(json.dumps(summary, indent=2, sort_keys=True))
@@ -272,8 +270,7 @@ def _evaluate_case(case: ContrastCase) -> dict[str, Any]:
     observed_kind = final.final_kind if final else None
     observed_classification = raw.ambiguity_classification if raw else None
     gate_fallback = any(
-        str(error).startswith("fresh_evidence_gate_fallback:")
-        for error in parsed.parse_errors
+        str(error).startswith("fresh_evidence_gate_fallback:") for error in parsed.parse_errors
     )
     passed = (
         observed_label == case.expected_final_label
@@ -343,8 +340,7 @@ def _summarize(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     for record in records:
         pairs.setdefault(record["pair_id"], []).append(record)
     pair_pass = {
-        pair_id: all(member["passed"] for member in members)
-        for pair_id, members in pairs.items()
+        pair_id: all(member["passed"] for member in members) for pair_id, members in pairs.items()
     }
     return {
         "cases": len(records),
@@ -356,15 +352,12 @@ def _summarize(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "class_distribution": dict(
             sorted(
                 Counter(
-                    str(record["observed_ambiguity_classification"])
-                    for record in records
+                    str(record["observed_ambiguity_classification"]) for record in records
                 ).items()
             )
         ),
         "panel_passed": all(record["passed"] for record in records),
-        "failed_cases": sorted(
-            record["case_id"] for record in records if not record["passed"]
-        ),
+        "failed_cases": sorted(record["case_id"] for record in records if not record["passed"]),
     }
 
 
@@ -451,9 +444,7 @@ def _decision(summary: Mapping[str, Any]) -> str:
 
 def _register(payload: Mapping[str, Any]) -> None:
     summary = payload["summary"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,

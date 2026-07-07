@@ -12,9 +12,6 @@ from typing import Any, Literal
 import dspy
 from pydantic import ValidationError
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate_set_union import (
-    build_candidate_set_union_rows,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (
     AssessmentDraft,
 )
@@ -30,6 +27,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
     deterministic_extraction,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate_set_union import (
+    build_candidate_set_union_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind as DeterministicCandidateKind,
@@ -69,6 +69,7 @@ DEFAULT_REPORT_PATH = Path(
 )
 DEFAULT_CANDIDATE_SET_JSONL_PATH = selector_probe.DEFAULT_CANDIDATE_SET_JSONL_PATH
 
+
 class Gan2026CandidateSetClinicalAssessmentSignature(dspy.Signature):
     """Synthesize a clinical seizure-burden assessment from a CandidateSet."""
 
@@ -80,9 +81,7 @@ class Gan2026CandidateSetClinicalAssessmentSignature(dspy.Signature):
     )
     candidate_set: dict[str, Any] = dspy.InputField(desc="Source-near candidates.")
     output_contract: dict[str, Any] = dspy.InputField(desc="ClinicalAssessment contract.")
-    assessment_draft: AssessmentDraft = dspy.OutputField(
-        desc="Clinical assessment draft only."
-    )
+    assessment_draft: AssessmentDraft = dspy.OutputField(desc="Clinical assessment draft only.")
 
 
 class DspyCandidateSetClinicalAssessment(dspy.Module):
@@ -242,10 +241,7 @@ def build_assessment_inputs(
                 "source phrase incidentally contains the word 'cluster' or 'clustering' as a "
                 "general descriptor without describing a recurring grouped-episode pattern."
             ),
-            (
-                "Do not turn vague words like several, few, many, or multiple into "
-                "exact numbers."
-            ),
+            ("Do not turn vague words like several, few, many, or multiple into exact numbers."),
             (
                 "Return a clinical assessment only. Keep contextual details separate "
                 "from the primary burden."
@@ -589,12 +585,10 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
     assessments = [row for row in rows if row.get("clinical_assessment")]
     kind_counts = Counter(
-        str((row.get("clinical_assessment") or {}).get("assessment_kind"))
-        for row in assessments
+        str((row.get("clinical_assessment") or {}).get("assessment_kind")) for row in assessments
     )
     policy_counts = Counter(
-        str((row.get("clinical_assessment") or {}).get("aggregation_policy"))
-        for row in assessments
+        str((row.get("clinical_assessment") or {}).get("aggregation_policy")) for row in assessments
     )
     return {
         "examples": len(rows),
@@ -752,9 +746,7 @@ def _policy_examples() -> list[dict[str, str]]:
         },
         {
             "case": "Total count plus subtype",
-            "candidates": (
-                "A says 8 seizures in the past two months; B says 1 was nocturnal."
-            ),
+            "candidates": ("A says 8 seizures in the past two months; B says 1 was nocturnal."),
             "assessment": (
                 "Use A as primary. Put B in supporting or rejected context because "
                 "it may already be included in A."
@@ -763,12 +755,10 @@ def _policy_examples() -> list[dict[str, str]]:
         {
             "case": "Frequency plus cluster modifier",
             "candidates": (
-                "A says 12 seizures per month; B says events sometimes cluster "
-                "after sleep loss."
+                "A says 12 seizures per month; B says events sometimes cluster after sleep loss."
             ),
             "assessment": (
-                "Use A as primary with primary_with_context. B is context, not "
-                "additive burden."
+                "Use A as primary with primary_with_context. B is context, not additive burden."
             ),
         },
         {

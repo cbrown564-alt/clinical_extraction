@@ -2,23 +2,15 @@
 
 Split from test_exectv2_target_indicators_single_call.py."""
 
-import json
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
     MentionRecord,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_target_indicators_single_call import (  # noqa: E501
-    COMPONENT_OWNER,
-    _parse_target_extraction_json,
     audit_only_projection_replay_switches,
-    build_prompt_input,
     summarize_rows,
     to_predicted_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
-    TARGET_INDICATORS,
-)
+
 
 def test_target_single_call_adapter_projects_diagnosis_text_to_core_fact() -> None:
     note = "Diagnosis: probable focal epilepsy (perinatal insult)."
@@ -54,10 +46,7 @@ def test_target_single_call_adapter_extends_probable_temporal_diagnosis_evidence
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions[0].text == "temporal lobe epilepsy"
-    assert any(
-        "extended_probable_temporal_diagnosis_evidence" in warning
-        for warning in warnings
-    )
+    assert any("extended_probable_temporal_diagnosis_evidence" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_preserves_genetic_generalised_epilepsy() -> None:
@@ -197,10 +186,7 @@ def test_target_single_call_adapter_drops_non_epilepsy_diagnosis_core() -> None:
 
 
 def test_target_single_call_adapter_keeps_epilepsy_diagnosis_cores() -> None:
-    note = (
-        "Diagnosis: temporal lobe epilepsy. She has intractable epilepsy and "
-        "epileptic attacks."
-    )
+    note = "Diagnosis: temporal lobe epilepsy. She has intractable epilepsy and epileptic attacks."
     mentions = [
         MentionRecord(
             entity="Diagnosis",
@@ -312,10 +298,7 @@ def test_target_single_call_adapter_projects_focal_onset_sf_candidate_to_diagnos
     ]
     assert predicted.mentions[0].text == "focal epilepsy"
     assert predicted.mentions[1].text == "seizures"
-    assert any(
-        "projected_focal_onset_sf_candidate_to_diagnosis" in warning
-        for warning in warnings
-    )
+    assert any("projected_focal_onset_sf_candidate_to_diagnosis" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_focal_diagnosis_context_to_sf() -> None:
@@ -342,10 +325,7 @@ def test_target_single_call_adapter_projects_focal_diagnosis_context_to_sf() -> 
     assert sf_mention.attributes["LowerNumberOfTimePeriods"] == "3"
     assert sf_mention.attributes["UpperNumberOfTimePeriods"] == "4"
     assert sf_mention.attributes["TimePeriod"] == "Week"
-    assert any(
-        "projected_focal_diagnosis_context_to_sf_state" in warning
-        for warning in warnings
-    )
+    assert any("projected_focal_diagnosis_context_to_sf_state" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_sf_context_to_focal_diagnosis() -> None:
@@ -372,10 +352,7 @@ def test_target_single_call_adapter_projects_sf_context_to_focal_diagnosis() -> 
     assert predicted.mentions[1].text == "focal epilepsy"
     assert predicted.mentions[1].attributes["Certainty"] == "3"
     assert predicted.mentions[1].evidence == "possibly focal onset"
-    assert any(
-        "projected_sf_context_to_focal_diagnosis" in warning
-        for warning in warnings
-    )
+    assert any("projected_sf_context_to_focal_diagnosis" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_sf_header_context_to_focal_diagnosis() -> None:
@@ -404,10 +381,7 @@ def test_target_single_call_adapter_projects_sf_header_context_to_focal_diagnosi
     ]
     assert predicted.mentions[1].text == "focal epilepsy"
     assert predicted.mentions[1].attributes["Certainty"] == "3"
-    assert any(
-        "projected_sf_context_to_focal_diagnosis" in warning
-        for warning in warnings
-    )
+    assert any("projected_sf_context_to_focal_diagnosis" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_syndrome_without_alone_from_evidence() -> None:
@@ -508,8 +482,7 @@ def test_target_single_call_adapter_projects_infrequent_diagnosis_year_to_unknow
     assert attrs["FrequencyChange"] == "Infrequent"
     assert "NumberOfSeizures" not in attrs
     assert any(
-        "projected_infrequent_diagnosis_year_to_change_state" in warning
-        for warning in warnings
+        "projected_infrequent_diagnosis_year_to_change_state" in warning for warning in warnings
     )
 
 
@@ -647,8 +620,7 @@ def test_target_single_call_adapter_projects_absence_like_header_diagnosis_to_sf
     assert mention.attributes["NumberOfSeizures"] == "1"
     assert mention.attributes["YearDate"] == "2014"
     assert any(
-        "projected_frequency_header_diagnosis_to_sf_state" in warning
-        for warning in warnings
+        "projected_frequency_header_diagnosis_to_sf_state" in warning for warning in warnings
     )
 
 
@@ -787,10 +759,7 @@ def test_target_single_call_adapter_splits_temporal_lobe_onset_to_focal_seizures
         "temporal lobe seizure",
         "focal seizures",
     ]
-    assert any(
-        "split_temporal_lobe_onset_to_focal_seizures" in warning
-        for warning in warnings
-    )
+    assert any("split_temporal_lobe_onset_to_focal_seizures" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_typed_zero_state_to_diagnosis() -> None:
@@ -807,8 +776,7 @@ def test_target_single_call_adapter_projects_typed_zero_state_to_diagnosis() -> 
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert any(
-        mention.entity == "Diagnosis"
-        and mention.text == "Focal to bilateral convulsive seizures"
+        mention.entity == "Diagnosis" and mention.text == "Focal to bilateral convulsive seizures"
         for mention in predicted.mentions
     )
     assert any("projected_typed_seizure_frequency_to_diagnosis" in warning for warning in warnings)
@@ -851,8 +819,7 @@ def test_target_single_call_adapter_projects_controlled_state_from_diagnosis_con
         for mention in predicted.mentions
     )
     assert any(
-        "projected_diagnosis_context_to_controlled_sf_state" in warning
-        for warning in warnings
+        "projected_diagnosis_context_to_controlled_sf_state" in warning for warning in warnings
     )
 
 
@@ -923,10 +890,7 @@ def test_target_projection_quarantines_diagnosis_context_state_families_by_defau
             predicted_mention.entity == "SeizureFrequency"
             for predicted_mention in predicted.mentions
         )
-        assert any(
-            f"quarantined_projection_family: {family}" in warning
-            for warning in warnings
-        )
+        assert any(f"quarantined_projection_family: {family}" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_dropped_general_complex_sf_to_diagnosis() -> None:

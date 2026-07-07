@@ -27,15 +27,15 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026 import data as gan_data
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
-    summarize_family_holdout_cv,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026 import data as gan_data
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
+    summarize_family_holdout_cv,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -54,12 +54,9 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 BASELINE_V05_JSONL = (
-    EXPERIMENTS
-    / "gan2026_llm_only_direct_labeler_v05_validation750_gpt41mini_2026-06-09.jsonl"
+    EXPERIMENTS / "gan2026_llm_only_direct_labeler_v05_validation750_gpt41mini_2026-06-09.jsonl"
 )
-PREDECLARATION_PATH = (
-    EXPERIMENTS / "gan2026_label_binding_v0_7_predeclaration_2026-06-15.md"
-)
+PREDECLARATION_PATH = EXPERIMENTS / "gan2026_label_binding_v0_7_predeclaration_2026-06-15.md"
 
 RUN_ID = "gan2026_llm_only_direct_labeler_v07_validation750_gpt41mini_2026-06-15"
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
@@ -94,14 +91,10 @@ def _reparse_baseline_v05() -> dict[int, dict[str, Any]]:
 
     labeler.set_active_prompt_version(labeler.PROMPT_VERSION_V0_5)
     baseline_rows = [
-        json.loads(line)
-        for line in BASELINE_V05_JSONL.read_text(encoding="utf-8").splitlines()
+        json.loads(line) for line in BASELINE_V05_JSONL.read_text(encoding="utf-8").splitlines()
     ]
     rescored: dict[int, dict[str, Any]] = {}
-    records = {
-        rec.source_row_index: rec
-        for rec in gan_data.load_records_for_split("validation")
-    }
+    records = {rec.source_row_index: rec for rec in gan_data.load_records_for_split("validation")}
     for row in baseline_rows:
         idx = row["source_row_index"]
         rec = records[idx]
@@ -205,16 +198,12 @@ def main() -> None:
     wrong_to_correct = sum(
         1
         for idx, c in candidate.items()
-        if idx in baseline
-        and not baseline[idx]["purist_correct"]
-        and c["purist_correct"]
+        if idx in baseline and not baseline[idx]["purist_correct"] and c["purist_correct"]
     )
     correct_to_wrong = sum(
         1
         for idx, c in candidate.items()
-        if idx in baseline
-        and baseline[idx]["purist_correct"]
-        and not c["purist_correct"]
+        if idx in baseline and baseline[idx]["purist_correct"] and not c["purist_correct"]
     )
 
     summary_by_family = _transitions_by_family(baseline, candidate)
@@ -246,18 +235,27 @@ def main() -> None:
         "summary_by_family": summary_by_family,
         "family_cv": cv,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(payload)
-    print(json.dumps(
-        {k: payload[k] for k in (
-            "rows", "v07_purist", "v05_baseline_purist", "net_purist_vs_v05",
-            "wrong_to_correct_vs_v05", "correct_to_wrong_vs_v05",
-        )} | {"gap_robust": cv["gap_robust"], "cv_reasons": cv["reasons"]},
-        indent=2, sort_keys=True,
-    ))
+    print(
+        json.dumps(
+            {
+                k: payload[k]
+                for k in (
+                    "rows",
+                    "v07_purist",
+                    "v05_baseline_purist",
+                    "net_purist_vs_v05",
+                    "wrong_to_correct_vs_v05",
+                    "correct_to_wrong_vs_v05",
+                )
+            }
+            | {"gap_robust": cv["gap_robust"], "cv_reasons": cv["reasons"]},
+            indent=2,
+            sort_keys=True,
+        )
+    )
 
 
 def _markdown(p: dict[str, Any]) -> str:
@@ -298,27 +296,39 @@ def _markdown(p: dict[str, Any]) -> str:
             f"{h['wrong_to_correct']} | {h['correct_to_wrong']} | "
             f"{h['net_purist_gain']:+d} | {h['changed_label_precision']} |"
         )
-    lines.extend(["", "## Per-band transition summary (candidate vs baseline)", "",
-                  "| Band | rows | changed | w->c | c->w |", "| --- | ---: | ---: | ---: | ---: |"])
+    lines.extend(
+        [
+            "",
+            "## Per-band transition summary (candidate vs baseline)",
+            "",
+            "| Band | rows | changed | w->c | c->w |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for band, fam in p["summary_by_family"]["families"].items():
         lines.append(
             f"| {band} | {fam['rows']} | {fam['changed_labels']} | "
             f"{fam['wrong_to_correct']} | {fam['correct_to_wrong']} |"
         )
-    lines.extend(["", "## Interpretation", "",
-                  "A gap_robust verdict means no held-out boundary band silently "
-                  "regresses and every changed band clears the changed-label "
-                  "precision bar. This is within-validation stability, necessary "
-                  "but NOT sufficient for test450: it is not a holdout result.", ""])
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "A gap_robust verdict means no held-out boundary band silently "
+            "regresses and every changed band clears the changed-label "
+            "precision bar. This is within-validation stability, necessary "
+            "but NOT sufficient for test450: it is not a holdout result.",
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
 def _register(p: dict[str, Any]) -> None:
     cv = p["family_cv"]
     decision = "promote" if cv["gap_robust"] and p["net_purist_vs_v05"] > 0 else "revise"
-    entries = [
-        e for e in load_run_registry(REGISTRY_PATH) if e.run_id != RUN_ID
-    ]
+    entries = [e for e in load_run_registry(REGISTRY_PATH) if e.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,

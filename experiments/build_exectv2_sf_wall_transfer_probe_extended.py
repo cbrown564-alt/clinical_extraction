@@ -50,9 +50,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (  # noq
     ExectAnnotation,
     load_letters,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (  # noqa: E402
-    FAMILIES,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import (  # noqa: E402
     REPO_ROOT,
     load_json,
@@ -71,8 +68,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 OUT_JSON = base.OUT_JSON
 OUT_MD = base.OUT_MD
 
-GPT_DEV140 = REPO_ROOT / "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.jsonl"
-DEEPSEEK_DEV140 = REPO_ROOT / "experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.jsonl"
+GPT_DEV140 = (
+    REPO_ROOT / "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.jsonl"
+)
+DEEPSEEK_DEV140 = (
+    REPO_ROOT / "experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.jsonl"
+)
 QWEN_DEV140 = REPO_ROOT / "experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.jsonl"
 
 # ── Gan P0.2 reference numbers (validation750, for the cross-task panel) ──────────
@@ -89,27 +90,69 @@ GAN_BAND_UNKNOWN_ENTROPY = 0.000
 # it cannot manufacture a signal.
 _SOURCE_FLAG_KEYWORDS: dict[str, tuple[str, ...]] = {
     "source_has_last_event_language": (
-        "last seizure", "last event", "last episode", "last attack", "last fit",
-        "last one", "most recent", "latest seizure", "latest event",
+        "last seizure",
+        "last event",
+        "last episode",
+        "last attack",
+        "last fit",
+        "last one",
+        "most recent",
+        "latest seizure",
+        "latest event",
     ),
     "source_has_since_anchor": (
-        "since starting", "since commencing", "since last", "since then",
-        "free since", "since his", "since her", "since the", "ever since",
+        "since starting",
+        "since commencing",
+        "since last",
+        "since then",
+        "free since",
+        "since his",
+        "since her",
+        "since the",
+        "ever since",
     ),
     "source_has_trigger_language": (
-        "trigger", "provoked", "stress", "sleep deprivation", "sleep deprived",
-        "sleep-deprived", "missed medication", "missed dose", "non-compliance",
-        "noncompliance", "alcohol", "photosensitiv", "febrile", "fever",
+        "trigger",
+        "provoked",
+        "stress",
+        "sleep deprivation",
+        "sleep deprived",
+        "sleep-deprived",
+        "missed medication",
+        "missed dose",
+        "non-compliance",
+        "noncompliance",
+        "alcohol",
+        "photosensitiv",
+        "febrile",
+        "fever",
     ),
     "source_has_drop_attack_language": (
-        "drop attack", "drop-attack", "fall to the ground", "drop to the ground",
-        "atonic", "collapse",
+        "drop attack",
+        "drop-attack",
+        "fall to the ground",
+        "drop to the ground",
+        "atonic",
+        "collapse",
     ),
     "source_has_unable_to_quantify": (
-        "unable to quantify", "cannot quantify", "difficult to quantify",
-        "uncertain", "unclear", "not sure", "unsure", "cannot say", "hard to say",
-        "vague", "unquantif", "unknown frequency", "frequency unknown",
-        "does not know", "cannot recall", "unable to recall", "not quantified",
+        "unable to quantify",
+        "cannot quantify",
+        "difficult to quantify",
+        "uncertain",
+        "unclear",
+        "not sure",
+        "unsure",
+        "cannot say",
+        "hard to say",
+        "vague",
+        "unquantif",
+        "unknown frequency",
+        "frequency unknown",
+        "does not know",
+        "cannot recall",
+        "unable to recall",
+        "not quantified",
     ),
 }
 SOURCE_FLAGS = tuple(_SOURCE_FLAG_KEYWORDS)
@@ -118,18 +161,45 @@ SOURCE_FLAGS = tuple(_SOURCE_FLAG_KEYWORDS)
 _RANGE_RE = re.compile(r"\d+\s*(?:-|–|to|or)\s*\d+")
 _AMBIGUITY_KEYWORDS: dict[str, tuple[str, ...]] = {
     "vague_count_or_period": (
-        "few", "several", "a couple", "couple of", " some ", "multiple",
-        "numerous", "occasional", "intermittent", "sporadic", "a number of",
+        "few",
+        "several",
+        "a couple",
+        "couple of",
+        " some ",
+        "multiple",
+        "numerous",
+        "occasional",
+        "intermittent",
+        "sporadic",
+        "a number of",
     ),
     "relative_change_without_base_rate": (
-        "more frequent", "less frequent", "increased", "decreased", "reduced",
-        "worsen", "improv", "fewer", "worse", "better",
+        "more frequent",
+        "less frequent",
+        "increased",
+        "decreased",
+        "reduced",
+        "worsen",
+        "improv",
+        "fewer",
+        "worse",
+        "better",
     ),
     "uncertainty_language": (
-        "approximately", "around", "about", "roughly", "~", "estimat", "?",
+        "approximately",
+        "around",
+        "about",
+        "roughly",
+        "~",
+        "estimat",
+        "?",
     ),
     "conditional_or_trigger_bound": (
-        "when ", "if ", "during", "only with", "associated with",
+        "when ",
+        "if ",
+        "during",
+        "only with",
+        "associated with",
     ),
 }
 
@@ -242,7 +312,7 @@ def _risk_coverage_curve(items: list[dict[str, Any]]) -> dict[str, Any]:
         )
     auc = sum(
         (b["coverage"] - a["coverage"]) * (a["selective_risk"] + b["selective_risk"]) / 2
-        for a, b in zip(points, points[1:])
+        for a, b in zip(points, points[1:], strict=False)
     )
     return {"auc": round(auc, 4), "plateau": points[0], "operating_points": points}
 
@@ -291,7 +361,7 @@ def external_risk_population() -> dict[str, Any]:
     }
     feature_out: dict[str, Any] = {}
     for name, risks in feature_risk.items():
-        items = [{"risk": r, "correct": c["correct"]} for r, c in zip(risks, cells)]
+        items = [{"risk": r, "correct": c["correct"]} for r, c in zip(risks, cells, strict=False)]
         curve = _risk_coverage_curve(items)
         feature_out[name] = {
             "auroc_error": round(rc.auroc(risks, labels), 4),
@@ -307,7 +377,7 @@ def external_risk_population() -> dict[str, Any]:
         covered += 1
         err += 0 if c["correct"] else 1
         pts.append((covered / n, err / covered))
-    oracle_auc = sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:]))
+    oracle_auc = sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:], strict=False))
 
     return {
         "split": "dev140",
@@ -429,7 +499,11 @@ def wall_slice_null_test(external_population: dict[str, Any]) -> dict[str, Any]:
             # per-model over-read accounting (gold-unknown -> non-unknown state)
             for model_name, mp in pmap.items():
                 states = mp.get(type_key)
-                if states and (states & {"active-rate", "seizure-free"}) and "unknown" not in states:
+                if (
+                    states
+                    and (states & {"active-rate", "seizure-free"})
+                    and "unknown" not in states
+                ):
                     per_model_overread[model_name] += 1
             gpt_states = pmap["gpt41mini"].get(type_key)
             if gpt_states is None:
@@ -440,7 +514,9 @@ def wall_slice_null_test(external_population: dict[str, Any]) -> dict[str, Any]:
                 cls = "over_read_wrong"
             else:
                 cls = "recall_miss"
-            model_states = [_state_of(pmap[m], type_key) for m in ("gpt41mini", "deepseek", "qwen36")]
+            model_states = [
+                _state_of(pmap[m], type_key) for m in ("gpt41mini", "deepseek", "qwen36")
+            ]
             rep_states = [_state_of(rm, type_key) for rm in rep_maps]
             units.append(
                 {
@@ -489,7 +565,11 @@ def wall_slice_null_test(external_population: dict[str, Any]) -> dict[str, Any]:
         },
     }
     best_separation = max(
-        (f["auroc_over_read"] for f in features.values() if f["auroc_over_read"] == f["auroc_over_read"]),
+        (
+            f["auroc_over_read"]
+            for f in features.values()
+            if f["auroc_over_read"] == f["auroc_over_read"]
+        ),
         key=lambda v: abs(v - 0.5),
         default=float("nan"),
     )
@@ -510,7 +590,9 @@ def wall_slice_null_test(external_population: dict[str, Any]) -> dict[str, Any]:
         },
         "per_model_over_read_counts_on_gold_unknown": per_model_overread,
         "features": features,
-        "best_separating_auroc": round(best_separation, 4) if best_separation == best_separation else None,
+        "best_separating_auroc": round(best_separation, 4)
+        if best_separation == best_separation
+        else None,
         "h1_supported": h1_supported,
         "result": "H1_separation_exists" if h1_supported else "H0_retained_no_gold_free_separator",
         "entropy_zero_over_reads": entropy_zero_over_reads,
@@ -629,7 +711,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
     lines.append(f"`risk = {pop['formula']}`")
     lines.append("")
     lines.append(
-        f"- Agreement leg (#1-#2): largest identical SF-keyset cluster across the three "
+        "- Agreement leg (#1-#2): largest identical SF-keyset cluster across the three "
         "same-core model-swap runs (GPT / DeepSeek / Qwen)."
     )
     lines.append(
@@ -650,9 +732,7 @@ def render_markdown(payload: dict[str, Any]) -> str:
             f"| {label[key]} | {feat['auroc_error']:.4f} | {feat['risk_coverage_auc']:.4f} | "
             f"{_fmt_plateau(feat['plateau'])} |"
         )
-    lines.append(
-        f"| _oracle (correct-first)_ | — | {pop['oracle_risk_coverage_auc']:.4f} | — |"
-    )
+    lines.append(f"| _oracle (correct-first)_ | — | {pop['oracle_risk_coverage_auc']:.4f} | — |")
     lines.append("")
     gan = pop["gan_p0_2_reference"]
     lines.append(
@@ -692,14 +772,20 @@ def render_markdown(payload: dict[str, Any]) -> str:
         f"counts on the gold-unknown slice: {wall['per_model_over_read_counts_on_gold_unknown']}."
     )
     lines.append("")
-    lines.append("| Feature | Mean (withhold-correct) | Mean (over-read-wrong) | AUROC (flags over-read) |")
+    lines.append(
+        "| Feature | Mean (withhold-correct) | Mean (over-read-wrong) | AUROC (flags over-read) |"
+    )
     lines.append("| --- | ---: | ---: | ---: |")
     flabel = {
         "cross_model_state_agreement": "#1 Cross-model state agreement",
         "external_risk_composite": "#3 External risk composite",
         "self_consistency_state_entropy": "#17/#18 Self-consistency state entropy",
     }
-    for key in ("cross_model_state_agreement", "external_risk_composite", "self_consistency_state_entropy"):
+    for key in (
+        "cross_model_state_agreement",
+        "external_risk_composite",
+        "self_consistency_state_entropy",
+    ):
         feat = wall["features"][key]
         lines.append(
             f"| {flabel[key]} | {feat['mean_withhold_correct']} | {feat['mean_over_read_wrong']} | "
@@ -727,7 +813,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
     lines.append("")
     lines.append("### Over-read units (the binding residual)")
     lines.append("")
-    lines.append("| Letter | GPT state | 3-model states | 4-temp states | State entropy | Letter ext-risk |")
+    lines.append(
+        "| Letter | GPT state | 3-model states | 4-temp states | State entropy | Letter ext-risk |"
+    )
     lines.append("| --- | --- | --- | --- | ---: | ---: |")
     for u in wall["over_read_units"]:
         lines.append(
@@ -755,7 +843,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Generator")
     lines.append("")
-    lines.append("- Extended harness: `experiments/build_exectv2_sf_wall_transfer_probe_extended.py`")
+    lines.append(
+        "- Extended harness: `experiments/build_exectv2_sf_wall_transfer_probe_extended.py`"
+    )
     lines.append("- Base harness: `experiments/build_exectv2_sf_wall_transfer_probe.py`")
     lines.append("")
     return md.rstrip() + "\n\n" + "\n".join(lines)
@@ -774,8 +864,10 @@ def main() -> None:
     OUT_MD.write_text(render_markdown(payload), encoding="utf-8")
     print(f"Wrote {OUT_JSON.relative_to(REPO_ROOT)}")
     print(f"Wrote {OUT_MD.relative_to(REPO_ROOT)}")
-    print(f"Verdict: {payload['verdict']['verdict']} "
-          f"({payload['verdict']['checks_passed']}/{payload['verdict']['checks_total']})")
+    print(
+        f"Verdict: {payload['verdict']['verdict']} "
+        f"({payload['verdict']['checks_passed']}/{payload['verdict']['checks_total']})"
+    )
 
 
 if __name__ == "__main__":

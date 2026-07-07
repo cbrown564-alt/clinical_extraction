@@ -20,9 +20,16 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (
+    AssessmentDraft,
+    AssessmentDraftBurden,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
     deterministic_candidate_set_from_raw,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
+    ClinicalAssessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
@@ -33,13 +40,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.determini
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_draft import (
-    AssessmentDraft,
-    AssessmentDraftBurden,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
-    ClinicalAssessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_clinical_assessment_probe as assessment_probe,
@@ -176,9 +176,7 @@ def evidence_trace_check_stage(
             for idx, candidate in enumerate(candidate_set.candidates)
             if idx != selected_index
         ],
-        normalized_burden=AssessmentDraftBurden(
-            source_normalized_phrase=final_selection.evidence
-        ),
+        normalized_burden=AssessmentDraftBurden(source_normalized_phrase=final_selection.evidence),
         assessment_summary=final_selection.rationale,
     )
     try:

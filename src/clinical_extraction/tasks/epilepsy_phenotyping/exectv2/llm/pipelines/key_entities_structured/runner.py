@@ -29,25 +29,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
-    raw_output_from_adapter_parse_error,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     _has_blocking_parse_issue,
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    PHRASE_ONLY,
-    benchmark_config_for,
-    score_concept_identity,
-    score_frequency_state,
-    score_investigations_components,
-    score_overall,
-    score_prescription_components,
-    semantic_config_for,
-    source_near_diagnostic,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
     KEY_ENTITY_ITEM_F1_TARGET,
     KEY_ENTITY_NAMES,
@@ -64,12 +49,27 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection import (
     to_predicted_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures import (
-    DspyKeyEntitiesStructuredExtractor,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders import (
     build_prompt_input,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures import (
+    DspyKeyEntitiesStructuredExtractor,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    raw_output_from_adapter_parse_error,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    PHRASE_ONLY,
+    benchmark_config_for,
+    score_concept_identity,
+    score_frequency_state,
+    score_investigations_components,
+    score_overall,
+    score_prescription_components,
+    semantic_config_for,
+    source_near_diagnostic,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 
 def run_split(
@@ -368,12 +368,10 @@ def _key_clinical_recovery_to_dict(
         ).clinical_headline,
     }
     precision_tp = sum(
-        int(getattr(score, "precision_tp", getattr(score, "tp", 0)))
-        for score in scores.values()
+        int(getattr(score, "precision_tp", getattr(score, "tp", 0))) for score in scores.values()
     )
     recall_tp = sum(
-        int(getattr(score, "recall_tp", getattr(score, "tp", 0)))
-        for score in scores.values()
+        int(getattr(score, "recall_tp", getattr(score, "tp", 0))) for score in scores.values()
     )
     pred_count = sum(
         int(getattr(score, "pred_count", getattr(score, "tp", 0) + getattr(score, "fp", 0)))

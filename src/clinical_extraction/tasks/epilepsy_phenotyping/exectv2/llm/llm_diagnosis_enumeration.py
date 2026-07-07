@@ -2,10 +2,10 @@
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.enumeration import (
     COMPONENT_OWNER,
-    DspyDiagnosisEnumeration,
-    ExECTv2DiagnosisEnumerationSignature,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
+    DspyDiagnosisEnumeration,
+    ExECTv2DiagnosisEnumerationSignature,
     build_prompt_input,
     run_split,
     summarize_rows,

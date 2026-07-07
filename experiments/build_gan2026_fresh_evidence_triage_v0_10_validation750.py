@@ -20,6 +20,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.registry import (
+    RunRegistryEntry,
+    load_run_registry,
+    validate_run_registry_artifacts,
+    write_run_registry,
+)
 from clinical_extraction.core.run_resume import (
     merge_rows,
     pending_items,
@@ -28,18 +34,13 @@ from clinical_extraction.core.run_resume import (
 from clinical_extraction.tasks.seizure_frequency.gan2026 import data as gan_data
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     family_cv_promotion,
-    family_transitions,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     fresh_evidence_reasoner as fer,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
-)
-from clinical_extraction.core.registry import (
-    RunRegistryEntry,
-    load_run_registry,
-    validate_run_registry_artifacts,
-    write_run_registry,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -56,8 +57,7 @@ RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 # v0.4 baseline (same source the v0.4 validation750 run used)
 BASELINE_V04_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 
 PREDECLARATION_PATH = (
@@ -65,9 +65,9 @@ PREDECLARATION_PATH = (
 )
 
 DATE = "2026-06-16"
-MODEL = "openai/gpt-4.1"   # synonymous with gpt-4.1-mini per predeclaration
+MODEL = "openai/gpt-4.1"  # synonymous with gpt-4.1-mini per predeclaration
 TEMPERATURE = 0.0
-MAX_TOKENS = 3200           # increased vs 2800 for v0.4 to fit triage_result output
+MAX_TOKENS = 3200  # increased vs 2800 for v0.4 to fit triage_result output
 SPLIT = "validation"
 SPLIT_MANIFEST = "gan2026_split_v1"
 
@@ -125,8 +125,7 @@ def _run_v0_10_live(records: list[gan_data.GanFrequencyRecord]) -> list[dict[str
         key_of=lambda r: str(r.source_row_index),
     )
     print(
-        f"Resume: {len(completed_rows)} already done, "
-        f"{len(pending)} pending out of {len(records)}"
+        f"Resume: {len(completed_rows)} already done, {len(pending)} pending out of {len(records)}"
     )
 
     new_rows: list[dict[str, Any]] = []
@@ -164,6 +163,7 @@ def _run_v0_10_live(records: list[gan_data.GanFrequencyRecord]) -> list[dict[str
 
 def _resilient_write(rows: list[dict[str, Any]], path: Path) -> None:
     import time
+
     last_exc: Exception | None = None
     for _ in range(8):
         try:
@@ -325,9 +325,7 @@ def _markdown(payload: dict[str, Any]) -> str:
                 "| Row | Gold | Baseline (v0.4) | New (v0.10) | "
                 "Now Correct? | Triage Reason | Ambiguity Class | Action |"
             ),
-            (
-                "| ---: | --- | --- | --- | --- | --- | --- | --- |"
-            ),
+            ("| ---: | --- | --- | --- | --- | --- | --- | --- |"),
         ]
     )
     for row in attr:
@@ -395,9 +393,7 @@ def _decide(
 
 def _register(payload: dict[str, Any]) -> None:
     cv = payload["family_cv"]
-    entries = [
-        e for e in load_run_registry(REGISTRY_PATH) if e.run_id != RUN_ID
-    ]
+    entries = [e for e in load_run_registry(REGISTRY_PATH) if e.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -440,7 +436,9 @@ def _register(payload: dict[str, Any]) -> None:
                 "estimate, not a test450 number."
             ),
             decision=payload["decision"],
-            supersedes=("gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13",),
+            supersedes=(
+                "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13",
+            ),
             claim_language_notes=(
                 "Cycle C5 confidence-gated triage scaffold fresh-evidence reasoner v0.10. "
                 "gap_robust + non-negative net is necessary, NOT sufficient, for "
@@ -499,13 +497,10 @@ def main() -> None:
             f"fresh_evidence_reasoner {fer.PROMPT_VERSION_V0_10} "
             f"(Cycle C5 confidence-gated triage scaffold) live, temp 0"
         ),
-        "baseline": (
-            f"fresh_evidence_reasoner v0.4 from {BASELINE_V04_JSONL.name}"
-        ),
+        "baseline": (f"fresh_evidence_reasoner v0.4 from {BASELINE_V04_JSONL.name}"),
         "predeclaration": str(PREDECLARATION_PATH.relative_to(ROOT)),
         "evidence_validity": (
-            "validation750 development split (gan2026_split_v1), NOT a holdout or "
-            "test450 result."
+            "validation750 development split (gan2026_split_v1), NOT a holdout or test450 result."
         ),
         "rows": n,
         "v010_purist": v010_purist,
@@ -520,31 +515,31 @@ def main() -> None:
         "decision": decision,
     }
 
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(payload)
 
     # Print key numbers
     flipped_correct = sum(1 for r in attribution if r["now_purist_correct"])
-    print(json.dumps(
-        {
-            "rows": n,
-            "v010_purist": v010_purist,
-            "v04_baseline_purist": v04_purist,
-            "net_purist_vs_v04": v010_purist - v04_purist,
-            "wrong_to_correct_vs_v04": wrong_to_correct,
-            "correct_to_wrong_vs_v04": correct_to_wrong,
-            "gap_robust": cv["gap_robust"],
-            "cv_reasons": cv["reasons"],
-            "no_correct_rows_flipped": flipped_correct,
-            "genuine_rate_regressions": len(regressions),
-            "decision": decision,
-        },
-        indent=2,
-        sort_keys=True,
-    ))
+    print(
+        json.dumps(
+            {
+                "rows": n,
+                "v010_purist": v010_purist,
+                "v04_baseline_purist": v04_purist,
+                "net_purist_vs_v04": v010_purist - v04_purist,
+                "wrong_to_correct_vs_v04": wrong_to_correct,
+                "correct_to_wrong_vs_v04": correct_to_wrong,
+                "gap_robust": cv["gap_robust"],
+                "cv_reasons": cv["reasons"],
+                "no_correct_rows_flipped": flipped_correct,
+                "genuine_rate_regressions": len(regressions),
+                "decision": decision,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
     print("\n--- 11-Row Attribution ---")
     for row in attribution:
         print(
@@ -558,9 +553,11 @@ def main() -> None:
     if regressions:
         print(f"\n--- STOP RULE VIOLATED: {len(regressions)} genuine-rate regressions ---")
         for r in regressions:
-            print(f"  row {r['source_row_index']}: {r['gold_band']} "
-                  f"gold={r['gold_label']!r} base={r['baseline_label']!r} "
-                  f"new={r['new_label']!r} triage={r['triage_reason']!r}")
+            print(
+                f"  row {r['source_row_index']}: {r['gold_band']} "
+                f"gold={r['gold_label']!r} base={r['baseline_label']!r} "
+                f"new={r['new_label']!r} triage={r['triage_reason']!r}"
+            )
     else:
         print("\nStop rule CLEAR: 0 genuine-rate regressions.")
 

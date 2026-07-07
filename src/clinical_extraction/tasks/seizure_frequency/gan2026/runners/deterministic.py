@@ -10,7 +10,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.assessment_dra
     AssessmentDraftBurden,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
-    CandidateSet,
     deterministic_candidate_set_from_raw,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
@@ -78,9 +77,7 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
     )
 
     disabled_switches = {
-        group.value
-        for group in RuleGroup
-        if group not in config.ablation_config.enabled_groups
+        group.value for group in RuleGroup if group not in config.ablation_config.enabled_groups
     } | set(config.ablation_config.disabled_rule_ids)
 
     draft = AssessmentDraft(
@@ -91,9 +88,7 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
             for idx, c in enumerate(candidate_set.candidates)
             if idx != selected_index
         ],
-        normalized_burden=AssessmentDraftBurden(
-            source_normalized_phrase=final_selection.evidence
-        ),
+        normalized_burden=AssessmentDraftBurden(source_normalized_phrase=final_selection.evidence),
         assessment_summary=final_selection.rationale,
     )
     try:
@@ -110,8 +105,6 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
         "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
         "final_selection": final_selection.model_dump(mode="json"),
         "evidence_valid": evidence_is_substring(item.note_text, final_selection.evidence),
-        "clinical_assessment": (
-            clinical_assessment.model_dump() if clinical_assessment else None
-        ),
+        "clinical_assessment": (clinical_assessment.model_dump() if clinical_assessment else None),
     }
     return PipelineResult(output=output, diagnostics=diagnostics)

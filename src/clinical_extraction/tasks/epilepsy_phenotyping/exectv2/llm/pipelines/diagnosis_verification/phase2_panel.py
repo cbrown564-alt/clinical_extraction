@@ -1,7 +1,6 @@
 """Residual-panel GPT-4.1-mini experiments for ExECTv2 Diagnosis Phase 2."""
 
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import json
 from collections import Counter, defaultdict
@@ -24,13 +23,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
-    reconciler,
-    verifier as verifier_base,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     MentionRecord,
@@ -40,11 +36,17 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     repair_attributes,
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
+    reconciler,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
+    verifier as verifier_base,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     _concept_keys as concept_keys,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-        score_concept_identity,
+    score_concept_identity,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -80,9 +82,9 @@ class ExECTv2DiagnosisPhase2Signature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}. No markdown fences."
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}. No markdown fences.'
         )
     )
 
@@ -177,8 +179,7 @@ def select_panel(
 def residual_family(record: Mapping[str, Any]) -> str:
     text = normalize_phrase(
         " ".join(
-            str(record.get(key, ""))
-            for key in ("key", "example_text", "evidence", "note_excerpt")
+            str(record.get(key, "")) for key in ("key", "example_text", "evidence", "note_excerpt")
         )
     )
     if any(term in text for term in ("tonic clonic", "tonic chronic")):
@@ -546,9 +547,7 @@ def summarize_rows(
             int(row.get("n_mentions_scored", 0)) for row in variant_rows
         )
         score["n_evidence_invalid"] = n_invalid
-        score["evidence_validity_rate"] = (
-            round((n_raw - n_invalid) / n_raw, 4) if n_raw else 1.0
-        )
+        score["evidence_validity_rate"] = round((n_raw - n_invalid) / n_raw, 4) if n_raw else 1.0
         score["changed_rows_vs_v02"] = _changed_row_count(
             variant_rows,
             current_rows=current_rows,
@@ -692,8 +691,7 @@ def _letters_from_rows(
                     entity=DIAGNOSIS.name,
                     text=str(mention.get("text", "")),
                     attributes={
-                        str(k): str(v)
-                        for k, v in dict(mention.get("attributes") or {}).items()
+                        str(k): str(v) for k, v in dict(mention.get("attributes") or {}).items()
                     },
                 )
             )
@@ -743,10 +741,7 @@ def _mention_to_row(mention: PredictedMention) -> dict[str, Any]:
 
 
 def _reason(record: Mapping[str, Any], family: str) -> str:
-    return (
-        f"{family}:{record.get('side')}:{record.get('example_text')} "
-        f"{record.get('key')}"
-    )
+    return f"{family}:{record.get('side')}:{record.get('example_text')} {record.get('key')}"
 
 
 def _score_table_row(label: str, score: Mapping[str, Any]) -> str:

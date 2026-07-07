@@ -13,12 +13,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     ENTITY_REGISTRY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
-    TARGET_INDICATORS,
-)
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.constants import (  # noqa: E501
     PROMPT_VERSION,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
+    TARGET_INDICATORS,
 )
 
 
@@ -252,10 +251,10 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "type appears in both Diagnosis and SeizureFrequency when the "
                 "letter gives both the clinical type and a frequency/state."
             ),
-            "If no target findings are present, return {\"mentions\": []}.",
+            'If no target findings are present, return {"mentions": []}.',
             "Return exactly one JSON object. No markdown fences.",
             "Do not write analysis, corrections, caveats, or revised JSON after the object.",
-            "Use rationale=\"\" or a short phrase only; do not explain uncertainty there.",
+            'Use rationale="" or a short phrase only; do not explain uncertainty there.',
         ],
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
@@ -419,14 +418,11 @@ def _worked_examples() -> list[dict[str, Any]]:
                         "CT_Performed": "Yes",
                         "CT_Results": "Abnormal",
                     },
-                    "evidence": (
-                        "previous CT scan from 2017 showing a left hemisphere infarct"
-                    ),
+                    "evidence": ("previous CT scan from 2017 showing a left hemisphere infarct"),
                 }
             ],
             "note": (
-                "Completed historical CT with a result counts; requested future "
-                "MRI/EEG does not."
+                "Completed historical CT with a result counts; requested future MRI/EEG does not."
             ),
         },
         {

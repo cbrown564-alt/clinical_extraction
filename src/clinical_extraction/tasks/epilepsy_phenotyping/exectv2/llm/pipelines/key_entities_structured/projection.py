@@ -20,10 +20,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
-    check_evidence,
-    repair_attributes,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
     COMPONENT_OWNER,
     KEY_ENTITY_NAMES,
@@ -32,6 +28,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.records import (
     MentionForEvidence,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    check_evidence,
+    repair_attributes,
 )
 
 
@@ -145,8 +145,7 @@ def _apply_render_safety_gates(
     for mention in mentions:
         if mention.entity == SEIZURE_FREQUENCY.name and not _has_sf_state(mention):
             warnings.append(
-                "SeizureFrequency: dropped_no_frequency_state_rendering: "
-                f"{mention.text!r}"
+                f"SeizureFrequency: dropped_no_frequency_state_rendering: {mention.text!r}"
             )
             continue
         gated.append(mention)
@@ -155,8 +154,7 @@ def _apply_render_safety_gates(
 
 def _has_sf_state(mention: PredictedMention) -> bool:
     return any(
-        key in _SF_STATE_ATTRS and str(value).strip()
-        for key, value in mention.attributes.items()
+        key in _SF_STATE_ATTRS and str(value).strip() for key, value in mention.attributes.items()
     )
 
 
@@ -184,8 +182,7 @@ def _drop_duplicate_modality_only_investigations(
             and any(modality in result_bearing_modalities for modality in modalities)
         ):
             warnings.append(
-                "Investigations: dropped_duplicate_modality_only_rendering: "
-                f"{mention.text!r}"
+                f"Investigations: dropped_duplicate_modality_only_rendering: {mention.text!r}"
             )
             continue
         kept.append(mention)

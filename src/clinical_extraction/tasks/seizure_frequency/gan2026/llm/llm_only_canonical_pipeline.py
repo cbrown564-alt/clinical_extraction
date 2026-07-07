@@ -1,4 +1,4 @@
-﻿"""LLM-only canonical-pipeline Gan 2026 seizure-frequency extraction experiments.
+"""LLM-only canonical-pipeline Gan 2026 seizure-frequency extraction experiments.
 
 This is the "purest form" fully-LLM comparator named in the three-way
 architecture comparison plan: a single-shot configuration that collapses
@@ -30,9 +30,6 @@ import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -53,6 +50,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragm
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+    load_raw_outputs_by_source_index,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     llm_model_metadata_lines,
@@ -92,7 +92,7 @@ class CanonicalLlmDecisionRecord(BaseModel):
 class Gan2026CanonicalLlmExtractorSignature(dspy.Signature):
     """Read a clinical note and decide the patient's current seizure frequency.
 
-    Provide a complete answer that adheres to the instructions below. 
+    Provide a complete answer that adheres to the instructions below.
     Return exactly one JSON object with these keys: final_label,
     evidence, answer_kind, selected_seizure_type, time_window,
     applied_rule_families, confidence, and rationale.

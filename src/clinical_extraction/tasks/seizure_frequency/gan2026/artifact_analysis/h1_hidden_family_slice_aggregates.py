@@ -9,9 +9,6 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
-    classify_hidden_families,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanFrequencyRecord,
     load_records_for_split,
@@ -19,12 +16,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+    classify_hidden_families,
+)
 
 POLICY_NAME = "gan2026_h1_hidden_family_slice_aggregates_v0"
 VARIANT = "selective_safety_floor_gate_v0"
 DEFAULT_VALIDATION_JSONL_PATH = Path(
-    "experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_"
-    "2026-06-03.jsonl"
+    "experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.jsonl"
 )
 DEFAULT_TEST_JSONL_PATH = Path(
     "experiments/gan2026_selective_safety_floor_gate_v0_test450_frozen_audit_"

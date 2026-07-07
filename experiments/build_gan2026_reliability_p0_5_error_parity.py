@@ -24,16 +24,15 @@ from __future__ import annotations
 
 import json
 import statistics
-from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
+    tag_hidden_families,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     reliability_common as rc,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
-    tag_hidden_families,
-)
 
 OUT_JSON = rc.EXPERIMENTS / "gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.json"
 OUT_MD = rc.EXPERIMENTS / "gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.md"
@@ -123,7 +122,9 @@ def main() -> None:
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
     print(f"  overall acc {overall_acc:.3f}; band error spread {spread:.3f}; CV {cv:.3f}")
-    print(f"  worst band: {worst_band[0]} acc {worst_band[1]['accuracy']:.3f} (n={worst_band[1]['n']})")
+    print(
+        f"  worst band: {worst_band[0]} acc {worst_band[1]['accuracy']:.3f} (n={worst_band[1]['n']})"
+    )
     print(f"  flagged bands: {[f['band'] for f in flagged]}")
 
 
@@ -132,8 +133,10 @@ def render_md(result: dict[str, Any]) -> str:
     L.append("# P0.5 — Error-Parity Gap Across Families / Bands (Fairness)\n")
     L.append(f"Date: {result['date']}  ·  Split: {result['split']}  ·  Model calls: 0\n")
     o = result["overall"]
-    L.append(f"Subject overall Purist accuracy: {o['correct']}/{o['n']} = {o['accuracy']:.1%}. "
-             f"Subgroups from `{result['classifier']}`.\n")
+    L.append(
+        f"Subject overall Purist accuracy: {o['correct']}/{o['n']} = {o['accuracy']:.1%}. "
+        f"Subgroups from `{result['classifier']}`.\n"
+    )
     L.append("## Boundary bands (partition every row exactly once)\n")
     L.append("| Band | n | Purist acc | Error rate |")
     L.append("|---|---:|---:|---:|")
@@ -141,12 +144,16 @@ def render_md(result: dict[str, Any]) -> str:
         L.append(f"| {b} | {d['n']} | {d['accuracy']:.1%} | {d['error_rate']:.1%} |")
     pa = result["parity"]
     L.append(f"\n- **Error-rate spread (max−min): {pa['error_rate_spread_max_minus_min']:.1%}**")
-    L.append(f"- **Accuracy coefficient of variation: {pa['accuracy_coefficient_of_variation']:.3f}**")
+    L.append(
+        f"- **Accuracy coefficient of variation: {pa['accuracy_coefficient_of_variation']:.3f}**"
+    )
     wb = pa["worst_band"]
     L.append(f"- Worst band: **{wb['band']}** at {wb['accuracy']:.1%} (n={wb['n']})")
     if pa["flagged_bands"]:
-        names = ", ".join(f"{f['band']} ({f['accuracy']:.0%}, −{f['deficit_vs_overall']:.0%})"
-                          for f in pa["flagged_bands"])
+        names = ", ".join(
+            f"{f['band']} ({f['accuracy']:.0%}, −{f['deficit_vs_overall']:.0%})"
+            for f in pa["flagged_bands"]
+        )
         L.append(f"- **Parity flag (> {pa['parity_margin']:.0%} below overall): {names}**")
     else:
         L.append(f"- Parity flag: none beyond the {pa['parity_margin']:.0%} margin")

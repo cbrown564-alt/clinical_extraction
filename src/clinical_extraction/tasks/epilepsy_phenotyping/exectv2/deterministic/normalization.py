@@ -7,9 +7,6 @@ from collections import Counter
 from collections.abc import Hashable, Iterable, Mapping
 from dataclasses import dataclass
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
-    normalize_phrase,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -21,6 +18,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
+    normalize_phrase,
 )
 
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
@@ -225,9 +225,7 @@ def with_text(mention: PredictedMention, text: str) -> PredictedMention:
 
 
 def diagnosis_copy(mention: PredictedMention, text: str) -> PredictedMention:
-    attributes = {
-        k: v for k, v in mention.attributes.items() if k not in {"CUI", "CUIPhrase"}
-    }
+    attributes = {k: v for k, v in mention.attributes.items() if k not in {"CUI", "CUIPhrase"}}
     attributes.setdefault("DiagCategory", diagnosis_category_for_concept(text))
     attributes.setdefault("Certainty", "5")
     attributes.setdefault("Negation", "Affirmed")

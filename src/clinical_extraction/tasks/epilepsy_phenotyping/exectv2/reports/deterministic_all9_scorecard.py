@@ -8,6 +8,9 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.registry import (
+    RunRegistryEntry,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     ALL_ENTITIES,
     PATIENT_HISTORY,
@@ -42,9 +45,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_benchmark_projection,
     score_prescription_components,
     semantic_config_for,
-)
-from clinical_extraction.core.registry import (
-    RunRegistryEntry,
 )
 
 DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
@@ -132,9 +132,7 @@ def build_scorecard(
         "schema_repairs": 0,
         "validation": validation,
         "scores": {name: overall_to_dict(score) for name, score in scores.items()},
-        "prescription_component_scores": _prescription_components_to_dict(
-            prescription_components
-        ),
+        "prescription_component_scores": _prescription_components_to_dict(prescription_components),
         "prescription_benchmark_projection_scores": _prescription_projection_to_dict(
             prescription_projection
         ),
@@ -214,8 +212,7 @@ def _prescription_components_to_dict(score: Any) -> dict[str, Any]:
 
 def _prescription_projection_to_dict(score: Any) -> dict[str, Any]:
     return {
-        name: prf1_to_dict(getattr(score, name))
-        for name in PRESCRIPTION_BENCHMARK_PROJECTION_ORDER
+        name: prf1_to_dict(getattr(score, name)) for name in PRESCRIPTION_BENCHMARK_PROJECTION_ORDER
     }
 
 
@@ -254,14 +251,10 @@ def _patient_history_error_ledger(
         "predicted_mentions": len(pred_mentions),
         "predicted_with_cui": sum(1 for mention in pred_mentions if "CUI" in mention.attributes),
         "predicted_with_temporal_attributes": sum(
-            1
-            for mention in pred_mentions
-            if temporal_attrs.intersection(mention.attributes)
+            1 for mention in pred_mentions if temporal_attrs.intersection(mention.attributes)
         ),
         "predicted_negated": sum(
-            1
-            for mention in pred_mentions
-            if mention.attributes.get("Negation") == "Negated"
+            1 for mention in pred_mentions if mention.attributes.get("Negation") == "Negated"
         ),
         "gap_families": {
             "phrase_scope_or_missing": {
@@ -474,9 +467,9 @@ def _primary_metrics(scorecard: dict[str, Any]) -> dict[str, Any]:
         "prescription_clinical_headline_f1": scorecard["prescription_component_scores"][
             "clinical_headline"
         ]["f1"],
-        "prescription_benchmark_with_cui_f1": scorecard[
-            "prescription_benchmark_projection_scores"
-        ]["benchmark_with_cui"]["f1"],
+        "prescription_benchmark_with_cui_f1": scorecard["prescription_benchmark_projection_scores"][
+            "benchmark_with_cui"
+        ]["f1"],
     }
     for layer in ("phrase_only", "semantic", "benchmark"):
         metrics[f"{layer}_per_item_f1"] = scorecard["scores"][layer]["per_item"]["f1"]

@@ -39,10 +39,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     check_evidence,
     repair_attributes,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
-    TARGET_INDICATORS,
-)
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.constants import (  # noqa: E501
     COMPONENT_OWNER,
     PIPELINE_FAMILY,
@@ -64,6 +60,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target
     _normalize_target_attributes,
     _normalize_target_text,
     _sf_state_drop_reason,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
+    TARGET_INDICATORS,
 )
 
 __all__ = ["audit_only_projection_replay_switches", "to_predicted_letter"]
@@ -89,8 +88,7 @@ def to_predicted_letter(
             if focal_diagnosis is not None:
                 entity_valid.append(focal_diagnosis)
                 warnings.append(
-                    "projected_focal_onset_sf_candidate_to_diagnosis: "
-                    f"{mention.text!r}"
+                    f"projected_focal_onset_sf_candidate_to_diagnosis: {mention.text!r}"
                 )
                 continue
             if not mention.attributes:
@@ -160,8 +158,7 @@ def to_predicted_letter(
                 if projected_diagnosis is not None:
                     predicted_mentions.append(projected_diagnosis)
                     warnings.append(
-                        "SeizureFrequency: projected_dropped_sf_to_diagnosis: "
-                        f"{text!r}"
+                        f"SeizureFrequency: projected_dropped_sf_to_diagnosis: {text!r}"
                     )
                 warnings.append(f"SeizureFrequency: {drop_warning}: {text!r}")
                 continue
@@ -182,8 +179,7 @@ def to_predicted_letter(
             if projected_sf is not None:
                 predicted_mentions.append(projected_sf)
                 warnings.append(
-                    "Diagnosis: projected_frequency_header_diagnosis_to_sf_state: "
-                    f"{text!r}"
+                    f"Diagnosis: projected_frequency_header_diagnosis_to_sf_state: {text!r}"
                 )
                 continue
             warnings.append(f"Diagnosis: dropped_non_epilepsy_core: {text!r}")
@@ -198,27 +194,15 @@ def to_predicted_letter(
             base_mention,
             note_text,
         ):
-            warnings.append(
-                f"Diagnosis: dropped_zero_since_only_diagnosis_context: {text!r}"
-            )
+            warnings.append(f"Diagnosis: dropped_zero_since_only_diagnosis_context: {text!r}")
             continue
-        if mention.entity == "Diagnosis" and _is_investigation_only_diagnosis_context(
-            base_mention
-        ):
-            warnings.append(
-                f"Diagnosis: dropped_investigation_only_diagnosis_context: {text!r}"
-            )
+        if mention.entity == "Diagnosis" and _is_investigation_only_diagnosis_context(base_mention):
+            warnings.append(f"Diagnosis: dropped_investigation_only_diagnosis_context: {text!r}")
             continue
-        if mention.entity == "Diagnosis" and _is_frequency_phrase_diagnosis_context(
-            base_mention
-        ):
-            warnings.append(
-                f"Diagnosis: dropped_frequency_phrase_diagnosis_context: {text!r}"
-            )
+        if mention.entity == "Diagnosis" and _is_frequency_phrase_diagnosis_context(base_mention):
+            warnings.append(f"Diagnosis: dropped_frequency_phrase_diagnosis_context: {text!r}")
             continue
-        if mention.entity == "Diagnosis" and _is_unsupported_inferred_diagnosis(
-            base_mention
-        ):
+        if mention.entity == "Diagnosis" and _is_unsupported_inferred_diagnosis(base_mention):
             warnings.append(f"Diagnosis: dropped_unsupported_inferred_diagnosis: {text!r}")
             continue
         if mention.entity == "Investigations" and _is_planned_investigation(
@@ -227,19 +211,13 @@ def to_predicted_letter(
         ):
             warnings.append(f"Investigations: dropped_planned_investigation: {text!r}")
             continue
-        if mention.entity == "Investigations" and _is_unsupported_eeg_confirmation(
-            base_mention
-        ):
-            warnings.append(
-                f"Investigations: dropped_unsupported_eeg_confirmation: {text!r}"
-            )
+        if mention.entity == "Investigations" and _is_unsupported_eeg_confirmation(base_mention):
+            warnings.append(f"Investigations: dropped_unsupported_eeg_confirmation: {text!r}")
             continue
         if mention.entity == "Investigations" and _is_unsupported_investigation_evidence(
             base_mention
         ):
-            warnings.append(
-                f"Investigations: dropped_unsupported_investigation_evidence: {text!r}"
-            )
+            warnings.append(f"Investigations: dropped_unsupported_investigation_evidence: {text!r}")
             continue
         expanded_mentions, expansion_warnings = _expand_target_mention(base_mention)
         warnings.extend(f"{mention.entity}: {warning}" for warning in expansion_warnings)
@@ -263,9 +241,7 @@ def to_predicted_letter(
                     "pipeline_family": PIPELINE_FAMILY,
                     "n_evidence_invalid": len(evidence_invalid),
                     "target_projection_family_switches": (
-                        effective_target_projection_family_switches(
-                            projection_family_switches
-                        )
+                        effective_target_projection_family_switches(projection_family_switches)
                     ),
                     "attribute_warnings": warnings,
                 },

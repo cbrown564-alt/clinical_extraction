@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import re
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
-    TARGET_INDICATORS,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.loader import (
     load_active_llm_only_runs,
     load_rich_schema_runs,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
     ReliabilityRun,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
+    TARGET_INDICATORS,
 )
 
 FAMILIES: tuple[str, ...] = tuple(TARGET_INDICATORS)

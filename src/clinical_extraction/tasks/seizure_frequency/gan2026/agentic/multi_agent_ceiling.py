@@ -13,6 +13,7 @@ Two candidates, per `docs/experiments/gan2026/agentic/gan2026_agentic_redo_prede
   evidence, never a label), given to a `dspy.ReAct` orchestrator that
   decides which to consult based on the letter, then resolves itself.
 """
+
 from __future__ import annotations
 
 import json
@@ -22,10 +23,6 @@ import dspy
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.contracts import (
     AgentBudget,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
-    parse_seizure_frequency_candidates,
-    read_boundary_guide,
 )
 
 CONDITION_D3_STATIC = "multi_agent_d3_static"
@@ -133,15 +130,9 @@ class ResolverSignature(dspy.Signature):
 
 def run_d3_static(prompt_input_json: str) -> dict[str, Any]:
     """Always run all three specialists, then the resolver. 4 model calls."""
-    frequency = dspy.Predict(FrequencyFactListerSignature)(
-        prompt_input_json=prompt_input_json
-    )
-    boundary = dspy.Predict(BoundaryHazardListerSignature)(
-        prompt_input_json=prompt_input_json
-    )
-    cluster = dspy.Predict(ClusterBurdenListerSignature)(
-        prompt_input_json=prompt_input_json
-    )
+    frequency = dspy.Predict(FrequencyFactListerSignature)(prompt_input_json=prompt_input_json)
+    boundary = dspy.Predict(BoundaryHazardListerSignature)(prompt_input_json=prompt_input_json)
+    cluster = dspy.Predict(ClusterBurdenListerSignature)(prompt_input_json=prompt_input_json)
     resolver = dspy.Predict(ResolverSignature)(
         prompt_input_json=prompt_input_json,
         frequency_facts_json=str(frequency.frequency_facts_json),

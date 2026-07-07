@@ -18,11 +18,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     RuleSpec,
 )
 from clinical_extraction.tasks.shared.epilepsy.terms import (
-    FULL_MONTHS,
-    MONTH_ABBREVIATIONS,
     MONTH_NAME_PATTERN,
     NUMBER_TOKEN,
-    NUMBER_VALUE_TOKEN,
     NUMBER_WORD_PATTERN,
     NUMBER_WORDS,
     QUALIFIED_SEIZURE_TERMS,

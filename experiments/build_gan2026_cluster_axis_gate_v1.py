@@ -33,17 +33,17 @@ import re
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
-    summarize_family_holdout_cv,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
-    summarize_transitions_by_family,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
+    summarize_family_holdout_cv,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_transitions import (
+    summarize_transitions_by_family,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -62,12 +62,10 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 VAL_SOURCE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 TEST_SOURCE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 
 RUN_ID = "gan2026_cluster_axis_gate_v1_tightened_2026-06-16"
@@ -102,9 +100,7 @@ CLUSTER_RECURRING_RE = re.compile(
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -157,7 +153,7 @@ def _rewrite_plain_rate_to_cluster(plain_rate: str) -> str:
     if idx < 0:
         return plain_rate  # fallback: no change
     count_part = plain_rate[:idx]
-    interval_part = plain_rate[idx + 5:]  # everything after ' per '
+    interval_part = plain_rate[idx + 5 :]  # everything after ' per '
     return f"{count_part} cluster per {interval_part}, multiple per cluster"
 
 
@@ -208,7 +204,7 @@ def _apply_gate_to_rows(
         gold_monthly = row.get("reference", {}).get("gold_monthly_frequency")
         comparison = row.get("score_layers", {}).get("final", {}).get("comparison", {})
         base_purist = comparison.get("purist_correct", False)
-        base_label = comparison.get("final_label", "")
+        comparison.get("final_label", "")
 
         v04_label = _get_v04_final_label(row)
         note = _get_note_text(row)
@@ -254,24 +250,25 @@ def _apply_gate_to_rows(
         # Is gold a plain rate? (for precision check)
         gold_is_plain_rate = _is_plain_rate(gold_label)
 
-        touched.append({
-            "source_row_index": idx,
-            "gold_label": gold_label,
-            "gold_monthly_frequency": gold_monthly,
-            "gold_purist_category": gold_purist_cat,
-            "gold_is_plain_rate": gold_is_plain_rate,
-            "v04_label": v04_label,
-            "cluster_rewrite": cluster_label,
-            "cluster_monthly_frequency": cluster_freq,
-            "gated_purist_category": gated_purist_cat,
-            "base_purist_correct": base_purist,
-            "gated_purist_correct": gated_correct,
-            "transition": transition,
-        })
+        touched.append(
+            {
+                "source_row_index": idx,
+                "gold_label": gold_label,
+                "gold_monthly_frequency": gold_monthly,
+                "gold_purist_category": gold_purist_cat,
+                "gold_is_plain_rate": gold_is_plain_rate,
+                "v04_label": v04_label,
+                "cluster_rewrite": cluster_label,
+                "cluster_monthly_frequency": cluster_freq,
+                "gated_purist_category": gated_purist_cat,
+                "base_purist_correct": base_purist,
+                "gated_purist_correct": gated_correct,
+                "transition": transition,
+            }
+        )
 
     genuine_rate_regressions = [
-        r for r in touched
-        if r["transition"] == "correct_to_wrong" and r["gold_is_plain_rate"]
+        r for r in touched if r["transition"] == "correct_to_wrong" and r["gold_is_plain_rate"]
     ]
     net_purist = wrong_to_correct - correct_to_wrong
 
@@ -305,8 +302,7 @@ def _build_transition_rows_for_cv(
     """
     # Build index of gate-touched rows
     touched_by_idx: dict[int, dict[str, Any]] = {
-        r["source_row_index"]: r
-        for r in gate_summary["touched_records"]
+        r["source_row_index"]: r for r in gate_summary["touched_records"]
     }
 
     annotated: list[dict[str, Any]] = []
@@ -315,7 +311,7 @@ def _build_transition_rows_for_cv(
         gold_monthly = row.get("reference", {}).get("gold_monthly_frequency")
         comparison = row.get("score_layers", {}).get("final", {}).get("comparison", {})
         base_purist = comparison.get("purist_correct", False)
-        note = _get_note_text(row)
+        _get_note_text(row)
 
         families = (boundary_band(gold_monthly),)
 
@@ -334,18 +330,20 @@ def _build_transition_rows_for_cv(
             label_changed = False
             transition = "unchanged"
 
-        annotated.append({
-            "source_row_index": idx,
-            "hidden_families": families,
-            "transition_vs_gate": {
-                "purist_transition": transition,
-                "label_changed": label_changed,
-            },
-            "v04_reference": {
-                "comparison": {"purist_correct": base_purist},
-            },
-            "gated_score": {"purist_correct": gated_correct},
-        })
+        annotated.append(
+            {
+                "source_row_index": idx,
+                "hidden_families": families,
+                "transition_vs_gate": {
+                    "purist_transition": transition,
+                    "label_changed": label_changed,
+                },
+                "v04_reference": {
+                    "comparison": {"purist_correct": base_purist},
+                },
+                "gated_score": {"purist_correct": gated_correct},
+            }
+        )
     return annotated
 
 
@@ -423,13 +421,15 @@ def _markdown(payload: dict[str, Any]) -> str:
             f"| {r['transition'] or 'unchanged'} |"
         )
 
-    lines.extend([
-        "",
-        "## Precision Check (Genuine-Rate Regressions)",
-        "",
-        f"- Genuine-rate regressions (C->W where gold is plain rate): "
-        f"{val['genuine_rate_regressions']}",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Precision Check (Genuine-Rate Regressions)",
+            "",
+            f"- Genuine-rate regressions (C->W where gold is plain rate): "
+            f"{val['genuine_rate_regressions']}",
+        ]
+    )
     if val["genuine_rate_regression_rows"]:
         lines.append(f"- Row indices: {val['genuine_rate_regression_rows']}")
     if val["genuine_rate_regressions"] == 0:
@@ -438,23 +438,32 @@ def _markdown(payload: dict[str, Any]) -> str:
         lines.append("- FAIL: genuine-rate regressions detected; gate is too leaky")
     lines.append("")
 
-    lines.extend([
-        "## Held-Out-Family CV",
-        "",
-        f"- gap_robust: **{cv_result['gap_robust']}**",
-        f"- Aggregate net Purist gain: {cv_result['aggregate']['net_purist_gain']}",
-        f"- Worst held-out fold: {cv_result['worst_held_out_fold']}",
-        f"- Regressing held-out families: {cv_result['regressing_held_out_families']}",
-        f"- Low-precision held-out families: {cv_result['low_precision_held_out_families']}",
-        f"- Reasons for non-robust: {cv_result['reasons']}",
-        "",
-        "### Per-Band Transition Summary",
-        "",
-        "| Band | rows | W->C | C->W | net | precision |",
-        "| --- | ---: | ---: | ---: | ---: | --- |",
-    ])
+    lines.extend(
+        [
+            "## Held-Out-Family CV",
+            "",
+            f"- gap_robust: **{cv_result['gap_robust']}**",
+            f"- Aggregate net Purist gain: {cv_result['aggregate']['net_purist_gain']}",
+            f"- Worst held-out fold: {cv_result['worst_held_out_fold']}",
+            f"- Regressing held-out families: {cv_result['regressing_held_out_families']}",
+            f"- Low-precision held-out families: {cv_result['low_precision_held_out_families']}",
+            f"- Reasons for non-robust: {cv_result['reasons']}",
+            "",
+            "### Per-Band Transition Summary",
+            "",
+            "| Band | rows | W->C | C->W | net | precision |",
+            "| --- | ---: | ---: | ---: | ---: | --- |",
+        ]
+    )
     families = cv["transitions_by_family"].get("families", {})
-    for band in ["band_zero", "band_unknown", "band_submonthly", "band_monthly", "band_weekly", "band_daily"]:
+    for band in [
+        "band_zero",
+        "band_unknown",
+        "band_submonthly",
+        "band_monthly",
+        "band_weekly",
+        "band_daily",
+    ]:
         f = families.get(band, {})
         if f:
             prec = f.get("changed_label_precision")
@@ -466,22 +475,24 @@ def _markdown(payload: dict[str, Any]) -> str:
     lines.append("")
 
     if test is not None:
-        lines.extend([
-            "## Test450 Results (Authorised Gate Applied)",
-            "",
-            f"- Baseline Purist (v0.4): {test['baseline_purist_correct']}/{test['total_rows']}",
-            f"- Gated Purist: {test['gated_purist_correct']}/{test['total_rows']}",
-            f"- Rows touched by gate: {test['touched_rows']}",
-            f"- Wrong->Correct (W->C): {test['wrong_to_correct']}",
-            f"- Correct->Wrong (C->W): {test['correct_to_wrong']}",
-            f"- Net Purist: {test['net_purist']:+d}",
-            f"- Delta vs 379 baseline: {test['gated_purist_correct'] - 379:+d}",
-            "",
-            "### Test Touched Rows",
-            "",
-            "| idx | gold | v0.4 pred | cluster rewrite | gold_purist | gated_purist | transition |",
-            "| --- | --- | --- | --- | --- | --- | --- |",
-        ])
+        lines.extend(
+            [
+                "## Test450 Results (Authorised Gate Applied)",
+                "",
+                f"- Baseline Purist (v0.4): {test['baseline_purist_correct']}/{test['total_rows']}",
+                f"- Gated Purist: {test['gated_purist_correct']}/{test['total_rows']}",
+                f"- Rows touched by gate: {test['touched_rows']}",
+                f"- Wrong->Correct (W->C): {test['wrong_to_correct']}",
+                f"- Correct->Wrong (C->W): {test['correct_to_wrong']}",
+                f"- Net Purist: {test['net_purist']:+d}",
+                f"- Delta vs 379 baseline: {test['gated_purist_correct'] - 379:+d}",
+                "",
+                "### Test Touched Rows",
+                "",
+                "| idx | gold | v0.4 pred | cluster rewrite | gold_purist | gated_purist | transition |",
+                "| --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
         for r in test["touched_records"]:
             lines.append(
                 f"| {r['source_row_index']} "
@@ -494,19 +505,23 @@ def _markdown(payload: dict[str, Any]) -> str:
             )
         lines.append("")
     else:
-        lines.extend([
-            "## Test450 Results",
-            "",
-            "GATE DID NOT REACH TEST: See stop-rule evaluation in summary.",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Test450 Results",
+                "",
+                "GATE DID NOT REACH TEST: See stop-rule evaluation in summary.",
+                "",
+            ]
+        )
 
-    lines.extend([
-        "## Decision",
-        "",
-        payload.get("decision_note", ""),
-        "",
-    ])
+    lines.extend(
+        [
+            "## Decision",
+            "",
+            payload.get("decision_note", ""),
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -527,22 +542,22 @@ def _register(payload: dict[str, Any]) -> None:
         "gap_robust": payload["family_cv"]["cv_result"]["gap_robust"],
     }
     if test is not None:
-        metrics.update({
-            "test_baseline_purist": test["baseline_purist_correct"],
-            "test_gated_purist": test["gated_purist_correct"],
-            "test_total_rows": test["total_rows"],
-            "test_touched": test["touched_rows"],
-            "test_wrong_to_correct": test["wrong_to_correct"],
-            "test_correct_to_wrong": test["correct_to_wrong"],
-            "test_net_purist": test["net_purist"],
-            "test_delta_vs_379_baseline": test["gated_purist_correct"] - 379,
-        })
+        metrics.update(
+            {
+                "test_baseline_purist": test["baseline_purist_correct"],
+                "test_gated_purist": test["gated_purist_correct"],
+                "test_total_rows": test["total_rows"],
+                "test_touched": test["touched_rows"],
+                "test_wrong_to_correct": test["wrong_to_correct"],
+                "test_correct_to_wrong": test["correct_to_wrong"],
+                "test_net_purist": test["net_purist"],
+                "test_delta_vs_379_baseline": test["gated_purist_correct"] - 379,
+            }
+        )
 
     split_label = "validation+test" if test is not None else "validation"
 
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -595,11 +610,15 @@ def main() -> None:
     print(f"  Loaded {len(val_rows)} rows")
 
     val_summary = _apply_gate_to_rows(val_rows, split_name="validation750")
-    print(f"  Baseline Purist: {val_summary['baseline_purist_correct']}/{val_summary['total_rows']}")
+    print(
+        f"  Baseline Purist: {val_summary['baseline_purist_correct']}/{val_summary['total_rows']}"
+    )
     print(f"  Gated Purist:    {val_summary['gated_purist_correct']}/{val_summary['total_rows']}")
     print(f"  Touched: {val_summary['touched_rows']} rows")
-    print(f"  W->C: {val_summary['wrong_to_correct']}, C->W: {val_summary['correct_to_wrong']}, "
-          f"Net: {val_summary['net_purist']:+d}")
+    print(
+        f"  W->C: {val_summary['wrong_to_correct']}, C->W: {val_summary['correct_to_wrong']}, "
+        f"Net: {val_summary['net_purist']:+d}"
+    )
     print(f"  Genuine-rate regressions: {val_summary['genuine_rate_regressions']}")
 
     # -------------------------------------------------------------------------
@@ -621,13 +640,9 @@ def main() -> None:
     net_purist = val_summary["net_purist"]
     gap_robust = cv_result["gap_robust"]
 
-    proceed_to_test = (
-        genuine_regressions == 0
-        and net_purist >= 0
-        and gap_robust
-    )
+    proceed_to_test = genuine_regressions == 0 and net_purist >= 0 and gap_robust
 
-    print(f"\nStop-rule evaluation:")
+    print("\nStop-rule evaluation:")
     print(f"  genuine_rate_regressions == 0: {genuine_regressions == 0}")
     print(f"  net_purist >= 0: {net_purist >= 0} ({net_purist})")
     print(f"  gap_robust: {gap_robust}")
@@ -643,16 +658,24 @@ def main() -> None:
         print(f"  Loaded {len(test_rows)} rows")
 
         test_summary = _apply_gate_to_rows(test_rows, split_name="test450")
-        print(f"  Test baseline Purist: {test_summary['baseline_purist_correct']}/{test_summary['total_rows']}")
-        print(f"  Test gated Purist:    {test_summary['gated_purist_correct']}/{test_summary['total_rows']}")
+        print(
+            f"  Test baseline Purist: {test_summary['baseline_purist_correct']}/{test_summary['total_rows']}"
+        )
+        print(
+            f"  Test gated Purist:    {test_summary['gated_purist_correct']}/{test_summary['total_rows']}"
+        )
         print(f"  Test touched: {test_summary['touched_rows']} rows")
-        print(f"  Test W->C: {test_summary['wrong_to_correct']}, C->W: {test_summary['correct_to_wrong']}, "
-              f"Net: {test_summary['net_purist']:+d}")
+        print(
+            f"  Test W->C: {test_summary['wrong_to_correct']}, C->W: {test_summary['correct_to_wrong']}, "
+            f"Net: {test_summary['net_purist']:+d}"
+        )
         print(f"  Delta vs 379: {test_summary['gated_purist_correct'] - 379:+d}")
 
         # Confirm baseline
         if test_summary["baseline_purist_correct"] != 379:
-            print(f"  WARNING: Expected test baseline 379, got {test_summary['baseline_purist_correct']}")
+            print(
+                f"  WARNING: Expected test baseline 379, got {test_summary['baseline_purist_correct']}"
+            )
 
     # -------------------------------------------------------------------------
     # Build decision note
@@ -686,7 +709,7 @@ def main() -> None:
                 reasons.append(f"gap_robust=False ({cv_result['reasons']})")
             decision = "revise"
             decision_note = (
-                f"STOP RULE triggered: gate did not reach test. Reasons: "
+                "STOP RULE triggered: gate did not reach test. Reasons: "
                 + "; ".join(reasons)
                 + ". Gate needs tightening before test application."
             )
@@ -724,9 +747,7 @@ def main() -> None:
         "validation_touched_records": val_summary["touched_records"],
     }
     if test_summary is not None:
-        payload_for_json["test"] = {
-            k: v for k, v in test_summary.items() if k != "touched_records"
-        }
+        payload_for_json["test"] = {k: v for k, v in test_summary.items() if k != "touched_records"}
         payload_for_json["test_touched_records"] = test_summary["touched_records"]
 
     JSON_PATH.write_text(

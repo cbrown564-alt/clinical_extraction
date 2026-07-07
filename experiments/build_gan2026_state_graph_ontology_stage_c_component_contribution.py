@@ -43,15 +43,15 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
-    load_records_for_split,
-    load_split_manifest,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    load_records_for_split,
+    load_split_manifest,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -84,8 +84,7 @@ SOURCE_CLAIM_TABLE = (
 # The frozen v0.9 selector replay supplying the deterministic/consensus/fresh
 # components and the selected baseline for each row.
 V09_REPLAY = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
 
@@ -238,8 +237,7 @@ def _build_rows(
         graph_kind = graph["graph_kind"]
 
         pool_correct = any(
-            _purist_correct(label, gold_monthly)
-            for label in (deterministic, consensus, fresh)
+            _purist_correct(label, gold_monthly) for label in (deterministic, consensus, fresh)
         )
         selected_correct = _purist_correct(selected, gold_monthly)
         graph_correct = _purist_correct(graph_label, gold_monthly)
@@ -364,9 +362,7 @@ def _summarize(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "arm1_component_pool_coverage": arm1,
         "arm2_selection_contribution": posture_summary,
         "by_band": _by_band(rows),
-        "graph_kind_counts": dict(
-            sorted(Counter(row["graph_kind"] for row in rows).items())
-        ),
+        "graph_kind_counts": dict(sorted(Counter(row["graph_kind"] for row in rows).items())),
         "claim_boundary": (
             "Validation-only no-call replay. The graph query is rebuilt "
             "deterministically from the validation50 v3 section claim-table; the "
@@ -488,8 +484,7 @@ def _markdown(payload: Mapping[str, Any]) -> str:
         "",
         "## Experiment Unit",
         "",
-        "- Work class: hybrid selector / saved-output replay with a rebuilt graph "
-        "component.",
+        "- Work class: hybrid selector / saved-output replay with a rebuilt graph component.",
         "- Scorer: Gan-compatible Purist, unchanged.",
         "- Baseline: v0.9 selected label per row.",
         "- Stop rule (design §6): promote only with net component uplift and "
@@ -579,9 +574,7 @@ def _register(payload: Mapping[str, Any]) -> None:
     summary = payload["summary"]
     arm1 = summary["arm1_component_pool_coverage"]
     arm2 = summary["arm2_selection_contribution"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -613,9 +606,7 @@ def _register(payload: Mapping[str, Any]) -> None:
                 "v09_selected_purist_correct": summary["v09_selected_purist_correct"],
                 "graph_component_purist_correct": summary["graph_component_purist_correct"],
                 "no_correct_pool_rows": arm1["no_correct_pool_rows"],
-                "graph_mints_correct_for_no_correct": arm1[
-                    "graph_mints_correct_for_no_correct"
-                ],
+                "graph_mints_correct_for_no_correct": arm1["graph_mints_correct_for_no_correct"],
                 "p1_unilateral_correct_to_wrong": arm2["P1_unilateral"]["correct_to_wrong"],
                 "p2_corroborated_correct_to_wrong": arm2["P2_corroborated"]["correct_to_wrong"],
                 "p2_corroborated_net_purist_gain": arm2["P2_corroborated"]["net_purist_gain"],

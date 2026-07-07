@@ -5,9 +5,14 @@ letters use a two-sentence clinical shorthand instead: name the seizure type,
 then give a rate or seizure-free duration with a pronoun ("these", "they",
 "like this"). This module handles only those local carry-forward statements.
 """
+
 from __future__ import annotations
 
 import re
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    SEIZURE_TYPE_ANCHOR_RULE,
+)
 
 from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
@@ -15,9 +20,6 @@ from .frequency_section import _last_event_date_attrs, _rate_attrs
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
-    SEIZURE_TYPE_ANCHOR_RULE,
-)
 
 _SENTENCE = re.compile(r"[^.!?\n]+(?:[.!?]|\n|$)")
 _PRONOUN_CONTINUATION = re.compile(
@@ -231,7 +233,9 @@ def _seizure_free_surface_mention(attrs: dict[str, str], evidence: str) -> Predi
     )
 
 
-def _forced_cui_mention(anchor_text: str, attrs: dict[str, str], cui: str, evidence: str) -> PredictedMention:
+def _forced_cui_mention(
+    anchor_text: str, attrs: dict[str, str], cui: str, evidence: str
+) -> PredictedMention:
     return PredictedMention(
         entity=SEIZURE_FREQUENCY.name,
         text=anchor_text,
@@ -325,7 +329,9 @@ def _last_seizure_ago_attrs(sentence: str) -> dict[str, str] | None:
     }
 
 
-def _same_sentence_mentions(sentence: str, anchors: list[tuple[str, tuple[int, int]]]) -> list[PredictedMention]:
+def _same_sentence_mentions(
+    sentence: str, anchors: list[tuple[str, tuple[int, int]]]
+) -> list[PredictedMention]:
     mentions: list[PredictedMention] = []
     if not anchors:
         return mentions
@@ -358,7 +364,9 @@ def _same_sentence_mentions(sentence: str, anchors: list[tuple[str, tuple[int, i
         else _rate_attrs(sentence)
     )
     if rate and _FAIRLY_FREQUENT.search(sentence):
-        mentions.append(_mention(anchor_text, {**rate, "TimeSince_or_TimeOfEvent": "During"}, sentence))
+        mentions.append(
+            _mention(anchor_text, {**rate, "TimeSince_or_TimeOfEvent": "During"}, sentence)
+        )
         mentions.append(_mention(anchor_text, {"FrequencyChange": "Frequent"}, sentence))
 
     several = _SEVERAL_TIMES_PER_PERIOD.search(sentence)
@@ -381,8 +389,16 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
     mentions: list[PredictedMention] = []
     for match in _IMPROVED_DRUG_CONTROL.finditer(text):
         evidence = match.group(0)
-        mentions.append(_mention("focal seizures", {"NumberOfSeizures": "0", "PointInTime": "DrugChange"}, evidence))
-        mentions.append(_mention("seizures", {"FrequencyChange": "Infrequent", "PointInTime": "DrugChange"}, evidence))
+        mentions.append(
+            _mention(
+                "focal seizures", {"NumberOfSeizures": "0", "PointInTime": "DrugChange"}, evidence
+            )
+        )
+        mentions.append(
+            _mention(
+                "seizures", {"FrequencyChange": "Infrequent", "PointInTime": "DrugChange"}, evidence
+            )
+        )
 
     for match in _NO_FURTHER_AFTER_COMMENCED.finditer(text):
         mentions.append(
@@ -581,7 +597,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
         )
 
     for match in _REMAINS_SEIZURE_FREE.finditer(text):
-        follow = text[match.end(): match.end() + 40].lower()
+        follow = text[match.end() : match.end() + 40].lower()
         if "driving" in follow:
             continue
         if "after" in follow and "surgery" in follow:
@@ -592,7 +608,7 @@ def _global_statement_mentions(text: str) -> list[PredictedMention]:
                         "PointInTime": "Surgery",
                         "TimeSince_or_TimeOfEvent": "Since",
                     },
-                    match.group(0) + text[match.end(): match.end() + 20],
+                    match.group(0) + text[match.end() : match.end() + 20],
                 )
             )
             continue

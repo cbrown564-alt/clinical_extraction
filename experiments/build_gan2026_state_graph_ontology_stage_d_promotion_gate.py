@@ -55,15 +55,15 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
-    load_records_for_split,
-    load_split_manifest,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    load_records_for_split,
+    load_split_manifest,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -101,14 +101,12 @@ V3_OVERLAP_TABLE = (
 # The frozen v0.9 selector replay supplying the deterministic/consensus/fresh
 # components and the selected baseline for each row (covers all 750).
 V09_REPLAY = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
 # The frozen audit that identifies the 11/750 no-correct residual rows + categories.
 RESIDUAL_AUDIT = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "residual_component_generation_audit_2026-06-15.json"
 )
 
@@ -231,9 +229,7 @@ def _build_predeclared_slice(
     fill = non_residual[: SLICE_SIZE - len(residual_indices)]
     slice_set = set(residual_indices) | set(fill)
     if len(slice_set) != SLICE_SIZE:
-        raise ValueError(
-            f"predeclared slice is {len(slice_set)} rows, expected {SLICE_SIZE}"
-        )
+        raise ValueError(f"predeclared slice is {len(slice_set)} rows, expected {SLICE_SIZE}")
     missing_residual = residual_indices - slice_set
     if missing_residual:
         raise ValueError(f"residual rows missing from slice: {sorted(missing_residual)}")
@@ -285,9 +281,7 @@ def _v3_v4_cross_check(graph_labels: Mapping[int, dict[str, Any]]) -> dict[str, 
     v3_rows = _load_claim_table(V3_OVERLAP_TABLE)
     if overlap not in v3_rows or not v3_rows[overlap].get("structured_record"):
         return {"overlap_row": overlap, "available": False}
-    record = next(
-        r for r in load_records_for_split("validation") if r.source_row_index == overlap
-    )
+    record = next(r for r in load_records_for_split("validation") if r.source_row_index == overlap)
     claims = atomic_claims_from_structured_record(v3_rows[overlap].get("structured_record"))
     graph = build_state_graph_from_atomic_claims(
         record.note_text,
@@ -371,8 +365,7 @@ def _build_rows(
         graph_kind = graph["graph_kind"]
 
         pool_correct = any(
-            _purist_correct(label, gold_monthly)
-            for label in (deterministic, consensus, fresh)
+            _purist_correct(label, gold_monthly) for label in (deterministic, consensus, fresh)
         )
         selected_correct = _purist_correct(selected, gold_monthly)
         graph_correct = _purist_correct(graph_label, gold_monthly)
@@ -492,17 +485,13 @@ def _summarize(
 
     # Arm 1 over the predeclared residual rows specifically.
     residual_rows = [by_index[rec["source_row_index"]] for rec in residual]
-    residual_minted = [
-        row for row in residual_rows if row["graph_mints_correct_for_no_correct"]
-    ]
+    residual_minted = [row for row in residual_rows if row["graph_mints_correct_for_no_correct"]]
     # The crucial realized-vs-available number: of the residual rows where the
     # graph mints a correct component, how many does the *promotion posture* (P2)
     # actually recover at selection time. Corroboration cannot fire where every
     # other component is wrong, so minted (Arm 1) >> recovered (Arm 2) is expected.
     residual_p2_recovered = [
-        row
-        for row in residual_rows
-        if row["postures"][PROMOTION_POSTURE]["transition"] == "W->C"
+        row for row in residual_rows if row["postures"][PROMOTION_POSTURE]["transition"] == "W->C"
     ]
     residual_category = _residual_category_breakdown(residual, by_index)
 
@@ -516,9 +505,7 @@ def _summarize(
         "predeclared_residual_rows": len(residual_rows),
         "predeclared_residual_indices": [rec["source_row_index"] for rec in residual],
         "graph_mints_correct_for_predeclared_residual": len(residual_minted),
-        "predeclared_residual_minted_indices": [
-            row["source_row_index"] for row in residual_minted
-        ],
+        "predeclared_residual_minted_indices": [row["source_row_index"] for row in residual_minted],
         "p2_recovered_predeclared_residual": len(residual_p2_recovered),
         "p2_recovered_predeclared_residual_indices": [
             row["source_row_index"] for row in residual_p2_recovered
@@ -534,9 +521,7 @@ def _summarize(
         "arm1_residual_coverage": arm1,
         "arm2_selection_contribution": posture_summary,
         "by_band": _by_band(rows),
-        "graph_kind_counts": dict(
-            sorted(Counter(row["graph_kind"] for row in rows).items())
-        ),
+        "graph_kind_counts": dict(sorted(Counter(row["graph_kind"] for row in rows).items())),
         "v3_v4_cross_check": dict(cross_check),
         "claim_boundary": (
             "Validation-only no-call replay on a predeclared 250-row slice that "
@@ -622,14 +607,10 @@ def _by_band(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 1 for r in band_rows if r["postures"][PROMOTION_POSTURE]["override"]
             ),
             "p2_wrong_to_correct": sum(
-                1
-                for r in band_rows
-                if r["postures"][PROMOTION_POSTURE]["transition"] == "W->C"
+                1 for r in band_rows if r["postures"][PROMOTION_POSTURE]["transition"] == "W->C"
             ),
             "p2_correct_to_wrong": sum(
-                1
-                for r in band_rows
-                if r["postures"][PROMOTION_POSTURE]["transition"] == "C->W"
+                1 for r in band_rows if r["postures"][PROMOTION_POSTURE]["transition"] == "C->W"
             ),
         }
     return bands
@@ -856,8 +837,7 @@ def _markdown(payload: Mapping[str, Any]) -> str:
             if not info:
                 continue
             lines.append(
-                f"| `{band}` | {info['overrides']} | {info['correct']} | "
-                f"{info['precision']:.2f} |"
+                f"| `{band}` | {info['overrides']} | {info['correct']} | {info['precision']:.2f} |"
             )
     else:
         lines.append("| (no P2 overrides) | 0 | 0 | - |")
@@ -915,9 +895,7 @@ def _register(payload: Mapping[str, Any]) -> None:
     summary = payload["summary"]
     arm1 = summary["arm1_residual_coverage"]
     arm2 = summary["arm2_selection_contribution"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -955,9 +933,7 @@ def _register(payload: Mapping[str, Any]) -> None:
                     "graph_mints_correct_for_predeclared_residual"
                 ],
                 "no_correct_pool_rows": arm1["no_correct_pool_rows"],
-                "graph_mints_correct_for_no_correct": arm1[
-                    "graph_mints_correct_for_no_correct"
-                ],
+                "graph_mints_correct_for_no_correct": arm1["graph_mints_correct_for_no_correct"],
                 "p2_corroborated_wrong_to_correct": arm2["P2_corroborated"]["wrong_to_correct"],
                 "p2_corroborated_correct_to_wrong": arm2["P2_corroborated"]["correct_to_wrong"],
                 "p2_corroborated_net_purist_gain": arm2["P2_corroborated"]["net_purist_gain"],

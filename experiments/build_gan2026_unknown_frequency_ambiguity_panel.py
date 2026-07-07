@@ -15,14 +15,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    fresh_evidence_reasoner,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    fresh_evidence_reasoner,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -59,8 +59,7 @@ PANEL_CASES: tuple[AmbiguityPanelCase, ...] = (
         expected_final_kind="unknown",
         ambiguity_classification="last_event_only_unknown",
         note_text=(
-            "The patient's last seizure occurred on 20 Dec. "
-            "There have been no seizures since then."
+            "The patient's last seizure occurred on 20 Dec. There have been no seizures since then."
         ),
         evidence=(
             "last seizure occurred on 20 Dec",
@@ -169,8 +168,7 @@ PANEL_CASES: tuple[AmbiguityPanelCase, ...] = (
         expected_final_kind="unknown",
         ambiguity_classification="unknown_count_or_window",
         note_text=(
-            "The note reports one seizure on 06 Nov after missed doses and "
-            "sleep deprivation."
+            "The note reports one seizure on 06 Nov after missed doses and sleep deprivation."
         ),
         evidence=(
             "one seizure on 06 Nov",
@@ -361,9 +359,7 @@ def _markdown(payload: Mapping[str, Any]) -> str:
 
 
 def _register(payload: Mapping[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     summary = payload["summary"]
     entries.append(
         RunRegistryEntry(

@@ -23,15 +23,15 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
-    load_records_for_split,
-    load_split_manifest,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    load_records_for_split,
+    load_split_manifest,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -231,9 +231,7 @@ def _markdown(payload: dict[str, Any], summary: AtomicClaimViabilitySummary) -> 
 
 def _register(summary: AtomicClaimViabilitySummary, split_manifest: str) -> None:
     admission = summary.node_admission
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,

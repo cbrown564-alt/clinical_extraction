@@ -10,45 +10,11 @@ component-generation design note:
 - ``resolve`` - the final label as an explicit, ablatable graph query.
 """
 
-from .graph import (
-    ClinicalFrequencyStateGraph,
-    EvidenceSpan,
-    GraphNodeKind,
-    StateGraphNode,
-    build_state_graph,
-    build_state_graph_from_atomic_claims,
-    graph_invariance_signature,
-)
 from .claim_table import (
     NORMALIZED_CLAIM_RULE_ID,
     atomic_claim_from_table_claim,
     atomic_claims_from_structured_record,
 )
-from .edges import GraphEdge, GraphEdgeKind, derive_edges
-from .ontology import (
-    ADMISSIBLE_STATES,
-    UNKNOWN_ONLY_SHAPES,
-    AdmissibilityResult,
-    AdmissibleStateOntology,
-    EvidenceShape,
-    classify_evidence_shape,
-)
-from .validation import (
-    EdgeValidation,
-    GraphValidation,
-    NodeValidation,
-    dual_validate_graph,
-    validate_node,
-)
-from .resolve import GraphLabelResolution, resolve_label
-from .extract import (
-    extract_stage,
-    extracted_candidate_from_state_graph_node,
-    materialize_state_graph_extract,
-    raw_candidate_from_state_graph_node,
-    state_graph_candidate_set_from_graph,
-)
-from .projection import GanGraphProjection, ProjectionPolicy, project_graph_to_gan
 from .coverage import (
     AtomicClaimViabilitySummary,
     BandCoverage,
@@ -60,6 +26,40 @@ from .coverage import (
     graph_node_labels,
     ontology_coverage_summary,
     oracle_coverage_summary,
+)
+from .edges import GraphEdge, GraphEdgeKind, derive_edges
+from .extract import (
+    extract_stage,
+    extracted_candidate_from_state_graph_node,
+    materialize_state_graph_extract,
+    raw_candidate_from_state_graph_node,
+    state_graph_candidate_set_from_graph,
+)
+from .graph import (
+    ClinicalFrequencyStateGraph,
+    EvidenceSpan,
+    GraphNodeKind,
+    StateGraphNode,
+    build_state_graph,
+    build_state_graph_from_atomic_claims,
+    graph_invariance_signature,
+)
+from .ontology import (
+    ADMISSIBLE_STATES,
+    UNKNOWN_ONLY_SHAPES,
+    AdmissibilityResult,
+    AdmissibleStateOntology,
+    EvidenceShape,
+    classify_evidence_shape,
+)
+from .projection import GanGraphProjection, ProjectionPolicy, project_graph_to_gan
+from .resolve import GraphLabelResolution, resolve_label
+from .validation import (
+    EdgeValidation,
+    GraphValidation,
+    NodeValidation,
+    dual_validate_graph,
+    validate_node,
 )
 
 __all__ = [

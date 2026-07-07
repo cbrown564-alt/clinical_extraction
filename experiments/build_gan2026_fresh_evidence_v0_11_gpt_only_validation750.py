@@ -29,6 +29,12 @@ import time
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.registry import (
+    RunRegistryEntry,
+    load_run_registry,
+    validate_run_registry_artifacts,
+    write_run_registry,
+)
 from clinical_extraction.core.run_resume import (
     merge_rows,
     pending_items,
@@ -37,17 +43,13 @@ from clinical_extraction.core.run_resume import (
 from clinical_extraction.tasks.seizure_frequency.gan2026 import data as gan_data
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     family_cv_promotion,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     fresh_evidence_reasoner as fer,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
-)
-from clinical_extraction.core.registry import (
-    RunRegistryEntry,
-    load_run_registry,
-    validate_run_registry_artifacts,
-    write_run_registry,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -63,12 +65,9 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 BASELINE_V04_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
-PLAN_PATH = (
-    "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
-)
+PLAN_PATH = "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md"
 
 DATE = "2026-06-16"
 MODEL = "openai/gpt-4.1"  # NOTE: full gpt-4.1, NOT mini (build_dspy_lm does no aliasing).
@@ -106,12 +105,8 @@ def _run_live(records: list[gan_data.GanFrequencyRecord]) -> list[dict[str, Any]
         CHECKPOINT_JSONL if CHECKPOINT_JSONL.exists() else None,
         key="source_row_index",
     )
-    pending = pending_items(
-        records, completed_keys, key_of=lambda r: str(r.source_row_index)
-    )
-    print(
-        f"Resume: {len(completed_rows)} done, {len(pending)} pending of {len(records)}"
-    )
+    pending = pending_items(records, completed_keys, key_of=lambda r: str(r.source_row_index))
+    print(f"Resume: {len(completed_rows)} done, {len(pending)} pending of {len(records)}")
     new_rows: list[dict[str, Any]] = []
     if pending:
         new_rows, _ = fer.run_split(
@@ -368,18 +363,22 @@ def main() -> None:
     records = gan_data.load_records_for_split(SPLIT)
     candidate_rows = _run_live(records)
 
-    baseline = _score_indexed(list({int(r["source_row_index"]): r for r in load_jsonl_rows(BASELINE_V04_JSONL)}.values()))
+    baseline = _score_indexed(
+        list({int(r["source_row_index"]): r for r in load_jsonl_rows(BASELINE_V04_JSONL)}.values())
+    )
     candidate = _score_indexed(candidate_rows)
     n = len(candidate_rows)
 
     a3_purist = sum(v["purist_correct"] for v in candidate.values())
     baseline_purist = sum(v["purist_correct"] for v in baseline.values())
     wrong_to_correct = sum(
-        1 for idx, c in candidate.items()
+        1
+        for idx, c in candidate.items()
         if idx in baseline and not baseline[idx]["purist_correct"] and c["purist_correct"]
     )
     correct_to_wrong = sum(
-        1 for idx, c in candidate.items()
+        1
+        for idx, c in candidate.items()
         if idx in baseline and baseline[idx]["purist_correct"] and not c["purist_correct"]
     )
 
@@ -435,20 +434,23 @@ def main() -> None:
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(payload)
 
-    print(json.dumps(
-        {
-            "rows": n,
-            "a3_purist": a3_purist,
-            "baseline_purist": baseline_purist,
-            "net_vs_baseline": a3_purist - baseline_purist,
-            "gpt_only_purist": gpt_only_purist,
-            "reasoner_net_vs_gpt": a3_purist - gpt_only_purist,
-            "gap_robust": cv["gap_robust"],
-            "genuine_rate_regressions": len(regressions),
-            "decision": decision,
-        },
-        indent=2, sort_keys=True,
-    ))
+    print(
+        json.dumps(
+            {
+                "rows": n,
+                "a3_purist": a3_purist,
+                "baseline_purist": baseline_purist,
+                "net_vs_baseline": a3_purist - baseline_purist,
+                "gpt_only_purist": gpt_only_purist,
+                "reasoner_net_vs_gpt": a3_purist - gpt_only_purist,
+                "gap_robust": cv["gap_robust"],
+                "genuine_rate_regressions": len(regressions),
+                "decision": decision,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

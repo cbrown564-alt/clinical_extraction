@@ -9,19 +9,19 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
-    PROMPT_VERSION,
-    _extract_raw_model_final_label,
-    _normalized_label_vote,
-    _run_model_call,
-    _trace_attribution_layer,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
     AgenticSplitHooks,
     RegisteredAgenticStage,
     SplitRunParams,
     dispatch_registered_split,
     register_agentic_stage,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
+    PROMPT_VERSION,
+    _extract_raw_model_final_label,
+    _normalized_label_vote,
+    _run_model_call,
+    _trace_attribution_layer,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tools import (
     parse_seizure_frequency_candidates,
@@ -38,13 +38,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
-    LlmOnlyDirectLabelerDecisionRecord,
-    parse_decision_json,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     map_pragmatic,
     map_purist,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler import (
+    LlmOnlyDirectLabelerDecisionRecord,
+    parse_decision_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     write_markdown_report,
@@ -176,9 +176,7 @@ def condition_summaries(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str
             "purist_correct": purist_correct,
             "pragmatic_correct": pragmatic_correct,
             "purist_accuracy": round(purist_correct / len(rows), 4) if rows else 0.0,
-            "pragmatic_accuracy": (
-                round(pragmatic_correct / len(rows), 4) if rows else 0.0
-            ),
+            "pragmatic_accuracy": (round(pragmatic_correct / len(rows), 4) if rows else 0.0),
             "wins_vs_no_tool": wins,
             "losses_vs_no_tool": losses,
             "call_failures": call_failures,
@@ -209,8 +207,7 @@ def gate_interpretation(condition_summary: Mapping[str, Mapping[str, Any]]) -> d
     if len(harmful) == len(context_conditions):
         status = "reject_dynamic_tool_context"
         interpretation = (
-            "Every tool-context variant underperformed the no-tool one-call "
-            "condition on hard50."
+            "Every tool-context variant underperformed the no-tool one-call condition on hard50."
         )
     elif non_harmful:
         status = "revise_with_non_harmful_context"
@@ -442,9 +439,7 @@ def _execute_model_call(
         )
     except Exception as exc:  # pragma: no cover - live transport only.
         call_error = f"{type(exc).__name__}: {exc}"
-    decision, parse_errors = (
-        parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
-    )
+    decision, parse_errors = parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
     return {
         "call_index": plan["call_index"],
         "call_role": plan["call_role"],
@@ -453,9 +448,7 @@ def _execute_model_call(
         "prompt_version": PROMPT_VERSION,
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,
-        "raw_model_final_label": _extract_raw_model_final_label(raw_output)
-        if raw_output
-        else None,
+        "raw_model_final_label": _extract_raw_model_final_label(raw_output) if raw_output else None,
         "call_error": call_error,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
@@ -562,10 +555,7 @@ def _boundary_guides_for_parser_result(parser_result: Mapping[str, Any]) -> list
         guide_ids.add("cluster_frequency_vs_incidental_clustering")
     if "seizure_free" in candidate_kinds:
         guide_ids.add("seizure_free_event_conflict")
-    return [
-        read_boundary_guide(guide_id).model_dump(mode="json")
-        for guide_id in sorted(guide_ids)
-    ]
+    return [read_boundary_guide(guide_id).model_dump(mode="json") for guide_id in sorted(guide_ids)]
 
 
 def _compare_to_gold(
@@ -613,9 +603,7 @@ def _correct_by_row(
     return {
         int(row["source_row_index"]): bool(
             dict(
-                dict(row.get("condition_traces", {}))
-                .get(condition, {})
-                .get("final_comparison")
+                dict(row.get("condition_traces", {})).get(condition, {}).get("final_comparison")
                 or {}
             ).get("purist_correct")
         )

@@ -39,12 +39,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.metric import (
     KEY_FAMILIES,
     _counts,
-    _family_scores,
     _f1_from,
+    _family_scores,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
-    frequency_state_faithful,
     source_near_diagnostic,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
@@ -88,7 +87,9 @@ def _load_jsonl(run_id: str) -> list[dict]:
 def gepa_predictions() -> dict[str, ExectLetter]:
     out: dict[str, ExectLetter] = {}
     for row in _load_jsonl(GEPA_RUN):
-        out[row["letter_id"]] = _letter_from_mentions(row["letter_id"], row.get("predicted_mentions", []))
+        out[row["letter_id"]] = _letter_from_mentions(
+            row["letter_id"], row.get("predicted_mentions", [])
+        )
     return out
 
 
@@ -120,7 +121,14 @@ def strict_headline(gold: list[ExectLetter], pred_by_id: dict[str, ExectLetter])
     # agg = [precision_tp, recall_tp, pred_count, gold_count]
     agg_recall = agg[1] / agg[3] if agg[3] else 0.0
     fam_recall = {f: (fam[f][1] / fam[f][3] if fam[f][3] else 0.0) for f in KEY_FAMILIES}
-    return _f1_from(*agg), {f: _f1_from(*fam[f]) for f in KEY_FAMILIES}, agg, agg_recall, fam_recall, fam
+    return (
+        _f1_from(*agg),
+        {f: _f1_from(*fam[f]) for f in KEY_FAMILIES},
+        agg,
+        agg_recall,
+        fam_recall,
+        fam,
+    )
 
 
 def overlap_ceiling(gold: list[ExectLetter], pred_by_id: dict[str, ExectLetter]):
@@ -141,8 +149,11 @@ def overlap_ceiling(gold: list[ExectLetter], pred_by_id: dict[str, ExectLetter])
 
 def _key_set(mentions: list[dict]) -> set:
     return {
-        (m["entity"], (m.get("text") or "").strip().lower(),
-         tuple(sorted((str(k), str(v)) for k, v in (m.get("attributes") or {}).items())))
+        (
+            m["entity"],
+            (m.get("text") or "").strip().lower(),
+            tuple(sorted((str(k), str(v)) for k, v in (m.get("attributes") or {}).items())),
+        )
         for m in mentions
     }
 
@@ -161,9 +172,16 @@ def recovery_stage_attribution(gold: list[ExectLetter]):
         if before is None or after is None:
             continue
         before_keys = _key_set(before)
-        added = [m for m in after if (m["entity"], (m.get("text") or "").strip().lower(),
-                 tuple(sorted((str(k), str(v)) for k, v in (m.get("attributes") or {}).items())))
-                 not in before_keys]
+        added = [
+            m
+            for m in after
+            if (
+                m["entity"],
+                (m.get("text") or "").strip().lower(),
+                tuple(sorted((str(k), str(v)) for k, v in (m.get("attributes") or {}).items())),
+            )
+            not in before_keys
+        ]
         dropped = len(before) - (len(after) - len(added))
         added_total += len(added)
         dropped_total += max(0, dropped)
@@ -194,9 +212,18 @@ def recall_deficit_decomposition(gold: list[ExectLetter], pred_by_id: dict[str, 
         return bool(a and any(b and (a in b or b in a) for b in bs))
 
     per = {
-        f: {"fn": 0, "miskeyed": 0, "genuine": 0, "fp": 0, "fp_overlap": 0,
+        f: {
+            "fn": 0,
+            "miskeyed": 0,
+            "genuine": 0,
+            "fp": 0,
+            "fp_overlap": 0,
             # strict counts for the oracle re-key ceiling
-            "ptp": 0, "rtp": 0, "pc": 0, "gc": 0}
+            "ptp": 0,
+            "rtp": 0,
+            "pc": 0,
+            "gc": 0,
+        }
         for f in KEY_FAMILIES
     }
     for g in gold:
@@ -263,9 +290,18 @@ def main() -> None:
         ov_f1, ov_r, ov_p, attr_rate, ov_per = overlap_ceiling(gold, pred)
         sfp = sf_state_profile(gold, pred)
         R[name] = dict(
-            strict_f1=strict_f1, strict_fam=strict_fam, agg=agg, agg_recall=agg_recall,
-            fam_recall=fam_recall, fam_counts=fam_counts, sfp=sfp, ov_f1=ov_f1, ov_r=ov_r,
-            ov_p=ov_p, attr_rate=attr_rate, ov_per=ov_per,
+            strict_f1=strict_f1,
+            strict_fam=strict_fam,
+            agg=agg,
+            agg_recall=agg_recall,
+            fam_recall=fam_recall,
+            fam_counts=fam_counts,
+            sfp=sfp,
+            ov_f1=ov_f1,
+            ov_r=ov_r,
+            ov_p=ov_p,
+            attr_rate=attr_rate,
+            ov_per=ov_per,
         )
 
     # --- Headline ladder ----------------------------------------------------- #
@@ -273,30 +309,44 @@ def main() -> None:
     print(f"{'system':<34}{'strict F1':>10}{'Dx':>7}{'SF':>7}{'Rx':>7}{'Inv':>7}{'SF_prof':>9}")
     for name, r in R.items():
         sfam = r["strict_fam"]
-        print(f"{name:<34}{r['strict_f1']:>10.3f}{sfam['Diagnosis']:>7.3f}{sfam['SeizureFrequency']:>7.3f}"
-              f"{sfam['Prescription']:>7.3f}{sfam['Investigations']:>7.3f}{r['sfp']:>9.3f}")
+        print(
+            f"{name:<34}{r['strict_f1']:>10.3f}{sfam['Diagnosis']:>7.3f}{sfam['SeizureFrequency']:>7.3f}"
+            f"{sfam['Prescription']:>7.3f}{sfam['Investigations']:>7.3f}{r['sfp']:>9.3f}"
+        )
 
     # --- Evidence-presence ceiling ------------------------------------------ #
-    print("\n## Evidence-presence ceiling (source_near same-entity text-overlap): "
-          "credit any gold whose evidence was retrieved\n")
+    print(
+        "\n## Evidence-presence ceiling (source_near same-entity text-overlap): "
+        "credit any gold whose evidence was retrieved\n"
+    )
     print(f"{'system':<34}{'ovlp F1':>9}{'ovlp R':>8}{'ovlp P':>8}{'attr-agree':>11}")
     for name, r in R.items():
-        print(f"{name:<34}{r['ov_f1']:>9.3f}{r['ov_r']:>8.3f}{r['ov_p']:>8.3f}{r['attr_rate']:>11.3f}")
+        print(
+            f"{name:<34}{r['ov_f1']:>9.3f}{r['ov_r']:>8.3f}{r['ov_p']:>8.3f}{r['attr_rate']:>11.3f}"
+        )
 
     # --- Evidence captured by the LLM vs shuffled in deterministically ------- #
-    print("\n## Evidence-recall counts: LLM-captured vs deterministically recovered "
-          "(gold mentions with overlapping retrieved evidence)\n")
+    print(
+        "\n## Evidence-recall counts: LLM-captured vs deterministically recovered "
+        "(gold mentions with overlapping retrieved evidence)\n"
+    )
     print(f"{'system':<34}{'gold w/ ev':>11}{'/ total':>9}{'ev-recall':>11}")
     for name in ["GEPA best (multifamily)"] + [f"hybrid::{s}" for s in HYBRID_SURFACES]:
         preds = [systems[name].get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in gold]
-        ov = source_near_diagnostic(gold, preds, list(KEY_FAMILIES), benchmark_config_for).overall.overlap
+        ov = source_near_diagnostic(
+            gold, preds, list(KEY_FAMILIES), benchmark_config_for
+        ).overall.overlap
         print(f"{name:<34}{ov.tp:>11}{ov.tp + ov.fn:>9}{ov.recall:>11.3f}")
-    print("  hybrid LLM producers = `source_scored`; the deterministic stack's NET add to "
-          "evidence-recall is `final` - `source_scored` (recovery adds, normalization re-keys).")
+    print(
+        "  hybrid LLM producers = `source_scored`; the deterministic stack's NET add to "
+        "evidence-recall is `final` - `source_scored` (recovery adds, normalization re-keys)."
+    )
 
     # --- Per-family recall decomposition (the cleanest Q2 view) -------------- #
     print("\n## Per-family RECALL: strict (keyed right) vs evidence-presence (retrieved)\n")
-    print(f"{'system':<28}{'family':<16}{'strict R':>9}{'ev-recall':>10}{'mis-keyed':>10}{'not-retr':>9}")
+    print(
+        f"{'system':<28}{'family':<16}{'strict R':>9}{'ev-recall':>10}{'mis-keyed':>10}{'not-retr':>9}"
+    )
     for name in ("GEPA best (multifamily)", "hybrid::source_scored", "hybrid::final"):
         r = R[name]
         for f in KEY_FAMILIES:
@@ -311,7 +361,9 @@ def main() -> None:
     hyb_final = R["hybrid::final"]
 
     print("\n## Q2 — GEPA: how much can re-using the evidence it ALREADY retrieved buy?")
-    print("   (strict-headline FALSE NEGATIVES split by whether overlapping evidence was retrieved)\n")
+    print(
+        "   (strict-headline FALSE NEGATIVES split by whether overlapping evidence was retrieved)\n"
+    )
     dec = recall_deficit_decomposition(gold, systems["GEPA best (multifamily)"])
     tot_fn = sum(d["fn"] for d in dec.values())
     tot_mk = sum(d["miskeyed"] for d in dec.values())
@@ -321,52 +373,80 @@ def main() -> None:
         d = dec[f]
         print(f"{f:<18}{d['fn']:>9}{d['miskeyed']:>11}{d['genuine']:>14}")
     print(f"{'TOTAL':<18}{tot_fn:>9}{tot_mk:>11}{tot_gn:>14}")
-    print(f"  => of GEPA's {tot_fn} missed gold units, {tot_mk} ({100*tot_mk/tot_fn:.0f}%) have overlapping "
-          f"retrieved evidence (re-keyable); {tot_gn} ({100*tot_gn/tot_fn:.0f}%) are genuinely not retrieved.")
+    print(
+        f"  => of GEPA's {tot_fn} missed gold units, {tot_mk} ({100 * tot_mk / tot_fn:.0f}%) have overlapping "
+        f"retrieved evidence (re-keyable); {tot_gn} ({100 * tot_gn / tot_fn:.0f}%) are genuinely not retrieved."
+    )
 
     # Oracle re-key ceiling: credit every mis-keyed FN and every overlapping spurious FP.
     o_agg = [0, 0, 0, 0]
     for f in KEY_FAMILIES:
         ptp, rtp, pc, gc = g["fam_counts"][f]
         d = dec[f]
-        o_agg[0] += ptp + d["fp_overlap"]   # precision_tp + recovered spurious
-        o_agg[1] += rtp + d["miskeyed"]      # recall_tp   + recovered misses
+        o_agg[0] += ptp + d["fp_overlap"]  # precision_tp + recovered spurious
+        o_agg[1] += rtp + d["miskeyed"]  # recall_tp   + recovered misses
         o_agg[2] += pc
         o_agg[3] += gc
     oracle_f1 = _f1_from(*o_agg)
-    print(f"\n  ORACLE re-key ceiling (perfect re-keyer of retrieved evidence, no new extraction):")
-    print(f"    GEPA strict {g['strict_f1']:.3f} -> {oracle_f1:.3f}  (+{oracle_f1 - g['strict_f1']:.3f} upper bound)")
-    print(f"    The biggest validated slice is SF state representation: SF clinical_headline "
-          f"{g['strict_fam']['SeizureFrequency']:.3f} -> state_profile {g['sfp']:.3f} "
-          f"(+{g['sfp'] - g['strict_fam']['SeizureFrequency']:.3f}).")
-    print(f"    Even at this oracle ceiling, {oracle_f1:.3f} < hybrid {hyb_final['strict_f1']:.3f}: "
-          f"the residual {hyb_final['strict_f1'] - oracle_f1:.3f} is gold GEPA never retrieved.")
+    print("\n  ORACLE re-key ceiling (perfect re-keyer of retrieved evidence, no new extraction):")
+    print(
+        f"    GEPA strict {g['strict_f1']:.3f} -> {oracle_f1:.3f}  (+{oracle_f1 - g['strict_f1']:.3f} upper bound)"
+    )
+    print(
+        f"    The biggest validated slice is SF state representation: SF clinical_headline "
+        f"{g['strict_fam']['SeizureFrequency']:.3f} -> state_profile {g['sfp']:.3f} "
+        f"(+{g['sfp'] - g['strict_fam']['SeizureFrequency']:.3f})."
+    )
+    print(
+        f"    Even at this oracle ceiling, {oracle_f1:.3f} < hybrid {hyb_final['strict_f1']:.3f}: "
+        f"the residual {hyb_final['strict_f1'] - oracle_f1:.3f} is gold GEPA never retrieved."
+    )
 
     added_total, added_tp, dropped_total = recovery_stage_attribution(gold)
     print("\n## Q1 — hybrid: how much of its score is DETERMINISTIC recovery of MISSED info?")
-    print(f"  raw LLM producers (source_scored) F1 ...... {hyb_src['strict_f1']:.3f}   "
-          f"(Dx {hyb_src['strict_fam']['Diagnosis']:.3f} / SF {hyb_src['strict_fam']['SeizureFrequency']:.3f} / "
-          f"Rx {hyb_src['strict_fam']['Prescription']:.3f} / Inv {hyb_src['strict_fam']['Investigations']:.3f})")
-    print(f"  + deterministic RE-KEYING (dictionary_normalized) .. {hyb_dict['strict_f1']:.3f}   "
-          f"(+{hyb_dict['strict_f1'] - hyb_src['strict_f1']:.3f}; re-uses retrieved evidence)")
-    print(f"  + deterministic letter-RECOVERY (final) ............ {hyb_final['strict_f1']:.3f}   "
-          f"(+{hyb_final['strict_f1'] - hyb_dict['strict_f1']:.3f}; reads letter, adds missed facts)")
-    print(f"  net facts ADDED by recovery stage ......... {added_total}, "
-          f"of which {added_tp} land on a gold concept "
-          f"({100 * added_tp / added_total:.0f}% TP)" if added_total else "  (none added)")
+    print(
+        f"  raw LLM producers (source_scored) F1 ...... {hyb_src['strict_f1']:.3f}   "
+        f"(Dx {hyb_src['strict_fam']['Diagnosis']:.3f} / SF {hyb_src['strict_fam']['SeizureFrequency']:.3f} / "
+        f"Rx {hyb_src['strict_fam']['Prescription']:.3f} / Inv {hyb_src['strict_fam']['Investigations']:.3f})"
+    )
+    print(
+        f"  + deterministic RE-KEYING (dictionary_normalized) .. {hyb_dict['strict_f1']:.3f}   "
+        f"(+{hyb_dict['strict_f1'] - hyb_src['strict_f1']:.3f}; re-uses retrieved evidence)"
+    )
+    print(
+        f"  + deterministic letter-RECOVERY (final) ............ {hyb_final['strict_f1']:.3f}   "
+        f"(+{hyb_final['strict_f1'] - hyb_dict['strict_f1']:.3f}; reads letter, adds missed facts)"
+    )
+    print(
+        f"  net facts ADDED by recovery stage ......... {added_total}, "
+        f"of which {added_tp} land on a gold concept "
+        f"({100 * added_tp / added_total:.0f}% TP)"
+        if added_total
+        else "  (none added)"
+    )
     print(f"  net facts dropped by cleanup .............. {dropped_total}")
-    det_total = hyb_final['strict_f1'] - hyb_src['strict_f1']
-    det_recovery = hyb_final['strict_f1'] - hyb_dict['strict_f1']
-    print(f"  => deterministic stack contributes +{det_total:.3f} of the hybrid's {hyb_final['strict_f1']:.3f}; "
-          f"only +{det_recovery:.3f} is letter-recovery of missed info (rest is re-keying).")
+    det_total = hyb_final["strict_f1"] - hyb_src["strict_f1"]
+    det_recovery = hyb_final["strict_f1"] - hyb_dict["strict_f1"]
+    print(
+        f"  => deterministic stack contributes +{det_total:.3f} of the hybrid's {hyb_final['strict_f1']:.3f}; "
+        f"only +{det_recovery:.3f} is letter-recovery of missed info (rest is re-keying)."
+    )
 
-    print("\n## Cross-architecture: where the GEPA->hybrid gap of "
-          f"{hyb_final['strict_f1'] - g['strict_f1']:.3f} lives")
-    print(f"  evidence the hybrid retrieves that GEPA does not: ev-recall "
-          f"{g['ov_r']:.3f} -> {hyb_final['ov_r']:.3f} (+{hyb_final['ov_r'] - g['ov_r']:.3f})")
-    print(f"  the hybrid's deterministic stack is almost entirely Diagnosis re-keying/recovery: "
-          f"Dx {hyb_src['strict_fam']['Diagnosis']:.3f} -> {hyb_final['strict_fam']['Diagnosis']:.3f}")
-    print(f"  SF/Rx/Inv get ~zero from determinism — their hybrid edge is the focused LLM producers.")
+    print(
+        "\n## Cross-architecture: where the GEPA->hybrid gap of "
+        f"{hyb_final['strict_f1'] - g['strict_f1']:.3f} lives"
+    )
+    print(
+        f"  evidence the hybrid retrieves that GEPA does not: ev-recall "
+        f"{g['ov_r']:.3f} -> {hyb_final['ov_r']:.3f} (+{hyb_final['ov_r'] - g['ov_r']:.3f})"
+    )
+    print(
+        f"  the hybrid's deterministic stack is almost entirely Diagnosis re-keying/recovery: "
+        f"Dx {hyb_src['strict_fam']['Diagnosis']:.3f} -> {hyb_final['strict_fam']['Diagnosis']:.3f}"
+    )
+    print(
+        "  SF/Rx/Inv get ~zero from determinism — their hybrid edge is the focused LLM producers."
+    )
 
 
 if __name__ == "__main__":

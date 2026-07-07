@@ -1,9 +1,5 @@
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.projection_rule_attribution import (  # noqa: E501
-    PROJECTION_RULE_REGISTRY,
-    ProjectionPortability,
-    build_projection_rule_sidecar,
-    parse_rule_warning,
-    render_projection_rule_sidecar_markdown,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry import (
+    rules_for_phase,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.catalog import (
     projection_sf_rule_ids,
@@ -12,8 +8,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.types import (
     SurfacePhase,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry import (
-    rules_for_phase,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.projection_rule_attribution import (  # noqa: E501
+    PROJECTION_RULE_REGISTRY,
+    ProjectionPortability,
+    build_projection_rule_sidecar,
+    parse_rule_warning,
+    render_projection_rule_sidecar_markdown,
 )
 
 
@@ -21,17 +21,19 @@ def test_projection_rule_registry_uses_required_portability_categories() -> None
     categories = {spec.portability for spec in PROJECTION_RULE_REGISTRY.values()}
 
     assert categories == set(ProjectionPortability)
-    assert PROJECTION_RULE_REGISTRY[
-        "projected_diagnosis_context_to_frequent_myoclonic_jerks"
-    ].portability is ProjectionPortability.GAN2026_SPECIFIC
+    assert (
+        PROJECTION_RULE_REGISTRY[
+            "projected_diagnosis_context_to_frequent_myoclonic_jerks"
+        ].portability
+        is ProjectionPortability.GAN2026_SPECIFIC
+    )
     assert PROJECTION_RULE_REGISTRY["projected_christmas_point_to_month_date"].as_dict() == {
         "rule_id": "projected_christmas_point_to_month_date",
         "entity": "SeizureFrequency",
         "portability_category": "benchmark_format",
         "enabled_by_default": False,
         "switch_name": (
-            "target_projection_family_switches."
-            "projected_christmas_point_to_month_date"
+            "target_projection_family_switches.projected_christmas_point_to_month_date"
         ),
         "switch_status": "adapter_quarantined_default_audit_replay",
     }
@@ -145,9 +147,7 @@ def test_projection_rule_sidecar_counts_same_raw_corrections_and_fidelity_effect
 def test_projection_sf_catalog_registers_all_seizure_frequency_rules() -> None:
     registered = projection_sf_rule_ids()
     catalog_project = {
-        rule.rule_id
-        for rule in rules_for_phase(SurfacePhase.PROJECT)
-        if rule.rule_id in registered
+        rule.rule_id for rule in rules_for_phase(SurfacePhase.PROJECT) if rule.rule_id in registered
     }
     catalog_evidence = {
         rule.rule_id
@@ -161,16 +161,12 @@ def test_projection_sf_catalog_registers_all_seizure_frequency_rules() -> None:
 
 def test_quarantined_projection_families_match_attribution_registry() -> None:
     attribution_quarantined = {
-        rule_id
-        for rule_id, spec in PROJECTION_RULE_REGISTRY.items()
-        if not spec.enabled_by_default
+        rule_id for rule_id, spec in PROJECTION_RULE_REGISTRY.items() if not spec.enabled_by_default
     }
     registry_quarantined = quarantined_projection_families()
 
     assert registry_quarantined == {
-        rule_id
-        for rule_id in attribution_quarantined
-        if rule_id in projection_sf_rule_ids()
+        rule_id for rule_id in attribution_quarantined if rule_id in projection_sf_rule_ids()
     }
     assert registry_quarantined == frozenset(
         {

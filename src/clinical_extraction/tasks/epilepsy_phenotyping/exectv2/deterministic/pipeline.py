@@ -22,6 +22,7 @@ Usage::
     letters = load_letters()
     predicted = run_on_letters(letters)
 """
+
 from __future__ import annotations
 
 import re
@@ -34,25 +35,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    ANCHOR_RULES,
+    CHANGE_RULES,
+    RATE_RULES,
+    SEIZURE_FREE_RULES,
+    TEMPORAL_RULES,
+)
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from .association import associate_attributes_to_anchors
 from .candidates import AnchorCandidate, AttributeExtraction
 from .frequency_section import frequency_section_mentions
 from .lexicon import assign_cui
 from .overlap import resolve_overlapping_anchors, resolve_overlapping_attributes
 from .rule_metadata import DEFAULT_ABLATION, AblationConfig, ExtractionContext
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
-    ANCHOR_RULES,
-    CHANGE_RULES,
-    RATE_RULES,
-    SEIZURE_FREE_RULES,
-    SEIZURE_TYPE_ANCHOR_RULE,
-    TEMPORAL_RULES,
-)
 from .statement_parser import statement_mentions
 
 
@@ -106,7 +106,7 @@ def _apply_implied_count(
     phrase = anchor.text.lower()
     if not (_PLURAL_SEIZURE_NOUN.search(phrase) or _SINGULAR_SEIZURE_NOUN.search(phrase)):
         return attributes
-    window = text[max(0, anchor.span[0] - 30): anchor.span[0]]
+    window = text[max(0, anchor.span[0] - 30) : anchor.span[0]]
     if _NEGATION_CUE.search(window):
         implied = "0"
     elif _PLURAL_SEIZURE_NOUN.search(phrase):
@@ -217,7 +217,10 @@ def _projection_alias_texts(mention: PredictedMention) -> tuple[str, ...]:
 
     if phrase == "absences" and attrs.get("FrequencyChange") == "Infrequent":
         return ("absence",)
-    if phrase == "generalised tonic clonic seizures" and attrs.get("FrequencyChange") == "Infrequent":
+    if (
+        phrase == "generalised tonic clonic seizures"
+        and attrs.get("FrequencyChange") == "Infrequent"
+    ):
         return ("generalized tonic clonic seizures",)
     if phrase == "secondary generalised seizures":
         if is_zero and "MonthDate" in attrs:
@@ -240,11 +243,17 @@ def _projection_alias_texts(mention: PredictedMention) -> tuple[str, ...]:
 def _projection_attribute_aliases(mention: PredictedMention) -> tuple[dict[str, str], ...]:
     attrs = dict(mention.attributes)
     aliases: list[dict[str, str]] = []
-    if attrs.get("CUI") != "C1299590" and "FrequencyChange" in attrs and any(
-        key in attrs for key in ("NumberOfSeizures", "TimePeriod", "NumberOfTimePeriods")
+    if (
+        attrs.get("CUI") != "C1299590"
+        and "FrequencyChange" in attrs
+        and any(key in attrs for key in ("NumberOfSeizures", "TimePeriod", "NumberOfTimePeriods"))
     ):
         aliases.append(
-            {key: value for key, value in attrs.items() if key in {"FrequencyChange", "CUI", "CUIPhrase"}}
+            {
+                key: value
+                for key, value in attrs.items()
+                if key in {"FrequencyChange", "CUI", "CUIPhrase"}
+            }
         )
     if "LowerNumberOfSeizures" in attrs and "PointInTime" in attrs:
         aliases.append(
@@ -261,11 +270,15 @@ def _with_alias_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
     cui = assign_cui(text)
     if cui is None:
         return {k: v for k, v in attrs.items() if k not in {"CUI", "CUIPhrase"}}
-    return {**{k: v for k, v in attrs.items() if k not in {"CUI", "CUIPhrase"}}, "CUI": cui, "CUIPhrase": text}
+    return {
+        **{k: v for k, v in attrs.items() if k not in {"CUI", "CUIPhrase"}},
+        "CUI": cui,
+        "CUIPhrase": text,
+    }
 
 
 def _projection_alias_mentions(
-    mentions: tuple[PredictedMention, ...]
+    mentions: tuple[PredictedMention, ...],
 ) -> tuple[PredictedMention, ...]:
     existing = {_mention_key(m) for m in mentions}
     aliases: list[PredictedMention] = []
@@ -393,18 +406,18 @@ def extract_seizure_frequency(
     attributes = [a for a in attributes if a.evidence and a.evidence in text]
 
     pairs = associate_attributes_to_anchors(anchors, attributes, text)
-    associated_mentions = _split_mixed_mentions(tuple(
-        _mention_from_pair(anchor, merged)
-        for anchor, attrs in pairs
-        for merged in (_apply_implied_count(anchor, attrs, text),)
-        if not _is_bare_nonzero_count(merged)
-    ))
+    associated_mentions = _split_mixed_mentions(
+        tuple(
+            _mention_from_pair(anchor, merged)
+            for anchor, attrs in pairs
+            for merged in (_apply_implied_count(anchor, attrs, text),)
+            if not _is_bare_nonzero_count(merged)
+        )
+    )
     associated_keys = {_mention_key(m) for m in associated_mentions}
     structured_candidates = (*frequency_section_mentions(text), *statement_mentions(text))
     structured_mentions = tuple(
-        mention
-        for mention in structured_candidates
-        if _mention_key(mention) not in associated_keys
+        mention for mention in structured_candidates if _mention_key(mention) not in associated_keys
     )
     mentions = (*associated_mentions, *structured_mentions)
     mentions = (*mentions, *_projection_alias_mentions(mentions))

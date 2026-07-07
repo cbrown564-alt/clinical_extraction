@@ -9,8 +9,8 @@ from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.component_off import (
-    build_component_off_replay_configs,
     build_component_off_readout_payload,
+    build_component_off_replay_configs,
     build_full200_component_off_readout_payload,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import (
@@ -31,11 +31,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ab
     layer_score,
     load_summary,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.telemetry import (
-    aggregate_operational_counts,
-    aggregate_validity_rates,
-    deterministic_action_counts,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.render import (
     render_component_ablation_markdown,
     render_component_off_readout_markdown,
@@ -43,7 +38,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ab
     render_full200_component_off_readout_markdown,
     render_replay_config,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import ComponentImpactReplaySpec
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.telemetry import (
+    aggregate_operational_counts,
+    aggregate_validity_rates,
+    deterministic_action_counts,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
+    ComponentImpactReplaySpec,
+)
+
 
 def build_architecture_layer_ladder(
     spec: ComponentImpactReplaySpec,
@@ -108,7 +111,9 @@ def write_component_ablation_artifacts(
     component_off_md_path: Path = DEFAULT_COMPONENT_OFF_MD,
     generated_on: str = DEFAULT_GENERATED_ON,
 ) -> dict[str, Path]:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+        build_component_ablation_payload,
+    )
 
     payload = build_component_ablation_payload(specs, generated_on=generated_on)
     resolved = {
@@ -269,7 +274,9 @@ def write_full200_component_off_readout_artifacts(
 
 @lru_cache(maxsize=1)
 def cached_component_ablation_payload() -> dict[str, Any]:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+        build_component_ablation_payload,
+    )
 
     return build_component_ablation_payload()
 

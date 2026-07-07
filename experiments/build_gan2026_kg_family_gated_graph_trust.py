@@ -32,21 +32,21 @@ from __future__ import annotations
 
 import json
 from collections import Counter, defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
-    summarize_family_holdout_cv,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.family_cv_promotion import (
+    summarize_family_holdout_cv,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -99,9 +99,7 @@ def _load_graphs() -> dict[int, ClinicalFrequencyStateGraph]:
         if not line.strip():
             continue
         d = json.loads(line)
-        graphs[int(d["source_row_index"])] = ClinicalFrequencyStateGraph.model_validate(
-            d["graph"]
-        )
+        graphs[int(d["source_row_index"])] = ClinicalFrequencyStateGraph.model_validate(d["graph"])
     return graphs
 
 
@@ -121,9 +119,7 @@ def _graph_features(graph: ClinicalFrequencyStateGraph) -> dict[str, Any]:
     validation = dual_validate_graph(graph)
     admitted = validation.admitted_node_ids
     admitted_nodes = [n for n in graph.nodes if n.node_id in admitted]
-    any_admitted_quantified = any(
-        n.semantic_kind in QUANTIFIED_KINDS for n in admitted_nodes
-    )
+    any_admitted_quantified = any(n.semantic_kind in QUANTIFIED_KINDS for n in admitted_nodes)
     over_inference_shapes: list[str] = []
     for nv in validation.node_validations:
         for failure in nv.failures:
@@ -153,10 +149,7 @@ def _posture_override(
     if posture == "P3_unknown_only":
         return graph_kind == "unknown"
     if posture == "P2_5_family_gated":
-        return (
-            graph_kind in WITHHOLDING_KINDS
-            and not features["any_admitted_quantified"]
-        )
+        return graph_kind in WITHHOLDING_KINDS and not features["any_admitted_quantified"]
     if posture == "P2_5a_guarded":
         return (
             graph_kind in WITHHOLDING_KINDS

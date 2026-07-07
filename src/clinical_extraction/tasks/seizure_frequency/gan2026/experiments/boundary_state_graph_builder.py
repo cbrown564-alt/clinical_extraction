@@ -12,9 +12,6 @@ import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
     label_to_frequency_record,
@@ -34,6 +31,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadat
     build_run_metadata,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+    load_raw_outputs_by_source_index,
+)
 
 PROMPT_VERSION = "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_v1_unknown_recall"
 DEFAULT_JSONL_PATH = Path(
@@ -41,8 +41,7 @@ DEFAULT_JSONL_PATH = Path(
     "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_smoke_2026-06-02.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/"
-    "gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_smoke_2026-06-02.md"
+    "experiments/gan2026_hybrid_clinical_frequency_state_graph_boundary_builder_smoke_2026-06-02.md"
 )
 VALIDATION_MISSING_REPRESENTABILITY_SOURCE_ROW_INDICES: tuple[int, ...] = (
     338,
@@ -372,12 +371,10 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
         "reused_raw_outputs": sum(bool(row.get("reused_raw_output")) for row in rows),
         "exact_evidence_valid": sum(
-            int((row.get("evidence_summary") or {}).get("exact_evidence_valid", 0))
-            for row in rows
+            int((row.get("evidence_summary") or {}).get("exact_evidence_valid", 0)) for row in rows
         ),
         "exact_evidence_total": sum(
-            int((row.get("evidence_summary") or {}).get("exact_evidence_total", 0))
-            for row in rows
+            int((row.get("evidence_summary") or {}).get("exact_evidence_total", 0)) for row in rows
         ),
         "representability_gain_candidates": sum(
             bool(row.get("representability_gain_candidate")) for row in rows
@@ -413,8 +410,7 @@ def write_report(
         f"- Schema-valid rows: {summary['schema_valid_rows']}/{summary['row_count']}",
         f"- Call failures: {summary['call_failures']}",
         f"- Reused raw outputs: {summary['reused_raw_outputs']}",
-        f"- Exact evidence: {summary['exact_evidence_valid']}/"
-        f"{summary['exact_evidence_total']}",
+        f"- Exact evidence: {summary['exact_evidence_valid']}/{summary['exact_evidence_total']}",
         f"- Representability gain candidates: "
         f"{summary['representability_gain_candidates']}/{summary['row_count']}",
         "",
@@ -460,8 +456,7 @@ def _evidence_summary(
     return {
         "exact_evidence_total": len(nodes),
         "exact_evidence_valid": sum(
-            evidence_is_substring(note_text, str(node.get("evidence") or ""))
-            for node in nodes
+            evidence_is_substring(note_text, str(node.get("evidence") or "")) for node in nodes
         ),
     }
 
@@ -499,8 +494,10 @@ def _load_surface_records(args: argparse.Namespace) -> tuple[list[GanFrequencyRe
 
     records = select_validation_missing_rows(load_records_for_split("validation"))
     manifest = load_split_manifest()
-    return records, "validation_hard_slices", str(
-        manifest.get("manifest_version", "gan2026_split_v1")
+    return (
+        records,
+        "validation_hard_slices",
+        str(manifest.get("manifest_version", "gan2026_split_v1")),
     )
 
 
@@ -533,9 +530,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     if args.limit is not None:
         records = records[: args.limit]
     reuse_raw_outputs = (
-        load_raw_outputs_by_source_index(args.reuse_raw_outputs)
-        if args.reuse_raw_outputs
-        else {}
+        load_raw_outputs_by_source_index(args.reuse_raw_outputs) if args.reuse_raw_outputs else {}
     )
     rows, metadata = run_boundary_state_graph_builder_split(
         records,

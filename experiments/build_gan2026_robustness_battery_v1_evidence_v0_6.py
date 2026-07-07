@@ -32,16 +32,16 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
 )
@@ -117,9 +117,7 @@ def main() -> None:
         "panels": panel_results,
         "summary": summary,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(summary)
     print(json.dumps(summary, indent=2, sort_keys=True))
@@ -154,7 +152,7 @@ def _build_record(panel: str, case: dict[str, Any]) -> GanFrequencyRecord:
 
 def _run_panel(panel: str, cases: list[dict[str, Any]]) -> dict[str, Any]:
     records = [_build_record(panel, case) for case in cases]
-    index_to_case = {rec.source_row_index: case for rec, case in zip(records, cases)}
+    index_to_case = {rec.source_row_index: case for rec, case in zip(records, cases, strict=False)}
 
     checkpoint_jsonl = CHECKPOINT_DIR / f"{RUN_ID}_{panel}.jsonl"
     checkpoint_report = CHECKPOINT_DIR / f"{RUN_ID}_{panel}.md"
@@ -271,8 +269,7 @@ def _judge(panel_results: dict[str, Any]) -> dict[str, Any]:
 
     a_pairs = a["pairs"]
     a_pass = (
-        a_pairs["both_correct_pairs"] == a_pairs["pairs"]
-        and a_pairs["overfit_only_pairs"] == 0
+        a_pairs["both_correct_pairs"] == a_pairs["pairs"] and a_pairs["overfit_only_pairs"] == 0
     )
     b_pass = b["purist_correct"] >= PANEL_B_MIN_CORRECT
     c_fraction = c["purist_correct"] / c["cases"] if c["cases"] else 0.0
@@ -400,7 +397,15 @@ def _markdown(payload: dict[str, Any]) -> str:
                 f"| {f['panel']} | {f['id']} | {f['axis']} | {f['gold_purist']} | "
                 f"{f['predicted_label']} | {f['predicted_purist']} |"
             )
-    lines.extend(["", "## Panel A — minimal-pair detail", "", "| Pair | Axis | Both correct | Quantify side | Unknown/hard side | Overfit-only |", "| --- | --- | :---: | :---: | :---: | :---: |"])
+    lines.extend(
+        [
+            "",
+            "## Panel A — minimal-pair detail",
+            "",
+            "| Pair | Axis | Both correct | Quantify side | Unknown/hard side | Overfit-only |",
+            "| --- | --- | :---: | :---: | :---: | :---: |",
+        ]
+    )
     for rec in payload["panels"]["A_minimal_pairs"]["pairs"]["records"]:
         lines.append(
             f"| {rec['pair']} | {rec['axis']} | "
@@ -410,7 +415,15 @@ def _markdown(payload: dict[str, Any]) -> str:
             f"{'yes' if rec['overfit_only'] else 'no'} |"
         )
     for panel in PANELS:
-        lines.extend(["", f"## {panel} — rows", "", "| Case | Axis | Gold Purist | Predicted | Pred Purist | Correct |", "| --- | --- | --- | --- | --- | :---: |"])
+        lines.extend(
+            [
+                "",
+                f"## {panel} — rows",
+                "",
+                "| Case | Axis | Gold Purist | Predicted | Pred Purist | Correct |",
+                "| --- | --- | --- | --- | --- | :---: |",
+            ]
+        )
         for row in payload["panels"][panel]["rows"]:
             lines.append(
                 f"| {row['id']} | {row['axis']} | {row['gold_purist']} | "
@@ -441,9 +454,7 @@ def _tri(value: bool | None) -> str:
 
 def _register(summary: dict[str, Any]) -> None:
     decision = "promote" if summary["verdict"] == "transfers" else "revise"
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -455,9 +466,7 @@ def _register(summary: dict[str, Any]) -> None:
             date=DATE,
             pipeline_family="robustness_battery_generalization_adversary",
             split="validation",
-            row_count=sum(
-                summary[f"panel_{p}"]["cases"] for p in ("A", "B", "C")
-            ),
+            row_count=sum(summary[f"panel_{p}"]["cases"] for p in ("A", "B", "C")),
             model=MODEL,
             model_role=(
                 "LLM-only direct labeler (prompt v0.6 triage-scaffold evidence "

@@ -10,26 +10,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
     GanRecord,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
-    deterministic_selection,
-    temporal,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
-    AblationConfig,
-    Portability,
-    RuleGroup,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
-    CandidateKind,
     Gan2026PipelineV1,
-    _candidate_event,
-    _clinic_date,
-    _month_span_floor,
-    _normalize_candidate,
-    _RawCandidate,
-    _relative_note_date,
-    _select_final_event,
 )
+
 
 def _record(note_text: str, gold_label: str = "unknown") -> GanRecord:
     return GanRecord(

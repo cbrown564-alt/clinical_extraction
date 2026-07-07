@@ -9,9 +9,6 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
-    extract_json_object,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing_coerce import (
     _coerce_clean_render_mention_list,
     _coerce_dedup_clinical_facts,
@@ -29,6 +26,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     StructuredPoolAdjudicationRecord,
     StructuredPoolGroupAdjudicationRecord,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
+)
+
 
 def parse_events_json(
     raw_output: str,
@@ -122,15 +123,11 @@ def parse_generation_selection_typed_mentions_json(
 
     notes = list(dialect_notes)
     generated_mentions, generated_notes = _coerce_typed_mention_list(
-        payload.get("generated_typed_mentions")
-        or payload.get("generated_mentions")
-        or [],
+        payload.get("generated_typed_mentions") or payload.get("generated_mentions") or [],
         prefix="generated_typed_mentions",
     )
     final_mentions, final_notes = _coerce_typed_mention_list(
-        payload.get("final_typed_mentions")
-        or payload.get("final_mentions")
-        or [],
+        payload.get("final_typed_mentions") or payload.get("final_mentions") or [],
         prefix="final_typed_mentions",
     )
     notes.extend(generated_notes)
@@ -146,6 +143,7 @@ def parse_generation_selection_typed_mentions_json(
     except Exception as exc:
         return None, [*notes, f"schema_validation_error: {exc}"]
     return record, notes
+
 
 def parse_generation_selection_mention_ids_json(
     raw_output: str,
@@ -233,9 +231,7 @@ def parse_dedup_clinical_facts_json(
     )
     notes.extend(fact_notes)
     try:
-        record = DedupClinicalFactsRecord.model_validate(
-            {**payload, "clinical_facts": facts}
-        )
+        record = DedupClinicalFactsRecord.model_validate({**payload, "clinical_facts": facts})
     except Exception as exc:
         return None, [*notes, f"schema_validation_error: {exc}"]
     return record, notes
@@ -303,11 +299,7 @@ def parse_qwen_pool_group_adjudication_json(
             raw_summary = payload.get("selection_summary") or []
             if isinstance(raw_summary, list):
                 selection_summary = [
-                    (
-                        dict(item)
-                        if isinstance(item, Mapping)
-                        else {"reason": str(item)}
-                    )
+                    (dict(item) if isinstance(item, Mapping) else {"reason": str(item)})
                     for item in raw_summary
                 ]
 
@@ -393,4 +385,3 @@ def final_mentions_from_mention_id_selection(
             continue
         selected.append(structured.MentionForEvidence.model_validate(mention))
     return selected, notes
-

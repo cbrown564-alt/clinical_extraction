@@ -14,7 +14,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.candi
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate_set_union import (
     DEFAULT_ARTIFACT_NAME,
     build_candidate_set_union_rows,
-    summarize_union_rows,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
@@ -66,10 +65,7 @@ def write_report(
         f"- LLM call-error rows: {summary['llm_call_error_rows']}",
         f"- LLM parse/validation issue rows: {summary['llm_parse_or_validation_issue_rows']}",
         f"- Merged duplicate candidates: {summary['merged_duplicate_candidates']}",
-        (
-            "- Merged nested duplicate candidates: "
-            f"{summary['merged_nested_duplicate_candidates']}"
-        ),
+        (f"- Merged nested duplicate candidates: {summary['merged_nested_duplicate_candidates']}"),
         "",
         "## Candidate Kinds",
         "",

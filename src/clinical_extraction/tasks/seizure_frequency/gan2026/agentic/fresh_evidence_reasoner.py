@@ -34,6 +34,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
     precision_gated_selector,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
+    SplitRunParams,
+    run_cross_model_structured_event_split,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -44,10 +48,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
-    SplitRunParams,
-    run_cross_model_structured_event_split,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving_with_trace,
@@ -79,15 +79,15 @@ def set_active_two_model_peer(peer_agent_id: str) -> None:
     """Select the single peer trace shown in the v0_12 two-model variant."""
     global _ACTIVE_TWO_MODEL_PEER  # noqa: PLW0603
     if peer_agent_id not in cross_model_base.AGENT_IDS or peer_agent_id == "gpt":
-        raise ValueError(
-            f"peer_agent_id must be a non-gpt agent in {cross_model_base.AGENT_IDS}"
-        )
+        raise ValueError(f"peer_agent_id must be a non-gpt agent in {cross_model_base.AGENT_IDS}")
     _ACTIVE_TWO_MODEL_PEER = peer_agent_id
 
 
 def get_active_two_model_peer() -> str:
     """Return the peer agent id currently selected for the v0_12 variant."""
     return _ACTIVE_TWO_MODEL_PEER
+
+
 PIPELINE_FAMILY = "fresh_evidence_reasoner"
 
 # Active prompt version — call set_active_prompt_version() before run_split to
@@ -105,10 +105,10 @@ def set_active_prompt_version(version: str) -> None:
 def get_active_prompt_version() -> str:
     """Return the currently active prompt version."""
     return _ACTIVE_PROMPT_VERSION
+
+
 DEFAULT_STRUCTURED_EVENT_JSONL_PATH = llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = (
-    cross_model_base.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = cross_model_base.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH = (
     cross_model_base.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
 )
@@ -349,8 +349,8 @@ def run_split(
             rows, **family_transitions.FRESH_EVIDENCE_PATHS
         )
         metadata["summary_by_family"] = summary_by_family
-        metadata["family_holdout_cv"] = (
-            family_cv_promotion.summarize_family_holdout_cv(summary_by_family)
+        metadata["family_holdout_cv"] = family_cv_promotion.summarize_family_holdout_cv(
+            summary_by_family
         )
         metadata["precision_gated_selector"] = (
             precision_gated_selector.summarize_precision_gated_selector(
@@ -562,9 +562,7 @@ def _build_prompt_input_v0_11_gpt_only(
     presence of the peer ensemble.
     """
 
-    agent_inputs = [
-        cross_model_base._agent_prompt_summary("gpt", agent_rows.get("gpt"))
-    ]
+    agent_inputs = [cross_model_base._agent_prompt_summary("gpt", agent_rows.get("gpt"))]
     payload = {
         "prompt_version": PROMPT_VERSION_V0_11_GPT_ONLY,
         "task": "Gan 2026 fresh-evidence seizure-frequency reasoning",
@@ -1193,14 +1191,8 @@ def write_report(
         f"- Fresh-evidence replace actions: {summary.get('fresh_evidence_replace_actions', 0)}",
         f"- Evidence-gate fallbacks: {summary.get('fresh_evidence_gate_fallbacks', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- V0 Pragmatic: {summary.get('v0_pragmatic_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
+        (f"- V0 Pragmatic: {summary.get('v0_pragmatic_correct', 0)}/{summary.get('rows', 0)}"),
         (
             f"- Raw model Purist: {summary.get('raw_model_purist_correct', 0)}/"
             f"{summary.get('rows', 0)}"
@@ -1218,23 +1210,16 @@ def write_report(
             f"{summary.get('format_only_pragmatic_correct', 0)}/"
             f"{summary.get('rows', 0)}"
         ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         (
             f"- Final Pragmatic: {summary.get('final_pragmatic_correct', 0)}/"
             f"{summary.get('rows', 0)}"
         ),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Actions: `{summary.get('fresh_evidence_actions', {})}`",
         (
-            "- Profiles: omitted from the test report to keep the first readout "
-            "aggregate-only."
+            "- Profiles: omitted from the test report to keep the first readout aggregate-only."
             if is_test_split
             else f"- Profiles: `{summary.get('fresh_evidence_profiles', {})}`"
         ),
@@ -1277,9 +1262,7 @@ def write_report(
         layers = dict(row.get("score_layers") or {})
         fresh_record = dict(row.get("fresh_evidence_decision_record") or {})
         notes = "; ".join(str(error) for error in row.get("parse_errors") or [])
-        render_events = "; ".join(
-            str(event) for event in row.get("action_render_events") or []
-        )
+        render_events = "; ".join(str(event) for event in row.get("action_render_events") or [])
         if render_events:
             notes = f"{notes}; {render_events}" if notes else render_events
         if row.get("call_error"):
@@ -1315,9 +1298,7 @@ class FreshEvidenceSignature(dspy.Signature):
     prompt_input_json: str = dspy.InputField(
         desc="JSON payload with saved structured-event traces and a raw-note excerpt."
     )
-    decision_json: str = dspy.OutputField(
-        desc="Strict JSON object matching FreshEvidenceDecision."
-    )
+    decision_json: str = dspy.OutputField(desc="Strict JSON object matching FreshEvidenceDecision.")
 
 
 class DspyFreshEvidenceCaller(dspy.Module):
@@ -1418,9 +1399,7 @@ def _build_row(
         "format_repair_events": parsed.format_repair_events,
         "action_render_events": parsed.action_render_events,
         "fresh_evidence_decision_record": (
-            parsed.raw_fresh_decision.model_dump(mode="json")
-            if parsed.raw_fresh_decision
-            else None
+            parsed.raw_fresh_decision.model_dump(mode="json") if parsed.raw_fresh_decision else None
         ),
         "raw_decision_record": (
             parsed.raw_decision.model_dump(mode="json") if parsed.raw_decision else None
@@ -1442,9 +1421,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if gpt_row is None else []),
     }
 
@@ -1541,12 +1518,9 @@ def _format_only_decision(
     raw_decision: llm_event_reasoner.ReasonedFrequencyDecision,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision, list[dict[str, Any]], list[str]]:
     parse_notes: list[str] = []
-    repair_trace = repair_prediction_label_format_preserving_with_trace(
-        raw_decision.final_label
-    )
+    repair_trace = repair_prediction_label_format_preserving_with_trace(raw_decision.final_label)
     repair_events = [
-        llm_event_reasoner._repair_event_to_dict(event)
-        for event in repair_trace.events
+        llm_event_reasoner._repair_event_to_dict(event) for event in repair_trace.events
     ]
     format_decision = raw_decision
     if repair_trace.final_label != raw_decision.final_label:
@@ -1643,9 +1617,7 @@ def _render_fresh_action(
             "fresh_evidence_gate_fallback: evidence_not_exact",
         )
     if exact_evidence != format_decision.evidence:
-        format_decision = format_decision.model_copy(
-            update={"evidence": exact_evidence}
-        )
+        format_decision = format_decision.model_copy(update={"evidence": exact_evidence})
         render_notes.append("fresh_evidence_shape_repaired:filtered_non_exact_evidence")
     if not format_decision.selected_event_ids:
         format_decision = format_decision.model_copy(
@@ -1704,8 +1676,7 @@ def _fresh_evidence_safety_gate_reason(
     if _is_same_day_cluster_downgrade(raw_fresh, original_label):
         return "fresh_evidence_gate_fallback: same_day_cluster_downgrade"
     original_is_seizure_free = (
-        original_kind == "seizure_free"
-        or original_label.strip().lower().startswith("seizure free")
+        original_kind == "seizure_free" or original_label.strip().lower().startswith("seizure free")
     )
     replacement_is_boundary_state = format_decision.final_kind in {
         "unknown",
@@ -1717,10 +1688,7 @@ def _fresh_evidence_safety_gate_reason(
         and replacement_is_boundary_state
         and not selective_unknown_boundary
     ):
-        return (
-            "fresh_evidence_gate_fallback: "
-            "original_seizure_free_to_unknown_or_no_reference"
-        )
+        return "fresh_evidence_gate_fallback: original_seizure_free_to_unknown_or_no_reference"
     if format_decision.final_kind == "unknown" and not selective_unknown_boundary:
         return "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
     if raw_fresh.final_kind == "seizure_free" and original_kind == "frequency":
@@ -1759,10 +1727,7 @@ def _fresh_evidence_safety_gate_reason(
             or "≤ 2 per" in decision_text
         )
         if explicit_numeric_boundary:
-            return (
-                "fresh_evidence_gate_fallback: "
-                "multiple_label_for_explicit_numeric_frequency"
-            )
+            return "fresh_evidence_gate_fallback: multiple_label_for_explicit_numeric_frequency"
     return None
 
 
@@ -1962,11 +1927,7 @@ def _is_open_ended_treatment_start_denominator(raw_fresh: FreshEvidenceDecision)
             "soon afterwards",
         )
     )
-    return (
-        has_since_treatment_start
-        and has_treatment_anchor
-        and not has_usable_followup_exception
-    )
+    return has_since_treatment_start and has_treatment_anchor and not has_usable_followup_exception
 
 
 def _is_seizure_free_replacement_of_frequency_original(
@@ -2057,9 +2018,7 @@ def _is_same_day_cluster_downgrade(
         )
     ).lower()
     has_same_day_cluster = (
-        "yesterday" in decision_text
-        or "today" in decision_text
-        or "single day" in decision_text
+        "yesterday" in decision_text or "today" in decision_text or "single day" in decision_text
     ) and any(
         token in decision_text
         for token in (

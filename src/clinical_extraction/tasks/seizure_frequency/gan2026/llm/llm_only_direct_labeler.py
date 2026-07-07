@@ -14,9 +14,6 @@ import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -38,6 +35,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+    load_raw_outputs_by_source_index,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
     llm_model_metadata_lines,
@@ -183,122 +183,122 @@ class DspyLlmOnlyDirectLabelerExtractor(dspy.Module):
 
 def _v0_5_instructions() -> list[str]:
     return [
-            "Read the full clinical note and extract the current seizure-frequency answer.",
-            (
-                "Return final_label as one normalized string using count, range, or "
-                "multiple over a day/week/month/year denominator; seizure-free duration; "
-                "unknown; or no seizure frequency reference."
-            ),
-            (
-                "Allowed frequency forms include 1 per day, "
-                "2 to 3 per month, multiple per week, 1 cluster per week, 2 to 3 per cluster, "
-                "seizure free for 6 month, unknown, no seizure frequency reference."
-            ),
-            (
-                "When a note contains counts across multiple time windows, prefer the most "
-                "recent window's rate as the primary label — for example, if the note reports "
-                "six events over the year and two in the most recent month, the label is "
-                "'2 per month'."
-            ),
-            (
-                "When multiple seizure types are present, select the type with the highest "
-                "frequency as the label — rank by how often events occur (events per day, "
-                "per week, or per month), not by clinical severity. Daily drop attacks or "
-                "daily absences take precedence over weekly or monthly tonic-clonic seizures. "
-                "Exception: when events occur in a cluster pattern (grouped multi-event "
-                "episodes separated by seizure-free intervals, recurring every few days or "
-                "weeks), label using the cluster cadence — not the per-episode daily burst "
-                "rate. Events within a single cluster day are not the same as daily ongoing "
-                "events."
-            ),
-            (
-                "Plural daily seizures/events should map to multiple per day unless the note "
-                "clearly says exactly one per day."
-            ),
-            (
-                "Use unknown when seizures or seizure-like events are discussed but current "
-                "frequency cannot be converted to a normalized rate."
-            ),
-            (
-                "Use no seizure frequency reference only when the note contains no usable "
-                "seizure-frequency evidence."
-            ),
-            (
-                "Use seizure-free only when the note asserts no seizures/events for a current "
-                "duration; do not use seizure-free for a single semiology if other current "
-                "seizure-like events remain."
-            ),
-            (
-                "If the note describes a seizure burst (multiple events in a short recent "
-                "period) followed by a seizure-free run, the label is the burst frequency — "
-                "not the ensuing seizure-free duration. A seizure-free label is appropriate "
-                "only when the absence of seizures is the note's primary clinical statement, "
-                "not when a recent burst ended and no further events have since occurred."
-            ),
-            (
-                "If seizures are described only as occurring within a conditional window "
-                "(perimenstrual, sleep-deprived, missed medication, situational triggers), "
-                "do not report the outside-window seizure-free duration as the overall "
-                "current frequency — use unknown unless the note gives an unconditional "
-                "current rate. A single event reported as 'N weeks ago' or 'N occasions "
-                "since [date]' describes a total count in an observation window, not a "
-                "recurrent rate — use unknown for these constructions unless the note "
-                "explicitly states the events recur at that rate."
-            ),
-            (
-                "For cluster labels, include both cluster rate and events per cluster when both "
-                "are stated; use 'multiple per cluster' when the per-cluster count is described "
-                "approximately (e.g., 'about five', 'several'). If the note states how often "
-                "clusters occur (e.g., 'clusters every 3-4 weeks', 'cluster days four to five "
-                "times per week'), that cadence is a usable frequency even when per-cluster "
-                "count is unknown — use the cadence as the label and 'multiple per cluster' "
-                "unless the count is stated. Drop attacks, status epilepticus episodes, "
-                "myoclonic jerks, absence episodes, and behavioural arrest events all count "
-                "as seizure events for frequency purposes."
-            ),
-            (
-                "answer_kind must be written as exactly one of these five "
-                "words, with no other wording: 'frequency' (the note gives a "
-                "usable current seizure-frequency rate or range), "
-                "'seizure_free' (the note describes a current seizure-free "
-                "duration instead of a rate), 'unknown' (seizures are "
-                "discussed but the current frequency cannot be converted to "
-                "a normalized rate), 'no_reference' (the note contains no "
-                "usable seizure-frequency evidence at all), or "
-                "'unresolved_multiple' (several current seizure-frequency "
-                "claims conflict and none can be picked as the answer). Do "
-                "not write a longer description in this field — choose "
-                "exactly one of the five words above."
-            ),
-            "Evidence must be an exact substring from the note when possible.",
-            (
-                "confidence describes how certain you are about the answer based on "
-                "what the note contains: "
-                "'low' when two or more current seizure-frequency facts compete and "
-                "none clearly dominates, or when the frequency is only a vague range "
-                "with no time window at all; "
-                "'medium' when one fact is clearly dominant but some ambiguity remains "
-                "— for example, events are only described as conditional on a trigger, "
-                "the count is vague but a time window is clear, or only a relative "
-                "trend is given with no stated rate; "
-                "'high' when there is exactly one unambiguous current fact, no "
-                "competing claims, and the evidence can be quoted directly from the note."
-            ),
-            (
-                "Write rationale as one short, plain-language sentence stating "
-                "only the deciding evidence and label — for example: 'The note "
-                "states two seizures per month for the current period, so the "
-                "label is 2 per month.' Do not show step-by-step reasoning, "
-                "alternative options you considered and rejected, or "
-                "self-questioning; state only the final justification."
-            ),
-            (
-                "Before writing your final_label, verify that the rate described in your "
-                "rationale matches it: if your rationale names a concrete frequency, your "
-                "final_label must not be 'unknown' or 'no seizure frequency reference'."
-            ),
-            "Return exactly one JSON object with no markdown.",
-        ]
+        "Read the full clinical note and extract the current seizure-frequency answer.",
+        (
+            "Return final_label as one normalized string using count, range, or "
+            "multiple over a day/week/month/year denominator; seizure-free duration; "
+            "unknown; or no seizure frequency reference."
+        ),
+        (
+            "Allowed frequency forms include 1 per day, "
+            "2 to 3 per month, multiple per week, 1 cluster per week, 2 to 3 per cluster, "
+            "seizure free for 6 month, unknown, no seizure frequency reference."
+        ),
+        (
+            "When a note contains counts across multiple time windows, prefer the most "
+            "recent window's rate as the primary label — for example, if the note reports "
+            "six events over the year and two in the most recent month, the label is "
+            "'2 per month'."
+        ),
+        (
+            "When multiple seizure types are present, select the type with the highest "
+            "frequency as the label — rank by how often events occur (events per day, "
+            "per week, or per month), not by clinical severity. Daily drop attacks or "
+            "daily absences take precedence over weekly or monthly tonic-clonic seizures. "
+            "Exception: when events occur in a cluster pattern (grouped multi-event "
+            "episodes separated by seizure-free intervals, recurring every few days or "
+            "weeks), label using the cluster cadence — not the per-episode daily burst "
+            "rate. Events within a single cluster day are not the same as daily ongoing "
+            "events."
+        ),
+        (
+            "Plural daily seizures/events should map to multiple per day unless the note "
+            "clearly says exactly one per day."
+        ),
+        (
+            "Use unknown when seizures or seizure-like events are discussed but current "
+            "frequency cannot be converted to a normalized rate."
+        ),
+        (
+            "Use no seizure frequency reference only when the note contains no usable "
+            "seizure-frequency evidence."
+        ),
+        (
+            "Use seizure-free only when the note asserts no seizures/events for a current "
+            "duration; do not use seizure-free for a single semiology if other current "
+            "seizure-like events remain."
+        ),
+        (
+            "If the note describes a seizure burst (multiple events in a short recent "
+            "period) followed by a seizure-free run, the label is the burst frequency — "
+            "not the ensuing seizure-free duration. A seizure-free label is appropriate "
+            "only when the absence of seizures is the note's primary clinical statement, "
+            "not when a recent burst ended and no further events have since occurred."
+        ),
+        (
+            "If seizures are described only as occurring within a conditional window "
+            "(perimenstrual, sleep-deprived, missed medication, situational triggers), "
+            "do not report the outside-window seizure-free duration as the overall "
+            "current frequency — use unknown unless the note gives an unconditional "
+            "current rate. A single event reported as 'N weeks ago' or 'N occasions "
+            "since [date]' describes a total count in an observation window, not a "
+            "recurrent rate — use unknown for these constructions unless the note "
+            "explicitly states the events recur at that rate."
+        ),
+        (
+            "For cluster labels, include both cluster rate and events per cluster when both "
+            "are stated; use 'multiple per cluster' when the per-cluster count is described "
+            "approximately (e.g., 'about five', 'several'). If the note states how often "
+            "clusters occur (e.g., 'clusters every 3-4 weeks', 'cluster days four to five "
+            "times per week'), that cadence is a usable frequency even when per-cluster "
+            "count is unknown — use the cadence as the label and 'multiple per cluster' "
+            "unless the count is stated. Drop attacks, status epilepticus episodes, "
+            "myoclonic jerks, absence episodes, and behavioural arrest events all count "
+            "as seizure events for frequency purposes."
+        ),
+        (
+            "answer_kind must be written as exactly one of these five "
+            "words, with no other wording: 'frequency' (the note gives a "
+            "usable current seizure-frequency rate or range), "
+            "'seizure_free' (the note describes a current seizure-free "
+            "duration instead of a rate), 'unknown' (seizures are "
+            "discussed but the current frequency cannot be converted to "
+            "a normalized rate), 'no_reference' (the note contains no "
+            "usable seizure-frequency evidence at all), or "
+            "'unresolved_multiple' (several current seizure-frequency "
+            "claims conflict and none can be picked as the answer). Do "
+            "not write a longer description in this field — choose "
+            "exactly one of the five words above."
+        ),
+        "Evidence must be an exact substring from the note when possible.",
+        (
+            "confidence describes how certain you are about the answer based on "
+            "what the note contains: "
+            "'low' when two or more current seizure-frequency facts compete and "
+            "none clearly dominates, or when the frequency is only a vague range "
+            "with no time window at all; "
+            "'medium' when one fact is clearly dominant but some ambiguity remains "
+            "— for example, events are only described as conditional on a trigger, "
+            "the count is vague but a time window is clear, or only a relative "
+            "trend is given with no stated rate; "
+            "'high' when there is exactly one unambiguous current fact, no "
+            "competing claims, and the evidence can be quoted directly from the note."
+        ),
+        (
+            "Write rationale as one short, plain-language sentence stating "
+            "only the deciding evidence and label — for example: 'The note "
+            "states two seizures per month for the current period, so the "
+            "label is 2 per month.' Do not show step-by-step reasoning, "
+            "alternative options you considered and rejected, or "
+            "self-questioning; state only the final justification."
+        ),
+        (
+            "Before writing your final_label, verify that the rate described in your "
+            "rationale matches it: if your rationale names a concrete frequency, your "
+            "final_label must not be 'unknown' or 'no seizure frequency reference'."
+        ),
+        "Return exactly one JSON object with no markdown.",
+    ]
 
 
 def _v0_6_instructions() -> list[str]:
@@ -689,7 +689,7 @@ def _parse_recurrence_window(*texts: str | None) -> str | None:
         cue = _CLUSTER_RECURRENCE.search(text)
         search_spans: list[str] = []
         if cue:
-            search_spans.append(text[cue.start():])
+            search_spans.append(text[cue.start() :])
         search_spans.append(text)
         for span in search_spans:
             match = _WINDOW_UNIT.search(span)
@@ -745,10 +745,14 @@ def _apply_v0_7_label_binding(
     target = _NO_RATE_ANSWER_KINDS.get(answer_kind)
     if target is not None:
         if label.strip().lower() != target:
-            return target, (
-                f"v0_7_binding_coerce_no_rate: answer_kind={answer_kind!r} "
-                f"-> {target!r} (was {label!r})"
-            ), True
+            return (
+                target,
+                (
+                    f"v0_7_binding_coerce_no_rate: answer_kind={answer_kind!r} "
+                    f"-> {target!r} (was {label!r})"
+                ),
+                True,
+            )
         return label, "", True
 
     # Rule 2: cluster-cadence render when the model formed a cluster finding.
@@ -759,15 +763,17 @@ def _apply_v0_7_label_binding(
             # rate (e.g. 'multiple per day'). No relabel needed.
             return label, "", True
         if _is_cluster_reasoning(rationale, evidence):
-            window = _parse_recurrence_window(
-                decision.time_window, rationale, evidence
-            )
+            window = _parse_recurrence_window(decision.time_window, rationale, evidence)
             if window:
                 cluster_label = f"1 cluster per {window}, multiple per cluster"
-                return cluster_label, (
-                    f"v0_7_binding_cluster_render: cluster reasoning -> "
-                    f"{cluster_label!r} (was {label!r})"
-                ), True
+                return (
+                    cluster_label,
+                    (
+                        f"v0_7_binding_cluster_render: cluster reasoning -> "
+                        f"{cluster_label!r} (was {label!r})"
+                    ),
+                    True,
+                )
 
     return label, "", False
 

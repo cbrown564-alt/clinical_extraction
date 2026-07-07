@@ -18,16 +18,15 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
+    canonicalize_diagnosis_concept,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.projection import (
     ProjectionFamilySwitches,
     apply_all,
     projection_patterns,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
-    canonicalize_diagnosis_concept,
-    )
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.constants import (  # noqa: E501
     _CLUSTER_OF_SEIZURES,
     _DIAGNOSIS_ALLOWED_CORE,
@@ -72,9 +71,7 @@ def _normalize_target_attributes(
             and evidence_frequency != normalized.get("Frequency")
         ):
             normalized["Frequency"] = evidence_frequency
-            warnings.append(
-                f"projected_prescription_frequency_from_evidence: {evidence_frequency}"
-            )
+            warnings.append(f"projected_prescription_frequency_from_evidence: {evidence_frequency}")
         unit = normalized.get("DoseUnit", "").strip().lower()
         if unit in {"milligram", "milligrams", "mgs"}:
             normalized["DoseUnit"] = "mg"
@@ -156,8 +153,7 @@ def _normalize_target_attributes(
                 normalized.pop(key, None)
             if removed:
                 warnings.append(
-                    "removed_non_target_investigation_attrs: "
-                    + ",".join(sorted(removed))
+                    "removed_non_target_investigation_attrs: " + ",".join(sorted(removed))
                 )
         if text_modality is not None:
             removed = [
@@ -171,8 +167,7 @@ def _normalize_target_attributes(
                 normalized.pop(key, None)
             if removed:
                 warnings.append(
-                    "removed_cross_modal_investigation_attrs: "
-                    + ",".join(sorted(removed))
+                    "removed_cross_modal_investigation_attrs: " + ",".join(sorted(removed))
                 )
         if normalized.get("EEG_Results") and "EEG_Performed" not in normalized:
             normalized["EEG_Performed"] = "Yes"
@@ -197,14 +192,10 @@ def _normalize_target_text(
     evidence: str = "",
 ) -> tuple[str, list[str]]:
     if entity == "SeizureFrequency":
-        if (
-            "seizures over" in normalize_phrase(evidence)
-            and "generalised tonic clonic seizures with myoclonic jerks"
-            in normalize_phrase(text)
-        ):
-            return "seizures", [
-                f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"
-            ]
+        if "seizures over" in normalize_phrase(
+            evidence
+        ) and "generalised tonic clonic seizures with myoclonic jerks" in normalize_phrase(text):
+            return "seizures", [f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"]
         normalized = normalize_phrase(text)
         if "absence like seizures" in normalize_phrase(evidence) and normalized not in {
             "absence like seizure",
@@ -216,16 +207,13 @@ def _normalize_target_text(
             ]
         if normalized in _SF_TEXT_ALIASES and _SF_TEXT_ALIASES[normalized] != text:
             return _SF_TEXT_ALIASES[normalized], [
-                f"normalized_seizure_frequency_text: {text!r} -> "
-                f"{_SF_TEXT_ALIASES[normalized]!r}"
+                f"normalized_seizure_frequency_text: {text!r} -> {_SF_TEXT_ALIASES[normalized]!r}"
             ]
         if re.match(r"^seizures?\s+every\b", normalized) and (
             projection_patterns.EVERY_N_PERIODS.search(normalized)
             or projection_patterns.EVERY_N_TO_M_PERIODS.search(normalized)
         ):
-            return "seizures", [
-                f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"
-            ]
+            return "seizures", [f"normalized_seizure_frequency_text: {text!r} -> 'seizures'"]
         return text, []
     if entity != "Diagnosis":
         return text, []
@@ -269,10 +257,7 @@ def _sf_state_drop_reason(
         and "significant improvement since increasing" in normalized_evidence
     ):
         return "dropped_improvement_phrase_not_headline_state"
-    if (
-        normalized_text not in normalized_evidence
-        and "angry or upset" in normalized_evidence
-    ):
+    if normalized_text not in normalized_evidence and "angry or upset" in normalized_evidence:
         return "dropped_unsupported_episode_frequency_anchor"
     if normalized_text == "minor seizures" and normalized_evidence == "occur 4 to 5 times a year":
         return "dropped_unsupported_episode_frequency_anchor"
@@ -331,19 +316,14 @@ def _sf_state_drop_reason(
         and "since" not in normalized_evidence
     ):
         return "dropped_unanchored_current_seizure_free_state"
-    if (
-        attrs.get("NumberOfSeizures") == "0"
-        and "best its ever been" in normalized_evidence
-    ):
+    if attrs.get("NumberOfSeizures") == "0" and "best its ever been" in normalized_evidence:
         return "dropped_vague_best_control_zero_state"
     if (
         attrs.get("NumberOfSeizures") == "0"
         and "last had a seizure before this" in normalized_evidence
     ):
         return "dropped_relative_prior_event_not_seizure_free"
-    if attrs.get("NumberOfSeizures") == "0" and _evidence_has_positive_rate(
-        normalized_evidence
-    ):
+    if attrs.get("NumberOfSeizures") == "0" and _evidence_has_positive_rate(normalized_evidence):
         return "dropped_inconsistent_zero_state_with_active_rate"
     if normalized_evidence.startswith("previous event"):
         return "dropped_previous_event_not_headline_frequency"
@@ -373,7 +353,9 @@ def _is_allowed_sf_anchor(text: str) -> bool:
 def _is_planned_prescription(mention: PredictedMention, note_text: str) -> bool:
     if mention.entity != "Prescription":
         return False
-    context = projection_patterns.local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    context = projection_patterns.local_evidence_context(
+        note_text, mention.evidence, before=96, after=24
+    )
     return bool(_PLANNED_PRESCRIPTION_CONTEXT.search(context))
 
 
@@ -387,7 +369,9 @@ def _is_planned_investigation(mention: PredictedMention, note_text: str) -> bool
     )
     if has_result:
         return False
-    context = projection_patterns.local_evidence_context(note_text, mention.evidence, before=96, after=24)
+    context = projection_patterns.local_evidence_context(
+        note_text, mention.evidence, before=96, after=24
+    )
     return bool(_PLANNED_INVESTIGATION_CONTEXT.search(context))
 
 
@@ -614,9 +598,10 @@ def _expand_target_mention(
 def _expand_diagnosis_projection(
     mention: PredictedMention,
 ) -> tuple[list[PredictedMention], list[str]]:
-    if (
-        normalize_phrase(mention.text) == "temporal lobe seizure"
-        and "temporal lobe onset focal seizures" in normalize_phrase(mention.evidence)
+    if normalize_phrase(
+        mention.text
+    ) == "temporal lobe seizure" and "temporal lobe onset focal seizures" in normalize_phrase(
+        mention.evidence
     ):
         companion = mention.model_copy(
             update={
@@ -639,9 +624,7 @@ def _expand_diagnosis_projection(
             }
         )
         return [mention, companion], ["split_secondary_gtc_to_tonic_clonic_diagnosis"]
-    if normalize_phrase(mention.text) == (
-        "epilepsy with generalised tonic clonic seizures alone"
-    ):
+    if normalize_phrase(mention.text) == ("epilepsy with generalised tonic clonic seizures alone"):
         companion = mention.model_copy(
             update={
                 "text": "tonic clonic seizures",
@@ -676,9 +659,7 @@ def _expand_diagnosis_projection(
             },
         }
     )
-    return [mention, syndrome_mention, seizure_mention], [
-        "split_generalised_epilepsy_syndrome"
-    ]
+    return [mention, syndrome_mention, seizure_mention], ["split_generalised_epilepsy_syndrome"]
 
 
 def _expand_seizure_frequency_state(
@@ -698,9 +679,9 @@ def _expand_seizure_frequency_state(
             )
         )
         warnings.append("split_convulsive_zero_state")
-    if mention.attributes.get("NumberOfSeizures") == "0" and projection_patterns.CONTROLLED_ON_DOSE.search(
-        mention.evidence
-    ):
+    if mention.attributes.get(
+        "NumberOfSeizures"
+    ) == "0" and projection_patterns.CONTROLLED_ON_DOSE.search(mention.evidence):
         expanded.append(
             mention.model_copy(
                 update={
@@ -875,6 +856,4 @@ def _split_range_attribute(
     attrs.pop(source_key, None)
     attrs[lower_key] = projection_patterns.clean_number(match.group(1))
     attrs[upper_key] = projection_patterns.clean_number(match.group(2))
-    warnings.append(
-        f"split_range_attribute: {source_key} -> {lower_key}/{upper_key}"
-    )
+    warnings.append(f"split_range_attribute: {source_key} -> {lower_key}/{upper_key}")

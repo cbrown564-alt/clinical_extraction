@@ -10,13 +10,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     deterministic_candidate_set_from_raw,
     extract_row_context,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    FrequencyLabelKind,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
     RawCandidate,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    FrequencyLabelKind,
 )
 
 

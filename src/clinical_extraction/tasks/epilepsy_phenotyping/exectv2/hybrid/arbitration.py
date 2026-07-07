@@ -52,15 +52,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
-    _attribute_vocabulary,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.repair import (
     check_evidence,
     repair_attributes,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity import (
+    _attribute_vocabulary,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 from .all_entity_assessment import summarize_rows  # reused scorer
@@ -160,9 +160,9 @@ class ExECTv2ArbitrationSignature(dspy.Signature):
     )
     arbitration_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"entity\": ..., \"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"entity": ..., "text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -224,8 +224,7 @@ def load_candidate_pool(
                             "proposed_entity": entity,
                             "text": str(m.get("text", "")),
                             "attributes": {
-                                str(k): str(v)
-                                for k, v in (m.get("attributes") or {}).items()
+                                str(k): str(v) for k, v in (m.get("attributes") or {}).items()
                             },
                             "evidence": str(m.get("evidence", "")),
                         }
@@ -268,9 +267,7 @@ def _merge_pool(candidates: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
 # ── Prompt builder ──────────────────────────────────────────────────────────────
 
 
-def build_prompt_input(
-    letter: ExectLetter, candidates: Sequence[dict[str, Any]]
-) -> str:
+def build_prompt_input(letter: ExectLetter, candidates: Sequence[dict[str, Any]]) -> str:
     pool = _merge_pool(candidates)
     payload = {
         "prompt_version": PROMPT_VERSION,
@@ -308,7 +305,7 @@ def build_prompt_input(
             "Include only attributes legal for the chosen entity (see "
             "attribute_vocabulary) and explicitly supported by the letter.",
             "Both text and evidence MUST be exact substrings of the letter.",
-            "Return exactly one JSON object {\"mentions\": [...]}. No markdown fences.",
+            'Return exactly one JSON object {"mentions": [...]}. No markdown fences.',
         ],
         "entity_routing": ENTITY_ROUTING,
         "attribute_vocabulary": {
@@ -518,7 +515,11 @@ def run_arbitration(
                 ],
             }
         )
-        if progress_every and checkpoint_jsonl_path and (len(rows) - n_resumed) % progress_every == 0:
+        if (
+            progress_every
+            and checkpoint_jsonl_path
+            and (len(rows) - n_resumed) % progress_every == 0
+        ):
             write_jsonl(rows, checkpoint_jsonl_path)
             print(
                 json.dumps({"processed": len(rows), "total": len(letters)}),
@@ -562,8 +563,12 @@ def _arbitration_diagnostics(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     return {
         "call_failures": sum(bool(r.get("call_error")) for r in rows),
         "parse_failures": sum(
-            1 for r in rows if any("invalid_json" in str(e) or "no_mentions_list" in str(e)
-                                   for e in (r.get("parse_errors") or []))
+            1
+            for r in rows
+            if any(
+                "invalid_json" in str(e) or "no_mentions_list" in str(e)
+                for e in (r.get("parse_errors") or [])
+            )
         ),
         "n_mentions_raw": sum(int(r.get("n_mentions_raw", 0)) for r in rows),
         "n_mentions_scored": sum(int(r.get("n_mentions_scored", 0)) for r in rows),

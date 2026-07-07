@@ -17,17 +17,17 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -44,30 +44,25 @@ RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 DATE = "2026-06-26"
 RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_"
-    f"exact_aggregate_audit_{DATE}"
+    f"gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_{DATE}"
 )
 JSON_OUT = EXPERIMENTS / f"{RUN_ID}.json"
 MD_OUT = EXPERIMENTS / f"{RUN_ID}.md"
 
 DET_PATH = (
-    EXPERIMENTS
-    / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
+    EXPERIMENTS / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
     "v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl"
 )
 CONSENSUS_PATH = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_"
     "2026-06-26.jsonl"
 )
 FRESH_PATH = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
     "2026-06-15.jsonl"
 )
 GATE3_JSON = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_"
     "exact_source_symmetry_preflight_2026-06-26.json"
 )
 PRIOR_CLOSEST_ANCHOR_SELECTED_PURIST = 348
@@ -137,7 +132,7 @@ def _load_data_rows(path: Path) -> list[dict[str, Any]]:
 def _deterministic_component_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     component_rows = []
     for row in rows:
-        score = ((row.get("scores") or {}).get("deterministic_top") or {})
+        score = (row.get("scores") or {}).get("deterministic_top") or {}
         final_label = score.get("final_label")
         component_rows.append(
             {
@@ -154,9 +149,7 @@ def _consensus_component_rows(
     consensus_rows: list[dict[str, Any]],
     deterministic_rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    deterministic_by_id = {
-        int(row["source_row_index"]): row for row in deterministic_rows
-    }
+    deterministic_by_id = {int(row["source_row_index"]): row for row in deterministic_rows}
     component_rows = []
     for row in consensus_rows:
         source_row_index = int(row["source_row_index"])
@@ -179,9 +172,7 @@ def _comparison_for_label(label: str | None, deterministic_row: dict[str, Any]) 
     reference = deterministic_row.get("reference") or {}
     gold_monthly = reference.get("gold_monthly_frequency")
     if gold_monthly is None:
-        gold_monthly = (deterministic_row.get("comparison") or {}).get(
-            "gold_monthly_frequency"
-        )
+        gold_monthly = (deterministic_row.get("comparison") or {}).get("gold_monthly_frequency")
     if gold_monthly is None:
         return {}
     try:
@@ -230,15 +221,11 @@ def _aggregate_payload(
         "fresh_evidence_purist_rate": _rate(summary["fresh_evidence_purist_correct"]),
         "selected_purist_correct": summary["selected_purist_correct"],
         "selected_purist_rate": _rate(summary["selected_purist_correct"]),
-        "selected_pragmatic_correct": _count_layer(
-            selector_rows, "selected", "pragmatic_correct"
-        ),
+        "selected_pragmatic_correct": _count_layer(selector_rows, "selected", "pragmatic_correct"),
         "selected_pragmatic_rate": _rate(
             _count_layer(selector_rows, "selected", "pragmatic_correct")
         ),
-        "net_purist_gain_vs_deterministic": summary[
-            "net_purist_gain_vs_deterministic"
-        ],
+        "net_purist_gain_vs_deterministic": summary["net_purist_gain_vs_deterministic"],
         "changed_labels": summary["changed_labels"],
         "wrong_to_correct": summary["wrong_to_correct"],
         "correct_to_wrong": summary["correct_to_wrong"],
@@ -330,9 +317,7 @@ def _source_artifacts() -> dict[str, str]:
 
 
 def _count_layer(rows: list[dict[str, Any]], layer: str, field: str) -> int:
-    return sum(
-        row["score_layers"][layer]["comparison"].get(field) is True for row in rows
-    )
+    return sum(row["score_layers"][layer]["comparison"].get(field) is True for row in rows)
 
 
 def _rate(count: int) -> float:
@@ -464,9 +449,7 @@ def _register(payload: dict[str, Any]) -> None:
             "deterministic_purist_correct": aggregate["deterministic_purist_correct"],
             "selected_purist_correct": aggregate["selected_purist_correct"],
             "selected_pragmatic_correct": aggregate["selected_pragmatic_correct"],
-            "net_purist_gain_vs_deterministic": aggregate[
-                "net_purist_gain_vs_deterministic"
-            ],
+            "net_purist_gain_vs_deterministic": aggregate["net_purist_gain_vs_deterministic"],
             "changed_labels": aggregate["changed_labels"],
             "wrong_to_correct": aggregate["wrong_to_correct"],
             "correct_to_wrong": aggregate["correct_to_wrong"],

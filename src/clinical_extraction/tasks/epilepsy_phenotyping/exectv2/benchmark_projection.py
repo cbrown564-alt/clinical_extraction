@@ -11,6 +11,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
+    resolve_drug_surface,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -26,13 +29,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexicon import (
-    resolve_drug_surface,
-)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.lexicon import (
     assign_cui,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
+
 @dataclass(frozen=True)
 class BenchmarkConcept:
     """Benchmark-facing concept projection for one extracted clinical mention."""
@@ -387,9 +389,7 @@ _EPILEPSY_CAUSE_ENTRIES: tuple[tuple[BenchmarkConcept, tuple[str, ...]], ...] = 
     ),
     (
         BenchmarkConcept("hypoxia-during-birth", "C0559478", "hypoxia-during-birth"),
-        (
-            "hypoxia during birth",
-        ),
+        ("hypoxia during birth",),
     ),
     (
         BenchmarkConcept("herpes-encephalitis", "C0276226", "herpes-encephalitis"),

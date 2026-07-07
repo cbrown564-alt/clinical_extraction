@@ -33,14 +33,14 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -53,8 +53,7 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SLICE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_7_safety_v0_9_"
     "2026-06-15.jsonl"
 )
 
@@ -114,9 +113,7 @@ def main() -> None:
         "summary": summary,
         "rows": sorted(scored, key=lambda r: r["source_row_index"]),
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(summary)
     print(json.dumps(summary["headline"], indent=2, sort_keys=True))
@@ -204,16 +201,13 @@ def _score_row(row: dict[str, Any]) -> dict[str, Any]:
     # clinically distinct, so they are only "semantically correct" when the kind
     # matches gold's kind.
     semantic_correct = bool(
-        purist_correct
-        and not over_specific_rebucket
-        and predicted_decision == gold_decision
+        purist_correct and not over_specific_rebucket and predicted_decision == gold_decision
     )
 
     ambiguity_class = decision_record.get("ambiguity_classification")
     coherent_decisions = CLASS_COHERENT_DECISIONS.get(str(ambiguity_class))
     class_label_incoherent = bool(
-        coherent_decisions is not None
-        and predicted_decision not in coherent_decisions
+        coherent_decisions is not None and predicted_decision not in coherent_decisions
     )
 
     return {
@@ -233,17 +227,13 @@ def _score_row(row: dict[str, Any]) -> dict[str, Any]:
 def _summarize(scored: list[dict[str, Any]]) -> dict[str, Any]:
     purist = sum(1 for row in scored if row["purist_correct"])
     semantic = sum(1 for row in scored if row["semantic_correct"])
-    over_specific = [
-        row["source_row_index"] for row in scored if row["over_specific_rebucket"]
-    ]
+    over_specific = [row["source_row_index"] for row in scored if row["over_specific_rebucket"]]
     purist_only = [
         row["source_row_index"]
         for row in scored
         if row["purist_correct"] and not row["semantic_correct"]
     ]
-    incoherent = [
-        row["source_row_index"] for row in scored if row["class_label_incoherent"]
-    ]
+    incoherent = [row["source_row_index"] for row in scored if row["class_label_incoherent"]]
     decision_confusion = Counter(
         (row["gold_decision"], row["predicted_decision"]) for row in scored
     )
@@ -258,8 +248,7 @@ def _summarize(scored: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "purist_correct_but_not_semantic_rows": sorted(purist_only),
         "decision_confusion": {
-            f"{gold}->{pred}": count
-            for (gold, pred), count in sorted(decision_confusion.items())
+            f"{gold}->{pred}": count for (gold, pred), count in sorted(decision_confusion.items())
         },
     }
 
@@ -298,8 +287,7 @@ def _markdown(payload: dict[str, Any]) -> str:
         f"- Purist-correct: `{head['purist_correct']}/{head['rows']}`",
         f"- Semantic-correct (clinical decision agrees, no re-bucketing credit): "
         f"`{head['semantic_correct']}/{head['rows']}`",
-        f"- Purist credit not backed by semantics: "
-        f"`{head['purist_minus_semantic']}`",
+        f"- Purist credit not backed by semantics: `{head['purist_minus_semantic']}`",
         f"- Over-specific re-bucketing rows (Purist-correct, clinically wrong): "
         f"`{head['over_specific_rebucket_rows'] or 'none'}`",
         f"- Class/label incoherent rows (Insight 4): "
@@ -388,9 +376,7 @@ def _interpretation(summary: dict[str, Any]) -> str:
 
 def _register(summary: dict[str, Any]) -> None:
     head = summary["headline"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -418,12 +404,8 @@ def _register(summary: dict[str, Any]) -> None:
                 "purist_correct": head["purist_correct"],
                 "semantic_correct": head["semantic_correct"],
                 "purist_minus_semantic": head["purist_minus_semantic"],
-                "over_specific_rebucket_count": len(
-                    head["over_specific_rebucket_rows"]
-                ),
-                "class_label_incoherent_count": len(
-                    head["class_label_incoherent_rows"]
-                ),
+                "over_specific_rebucket_count": len(head["over_specific_rebucket_rows"]),
+                "class_label_incoherent_count": len(head["class_label_incoherent_rows"]),
             },
             evidence_validity=(
                 "Validation-only diagnostic overlay on saved live outputs. No "

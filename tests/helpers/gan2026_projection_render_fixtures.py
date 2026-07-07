@@ -1,8 +1,5 @@
 """Shared fixtures for Gan2026 clinical assessment projection/render tests."""
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
-    clinical_assessment_projection_render as projection_render,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
     EvidenceSpan,
@@ -14,10 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     SeizureFreeDetails,
     SourcePhraseOnlyDetails,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
-    ClinicalAssessment,
-    NormalizedBurden,
-)
+
 
 def candidate_set(
     source_row_index: int,
@@ -29,9 +23,7 @@ def candidate_set(
     events_per_cluster: str | None = None,
 ) -> CandidateSet:
     frequency = (
-        FrequencyDetails(source_phrase=evidence)
-        if candidate_kind == "frequency_rate"
-        else None
+        FrequencyDetails(source_phrase=evidence) if candidate_kind == "frequency_rate" else None
     )
     return CandidateSet(
         source_row_index=source_row_index,

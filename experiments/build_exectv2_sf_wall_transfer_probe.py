@@ -14,7 +14,6 @@ import collections
 import itertools
 import json
 import math
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -28,15 +27,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     headline_keys,
     jaccard,
-    row_family_score,
     round_rate,
+    row_family_score,
 )
 
 GENERATED_ON = "2026-06-27"
 OUT_JSON = REPO_ROOT / "experiments/exectv2_sf_wall_transfer_probe_2026-06-27.json"
 OUT_MD = (
-    REPO_ROOT
-    / "docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md"
+    REPO_ROOT / "docs/experiments/exectv2/reliability/exectv2_sf_wall_transfer_probe_2026-06-27.md"
 )
 
 DEV140_SWAP = REPO_ROOT / "experiments/exectv2_same_core_model_swap_dev140_20260625.json"
@@ -50,8 +48,7 @@ SELF_CONSISTENCY = (
     / "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_20260625.json"
 )
 GAN_P21 = (
-    REPO_ROOT
-    / "experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json"
+    REPO_ROOT / "experiments/gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json"
 )
 
 
@@ -68,10 +65,7 @@ def family_keys_by_letter(rows: list[dict[str, Any]]) -> dict[str, dict[str, fro
     out: dict[str, dict[str, frozenset[str]]] = {}
     for row in rows:
         letter_id = str(row["letter_id"])
-        out[letter_id] = {
-            family: frozenset(headline_keys(row, family))
-            for family in FAMILIES
-        }
+        out[letter_id] = {family: frozenset(headline_keys(row, family)) for family in FAMILIES}
     return out
 
 
@@ -131,8 +125,7 @@ def weakest_family_by_split(
         for row in source:
             family_f1[row["family"]].append(row["f1"])
         family_mean = {
-            family: round(sum(values) / len(values), 4)
-            for family, values in family_f1.items()
+            family: round(sum(values) / len(values), 4) for family, values in family_f1.items()
         }
         worst_family = min(family_mean, key=family_mean.get)
         best_family = max(family_mean, key=family_mean.get)
@@ -270,15 +263,13 @@ def cross_model_probe(
                     stats["correct_exact_3_of_3"], stats["correct_cells"]
                 ),
                 "error_mean_agreement_cluster_size": round(
-                    sum(stats["error_agreement_sizes"])
-                    / len(stats["error_agreement_sizes"]),
+                    sum(stats["error_agreement_sizes"]) / len(stats["error_agreement_sizes"]),
                     4,
                 )
                 if stats["error_agreement_sizes"]
                 else None,
                 "correct_mean_agreement_cluster_size": round(
-                    sum(stats["correct_agreement_sizes"])
-                    / len(stats["correct_agreement_sizes"]),
+                    sum(stats["correct_agreement_sizes"]) / len(stats["correct_agreement_sizes"]),
                     4,
                 )
                 if stats["correct_agreement_sizes"]
@@ -325,9 +316,7 @@ def self_consistency_error_stratification(
         repeat: dict[str, dict[str, list[str]]] = {}
         for row in rows:
             letter_id = str(row["letter_id"])
-            repeat[letter_id] = {
-                family: headline_keys(row, family) for family in FAMILIES
-            }
+            repeat[letter_id] = {family: headline_keys(row, family) for family in FAMILIES}
             if letter_id not in gold_rows:
                 gold_rows[letter_id] = row
         repeats.append(repeat)
@@ -349,21 +338,15 @@ def self_consistency_error_stratification(
     }
 
     for letter_id, gold_row in sorted(gold_rows.items()):
-        score_by_family = {
-            family: row_family_score(gold_row, family) for family in FAMILIES
-        }
+        score_by_family = {family: row_family_score(gold_row, family) for family in FAMILIES}
         for family in FAMILIES:
             samples = [
-                tuple(repeat[letter_id][family])
-                for repeat in repeats
-                if letter_id in repeat
+                tuple(repeat[letter_id][family]) for repeat in repeats if letter_id in repeat
             ]
             canonical_keys = [repr(tuple(sample)) for sample in samples]
             entropy = normalized_entropy(canonical_keys)
             unanimous = len({tuple(sample) for sample in samples}) == 1 and len(samples) >= 2
-            correct = (
-                score_by_family[family].fp == 0 and score_by_family[family].fn == 0
-            )
+            correct = score_by_family[family].fp == 0 and score_by_family[family].fn == 0
             stats = by_family[family]
             stats["cells"] += 1
             stats["mean_entropy"].append(entropy)
@@ -440,10 +423,7 @@ def render_verdict(payload: dict[str, Any]) -> dict[str, Any]:
     full200_weakest = payload["weakest_family"]["full200"]["worst_family"]
     sf_is_weakest = dev140_weakest == "SeizureFrequency" and full200_weakest == "SeizureFrequency"
 
-    cross = {
-        row["family"]: row
-        for row in payload["cross_model_dev140"]["by_family"]
-    }
+    cross = {row["family"]: row for row in payload["cross_model_dev140"]["by_family"]}
     sf_cross = cross["SeizureFrequency"]
     # Confident-error signature: errors agree as much or more than correct cells.
     sf_confident_errors = (
@@ -462,8 +442,7 @@ def render_verdict(payload: dict[str, Any]) -> dict[str, Any]:
     )
 
     sc = {
-        row["family"]: row
-        for row in payload["self_consistency_error_stratification"]["by_family"]
+        row["family"]: row for row in payload["self_consistency_error_stratification"]["by_family"]
     }
     sf_sc = sc["SeizureFrequency"]
     sf_unanimous_wrong = sf_sc["unanimous_4_of_4_wrong_rate"] >= 0.10
@@ -521,8 +500,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# ExECTv2 SeizureFrequency Wall-Transfer Probe (P3b)",
         "",
         f"- Generated: `{payload['generated_on']}`",
-        f"- JSON: `experiments/exectv2_sf_wall_transfer_probe_2026-06-27.json`",
-        f"- Harness: `experiments/build_exectv2_sf_wall_transfer_probe.py`",
+        "- JSON: `experiments/exectv2_sf_wall_transfer_probe_2026-06-27.json`",
+        "- Harness: `experiments/build_exectv2_sf_wall_transfer_probe.py`",
         f"- Claim boundary: {payload['claim_boundary']}",
         "- Row inspection policy: `aggregate_only_no_full200_or_holdout_row_level_inspection`",
         "- No model calls; replay from saved same-core model-swap and self-consistency artifacts.",
@@ -647,11 +626,11 @@ def render_markdown(payload: dict[str, Any]) -> str:
             "",
             "| Signal | Gan P2.1 | ExECTv2 SF (this probe) |",
             "| --- | --- | --- |",
-            f"| Residual / error entropy | flat (~0.018) | error > correct (0.287 vs 0.069) |",
-            f"| Self-consistency unanimous wrong | band_unknown stable at 0.000 | 17.1% of SF cells |",
-            f"| Cross-model error agreement | external AUROC 0.781 (disagreement signals risk) | "
-            f"error 3/3 exact 21.8% vs correct 69.4% |",
-            f"| Weakest family | rate/over-reading bands | SF F1 0.7525 full-200 |",
+            "| Residual / error entropy | flat (~0.018) | error > correct (0.287 vs 0.069) |",
+            "| Self-consistency unanimous wrong | band_unknown stable at 0.000 | 17.1% of SF cells |",
+            "| Cross-model error agreement | external AUROC 0.781 (disagreement signals risk) | "
+            "error 3/3 exact 21.8% vs correct 69.4% |",
+            "| Weakest family | rate/over-reading bands | SF F1 0.7525 full-200 |",
             "",
             "## Interpretation Boundary",
             "",

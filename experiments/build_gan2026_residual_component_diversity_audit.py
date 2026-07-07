@@ -32,14 +32,14 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
-    label_to_frequency_record,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+    label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -52,8 +52,7 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 RESIDUAL_AUDIT_JSON = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "residual_component_generation_audit_2026-06-15.json"
 )
 
@@ -85,9 +84,7 @@ def main() -> None:
         "source_artifact": str(RESIDUAL_AUDIT_JSON),
         "summary": summary,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(summary)
     print(json.dumps(summary["headline"], indent=2, sort_keys=True))
@@ -117,8 +114,7 @@ def _row_diversity(record: dict[str, Any]) -> dict[str, Any]:
     # Unparseable components count as their own distinct outcome so a parse
     # failure is never silently merged with a real bucket.
     distinct_outcomes = {
-        component_buckets[component] or f"<unparseable:{component}>"
-        for component in COMPONENTS
+        component_buckets[component] or f"<unparseable:{component}>" for component in COMPONENTS
     }
     distinct_count = len(distinct_outcomes)
     if distinct_count == 1:
@@ -134,8 +130,7 @@ def _row_diversity(record: dict[str, Any]) -> dict[str, Any]:
         "gold_label": record["gold_label"],
         "gold_bucket": gold_bucket,
         "component_labels": {
-            component: record[COMPONENT_LABEL_KEY[component]]
-            for component in COMPONENTS
+            component: record[COMPONENT_LABEL_KEY[component]] for component in COMPONENTS
         },
         "component_buckets": component_buckets,
         "distinct_bucket_count": distinct_count,
@@ -155,14 +150,10 @@ def _audit(records: list[dict[str, Any]]) -> dict[str, Any]:
         return dict(sorted(Counter(row["agreement"] for row in subset).items()))
 
     no_correct_correlated = [
-        row["source_row_index"]
-        for row in no_correct
-        if row["agreement"] == "all_three_one_bucket"
+        row["source_row_index"] for row in no_correct if row["agreement"] == "all_three_one_bucket"
     ]
     no_correct_split = [
-        row["source_row_index"]
-        for row in no_correct
-        if row["agreement"] != "all_three_one_bucket"
+        row["source_row_index"] for row in no_correct if row["agreement"] != "all_three_one_bucket"
     ]
     category_counts = Counter()
     for row in no_correct:
@@ -177,9 +168,7 @@ def _audit(records: list[dict[str, Any]]) -> dict[str, Any]:
             "no_correct_correlated_one_bucket": len(no_correct_correlated),
             "no_correct_split_across_buckets": len(no_correct_split),
             "correlated_failure_fraction": (
-                round(len(no_correct_correlated) / len(no_correct), 4)
-                if no_correct
-                else None
+                round(len(no_correct_correlated) / len(no_correct), 4) if no_correct else None
             ),
         },
         "no_correct_correlated_rows": sorted(no_correct_correlated),
@@ -191,9 +180,7 @@ def _audit(records: list[dict[str, Any]]) -> dict[str, Any]:
             "recoverable": _agreement_counts(recoverable),
         },
         "no_correct_rows": sorted(no_correct, key=lambda r: r["source_row_index"]),
-        "recoverable_rows": sorted(
-            recoverable, key=lambda r: r["source_row_index"]
-        ),
+        "recoverable_rows": sorted(recoverable, key=lambda r: r["source_row_index"]),
     }
 
 
@@ -236,11 +223,9 @@ def _markdown(payload: dict[str, Any]) -> str:
         f"- No-correct rows where at least one component breaks ranks: "
         f"`{head['no_correct_split_across_buckets']}/{head['no_correct_rows']}`",
         "",
-        f"Correlated (one-bucket) no-correct rows: "
-        f"`{summary['no_correct_correlated_rows']}`",
+        f"Correlated (one-bucket) no-correct rows: `{summary['no_correct_correlated_rows']}`",
         "",
-        f"Split (multi-bucket) no-correct rows: "
-        f"`{summary['no_correct_split_rows']}`",
+        f"Split (multi-bucket) no-correct rows: `{summary['no_correct_split_rows']}`",
         "",
         "## Agreement structure",
         "",
@@ -330,9 +315,7 @@ def _interpretation(summary: dict[str, Any]) -> str:
 
 def _register(summary: dict[str, Any]) -> None:
     head = summary["headline"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -356,12 +339,8 @@ def _register(summary: dict[str, Any]) -> None:
             cache_reuse_source=str(RESIDUAL_AUDIT_JSON),
             primary_metrics={
                 "no_correct_rows": head["no_correct_rows"],
-                "no_correct_correlated_one_bucket": (
-                    head["no_correct_correlated_one_bucket"]
-                ),
-                "no_correct_split_across_buckets": (
-                    head["no_correct_split_across_buckets"]
-                ),
+                "no_correct_correlated_one_bucket": (head["no_correct_correlated_one_bucket"]),
+                "no_correct_split_across_buckets": (head["no_correct_split_across_buckets"]),
                 "correlated_failure_fraction": head["correlated_failure_fraction"],
             },
             evidence_validity=(

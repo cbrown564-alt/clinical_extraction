@@ -2,10 +2,10 @@
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.acceptance_gate import (
     COMPONENT_OWNER,
-    DspyDiagnosisAcceptanceGate,
-    ExECTv2DiagnosisAcceptanceGateSignature,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
+    DspyDiagnosisAcceptanceGate,
+    ExECTv2DiagnosisAcceptanceGateSignature,
     build_candidate_pool,
     build_prompt_input,
     parse_decision_json,

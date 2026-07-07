@@ -44,8 +44,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     classify_boundary_families,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
-    run_split,
     load_reusable_raw_outputs,
+    run_split,
     write_jsonl,
 )
 
@@ -88,7 +88,9 @@ def records_split(records) -> str:
     return "validation"
 
 
-def per_row_entropy(samples_by_temp: dict[float, list[dict[str, Any]]]) -> dict[int, dict[str, Any]]:
+def per_row_entropy(
+    samples_by_temp: dict[float, list[dict[str, Any]]],
+) -> dict[int, dict[str, Any]]:
     """Collect, per source_row_index, the predicted Purist category and final_kind
     across temperatures, and compute the two-level semantic entropy."""
     by_idx: dict[int, dict[str, list[str]]] = collections.defaultdict(
@@ -98,11 +100,13 @@ def per_row_entropy(samples_by_temp: dict[float, list[dict[str, Any]]]) -> dict[
         for r in rows:
             idx = r["source_row_index"]
             comp = r.get("comparison") or {}
-            sel = ((r.get("structured_record") or {}).get("selection") or {})
+            sel = (r.get("structured_record") or {}).get("selection") or {}
             by_idx[idx]["purist"].append(comp.get("predicted_purist_category"))
             by_idx[idx]["kind"].append(sel.get("final_kind"))
-            by_idx[idx]["label"].append(r.get("structured_record") and
-                                        ((r.get("structured_record") or {}).get("selection") or {}).get("final_label"))
+            by_idx[idx]["label"].append(
+                r.get("structured_record")
+                and ((r.get("structured_record") or {}).get("selection") or {}).get("final_label")
+            )
     out: dict[int, dict[str, Any]] = {}
     for idx, d in by_idx.items():
         out[idx] = {
@@ -128,11 +132,14 @@ def analyse(records, samples_by_temp, out_json: Path, out_md: Path, *, mode: str
         fams = classify_boundary_families(note_text=rec.note_text, gold_per_month=gold_pm)
         # residual = unknown-vs-rate territory: gold unknown band OR over-reading qual families
         is_residual = (band == "band_unknown") or ("seizure_free_duration" in fams)
-        rows_out.append({
-            "band": band, "is_residual": is_residual,
-            "label_entropy_purist": e["label_entropy_purist"],
-            "kind_entropy": e["kind_entropy"],
-        })
+        rows_out.append(
+            {
+                "band": band,
+                "is_residual": is_residual,
+                "label_entropy_purist": e["label_entropy_purist"],
+                "kind_entropy": e["kind_entropy"],
+            }
+        )
 
     def mean(xs):
         return sum(xs) / len(xs) if xs else 0.0
@@ -162,8 +169,11 @@ def analyse(records, samples_by_temp, out_json: Path, out_md: Path, *, mode: str
     # the decisions are stable under temperature (we verified raw prose DOES vary,
     # so this is genuine decision-stability, not a caching/degenerate-sampling
     # artifact). "decision_stable" flags that the rendered label/kind does not move.
-    verdict = "H1_entropy_localizes_residual" if (resid_mean - nonresid_mean) > 0.05 else \
-              "H0_confident_over_reading"
+    verdict = (
+        "H1_entropy_localizes_residual"
+        if (resid_mean - nonresid_mean) > 0.05
+        else "H0_confident_over_reading"
+    )
 
     result = {
         "artifact_kind": "gan2026_reliability_p2_1_semantic_entropy",
@@ -182,10 +192,14 @@ def analyse(records, samples_by_temp, out_json: Path, out_md: Path, *, mode: str
         "mean_kind_entropy": mean(all_kind_ent),
         "rows_with_nonzero_label_entropy": nonzero_label,
         "residual": {
-            "n": len(resid), "mean_label_entropy": resid_mean, "mean_kind_entropy": mean([r["kind_entropy"] for r in resid]),
+            "n": len(resid),
+            "mean_label_entropy": resid_mean,
+            "mean_kind_entropy": mean([r["kind_entropy"] for r in resid]),
         },
         "non_residual": {
-            "n": len(nonresid), "mean_label_entropy": nonresid_mean, "mean_kind_entropy": mean([r["kind_entropy"] for r in nonresid]),
+            "n": len(nonresid),
+            "mean_label_entropy": nonresid_mean,
+            "mean_kind_entropy": mean([r["kind_entropy"] for r in nonresid]),
         },
         "per_band_entropy": band_ent,
         "hypothesis_verdict": verdict,
@@ -202,48 +216,66 @@ def analyse(records, samples_by_temp, out_json: Path, out_md: Path, *, mode: str
 def render_md(r: dict[str, Any]) -> str:
     L: list[str] = []
     L.append(f"# P2.1 — Semantic Entropy over Multi-Sampled Structured Events ({r['mode']})\n")
-    L.append(f"Date: {r['date']}  ·  Model: {r['model']}  ·  k={r['k_samples']} @ temps "
-             f"{r['temperatures']}  ·  n={r['n_rows']}\n")
+    L.append(
+        f"Date: {r['date']}  ·  Model: {r['model']}  ·  k={r['k_samples']} @ temps "
+        f"{r['temperatures']}  ·  n={r['n_rows']}\n"
+    )
     if r["decision_stable_under_temperature"]:
-        L.append("> **DECISION-STABLE UNDER TEMPERATURE** (not a caching artifact): raw model "
-                 "prose genuinely varies across temperatures (different text/length), but the "
-                 "rendered Purist label and selected kind do NOT move (mean entropy < 0.02). "
-                 "Semantic entropy is uninformative because the *decisions* are stable, not "
-                 "because sampling failed.\n")
-    L.append(f"- Mean label (Purist) entropy: {r['mean_label_entropy_purist']:.3f}; "
-             f"mean kind entropy: {r['mean_kind_entropy']:.3f}")
-    L.append(f"- Rows with non-zero label entropy: {r['rows_with_nonzero_label_entropy']}/{r['n_rows']}")
-    L.append(f"- **Residual** (band_unknown ∪ seizure_free_duration), n={r['residual']['n']}: "
-             f"mean label entropy {r['residual']['mean_label_entropy']:.3f}, "
-             f"kind entropy {r['residual']['mean_kind_entropy']:.3f}")
-    L.append(f"- **Non-residual**, n={r['non_residual']['n']}: "
-             f"mean label entropy {r['non_residual']['mean_label_entropy']:.3f}, "
-             f"kind entropy {r['non_residual']['mean_kind_entropy']:.3f}\n")
+        L.append(
+            "> **DECISION-STABLE UNDER TEMPERATURE** (not a caching artifact): raw model "
+            "prose genuinely varies across temperatures (different text/length), but the "
+            "rendered Purist label and selected kind do NOT move (mean entropy < 0.02). "
+            "Semantic entropy is uninformative because the *decisions* are stable, not "
+            "because sampling failed.\n"
+        )
+    L.append(
+        f"- Mean label (Purist) entropy: {r['mean_label_entropy_purist']:.3f}; "
+        f"mean kind entropy: {r['mean_kind_entropy']:.3f}"
+    )
+    L.append(
+        f"- Rows with non-zero label entropy: {r['rows_with_nonzero_label_entropy']}/{r['n_rows']}"
+    )
+    L.append(
+        f"- **Residual** (band_unknown ∪ seizure_free_duration), n={r['residual']['n']}: "
+        f"mean label entropy {r['residual']['mean_label_entropy']:.3f}, "
+        f"kind entropy {r['residual']['mean_kind_entropy']:.3f}"
+    )
+    L.append(
+        f"- **Non-residual**, n={r['non_residual']['n']}: "
+        f"mean label entropy {r['non_residual']['mean_label_entropy']:.3f}, "
+        f"kind entropy {r['non_residual']['mean_kind_entropy']:.3f}\n"
+    )
     L.append("## Per-band mean entropy\n")
     L.append("| Band | n | Label entropy | Kind entropy |")
     L.append("|---|---:|---:|---:|")
     for b, d in r["per_band_entropy"].items():
-        L.append(f"| {b} | {d['n']} | {d['mean_label_entropy']:.3f} | {d['mean_kind_entropy']:.3f} |")
+        L.append(
+            f"| {b} | {d['n']} | {d['mean_label_entropy']:.3f} | {d['mean_kind_entropy']:.3f} |"
+        )
     L.append(f"\n**Hypothesis verdict: `{r['hypothesis_verdict']}`.**\n")
     L.append("---\n")
     verdict = r["hypothesis_verdict"]
     if verdict == "H1_entropy_localizes_residual":
-        L.append("**Reading (H1).** Varying-temperature entropy is materially higher on the "
-                 "unknown-vs-rate residual — answer instability is a forward-observable "
-                 "abstention signal the single-sample honest-ceiling analysis missed. The "
-                 "wall cracks: sampling exposes the wavering that a single greedy decode hides.\n")
+        L.append(
+            "**Reading (H1).** Varying-temperature entropy is materially higher on the "
+            "unknown-vs-rate residual — answer instability is a forward-observable "
+            "abstention signal the single-sample honest-ceiling analysis missed. The "
+            "wall cracks: sampling exposes the wavering that a single greedy decode hides.\n"
+        )
     elif verdict == "H0_confident_over_reading":
-        L.append("**Reading (H0 — the wall is real, with a mechanism).** Varying-temperature "
-                 f"entropy is ~0 everywhere, and the residual (n={r['residual']['n']}, "
-                 f"label entropy {r['residual']['mean_label_entropy']:.4f}) is no more uncertain "
-                 f"than the rest (non-residual {r['non_residual']['mean_label_entropy']:.4f}); "
-                 "`band_unknown` is perfectly stable. Because the raw prose DOES vary while the "
-                 "decision does not, this is genuine decision-stability: the documented "
-                 "over-reading is CONFIDENT, not uncertain. That is the strongest version of "
-                 "The Wall — the model commits to the same (often wrong) category across "
-                 "temperatures, which is exactly why no forward-observable abstention signal "
-                 "(self-confidence, self-consistency, OR sampling entropy) can catch it. A "
-                 "publishable null that converts the closeout's negative result into a mechanism.\n")
+        L.append(
+            "**Reading (H0 — the wall is real, with a mechanism).** Varying-temperature "
+            f"entropy is ~0 everywhere, and the residual (n={r['residual']['n']}, "
+            f"label entropy {r['residual']['mean_label_entropy']:.4f}) is no more uncertain "
+            f"than the rest (non-residual {r['non_residual']['mean_label_entropy']:.4f}); "
+            "`band_unknown` is perfectly stable. Because the raw prose DOES vary while the "
+            "decision does not, this is genuine decision-stability: the documented "
+            "over-reading is CONFIDENT, not uncertain. That is the strongest version of "
+            "The Wall — the model commits to the same (often wrong) category across "
+            "temperatures, which is exactly why no forward-observable abstention signal "
+            "(self-confidence, self-consistency, OR sampling entropy) can catch it. A "
+            "publishable null that converts the closeout's negative result into a mechanism.\n"
+        )
     return "\n".join(L)
 
 
@@ -266,7 +298,9 @@ def main() -> None:
 
     samples_by_temp: dict[float, list[dict[str, Any]]] = {}
     for temp in TEMPERATURES:
-        out_path = rc.EXPERIMENTS / f"gan2026_reliability_p2_1_samples_{tag}_temp{temp}_2026-06-17.jsonl"
+        out_path = (
+            rc.EXPERIMENTS / f"gan2026_reliability_p2_1_samples_{tag}_temp{temp}_2026-06-17.jsonl"
+        )
         print(f"[temp {temp}] running/resuming {len(records)} rows -> {out_path.name}")
         samples_by_temp[temp] = run_temperature(records, temp, out_path)
 
@@ -274,11 +308,15 @@ def main() -> None:
     out_md = rc.EXPERIMENTS / f"gan2026_reliability_p2_1_semantic_entropy_{tag}_2026-06-17.md"
     result = analyse(records, samples_by_temp, out_json, out_md, mode=tag)
     print(f"wrote {out_json}")
-    print(f"  decision_stable={result['decision_stable_under_temperature']} "
-          f"mean_label_entropy={result['mean_label_entropy_purist']:.3f} "
-          f"mean_kind_entropy={result['mean_kind_entropy']:.3f}")
-    print(f"  residual label entropy {result['residual']['mean_label_entropy']:.3f} vs "
-          f"non-residual {result['non_residual']['mean_label_entropy']:.3f}")
+    print(
+        f"  decision_stable={result['decision_stable_under_temperature']} "
+        f"mean_label_entropy={result['mean_label_entropy_purist']:.3f} "
+        f"mean_kind_entropy={result['mean_kind_entropy']:.3f}"
+    )
+    print(
+        f"  residual label entropy {result['residual']['mean_label_entropy']:.3f} vs "
+        f"non-residual {result['non_residual']['mean_label_entropy']:.3f}"
+    )
     print(f"  verdict: {result['hypothesis_verdict']}")
 
 
