@@ -1,0 +1,102 @@
+{
+  "probe_kind": "exectv2_calibration_signal_probe_dev140",
+  "generated_on": "2026-07-07",
+  "generated_by": "experiments/build_exectv2_calibration_signal_probe.py",
+  "claim_boundary": "dev140 replay over saved same-core model-swap and multi-temperature artifacts; no model calls, no full-200 or holdout rows.",
+  "cell_count": 1719,
+  "signal_sources": {
+    "cross_model_agreement": {
+      "artifacts": [
+        "experiments/exectv2_2call_no_sf_adjudicator_{gpt41mini,deepseek,qwen36}_dev140_20260625.jsonl"
+      ],
+      "definition": "Size of the largest identical-headline-keyset cluster across the three same-core models (1..3); risk = (3 - agreement)/3."
+    },
+    "self_consistency_entropy": {
+      "artifacts": [
+        "experiments/exectv2_2call_no_sf_self_consistency_entropy_dev140_temps_r{1..4}_temp*_20260625_assembly.jsonl"
+      ],
+      "definition": "Normalized Shannon entropy of the headline-keyset distribution across the four temperature runs, in [0, 1]."
+    }
+  },
+  "per_family_auroc": {
+    "Diagnosis": {
+      "cell_count": 520,
+      "cross_model_agreement": {
+        "auroc_error": 0.6291,
+        "coverage": 0.3462
+      },
+      "self_consistency_entropy": {
+        "auroc_error": 0.5879,
+        "coverage": 0.2077
+      }
+    },
+    "SeizureFrequency": {
+      "cell_count": 421,
+      "cross_model_agreement": {
+        "auroc_error": 0.5479,
+        "coverage": 0.323
+      },
+      "self_consistency_entropy": {
+        "auroc_error": 0.5662,
+        "coverage": 0.1591
+      }
+    },
+    "Prescription": {
+      "cell_count": 463,
+      "cross_model_agreement": {
+        "auroc_error": 0.5,
+        "coverage": 0.0
+      },
+      "self_consistency_entropy": {
+        "auroc_error": 0.5,
+        "coverage": 0.0
+      }
+    },
+    "Investigations": {
+      "cell_count": 315,
+      "cross_model_agreement": {
+        "auroc_error": 0.6067,
+        "coverage": 0.2889
+      },
+      "self_consistency_entropy": {
+        "auroc_error": 0.6007,
+        "coverage": 0.146
+      }
+    }
+  },
+  "pooled_auroc": {
+    "cross_model_agreement": {
+      "auroc_error": 0.5958,
+      "coverage": 0.2368
+    },
+    "self_consistency_entropy": {
+      "auroc_error": 0.5776,
+      "coverage": 0.1286
+    }
+  },
+  "h2_correlation": {
+    "n": 1719,
+    "spearman_rho": 0.5676,
+    "threshold_for_redundancy": 0.7
+  },
+  "signal_distributions": {
+    "cross_model_agreement_cluster_sizes": {
+      "1": 123,
+      "2": 284,
+      "3": 1312
+    },
+    "self_consistency_entropy_mean": 0.0626
+  },
+  "predeclared_verdicts": {
+    "H1_cross_model_agreement_generalizes": {
+      "verdict": "refuted_does_not_generalize",
+      "bar": "AUROC > 0.7 on >=2 of the 3 non-SF families, or on the pooled population.",
+      "non_sf_families_above_bar": []
+    },
+    "H2_self_consistency_orthogonal": {
+      "verdict": "adds_orthogonal_signal",
+      "bar": "|Spearman rho| <= 0.7",
+      "spearman_rho": 0.5676
+    }
+  }
+}

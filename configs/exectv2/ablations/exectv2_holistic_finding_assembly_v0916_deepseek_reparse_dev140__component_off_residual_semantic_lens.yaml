@@ -139,6 +139,7 @@ operational_counts:
   parse_failures: not_recorded_in_source_summary
   abstentions: not_recorded_in_source_summary
   missing_outputs: not_recorded_in_source_summary
+deterministic_action_counts:
 row_inspection_policy: aggregate_only
 allow_model_calls: false
 allow_post_run_tuning: false

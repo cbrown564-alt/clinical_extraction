@@ -102,6 +102,39 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-06: **Predecessor-synthesis follow-up item 5 — raw-vs-projected
+  decomposition landed (zero LLM calls).** Plan:
+  `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 5 — **the last
+  pending item; all seven are now complete.** This is the system-wide
+  attribution-discipline deliverable (item 4 was the Prescription-specific
+  analogue). Decomposes the cited `clinical_headline` (0.9189 dev140 / 0.8680
+  full-200) per family into RAW producer emission (0.8475 / 0.8117), POST-LENS
+  after deterministic reconciliation (0.8913 / 0.8383), and HEADLINE after bridge
+  + de-dup + CUI projection (0.9189 / 0.8680). **Deterministic contribution:
+  +0.0714 dev140 / +0.0563 full-200 overall** — real, but smaller and shaped
+  differently than dspy's flat ~24pp bridge figure. **Family-split mechanism
+  (the sharper finding):** Dx lift (+0.1194 dev / +0.0728 full) is the
+  deterministic **dictionary lens** (post-lens == headline); SF lift (+0.1244
+  dev / +0.1250 full) is the **CUI-projection bridge + de-dup** (post-lens ==
+  raw — *the* projection-heavy number dspy warns about); Rx and Inv get
+  **+0.0000** (raw == headline; Rx is item 4's deterministic-owned ceiling
+  confirmed from the other direction). Two caveats surfaced (not hidden):
+  (1) **"raw" is post-producer, not raw vanilla-LLM** (dev140 Dx/SF/Inv
+  producers are hybrid routes; only Rx is deterministic), so not directly
+  commensurable with dspy's single-call raw figure — the per-family *shape*
+  transfers, not the absolute gap; (2) **SF full-200 raw (0.6592) is the
+  uncomfortable number** this surfaces — more reason to state it. Self-check
+  PASS on both splits (headline column reproduces 0.9189 / 0.8680 exactly).
+  Reads the registry-tracked P7 treatment artifacts' own `score_ladder` surfaces
+  — no re-scoring, no new runs. A drop-in §4 paragraph is in the results doc.
+  **Manuscript implication:** §4 must carry a raw-emission column (or cited
+  companion table) and the per-family lens-vs-bridge attribution; hiding the raw
+  column inherits dspy's critique, surfacing it preempts the critique. Driver +
+  JSON: `experiments/exectv2_raw_vs_projected_decomposition_2026-07-06.{py,json}`;
+  results:
+  `docs/experiments/exectv2/exectv2_raw_vs_projected_decomposition_2026-07-06.md`;
+  hypothesis `rx_dx_sf_inv_raw_vs_projected_decomposition_2026-07-06`
+  (CONFIRMED, entry 34).
 - 2026-07-06: **Predecessor-synthesis follow-up item 3 — retrieval-highlight
   salience priming landed (84 gpt-4.1-mini calls, dev140, temp 0, cached).**
   Plan: `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 3. The
@@ -154,6 +187,61 @@ Current evidence stack:
   `experiments/exectv2_medication_no_model_oracle_2026-07-06.{py,json}`; results
   doc:
   `docs/experiments/exectv2/prescription/exectv2_medication_no_model_oracle_2026-07-06.md`.
+- 2026-07-06: **Predecessor-synthesis follow-up item 4 EXTENSION — no-model
+  oracle extended to Investigations + SeizureFrequency (zero LLM calls).** The
+  medication probe's two-surface template (`gold_as_prediction` scorer ceiling +
+  `deterministic_only` extraction ceiling) ported to the other two LLM-touched
+  families. **Cross-family attribution picture now complete and decomposes
+  cleanly:** **Prescription** deterministic-owned (item 4: deterministic-only ==
+  hybrid headline, LLM adds zero); **SF** deterministic-owned
+  (`deterministic_only` dev140 `state_profile` **0.8947** — *exceeds* the cited
+  registered hybrid 0.7483; `state_profile_directional` **0.8873** vs hybrid
+  **0.8897**, gap −0.0024 — the deterministic extractor's own keep/drop filter
+  carries the SF clinical headline); **Investigations** lens+LLM-owned
+  (`deterministic_only` **0.5116 dev140 / 0.4858 full-200**, gap **−0.4016 /
+  −0.4355** — the contribution-bearing family, opposite of the Rx/SF pattern; the
+  hybrid's verifier + pending-test suppression + completed-neuro lens owns the Inv
+  headline). The SF probe also scored a **candidate-substrate** surface
+  (`build_candidate_set`, every candidate kept — dspy's E1 broad-payload
+  analogue): 0.5211 dev `state_profile` at **77.2% recall / 39.3% precision** —
+  partial confirmation of dspy's E1 localization-to-adjudication framing, but our
+  recall is 77%, **not** dspy's 100% (a genuine cross-codebase difference). The
+  cited SF 0.7483 `state_profile` is the raw SF-verify LLM-program baseline, not
+  the deterministic ceiling — the deterministic ceiling (0.8947) was not
+  previously stated alongside it. Drivers
+  `experiments/exectv2_investigations_no_model_oracle_2026-07-06.py` +
+  `experiments/exectv2_sf_no_model_oracle_2026-07-06.py`; results docs
+  `docs/experiments/exectv2/investigations/exectv2_investigations_no_model_oracle_2026-07-06.md`
+  + `docs/experiments/exectv2/seizure_frequency/exectv2_sf_no_model_oracle_2026-07-06.md`.
+- 2026-07-06: **Predecessor-synthesis follow-up item 2 INTEGRATION — closed-
+  option direction selector wired into the ExECTv2 hybrid SF lane (25 calls).**
+  The standalone probe (item 2, +0.0552, refutes "fundamental") noted its
+  substrate integration as candidate work. Done: extracted the selector
+  primitives to a shared library
+  (`hybrid/closed_option_direction.py`), wired an opt-in
+  `direction_selector="llm_closed_option"` parameter into
+  `hybrid/clinical_assessment.py::run_split` (default `"off"` = v08 production,
+  byte-identical — regression-guarded), and replayed on the v08 hybrid SF
+  artifact. **Outcome: APPROACHES but does not match** — hybrid + LLM closed-
+  option selector scored **0.8333 dev140 `state_profile_directional`** vs the
+  deterministic-rules hybrid reference **0.8897** (delta **−0.0563**),
+  `state_profile` byte-identical (0.9338). The deterministic `rules/change.py`
+  remains the superior final direction source (negative-for-production-wiring;
+  consistent with the inversion synthesis). **Mechanism (a vocab-design
+  finding):** the gold `FrequencyChange` attribute conflates change-direction
+  (`Increased`/`Decreased`/`Same`) and frequency-magnitude
+  (`Frequent`/`Infrequent`); the LLM selector answers the plain-English
+  "direction" question (a subset), while the deterministic regexes faithfully
+  implement the conflated vocab (selector mapped Infrequent→Decreased 14×,
+  Frequent→Same/Increased/Decreased 12×). This does **not** contradict the
+  standalone refute — different question (contract on direction-blind artifact
+  vs selector replacing already-strong rules). Scope correction vs the plan's
+  literal "gan2026 CandidateSet" wording: 0.8897 is an ExECTv2 number; gan2026
+  has no direction concept and scores a different surface. Driver
+  `scripts/run_exectv2_sf_closed_option_hybrid_integration.py`; predeclaration +
+  results docs under
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_closed_option_hybrid_integration_*_2026-07-06.md`;
+  tests `tests/test_exectv2_sf_closed_option_hybrid_integration.py` (18 cases).
 - 2026-07-06: **Predecessor-synthesis follow-ups items 6, 7, 2 — all landed.
   Item 2 REFUTES the "fundamental" framing of the SF capacity-vs-execution gap.**
   Plan: `docs/plans/predecessor_synthesis_followups_2026-07-06.md`. The two
@@ -732,6 +820,17 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-06: **Predecessor-synthesis follow-up item 5 — raw-vs-projected
+  decomposition complete** (see Now for the full entry). Zero LLM calls; the
+  cited 0.9189 dev / 0.8680 full decomposes per family into raw (0.8475 /
+  0.8117) / post-lens (0.8913 / 0.8383) / headline (0.9189 / 0.8680);
+  deterministic contributes +0.0714 / +0.0563 overall, family-split (Dx=lens,
+  SF=bridge, Rx/Inv=none). The attribution-discipline deliverable — raw stated
+  per family alongside the headline, preempting dspy's bridge-inflation critique
+  by disclosure. Hypothesis `rx_dx_sf_inv_raw_vs_projected_decomposition_2026-07-06`
+  registered (entry 34, CONFIRMED). **All seven predecessor-synthesis follow-up
+  items are now complete.** Results:
+  `docs/experiments/exectv2/exectv2_raw_vs_projected_decomposition_2026-07-06.md`.
 - 2026-07-06: **Predecessor-synthesis follow-up item 3 — retrieval-highlight
   salience priming complete** (see Now for the full entry). 84 calls dev140.
   HIGHLIGHT IS NOT THE LEVER — Arm B − Arm A = −0.0068 (< +0.02 kill band);

@@ -1,0 +1,345 @@
+{
+  "run_meta": {
+    "probe": "exectv2_raw_vs_projected_decomposition",
+    "llm_calls": 0,
+    "model": "(model-independent; reads existing artifacts)",
+    "surfaces": [
+      "raw",
+      "post_lens",
+      "headline"
+    ],
+    "surface_definitions": {
+      "raw": "score_ladder.raw_lane_score -- producer-lane emission pre-lens (provenance emitted_raw_candidate). CAVEAT: post-producer, not raw vanilla-LLM; the dev140 Dx/SF/Inv producers are hybrid routes.",
+      "post_lens": "score_ladder.materialized_surfaces.residual_benchmark_added -- after deterministic reconciliation, pre-bridge (projected=False).",
+      "headline": "score_ladder.headline_target -- cited clinical_headline, post-bridge + de-dup + CUI projection (projected=True)."
+    },
+    "attribution_rule": "Per research-protocol attribution rule: an LLM-first claim requires showing what the model selected before deterministic semantic repair. RAW is that surface (modulo the post-producer caveat).",
+    "note": "This is an attribution-discipline reporting deliverable, not a fresh measurement. The three surfaces were already computed through the same family scorers in the registry-tracked P7 treatment runs; this probe reads them, packages the per-family table, and re-validates the headline."
+  },
+  "splits": {
+    "dev140": {
+      "label": "dev140 (140 letters)",
+      "source_artifact": "experiments\\exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.json",
+      "registry_id": "exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702",
+      "cited_overall_headline": 0.9189,
+      "headline_self_check": "PASS",
+      "by_family": [
+        {
+          "family": "Diagnosis",
+          "raw": {
+            "f1": 0.779,
+            "precision": 0.7548,
+            "recall": 0.8047,
+            "tp": 239,
+            "fp": 76,
+            "fn": 58
+          },
+          "post_lens": {
+            "f1": 0.8984,
+            "precision": 0.8694,
+            "recall": 0.9293,
+            "tp": 276,
+            "fp": 41,
+            "fn": 21
+          },
+          "headline": {
+            "f1": 0.8984,
+            "precision": 0.8694,
+            "recall": 0.9293,
+            "tp": 276,
+            "fp": 41,
+            "fn": 21
+          },
+          "gap_raw_to_post": 0.1194,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.1194,
+          "mechanism": "Deterministic dictionary lens (drop generic 'epilepsy', rewrite conventions, add residual + generic-epilepsy companion). post-lens == headline; the entire lift is stage 2."
+        },
+        {
+          "family": "SeizureFrequency",
+          "raw": {
+            "f1": 0.7836,
+            "precision": 0.7409,
+            "recall": 0.8314,
+            "tp": 143,
+            "fp": 50,
+            "fn": 29
+          },
+          "post_lens": {
+            "f1": 0.7836,
+            "precision": 0.7409,
+            "recall": 0.8314,
+            "tp": 143,
+            "fp": 50,
+            "fn": 29
+          },
+          "headline": {
+            "f1": 0.908,
+            "precision": 0.9053,
+            "recall": 0.9107,
+            "tp": 153,
+            "fp": 16,
+            "fn": 15
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.1244,
+          "gap_raw_to_headline": 0.1244,
+          "mechanism": "CUI-projection bridge + de-dup. post-lens == raw; the entire lift is stage 3 (SF's frequency-type key uses CUI as seizure-type identity, so the CUI bridge materially changes SF scoring). This is the projection-heavy number dspy warns about."
+        },
+        {
+          "family": "Prescription",
+          "raw": {
+            "f1": 0.9615,
+            "precision": 0.9524,
+            "recall": 0.9709,
+            "tp": 200,
+            "fp": 10,
+            "fn": 6
+          },
+          "post_lens": {
+            "f1": 0.9615,
+            "precision": 0.9524,
+            "recall": 0.9709,
+            "tp": 200,
+            "fp": 10,
+            "fn": 6
+          },
+          "headline": {
+            "f1": 0.9615,
+            "precision": 0.9524,
+            "recall": 0.9709,
+            "tp": 200,
+            "fp": 10,
+            "fn": 6
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.0,
+          "mechanism": "None. Raw == headline (the deterministic-owned ceiling item 4 confirmed; the producer's emission carries through unchanged)."
+        },
+        {
+          "family": "Investigations",
+          "raw": {
+            "f1": 0.9132,
+            "precision": 0.938,
+            "recall": 0.8897,
+            "tp": 121,
+            "fp": 8,
+            "fn": 15
+          },
+          "post_lens": {
+            "f1": 0.9132,
+            "precision": 0.938,
+            "recall": 0.8897,
+            "tp": 121,
+            "fp": 8,
+            "fn": 15
+          },
+          "headline": {
+            "f1": 0.9132,
+            "precision": 0.938,
+            "recall": 0.8897,
+            "tp": 121,
+            "fp": 8,
+            "fn": 15
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.0,
+          "mechanism": "None. Raw == headline (hybrid arbitration's output carries through unchanged)."
+        }
+      ],
+      "overall": {
+        "raw": {
+          "f1": 0.8475,
+          "precision": 0.829,
+          "recall": 0.8668,
+          "tp": 703,
+          "fp": 144,
+          "fn": 108
+        },
+        "post_lens": {
+          "f1": 0.8913,
+          "precision": 0.8712,
+          "recall": 0.9125,
+          "tp": 740,
+          "fp": 109,
+          "fn": 71
+        },
+        "headline": {
+          "f1": 0.9189,
+          "precision": 0.9088,
+          "recall": 0.9294,
+          "tp": 750,
+          "fp": 75,
+          "fn": 57
+        },
+        "gap_raw_to_post": 0.0438,
+        "gap_post_to_headline": 0.0276,
+        "gap_raw_to_headline": 0.0714
+      }
+    },
+    "full200": {
+      "label": "full200 (200 letters)",
+      "source_artifact": "experiments\\exectv2_holistic_finding_assembly_v08_full200_p7_treatment_20260702.json",
+      "registry_id": "exectv2_holistic_finding_assembly_v08_full200_p7fix_gpt41mini_20260702",
+      "cited_overall_headline": 0.868,
+      "headline_self_check": "PASS",
+      "by_family": [
+        {
+          "family": "Diagnosis",
+          "raw": {
+            "f1": 0.7818,
+            "precision": 0.7757,
+            "recall": 0.7881,
+            "tp": 331,
+            "fp": 94,
+            "fn": 89
+          },
+          "post_lens": {
+            "f1": 0.8546,
+            "precision": 0.8318,
+            "recall": 0.8786,
+            "tp": 369,
+            "fp": 74,
+            "fn": 51
+          },
+          "headline": {
+            "f1": 0.8546,
+            "precision": 0.8318,
+            "recall": 0.8786,
+            "tp": 369,
+            "fp": 74,
+            "fn": 51
+          },
+          "gap_raw_to_post": 0.0728,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.0728,
+          "mechanism": "Deterministic dictionary lens (drop generic 'epilepsy', rewrite conventions, add residual + generic-epilepsy companion). post-lens == headline; the entire lift is stage 2."
+        },
+        {
+          "family": "SeizureFrequency",
+          "raw": {
+            "f1": 0.6592,
+            "precision": 0.6132,
+            "recall": 0.7126,
+            "tp": 176,
+            "fp": 111,
+            "fn": 71
+          },
+          "post_lens": {
+            "f1": 0.6592,
+            "precision": 0.6132,
+            "recall": 0.7126,
+            "tp": 176,
+            "fp": 111,
+            "fn": 71
+          },
+          "headline": {
+            "f1": 0.7842,
+            "precision": 0.7529,
+            "recall": 0.8182,
+            "tp": 198,
+            "fp": 65,
+            "fn": 44
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.125,
+          "gap_raw_to_headline": 0.125,
+          "mechanism": "CUI-projection bridge + de-dup. post-lens == raw; the entire lift is stage 3 (SF's frequency-type key uses CUI as seizure-type identity, so the CUI bridge materially changes SF scoring). This is the projection-heavy number dspy warns about."
+        },
+        {
+          "family": "Prescription",
+          "raw": {
+            "f1": 0.9278,
+            "precision": 0.9343,
+            "recall": 0.9215,
+            "tp": 270,
+            "fp": 19,
+            "fn": 23
+          },
+          "post_lens": {
+            "f1": 0.9278,
+            "precision": 0.9343,
+            "recall": 0.9215,
+            "tp": 270,
+            "fp": 19,
+            "fn": 23
+          },
+          "headline": {
+            "f1": 0.9278,
+            "precision": 0.9343,
+            "recall": 0.9215,
+            "tp": 270,
+            "fp": 19,
+            "fn": 23
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.0,
+          "mechanism": "None. Raw == headline (the deterministic-owned ceiling item 4 confirmed; the producer's emission carries through unchanged)."
+        },
+        {
+          "family": "Investigations",
+          "raw": {
+            "f1": 0.9213,
+            "precision": 0.948,
+            "recall": 0.8962,
+            "tp": 164,
+            "fp": 9,
+            "fn": 19
+          },
+          "post_lens": {
+            "f1": 0.9213,
+            "precision": 0.948,
+            "recall": 0.8962,
+            "tp": 164,
+            "fp": 9,
+            "fn": 19
+          },
+          "headline": {
+            "f1": 0.9213,
+            "precision": 0.948,
+            "recall": 0.8962,
+            "tp": 164,
+            "fp": 9,
+            "fn": 19
+          },
+          "gap_raw_to_post": 0.0,
+          "gap_post_to_headline": 0.0,
+          "gap_raw_to_headline": 0.0,
+          "mechanism": "None. Raw == headline (hybrid arbitration's output carries through unchanged)."
+        }
+      ],
+      "overall": {
+        "raw": {
+          "f1": 0.8117,
+          "precision": 0.8005,
+          "recall": 0.8233,
+          "tp": 941,
+          "fp": 233,
+          "fn": 202
+        },
+        "post_lens": {
+          "f1": 0.8383,
+          "precision": 0.8209,
+          "recall": 0.8565,
+          "tp": 979,
+          "fp": 213,
+          "fn": 164
+        },
+        "headline": {
+          "f1": 0.868,
+          "precision": 0.8567,
+          "recall": 0.8796,
+          "tp": 1001,
+          "fp": 167,
+          "fn": 137
+        },
+        "gap_raw_to_post": 0.0266,
+        "gap_post_to_headline": 0.0297,
+        "gap_raw_to_headline": 0.0563
+      }
+    }
+  }
+}

@@ -1,0 +1,1785 @@
+{
+  "run_meta": {
+    "probe": "exectv2_investigations_no_model_oracle",
+    "llm_calls": 0,
+    "model": "(model-independent)",
+    "surfaces": [
+      "gold_as_prediction",
+      "deterministic_only"
+    ],
+    "scorer": "score_investigations_components",
+    "cited_hybrid_inv_for_comparison": {
+      "dev140_clinical_headline_f1": 0.9132,
+      "full200_clinical_headline_f1": 0.9213
+    },
+    "note": "gold_as_prediction is the dspy-style scorer-integrity ceiling (gold copied through the pipeline; tests the scorer, not extraction). deterministic_only is the real no-model extraction ceiling (_extract_investigations run as the final system)."
+  },
+  "splits": {
+    "dev": {
+      "label": "dev140",
+      "row_count": 140,
+      "gold_as_prediction": {
+        "row_count": 140,
+        "prescription_component_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 59,
+            "fp": 0,
+            "fn": 0
+          },
+          "mri": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 64,
+            "fp": 0,
+            "fn": 0
+          },
+          "ct": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0
+          },
+          "performed": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "result": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          }
+        },
+        "investigations_component_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 59,
+            "fp": 0,
+            "fn": 0
+          },
+          "mri": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 64,
+            "fp": 0,
+            "fn": 0
+          },
+          "ct": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0
+          },
+          "performed": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "result": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "deterministic_only": {
+        "row_count": 140,
+        "prescription_component_scores": {
+          "clinical_headline": {
+            "precision": 0.4231,
+            "recall": 0.6471,
+            "f1": 0.5116,
+            "tp": 88,
+            "fp": 120,
+            "fn": 48
+          },
+          "eeg": {
+            "precision": 0.3511,
+            "recall": 0.5593,
+            "f1": 0.4314,
+            "tp": 33,
+            "fp": 61,
+            "fn": 26
+          },
+          "mri": {
+            "precision": 0.43,
+            "recall": 0.6719,
+            "f1": 0.5244,
+            "tp": 43,
+            "fp": 57,
+            "fn": 21
+          },
+          "ct": {
+            "precision": 0.7857,
+            "recall": 0.8462,
+            "f1": 0.8148,
+            "tp": 11,
+            "fp": 3,
+            "fn": 2
+          },
+          "performed": {
+            "precision": 0.6538,
+            "recall": 1.0,
+            "f1": 0.7907,
+            "tp": 136,
+            "fp": 72,
+            "fn": 0
+          },
+          "result": {
+            "precision": 0.9167,
+            "recall": 0.6471,
+            "f1": 0.7586,
+            "tp": 88,
+            "fp": 8,
+            "fn": 48
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 0,
+            "fn": 1
+          }
+        },
+        "investigations_component_scores": {
+          "clinical_headline": {
+            "precision": 0.4231,
+            "recall": 0.6471,
+            "f1": 0.5116,
+            "tp": 88,
+            "fp": 120,
+            "fn": 48
+          },
+          "eeg": {
+            "precision": 0.3511,
+            "recall": 0.5593,
+            "f1": 0.4314,
+            "tp": 33,
+            "fp": 61,
+            "fn": 26
+          },
+          "mri": {
+            "precision": 0.43,
+            "recall": 0.6719,
+            "f1": 0.5244,
+            "tp": 43,
+            "fp": 57,
+            "fn": 21
+          },
+          "ct": {
+            "precision": 0.7857,
+            "recall": 0.8462,
+            "f1": 0.8148,
+            "tp": 11,
+            "fp": 3,
+            "fn": 2
+          },
+          "performed": {
+            "precision": 0.6538,
+            "recall": 1.0,
+            "f1": 0.7907,
+            "tp": 136,
+            "fp": 72,
+            "fn": 0
+          },
+          "result": {
+            "precision": 0.9167,
+            "recall": 0.6471,
+            "f1": 0.7586,
+            "tp": 88,
+            "fp": 8,
+            "fn": 48
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 0.6667,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 0,
+            "fn": 1
+          }
+        }
+      },
+      "deterministic_only_dev140_decomposition": {
+        "per_letter": [
+          {
+            "letter_id": "EA0002",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0004",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0005",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0006",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0007",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0008",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0009",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0010",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0011",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0012",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0014",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0015",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0016",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0018",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0019",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0020",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0021",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0022",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ]
+          },
+          {
+            "letter_id": "EA0023",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0024",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0025",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0026",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0027",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0028",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0030",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0033",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0034",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0035",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0038",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0039",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0040",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0043",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0044",
+            "gold_n": 3,
+            "pred_n": 4,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0045",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0046",
+            "gold_n": 4,
+            "pred_n": 4,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')",
+              "('MRI', 'Yes', 'Abnormal')",
+              "('MRI', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0047",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0049",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0050",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0052",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0054",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0056",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0057",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0059",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0061",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0062",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('CT', 'Yes', 'Unknown')"
+            ],
+            "spurious": [
+              "('CT', 'Yes', 'Normal')",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0063",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0067",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0068",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0071",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0072",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0073",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('CT', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('CT', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0074",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0075",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0076",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0078",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0079",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0082",
+            "gold_n": 3,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0084",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0085",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0087",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0088",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0092",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0093",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0096",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0100",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0102",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0104",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0106",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0107",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0108",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('CT', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0109",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0110",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0111",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0113",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0114",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0116",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0117",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0119",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0120",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0121",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0123",
+            "gold_n": 2,
+            "pred_n": 4,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0124",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0125",
+            "gold_n": 0,
+            "pred_n": 4,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0126",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0127",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0128",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0129",
+            "gold_n": 2,
+            "pred_n": 4,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0131",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0132",
+            "gold_n": 4,
+            "pred_n": 5,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0133",
+            "gold_n": 1,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0135",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0136",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0137",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0139",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0141",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0142",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')",
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0143",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0146",
+            "gold_n": 3,
+            "pred_n": 4,
+            "missed": [
+              "('EEG', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0148",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0149",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0150",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0151",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0152",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0153",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0154",
+            "gold_n": 1,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', 'Normal')"
+            ]
+          },
+          {
+            "letter_id": "EA0156",
+            "gold_n": 3,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0157",
+            "gold_n": 0,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0158",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0160",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0161",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0162",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0163",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0164",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0166",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0167",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0168",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0169",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0171",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0172",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0173",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0175",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ]
+          },
+          {
+            "letter_id": "EA0176",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('MRI', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', 'Abnormal')"
+            ]
+          },
+          {
+            "letter_id": "EA0178",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0179",
+            "gold_n": 2,
+            "pred_n": 3,
+            "missed": [
+              "('MRI', 'Yes', 'Normal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', 'Unknown')",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0180",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0181",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0182",
+            "gold_n": 2,
+            "pred_n": 3,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0183",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0184",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0185",
+            "gold_n": 1,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('MRI', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0186",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0188",
+            "gold_n": 3,
+            "pred_n": 5,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', 'Normal')",
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0189",
+            "gold_n": 1,
+            "pred_n": 4,
+            "missed": [],
+            "spurious": [
+              "('MRI', 'Yes', None)",
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0190",
+            "gold_n": 2,
+            "pred_n": 2,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0191",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0195",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0197",
+            "gold_n": 2,
+            "pred_n": 3,
+            "missed": [
+              "('EEG', 'Yes', 'Abnormal')"
+            ],
+            "spurious": [
+              "('EEG', 'Yes', None)",
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0198",
+            "gold_n": 0,
+            "pred_n": 1,
+            "missed": [],
+            "spurious": [
+              "('EEG', 'Yes', None)"
+            ]
+          },
+          {
+            "letter_id": "EA0199",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0200",
+            "gold_n": 3,
+            "pred_n": 3,
+            "missed": [],
+            "spurious": []
+          }
+        ],
+        "missed_key_totals": {
+          "('EEG', 'Yes', 'Abnormal')": 21,
+          "('MRI', 'Yes', 'Abnormal')": 18,
+          "('EEG', 'Yes', 'Normal')": 4,
+          "('MRI', 'Yes', 'Normal')": 3,
+          "('CT', 'Yes', 'Unknown')": 1,
+          "('CT', 'Yes', 'Normal')": 1
+        },
+        "spurious_key_totals": {
+          "('EEG', 'Yes', None)": 56,
+          "('MRI', 'Yes', None)": 54,
+          "('EEG', 'Yes', 'Abnormal')": 2,
+          "('CT', 'Yes', None)": 2,
+          "('EEG', 'Yes', 'Normal')": 2,
+          "('MRI', 'Yes', 'Abnormal')": 2,
+          "('CT', 'Yes', 'Normal')": 1,
+          "('MRI', 'Yes', 'Unknown')": 1
+        }
+      }
+    },
+    "full200": {
+      "label": "full200",
+      "row_count": 200,
+      "gold_as_prediction": {
+        "row_count": 200,
+        "prescription_component_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 78,
+            "fp": 0,
+            "fn": 0
+          },
+          "mri": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 88,
+            "fp": 0,
+            "fn": 0
+          },
+          "ct": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 17,
+            "fp": 0,
+            "fn": 0
+          },
+          "performed": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "result": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          }
+        },
+        "investigations_component_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 78,
+            "fp": 0,
+            "fn": 0
+          },
+          "mri": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 88,
+            "fp": 0,
+            "fn": 0
+          },
+          "ct": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 17,
+            "fp": 0,
+            "fn": 0
+          },
+          "performed": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "result": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 183,
+            "fp": 0,
+            "fn": 0
+          },
+          "eeg_type": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 3,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "deterministic_only": {
+        "row_count": 200,
+        "prescription_component_scores": {
+          "clinical_headline": {
+            "precision": 0.4051,
+            "recall": 0.6066,
+            "f1": 0.4858,
+            "tp": 111,
+            "fp": 163,
+            "fn": 72
+          },
+          "eeg": {
+            "precision": 0.3543,
+            "recall": 0.5769,
+            "f1": 0.439,
+            "tp": 45,
+            "fp": 82,
+            "fn": 33
+          },
+          "mri": {
+            "precision": 0.4141,
+            "recall": 0.6023,
+            "f1": 0.4907,
+            "tp": 53,
+            "fp": 75,
+            "fn": 35
+          },
+          "ct": {
+            "precision": 0.6316,
+            "recall": 0.7059,
+            "f1": 0.6667,
+            "tp": 12,
+            "fp": 7,
+            "fn": 5
+          },
+          "performed": {
+            "precision": 0.6642,
+            "recall": 0.9945,
+            "f1": 0.7965,
+            "tp": 182,
+            "fp": 92,
+            "fn": 1
+          },
+          "result": {
+            "precision": 0.9174,
+            "recall": 0.6066,
+            "f1": 0.7303,
+            "tp": 111,
+            "fp": 10,
+            "fn": 72
+          },
+          "eeg_type": {
+            "precision": 0.5,
+            "recall": 0.6667,
+            "f1": 0.5714,
+            "tp": 2,
+            "fp": 2,
+            "fn": 1
+          }
+        },
+        "investigations_component_scores": {
+          "clinical_headline": {
+            "precision": 0.4051,
+            "recall": 0.6066,
+            "f1": 0.4858,
+            "tp": 111,
+            "fp": 163,
+            "fn": 72
+          },
+          "eeg": {
+            "precision": 0.3543,
+            "recall": 0.5769,
+            "f1": 0.439,
+            "tp": 45,
+            "fp": 82,
+            "fn": 33
+          },
+          "mri": {
+            "precision": 0.4141,
+            "recall": 0.6023,
+            "f1": 0.4907,
+            "tp": 53,
+            "fp": 75,
+            "fn": 35
+          },
+          "ct": {
+            "precision": 0.6316,
+            "recall": 0.7059,
+            "f1": 0.6667,
+            "tp": 12,
+            "fp": 7,
+            "fn": 5
+          },
+          "performed": {
+            "precision": 0.6642,
+            "recall": 0.9945,
+            "f1": 0.7965,
+            "tp": 182,
+            "fp": 92,
+            "fn": 1
+          },
+          "result": {
+            "precision": 0.9174,
+            "recall": 0.6066,
+            "f1": 0.7303,
+            "tp": 111,
+            "fp": 10,
+            "fn": 72
+          },
+          "eeg_type": {
+            "precision": 0.5,
+            "recall": 0.6667,
+            "f1": 0.5714,
+            "tp": 2,
+            "fp": 2,
+            "fn": 1
+          }
+        }
+      }
+    }
+  }
+}

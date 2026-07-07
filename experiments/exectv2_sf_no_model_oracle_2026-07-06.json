@@ -1,0 +1,3455 @@
+{
+  "run_meta": {
+    "probe": "exectv2_sf_no_model_oracle",
+    "llm_calls": 0,
+    "model": "(model-independent)",
+    "surfaces": [
+      "gold_as_prediction",
+      "deterministic_only",
+      "candidate_substrate"
+    ],
+    "scorer": "score_frequency_state",
+    "cited_hybrid_sf_for_comparison": {
+      "dev140_state_profile_f1_registered": 0.7483,
+      "dev140_state_profile_f1_rerun_2026_07_03": 0.7793,
+      "dev140_state_profile_directional_f1_raw": 0.6552,
+      "dev140_state_profile_directional_f1_hybrid": 0.8897
+    },
+    "note": "gold_as_prediction is the dspy-style scorer-integrity ceiling. deterministic_only is the real no-model extraction ceiling (extract_seizure_frequency run as the final system, with its keep/drop filter). candidate_substrate is the dspy E1 analogue: build_candidate_set with every candidate kept (pre-adjudication)."
+  },
+  "splits": {
+    "dev": {
+      "label": "dev140",
+      "row_count": 140,
+      "gold_as_prediction": {
+        "row_count": 140,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 168,
+            "fp": 0,
+            "fn": 0
+          },
+          "state_profile": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 136,
+            "fp": 0,
+            "fn": 0
+          },
+          "state_profile_directional": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 140,
+            "fp": 0,
+            "fn": 0
+          },
+          "active_rate": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 79,
+            "fp": 0,
+            "fn": 0
+          },
+          "active_rate_fidelity": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 85,
+            "fp": 0,
+            "fn": 0
+          },
+          "seizure_free": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 57,
+            "fp": 0,
+            "fn": 0
+          },
+          "unknown": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 32,
+            "fp": 0,
+            "fn": 0
+          },
+          "exact_semantic": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 187,
+            "fp": 0,
+            "fn": 0
+          },
+          "benchmark_with_cui": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 187,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "deterministic_only": {
+        "row_count": 140,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 0.8554,
+            "recall": 0.8452,
+            "f1": 0.8503,
+            "tp": 142,
+            "fp": 24,
+            "fn": 26
+          },
+          "state_profile": {
+            "precision": 0.9154,
+            "recall": 0.875,
+            "f1": 0.8947,
+            "tp": 119,
+            "fp": 11,
+            "fn": 17
+          },
+          "state_profile_directional": {
+            "precision": 0.9037,
+            "recall": 0.8714,
+            "f1": 0.8873,
+            "tp": 122,
+            "fp": 13,
+            "fn": 18
+          },
+          "active_rate": {
+            "precision": 0.8046,
+            "recall": 0.8861,
+            "f1": 0.8434,
+            "tp": 70,
+            "fp": 17,
+            "fn": 9
+          },
+          "active_rate_fidelity": {
+            "precision": 0.6863,
+            "recall": 0.8235,
+            "f1": 0.7487,
+            "tp": 70,
+            "fp": 32,
+            "fn": 15
+          },
+          "seizure_free": {
+            "precision": 0.9216,
+            "recall": 0.8246,
+            "f1": 0.8704,
+            "tp": 47,
+            "fp": 4,
+            "fn": 10
+          },
+          "unknown": {
+            "precision": 0.8929,
+            "recall": 0.7812,
+            "f1": 0.8333,
+            "tp": 25,
+            "fp": 3,
+            "fn": 7
+          },
+          "exact_semantic": {
+            "precision": 0.6667,
+            "recall": 0.7487,
+            "f1": 0.7053,
+            "tp": 140,
+            "fp": 70,
+            "fn": 47
+          },
+          "benchmark_with_cui": {
+            "precision": 0.6667,
+            "recall": 0.7487,
+            "f1": 0.7053,
+            "tp": 140,
+            "fp": 70,
+            "fn": 47
+          }
+        }
+      },
+      "candidate_substrate": {
+        "row_count": 140,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 491,
+            "fn": 168
+          },
+          "state_profile": {
+            "precision": 0.3933,
+            "recall": 0.7721,
+            "f1": 0.5211,
+            "tp": 105,
+            "fp": 162,
+            "fn": 31
+          },
+          "state_profile_directional": {
+            "precision": 0.3881,
+            "recall": 0.7429,
+            "f1": 0.5098,
+            "tp": 104,
+            "fp": 164,
+            "fn": 36
+          },
+          "active_rate": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 132,
+            "fn": 79
+          },
+          "active_rate_fidelity": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 153,
+            "fn": 85
+          },
+          "seizure_free": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 47,
+            "fn": 57
+          },
+          "unknown": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 312,
+            "fn": 32
+          },
+          "exact_semantic": {
+            "precision": 0.1382,
+            "recall": 0.4759,
+            "f1": 0.2142,
+            "tp": 89,
+            "fp": 555,
+            "fn": 98
+          },
+          "benchmark_with_cui": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 644,
+            "fn": 187
+          }
+        }
+      },
+      "deterministic_only_dev140_decomposition": {
+        "state_profile": {
+          "metric": "state_profile",
+          "per_letter": [
+            {
+              "letter_id": "EA0002",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0004",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0005",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0006",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0007",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0008",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0009",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0010",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0011",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0012",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0014",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0015",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0016",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0018",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0019",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0020",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0021",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0022",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0023",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0024",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0025",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0026",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0027",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0028",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0030",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0033",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0034",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0035",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0038",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0039",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0040",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0043",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0044",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0045",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0046",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0047",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0049",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0050",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0052",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0054",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0056",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0057",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0059",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0061",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0062",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0063",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0067",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0068",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0071",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0072",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0073",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0074",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0075",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0076",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0078",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0079",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0082",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0084",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0085",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0087",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0088",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0092",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0093",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0096",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0100",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0102",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0104",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0106",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0107",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0108",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0109",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0110",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0111",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0113",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0114",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0116",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0117",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0119",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0120",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0121",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0123",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0124",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0125",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0126",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0127",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0128",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0129",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0131",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0132",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0133",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0135",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0136",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0137",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0139",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0141",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0142",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0143",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0146",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0148",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0149",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0150",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0151",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0152",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0153",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0154",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0156",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0157",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0158",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0160",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0161",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0162",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0163",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0164",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0166",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0167",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0168",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0169",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0171",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0172",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0173",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0175",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0176",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0178",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0179",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0180",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0181",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0182",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0183",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0184",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0185",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0186",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0188",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0189",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0190",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0191",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0195",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0197",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0198",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0199",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0200",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            }
+          ],
+          "missed_key_totals": {},
+          "spurious_key_totals": {}
+        },
+        "state_profile_directional": {
+          "metric": "state_profile_directional",
+          "per_letter": [
+            {
+              "letter_id": "EA0002",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0004",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0005",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0006",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0007",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0008",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0009",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0010",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0011",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0012",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0014",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0015",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0016",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0018",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0019",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0020",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0021",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0022",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0023",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0024",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0025",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0026",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0027",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0028",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0030",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0033",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0034",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0035",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0038",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0039",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0040",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0043",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0044",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0045",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0046",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0047",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0049",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0050",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0052",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0054",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0056",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0057",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0059",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0061",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0062",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0063",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0067",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0068",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0071",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0072",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0073",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0074",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0075",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0076",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0078",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0079",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0082",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0084",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0085",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0087",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0088",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0092",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0093",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0096",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0100",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0102",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0104",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0106",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0107",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0108",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0109",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0110",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0111",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0113",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0114",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0116",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0117",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0119",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0120",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0121",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0123",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0124",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0125",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0126",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0127",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0128",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0129",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0131",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0132",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0133",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0135",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0136",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0137",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0139",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0141",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0142",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0143",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0146",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0148",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0149",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0150",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0151",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0152",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0153",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0154",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0156",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0157",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0158",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0160",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0161",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0162",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0163",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0164",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0166",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0167",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0168",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0169",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0171",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0172",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0173",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0175",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0176",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0178",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0179",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0180",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0181",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0182",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0183",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0184",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0185",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0186",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0188",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0189",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0190",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0191",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0195",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0197",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0198",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0199",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            },
+            {
+              "letter_id": "EA0200",
+              "gold_n": 0,
+              "pred_n": 0,
+              "missed": [],
+              "spurious": []
+            }
+          ],
+          "missed_key_totals": {},
+          "spurious_key_totals": {}
+        }
+      },
+      "candidate_substrate_dev140_decomposition": {
+        "metric": "state_profile",
+        "per_letter": [
+          {
+            "letter_id": "EA0002",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0004",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0005",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0006",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0007",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0008",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0009",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0010",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0011",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0012",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0014",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0015",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0016",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0018",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0019",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0020",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0021",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0022",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0023",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0024",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0025",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0026",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0027",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0028",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0030",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0033",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0034",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0035",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0038",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0039",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0040",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0043",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0044",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0045",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0046",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0047",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0049",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0050",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0052",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0054",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0056",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0057",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0059",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0061",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0062",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0063",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0067",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0068",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0071",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0072",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0073",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0074",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0075",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0076",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0078",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0079",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0082",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0084",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0085",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0087",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0088",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0092",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0093",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0096",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0100",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0102",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0104",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0106",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0107",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0108",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0109",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0110",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0111",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0113",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0114",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0116",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0117",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0119",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0120",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0121",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0123",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0124",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0125",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0126",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0127",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0128",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0129",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0131",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0132",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0133",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0135",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0136",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0137",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0139",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0141",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0142",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0143",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0146",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0148",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0149",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0150",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0151",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0152",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0153",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0154",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0156",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0157",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0158",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0160",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0161",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0162",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0163",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0164",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0166",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0167",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0168",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0169",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0171",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0172",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0173",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0175",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0176",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0178",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0179",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0180",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0181",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0182",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0183",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0184",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0185",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0186",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0188",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0189",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0190",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0191",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0195",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0197",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0198",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0199",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          },
+          {
+            "letter_id": "EA0200",
+            "gold_n": 0,
+            "pred_n": 0,
+            "missed": [],
+            "spurious": []
+          }
+        ],
+        "missed_key_totals": {},
+        "spurious_key_totals": {}
+      }
+    },
+    "full200": {
+      "label": "full200",
+      "row_count": 200,
+      "gold_as_prediction": {
+        "row_count": 200,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 242,
+            "fp": 0,
+            "fn": 0
+          },
+          "state_profile": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 201,
+            "fp": 0,
+            "fn": 0
+          },
+          "state_profile_directional": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 205,
+            "fp": 0,
+            "fn": 0
+          },
+          "active_rate": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 108,
+            "fp": 0,
+            "fn": 0
+          },
+          "active_rate_fidelity": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 114,
+            "fp": 0,
+            "fn": 0
+          },
+          "seizure_free": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 83,
+            "fp": 0,
+            "fn": 0
+          },
+          "unknown": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 51,
+            "fp": 0,
+            "fn": 0
+          },
+          "exact_semantic": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 263,
+            "fp": 0,
+            "fn": 0
+          },
+          "benchmark_with_cui": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "tp": 263,
+            "fp": 0,
+            "fn": 0
+          }
+        }
+      },
+      "deterministic_only": {
+        "row_count": 200,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 0.7913,
+            "recall": 0.7521,
+            "f1": 0.7712,
+            "tp": 182,
+            "fp": 48,
+            "fn": 60
+          },
+          "state_profile": {
+            "precision": 0.8895,
+            "recall": 0.801,
+            "f1": 0.8429,
+            "tp": 161,
+            "fp": 20,
+            "fn": 40
+          },
+          "state_profile_directional": {
+            "precision": 0.871,
+            "recall": 0.7902,
+            "f1": 0.8286,
+            "tp": 162,
+            "fp": 24,
+            "fn": 43
+          },
+          "active_rate": {
+            "precision": 0.736,
+            "recall": 0.8519,
+            "f1": 0.7897,
+            "tp": 92,
+            "fp": 33,
+            "fn": 16
+          },
+          "active_rate_fidelity": {
+            "precision": 0.6454,
+            "recall": 0.7982,
+            "f1": 0.7137,
+            "tp": 91,
+            "fp": 50,
+            "fn": 23
+          },
+          "seizure_free": {
+            "precision": 0.8382,
+            "recall": 0.6867,
+            "f1": 0.755,
+            "tp": 57,
+            "fp": 11,
+            "fn": 26
+          },
+          "unknown": {
+            "precision": 0.8919,
+            "recall": 0.6471,
+            "f1": 0.75,
+            "tp": 33,
+            "fp": 4,
+            "fn": 18
+          },
+          "exact_semantic": {
+            "precision": 0.5943,
+            "recall": 0.635,
+            "f1": 0.614,
+            "tp": 167,
+            "fp": 114,
+            "fn": 96
+          },
+          "benchmark_with_cui": {
+            "precision": 0.5907,
+            "recall": 0.6312,
+            "f1": 0.6103,
+            "tp": 166,
+            "fp": 115,
+            "fn": 97
+          }
+        }
+      },
+      "candidate_substrate": {
+        "row_count": 200,
+        "frequency_state_scores": {
+          "clinical_headline": {
+            "precision": 0.0015,
+            "recall": 0.0041,
+            "f1": 0.0022,
+            "tp": 1,
+            "fp": 682,
+            "fn": 241
+          },
+          "state_profile": {
+            "precision": 0.385,
+            "recall": 0.7413,
+            "f1": 0.5068,
+            "tp": 149,
+            "fp": 238,
+            "fn": 52
+          },
+          "state_profile_directional": {
+            "precision": 0.3763,
+            "recall": 0.7122,
+            "f1": 0.4924,
+            "tp": 146,
+            "fp": 242,
+            "fn": 59
+          },
+          "active_rate": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 189,
+            "fn": 108
+          },
+          "active_rate_fidelity": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 221,
+            "fn": 114
+          },
+          "seizure_free": {
+            "precision": 0.0137,
+            "recall": 0.012,
+            "f1": 0.0128,
+            "tp": 1,
+            "fp": 72,
+            "fn": 82
+          },
+          "unknown": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "tp": 0,
+            "fp": 421,
+            "fn": 51
+          },
+          "exact_semantic": {
+            "precision": 0.1264,
+            "recall": 0.4297,
+            "f1": 0.1953,
+            "tp": 113,
+            "fp": 781,
+            "fn": 150
+          },
+          "benchmark_with_cui": {
+            "precision": 0.0011,
+            "recall": 0.0038,
+            "f1": 0.0017,
+            "tp": 1,
+            "fp": 893,
+            "fn": 262
+          }
+        }
+      }
+    }
+  }
+}

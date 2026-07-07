@@ -1,6 +1,6 @@
 {
   "dataset": "exectv2",
-  "generated_on": "2026-07-02",
+  "generated_on": "2026-07-07",
   "source_scorecard": "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md",
   "source_cross_model_report": "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md",
   "evidence_set": [
@@ -970,13 +970,13 @@
       "cell_count": 1719,
       "fold_count": 5,
       "bin_count": 5,
-      "expected_calibration_error": 0.0245,
-      "brier_score": 0.1752,
+      "expected_calibration_error": 0.0229,
+      "brier_score": 0.1761,
       "constant_base_rate_brier_score": 0.1867,
-      "brier_improvement_vs_base_rate": 0.0116,
+      "brier_improvement_vs_base_rate": 0.0106,
       "overall_accuracy": 0.7516,
-      "mean_calibrated_confidence": 0.7502,
-      "max_adjacent_bin_reversal": 0.0087,
+      "mean_calibrated_confidence": 0.7506,
+      "max_adjacent_bin_reversal": 0.0,
       "leakage_audit": {
         "surface": "dev140 rich-schema holistic assembly reliability scorecard",
         "group_key": "letter_id",
@@ -1029,72 +1029,72 @@
         {
           "bin": "q1",
           "confidence_range": [
-            0.5547,
-            0.6364
+            0.5876,
+            0.6554
           ],
           "cells": 343,
-          "avg_confidence_proxy": 0.5954,
-          "avg_calibrated_confidence": 0.5954,
-          "accuracy": 0.5714,
-          "calibration_gap": -0.024,
-          "ece_contribution": 0.0048,
-          "mean_cell_f1": 0.8625
+          "avg_confidence_proxy": 0.6204,
+          "avg_calibrated_confidence": 0.6204,
+          "accuracy": 0.5656,
+          "calibration_gap": -0.0549,
+          "ece_contribution": 0.0109,
+          "mean_cell_f1": 0.869
         },
         {
           "bin": "q2",
           "confidence_range": [
-            0.6364,
-            0.7534
+            0.6554,
+            0.7482
           ],
           "cells": 344,
-          "avg_confidence_proxy": 0.7153,
-          "avg_calibrated_confidence": 0.7153,
-          "accuracy": 0.689,
-          "calibration_gap": -0.0264,
-          "ece_contribution": 0.0053,
-          "mean_cell_f1": 0.8592
+          "avg_confidence_proxy": 0.7192,
+          "avg_calibrated_confidence": 0.7192,
+          "accuracy": 0.7267,
+          "calibration_gap": 0.0076,
+          "ece_contribution": 0.0015,
+          "mean_cell_f1": 0.8781
         },
         {
           "bin": "q3",
           "confidence_range": [
-            0.7534,
-            0.804
+            0.7484,
+            0.7971
           ],
           "cells": 344,
-          "avg_confidence_proxy": 0.7831,
-          "avg_calibrated_confidence": 0.7831,
-          "accuracy": 0.8198,
-          "calibration_gap": 0.0367,
-          "ece_contribution": 0.0073,
-          "mean_cell_f1": 0.8944
+          "avg_confidence_proxy": 0.7778,
+          "avg_calibrated_confidence": 0.7778,
+          "accuracy": 0.8052,
+          "calibration_gap": 0.0274,
+          "ece_contribution": 0.0055,
+          "mean_cell_f1": 0.8909
         },
         {
           "bin": "q4",
           "confidence_range": [
-            0.804,
-            0.8266
+            0.7971,
+            0.8161
           ],
           "cells": 344,
-          "avg_confidence_proxy": 0.8151,
-          "avg_calibrated_confidence": 0.8151,
-          "accuracy": 0.843,
-          "calibration_gap": 0.0279,
-          "ece_contribution": 0.0056,
-          "mean_cell_f1": 0.9195
+          "avg_confidence_proxy": 0.8064,
+          "avg_calibrated_confidence": 0.8064,
+          "accuracy": 0.8285,
+          "calibration_gap": 0.0221,
+          "ece_contribution": 0.0044,
+          "mean_cell_f1": 0.9052
         },
         {
           "bin": "q5",
           "confidence_range": [
-            0.8266,
-            0.8687
+            0.8161,
+            0.85
           ],
           "cells": 344,
-          "avg_confidence_proxy": 0.8418,
-          "avg_calibrated_confidence": 0.8418,
-          "accuracy": 0.8343,
-          "calibration_gap": -0.0075,
-          "ece_contribution": 0.0015,
-          "mean_cell_f1": 0.9184
+          "avg_confidence_proxy": 0.8286,
+          "avg_calibrated_confidence": 0.8286,
+          "accuracy": 0.8314,
+          "calibration_gap": 0.0028,
+          "ece_contribution": 0.0006,
+          "mean_cell_f1": 0.9108
         }
       ],
       "per_family": [
@@ -1102,9 +1102,9 @@
           "family": "Diagnosis",
           "cells": 520,
           "accuracy": 0.6519,
-          "mean_calibrated_confidence": 0.6608,
-          "expected_calibration_error": 0.0535,
-          "brier_score": 0.2095,
+          "mean_calibrated_confidence": 0.6713,
+          "expected_calibration_error": 0.0723,
+          "brier_score": 0.2122,
           "constant_base_rate_brier_score": 0.2369,
           "bin_count": 4
         },
@@ -1112,9 +1112,9 @@
           "family": "SeizureFrequency",
           "cells": 421,
           "accuracy": 0.7411,
-          "mean_calibrated_confidence": 0.7482,
-          "expected_calibration_error": 0.0486,
-          "brier_score": 0.1949,
+          "mean_calibrated_confidence": 0.7503,
+          "expected_calibration_error": 0.0436,
+          "brier_score": 0.194,
           "constant_base_rate_brier_score": 0.1919,
           "bin_count": 4
         },
@@ -1122,9 +1122,9 @@
           "family": "Prescription",
           "cells": 463,
           "accuracy": 0.8315,
-          "mean_calibrated_confidence": 0.8165,
+          "mean_calibrated_confidence": 0.8088,
           "expected_calibration_error": 0.0387,
-          "brier_score": 0.1324,
+          "brier_score": 0.1339,
           "constant_base_rate_brier_score": 0.1466,
           "bin_count": 4
         },
@@ -1132,9 +1132,9 @@
           "family": "Investigations",
           "cells": 315,
           "accuracy": 0.8127,
-          "mean_calibrated_confidence": 0.8033,
-          "expected_calibration_error": 0.0208,
-          "brier_score": 0.1551,
+          "mean_calibrated_confidence": 0.7963,
+          "expected_calibration_error": 0.0338,
+          "brier_score": 0.1548,
           "constant_base_rate_brier_score": 0.156,
           "bin_count": 4
         }

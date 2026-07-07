@@ -10,6 +10,20 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import FAMILIES, _CALIBRATION_FEATURES
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import confidence_bin
 
+# Logistic-regression fit hyperparameters for the grouped calibration scoring rule.
+# ``LOGISTIC_L2_STRENGTH`` was raised from 0.015 to 0.03 after the four-family
+# scorer-scope fixes (7949a9d4, 2026-07-02) re-scored the dev140 surface: the
+# lighter penalty over-fit a cluster of high-confidence full-200 cells and produced
+# a non-monotone reliability curve (adjacent-bin reversal 0.1105 > the 0.10
+# promotion gate). L2 = 0.03 restores monotonicity (reversal 0.0784) on full-200
+# while leaving dev140 cross-validated ECE essentially unchanged (0.0245 -> 0.0229).
+# See ``exectv2_calibration_redesign_2026-07-07.md`` for the L2 sweep and the
+# external-signal null result that motivated operating on regularization rather
+# than on additional features.
+_LOGISTIC_LEARNING_RATE = 0.18
+_LOGISTIC_EPOCHS = 700
+LOGISTIC_L2_STRENGTH = 0.03
+
 def calibration_proxy(cells: list[dict[str, Any]]) -> dict[str, Any]:
     scored = cross_validated_calibration_scores(cells, fold_count=5)
     pairs = [
@@ -173,9 +187,9 @@ def fit_logistic_scoring_rule(cells: list[dict[str, Any]]) -> list[float]:
     weights = [0.0 for _ in range(len(_CALIBRATION_FEATURES) + 1)]
     if not cells:
         return weights
-    learning_rate = 0.18
-    l2 = 0.015
-    epochs = 700
+    learning_rate = _LOGISTIC_LEARNING_RATE
+    l2 = LOGISTIC_L2_STRENGTH
+    epochs = _LOGISTIC_EPOCHS
     for _ in range(epochs):
         gradients = [0.0 for _ in weights]
         for cell in cells:

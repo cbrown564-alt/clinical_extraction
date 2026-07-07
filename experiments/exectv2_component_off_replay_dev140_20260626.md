@@ -20,7 +20,7 @@
 | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | evidence_validation | 0.8211 | 0.8211 | +0.0000 | +0.0000 | +0.0000 | +0.0000 | +0.0000 |
 | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | standard_dictionary | 0.8601 | 0.8211 | +0.0390 | +0.1042 | +0.0000 | +0.0000 | +0.0000 |
 | `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | residual_semantic_lens | 0.8778 | 0.8601 | +0.0177 | +0.0476 | +0.0000 | +0.0000 | +0.0000 |
-| `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | headline_projection | 0.9061 | 0.8778 | +0.0283 | +0.0000 | +0.1239 | +0.0000 | +0.0000 |
+| `exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140` | headline_projection | 0.9061 | 0.8778 | +0.0283 | +0.0000 | +0.1266 | +0.0000 | +0.0000 |
 | `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | evidence_validation | 0.7498 | 0.7498 | +0.0000 | +0.0000 | +0.0000 | +0.0000 | +0.0000 |
 | `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | standard_dictionary | 0.8334 | 0.7498 | +0.0836 | +0.1382 | +0.0824 | +0.0775 | -0.0443 |
 | `exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140` | residual_semantic_lens | 0.8728 | 0.8334 | +0.0394 | +0.0333 | +0.0542 | -0.0015 | +0.1039 |

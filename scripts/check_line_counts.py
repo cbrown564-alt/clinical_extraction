@@ -298,7 +298,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split pipeline v1 integration cases",
     ),
     "test_exectv2_clinical_finding_assembly.py": AllowlistEntry(
-        830,
+        833,
         "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases",
     ),
     "test_gan2026_clinical_assessment_projection_render.py": AllowlistEntry(

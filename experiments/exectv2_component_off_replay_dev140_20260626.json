@@ -174,6 +174,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -341,6 +342,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -508,6 +510,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -675,6 +678,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -842,6 +846,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1009,6 +1014,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1176,6 +1182,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1230,11 +1237,11 @@
             "recall_tp": 272
           },
           "SeizureFrequency": {
-            "precision": 0.9,
+            "precision": 0.9053,
             "recall": 0.9107,
-            "f1": 0.9053,
+            "f1": 0.908,
             "tp": 153,
-            "fp": 17,
+            "fp": 16,
             "fn": 15,
             "pred_count": 170,
             "gold_count": 168
@@ -1323,13 +1330,13 @@
       "overall_component_contribution_delta": 0.0283,
       "family_component_contribution_deltas": {
         "Diagnosis": 0.0,
-        "SeizureFrequency": 0.1239,
+        "SeizureFrequency": 0.1266,
         "Prescription": 0.0,
         "Investigations": 0.0
       },
       "family_component_off_deltas": {
         "Diagnosis": 0.0,
-        "SeizureFrequency": -0.1239,
+        "SeizureFrequency": -0.1266,
         "Prescription": 0.0,
         "Investigations": 0.0
       },
@@ -1343,6 +1350,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1510,6 +1518,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1677,6 +1686,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -1844,6 +1854,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2011,6 +2022,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2178,6 +2190,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2345,6 +2358,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2512,6 +2526,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2679,6 +2694,7 @@
         "abstentions": "not_recorded_in_source_summary",
         "missing_outputs": "not_recorded_in_source_summary"
       },
+      "deterministic_action_counts": {},
       "row_inspection_policy": "aggregate_only",
       "allow_model_calls": false,
       "allow_post_run_tuning": false,
@@ -2852,7 +2868,7 @@
           "overall_component_contribution_delta": 0.0283,
           "family_component_contribution_deltas": {
             "Diagnosis": 0.0,
-            "SeizureFrequency": 0.1239,
+            "SeizureFrequency": 0.1266,
             "Prescription": 0.0,
             "Investigations": 0.0
           }

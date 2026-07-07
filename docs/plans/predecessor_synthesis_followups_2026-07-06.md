@@ -1,6 +1,8 @@
 # Implementation plan — predecessor-synthesis follow-ups (7 items)
 
-Status: **IN PROGRESS — items 1, 2, 3, 4, 6, 7 done; 5 pending.** Date: 2026-07-06.
+Status: **COMPLETE — all 7 items done (1, 2, 3, 4, 5, 6, 7) + both pieces of
+candidate work done (item 2 hybrid-lane integration; item 4 Inv+SF oracle
+extension).** Date: 2026-07-06.
 Owner: ExECTv2 + Gan2026 workstreams.
 Branch context: `exectv2-capacity-execution-gap-generalization`.
 Provenance: triggered by the 2026-07-06 read of the four predecessor-lessons
@@ -17,27 +19,34 @@ experiments that each warrant their **own separately-frozen predeclaration**
 research protocol: dev140 / labelled synthetic panel only; Gan test450 and
 ExECT holdout/full-200 row-level inspection remain blocked.
 
-> **Status snapshot (2026-07-06 close):** items **1** (`/gold-noise` tab),
-> **6** (`multiple` sentinel audit), **7** (policy-wall audit), **2**
-> (closed-option direction selector), **4** (no-model medication oracle), and
-> **3** (retrieval-highlight salience priming) are **complete**. Item 5 remains
-> pending. The three headline outcomes so far: **item 2 refutes the
-> "fundamental" framing** of the SF capacity-vs-execution gap (closed-option
-> recovers +0.0552 dev140 `state_profile_directional` where the free-write
-> family regressed); **item 4 confirms the dspy medication-ceiling framing** —
-> deterministic-only (`_extract_prescriptions` as the final system, zero LLM)
-> reproduces the cited hybrid `clinical_headline` **exactly** (0.9615 dev140 /
-> 0.9278 full-200, gap +0.0000 on both), so the LLM contributes **zero** to the
-> Prescription headline; **item 3 is the diversifying negative on the input
-> axis** — retrieval-highlight priming does *not* move direction (Arm B − Arm A
-> = −0.0068 dev140 `state_profile_directional`, < the +0.02 kill band), so the
-> gap **survives a change of input** even though item 2 showed it does *not*
-> survive a change of generation contract. Combined cross-family claim: the
-> SF-direction gap is **contract-sensitive but input-robust** (not fundamental;
-> the lever is the closed-option contract, not input salience-priming; on this
-> surface retrieval works by lookup, not priming). See the per-item status
-> stamps and outcome notes below, and the linked audit/experiment docs.
-> Remaining: item 5 (raw-vs-projected decomposition, zero LLM).
+> **Status snapshot (2026-07-06 close):** **all seven items complete.** Items
+> **1** (`/gold-noise` tab), **6** (`multiple` sentinel audit), **7** (policy-wall
+> audit), **2** (closed-option direction selector), **4** (no-model medication
+> oracle), **3** (retrieval-highlight salience priming), and **5** (raw-vs-
+> projected decomposition) are all **done**. The four headline outcomes:
+> **item 2 refutes the "fundamental" framing** of the SF capacity-vs-execution
+> gap (closed-option recovers +0.0552 dev140 `state_profile_directional` where
+> the free-write family regressed); **item 4 confirms the dspy medication-ceiling
+> framing** — deterministic-only (`_extract_prescriptions` as the final system,
+> zero LLM) reproduces the cited hybrid `clinical_headline` **exactly** (0.9615
+> dev140 / 0.9278 full-200, gap +0.0000 on both), so the LLM contributes **zero**
+> to the Prescription headline; **item 3 is the diversifying negative on the
+> input axis** — retrieval-highlight priming does *not* move direction (Arm B −
+> Arm A = −0.0068 dev140 `state_profile_directional`, < the +0.02 kill band), so
+> the gap **survives a change of input** even though item 2 showed it does *not*
+> survive a change of generation contract; **item 5 is the attribution-discipline
+> deliverable** — the cited 0.9189 dev140 / 0.8680 full-200 `clinical_headline`
+> decomposes per family into raw producer emission (0.8475 / 0.8117), post-lens
+> (0.8913 / 0.8383), and headline (0.9189 / 0.8680); the deterministic layer
+> contributes +0.0714 / +0.0563 overall, split cleanly by family (Dx lift = lens
+> +0.1194 dev; SF lift = CUI-bridge +0.1244 dev; Rx/Inv = +0.0000) — smaller and
+> sharper than dspy's flat ~24pp bridge figure, and the per-family raw numbers
+> are now stated alongside the headline, preempting the bridge-inflation
+> critique. Combined cross-family claim: the SF-direction gap is
+> **contract-sensitive but input-robust** (not fundamental; the lever is the
+> closed-option contract, not input salience-priming; on this surface retrieval
+> works by lookup, not priming). See the per-item status stamps and outcome
+> notes below, and the linked audit/experiment docs.
 
 ---
 
@@ -58,8 +67,10 @@ The seven items are not independent. They form three groups plus two audits:
   the lever that deploys the capacity is the closed-option contract, not input
   salience-priming (on this surface retrieval works by lookup, not priming).
 - **Group B — honest-headline infrastructure (items 1, 4, 5).** Item 5
-  decomposes the cited 0.9189 into raw-LLM vs deterministic; item 4 establishes
-  the no-model medication ceiling — **DONE 2026-07-06, confirms dspy framing
+  decomposes the cited 0.9189 into raw-LLM vs deterministic — **DONE 2026-07-06,
+  family-split decomposition (Dx=lens, SF=bridge, Rx/Inv=none; +0.0714 dev /
+  +0.0563 full overall; raw stated per family)**; item 4 establishes the
+  no-model medication ceiling — **DONE 2026-07-06, confirms dspy framing
   (deterministic-only == cited hybrid headline, gap +0.0000 on both splits)**;
   item 1 surfaces all gold-quality evidence in a dedicated frontend tab —
   **DONE 2026-07-06**. Together they answer the dspy "bridge-inflation" critique
@@ -77,7 +88,8 @@ Sequencing recommendation (original): **6 → 7 → 5 → 4 → 1 (parallel) →
 split-discipline risk; item 4 is a zero-LLM ceiling probe; items 2 and 3 are the
 only costed, fresh-protocol experiments. **Actual execution order:** 6 → 7 → 2
 (per the user's "run 6 & 7 first" direction); items 1 and 4 landed separately
-earlier on 2026-07-06. Items 5 (zero-LLM) and item 3 (costed) remain.
+earlier on 2026-07-06; items 3 (costed) and 5 (zero-LLM) landed last. **All
+seven items are now complete.**
 
 ---
 
@@ -505,7 +517,42 @@ ceiling is deterministic-owned and the LLM lane's value is elsewhere.
 
 ---
 
-## Item 5 — State the raw-extraction number alongside the headline  ⏳ PENDING (zero LLM)
+## Item 5 — State the raw-extraction number alongside the headline  ✅ DONE (2026-07-06)
+
+Landed as a zero-LLM attribution-discipline probe
+(`experiments/exectv2_raw_vs_projected_decomposition_2026-07-06.py`) + results
+doc (`docs/experiments/exectv2/exectv2_raw_vs_projected_decomposition_2026-07-06.md`).
+**Outcome: the deterministic contribution to the cited `clinical_headline` is
+now stated per family — the dspy bridge-inflation critique is preempted by
+surfacing the decomposition rather than hiding it, and the shape is sharper than
+dspy's flat ~24pp.** The cited 0.9189 dev140 / 0.8680 full-200 decomposes as:
+
+| Surface | dev140 | full-200 |
+| --- | ---: | ---: |
+| RAW (producer emission, pre-lens) | 0.8475 | 0.8117 |
+| POST-LENS (+ deterministic reconciliation) | 0.8913 | 0.8383 |
+| HEADLINE (+ bridge, de-dup, CUI projection) | 0.9189 | 0.8680 |
+| **deterministic contribution (R→H)** | **+0.0714** | **+0.0563** |
+
+The lift is **family-specific**, split cleanly by stage: **Dx** lift (+0.1194 dev
+/ +0.0728 full) is the deterministic **dictionary lens** (post-lens already ==
+headline; convention rewriting + generic-anchor removal); **SF** lift (+0.1244
+dev / +0.1250 full) is the **CUI-projection bridge + de-dup** (post-lens == raw;
+the entire lift is stage 3 — *the* projection-heavy number dspy warns about);
+**Rx** and **Inv** get **+0.0000** (raw == headline — Rx is the deterministic-
+owned ceiling item 4 confirmed from the other direction). So there is no single
+honest "the deterministic layer contributes X" number — the honest statement is
+per-family. Two caveats are surfaced (not hidden) in the doc: (1) **"raw" is
+post-producer, not raw vanilla-LLM** (the dev140 Dx/SF/Inv producers are hybrid
+routes; only Rx is fully deterministic), so it is not directly commensurable with
+dspy's single-call raw figure — the per-family *shape* is what transfers, not the
+absolute gap; (2) the SF full-200 raw (0.6592) is the uncomfortable number this
+decomposition surfaces — more reason to state it, not less. The probe reads the
+registry-tracked P7 treatment artifacts' own `score_ladder` surfaces
+(`raw_lane_score` / `materialized_surfaces.residual_benchmark_added` /
+`headline_target`), and its self-check confirms the headline column reproduces
+0.9189 / 0.8680 exactly. A drop-in §4 paragraph is in the results doc. Hypothesis
+`rx_dx_sf_inv_raw_vs_projected_decomposition_2026-07-06` registered (CONFIRMED).
 
 **Motivating predecessor finding.** dspy's most uncomfortable finding for us:
 **raw S1 extraction is 68.6% micro-F1; after benchmark bridges the same surface
@@ -731,17 +778,17 @@ before they predeclare, because if GEPA's plateau is policy-wall-shaped, the
 | 7 — policy-wall check | Audit | 0 | none | — | ✅ DONE 2026-07-06 | 2/32 evolved seeds clear the 14,639-char wall (18,638 / 16,119); research-only, not production path |
 | 1 — gold-noise frontend tab | Infra | 0 | none | — | ✅ DONE 2026-07-06 | `/gold-noise` route landed (read-only, 3 levels) |
 | 2 — closed-option SF-direction selector | Experiment | 28 calls (ran) | dev140 only | 6, 7 | ✅ DONE 2026-07-06 | **REFUTES "fundamental"** — +0.0552 dev140 directional, no regression |
-| 5 — raw-extraction decomposition | Infra | 0 | none (re-score) | — | ⏳ PENDING | — |
+| 5 — raw-extraction decomposition | Infra | 0 | none (re-score) | — | ✅ DONE 2026-07-06 | Deterministic contributes +0.0714 dev / +0.0563 full; family-split (Dx=lens, SF=bridge, Rx/Inv=none); raw stated per family |
 | 4 — no-model medication oracle | Ceiling probe | 0 | none (replay) | — | ✅ DONE 2026-07-06 | **Confirms dspy framing** — deterministic-only == cited hybrid headline (0.9615 dev / 0.9278 full, gap +0.0000 both); LLM adds zero to Rx headline |
 | 3 — retrieval-highlight priming | Experiment | 84 calls (ran) | dev140 only | 6, 7 | ✅ DONE 2026-07-06 | **HIGHLIGHT IS NOT THE LEVER** — Arm B − Arm A = −0.0068 dev140 directional (< +0.02 kill band); gap survives input change; LOOKUP not priming (Arm C ≈ Arm B) |
 
 Only items 2 and 3 are costed fresh-protocol experiments; both are spent (item 2
 28 calls, item 3 84 calls). Everything else is zero-LLM audit/infrastructure;
-item 5 remains. The two audits (6, 7) ran first per design and their outcomes
-were absorbed into item 2's frozen predeclaration: item 6's unknown-vs-counted
-finding → item 2 states its claim in within-architecture-delta terms; item 7's
-policy-wall finding (research-only) → item 2 ran on the un-walled raw program,
-so its refute is clean.
+**all seven items are now complete.** The two audits (6, 7) ran first per design
+and their outcomes were absorbed into item 2's frozen predeclaration: item 6's
+unknown-vs-counted finding → item 2 states its claim in within-architecture-delta
+terms; item 7's policy-wall finding (research-only) → item 2 ran on the un-walled
+raw program, so its refute is clean.
 
 ## Cross-cutting research-protocol compliance
 
@@ -771,10 +818,28 @@ so its refute is clean.
    probe (cleanest attribution), or wire it into the existing gan2026
    `CandidateSet` substrate?~~ **RESOLVED 2026-07-06 — standalone probe chosen
    and run.** It worked (+0.0552, refutes "fundamental"), so per the original
-   recommendation the substrate-integration follow-up is now candidate work:
-   wire the closed-option selector into gan2026's `CandidateSet` as a candidate
-   direction source feeding the hybrid arbitration, and re-score against the
-   0.8897 hybrid reference. Not started.
+   recommendation the substrate-integration follow-up was run as candidate work.
+   **INTEGRATION DONE 2026-07-06 (registry entry 37):** wired the closed-option
+   selector into the **ExECTv2 hybrid SF lane** (not gan2026 — scope correction:
+   0.8897 is an ExECTv2 number; the gan2026 `CandidateSet` has no direction
+   concept and scores a different surface; documented in the predeclaration's
+   "Scope correction" section). Replayed on the v08 hybrid artifact, the LLM
+   selector scored **0.8333 dev140 `state_profile_directional`** vs the
+   deterministic-rules hybrid reference **0.8897** (delta **−0.0563**),
+   `state_profile` byte-identical (0.9338). Verdict: **APPROACHES but does not
+   match** — negative-for-production-wiring; the deterministic `rules/change.py`
+   remains the superior final direction source (consistent with the inversion
+   synthesis). Mechanism: a vocab-design finding — the gold `FrequencyChange`
+   attribute conflates change-direction (`Increased`/`Decreased`/`Same`) and
+   frequency-magnitude (`Frequent`/`Infrequent`); the LLM selector answers the
+   plain-English "direction" question (a subset), while the deterministic regexes
+   faithfully implement the conflated vocab. This does **not** contradict the
+   standalone refute (different question: contract-on-direction-blind-artifact vs
+   selector-replacing-already-strong-rules). Driver
+   `scripts/run_exectv2_sf_closed_option_hybrid_integration.py`; library
+   `hybrid/closed_option_direction.py`; opt-in wiring
+   `hybrid/clinical_assessment.py::run_split(direction_selector=...)`. 25
+   gpt-4.1-mini calls, dev140, temp 0, cached.
 2. **Item 3 ablation:** ~~include Arm C (highlight-only) to replicate
    dissertation-recursive's −32pp mechanism result, or run only A vs B to save
    calls?~~ **RESOLVED 2026-07-06 — Arm C included, per the original
@@ -794,4 +859,18 @@ so its refute is clean.
    90.4–96.7% near-ceiling) and the SF candidate substrate is now candidate work
    — the medication probe's two-surface design (`gold_as_prediction` scorer
    ceiling + `deterministic_only` extraction ceiling) is the reusable template.
-   Not started.
+   **EXTENSION DONE 2026-07-06 (registry entries 35 Inv + 36 SF).** Both
+   families probed; the cross-family attribution picture is now complete and
+   **decomposes cleanly**: **Prescription** deterministic-owned (LLM adds zero
+   to headline, item 4 medication oracle), **SF** deterministic-owned
+   (deterministic ≈ hybrid — `state_profile` 0.8947 dev exceeds the cited
+   registered 0.7483; `state_profile_directional` 0.8873 vs hybrid 0.8897, gap
+   −0.0024; candidate substrate 77% recall / 39% precision — partial
+   confirmation of dspy's E1 broad-payload framing, but recall is 77% not
+   dspy's 100%), **Investigations** lens+LLM-owned (deterministic-only **0.5116
+   dev / 0.4858 full**, gap −0.4016 / −0.4355 — the contribution-bearing family,
+   opposite of the Rx/SF pattern; the hybrid's verifier + pending-test
+   suppression + completed-neuro lens owns the Inv headline). Drivers
+   `experiments/exectv2_investigations_no_model_oracle_2026-07-06.py` +
+   `experiments/exectv2_sf_no_model_oracle_2026-07-06.py`. Zero LLM calls
+   (deterministic replay over gold text), both splits.
