@@ -64,8 +64,10 @@ def main() -> None:
         f"per-letter {gate['benchmark_per_letter_f1']:.3f} "
         f"(targets {gate['freeze_target_per_item']:.2f}/{gate['freeze_target_per_letter']:.2f})"
     )
-    print(f"Gate met: {gate['gate_met']} -> full-200 audit authorized: "
-          f"{gate['full_200_audit_authorized']}")
+    print(
+        f"Gate met: {gate['gate_met']} -> full-200 audit authorized: "
+        f"{gate['full_200_audit_authorized']}"
+    )
 
 
 if __name__ == "__main__":

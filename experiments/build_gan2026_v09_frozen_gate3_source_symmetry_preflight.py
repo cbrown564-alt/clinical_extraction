@@ -18,8 +18,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DATE = "2026-06-26"
 RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_9_"
-    f"frozen_gate3_source_symmetry_preflight_{DATE}"
+    f"gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_source_symmetry_preflight_{DATE}"
 )
 SPLIT_MANIFEST = ROOT / "data" / "Gan (2026)" / "splits" / "gan2026_split_v1.json"
 JSON_OUT = ROOT / "experiments" / f"{RUN_ID}.json"
@@ -30,33 +29,24 @@ DETERMINISTIC_JSONL = (
     "gpt41mini_2026-06-09.jsonl"
 )
 DETERMINISTIC_MD = (
-    "gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_"
-    "gpt41mini_2026-06-09.md"
+    "gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_gpt41mini_2026-06-09.md"
 )
 CONSENSUS_TWO_AGENT_JSONL = (
-    "gan2026_agentic_structured_event_consensus_available_two_agent_exact_"
-    "test450_2026-06-13.jsonl"
+    "gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.jsonl"
 )
 CONSENSUS_TWO_AGENT_MD = (
-    "gan2026_agentic_structured_event_consensus_available_two_agent_exact_"
-    "test450_2026-06-13.md"
+    "gan2026_agentic_structured_event_consensus_available_two_agent_exact_test450_2026-06-13.md"
 )
 FRESH_EVIDENCE_JSONL = (
-    "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
-    "2026-06-15.jsonl"
+    "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
 )
 FRESH_EVIDENCE_MD = (
-    "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
-    "2026-06-15.md"
+    "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
 )
 GPT_SE_JSONL = (
-    "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
-    "2026-06-09.jsonl"
+    "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl"
 )
-GPT_SE_MD = (
-    "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
-    "2026-06-09.md"
-)
+GPT_SE_MD = "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.md"
 QWEN_PATCH_JSONL = (
     "gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_"
     "qwen3635b_2026-06-13.jsonl"
@@ -90,9 +80,7 @@ COMPONENTS = [
             "available two-agent exact-label unanimity over GPT/Qwen structured events; "
             "not exact validation three-agent policy"
         ),
-        path=ROOT
-        / "experiments"
-        / CONSENSUS_TWO_AGENT_JSONL,
+        path=ROOT / "experiments" / CONSENSUS_TWO_AGENT_JSONL,
         markdown_path=ROOT / "experiments" / CONSENSUS_TWO_AGENT_MD,
     ),
     ComponentSpec(
@@ -281,9 +269,7 @@ def audit_artifact(spec: ComponentSpec, manifest_rows: set[int]) -> dict[str, An
         "path": rel(spec.path),
         "sha256": sha256(spec.path),
         "markdown_path": (
-            rel(spec.markdown_path)
-            if spec.markdown_path and spec.markdown_path.exists()
-            else None
+            rel(spec.markdown_path) if spec.markdown_path and spec.markdown_path.exists() else None
         ),
         "markdown_sha256": sha256(spec.markdown_path)
         if spec.markdown_path and spec.markdown_path.exists()
@@ -294,10 +280,7 @@ def audit_artifact(spec: ComponentSpec, manifest_rows: set[int]) -> dict[str, An
         "source_row_count": len(row_ids),
         "unique_source_rows": len(unique_rows),
         "coverage_ok": (
-            len(unique_rows) == 450
-            and not missing
-            and not off_manifest
-            and not duplicates
+            len(unique_rows) == 450 and not missing and not off_manifest and not duplicates
         ),
         "duplicate_source_row_count": len(duplicates),
         "off_manifest_source_row_count": len(off_manifest),
@@ -306,9 +289,7 @@ def audit_artifact(spec: ComponentSpec, manifest_rows: set[int]) -> dict[str, An
         "parse_or_repair_note_rows": parse_error_rows,
         "prompt_rows_checked": prompt_rows_checked,
         "prompt_forbidden_key_hits": dict(sorted(prompt_key_hits.items())),
-        "prompt_observed_nonblocking_key_hits": dict(
-            sorted(prompt_observed_key_hits.items())
-        ),
+        "prompt_observed_nonblocking_key_hits": dict(sorted(prompt_observed_key_hits.items())),
         "prompt_hygiene_ok": prompt_hygiene_ok,
         "forbidden_row_content_fields_present": forbidden_present,
         "row_content_fields_not_opened_for_development": True,
@@ -322,9 +303,7 @@ def main() -> None:
 
     all_required = component_audits + substrate_audits
     coverage_ok = all(item.get("coverage_ok") for item in all_required)
-    prompt_hygiene_ok = all(
-        item.get("prompt_hygiene_ok") is not False for item in all_required
-    )
+    prompt_hygiene_ok = all(item.get("prompt_hygiene_ok") is not False for item in all_required)
     exact_consensus_available = False
     consensus_mode = "closest_available_constrained_two_agent"
     gate_passed = coverage_ok and prompt_hygiene_ok

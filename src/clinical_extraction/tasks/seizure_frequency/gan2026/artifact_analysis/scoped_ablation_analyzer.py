@@ -65,14 +65,16 @@ class ScopedAblationAnalyzer:
                     "correct": pred_label == gold_label,
                 }
 
-            rows.append({
-                "source_row_index": int(record["source_row_index"]),
-                "source": str(record.get("source", "unknown")),
-                "source_artifact": str(record.get("source_artifact", "unknown")),
-                "gold_normalized_label": gold_label,
-                "gold_monthly_frequency": gold_freq,
-                "variant_results": variant_results,
-            })
+            rows.append(
+                {
+                    "source_row_index": int(record["source_row_index"]),
+                    "source": str(record.get("source", "unknown")),
+                    "source_artifact": str(record.get("source_artifact", "unknown")),
+                    "gold_normalized_label": gold_label,
+                    "gold_monthly_frequency": gold_freq,
+                    "variant_results": variant_results,
+                }
+            )
 
         # Calculate metrics for each variant
         variants_summary = {}
@@ -84,8 +86,7 @@ class ScopedAblationAnalyzer:
 
             variants_summary[variant.name] = {
                 "exact_matches": sum(
-                    bool(row["variant_results"][variant.name]["correct"])
-                    for row in rows
+                    bool(row["variant_results"][variant.name]["correct"]) for row in rows
                 ),
                 "purist_accuracy": purist["micro"]["accuracy"],
                 "purist_f1": purist["micro"]["f1"],
@@ -149,17 +150,17 @@ class ScopedAblationAnalyzer:
                 f"{stats['purist_f1']:.4f} | {stats['pragmatic_f1']:.4f} |"
             )
 
-        lines.extend([
-            "",
-            "## Detailed Results",
-            "",
-            "| Row | Gold | " + " | ".join(f"{v.name}" for v in self.variants) + " |",
-            "| ---: | --- | " + " | ".join("---" for _ in self.variants) + " |",
-        ])
-        for row in rows:
-            variant_cells = [
-                row["variant_results"][v.name]["final_label"] for v in self.variants
+        lines.extend(
+            [
+                "",
+                "## Detailed Results",
+                "",
+                "| Row | Gold | " + " | ".join(f"{v.name}" for v in self.variants) + " |",
+                "| ---: | --- | " + " | ".join("---" for _ in self.variants) + " |",
             ]
+        )
+        for row in rows:
+            variant_cells = [row["variant_results"][v.name]["final_label"] for v in self.variants]
             lines.append(
                 f"| {row['source_row_index']} | {row['gold_normalized_label']} | "
                 + " | ".join(variant_cells)

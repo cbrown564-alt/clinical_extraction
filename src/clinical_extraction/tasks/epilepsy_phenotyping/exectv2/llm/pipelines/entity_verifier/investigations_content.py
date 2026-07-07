@@ -75,11 +75,12 @@ class ExECTv2InvestigationsVerifierSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
+
 
 def _clinical_rules() -> list[str]:
     return [
@@ -126,6 +127,7 @@ def _clinical_rules() -> list[str]:
         ),
         "Return exactly one JSON object. No markdown code fences.",
     ]
+
 
 def _worked_examples() -> list[dict[str, Any]]:
     return [
@@ -188,8 +190,7 @@ def _worked_examples() -> list[dict[str, Any]]:
                     "evidence": "Video EEG captured events with no epileptiform correlate",
                     "confidence": "medium",
                     "rationale": (
-                        "Video EEG is completed telemetry with no epileptiform "
-                        "correlate."
+                        "Video EEG is completed telemetry with no epileptiform correlate."
                     ),
                 }
             ],
@@ -208,6 +209,7 @@ def _worked_examples() -> list[dict[str, Any]]:
             ],
         },
     ]
+
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     if not rows:

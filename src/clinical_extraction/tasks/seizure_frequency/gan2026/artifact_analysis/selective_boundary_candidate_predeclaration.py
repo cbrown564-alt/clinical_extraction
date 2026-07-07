@@ -29,9 +29,7 @@ DEFAULT_JSONL_PATH = Path(
 DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_selective_boundary_candidate_predeclaration_2026-06-04.json"
 )
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_REPORT_PATH = Path("")
 DEFAULT_PROTOCOL_PATH = Path("")
 
 PROMPT_VERSION = "selective_boundary_candidate_proposer_v3"

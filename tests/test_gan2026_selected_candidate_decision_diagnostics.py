@@ -51,9 +51,7 @@ def test_selected_candidate_decision_diagnostics_summarizes_sources_and_modes() 
     assert diagnostic_rows[0]["selected_source_composition"] == "mixed"
     assert diagnostic_rows[0]["high_burden"] is True
     assert diagnostic_rows[0]["related_group_coherence_flags"] == []
-    assert diagnostic_rows[0]["related_group_policy_action"] == (
-        "aggregate_selected_candidates"
-    )
+    assert diagnostic_rows[0]["related_group_policy_action"] == ("aggregate_selected_candidates")
     assert metadata["summary"]["selection_mode_counts"] == {
         "no_reliable_candidate": 1,
         "related_candidate_group": 1,
@@ -169,9 +167,7 @@ def _selection_row(
 
 def _frequency_candidate(candidate_id: str, evidence: str) -> ExtractedCandidate:
     source_row_index = int(candidate_id.split(":")[1])
-    source_type = (
-        "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
-    )
+    source_type = "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
     return ExtractedCandidate(
         candidate_id=candidate_id,
         component_owner="test",

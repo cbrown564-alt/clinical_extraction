@@ -77,7 +77,7 @@ def main() -> None:
     }
     # AUROC of majority fraction for predicting correctness (does self-agreement rank?).
     auroc_self = rc.auroc(majority_fracs, correctness)
-    unanimous = agreement_curve.get(f"4/4", {"n": 0, "accuracy": None})
+    unanimous = agreement_curve.get("4/4", {"n": 0, "accuracy": None})
 
     result: dict[str, Any] = {
         "artifact_kind": "gan2026_reliability_p0_8_self_consistency",
@@ -113,27 +113,37 @@ def main() -> None:
 def render_md(result: dict[str, Any]) -> str:
     L: list[str] = []
     L.append("# P0.8 — Hard50 Self-Consistency Re-Tabulation (Consistency, partial)\n")
-    L.append(f"Date: {result['date']}  ·  n={result['n_rows']} hard rows  ·  "
-             f"k={result['k_samples']} samples @ temp {result['sampling_temperature']}  ·  "
-             "Model calls: 0\n")
+    L.append(
+        f"Date: {result['date']}  ·  n={result['n_rows']} hard rows  ·  "
+        f"k={result['k_samples']} samples @ temp {result['sampling_temperature']}  ·  "
+        "Model calls: 0\n"
+    )
     L.append("## Agreement ↔ accuracy curve\n")
     L.append("| Majority (top/k) | n | Correct | Accuracy |")
     L.append("|---|---:|---:|---:|")
     for bucket, d in result["agreement_accuracy_curve"].items():
         L.append(f"| {bucket} | {d['n']} | {d['correct']} | {d['accuracy']:.1%} |")
     ua = result["unanimous_accuracy"]
-    L.append(f"\n> **Temperature caveat.** All samples are temp-0, so this measures "
-             "reproducibility/determinism, not self-consistency. Genuine self-consistency "
-             "needs VARYING temperatures (P2.1). The reproducibility-conditioned reading "
-             "below is what survives that caveat.\n")
-    L.append(f"- **Temp-0 unanimous (4/4) accuracy: {ua:.1%}** — even fully reproducible "
-             "hard rows are wrong ~31% of the time, so reproducibility ≠ correctness.")
+    L.append(
+        "\n> **Temperature caveat.** All samples are temp-0, so this measures "
+        "reproducibility/determinism, not self-consistency. Genuine self-consistency "
+        "needs VARYING temperatures (P2.1). The reproducibility-conditioned reading "
+        "below is what survives that caveat.\n"
+    )
+    L.append(
+        f"- **Temp-0 unanimous (4/4) accuracy: {ua:.1%}** — even fully reproducible "
+        "hard rows are wrong ~31% of the time, so reproducibility ≠ correctness."
+    )
     auroc = result["self_agreement_auroc_for_correctness_temp0"]
-    L.append(f"- Temp-0 self-agreement AUROC: "
-             f"{'%.4f' % auroc if auroc == auroc else 'n/a'} (uninformative *at temp-0*; "
-             "no conclusion drawn about varying-temperature self-consistency).")
-    L.append(f"- Temp-0 non-determinism: **{result['non_unanimous_rows']}/{result['n_rows']}** "
-             "rows disagree across identical-temperature samples.")
+    L.append(
+        f"- Temp-0 self-agreement AUROC: "
+        f"{f'{auroc:.4f}' if auroc == auroc else 'n/a'} (uninformative *at temp-0*; "
+        "no conclusion drawn about varying-temperature self-consistency)."
+    )
+    L.append(
+        f"- Temp-0 non-determinism: **{result['non_unanimous_rows']}/{result['n_rows']}** "
+        "rows disagree across identical-temperature samples."
+    )
     L.append(f"- Mean normalized label entropy: {result['mean_normalized_entropy']:.3f}\n")
     L.append(f"_{result['caveat']}_\n")
     L.append("---\n")

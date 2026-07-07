@@ -12,6 +12,7 @@ Usage:
     python experiments/exectv2_sf_agentic_redo_hard_panel.py --stage run
     python experiments/exectv2_sf_agentic_redo_hard_panel.py --stage report
 """
+
 from __future__ import annotations
 
 import argparse
@@ -111,7 +112,9 @@ def score_extraction(letter: ExectLetter, raw_output: str) -> tuple[float | None
 
 
 def run_condition_on_letter(condition: str, letter: ExectLetter) -> dict[str, Any]:
-    dspy.configure(lm=build_dspy_lm(MODEL, temperature=TEMPERATURE, max_tokens=MAX_TOKENS, cache=True))
+    dspy.configure(
+        lm=build_dspy_lm(MODEL, temperature=TEMPERATURE, max_tokens=MAX_TOKENS, cache=True)
+    )
     prompt_input_json = build_prompt_input(letter)
 
     call_error: str | None = None
@@ -142,7 +145,9 @@ def run_condition_on_letter(condition: str, letter: ExectLetter) -> dict[str, An
         call_error = f"{type(exc).__name__}: {exc}"
 
     f1, notes = (
-        score_extraction(letter, raw_output) if raw_output and not call_error else (None, ["not_run"])
+        score_extraction(letter, raw_output)
+        if raw_output and not call_error
+        else (None, ["not_run"])
     )
     return {
         "letter_id": letter.letter_id,
@@ -197,10 +202,16 @@ def _non_empty_gold_letter_ids() -> set[str]:
     mechanically floors every condition to a tied 0.0 on those letters and
     swamps the real per-letter signal. Reported separately, not silently
     dropped."""
-    return {letter.letter_id for letter in load_hard_panel_letters() if letter.entities("SeizureFrequency")}
+    return {
+        letter.letter_id
+        for letter in load_hard_panel_letters()
+        if letter.entities("SeizureFrequency")
+    }
 
 
-def _condition_table(lines: list[str], by_condition: dict[str, list[dict[str, Any]]], letter_ids: set[str] | None) -> dict[str, float]:
+def _condition_table(
+    lines: list[str], by_condition: dict[str, list[dict[str, Any]]], letter_ids: set[str] | None
+) -> dict[str, float]:
     means: dict[str, float] = {}
     lines.append("| Condition | Mean F1 | n | True Failures |")
     lines.append("| --- | ---: | ---: | ---: |")
@@ -280,7 +291,7 @@ def report_stage() -> None:
     lines.append(
         f"**Post-hoc finding (not predeclared):** {53 - len(non_empty_ids)}/53 of this "
         "panel's letters have EMPTY gold SeizureFrequency annotations (the "
-        "adjudication doc's own \"gold annotated nothing\" cases). "
+        'adjudication doc\'s own "gold annotated nothing" cases). '
         "`clinical_headline` F1 is structurally 0.0 on an empty-gold letter "
         "regardless of what's predicted -- even a perfectly correct empty "
         "prediction scores 0.0, not 1.0 (verified directly). This mechanically "
@@ -297,12 +308,16 @@ def report_stage() -> None:
     _condition_table(lines, by_condition, None)
 
     lines.append("")
-    lines.append(f"## Condition Mean F1 -- {len(non_empty_ids)} non-empty-gold letters (informative subset)")
+    lines.append(
+        f"## Condition Mean F1 -- {len(non_empty_ids)} non-empty-gold letters (informative subset)"
+    )
     lines.append("")
     _condition_table(lines, by_condition, non_empty_ids)
 
     lines.append("")
-    lines.append(f"## Win/Loss vs single_greedy -- {len(non_empty_ids)} non-empty-gold letters (gate basis)")
+    lines.append(
+        f"## Win/Loss vs single_greedy -- {len(non_empty_ids)} non-empty-gold letters (gate basis)"
+    )
     lines.append("")
     gate_results = _win_loss_table(lines, by_condition, non_empty_ids)
 

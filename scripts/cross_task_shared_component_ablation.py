@@ -13,7 +13,9 @@ from clinical_extraction.core.cross_task_component_ablation import (
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_JSON = REPO / "experiments/cross_task_shared_component_ablation_2026-06-27.json"
-DEFAULT_MD = REPO / "docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md"
+DEFAULT_MD = (
+    REPO / "docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md"
+)
 
 
 def render_markdown(payload: dict[str, Any]) -> str:
@@ -21,9 +23,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
         "# Cross-Task Shared-Component Ablation",
         "",
         f"- Generated: `{payload['generated_on']}`",
-        f"- JSON: `experiments/cross_task_shared_component_ablation_2026-06-27.json`",
-        f"- Harness: `scripts/cross_task_shared_component_ablation.py`",
-        f"- Core module: `src/clinical_extraction/core/cross_task_component_ablation.py`",
+        "- JSON: `experiments/cross_task_shared_component_ablation_2026-06-27.json`",
+        "- Harness: `scripts/cross_task_shared_component_ablation.py`",
+        "- Core module: `src/clinical_extraction/core/cross_task_component_ablation.py`",
         f"- Claim boundary: {payload['claim_boundary']}",
         "- Row inspection policy: `aggregate_only`",
         "- No model calls; reads saved dev140 / validation750 replay artifacts only.",
@@ -97,7 +99,9 @@ def render_markdown(payload: dict[str, Any]) -> str:
         if key in seen:
             continue
         seen.add(key)
-        exectv2 = next(r for r in payload["rows"] if r["component_id"] == key and r["task"] == "exectv2")
+        exectv2 = next(
+            r for r in payload["rows"] if r["component_id"] == key and r["task"] == "exectv2"
+        )
         lines.append(f"### `{key}`")
         lines.append("")
         lines.append(
@@ -153,7 +157,9 @@ def main() -> None:
     payload = build_cross_task_ablation_payload(component_ids=component_ids)
 
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
-    args.json_out.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    args.json_out.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     args.md_out.parent.mkdir(parents=True, exist_ok=True)
     args.md_out.write_text(render_markdown(payload), encoding="utf-8")
 

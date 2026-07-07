@@ -15,6 +15,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinic
     ClinicalFindingRecord,
 )
 
+
 class ExECTv2ClinicalFindingsFinalizerSignature(dspy.Signature):
     """Rewrite raw findings into the final scored seizure-frequency findings.
 
@@ -29,11 +30,11 @@ class ExECTv2ClinicalFindingsFinalizerSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"findings\": [{\"text\": ..., "
-            "\"evidence\": ..., \"clinical_kind\": ..., "
-            "\"frequency_statement_type\": ..., \"source_role\": ..., "
-            "\"count\": ..., \"period_unit\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"findings": [{"text": ..., '
+            '"evidence": ..., "clinical_kind": ..., '
+            '"frequency_statement_type": ..., "source_role": ..., '
+            '"count": ..., "period_unit": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -45,6 +46,7 @@ class DspyClinicalFindingsSFFinalizer(dspy.Module):
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
+
 
 def build_finalization_prompt_input(
     letter: ExectLetter,
@@ -62,8 +64,7 @@ def build_finalization_prompt_input(
         "raw_findings": [finding.model_dump(mode="json") for finding in raw_findings],
         "output_schema": {
             "text": (
-                "Exact short phrase from the letter naming the seizure type or "
-                "seizure-free state."
+                "Exact short phrase from the letter naming the seizure type or seizure-free state."
             ),
             "evidence": (
                 "Exact substring from the letter that supports this finding. Use "
@@ -216,7 +217,7 @@ def build_finalization_prompt_input(
             ),
             (
                 "Use null for unknown optional fields, but every final finding should "
-                "include all required keys. Return {\"findings\": []} when no target "
+                'include all required keys. Return {"findings": []} when no target '
                 "seizure-frequency finding is present."
             ),
             "Return exactly one JSON object. No markdown code fences.",
@@ -254,8 +255,7 @@ def build_finalization_prompt_input(
             },
             {
                 "note_fragment": (
-                    "The epilepsy seems to be under control on medication. "
-                    "Review in nine months."
+                    "The epilepsy seems to be under control on medication. Review in nine months."
                 ),
                 "final_findings": [],
             },

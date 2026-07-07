@@ -55,7 +55,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -135,8 +137,10 @@ def main() -> None:
 
     print(f"# Genuine-recall-miss analysis — {args.run} (dev140)\n")
     print(f"## Diagnosis genuine misses (no overlapping prediction): {dx_total_genuine}")
-    print(f"  ({dx_letter_had_some_pred} occurred in letters where the model DID emit other Dx — "
-          "so it's a per-concept omission, not a blank letter)")
+    print(
+        f"  ({dx_letter_had_some_pred} occurred in letters where the model DID emit other Dx — "
+        "so it's a per-concept omission, not a blank letter)"
+    )
     print("  by category:")
     for cat, n in dx_cat.most_common():
         print(f"    {cat:<28}{n:>3} ({100 * n / dx_total_genuine:.0f}%)")
@@ -171,7 +175,10 @@ def main() -> None:
                 attrs = ann.attributes
                 if any(attrs.get(k) == "0" for k in ("NumberOfSeizures", "LowerNumberOfSeizures")):
                     state = "seizure_free"
-                elif any(attrs.get(k) for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")):
+                elif any(
+                    attrs.get(k)
+                    for k in ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+                ):
                     state = "active_rate"
                 elif attrs.get("FrequencyChange"):
                     state = "changed"
@@ -180,7 +187,9 @@ def main() -> None:
                 sf_state[state] += 1
                 if pred_anns:
                     sf_letter_had_some_pred += 1
-                sf_examples.append((g.letter_id, f"{ann.text} [{state}]", _context(g.note_text, ann)))
+                sf_examples.append(
+                    (g.letter_id, f"{ann.text} [{state}]", _context(g.note_text, ann))
+                )
 
     print(f"\n## SeizureFrequency genuine misses (no overlapping prediction): {sf_total_genuine}")
     print(f"  ({sf_letter_had_some_pred} in letters where the model DID emit other SF)")

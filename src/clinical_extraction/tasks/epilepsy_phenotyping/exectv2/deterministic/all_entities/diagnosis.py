@@ -10,7 +10,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     diagnosis_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
@@ -22,6 +24,8 @@ _DIAGNOSIS_PATTERN = re.compile(
     + r")\b",
     re.IGNORECASE,
 )
+
+
 def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -65,6 +69,8 @@ def _extract_diagnoses(text: str) -> tuple[PredictedMention, ...]:
         occupied.append(match.span())
     mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
     return tuple(mentions)
+
+
 def _is_diagnosis_phrase_inside_onset_statement(text: str, match: re.Match[str]) -> bool:
     right = text[match.end() : match.end() + 48]
     return bool(

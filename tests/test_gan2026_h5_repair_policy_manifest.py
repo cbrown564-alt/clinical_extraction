@@ -29,22 +29,17 @@ def test_h5_repair_policy_manifest_freezes_bounded_policy() -> None:
     assert artifact["locked_test_row_level_artifacts_used"] == 0
     assert artifact["decision"] == "current_bounded_policy_for_next_validation_diagnostic"
     assert artifact["next_diagnostic_contract"]["holdout_use_authorized"] is False
-    assert artifact["next_diagnostic_contract"][
-        "do_not_restore_broad_frequency_to_sentinel_repair"
-    ] is True
     assert (
-        artifact["semantic_kind_transformations"]["frequency_to_no_reference_rows"]
-        == 0
+        artifact["next_diagnostic_contract"]["do_not_restore_broad_frequency_to_sentinel_repair"]
+        is True
     )
+    assert artifact["semantic_kind_transformations"]["frequency_to_no_reference_rows"] == 0
     assert artifact["semantic_kind_transformations"]["invalid_selected_evidence_rows"] == 1
-    assert artifact["condition_summaries"]["benchmark_aligned_adapter"][
-        "raw_correct_to_wrong"
-    ] == 0
+    assert artifact["condition_summaries"]["benchmark_aligned_adapter"]["raw_correct_to_wrong"] == 0
 
     by_bound = {item["bound_id"]: item for item in artifact["policy_bounds"]}
     assert (
-        by_bound["frequency_bearing_prediction_may_not_become_no_reference"]["status"]
-        == "disabled"
+        by_bound["frequency_bearing_prediction_may_not_become_no_reference"]["status"] == "disabled"
     )
     assert (
         by_bound["per_hour_rates_render_as_multiple_per_day"]["status"]

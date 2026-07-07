@@ -14,7 +14,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
     component_stage_ladder as csl,
 )
 
-
 GPT41_HYBRID_RUN = (
     "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07"
 )
@@ -28,9 +27,7 @@ def _spec(run_id: str) -> csl.ArchitectureSpec:
 
 
 def _ladder(run_id: str) -> dict[str, object]:
-    return csl.build_architecture_ladder(
-        _spec(run_id), records=None, generated_on="2026-06-24"
-    )
+    return csl.build_architecture_ladder(_spec(run_id), records=None, generated_on="2026-06-24")
 
 
 def test_structured_events_decomposes_into_a_moving_four_stage_ladder() -> None:

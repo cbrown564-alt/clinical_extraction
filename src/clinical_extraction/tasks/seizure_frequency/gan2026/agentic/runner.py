@@ -240,9 +240,7 @@ def write_report(
         traces = dict(row.get("condition_traces") or {})
         tool_calls = sum(len(trace.get("tool_calls", [])) for trace in traces.values())
         attribution = sorted({trace.get("attribution_layer", "") for trace in traces.values()})
-        lines.append(
-            f"| {row.get('source_row_index')} | {tool_calls} | {', '.join(attribution)} |"
-        )
+        lines.append(f"| {row.get('source_row_index')} | {tool_calls} | {', '.join(attribution)} |")
     write_markdown_report(path, lines)
 
 
@@ -338,9 +336,7 @@ def _condition_trace(
             model_call_results=model_call_results,
         ),
         "normalized_label_vote": vote,
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        ),
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else []),
     }
 
 
@@ -444,17 +440,13 @@ def _aggregation_plan(condition: ConditionName) -> dict[str, Any]:
 def _boundary_guides_for_parser_result(parser_result: Mapping[str, Any]) -> list[dict[str, Any]]:
     guide_ids = {"unknown_frequency_vs_no_reference"}
     candidate_kinds = {
-        candidate.get("candidate_kind")
-        for candidate in parser_result.get("candidates", [])
+        candidate.get("candidate_kind") for candidate in parser_result.get("candidates", [])
     }
     if "cluster_frequency" in candidate_kinds:
         guide_ids.add("cluster_frequency_vs_incidental_clustering")
     if "seizure_free" in candidate_kinds:
         guide_ids.add("seizure_free_event_conflict")
-    return [
-        read_boundary_guide(guide_id).model_dump(mode="json")
-        for guide_id in sorted(guide_ids)
-    ]
+    return [read_boundary_guide(guide_id).model_dump(mode="json") for guide_id in sorted(guide_ids)]
 
 
 def _default_budgets(*, max_tokens: int) -> dict[ConditionName, AgentBudget]:
@@ -535,9 +527,7 @@ def _execute_model_call(
     except Exception as exc:  # pragma: no cover - live transport only.
         call_error = f"{type(exc).__name__}: {exc}"
 
-    decision, parse_errors = (
-        parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
-    )
+    decision, parse_errors = parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
     comparison = _compare_to_gold(record, decision) if decision is not None else None
     return {
         "call_index": plan["call_index"],
@@ -547,9 +537,7 @@ def _execute_model_call(
         "prompt_version": PROMPT_VERSION,
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,
-        "raw_model_final_label": _extract_raw_model_final_label(raw_output)
-        if raw_output
-        else None,
+        "raw_model_final_label": _extract_raw_model_final_label(raw_output) if raw_output else None,
         "call_error": call_error,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
@@ -638,9 +626,7 @@ def _normalized_label_vote(results: Sequence[Mapping[str, Any]]) -> dict[str, An
     selected_label = _majority_label(labels) if labels else None
     counts = Counter(labels)
     repair_event_counts = Counter(
-        event["rule_id"]
-        for record in vote_records
-        for event in record["repair_events"]
+        event["rule_id"] for record in vote_records for event in record["repair_events"]
     )
     return {
         "method": "deterministic_normalized_label_vote",
@@ -726,7 +712,7 @@ def _trace_attribution_layer(
 
 
 def _select_row_final_trace(
-    condition_traces: Mapping[ConditionName, Mapping[str, Any]]
+    condition_traces: Mapping[ConditionName, Mapping[str, Any]],
 ) -> Mapping[str, Any] | None:
     preferred_order: tuple[ConditionName, ...] = (
         "single_agent_tools",

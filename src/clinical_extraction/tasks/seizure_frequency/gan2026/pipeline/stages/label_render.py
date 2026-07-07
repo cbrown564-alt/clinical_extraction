@@ -17,11 +17,7 @@ def render_label(projection: ProjectionDecision) -> tuple[str | None, str, list[
 
 
 def rate_label(burden: NormalizedBurden) -> str | None:
-    if (
-        burden.period_low is None
-        or burden.period_high is None
-        or burden.period_unit is None
-    ):
+    if burden.period_low is None or burden.period_high is None or burden.period_unit is None:
         return None
     if burden.count_low is None or burden.count_high is None:
         if burden.vague_count is None:

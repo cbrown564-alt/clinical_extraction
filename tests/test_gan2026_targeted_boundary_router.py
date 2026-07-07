@@ -50,21 +50,13 @@ def test_router_prompt_uses_profiles_without_forbidden_labels() -> None:
     assert "sentinel_boundary" in payload["router_profiles"]
     assert "rate_denominator" in payload["router_profiles"]
     assert "cluster_burden" in payload["router_profiles"]
-    assert payload["router_hints"]["possible_profiles"][0]["profile"] == (
-        "sentinel_boundary"
-    )
-    assert payload["router_hints"]["possible_profiles"][0]["candidate_event_ids"] == [
-        "e2"
-    ]
+    assert payload["router_hints"]["possible_profiles"][0]["profile"] == ("sentinel_boundary")
+    assert payload["router_hints"]["possible_profiles"][0]["candidate_event_ids"] == ["e2"]
     assert "keep_original_structured_event_final" in payload["required_output_schema"]["action"]
     assert "replace_with_existing_event" in payload["required_output_schema"]["action"]
+    assert any("Route first" in instruction for instruction in payload["instructions"])
     assert any(
-        "Route first" in instruction
-        for instruction in payload["instructions"]
-    )
-    assert any(
-        "Anchored numeric mentions" in instruction
-        for instruction in payload["instructions"]
+        "Anchored numeric mentions" in instruction for instruction in payload["instructions"]
     )
 
 
@@ -186,8 +178,7 @@ def _structured_event_row(
                     "assertion_status": "asserted",
                     "applies_to": "seizures",
                     "evidence": (
-                        "brief collapses have occurred on two recent occasions "
-                        "(July and September)"
+                        "brief collapses have occurred on two recent occasions (July and September)"
                     ),
                     "time_window": "recent",
                 },
@@ -207,8 +198,7 @@ def _structured_event_row(
                 "final_kind": final_kind,
                 "final_label": final_label,
                 "evidence": (
-                    "brief collapses have occurred on two recent occasions "
-                    "(July and September)"
+                    "brief collapses have occurred on two recent occasions (July and September)"
                 ),
                 "confidence": "high",
                 "rationale": "Original structured-event selection.",

@@ -116,17 +116,14 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "Current treatment is lamotrigine 200 mg twice daily."
     )
-    assert med_example["correct_event"]["mentions"][0]["text"] == (
-        "lamotrigine 200 mg twice daily"
-    )
+    assert med_example["correct_event"]["mentions"][0]["text"] == ("lamotrigine 200 mg twice daily")
     split_med_example = next(
         example
         for example in payload["worked_examples"]
         if example["note_fragment"] == "Current medication: Epilim 300 mg mane and 600 mg nocte."
     )
     assert [
-        m["attributes"]["Frequency"]
-        for m in split_med_example["correct_event"]["mentions"]
+        m["attributes"]["Frequency"] for m in split_med_example["correct_event"]["mentions"]
     ] == ["1", "1"]
     planned_med_example = next(
         example
@@ -145,9 +142,10 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "She has seizures every 3 to 4 weeks."
     )
-    assert interval_example["correct_event"]["mentions"][0]["attributes"][
-        "LowerNumberOfTimePeriods"
-    ] == "3"
+    assert (
+        interval_example["correct_event"]["mentions"][0]["attributes"]["LowerNumberOfTimePeriods"]
+        == "3"
+    )
     first_sf_example = payload["worked_examples"][0]
     assert first_sf_example["correct_event"]["mentions"][2]["attributes"] == {
         "NumberOfSeizures": "2",
@@ -161,22 +159,17 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
             "Seizure type and frequency: 2 generalised tonic clonic"
         )
     )
-    assert [
-        mention["text"]
-        for mention in dated_type_example["correct_event"]["mentions"]
-    ] == [
+    assert [mention["text"] for mention in dated_type_example["correct_event"]["mentions"]] == [
         "generalised tonic clonic seizures",
         "absence like seizures",
     ]
-    assert dated_type_example["correct_event"]["mentions"][1]["attributes"][
-        "NumberOfSeizures"
-    ] == "1"
+    assert (
+        dated_type_example["correct_event"]["mentions"][1]["attributes"]["NumberOfSeizures"] == "1"
+    )
     returned_example = next(
         example
         for example in payload["worked_examples"]
-        if example["note_fragment"].startswith(
-            "Unfortunately after a period of seizure freedom"
-        )
+        if example["note_fragment"].startswith("Unfortunately after a period of seizure freedom")
     )
     assert returned_example["correct_event"]["mentions"][0]["attributes"] == {
         "FrequencyChange": "Increased"
@@ -212,8 +205,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         "temporal lobe epilepsy",
     ]
     assert [
-        m["attributes"]["Certainty"]
-        for m in focal_temporal_example["correct_event"]["mentions"]
+        m["attributes"]["Certainty"] for m in focal_temporal_example["correct_event"]["mentions"]
     ] == ["5", "4"]
     temporal_lobe_example = next(
         example
@@ -229,9 +221,9 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "Diagnosis: symptomatic structural focal epilepsy."
     )
-    assert [
-        m["text"] for m in structural_focal_example["correct_event"]["mentions"]
-    ] == ["symptomatic structural focal epilepsy"]
+    assert [m["text"] for m in structural_focal_example["correct_event"]["mentions"]] == [
+        "symptomatic structural focal epilepsy"
+    ]
     intractable_example = next(
         example
         for example in payload["worked_examples"]
@@ -266,9 +258,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
             "Despite this she continues to get general and complex partial seizures"
         )
     )
-    assert [
-        m["text"] for m in general_complex_example["correct_event"]["mentions"]
-    ] == [
+    assert [m["text"] for m in general_complex_example["correct_event"]["mentions"]] == [
         "complex partial seizures"
     ]
     unclassified_example = next(
@@ -281,8 +271,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         "generalised epilepsy",
     ]
     assert [
-        m["attributes"]["Certainty"]
-        for m in unclassified_example["correct_event"]["mentions"]
+        m["attributes"]["Certainty"] for m in unclassified_example["correct_event"]["mentions"]
     ] == [
         "5",
         "3",
@@ -296,12 +285,12 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         "epilepsy",
         "focal epilepsy",
     ]
-    assert generic_specific_example["correct_event"]["mentions"][0]["attributes"][
-        "Certainty"
-    ] == "5"
-    assert generic_specific_example["correct_event"]["mentions"][1]["attributes"][
-        "Certainty"
-    ] == "4"
+    assert (
+        generic_specific_example["correct_event"]["mentions"][0]["attributes"]["Certainty"] == "5"
+    )
+    assert (
+        generic_specific_example["correct_event"]["mentions"][1]["attributes"]["Certainty"] == "4"
+    )
     focal_seizure_example = next(
         example
         for example in payload["worked_examples"]
@@ -313,15 +302,15 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "Seizure type and frequency: absence like seizures 2014."
     )
-    assert absence_like_example["correct_event"]["mentions"][0]["text"] == (
-        "absence like seizures"
+    assert absence_like_example["correct_event"]["mentions"][0]["text"] == ("absence like seizures")
+    assert (
+        absence_like_example["correct_event"]["mentions"][0]["attributes"]["DiagCategory"]
+        == "MultipleSeizures"
     )
-    assert absence_like_example["correct_event"]["mentions"][0]["attributes"][
-        "DiagCategory"
-    ] == "MultipleSeizures"
-    assert absence_like_example["correct_event"]["mentions"][1]["attributes"][
-        "NumberOfSeizures"
-    ] == "1"
+    assert (
+        absence_like_example["correct_event"]["mentions"][1]["attributes"]["NumberOfSeizures"]
+        == "1"
+    )
     planned_mri_example = next(
         example
         for example in payload["worked_examples"]
@@ -333,9 +322,7 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         for example in payload["worked_examples"]
         if example["note_fragment"] == "He has had several seizures since the last clinic visit."
     )
-    assert several_example["correct_event"]["mentions"][0]["attributes"][
-        "NumberOfSeizures"
-    ] == "3"
+    assert several_example["correct_event"]["mentions"][0]["attributes"]["NumberOfSeizures"] == "3"
     heading_several_example = next(
         example
         for example in payload["worked_examples"]
@@ -352,9 +339,9 @@ def test_prompt_hygiene_and_four_family_schema() -> None:
         if example["note_fragment"]
         == "Focal to bilateral convulsive seizures, last event around Christmas 2017."
     )
-    assert last_event_example["correct_event"]["mentions"][0]["attributes"][
-        "NumberOfSeizures"
-    ] == "0"
+    assert (
+        last_event_example["correct_event"]["mentions"][0]["attributes"]["NumberOfSeizures"] == "0"
+    )
     bare_seizure_free_example = next(
         example
         for example in payload["worked_examples"]
@@ -452,26 +439,20 @@ def test_qwen_compact_prompt_profile_keeps_schema_with_shorter_payload() -> None
         for example in compact["worked_examples"]
         if example["note_fragment"].startswith("Seizure type and frequency: Uncertain")
     )
-    assert heading_example["correct_event"]["mentions"][0]["attributes"][
-        "NumberOfSeizures"
-    ] == "3"
+    assert heading_example["correct_event"]["mentions"][0]["attributes"]["NumberOfSeizures"] == "3"
     dated_example = next(
         example
         for example in compact["worked_examples"]
         if example["note_fragment"] == "Seizure type and frequency: absence like seizures 2014."
     )
-    assert dated_example["correct_event"]["mentions"][0]["attributes"][
-        "NumberOfSeizures"
-    ] == "1"
+    assert dated_example["correct_event"]["mentions"][0]["attributes"]["NumberOfSeizures"] == "1"
     intractable_example = next(
         example
         for example in compact["worked_examples"]
         if example["note_fragment"]
         == "I reviewed this lady with intractable epilepsy in clinic today."
     )
-    assert intractable_example["correct_event"]["mentions"][0]["text"] == (
-        "intractable epilepsy"
-    )
+    assert intractable_example["correct_event"]["mentions"][0]["text"] == ("intractable epilepsy")
     vague_episode_example = next(
         example
         for example in compact["worked_examples"]
@@ -505,15 +486,15 @@ def test_candidate_evidence_ledger_types_family_lanes() -> None:
     ledger = structured.candidate_evidence_ledger_for_letter(letter)
 
     assert any(
-        item["family"] == "medication" and item["lane_hint"] == "current_regimen"
-        for item in ledger
+        item["family"] == "medication" and item["lane_hint"] == "current_regimen" for item in ledger
     )
     assert any(
         item["family"] == "investigation" and item["lane_hint"] == "planned_investigation"
         for item in ledger
     )
     assert any(
-        item["family"] == "investigation" and item["lane_hint"] == "performed_investigation"
+        item["family"] == "investigation"
+        and item["lane_hint"] == "performed_investigation"
         and item["anchor_hint"] == "EEG"
         for item in ledger
     )
@@ -530,12 +511,10 @@ def test_candidate_evidence_ledger_types_family_lanes() -> None:
         for item in ledger
     )
     assert any(
-        item["family"] == "seizure_frequency" and item["lane_hint"] == "reject"
-        for item in ledger
+        item["family"] == "seizure_frequency" and item["lane_hint"] == "reject" for item in ledger
     )
     assert any(
-        item["family"] == "seizure_frequency"
-        and item["lane_hint"] == "seizure_free_anchor"
+        item["family"] == "seizure_frequency" and item["lane_hint"] == "seizure_free_anchor"
         for item in ledger
     )
 
@@ -914,8 +893,7 @@ def test_flatten_events_preserves_cross_entity_renderings() -> None:
         SEIZURE_FREQUENCY.name,
     ]
     assert all(
-        mention.evidence == "focal epilepsy with 2 focal seizures per month"
-        for mention in mentions
+        mention.evidence == "focal epilepsy with 2 focal seizures per month" for mention in mentions
     )
 
 
@@ -1030,8 +1008,7 @@ def test_to_predicted_letter_gates_evidence_and_projects_cuis() -> None:
     assert any("repaired_evidence_from_mention_text" in warning for warning in warnings)
     assert any("Diagnosis: dropped_illegal_attribute" in warning for warning in warnings)
     assert any(
-        "Diagnosis: dropped_model_supplied_projection_attribute" in warning
-        for warning in warnings
+        "Diagnosis: dropped_model_supplied_projection_attribute" in warning for warning in warnings
     )
     assert any("dropped_no_frequency_state_rendering" in warning for warning in warnings)
     assert any("dropped_duplicate_modality_only_rendering" in warning for warning in warnings)

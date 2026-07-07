@@ -87,8 +87,12 @@ class VerifyOnlySelector:
     """
 
     def __call__(
-        self, state: Any, trajectories: Any, subsample_scores: Any,
-        candidate_idx: int, candidate: dict[str, str],
+        self,
+        state: Any,
+        trajectories: Any,
+        subsample_scores: Any,
+        candidate_idx: int,
+        candidate: dict[str, str],
     ) -> list[str]:
         return list(_VERIFY_NAMES)
 
@@ -163,9 +167,17 @@ def main() -> None:
         return
 
     GEPA_LOG_ROOT.mkdir(parents=True, exist_ok=True)
-    status: dict = {"started_at": _now(), "smoke": args.smoke, "run_id": config.run_id, "state": "running"}
+    status: dict = {
+        "started_at": _now(),
+        "smoke": args.smoke,
+        "run_id": config.run_id,
+        "state": "running",
+    }
     status_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"[verify-only] start {config.run_id} (S0 frozen, verify-only mutation, stage-local feedback)", flush=True)
+    print(
+        f"[verify-only] start {config.run_id} (S0 frozen, verify-only mutation, stage-local feedback)",
+        flush=True,
+    )
     try:
         payload = run_experiment(
             config,
@@ -192,7 +204,9 @@ def main() -> None:
         )
     except Exception as exc:
         status.update(
-            state="failed", finished_at=_now(), error=f"{type(exc).__name__}: {exc}",
+            state="failed",
+            finished_at=_now(),
+            error=f"{type(exc).__name__}: {exc}",
             traceback=traceback.format_exc()[-3000:],
         )
         print(f"[verify-only] FAILED {config.run_id}: {exc}", flush=True)

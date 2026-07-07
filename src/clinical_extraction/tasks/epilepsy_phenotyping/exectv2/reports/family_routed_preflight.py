@@ -27,16 +27,13 @@ SF_SCHEMA_DESIGN_PATH = Path(
     "exectv2_sf_llm_first_event_state_schema_design_2026-06-18.md"
 )
 REQUIRED_ROUTE_MODULE = (
-    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-    "llm_family_routed_llm_first"
+    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_family_routed_llm_first"
 )
 SCHEMA_BASE_MODULE = (
-    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-    "llm_only_clinical_findings"
+    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinical_findings"
 )
 SCHEMA_BASE_SOURCE_PATH = Path(
-    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/"
-    "llm_only_clinical_findings.py"
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/llm_only_clinical_findings.py"
 )
 REQUIRED_SCHEMA_BASE_CLASSES = (
     "ClinicalFindingsRecord",
@@ -240,9 +237,5 @@ def _schema_base_classes_declared(path: Path) -> bool:
         tree = ast.parse(path.read_text(encoding="utf-8"))
     except (FileNotFoundError, SyntaxError):
         return False
-    declared = {
-        node.name
-        for node in tree.body
-        if isinstance(node, ast.ClassDef)
-    }
+    declared = {node.name for node in tree.body if isinstance(node, ast.ClassDef)}
     return all(name in declared for name in REQUIRED_SCHEMA_BASE_CLASSES)

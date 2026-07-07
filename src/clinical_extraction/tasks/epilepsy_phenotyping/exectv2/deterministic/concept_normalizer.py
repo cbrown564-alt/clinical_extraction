@@ -119,7 +119,9 @@ class InSampleConceptNormalizer:
     ) -> CanonicalConcept | None:
         if entity not in self._entities:
             return None
-        cui = attributes.get("CUI") or self._phrase_to_cui.get(entity, {}).get(normalize_phrase(text))
+        cui = attributes.get("CUI") or self._phrase_to_cui.get(entity, {}).get(
+            normalize_phrase(text)
+        )
         if not cui:
             return None
         canonical = self._cui_to_phrase.get(entity, {}).get(cui)

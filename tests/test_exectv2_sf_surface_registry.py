@@ -181,12 +181,6 @@ def test_target_projection_sf_modules_line_count_gate() -> None:
 def test_p1_v09_dev140_sf_scores_match_frozen_baseline() -> None:
     """Live no-call replay: SF headline + active_rate_fidelity unchanged vs frozen v09."""
 
-    from pathlib import Path
-
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-        all_entities as _all_entities,  # noqa: F401
-    )
-
     repo = _REPO_ROOT
     frozen_path = (
         repo
@@ -231,7 +225,10 @@ def test_p1_v09_dev140_sf_scores_match_frozen_baseline() -> None:
     sf_headline = ladder["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
     sf_fidelity = ladder["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
     assert sf_headline == frozen["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
-    assert sf_fidelity == frozen["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
+    assert (
+        sf_fidelity
+        == frozen["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
+    )
 
 
 def test_registry_package_line_count_gate() -> None:

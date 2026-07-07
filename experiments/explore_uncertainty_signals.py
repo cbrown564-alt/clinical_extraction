@@ -1,4 +1,4 @@
-﻿"""Exploratory analysis: do uncertainty/confidence signals correlate with accuracy?
+"""Exploratory analysis: do uncertainty/confidence signals correlate with accuracy?
 
 Covers:
   - llm_only_direct_labeler: confidence (low/medium/high) x purist_correct
@@ -17,7 +17,6 @@ from __future__ import annotations
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
-
 
 # ── file registry ──────────────────────────────────────────────────────────────
 
@@ -63,12 +62,10 @@ FILES = {
         "_hybrid_live_candidate_sets_gpt41mini_2026-06-08.jsonl"
     ),
     "hybrid_deepseek": Path(
-        "experiments/gan2026_three_way_comparison_validation750"
-        "_hybrid_deepseek_2026-06-08.jsonl"
+        "experiments/gan2026_three_way_comparison_validation750_hybrid_deepseek_2026-06-08.jsonl"
     ),
     "hybrid_qwen": Path(
-        "experiments/gan2026_three_way_comparison_validation750"
-        "_hybrid_qwen3635b_2026-06-08.jsonl"
+        "experiments/gan2026_three_way_comparison_validation750_hybrid_qwen3635b_2026-06-08.jsonl"
     ),
 }
 
@@ -83,8 +80,9 @@ def load(key: str) -> list[dict]:
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
+
 def pct(n: int, d: int) -> str:
-    return f"{n/d:.1%}" if d else "—"
+    return f"{n / d:.1%}" if d else "—"
 
 
 def accuracy_by_group(
@@ -94,17 +92,12 @@ def accuracy_by_group(
     correct_fn=None,
 ) -> dict[str, tuple[int, int]]:
     """Return {group: (correct, total)} sorted by total desc."""
-    correct_fn = correct_fn or (
-        lambda r: bool((r.get("comparison") or {}).get("purist_correct"))
-    )
+    correct_fn = correct_fn or (lambda r: bool((r.get("comparison") or {}).get("purist_correct")))
     buckets: dict[str, list[bool]] = defaultdict(list)
     for row in rows:
         g = group_fn(row)
         buckets[g].append(correct_fn(row))
-    return {
-        g: (sum(v), len(v))
-        for g, v in sorted(buckets.items(), key=lambda kv: -len(kv[1]))
-    }
+    return {g: (sum(v), len(v)) for g, v in sorted(buckets.items(), key=lambda kv: -len(kv[1]))}
 
 
 def print_table(title: str, data: dict[str, tuple[int, int]], note: str = "") -> None:
@@ -112,7 +105,7 @@ def print_table(title: str, data: dict[str, tuple[int, int]], note: str = "") ->
     if note:
         print(f"    ({note})")
     print(f"  {'Group':<35} {'Correct':>8} {'Total':>7} {'Accuracy':>9}")
-    print(f"  {'-'*35} {'-'*8} {'-'*7} {'-'*9}")
+    print(f"  {'-' * 35} {'-' * 8} {'-' * 7} {'-' * 9}")
     for group, (correct, total) in data.items():
         print(f"  {group:<35} {correct:>8} {total:>7} {pct(correct, total):>9}")
 
@@ -122,7 +115,7 @@ def print_dist(title: str, counter: Counter, total: int, note: str = "") -> None
     if note:
         print(f"    ({note})")
     print(f"  {'Value':<40} {'Count':>7} {'Share':>8}")
-    print(f"  {'-'*40} {'-'*7} {'-'*8}")
+    print(f"  {'-' * 40} {'-' * 7} {'-' * 8}")
     for val, count in counter.most_common():
         print(f"  {str(val):<40} {count:>7} {pct(count, total):>8}")
 
@@ -131,11 +124,11 @@ def print_dist(title: str, counter: Counter, total: int, note: str = "") -> None
 
 CONF_ARCHITECTURES = {
     "direct_labeler_gpt41mini": "llm_only_direct_labeler / gpt-4.1-mini",
-    "direct_labeler_qwen":      "llm_only_direct_labeler / qwen3.6-35b",
-    "direct_labeler_deepseek":  "llm_only_direct_labeler / deepseek-v4-flash",
-    "canonical_gpt41mini":      "llm_only_canonical_pipeline / gpt-4.1-mini",
-    "canonical_qwen":           "llm_only_canonical_pipeline / qwen3.6-35b",
-    "canonical_deepseek":       "llm_only_canonical_pipeline / deepseek-v4-flash",
+    "direct_labeler_qwen": "llm_only_direct_labeler / qwen3.6-35b",
+    "direct_labeler_deepseek": "llm_only_direct_labeler / deepseek-v4-flash",
+    "canonical_gpt41mini": "llm_only_canonical_pipeline / gpt-4.1-mini",
+    "canonical_qwen": "llm_only_canonical_pipeline / qwen3.6-35b",
+    "canonical_deepseek": "llm_only_canonical_pipeline / deepseek-v4-flash",
 }
 
 print("\n" + "=" * 70)
@@ -173,12 +166,12 @@ print_table("All confidence-bearing architectures combined", agg_data)
 # ── Section 2: answer_kind × accuracy ──────────────────────────────────────────
 
 AK_ARCHITECTURES = {
-    "direct_labeler_gpt41mini": ("llm_only_direct_labeler / gpt-4.1-mini",  "decision_record"),
-    "direct_labeler_qwen":      ("llm_only_direct_labeler / qwen3.6-35b",   "decision_record"),
-    "direct_labeler_deepseek":  ("llm_only_direct_labeler / deepseek",       "decision_record"),
-    "canonical_gpt41mini":      ("llm_only_canonical_pipeline / gpt-4.1-mini", "decision_record"),
-    "canonical_qwen":           ("llm_only_canonical_pipeline / qwen3.6-35b",  "decision_record"),
-    "canonical_deepseek":       ("llm_only_canonical_pipeline / deepseek",      "decision_record"),
+    "direct_labeler_gpt41mini": ("llm_only_direct_labeler / gpt-4.1-mini", "decision_record"),
+    "direct_labeler_qwen": ("llm_only_direct_labeler / qwen3.6-35b", "decision_record"),
+    "direct_labeler_deepseek": ("llm_only_direct_labeler / deepseek", "decision_record"),
+    "canonical_gpt41mini": ("llm_only_canonical_pipeline / gpt-4.1-mini", "decision_record"),
+    "canonical_qwen": ("llm_only_canonical_pipeline / qwen3.6-35b", "decision_record"),
+    "canonical_deepseek": ("llm_only_canonical_pipeline / deepseek", "decision_record"),
 }
 
 print("\n" + "=" * 70)
@@ -206,7 +199,9 @@ for key in ("structured_events_gpt41mini", "structured_events_qwen", "structured
     label = key.replace("structured_events_", "structured_events / ").replace("_", " ")
     data = accuracy_by_group(
         rows,
-        group_fn=lambda r: str((r.get("comparison") or {}).get("predicted_purist_category") or "missing"),
+        group_fn=lambda r: str(
+            (r.get("comparison") or {}).get("predicted_purist_category") or "missing"
+        ),
     )
     print_table(label, data)
 
@@ -222,7 +217,9 @@ for key in ("direct_labeler_gpt41mini", "canonical_gpt41mini"):
     rows = load(key)
     if not rows:
         continue
-    label = "direct_labeler / gpt-4.1-mini" if "direct" in key else "canonical_pipeline / gpt-4.1-mini"
+    label = (
+        "direct_labeler / gpt-4.1-mini" if "direct" in key else "canonical_pipeline / gpt-4.1-mini"
+    )
     joint: Counter = Counter()
     for row in rows:
         dr = row.get("decision_record") or {}
@@ -232,7 +229,7 @@ for key in ("direct_labeler_gpt41mini", "canonical_gpt41mini"):
     total = sum(joint.values())
     print(f"\n### {label} (n={total})")
     print(f"  {'confidence × answer_kind':<45} {'Count':>7} {'Share':>8} {'Purist%':>8}")
-    print(f"  {'-'*45} {'-'*7} {'-'*8} {'-'*8}")
+    print(f"  {'-' * 45} {'-' * 7} {'-' * 8} {'-' * 8}")
     # compute per-cell accuracy
     cell_acc: dict[tuple, list[bool]] = defaultdict(list)
     for row in rows:
@@ -256,8 +253,8 @@ print("=" * 70)
 
 HYBRID_KEYS = {
     "hybrid_gpt41mini": "hybrid / gpt-4.1-mini",
-    "hybrid_deepseek":  "hybrid / deepseek-v4-flash",
-    "hybrid_qwen":      "hybrid / qwen3.6-35b",
+    "hybrid_deepseek": "hybrid / deepseek-v4-flash",
+    "hybrid_qwen": "hybrid / qwen3.6-35b",
 }
 
 for key, label in HYBRID_KEYS.items():
@@ -269,8 +266,10 @@ for key, label in HYBRID_KEYS.items():
     # filter to real assessment rows (exclude candidate_set_missing)
     assessment_rows = [r for r in rows if r.get("clinical_assessment")]
     placeholder_count = len(rows) - len(assessment_rows)
-    print(f"\n### {label}: {len(assessment_rows)} real assessment rows"
-          f"{f', {placeholder_count} candidate_set_missing' if placeholder_count else ''}")
+    print(
+        f"\n### {label}: {len(assessment_rows)} real assessment rows"
+        f"{f', {placeholder_count} candidate_set_missing' if placeholder_count else ''}"
+    )
 
     # assessment_kind
     ak_counter: Counter = Counter(
@@ -298,9 +297,11 @@ for key, label in HYBRID_KEYS.items():
                 flag_counter[f] += 1
         else:
             rows_no_flags += 1
-    print(f"\n  uncertainty_flags: rows_with_flags={rows_with_flags} "
-          f"({pct(rows_with_flags, len(assessment_rows))}), "
-          f"rows_no_flags={rows_no_flags} ({pct(rows_no_flags, len(assessment_rows))})")
+    print(
+        f"\n  uncertainty_flags: rows_with_flags={rows_with_flags} "
+        f"({pct(rows_with_flags, len(assessment_rows))}), "
+        f"rows_no_flags={rows_no_flags} ({pct(rows_no_flags, len(assessment_rows))})"
+    )
     if flag_counter:
         print_dist("  uncertainty_flags (by flag value)", flag_counter, rows_with_flags)
     else:
@@ -308,11 +309,14 @@ for key, label in HYBRID_KEYS.items():
 
     # normalization_issues: rows with any issues
     issues_rows = sum(
-        1 for r in assessment_rows
+        1
+        for r in assessment_rows
         if (r.get("clinical_assessment") or {}).get("normalization_issues")
     )
-    print(f"\n  normalization_issues: rows_with_issues={issues_rows} "
-          f"({pct(issues_rows, len(assessment_rows))})")
+    print(
+        f"\n  normalization_issues: rows_with_issues={issues_rows} "
+        f"({pct(issues_rows, len(assessment_rows))})"
+    )
 
 
 # ── Section 5: confidence calibration summary ──────────────────────────────────
@@ -323,7 +327,7 @@ print("=" * 70)
 
 CONF_ORDER = ["high", "medium", "low"]
 print(f"\n  {'Architecture':<45} {'conf':>6} {'correct':>8} {'total':>7} {'accuracy':>9}")
-print(f"  {'-'*45} {'-'*6} {'-'*8} {'-'*7} {'-'*9}")
+print(f"  {'-' * 45} {'-' * 6} {'-' * 8} {'-' * 7} {'-' * 9}")
 
 for key, label in CONF_ARCHITECTURES.items():
     rows = load(key)

@@ -68,9 +68,7 @@ def build_recovery_audit_rows(
                 "hidden_families": hidden_families,
                 "untagged_nonprediction": not hidden_families,
                 "baseline_label": row.get("deterministic_comparator_label"),
-                "baseline_label_family": _label_family(
-                    row.get("deterministic_comparator_label")
-                ),
+                "baseline_label_family": _label_family(row.get("deterministic_comparator_label")),
                 "gold_label": row.get("gold_label"),
                 "release_lanes": release_lanes,
                 "release_candidate_label": (
@@ -112,8 +110,7 @@ def summarize_recovery_audit_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str
         "all_nonpredictions": lambda row: True,
     }
     variant_summaries = [
-        _variant_summary(name, rows, predicate)
-        for name, predicate in variants.items()
+        _variant_summary(name, rows, predicate) for name, predicate in variants.items()
     ]
     selected = next(
         item for item in variant_summaries if item["variant"] == "untagged_nonprediction"
@@ -243,8 +240,7 @@ def _variant_summary(
             item["baseline_purist_correct"] is True for item in accounting
         ),
         "panel_release_rows": sum(
-            row["surface_membership"] == "h2_h4_component_stress_panel"
-            for row in selected
+            row["surface_membership"] == "h2_h4_component_stress_panel" for row in selected
         ),
         "release_lane_counts": dict(
             Counter(lane for row in selected for lane in row["release_lanes"])
@@ -261,10 +257,7 @@ def _release_lanes(row: Mapping[str, Any], hidden_families: Sequence[str]) -> li
         "no_reference",
     }:
         lanes.append("sentinel_untagged_nonprediction")
-    if (
-        not hidden_families
-        and row.get("router_reason") == "trigger_conditioned_frequency"
-    ):
+    if not hidden_families and row.get("router_reason") == "trigger_conditioned_frequency":
         lanes.append("trigger_untagged_nonprediction")
     return lanes
 

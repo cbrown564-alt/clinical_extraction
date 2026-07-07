@@ -74,39 +74,43 @@ _DISALLOWED_MODEL_PROJECTION_FIELDS: frozenset[str] = frozenset(
     {"CUI", "CUIPhrase", "Certainty", "Negation"}
 )
 
-_SCALAR_FINDING_FIELDS: frozenset[str] = frozenset({
-    "text",
-    "evidence",
-    "clinical_kind",
-    "frequency_statement_type",
-    "source_role",
-    "count",
-    "count_low",
-    "count_high",
-    "period_count",
-    "period_low",
-    "period_high",
-    "period_unit",
-    "time_relation",
-    "point_in_time",
-    "day",
-    "month",
-    "year",
-    "age_low",
-    "age_high",
-    "age_unit",
-    "frequency_change",
-    "confidence",
-    "rationale",
-})
+_SCALAR_FINDING_FIELDS: frozenset[str] = frozenset(
+    {
+        "text",
+        "evidence",
+        "clinical_kind",
+        "frequency_statement_type",
+        "source_role",
+        "count",
+        "count_low",
+        "count_high",
+        "period_count",
+        "period_low",
+        "period_high",
+        "period_unit",
+        "time_relation",
+        "point_in_time",
+        "day",
+        "month",
+        "year",
+        "age_low",
+        "age_high",
+        "age_unit",
+        "frequency_change",
+        "confidence",
+        "rationale",
+    }
+)
 
-_SCALAR_EVENT_FRAME_FIELDS: frozenset[str] = _SCALAR_FINDING_FIELDS | frozenset({
-    "event_id",
-    "seizure_phrase",
-    "target_status",
-    "statement_family",
-    "finding_text",
-})
+_SCALAR_EVENT_FRAME_FIELDS: frozenset[str] = _SCALAR_FINDING_FIELDS | frozenset(
+    {
+        "event_id",
+        "seizure_phrase",
+        "target_status",
+        "statement_family",
+        "finding_text",
+    }
+)
 
 _TIME_RELATION_ALIASES: Mapping[str, str] = {
     "during": "During",
@@ -151,15 +155,17 @@ _FREQUENCY_CHANGE_ALIASES: Mapping[str, str] = {
     "stable": "Same",
 }
 
-_CLINICAL_KIND_VALUES: frozenset[str] = frozenset({
-    "frequency_rate",
-    "seizure_free",
-    "frequency_change",
-    "dated_count",
-    "last_event",
-    "cluster_frequency",
-    "other_frequency",
-})
+_CLINICAL_KIND_VALUES: frozenset[str] = frozenset(
+    {
+        "frequency_rate",
+        "seizure_free",
+        "frequency_change",
+        "dated_count",
+        "last_event",
+        "cluster_frequency",
+        "other_frequency",
+    }
+)
 
 _STATEMENT_TYPE_TO_KIND: Mapping[str, str] = {
     "header_count_since_anchor": "dated_count",

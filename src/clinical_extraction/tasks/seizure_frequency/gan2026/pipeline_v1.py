@@ -88,9 +88,9 @@ class Gan2026PipelineV1:
     def __init__(self, ablation_config: AblationConfig | None = None) -> None:
         self.ablation_config = ablation_config or AblationConfig()
         from .runner import Gan2026PipelineRunner, PipelineConfiguration
+
         config = PipelineConfiguration(
-            architecture="deterministic",
-            ablation_config=self.ablation_config
+            architecture="deterministic", ablation_config=self.ablation_config
         )
         self._runner = Gan2026PipelineRunner(config)
 

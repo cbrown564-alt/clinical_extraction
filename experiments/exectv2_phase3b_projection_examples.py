@@ -12,8 +12,6 @@ from pathlib import Path
 import dotenv
 import dspy
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import to_exect_letter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions.diagnosis import (
     diagnosis_convention_target,
     is_diagnosis_convention_noise,
@@ -24,7 +22,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conven
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     diagnosis_category_for_concept,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import clean_span
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rule_metadata import (
     ExtractionContext,
 )
@@ -106,14 +103,14 @@ def _sf_reason(fact: dict, has_seizure_free: bool) -> str | None:
     evidence = str(fact.get("evidence", ""))
     lower = evidence.lower()
     if state == "changed" and _change_reject(evidence):
-        return f"DROP changed (reject pattern: historical/hypothetical)"
+        return "DROP changed (reject pattern: historical/hypothetical)"
     if state == "active_rate" and not _SEIZURE_WORD_RE.search(evidence):
         if _UNLABELLED_EVENT_RE.search(evidence):
-            return f"DROP active_rate (unlabelled event, no seizure word)"
+            return "DROP active_rate (unlabelled event, no seizure word)"
     if state == "active_rate" and _HISTORICAL_RATE_RE.search(evidence):
         return f"DROP active_rate (historical: {_HISTORICAL_RATE_RE.search(evidence).group(0)!r})"
     if state == "active_rate" and has_seizure_free and _PRECEDED_FREE_RE.search(lower):
-        return f"DROP active_rate (preceded by current seizure-free)"
+        return "DROP active_rate (preceded by current seizure-free)"
     if state == "seizure_free" and _seizure_free_reject(evidence):
         return f"DROP seizure_free (advice/historical: {_seizure_free_reject(evidence)})"
     if state == "active_rate":
@@ -171,7 +168,11 @@ def main() -> None:
     for g, prediction in zip(gold, predictions, strict=True):
         raw = str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
         try:
-            facts = (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", []) if raw else []
+            facts = (
+                (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", [])
+                if raw
+                else []
+            )
         except Exception:
             facts = []
         facts = [f for f in facts if isinstance(f, dict)]
@@ -212,11 +213,13 @@ def main() -> None:
                 if fc in {"Same", "Infrequent"} and _CONTROLLED_RE.search(evidence.lower()):
                     if not _drug_change_context(evidence.lower()):
                         continue
-                sf_add_examples.append((
-                    g.letter_id,
-                    {"evidence": evidence, "FrequencyChange": fc, "rule": _rule_id},
-                    g.note_text[max(0, match.start()-80):match.end()+80].strip(),
-                ))
+                sf_add_examples.append(
+                    (
+                        g.letter_id,
+                        {"evidence": evidence, "FrequencyChange": fc, "rule": _rule_id},
+                        g.note_text[max(0, match.start() - 80) : match.end() + 80].strip(),
+                    )
+                )
                 existing_ev.add(ev_norm)
 
         # Dx
@@ -232,18 +235,18 @@ def main() -> None:
                 rx_examples.append((g.letter_id, fact, reason))
 
     def _print_section(title: str, examples: list, max_n: int = 6) -> None:
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print(f"## {title} ({len(examples)} total, showing {min(max_n, len(examples))})")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
         for i, item in enumerate(examples[:max_n]):
             if len(item) == 3:
                 lid, data, reason = item
-                print(f"\n  [{i+1}] Letter {lid}")
+                print(f"\n  [{i + 1}] Letter {lid}")
                 print(f"      reason: {reason}")
                 print(f"      fact:   {json.dumps(data, ensure_ascii=False)}")
             elif len(item) == 3:
                 lid, data, ctx = item
-                print(f"\n  [{i+1}] Letter {lid}")
+                print(f"\n  [{i + 1}] Letter {lid}")
                 print(f"      fact:   {json.dumps(data, ensure_ascii=False)}")
                 print(f"      context: ...{ctx}...")
 
@@ -253,7 +256,11 @@ def main() -> None:
 
     _print_section("SF REPAIR (state changed by deterministic rule)", sf_repairs, max_n=3)
     _print_section("SF DROP (fact removed by deterministic rule)", sf_drops, max_n=4)
-    _print_section("SF RECALL-ADDITIVE (new fact from note text, model never selected)", sf_add_examples, max_n=4)
+    _print_section(
+        "SF RECALL-ADDITIVE (new fact from note text, model never selected)",
+        sf_add_examples,
+        max_n=4,
+    )
     _print_section("Dx RE-KEY / DROP (concept label rewrite or noise drop)", dx_examples, max_n=5)
     _print_section("Rx DROP (planned/historical medication removed)", rx_examples, max_n=4)
 

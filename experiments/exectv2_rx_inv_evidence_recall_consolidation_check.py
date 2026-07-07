@@ -81,7 +81,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -104,7 +106,9 @@ def _ignoring_used_pred_match(gold: ExectAnnotation, pred_anns: list[ExectAnnota
     return _first_overlapping_prediction(gold, pred_anns, set()) is not None
 
 
-def _any_entity_overlap(gold: ExectAnnotation, all_pred_anns: list[ExectAnnotation], entity: str) -> bool:
+def _any_entity_overlap(
+    gold: ExectAnnotation, all_pred_anns: list[ExectAnnotation], entity: str
+) -> bool:
     gold_phrase = normalize_phrase(gold.text)
     if not gold_phrase:
         return False
@@ -148,13 +152,17 @@ def process_entity(
 
     gate_pass = own_tp == official.overlap.tp and own_fn == official.overlap.fn
     print(f"=== PHASE 0: self-validation gate ({entity}) ===")
-    print(f"official source_near {entity}: tp={official.overlap.tp} fn={official.overlap.fn} "
-          f"recall={official.overlap.recall:.4f}")
+    print(
+        f"official source_near {entity}: tp={official.overlap.tp} fn={official.overlap.fn} "
+        f"recall={official.overlap.recall:.4f}"
+    )
     print(f"own trace reproduction       : tp={own_tp} fn={own_fn}")
     print(f"GATE {'PASS' if gate_pass else 'FAIL'}")
     if not gate_pass:
-        raise SystemExit(f"Phase 0 gate failed for {entity} -- own trace does not reproduce official "
-                          f"source_near tp/fn. Stopping before Phase 1.")
+        raise SystemExit(
+            f"Phase 0 gate failed for {entity} -- own trace does not reproduce official "
+            f"source_near tp/fn. Stopping before Phase 1."
+        )
 
     # --- Phase 1: mechanical H1/H2 split + substrate dump ------------------ #
     entity_out = OUT / entity.lower()
@@ -216,9 +224,15 @@ def process_entity(
     h1 = mechanism_counts[H1_CARDINALITY]
     h2 = mechanism_counts[H2_GENUINE_DIVERGENCE]
     print(f"\n=== PHASE 1: mechanical H1/H2 split ({total} {entity} source_near FNs) ===")
-    print(f"H1_CARDINALITY        = {h1} ({h1/total:.1%})" if total else "H1_CARDINALITY        = 0")
-    print(f"H2_GENUINE_DIVERGENCE = {h2} ({h2/total:.1%})" if total else "H2_GENUINE_DIVERGENCE = 0")
-    print(f"  cross-entity overlap among H2 (informational): {cross_entity_flags}/{h2}" if h2 else "")
+    print(
+        f"H1_CARDINALITY        = {h1} ({h1 / total:.1%})" if total else "H1_CARDINALITY        = 0"
+    )
+    print(
+        f"H2_GENUINE_DIVERGENCE = {h2} ({h2 / total:.1%})" if total else "H2_GENUINE_DIVERGENCE = 0"
+    )
+    print(
+        f"  cross-entity overlap among H2 (informational): {cross_entity_flags}/{h2}" if h2 else ""
+    )
 
     out = {
         "entity": entity,

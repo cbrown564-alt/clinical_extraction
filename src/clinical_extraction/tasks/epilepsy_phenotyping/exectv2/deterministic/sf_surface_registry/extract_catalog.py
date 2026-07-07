@@ -1,4 +1,5 @@
 """Load extract-phase catalog metadata for Stack A RuleSpec assembly."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -4,12 +4,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import FAMILIES, RICH_SCHEMA_RUNS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
+    FAMILIES,
+    RICH_SCHEMA_RUNS,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     risk_features,
-    risk_score as compute_risk_score,
     row_family_score,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+    risk_score as compute_risk_score,
+)
+
 
 def iter_reliability_cells(
     rich_rows: dict[str, list[dict[str, Any]]],

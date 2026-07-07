@@ -24,9 +24,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
-    verifier as verifier_base,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     MentionRecord,
     check_evidence,
@@ -34,6 +31,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     raw_output_from_adapter_parse_error,
     repair_attributes,
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
+    verifier as verifier_base,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -89,9 +89,9 @@ class ExECTv2DiagnosisDecomposerSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -301,9 +301,7 @@ def to_predicted_letter(
     note_text: str,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []
@@ -314,8 +312,7 @@ def to_predicted_letter(
             if key in attrs:
                 attrs.pop(key)
                 all_warnings.append(
-                    f"{DIAGNOSIS.name}: "
-                    f"dropped_model_supplied_projection_attribute: {key!r}"
+                    f"{DIAGNOSIS.name}: dropped_model_supplied_projection_attribute: {key!r}"
                 )
         repaired_attrs, attr_warnings = repair_attributes(attrs, spec=spec)
         all_warnings.extend(f"{DIAGNOSIS.name}: {warning}" for warning in attr_warnings)

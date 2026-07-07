@@ -26,13 +26,18 @@ import collections
 import json
 from typing import Any
 
+from build_gan2026_reliability_p0_2_risk_coverage import external_risk_score
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     reliability_common as rc,
 )
-from build_gan2026_reliability_p0_2_risk_coverage import SOURCE_FLAGS, external_risk_score
 
-OUT_JSON = rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json"
-OUT_MD = rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.md"
+OUT_JSON = (
+    rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json"
+)
+OUT_MD = (
+    rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.md"
+)
 
 
 def self_confidence_degeneracy(reasoner_rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -43,7 +48,9 @@ def self_confidence_degeneracy(reasoner_rows: list[dict[str, Any]]) -> dict[str,
     se_rows = rc.load_jsonl(rc.SE_MINI_VALIDATION750)
     subj: dict[str, list[bool]] = collections.defaultdict(list)
     for r in se_rows:
-        conf = ((r.get("structured_record") or {}).get("selection") or {}).get("confidence") or "missing"
+        conf = ((r.get("structured_record") or {}).get("selection") or {}).get(
+            "confidence"
+        ) or "missing"
         subj[conf].append(bool((r.get("comparison") or {}).get("purist_correct")))
     subj_table = {
         b: {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v) if v else None}
@@ -116,7 +123,9 @@ def main() -> None:
     repair_auroc = rc.auroc([float(x) for x in repair_counts], risk_is_error)
     repair_table = {
         ("any_repair" if k else "no_repair"): {
-            "n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v) if v else None
+            "n": len(v),
+            "correct": sum(v),
+            "accuracy": sum(v) / len(v) if v else None,
         }
         for k, v in sorted(repair_correct.items())
     }
@@ -150,10 +159,11 @@ def main() -> None:
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
-    print(f"  self-confidence dominant bucket share: "
-          f"{result['self_confidence_degeneracy']['dominant_bucket_share']:.1%}")
-    print(f"  external-confidence ECE={ece:.4f} Brier={brier:.4f} "
-          f"AUROC(correct)={auroc_conf:.4f}")
+    print(
+        f"  self-confidence dominant bucket share: "
+        f"{result['self_confidence_degeneracy']['dominant_bucket_share']:.1%}"
+    )
+    print(f"  external-confidence ECE={ece:.4f} Brier={brier:.4f} AUROC(correct)={auroc_conf:.4f}")
     print(f"  failure-prediction AUROC (risk score)={auroc_fail:.4f}")
 
 
@@ -163,45 +173,58 @@ def render_md(result: dict[str, Any]) -> str:
     L.append(f"Date: {result['date']}  ·  Split: {result['split']}  ·  Model calls: 0\n")
     sc = result["self_confidence_degeneracy"]
     L.append("## Self-confidence is degenerate\n")
-    L.append(f"Subject self-confidence is `{sc['field']}` ({sc['layer']}); "
-             f"{sc['note']}.\n")
+    L.append(f"Subject self-confidence is `{sc['field']}` ({sc['layer']}); {sc['note']}.\n")
     L.append("| Confidence bucket | n | Purist acc |")
     L.append("|---|---:|---:|")
     for b, d in sc["by_bucket"].items():
         acc = d["accuracy"]
-        L.append(f"| {b} | {d['n']} | {acc:.1%} |" if acc is not None else f"| {b} | {d['n']} | — |")
-    L.append(f"\nThe dominant bucket holds **{sc['dominant_bucket_share']:.1%}** of rows — "
-             "the subject's own confidence is near-constant and cannot rank correctness. "
-             "(The V12 reasoner self-report is equally degenerate; see JSON "
-             "`comparator_reasoner_uncertainty`.)\n")
+        L.append(
+            f"| {b} | {d['n']} | {acc:.1%} |" if acc is not None else f"| {b} | {d['n']} | — |"
+        )
+    L.append(
+        f"\nThe dominant bucket holds **{sc['dominant_bucket_share']:.1%}** of rows — "
+        "the subject's own confidence is near-constant and cannot rank correctness. "
+        "(The V12 reasoner self-report is equally degenerate; see JSON "
+        "`comparator_reasoner_uncertainty`.)\n"
+    )
     ec = result["external_confidence"]
     L.append("## External confidence (cross-model agreement share) — calibration\n")
     L.append(f"- Definition: `{ec['definition']}`")
-    L.append(f"- **ECE (10-bin): {ec['ece_10bin']:.4f}**, **Brier: {ec['brier']:.4f}**, "
-             f"**AUROC for correctness: {ec['auroc_for_correctness']:.4f}**\n")
+    L.append(
+        f"- **ECE (10-bin): {ec['ece_10bin']:.4f}**, **Brier: {ec['brier']:.4f}**, "
+        f"**AUROC for correctness: {ec['auroc_for_correctness']:.4f}**\n"
+    )
     L.append("| Bin | n | Mean score | Empirical acc | Gap |")
     L.append("|---|---:|---:|---:|---:|")
     for b in ec["reliability_diagram"]:
-        L.append(f"| {b['bin']} | {b['n']} | {b['mean_score']:.3f} | "
-                 f"{b['empirical_accuracy']:.3f} | {b['gap']:+.3f} |")
+        L.append(
+            f"| {b['bin']} | {b['n']} | {b['mean_score']:.3f} | "
+            f"{b['empirical_accuracy']:.3f} | {b['gap']:+.3f} |"
+        )
     fp = result["failure_prediction"]
     L.append("\n## Failure prediction\n")
-    L.append(f"- **External risk score AUROC for failure: {fp['risk_score_auroc_for_failure']:.4f}**")
+    L.append(
+        f"- **External risk score AUROC for failure: {fp['risk_score_auroc_for_failure']:.4f}**"
+    )
     L.append("- Evidence-valid vs correctness:")
     for k, d in fp["evidence_valid_split"].items():
         L.append(f"  - evidence_valid={k}: {d['correct']}/{d['n']} = {d['accuracy']:.1%}")
-    L.append(f"- **Parse-repair count AUROC for failure: {fp['parse_repair_auroc_for_failure']:.4f}** "
-             f"({fp['rows_with_any_repair']}/750 rows took a deterministic repair — repairs "
-             "are common, not constant, so the signal is real):")
+    L.append(
+        f"- **Parse-repair count AUROC for failure: {fp['parse_repair_auroc_for_failure']:.4f}** "
+        f"({fp['rows_with_any_repair']}/750 rows took a deterministic repair — repairs "
+        "are common, not constant, so the signal is real):"
+    )
     for k, d in fp["parse_repair_split"].items():
         L.append(f"  - {k}: {d['correct']}/{d['n']} = {d['accuracy']:.1%}")
     L.append("---\n")
-    L.append("**Reading.** External signals rank the subject's correctness "
-             f"(agreement-share AUROC {ec['auroc_for_correctness']:.3f}; risk-score "
-             f"failure AUROC {fp['risk_score_auroc_for_failure']:.3f}); self-reported "
-             "confidence does not (near-constant). The honest calibration story is that "
-             "reliability must be read off external corroboration, not the model's own "
-             "certainty — the same lesson the architecture arc reached (Insight #3).\n")
+    L.append(
+        "**Reading.** External signals rank the subject's correctness "
+        f"(agreement-share AUROC {ec['auroc_for_correctness']:.3f}; risk-score "
+        f"failure AUROC {fp['risk_score_auroc_for_failure']:.3f}); self-reported "
+        "confidence does not (near-constant). The honest calibration story is that "
+        "reliability must be read off external corroboration, not the model's own "
+        "certainty — the same lesson the architecture arc reached (Insight #3).\n"
+    )
     return "\n".join(L)
 
 

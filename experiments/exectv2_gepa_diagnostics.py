@@ -111,8 +111,12 @@ def _oracle_replay_sf_facts(letter: ExectLetter) -> list[dict[str, str]]:
     """Replay-helper facts (full gold attributes preserved) — reproduces the D1 oracle."""
 
     gold_rows = [
-        {"entity": ann.entity, "text": ann.text, "attributes": dict(ann.attributes),
-         "evidence": _valid_evidence(letter.note_text, ann)}
+        {
+            "entity": ann.entity,
+            "text": ann.text,
+            "attributes": dict(ann.attributes),
+            "evidence": _valid_evidence(letter.note_text, ann),
+        }
         for ann in letter.entities("SeizureFrequency")
     ]
     facts, _notes = clinical_facts_from_mentions(gold_rows)
@@ -176,8 +180,12 @@ def _score_dev(make_facts) -> dict[str, object]:
     recall = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
     return {
-        "tp": tp, "fp": fp, "fn": fn,
-        "precision": precision, "recall": recall, "f1": f1,
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
         "gold_state_total": gold_state_total,
         "gold_state_matched": gold_state_matched,
         "dropped": dropped,
@@ -204,8 +212,10 @@ def _report(title: str, res: dict[str, object]) -> None:
         f"P={res['precision']:.3f} R={res['recall']:.3f}  "
         f"(tp={res['tp']} fp={res['fp']} fn={res['fn']})"
     )
-    print(f"facts emitted={res['n_facts']}  pred mentions scored={res['n_pred_mentions']}  "
-          f"dropped-by-gate={res['dropped']}")
+    print(
+        f"facts emitted={res['n_facts']}  pred mentions scored={res['n_pred_mentions']}  "
+        f"dropped-by-gate={res['dropped']}"
+    )
     gt = res["gold_state_total"]
     gm = res["gold_state_matched"]
     print("per gold-state recall (matched / total):")
@@ -214,8 +224,10 @@ def _report(title: str, res: dict[str, object]) -> None:
         matched = gm.get(state, 0)
         rate = matched / total if total else 0.0
         print(f"    {state:<13} {matched:>3} / {total:<3}  = {rate:.3f}")
-    print(f"type-key kind gold={dict(res['type_key_kind_gold'])} "
-          f"pred={dict(res['type_key_kind_pred'])}")
+    print(
+        f"type-key kind gold={dict(res['type_key_kind_gold'])} "
+        f"pred={dict(res['type_key_kind_pred'])}"
+    )
     if res["examples"]:
         print("sample unmatched letters (gold keys vs pred keys):")
         for line in res["examples"]:
@@ -243,9 +255,7 @@ def _parse_gepa_log(path: Path) -> dict[str, object] | None:
         list(ast.literal_eval(d).values())
         for d in re.findall(r"Individual valset scores for new program: (\{.*?\})", txt)
     ]
-    aggregates = [
-        float(a) for a in re.findall(rf"Val aggregate for new program: {_FLOAT}", txt)
-    ]
+    aggregates = [float(a) for a in re.findall(rf"Val aggregate for new program: {_FLOAT}", txt)]
     best_so_far = [
         float(b) for b in re.findall(rf"Best valset aggregate score so far: {_FLOAT}", txt)
     ]
@@ -278,9 +288,7 @@ def _report_h2(path: Path, minibatch_size: int = 3) -> None:
     se_val = per_letter_std / (n_val**0.5) if n_val else float("nan")
     se_mini = per_letter_std / (minibatch_size**0.5)
 
-    step_deltas = [
-        round(aggregates[i] - aggregates[i - 1], 4) for i in range(1, len(aggregates))
-    ]
+    step_deltas = [round(aggregates[i] - aggregates[i - 1], 4) for i in range(1, len(aggregates))]
     median_abs_step = stats.median(abs(d) for d in step_deltas) if step_deltas else float("nan")
 
     print(f"seed valset aggregate          = {parsed['seed_aggregate']:.4f}")
@@ -311,10 +319,14 @@ def main() -> None:
     print("H4 / D1 probe: can a PERFECT model-style SF answer score ~1.0?")
     print("(production path: model-style fact -> adapter -> gates -> CUI projection -> scorer)")
     _report("MODEL-STYLE perfect SF answer (production path)", _score_dev(_model_style_sf_facts))
-    _report("ORACLE-REPLAY perfect SF answer (full gold attrs preserved)",
-            _score_dev(_oracle_replay_sf_facts))
-    _report("MODEL-STYLE + RAW hyphenated gold text as evidence (reproduces D1 0.0)",
-            _score_dev(_model_style_sf_facts_raw_evidence))
+    _report(
+        "ORACLE-REPLAY perfect SF answer (full gold attrs preserved)",
+        _score_dev(_oracle_replay_sf_facts),
+    )
+    _report(
+        "MODEL-STYLE + RAW hyphenated gold text as evidence (reproduces D1 0.0)",
+        _score_dev(_model_style_sf_facts_raw_evidence),
+    )
     _report_h2(DEFAULT_GEPA_LOG, minibatch_size=3)
 
 

@@ -10,12 +10,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.md"
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_reset_stage_component_inventory_v0_2026-06-06.md")
 
 
 @dataclass(frozen=True)
@@ -42,10 +38,7 @@ RESET_COMPONENT_ENTRIES = (
             "frequency_rate_values_repaired_from_selected_evidence",
         ),
         status="ported_v6",
-        notes=(
-            "Ported as explicit reset normalization instead of hidden scorer-facing "
-            "repair."
-        ),
+        notes=("Ported as explicit reset normalization instead of hidden scorer-facing repair."),
     ),
     ResetComponentEntry(
         old_name="vague period rates",
@@ -236,9 +229,7 @@ RESET_COMPONENT_ENTRIES = (
         reset_stage="verify",
         new_family="unresolved_cluster_cadence_with_per_cluster_burden",
         portability_category="seizure_frequency",
-        ablation_switch=(
-            "route_unresolved_cluster_cadence_with_per_cluster_burden"
-        ),
+        ablation_switch=("route_unresolved_cluster_cadence_with_per_cluster_burden"),
         issue_or_rule_ids=("cluster_cadence_unknown_with_per_cluster_burden",),
         status="ported_route_contract_v6",
         notes=(
@@ -294,8 +285,7 @@ RESET_COMPONENT_ENTRIES = (
         issue_or_rule_ids=("broad_hybrid_fallback_retired",),
         status="retired_do_not_port",
         notes=(
-            "Explicitly rejected because it blurred selection, projection, and fallback "
-            "ownership."
+            "Explicitly rejected because it blurred selection, projection, and fallback ownership."
         ),
     ),
     ResetComponentEntry(
@@ -346,9 +336,7 @@ def build_reset_stage_component_inventory() -> dict[str, Any]:
             "by_portability_category": dict(sorted(portability_counts.items())),
             "by_status": dict(sorted(status_counts.items())),
             "ported_or_retained_families": sum(
-                1
-                for entry in entries
-                if str(entry["status"]).startswith(("ported", "retained"))
+                1 for entry in entries if str(entry["status"]).startswith(("ported", "retained"))
             ),
             "pending_policy_families": sum(
                 1 for entry in entries if entry["status"] == "pending_policy_decision"
@@ -375,9 +363,7 @@ def write_reset_stage_component_inventory_outputs(
     write_reset_stage_component_inventory_report(artifact, markdown_path)
 
 
-def write_reset_stage_component_inventory_report(
-    artifact: Mapping[str, Any], path: Path
-) -> None:
+def write_reset_stage_component_inventory_report(artifact: Mapping[str, Any], path: Path) -> None:
     """Write a Markdown report for the reset-stage component inventory."""
 
     summary = artifact.get("summary", {})
@@ -422,12 +408,8 @@ def write_reset_stage_component_inventory_report(
     for entry in artifact.get("inventory", []):
         if not isinstance(entry, Mapping):
             continue
-        issue_ids = ", ".join(
-            f"`{issue_id}`" for issue_id in entry.get("issue_or_rule_ids", ())
-        )
-        lines.append(
-            f"| `{entry.get('new_family')}` | {issue_ids} | {entry.get('notes')} |"
-        )
+        issue_ids = ", ".join(f"`{issue_id}`" for issue_id in entry.get("issue_or_rule_ids", ()))
+        lines.append(f"| `{entry.get('new_family')}` | {issue_ids} | {entry.get('notes')} |")
     lines.extend(
         [
             "",

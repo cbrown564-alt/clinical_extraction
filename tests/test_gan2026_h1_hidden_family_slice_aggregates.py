@@ -15,9 +15,7 @@ def test_h1_slice_aggregates_compute_family_gap_without_row_ids() -> None:
             _row(2, before=True, after=False, label="seizure free for 6 month"),
             _row(3, before=True, after=True, label="1 per week"),
         ],
-        validation_records={
-            1: _record("No seizures since January.", "seizure free for 6 month")
-        },
+        validation_records={1: _record("No seizures since January.", "seizure free for 6 month")},
         test_records={
             2: _record("No seizures since January.", "seizure free for 6 month"),
             3: _record("Weekly focal seizures continue.", "1 per week"),

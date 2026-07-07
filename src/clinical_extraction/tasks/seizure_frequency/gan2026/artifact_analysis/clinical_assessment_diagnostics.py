@@ -119,9 +119,7 @@ def summarize_diagnostics(
             "diagnostic_flag_counts": dict(sorted(flag_counts.items())),
             "minimal_selector_primary_relation_counts": dict(sorted(comparison_counts.items())),
             "rich_selector_primary_relation_counts": dict(sorted(rich_comparison_counts.items())),
-            "flagged_source_row_indices": [
-                int(row["source_row_index"]) for row in rows_with_flags
-            ],
+            "flagged_source_row_indices": [int(row["source_row_index"]) for row in rows_with_flags],
         },
         "inspection_examples": {
             "flagged_rows": _examples(rows_with_flags),
@@ -139,8 +137,7 @@ def summarize_diagnostics(
                 [
                     row
                     for row in diagnostics
-                    if row["minimal_selector_primary_relation"]
-                    not in {"same", "not_available"}
+                    if row["minimal_selector_primary_relation"] not in {"same", "not_available"}
                 ]
             ),
             "rich_selector_differences": _examples(
@@ -243,9 +240,7 @@ def _diagnostic_row(
     rich_selector_row: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     candidates = _candidate_payloads_from_row(row)
-    candidate_by_id = {
-        str(candidate.get("candidate_id")): candidate for candidate in candidates
-    }
+    candidate_by_id = {str(candidate.get("candidate_id")): candidate for candidate in candidates}
     assessment = _assessment_from_row(row)
     if assessment is None:
         return _missing_diagnostic_row(row, candidates)
@@ -296,9 +291,7 @@ def _diagnostic_row(
         "supporting_temporalities": _candidate_values(supporting_candidates, "temporality"),
         "rejected_temporalities": _candidate_values(rejected_candidates, "temporality"),
         "primary_evidence_texts": [_candidate_evidence_text(c) for c in primary_candidates],
-        "supporting_evidence_texts": [
-            _candidate_evidence_text(c) for c in supporting_candidates
-        ],
+        "supporting_evidence_texts": [_candidate_evidence_text(c) for c in supporting_candidates],
         "rejected_evidence_texts": [_candidate_evidence_text(c) for c in rejected_candidates],
         "normalized_burden": normalized_burden,
         "assessment_summary": assessment.assessment_summary,
@@ -368,10 +361,10 @@ def _diagnostic_flags(
 ) -> list[str]:
     flags: list[str] = []
     primary_kinds = {str(candidate.get("candidate_kind")) for candidate in primary_candidates}
-    if (
-        len(assessment.primary_candidate_ids) > 1
-        and assessment.aggregation_policy in {"single_fact", "primary_with_context"}
-    ):
+    if len(assessment.primary_candidate_ids) > 1 and assessment.aggregation_policy in {
+        "single_fact",
+        "primary_with_context",
+    }:
         flags.append("multi_primary_nonadditive_policy")
     if assessment.aggregation_policy == "single_fact" and len(assessment.primary_candidate_ids) > 1:
         flags.append("single_fact_multiple_primary_candidates")
@@ -408,15 +401,11 @@ def _diagnostic_flags(
         and not _cluster_axis_single_primary_allowed(normalized_burden)
     ):
         flags.append("aggregation_policy_without_multiple_primary_candidates")
-    if (
-        assessment.aggregation_policy == "additive_same_window"
-        and primary_kinds != {"frequency_rate"}
-    ):
+    if assessment.aggregation_policy == "additive_same_window" and primary_kinds != {
+        "frequency_rate"
+    }:
         flags.append("additive_policy_non_frequency_primary")
-    if (
-        assessment.aggregation_policy == "cluster_axis"
-        and "cluster_frequency" not in primary_kinds
-    ):
+    if assessment.aggregation_policy == "cluster_axis" and "cluster_frequency" not in primary_kinds:
         flags.append("cluster_axis_without_cluster_primary")
     if rejected_candidates and not assessment.rejected_candidate_ids:
         flags.append("unreachable")
@@ -637,9 +626,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     minimal_rows = (
-        load_jsonl_rows(args.minimal_selector_jsonl)
-        if args.minimal_selector_jsonl.exists()
-        else []
+        load_jsonl_rows(args.minimal_selector_jsonl) if args.minimal_selector_jsonl.exists() else []
     )
     rich_rows = (
         load_jsonl_rows(args.rich_selector_jsonl) if args.rich_selector_jsonl.exists() else []

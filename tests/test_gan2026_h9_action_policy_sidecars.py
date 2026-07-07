@@ -35,9 +35,7 @@ def test_action_summary_sidecar_reports_coverage_burden_and_family_rates() -> No
         ),
     ]
 
-    summary = h9_action_policy_sidecars.build_action_summary_sidecar(
-        {"control": rows}
-    )
+    summary = h9_action_policy_sidecars.build_action_summary_sidecar({"control": rows})
 
     candidate = summary["candidates"][0]
     assert candidate["prediction_bearing_coverage"] == 2 / 3
@@ -45,9 +43,7 @@ def test_action_summary_sidecar_reports_coverage_burden_and_family_rates() -> No
     assert candidate["review_rows"] == 0
     assert candidate["release_lane_counts"] == {"human_review": 1}
     assert candidate["fallback_owner_counts"] == {"deterministic_comparator_fallback": 1}
-    family_a = {row["family"]: row for row in candidate["family_action_rates"]}[
-        "family_a"
-    ]
+    family_a = {row["family"]: row for row in candidate["family_action_rates"]}["family_a"]
     assert family_a["rows"] == 2
     assert family_a["nonprediction_rows"] == 1
     assert summary["decision"] == "h9_action_summary_sidecar_v1_complete"

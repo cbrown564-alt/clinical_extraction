@@ -52,8 +52,7 @@ def run_state_graph_diagnostics(
     """Build graph/projection rows and corpus-level diagnostic metadata."""
 
     rows = [
-        _diagnostic_row(record, split=split, split_manifest=split_manifest)
-        for record in records
+        _diagnostic_row(record, split=split, split_manifest=split_manifest) for record in records
     ]
     coverage = oracle_coverage_summary(records)
     summary = _summary(rows, coverage=coverage)
@@ -189,15 +188,11 @@ def _diagnostic_row(
         "gold_monthly_frequency": record.gold_monthly_frequency,
         "oracle_representable": representable,
         "graph": graph.model_dump(mode="json"),
-        "graph_node_labels": [
-            [kind.value, label] for kind, label in graph_node_labels(graph)
-        ],
+        "graph_node_labels": [[kind.value, label] for kind, label in graph_node_labels(graph)],
         "graph_errors": list(graph_errors),
         "projection": projection.model_dump(mode="json"),
         "projection_monthly_frequency": projection.monthly_frequency,
-        "projection_exact_label_match": (
-            projection.final_label == record.gold_normalized_label
-        ),
+        "projection_exact_label_match": (projection.final_label == record.gold_normalized_label),
     }
 
 
@@ -224,9 +219,7 @@ def _summary(
             "purist_f1": purist["micro"]["f1"],
             "pragmatic_accuracy": pragmatic["micro"]["accuracy"],
             "pragmatic_f1": pragmatic["micro"]["f1"],
-            "exact_label_matches": sum(
-                bool(row["projection_exact_label_match"]) for row in rows
-            ),
+            "exact_label_matches": sum(bool(row["projection_exact_label_match"]) for row in rows),
             "rows_with_graph_errors": sum(bool(row["graph_errors"]) for row in rows),
             "rows_with_competing_hypotheses": sum(
                 bool(row["graph"]["competing_hypothesis_node_ids"]) for row in rows
@@ -236,11 +229,7 @@ def _summary(
 
 
 def _projection_misses(rows: Sequence[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
-    return [
-        row
-        for row in rows
-        if row["projection"]["final_label"] != row["gold_normalized_label"]
-    ]
+    return [row for row in rows if row["projection"]["final_label"] != row["gold_normalized_label"]]
 
 
 def _gold_is_representable(

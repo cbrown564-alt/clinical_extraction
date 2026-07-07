@@ -260,10 +260,15 @@ def parse_rows() -> list[dict]:
         if not line:
             continue
         letter, direction, concept, verdict, reason = line.split("|", 4)
-        rows.append({
-            "letter": letter, "direction": direction, "concept": concept,
-            "verdict": verdict, "reason": reason,
-        })
+        rows.append(
+            {
+                "letter": letter,
+                "direction": direction,
+                "concept": concept,
+                "verdict": verdict,
+                "reason": reason,
+            }
+        )
     return rows
 
 
@@ -282,8 +287,12 @@ def main() -> None:
     got = {(r["letter"], r["direction"], r["concept"]) for r in rows}
     missing = expected - got
     extra = got - expected
-    assert not missing, f"un-adjudicated disagreements: {sorted(missing)[:10]} (+{max(0, len(missing) - 10)} more)"
-    assert not extra, f"verdicts for non-disagreements: {sorted(extra)[:10]} (+{max(0, len(extra) - 10)} more)"
+    assert not missing, (
+        f"un-adjudicated disagreements: {sorted(missing)[:10]} (+{max(0, len(missing) - 10)} more)"
+    )
+    assert not extra, (
+        f"verdicts for non-disagreements: {sorted(extra)[:10]} (+{max(0, len(extra) - 10)} more)"
+    )
 
     out = ROOT / "_dx_canonical" / "_adjudication.csv"
     with out.open("w", newline="", encoding="utf-8") as fh:
@@ -303,14 +312,18 @@ def main() -> None:
     print("VERDICT TALLY (of 209 missed+spurious concepts):")
     for k in ("GOLD_RIGHT", "MODEL_DEFENSIBLE", "BOTH_DEFENSIBLE"):
         print(f"  {k:18s} {vc[k]:3d}  ({vc[k] / n:.1%})")
-    print(f"\n  -> genuine model error (GOLD_RIGHT)  : {vc['GOLD_RIGHT']}/{n} ({vc['GOLD_RIGHT'] / n:.1%})")
+    print(
+        f"\n  -> genuine model error (GOLD_RIGHT)  : {vc['GOLD_RIGHT']}/{n} ({vc['GOLD_RIGHT'] / n:.1%})"
+    )
     print(f"  -> NOT a model mistake (MODEL+BOTH)  : {defensible}/{n} ({defensible / n:.1%})")
 
     print("\nby direction:")
     for d in ("MISSED", "SPURIOUS"):
         c = by_dir[d]
         nd = sum(c.values())
-        print(f"  {d:9s} n={nd:3d}  GOLD_RIGHT={c['GOLD_RIGHT']:3d}  MODEL_DEFENSIBLE={c['MODEL_DEFENSIBLE']:3d}  BOTH_DEFENSIBLE={c['BOTH_DEFENSIBLE']:3d}")
+        print(
+            f"  {d:9s} n={nd:3d}  GOLD_RIGHT={c['GOLD_RIGHT']:3d}  MODEL_DEFENSIBLE={c['MODEL_DEFENSIBLE']:3d}  BOTH_DEFENSIBLE={c['BOTH_DEFENSIBLE']:3d}"
+        )
 
     # --- Adjusted aggregate: treat MODEL_DEFENSIBLE + BOTH_DEFENSIBLE as correct. ---
     summary = json.loads((ROOT / "_dx_canonical" / "_summary.json").read_text(encoding="utf-8"))
@@ -319,17 +332,27 @@ def main() -> None:
     pred_count, gold_count = official["pred_count"], official["gold_count"]
 
     missed_defensible = by_dir["MISSED"]["MODEL_DEFENSIBLE"] + by_dir["MISSED"]["BOTH_DEFENSIBLE"]
-    spurious_defensible = by_dir["SPURIOUS"]["MODEL_DEFENSIBLE"] + by_dir["SPURIOUS"]["BOTH_DEFENSIBLE"]
+    spurious_defensible = (
+        by_dir["SPURIOUS"]["MODEL_DEFENSIBLE"] + by_dir["SPURIOUS"]["BOTH_DEFENSIBLE"]
+    )
     adj_recall_tp = recall_tp + missed_defensible
     adj_precision_tp = precision_tp + spurious_defensible
     adj_precision = adj_precision_tp / pred_count if pred_count else 0.0
     adj_recall = adj_recall_tp / gold_count if gold_count else 0.0
-    adj_f1 = (2 * adj_precision * adj_recall / (adj_precision + adj_recall)) if (adj_precision + adj_recall) else 0.0
+    adj_f1 = (
+        (2 * adj_precision * adj_recall / (adj_precision + adj_recall))
+        if (adj_precision + adj_recall)
+        else 0.0
+    )
 
-    print(f"\nOFFICIAL  concept_only   : P={official['precision']:.4f} R={official['recall']:.4f} F1={official['f1']:.4f}")
+    print(
+        f"\nOFFICIAL  concept_only   : P={official['precision']:.4f} R={official['recall']:.4f} F1={official['f1']:.4f}"
+    )
     print(f"CLINICALLY-ADJUSTED      : P={adj_precision:.4f} R={adj_recall:.4f} F1={adj_f1:.4f}")
-    print(f"  (treats {missed_defensible} defensible misses as recall_tp and "
-          f"{spurious_defensible} defensible spurious predictions as precision_tp)")
+    print(
+        f"  (treats {missed_defensible} defensible misses as recall_tp and "
+        f"{spurious_defensible} defensible spurious predictions as precision_tp)"
+    )
     print(f"\nwrote {out}")
 
 

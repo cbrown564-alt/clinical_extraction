@@ -46,8 +46,7 @@ def main() -> None:
         "--out-error-ledger-csv",
         type=Path,
         default=Path(
-            "experiments/"
-            "exectv2_llm_first_essential_family_error_ledger_dev140_20260618.csv"
+            "experiments/exectv2_llm_first_essential_family_error_ledger_dev140_20260618.csv"
         ),
     )
     parser.add_argument(

@@ -17,18 +17,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 DEFAULT_ROUTER_JSONL_PATH = Path(
     "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl"
 )
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.md"
-)
-DEFAULT_PREDECLARATION_PATH = Path(
-    ""
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq9_cluster_convention_monitoring_2026-06-04.md")
+DEFAULT_PREDECLARATION_PATH = Path("")
 ANALYSIS_VERSION = "gan2026_rq9_cluster_convention_monitoring_v0"
 
 
@@ -36,9 +28,7 @@ def interpret_cluster_rows(
     router_rows: Sequence[Mapping[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     rows = [
-        interpret_cluster_row(row)
-        for row in router_rows
-        if _is_prediction_bearing_cluster_row(row)
+        interpret_cluster_row(row) for row in router_rows if _is_prediction_bearing_cluster_row(row)
     ]
     rows.sort(key=lambda row: int(row["source_row_index"]))
     return rows, summarize_cluster_rows(rows)
@@ -82,9 +72,7 @@ def summarize_cluster_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "high_priority_verifier_rows": priority_counts["high_priority_verifier"],
         "routine_monitoring_rows": priority_counts["routine_monitoring"],
         "development_safe_rows": sum(row["development_safe_if_predicted"] for row in rows),
-        "development_unsafe_rows": sum(
-            row["development_unsafe_if_predicted"] for row in rows
-        ),
+        "development_unsafe_rows": sum(row["development_unsafe_if_predicted"] for row in rows),
         "development_unsafe_rate": _safe_rate(
             sum(row["development_unsafe_if_predicted"] for row in rows),
             len(rows),
@@ -166,9 +154,7 @@ def write_cluster_report(
     ]
     for key, value in metrics.items():
         lines.append(f"| {key.replace('_', ' ')} | {_format_metric(value)} |")
-    lines.extend(
-        ["", "## Monitoring Groups", "", "| Group | Rows |", "| --- | ---: |"]
-    )
+    lines.extend(["", "## Monitoring Groups", "", "| Group | Rows |", "| --- | ---: |"])
     for group, count in metadata["monitoring_group_counts"].items():
         lines.append(f"| `{group}` | {count} |")
     lines.extend(
@@ -256,8 +242,7 @@ def write_predeclaration(path: Path = DEFAULT_PREDECLARATION_PATH) -> None:
 def _is_prediction_bearing_cluster_row(row: Mapping[str, Any]) -> bool:
     reasons = set(row.get("development_accounting", {}).get("codex_ambiguity_reasons") or [])
     return (
-        row.get("selective_action") == "predict"
-        and "cluster_or_per_cluster_convention" in reasons
+        row.get("selective_action") == "predict" and "cluster_or_per_cluster_convention" in reasons
     )
 
 
@@ -332,9 +317,7 @@ def main() -> None:
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
-    parser.add_argument(
-        "--predeclaration-path", type=Path, default=DEFAULT_PREDECLARATION_PATH
-    )
+    parser.add_argument("--predeclaration-path", type=Path, default=DEFAULT_PREDECLARATION_PATH)
     args = parser.parse_args()
 
     rows, metadata = interpret_cluster_rows(load_jsonl_rows(args.router_jsonl))

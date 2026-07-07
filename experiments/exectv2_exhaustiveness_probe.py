@@ -53,7 +53,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -104,7 +106,9 @@ def main() -> None:
 
     gold = gepa_data.load_dev_letters()
     pred_by_id = _pred_letters(args.run)
-    pred = [pred_by_id.get(g.letter_id, ExectLetter(letter_id=g.letter_id, note_text="")) for g in gold]
+    pred = [
+        pred_by_id.get(g.letter_id, ExectLetter(letter_id=g.letter_id, note_text="")) for g in gold
+    ]
     pred_expanded = [_expand_letter(p) for p in pred]
 
     n_added = sum(
@@ -114,8 +118,10 @@ def main() -> None:
     after = _canonical_headline(gold, pred_expanded)
 
     print(f"# Deterministic exhaustiveness probe (parent expansion) — {args.run} (dev140)\n")
-    print(f"Added {n_added} parent-concept Diagnosis mentions across {len(gold)} letters "
-          "(deployable, no gold leak).\n")
+    print(
+        f"Added {n_added} parent-concept Diagnosis mentions across {len(gold)} letters "
+        "(deployable, no gold leak).\n"
+    )
     print(f"  {'':<16}{'before':>9}{'after':>9}{'delta':>9}")
     print(
         f"  {'overall_f1':<16}{before['overall_f1']:>9.3f}{after['overall_f1']:>9.3f}"

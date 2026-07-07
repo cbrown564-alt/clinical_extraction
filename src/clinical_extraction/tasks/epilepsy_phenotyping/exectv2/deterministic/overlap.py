@@ -14,6 +14,7 @@ Key difference from Gan 2026: ExECTv2 is mention extraction — we want ALL
 non-overlapping anchors/extractions, not just one dominant fact per letter.
 So this stage only removes span-level conflicts, not all but the best.
 """
+
 from __future__ import annotations
 
 from .candidates import AnchorCandidate, AttributeExtraction

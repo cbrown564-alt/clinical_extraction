@@ -213,8 +213,7 @@ def summarize_rows(
         and (row.get("final_rendered_label") or {}).get("rendered_label") is None
     ]
     projection_kind_counts = Counter(
-        str((row.get("projection_decision") or {}).get("projection_kind"))
-        for row in projected
+        str((row.get("projection_decision") or {}).get("projection_kind")) for row in projected
     )
     render_basis_counts = Counter(
         str((row.get("final_rendered_label") or {}).get("render_basis"))
@@ -222,12 +221,10 @@ def summarize_rows(
         if row.get("final_rendered_label")
     )
     projection_owner_counts = Counter(
-        str((row.get("projection_decision") or {}).get("projection_owner"))
-        for row in projected
+        str((row.get("projection_decision") or {}).get("projection_owner")) for row in projected
     )
     projection_rule_counts = Counter(
-        str((row.get("projection_decision") or {}).get("projection_rule_id"))
-        for row in projected
+        str((row.get("projection_decision") or {}).get("projection_rule_id")) for row in projected
     )
     issue_counts = Counter(
         issue

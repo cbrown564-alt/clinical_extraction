@@ -127,17 +127,14 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     assert "arithmetic_trace" in final_answer_schema
     assert "selected_event_ids" in final_answer_schema
     assert "normalized model-rendered label" in final_answer_schema["raw_llm_final_label"]
-    assert "Render raw_llm_final_label directly from the selected evidence" in json.dumps(
-        prompt
-    )
+    assert "Render raw_llm_final_label directly from the selected evidence" in json.dumps(prompt)
     assert "Always include final_answer.selected_event_ids" in json.dumps(prompt)
-    assert "Omit administrative, medication, plan, and no-reference events" in json.dumps(
-        prompt
-    )
+    assert "Omit administrative, medication, plan, and no-reference events" in json.dumps(prompt)
     assert "Cluster cadence is not events-per-cluster" in json.dumps(prompt)
-    assert "exact copy of one selected event evidence value" in final_answer_schema[
-        "selected_evidence"
-    ]
+    assert (
+        "exact copy of one selected event evidence value"
+        in final_answer_schema["selected_evidence"]
+    )
     assert "preserving the selected denominator" in json.dumps(prompt)
 
 
@@ -268,9 +265,7 @@ def test_run_split_records_llm_heavy_score_layers() -> None:
     assert metadata["pipeline_family"] == PIPELINE_FAMILY
     assert metadata["prompt_version"] == PROMPT_VERSION
     assert metadata["schema_smoke_stop_rule"]["schema_valid_rows_minimum"] == "25/25"
-    assert (
-        metadata["schema_smoke_stop_rule"]["deterministic_arithmetic_gap_maximum"] == "5 rows"
-    )
+    assert metadata["schema_smoke_stop_rule"]["deterministic_arithmetic_gap_maximum"] == "5 rows"
     assert metadata["repair_mode_layers"]["raw_llm"]["repair_family"] == "none"
     assert row["structured_record"]["final_answer"]["raw_clinical_summary"] == (
         "Current quantified focal-seizure rate."

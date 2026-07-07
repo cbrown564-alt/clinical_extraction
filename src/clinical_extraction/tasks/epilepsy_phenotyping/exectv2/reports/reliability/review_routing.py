@@ -5,7 +5,11 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import review_triggers, round_rate
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+    review_triggers,
+    round_rate,
+)
+
 
 def review_routing(cells: list[dict[str, Any]]) -> dict[str, Any]:
     reviewed = caught = false_alarm = missed = total_errors = 0
@@ -118,14 +122,8 @@ def review_operating_points(cells: list[dict[str, Any]]) -> list[dict[str, Any]]
             validation_status="dev-tuned candidate; needs frozen validation",
             review_fn=lambda cell: (
                 bool(cell["features"]["source_final_delta"])
-                or (
-                    cell["family"] == "SeizureFrequency"
-                    and bool(cell["features"]["active_rate"])
-                )
-                or (
-                    cell["family"] == "Prescription"
-                    and bool(cell["features"]["plan_language"])
-                )
+                or (cell["family"] == "SeizureFrequency" and bool(cell["features"]["active_rate"]))
+                or (cell["family"] == "Prescription" and bool(cell["features"]["plan_language"]))
                 or bool(cell["features"]["result_state"])
             ),
         ),

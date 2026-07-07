@@ -126,7 +126,9 @@ def _write_status(status: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--smoke", action="store_true")
-    parser.add_argument("--beta", type=float, default=DEFAULT_BETA, help="Uniform F-beta recall weight (>1).")
+    parser.add_argument(
+        "--beta", type=float, default=DEFAULT_BETA, help="Uniform F-beta recall weight (>1)."
+    )
     parser.add_argument(
         "--per-family",
         action="store_true",

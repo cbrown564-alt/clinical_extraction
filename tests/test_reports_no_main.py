@@ -37,11 +37,7 @@ def _reports_dir() -> Path:
 def _report_library_modules() -> list[Path]:
     """Python files directly under ``reports/`` (excludes the ``cli/`` package)."""
     reports_dir = _reports_dir()
-    return [
-        path
-        for path in sorted(reports_dir.glob("*.py"))
-        if path.name != "__init__.py"
-    ]
+    return [path for path in sorted(reports_dir.glob("*.py")) if path.name != "__init__.py"]
 
 
 def test_report_modules_have_no_cli_main() -> None:

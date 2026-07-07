@@ -44,9 +44,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 PROMPT_VERSION = "gan2026_temporal_sentinel_specialist_v0_1"
 SAFETY_GATE_VERSION = "gan2026_temporal_sentinel_safety_gate_v0_2"
 PIPELINE_FAMILY = "temporal_sentinel_specialist"
-DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
-    structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_STRUCTURED_EVENT_JSONL_PATH = structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_temporal_sentinel_specialist_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_temporal_sentinel_specialist_validation.md")
 STAGE_ID = "temporal_sentinel_specialist"
@@ -158,9 +156,7 @@ def build_prompt_input(
 ) -> str:
     """Build a model-facing specialist payload without IDs, gold, or split."""
 
-    structured_input = llm_event_reasoner.inspect_structured_events(
-        structured_event_row
-    )
+    structured_input = llm_event_reasoner.inspect_structured_events(structured_event_row)
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 temporal and sentinel boundary adjudication",
@@ -260,8 +256,7 @@ def build_prompt_input(
                 "or isolated event description rather than a recurring cadence."
             ),
             "duration_or_episode_length_boundary": (
-                "A duration such as minutes or episode length was rendered as a "
-                "frequency label."
+                "A duration such as minutes or episode length was rendered as a frequency label."
             ),
             "treatment_anchor_boundary": (
                 "A count since starting/changing treatment is not enough to define "
@@ -294,9 +289,7 @@ def build_prompt_input(
             "selected_event_ids": "empty for keep; exactly one event ID for replace",
             "rejected_event_ids": "list of event IDs explicitly rejected",
             "evidence": "list of exact evidence substrings supporting the action",
-            "contradiction_profile": (
-                "list containing temporal_sentinel:<profile> when acting"
-            ),
+            "contradiction_profile": ("list containing temporal_sentinel:<profile> when acting"),
             "calculation_trace": "short boundary/cadence trace, or null",
             "clinical_rationale": "brief specialist rationale for the action",
             "uncertainty": "one string: low | medium | high",
@@ -438,19 +431,10 @@ def write_report(
         f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
         f"- Action-render failures: {summary.get('action_render_failures', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Verifier actions: `{summary.get('verifier_actions', {})}`",
         f"- Specialist profiles: `{summary.get('temporal_sentinel_profiles', {})}`",
         "",
@@ -609,9 +593,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 
@@ -624,9 +606,7 @@ def _run_model_call(
     max_tokens: int,
 ) -> str:
     del model, temperature, max_tokens
-    prediction = DspyTemporalSentinelSpecialistCaller()(
-        prompt_input_json=prompt_input_json
-    )
+    prediction = DspyTemporalSentinelSpecialistCaller()(prompt_input_json=prompt_input_json)
     return str(prediction.decision_json)
 
 
@@ -660,9 +640,9 @@ def _safety_keep_reason(
     event_id = decision.selected_event_ids[0] if decision.selected_event_ids else None
     if event_id is None:
         return None
-    normalized = llm_event_reasoner._normalized_event_by_id(
-        structured_event_row or {}
-    ).get(event_id)
+    normalized = llm_event_reasoner._normalized_event_by_id(structured_event_row or {}).get(
+        event_id
+    )
     selection = _structured_selection(structured_event_row)
     original_kind = str(selection.get("final_kind") or "")
     original_label = str(selection.get("final_label") or "")
@@ -764,8 +744,7 @@ def _is_safe_boundary_replacement(
     if selected_kind not in BOUNDARY_KINDS:
         return False
     if not any(
-        str(review.get("semantic_kind") or "") in BOUNDARY_KINDS
-        for review in selected_reviews
+        str(review.get("semantic_kind") or "") in BOUNDARY_KINDS for review in selected_reviews
     ):
         return False
     selected_flags = _review_flags(selected_reviews)
@@ -801,9 +780,9 @@ def _normalized_label_for_event(
     structured_event_row: Mapping[str, Any] | None,
     event_id: str,
 ) -> str:
-    normalized = llm_event_reasoner._normalized_event_by_id(
-        structured_event_row or {}
-    ).get(event_id)
+    normalized = llm_event_reasoner._normalized_event_by_id(structured_event_row or {}).get(
+        event_id
+    )
     return str((normalized or {}).get("normalized_label") or "")
 
 
@@ -1065,9 +1044,7 @@ def _risk_checks(
 def _structured_selection(structured_event_row: Mapping[str, Any] | None) -> dict[str, Any]:
     if structured_event_row is None:
         return {}
-    return dict(
-        dict(structured_event_row.get("structured_record") or {}).get("selection") or {}
-    )
+    return dict(dict(structured_event_row.get("structured_record") or {}).get("selection") or {})
 
 
 def _looks_numeric_frequency_label(label: str) -> bool:

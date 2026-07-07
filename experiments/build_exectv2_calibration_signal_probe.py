@@ -44,9 +44,7 @@ _H2_REDUNDANCY_RHO = 0.70
 
 
 def main() -> None:
-    rich_rows = {
-        run.candidate: load_jsonl(REPO_ROOT / run.rows_path) for run in RICH_SCHEMA_RUNS
-    }
+    rich_rows = {run.candidate: load_jsonl(REPO_ROOT / run.rows_path) for run in RICH_SCHEMA_RUNS}
     cells = list(iter_reliability_cells(rich_rows))
 
     agreement = external_signals.load_dev140_cross_model_agreement()
@@ -67,8 +65,8 @@ def main() -> None:
     ]
     h1_verdict = (
         "supported"
-        if len(h1_generalizing) >= 2 or pooled["cross_model_agreement"]["auroc_error"]
-        > _AUROC_USEFULNESS_BAR
+        if len(h1_generalizing) >= 2
+        or pooled["cross_model_agreement"]["auroc_error"] > _AUROC_USEFULNESS_BAR
         else "refuted_does_not_generalize"
     )
 
@@ -132,9 +130,7 @@ def main() -> None:
 
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_MD.parent.mkdir(parents=True, exist_ok=True)
-    OUT_JSON.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    OUT_JSON.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     OUT_MD.write_text(_render_markdown(payload), encoding="utf-8")
     print(f"Wrote {OUT_JSON}")
     print(f"Wrote {OUT_MD}")
@@ -178,18 +174,12 @@ def _pooled_signal_auroc(
     }
 
 
-def _signal_auroc(
-    cells: list[dict[str, Any]], risk_fn: Any
-) -> dict[str, float]:
+def _signal_auroc(cells: list[dict[str, Any]], risk_fn: Any) -> dict[str, float]:
     risks = [float(risk_fn(c)) for c in cells]
     labels = [not bool(c["correct"]) for c in cells]
     return {
         "auroc_error": round(external_signals.auroc(risks, labels), 4),
-        "coverage": round(
-            sum(1 for r in risks if r > 0.0) / len(risks), 4
-        )
-        if risks
-        else 0.0,
+        "coverage": round(sum(1 for r in risks if r > 0.0) / len(risks), 4) if risks else 0.0,
     }
 
 
@@ -252,18 +242,14 @@ def _signal_distributions(
     entropy: dict[tuple[str, str], float],
 ) -> dict[str, Any]:
     agreement_counts = Counter(
-        agreement.get((c["letter_id"], c["family"]), {}).get("agreement", 3.0)
-        for c in cells
+        agreement.get((c["letter_id"], c["family"]), {}).get("agreement", 3.0) for c in cells
     )
     return {
         "cross_model_agreement_cluster_sizes": {
             str(int(k)): v for k, v in sorted(agreement_counts.items())
         },
         "self_consistency_entropy_mean": round(
-            sum(
-                entropy.get((c["letter_id"], c["family"]), 0.0) for c in cells
-            )
-            / len(cells),
+            sum(entropy.get((c["letter_id"], c["family"]), 0.0) for c in cells) / len(cells),
             4,
         )
         if cells

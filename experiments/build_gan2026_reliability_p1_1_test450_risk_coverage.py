@@ -60,8 +60,10 @@ def main() -> None:
 
     # Internal per-row join (aggregates only leave this function).
     items = [
-        {"risk": two_agent_external_risk(agree.get(r["source_row_index"], 1)),
-         "correct": rc.subject_purist_correct(r)}
+        {
+            "risk": two_agent_external_risk(agree.get(r["source_row_index"], 1)),
+            "correct": rc.subject_purist_correct(r),
+        }
         for r in rsn
     ]
     n = len(items)
@@ -129,8 +131,10 @@ def main() -> None:
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
     ar = result["aggregate_results"]
-    print(f"  base error {ar['base_error_rate']:.3f}; agree-only coverage {cov_agree:.3f} "
-          f"selective risk {sel_risk_agree:.3f}; disagree error {sel_risk_disagree:.3f}")
+    print(
+        f"  base error {ar['base_error_rate']:.3f}; agree-only coverage {cov_agree:.3f} "
+        f"selective risk {sel_risk_agree:.3f}; disagree error {sel_risk_disagree:.3f}"
+    )
     print(f"  two-agent AUROC for failure: {auroc_fail:.4f}")
     print(f"  frozen score sha256: {score_hash[:16]}...")
 
@@ -143,17 +147,27 @@ def render_md(result: dict[str, Any]) -> str:
     L.append(f"Date: {result['date']}  ·  Split: {result['split']}  ·  Model calls: 0\n")
     L.append(f"_{result['claim_boundary']}._\n")
     L.append(f"**Asymmetry.** {result['asymmetry_note']}\n")
-    L.append(f"Frozen transform `{result['frozen_transform']['function']}` "
-             f"sha256 `{result['frozen_transform']['source_sha256'][:16]}…` "
-             "(predeclared before touching test450).\n")
+    L.append(
+        f"Frozen transform `{result['frozen_transform']['function']}` "
+        f"sha256 `{result['frozen_transform']['source_sha256'][:16]}…` "
+        "(predeclared before touching test450).\n"
+    )
     ap = ar["operating_point_agree_only"]
-    L.append(f"- Base error rate: {ar['base_error_rate']:.1%} "
-             f"(CI {ar['base_error_rate_ci95'][0]:.1%}–{ar['base_error_rate_ci95'][1]:.1%})")
-    L.append(f"- **Agree-only operating point:** coverage {ap['coverage']:.1%}, selective risk "
-             f"{ap['selective_risk']:.1%} (CI {ap['selective_risk_ci95'][0]:.1%}–{ap['selective_risk_ci95'][1]:.1%})")
-    L.append(f"- Disagree set: {ar['disagree_set']['coverage_share']:.1%} of rows, error rate "
-             f"{ar['disagree_set']['error_rate']:.1%}")
-    L.append(f"- **Two-agent external-score AUROC for failure: {ar['external_score_auroc_for_failure']:.4f}**\n")
+    L.append(
+        f"- Base error rate: {ar['base_error_rate']:.1%} "
+        f"(CI {ar['base_error_rate_ci95'][0]:.1%}–{ar['base_error_rate_ci95'][1]:.1%})"
+    )
+    L.append(
+        f"- **Agree-only operating point:** coverage {ap['coverage']:.1%}, selective risk "
+        f"{ap['selective_risk']:.1%} (CI {ap['selective_risk_ci95'][0]:.1%}–{ap['selective_risk_ci95'][1]:.1%})"
+    )
+    L.append(
+        f"- Disagree set: {ar['disagree_set']['coverage_share']:.1%} of rows, error rate "
+        f"{ar['disagree_set']['error_rate']:.1%}"
+    )
+    L.append(
+        f"- **Two-agent external-score AUROC for failure: {ar['external_score_auroc_for_failure']:.4f}**\n"
+    )
     L.append(f"{result['validation_comparator']['note']}\n")
     L.append("---\n")
     L.append(

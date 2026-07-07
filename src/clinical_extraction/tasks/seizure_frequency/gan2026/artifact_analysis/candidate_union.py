@@ -60,8 +60,7 @@ def summarize_candidate_union_rows(rows: Sequence[Mapping[str, Any]]) -> dict[st
             for row in rows
         ),
         "llm_boundary_proposal": sum(
-            bool(row["gold_state_recall_summary"]["llm_boundary_candidate_recall"])
-            for row in rows
+            bool(row["gold_state_recall_summary"]["llm_boundary_candidate_recall"]) for row in rows
         ),
         "union_verified": sum(
             bool(row["gold_state_recall_summary"]["union_verified_candidate_recall"])
@@ -82,11 +81,7 @@ def summarize_candidate_union_rows(rows: Sequence[Mapping[str, Any]]) -> dict[st
     ]
     union_counts = [int(row["candidate_burden_summary"]["union_verified_count"]) for row in rows]
     rejected_counts = [int(row["candidate_burden_summary"]["rejected_count"]) for row in rows]
-    gate_failures = Counter(
-        failure
-        for row in rows
-        for failure in row["gate_failures"]
-    )
+    gate_failures = Counter(failure for row in rows for failure in row["gate_failures"])
     return {
         "artifact_kind": "gan2026_candidate_union_saved_artifact",
         "date": "2026-06-04",
@@ -514,11 +509,7 @@ def _required_metadata_missing(candidate: Mapping[str, Any]) -> bool:
 
 
 def _candidate_rate(rows: Sequence[Mapping[str, Any]], field: str) -> float:
-    candidates = [
-        candidate
-        for row in rows
-        for candidate in row["union_verified_candidates"]
-    ]
+    candidates = [candidate for row in rows for candidate in row["union_verified_candidates"]]
     if not candidates:
         return 0.0
     if field == "valid_source_id":

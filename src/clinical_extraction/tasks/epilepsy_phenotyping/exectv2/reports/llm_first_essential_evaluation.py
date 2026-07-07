@@ -33,7 +33,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first im
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.projection import (
     strip_and_project as _strip_and_project,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.projection import (
     strip_gold_cui as _strip_gold_cui,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.projection import (
     strip_prediction_cui as _strip_prediction_cui,
 )
 

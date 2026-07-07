@@ -41,9 +41,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as 
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 ROOT = Path(__file__).resolve().parents[1]
-RUN_JSONL = ROOT / "experiments" / "exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.jsonl"
+RUN_JSONL = (
+    ROOT
+    / "experiments"
+    / "exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.jsonl"
+)
 OUT_JSON = ROOT / "experiments" / "exectv2_evidence_support_audit_2026-06-30.json"
-OUT_MD = ROOT / "docs" / "experiments" / "exectv2" / "reliability" / "exectv2_evidence_support_audit_2026-06-30.md"
+OUT_MD = (
+    ROOT
+    / "docs"
+    / "experiments"
+    / "exectv2"
+    / "reliability"
+    / "exectv2_evidence_support_audit_2026-06-30.md"
+)
 MODEL = "openai/gpt-4.1-mini"
 FAMILIES = ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"]
 N_PER_FAMILY = 5
@@ -59,8 +70,12 @@ class SupportJudge(dspy.Signature):
     claimed_text: str = dspy.InputField(desc="the normalized phrase the model claims")
     claimed_attributes: str = dspy.InputField(desc="JSON of additional claimed attributes")
     evidence: str = dspy.InputField(desc="the quoted evidence string the model cited")
-    verdict: str = dspy.OutputField(desc="exactly one of: SUPPORTS, PARTIALLY_SUPPORTS, DOES_NOT_SUPPORT")
-    reason: str = dspy.OutputField(desc="one sentence: does the evidence text itself justify the SPECIFIC claimed value/attributes")
+    verdict: str = dspy.OutputField(
+        desc="exactly one of: SUPPORTS, PARTIALLY_SUPPORTS, DOES_NOT_SUPPORT"
+    )
+    reason: str = dspy.OutputField(
+        desc="one sentence: does the evidence text itself justify the SPECIFIC claimed value/attributes"
+    )
 
 
 def load_dev140_mentions() -> dict[str, list[dict]]:
@@ -103,7 +118,11 @@ def run_support_judge(by_family: dict[str, list[dict]], note_text_by_id: dict[st
     rng = random.Random(SEED)
     sample_results: dict[str, list[dict]] = defaultdict(list)
     for fam in FAMILIES:
-        grounded = [m for m in by_family.get(fam, []) if m.get("evidence_valid") is True and m.get("evidence")]
+        grounded = [
+            m
+            for m in by_family.get(fam, [])
+            if m.get("evidence_valid") is True and m.get("evidence")
+        ]
         sample = rng.sample(grounded, min(N_PER_FAMILY, len(grounded)))
         for m in sample:
             note = note_text_by_id.get(m["letter_id"], "")
@@ -118,13 +137,15 @@ def run_support_judge(by_family: dict[str, list[dict]], note_text_by_id: dict[st
             verdict = str(getattr(pred, "verdict", "")).strip().upper()
             if verdict not in ("SUPPORTS", "PARTIALLY_SUPPORTS", "DOES_NOT_SUPPORT"):
                 verdict = "UNPARSEABLE"
-            sample_results[fam].append({
-                "letter_id": m["letter_id"],
-                "claimed_text": m.get("text", ""),
-                "evidence": m.get("evidence", ""),
-                "verdict": verdict,
-                "reason": str(getattr(pred, "reason", "")),
-            })
+            sample_results[fam].append(
+                {
+                    "letter_id": m["letter_id"],
+                    "claimed_text": m.get("text", ""),
+                    "evidence": m.get("evidence", ""),
+                    "verdict": verdict,
+                    "reason": str(getattr(pred, "reason", "")),
+                }
+            )
     return sample_results
 
 
@@ -171,14 +192,18 @@ def main() -> None:
     # from groundedness -- assert the two are not silently identical across all families
     # (a sign the judge degenerated into restating groundedness).
     print("=== EVIDENCE SUPPORT-QUALITY COMPANION AUDIT (dev140) ===\n")
-    print(f"{'family':<18}{'grounded':>10}{'n':>6}   {'SUPPORTS':>9}{'PARTIAL':>9}{'NONE':>7}   "
-          f"{'strict':>8}{'lenient':>9}")
+    print(
+        f"{'family':<18}{'grounded':>10}{'n':>6}   {'SUPPORTS':>9}{'PARTIAL':>9}{'NONE':>7}   "
+        f"{'strict':>8}{'lenient':>9}"
+    )
     for fam in FAMILIES:
         g = ground[fam]
         s = support_summary[fam]
-        print(f"{fam:<18}{g['groundedness_rate'] if g['groundedness_rate'] is not None else float('nan'):>10.4f}"
-              f"{s['n_sampled']:>6}   {s['SUPPORTS']:>9}{s['PARTIALLY_SUPPORTS']:>9}{s['DOES_NOT_SUPPORT']:>7}   "
-              f"{(s['support_rate_strict'] or 0):>8.4f}{(s['support_rate_lenient'] or 0):>9.4f}")
+        print(
+            f"{fam:<18}{g['groundedness_rate'] if g['groundedness_rate'] is not None else float('nan'):>10.4f}"
+            f"{s['n_sampled']:>6}   {s['SUPPORTS']:>9}{s['PARTIALLY_SUPPORTS']:>9}{s['DOES_NOT_SUPPORT']:>7}   "
+            f"{(s['support_rate_strict'] or 0):>8.4f}{(s['support_rate_lenient'] or 0):>9.4f}"
+        )
 
     write_report(out)
     print(f"\nwrote {OUT_JSON}\nwrote {OUT_MD}")
@@ -186,7 +211,7 @@ def main() -> None:
 
 def write_report(out: dict) -> None:
     lines = [
-        "# Evidence support-quality companion audit (dev140) — closes FM1's \"Partial\" guardrail",
+        '# Evidence support-quality companion audit (dev140) — closes FM1\'s "Partial" guardrail',
         "",
         f"Run: `{out['run_id']}` (v08 hybrid, full-200 production system, filtered to dev140).",
         f"Model: `{out['model']}`. Support-judge sample: {out['n_per_family_sampled']} grounded "
@@ -203,7 +228,9 @@ def write_report(out: dict) -> None:
         "| --- | ---: | ---: | ---: |",
     ]
     for fam, g in out["groundedness_baseline"].items():
-        lines.append(f"| {fam} | {g['n_mentions']} | {g['n_grounded']} | {g['groundedness_rate']} |")
+        lines.append(
+            f"| {fam} | {g['n_mentions']} | {g['n_grounded']} | {g['groundedness_rate']} |"
+        )
 
     lines += [
         "",

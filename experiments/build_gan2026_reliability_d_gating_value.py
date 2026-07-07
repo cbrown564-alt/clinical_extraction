@@ -71,19 +71,27 @@ def gating_table(risk: list[float], correct: list[bool]) -> list[dict[str, Any]]
         errors_shed = abst_err
         total_errors = sum(1 for c in correct if not c)
         lo, hi = rc.wilson_interval(cov_correct, len(covered))
-        rows.append({
-            "coverage": len(covered) / n,
-            "covered": len(covered),
-            "abstained": len(abstained),
-            "selective_accuracy": sel_acc,
-            "selective_accuracy_ci95": [lo, hi],
-            "abstention_precision": abst_prec,         # errors among abstained
-            "random_abstention_precision": base_err,    # what random would get
-            "abstention_lift_over_random": (abst_prec - base_err) if abstained else float("nan"),
-            "errors_shed": errors_shed,
-            "errors_shed_frac_of_total": (errors_shed / total_errors) if total_errors else float("nan"),
-            "errors_shed_frac_if_random": (1 - cov),    # random sheds proportional to abstain frac
-        })
+        rows.append(
+            {
+                "coverage": len(covered) / n,
+                "covered": len(covered),
+                "abstained": len(abstained),
+                "selective_accuracy": sel_acc,
+                "selective_accuracy_ci95": [lo, hi],
+                "abstention_precision": abst_prec,  # errors among abstained
+                "random_abstention_precision": base_err,  # what random would get
+                "abstention_lift_over_random": (abst_prec - base_err)
+                if abstained
+                else float("nan"),
+                "errors_shed": errors_shed,
+                "errors_shed_frac_of_total": (errors_shed / total_errors)
+                if total_errors
+                else float("nan"),
+                "errors_shed_frac_if_random": (
+                    1 - cov
+                ),  # random sheds proportional to abstain frac
+            }
+        )
     return rows
 
 
@@ -131,11 +139,13 @@ def main() -> None:
     OUT_JSON.write_text(json.dumps(result, indent=2), encoding="utf-8")
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
-    print(f"  base accuracy {base_acc:.3f} (error {1-base_acc:.3f}), D AUROC {d_auroc:.3f}")
+    print(f"  base accuracy {base_acc:.3f} (error {1 - base_acc:.3f}), D AUROC {d_auroc:.3f}")
     for r in d_table:
-        print(f"  cov {r['coverage']:.0%}: sel acc {r['selective_accuracy']:.3f} "
-              f"| abst prec {r['abstention_precision']:.3f} vs random {r['random_abstention_precision']:.3f} "
-              f"(lift {r['abstention_lift_over_random']:+.3f})")
+        print(
+            f"  cov {r['coverage']:.0%}: sel acc {r['selective_accuracy']:.3f} "
+            f"| abst prec {r['abstention_precision']:.3f} vs random {r['random_abstention_precision']:.3f} "
+            f"(lift {r['abstention_lift_over_random']:+.3f})"
+        )
 
 
 def render_md(r: dict[str, Any]) -> str:
@@ -158,7 +168,9 @@ def render_md(r: dict[str, Any]) -> str:
             f"{x['abstention_precision']:.1%} | {x['abstention_lift_over_random']:+.1%} | "
             f"{x['errors_shed']} | {x['errors_shed_frac_of_total']:.0%} vs {x['errors_shed_frac_if_random']:.0%} |"
         )
-    L.append("\n## External composite gate (context only — needs 3 models, unavailable single-model)\n")
+    L.append(
+        "\n## External composite gate (context only — needs 3 models, unavailable single-model)\n"
+    )
     L.append("| Coverage | Selective acc | Abstention precision | vs random |")
     L.append("|---:|---:|---:|---:|")
     for x in r["external_gating_context_only"]:
@@ -175,7 +187,8 @@ def render_md(r: dict[str, Any]) -> str:
         f"vs the random bar {g90['random_abstention_precision']:.1%} ({g90['abstention_lift_over_random']:+.1%}). "
         "Judge practical usefulness by how far selective accuracy and abstention precision sit "
         "above the random bar, and whether the lift justifies one extra mini call per row plus "
-        "the discarded coverage.\n")
+        "the discarded coverage.\n"
+    )
     return "\n".join(L)
 
 

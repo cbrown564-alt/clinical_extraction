@@ -294,4 +294,3 @@ def prescription_residual_additions(note_text: str) -> list[tuple[str, str, dict
                 continue
             additions.append((drug_surface, evidence, attrs))
     return additions
-

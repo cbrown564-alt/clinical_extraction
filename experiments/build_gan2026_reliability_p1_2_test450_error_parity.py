@@ -25,10 +25,10 @@ import json
 import statistics
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026 import labels as gan_labels
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     reliability_common as rc,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026 import labels as gan_labels
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
     boundary_band,
     classify_boundary_families,
@@ -69,8 +69,12 @@ def main() -> None:
 
     def acc_table(groups: dict[str, list[bool]]) -> dict[str, Any]:
         return {
-            g: {"n": len(v), "correct": sum(v), "accuracy": sum(v) / len(v),
-                "error_rate": 1 - sum(v) / len(v)}
+            g: {
+                "n": len(v),
+                "correct": sum(v),
+                "accuracy": sum(v) / len(v),
+                "error_rate": 1 - sum(v) / len(v),
+            }
             for g, v in sorted(groups.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
         }
 
@@ -98,7 +102,8 @@ def main() -> None:
             "source_sha256": clf_hash,
         },
         "provenance": rc.provenance_block(
-            subject="single_se_mini_v0_reference", sources=[rc.REASONER_TEST450]),
+            subject="single_se_mini_v0_reference", sources=[rc.REASONER_TEST450]
+        ),
         "overall": {"accuracy": overall_acc, "correct": overall_correct, "n": n},
         "boundary_bands": band_table,
         "qualitative_families": family_table,
@@ -116,8 +121,10 @@ def main() -> None:
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
     print(f"  overall acc {overall_acc:.3f}; band error spread {spread:.3f}; CV {cv:.3f}")
-    print(f"  worst band {worst_band[0]} {worst_band[1]['accuracy']:.3f}; "
-          f"worst family {worst_qual[0]} {worst_qual[1]['accuracy']:.3f}; flagged {flagged}")
+    print(
+        f"  worst band {worst_band[0]} {worst_band[1]['accuracy']:.3f}; "
+        f"worst family {worst_qual[0]} {worst_qual[1]['accuracy']:.3f}; flagged {flagged}"
+    )
 
 
 def render_md(result: dict[str, Any]) -> str:
@@ -125,9 +132,11 @@ def render_md(result: dict[str, Any]) -> str:
     L.append("# P1.2 — Per-Family Error-Parity on Frozen test450 (Fairness)\n")
     L.append("## Aggregate-Only Holdout Readout\n")
     L.append(f"Date: {result['date']}  ·  Split: {result['split']}  ·  Model calls: 0\n")
-    L.append(f"_{result['claim_boundary']}._  Frozen classifier "
-             f"`{result['frozen_transform']['function']}` sha256 "
-             f"`{result['frozen_transform']['source_sha256'][:16]}…`.\n")
+    L.append(
+        f"_{result['claim_boundary']}._  Frozen classifier "
+        f"`{result['frozen_transform']['function']}` sha256 "
+        f"`{result['frozen_transform']['source_sha256'][:16]}…`.\n"
+    )
     o = result["overall"]
     L.append(f"Subject overall Purist accuracy: {o['correct']}/{o['n']} = {o['accuracy']:.1%}.\n")
     L.append("### Boundary bands (partition)\n")
@@ -136,14 +145,20 @@ def render_md(result: dict[str, Any]) -> str:
     for b, d in result["boundary_bands"].items():
         L.append(f"| {b} | {d['n']} | {d['accuracy']:.1%} | {d['error_rate']:.1%} |")
     pa = result["parity"]
-    L.append(f"\n- **Error-rate spread (max−min): {pa['error_rate_spread_max_minus_min']:.1%}**, "
-             f"accuracy CV {pa['accuracy_coefficient_of_variation']:.3f}")
+    L.append(
+        f"\n- **Error-rate spread (max−min): {pa['error_rate_spread_max_minus_min']:.1%}**, "
+        f"accuracy CV {pa['accuracy_coefficient_of_variation']:.3f}"
+    )
     wb = pa["worst_band"]
     wq = pa["worst_qualitative_family"]
-    L.append(f"- Worst band: **{wb['band']}** {wb['accuracy']:.1%} (n={wb['n']}); "
-             f"worst qualitative family: **{wq['family']}** {wq['accuracy']:.1%} (n={wq['n']})")
-    L.append(f"- Parity flag (> {pa['parity_margin']:.0%} below overall): "
-             f"{', '.join(pa['flagged_bands']) if pa['flagged_bands'] else 'none'}")
+    L.append(
+        f"- Worst band: **{wb['band']}** {wb['accuracy']:.1%} (n={wb['n']}); "
+        f"worst qualitative family: **{wq['family']}** {wq['accuracy']:.1%} (n={wq['n']})"
+    )
+    L.append(
+        f"- Parity flag (> {pa['parity_margin']:.0%} below overall): "
+        f"{', '.join(pa['flagged_bands']) if pa['flagged_bands'] else 'none'}"
+    )
     L.append("\n### Qualitative families (overlapping)\n")
     L.append("| Family | n | Purist acc | Error rate |")
     L.append("|---|---:|---:|---:|")

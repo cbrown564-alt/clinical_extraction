@@ -6,6 +6,7 @@ Tests are at four levels:
   3. Overlap + association unit tests.
   4. Pipeline smoke tests + registry validation.
 """
+
 from __future__ import annotations
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
@@ -146,7 +147,9 @@ def test_range_of_seizure_terms() -> None:
 
 
 def test_between_range_per_period() -> None:
-    results = _apply(BETWEEN_RANGE_PER_PERIOD_RULE, "She is having between 3 and 4 seizures per week.")
+    results = _apply(
+        BETWEEN_RANGE_PER_PERIOD_RULE, "She is having between 3 and 4 seizures per week."
+    )
     assert len(results) == 1
     c = results[0]
     assert c.attributes["LowerNumberOfSeizures"] == "3"
@@ -173,7 +176,9 @@ def test_period_range_every_three_to_four_weeks() -> None:
 
 
 def test_range_every_period() -> None:
-    results = _apply(RANGE_EVERY_PERIOD_RULE, "Generalised tonic clonic seizures 1 to 2 every month.")
+    results = _apply(
+        RANGE_EVERY_PERIOD_RULE, "Generalised tonic clonic seizures 1 to 2 every month."
+    )
     assert len(results) == 1
     attrs = results[0].attributes
     assert attrs["LowerNumberOfSeizures"] == "1"
@@ -201,7 +206,9 @@ def test_every_n_periods_word_number() -> None:
 
 
 def test_every_period_without_number() -> None:
-    results = _apply(EVERY_PERIOD_RULE, "Secondary generalised seizures, they happen about every year.")
+    results = _apply(
+        EVERY_PERIOD_RULE, "Secondary generalised seizures, they happen about every year."
+    )
     assert len(results) == 1
     attrs = results[0].attributes
     assert attrs["NumberOfSeizures"] == "1"
@@ -210,7 +217,10 @@ def test_every_period_without_number() -> None:
 
 
 def test_count_per_fortnight() -> None:
-    results = _apply(COUNT_PER_FORTNIGHT_RULE, "Focal seizures with altered awareness approximately 1 per fortnight.")
+    results = _apply(
+        COUNT_PER_FORTNIGHT_RULE,
+        "Focal seizures with altered awareness approximately 1 per fortnight.",
+    )
     assert len(results) == 1
     attrs = results[0].attributes
     assert attrs["NumberOfSeizures"] == "1"
@@ -228,7 +238,9 @@ def test_several_times_per_period() -> None:
 
 
 def test_range_over_period() -> None:
-    results = _apply(RANGE_OVER_PERIOD_RULE, "Last week she had around 10-15 of these seizures over 2 days.")
+    results = _apply(
+        RANGE_OVER_PERIOD_RULE, "Last week she had around 10-15 of these seizures over 2 days."
+    )
     assert len(results) == 1
     attrs = results[0].attributes
     assert attrs["LowerNumberOfSeizures"] == "10"
@@ -249,19 +261,28 @@ def test_header_continuation_rate() -> None:
 
 def test_adverbial_daily() -> None:
     results = _apply(ADVERBIAL_RULE, "Focal onset seizures are now daily.")
-    assert any(c.attributes["TimePeriod"] == "Day" and c.attributes["NumberOfSeizures"] == "1" for c in results)
+    assert any(
+        c.attributes["TimePeriod"] == "Day" and c.attributes["NumberOfSeizures"] == "1"
+        for c in results
+    )
 
 
 def test_adverbial_twice_weekly() -> None:
     results = _apply(ADVERBIAL_RULE, "She reports seizures twice weekly.")
-    assert any(c.attributes["NumberOfSeizures"] == "2" and c.attributes["TimePeriod"] == "Week" for c in results)
+    assert any(
+        c.attributes["NumberOfSeizures"] == "2" and c.attributes["TimePeriod"] == "Week"
+        for c in results
+    )
 
 
 def test_adverbial_fortnightly() -> None:
     # A bare adverbial only fires in seizure context (gate against "daily
     # headaches" / "daily living" / medication-titration "daily").
     results = _apply(ADVERBIAL_RULE, "Her seizure clusters occur fortnightly.")
-    assert any(c.attributes["TimePeriod"] == "Week" and c.attributes["NumberOfTimePeriods"] == "2" for c in results)
+    assert any(
+        c.attributes["TimePeriod"] == "Week" and c.attributes["NumberOfTimePeriods"] == "2"
+        for c in results
+    )
 
 
 def test_adverbial_outside_seizure_context_suppressed() -> None:
@@ -402,7 +423,9 @@ def test_pit_since_last_clinic() -> None:
 
 
 def test_pit_since_previous_phone_call() -> None:
-    results = _apply(PIT_SINCE_RULE, "Since my previous phone call she has had one focal motor seizure.")
+    results = _apply(
+        PIT_SINCE_RULE, "Since my previous phone call she has had one focal motor seizure."
+    )
     assert results
     assert results[0].attributes["PointInTime"] == "LastClinic"
     assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
@@ -467,7 +490,9 @@ def test_date_month_forward_seizure_context() -> None:
 
 
 def test_date_month_since_last_month_name() -> None:
-    results = _apply(DATE_MONTH_RULE, "Since last October she had 4 generalised tonic clonic seizures.")
+    results = _apply(
+        DATE_MONTH_RULE, "Since last October she had 4 generalised tonic clonic seizures."
+    )
     assert results
     assert results[0].attributes["MonthDate"] == "10"
     assert results[0].attributes["TimeSince_or_TimeOfEvent"] == "Since"
@@ -529,7 +554,9 @@ def test_last_seizure_date_zero_since() -> None:
 
 
 def test_last_event_date_zero_since() -> None:
-    results = _apply(LAST_EVENT_DATE_RULE, "Focal to bilateral convulsive seizures, last event October 2019.")
+    results = _apply(
+        LAST_EVENT_DATE_RULE, "Focal to bilateral convulsive seizures, last event October 2019."
+    )
     assert results
     c = results[0]
     assert c.attributes["NumberOfSeizures"] == "0"
@@ -549,7 +576,10 @@ def test_last_event_christmas_year_zero_since() -> None:
 
 
 def test_last_one_christmas_day_year_zero_since() -> None:
-    results = _apply(LAST_EVENT_DATE_RULE, "Secondary generalised seizures, his last one was on Christmas day 2009.")
+    results = _apply(
+        LAST_EVENT_DATE_RULE,
+        "Secondary generalised seizures, his last one was on Christmas day 2009.",
+    )
     assert results
     c = results[0]
     assert c.attributes["NumberOfSeizures"] == "0"
@@ -560,7 +590,9 @@ def test_last_one_christmas_day_year_zero_since() -> None:
 
 
 def test_last_event_ago_zero_period() -> None:
-    results = _apply(LAST_EVENT_AGO_RULE, "Focal seizures with altered awareness, last event 3 years ago.")
+    results = _apply(
+        LAST_EVENT_AGO_RULE, "Focal seizures with altered awareness, last event 3 years ago."
+    )
     assert results
     c = results[0]
     assert c.attributes["NumberOfSeizures"] == "0"
@@ -652,7 +684,9 @@ def test_anchor_bare_seizures() -> None:
 
 def test_anchor_seizure_free_phrase() -> None:
     results = _apply_anchors(SEIZURE_FREE_ANCHOR_RULE, "She has been seizure-free for 7 months.")
-    assert any("seizure-free" == c.text.lower() or "seizure free" == c.text.lower() for c in results)
+    assert any(
+        "seizure-free" == c.text.lower() or "seizure free" == c.text.lower() for c in results
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -685,7 +719,12 @@ def test_overlap_attributes_prefers_more_specific() -> None:
     range_extraction = AttributeExtraction(
         evidence=text,
         span=(0, len(text)),
-        attributes={"LowerNumberOfSeizures": "2", "UpperNumberOfSeizures": "5", "TimePeriod": "Month", "NumberOfTimePeriods": "1"},
+        attributes={
+            "LowerNumberOfSeizures": "2",
+            "UpperNumberOfSeizures": "5",
+            "TimePeriod": "Month",
+            "NumberOfTimePeriods": "1",
+        },
         rule_id="range",
     )
     count_extraction = AttributeExtraction(
@@ -700,8 +739,16 @@ def test_overlap_attributes_prefers_more_specific() -> None:
 
 
 def test_overlap_attributes_keeps_non_overlapping() -> None:
-    a = AttributeExtraction(evidence="3 per month", span=(0, 11), attributes={"NumberOfSeizures": "3", "TimePeriod": "Month"})
-    b = AttributeExtraction(evidence="2 per week", span=(20, 30), attributes={"NumberOfSeizures": "2", "TimePeriod": "Week"})
+    a = AttributeExtraction(
+        evidence="3 per month",
+        span=(0, 11),
+        attributes={"NumberOfSeizures": "3", "TimePeriod": "Month"},
+    )
+    b = AttributeExtraction(
+        evidence="2 per week",
+        span=(20, 30),
+        attributes={"NumberOfSeizures": "2", "TimePeriod": "Week"},
+    )
     resolved = resolve_overlapping_attributes([a, b])
     assert len(resolved) == 2
 
@@ -712,9 +759,17 @@ def test_overlap_attributes_keeps_non_overlapping() -> None:
 
 
 def test_association_merges_nearest_attribute() -> None:
-    anchor = AnchorCandidate(text="focal seizures", evidence="focal seizures", span=(0, 14), rule_id="a")
-    other_anchor = AnchorCandidate(text="absences", evidence="absences", span=(100, 108), rule_id="b")
-    attr = AttributeExtraction(evidence="2 per month", span=(15, 26), attributes={"NumberOfSeizures": "2", "TimePeriod": "Month"})
+    anchor = AnchorCandidate(
+        text="focal seizures", evidence="focal seizures", span=(0, 14), rule_id="a"
+    )
+    other_anchor = AnchorCandidate(
+        text="absences", evidence="absences", span=(100, 108), rule_id="b"
+    )
+    attr = AttributeExtraction(
+        evidence="2 per month",
+        span=(15, 26),
+        attributes={"NumberOfSeizures": "2", "TimePeriod": "Month"},
+    )
 
     pairs = associate_attributes_to_anchors([anchor, other_anchor], [attr])
     assert len(pairs) == 1
@@ -724,9 +779,17 @@ def test_association_merges_nearest_attribute() -> None:
 
 
 def test_association_drops_anchors_without_attributes() -> None:
-    anchor_with = AnchorCandidate(text="focal seizures", evidence="focal seizures", span=(0, 14), rule_id="a")
-    anchor_without = AnchorCandidate(text="absences", evidence="absences", span=(100, 108), rule_id="b")
-    attr = AttributeExtraction(evidence="2 per month", span=(15, 26), attributes={"NumberOfSeizures": "2", "TimePeriod": "Month"})
+    anchor_with = AnchorCandidate(
+        text="focal seizures", evidence="focal seizures", span=(0, 14), rule_id="a"
+    )
+    anchor_without = AnchorCandidate(
+        text="absences", evidence="absences", span=(100, 108), rule_id="b"
+    )
+    attr = AttributeExtraction(
+        evidence="2 per month",
+        span=(15, 26),
+        attributes={"NumberOfSeizures": "2", "TimePeriod": "Month"},
+    )
 
     pairs = associate_attributes_to_anchors([anchor_with, anchor_without], [attr])
     assert len(pairs) == 1
@@ -734,7 +797,9 @@ def test_association_drops_anchors_without_attributes() -> None:
 
 
 def test_association_no_anchors_returns_empty() -> None:
-    attr = AttributeExtraction(evidence="2 per month", span=(15, 26), attributes={"NumberOfSeizures": "2"})
+    attr = AttributeExtraction(
+        evidence="2 per month", span=(15, 26), attributes={"NumberOfSeizures": "2"}
+    )
     assert associate_attributes_to_anchors([], [attr]) == []
 
 
@@ -784,10 +849,7 @@ def test_pipeline_empty_text_produces_no_mentions() -> None:
 
 
 def test_pipeline_multiple_mentions_in_one_letter() -> None:
-    text = (
-        "Focal seizures occur 3 per month. "
-        "Absences occur 2 per week during illness."
-    )
+    text = "Focal seizures occur 3 per month. Absences occur 2 per week during illness."
     letter = _make_letter("T005", text)
     result = extract_seizure_frequency(letter)
     sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]
@@ -812,7 +874,8 @@ def test_pipeline_frequency_section_date_list_emits_multiple_mentions() -> None:
         for m in sf
     )
     dated = [
-        m for m in sf
+        m
+        for m in sf
         if m.text.lower() == "focal to bilateral convulsive seizures"
         and m.attributes.get("NumberOfSeizures") == "1"
     ]
@@ -845,8 +908,7 @@ def test_pipeline_frequency_section_statement_rows() -> None:
         for m in sf
     )
     assert any(
-        m.text.lower() == "absences"
-        and m.attributes.get("FrequencyChange") == "Infrequent"
+        m.text.lower() == "absences" and m.attributes.get("FrequencyChange") == "Infrequent"
         for m in sf
     )
 
@@ -982,7 +1044,9 @@ def test_pipeline_projection_alias_for_singular_range_phrase() -> None:
 
 
 def test_pipeline_projection_alias_for_change_only() -> None:
-    text = "His seizure frequency has reduced from about once a year to one seizure every two years."
+    text = (
+        "His seizure frequency has reduced from about once a year to one seizure every two years."
+    )
     letter = _make_letter("T006G", text)
     result = extract_seizure_frequency(letter)
     sf = [m for m in result.mentions if m.entity == SEIZURE_FREQUENCY.name]

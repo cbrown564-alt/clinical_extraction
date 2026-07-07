@@ -22,9 +22,13 @@ from check_line_counts import (  # noqa: E402
     check_frontend_line_counts,
     check_line_counts,
     check_tests_line_counts,
-    frontend_root as get_frontend_root,
     is_exectv2_llm_production,
     src_root,
+)
+from check_line_counts import (
+    frontend_root as get_frontend_root,
+)
+from check_line_counts import (
     tests_root as get_tests_root,
 )
 
@@ -43,10 +47,7 @@ def test_allowlist_paths_exist_under_src(repo_root: Path) -> None:
 def test_new_exectv2_llm_file_over_500_is_caught(tmp_path: Path) -> None:
     """A new 600-line module under exectv2/llm/ must fail without allowlisting."""
     package_root = tmp_path / "src" / "clinical_extraction"
-    target = (
-        package_root
-        / "tasks/epilepsy_phenotyping/exectv2/llm/llm_new_monolith_candidate.py"
-    )
+    target = package_root / "tasks/epilepsy_phenotyping/exectv2/llm/llm_new_monolith_candidate.py"
     target.parent.mkdir(parents=True)
     target.write_text("\n".join(["# stub"] * 600), encoding="utf-8")
 

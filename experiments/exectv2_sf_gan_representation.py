@@ -35,10 +35,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
     to_predicted_letter_from_dedup_facts,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import score_frequency_state
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     extract_json_object,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import score_frequency_state
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 EXPERIMENTS = Path("C:/Users/cbrow/Code/clinical_extraction/experiments")
@@ -161,10 +161,14 @@ def main() -> None:
     score = score_frequency_state(gold_list, pred_list)
     ch, sp = score.clinical_headline, score.state_profile
     print(f"\nSF over {len(gold)} letters (Gan event representation, {args.model}):")
-    print(f"  clinical_headline  P={ch.precision:.3f} R={ch.recall:.3f} F1={ch.f1:.3f}"
-          f"  (vs de-dup 0.592)")
-    print(f"  state_profile      P={sp.precision:.3f} R={sp.recall:.3f} F1={sp.f1:.3f}"
-          f"  (vs de-dup 0.713)")
+    print(
+        f"  clinical_headline  P={ch.precision:.3f} R={ch.recall:.3f} F1={ch.f1:.3f}"
+        f"  (vs de-dup 0.592)"
+    )
+    print(
+        f"  state_profile      P={sp.precision:.3f} R={sp.recall:.3f} F1={sp.f1:.3f}"
+        f"  (vs de-dup 0.713)"
+    )
 
     out_path = EXPERIMENTS / f"{args.out}.jsonl"
     out_path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")

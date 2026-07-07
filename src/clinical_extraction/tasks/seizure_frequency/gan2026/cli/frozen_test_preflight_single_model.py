@@ -92,13 +92,17 @@ def _check_manifest(
 ) -> set[int] | None:
     name = str(manifest.get("manifest_version") or manifest.get("name") or "")
     if name != config.expected_split_manifest:
-        failures.append(f"split manifest drifted: expected {config.expected_split_manifest}, got {name}")
+        failures.append(
+            f"split manifest drifted: expected {config.expected_split_manifest}, got {name}"
+        )
     else:
         checks.append(f"split manifest matches {config.expected_split_manifest}")
 
-    split_record = manifest.get("splits", {}).get(config.split) if isinstance(
-        manifest.get("splits"), Mapping
-    ) else None
+    split_record = (
+        manifest.get("splits", {}).get(config.split)
+        if isinstance(manifest.get("splits"), Mapping)
+        else None
+    )
     if not isinstance(split_record, Mapping):
         failures.append(f"manifest missing split record for {config.split!r}")
         return None
@@ -135,7 +139,9 @@ def _check_records_match_manifest(
             f"missing {len(manifest_indices - set(idxs))}, extra {len(set(idxs) - manifest_indices)}"
         )
     else:
-        checks.append(f"{config.split} records == manifest locked set ({len(manifest_indices)} rows)")
+        checks.append(
+            f"{config.split} records == manifest locked set ({len(manifest_indices)} rows)"
+        )
 
 
 def _check_subject_artifact(
@@ -165,7 +171,9 @@ def _check_subject_artifact(
         failures.append(f"subject artifact is not valid JSONL: {exc}")
         return
 
-    rows_with_id = [r for r in rows if isinstance(r, Mapping) and r.get("source_row_index") is not None]
+    rows_with_id = [
+        r for r in rows if isinstance(r, Mapping) and r.get("source_row_index") is not None
+    ]
     ids = {int(r["source_row_index"]) for r in rows_with_id}
     if len(ids) != len(rows_with_id):
         failures.append("subject artifact has duplicate row ids")
@@ -207,8 +215,13 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser.add_argument("--subject-artifact", type=Path, default=DEFAULT_SUBJECT_ARTIFACT)
     parser.add_argument("--subject-sha256", default=None)
     parser.add_argument("--no-require-v0-reference", action="store_true")
-    parser.add_argument("--output", type=Path, action="append", default=[],
-                        help="candidate output path that must be absent (repeatable).")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        action="append",
+        default=[],
+        help="candidate output path that must be absent (repeatable).",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 

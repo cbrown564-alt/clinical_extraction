@@ -31,18 +31,15 @@ JSONL_OUT = EXPERIMENTS / f"{RUN_ID}.jsonl"
 MD_OUT = EXPERIMENTS / f"{RUN_ID}.md"
 
 RULES_TOOL_BASELINE = (
-    EXPERIMENTS
-    / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
+    EXPERIMENTS / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
     "v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl"
 )
 GPT_STRUCTURED_EVENTS = (
-    EXPERIMENTS
-    / "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
+    EXPERIMENTS / "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
     "2026-06-09.jsonl"
 )
 QWEN_STRUCTURED_EVENTS_PATCH = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_"
     "qwen3635b_2026-06-13.jsonl"
 )
 DEEPSEEK_STRUCTURED_EVENTS = (
@@ -94,9 +91,7 @@ def main() -> None:
                     "action": decision.action,
                     "reason": decision.reason,
                     "consensus_label": decision.consensus_label,
-                    "vote_labels": {
-                        vote.agent_id: vote.final_label for vote in decision.votes
-                    },
+                    "vote_labels": {vote.agent_id: vote.final_label for vote in decision.votes},
                 },
             }
         )
@@ -119,17 +114,13 @@ def main() -> None:
         "source_artifacts": {
             "rules_tool_baseline": _rel(RULES_TOOL_BASELINE),
             "structured_event_agent_gpt41mini_v05": _rel(GPT_STRUCTURED_EVENTS),
-            "structured_event_agent_qwen3635b_recent_patch": _rel(
-                QWEN_STRUCTURED_EVENTS_PATCH
-            ),
+            "structured_event_agent_qwen3635b_recent_patch": _rel(QWEN_STRUCTURED_EVENTS_PATCH),
             "structured_event_agent_deepseek_v06": _rel(DEEPSEEK_STRUCTURED_EVENTS),
         },
         "source_artifact_sha256": {
             "rules_tool_baseline": _sha256(RULES_TOOL_BASELINE),
             "structured_event_agent_gpt41mini_v05": _sha256(GPT_STRUCTURED_EVENTS),
-            "structured_event_agent_qwen3635b_recent_patch": _sha256(
-                QWEN_STRUCTURED_EVENTS_PATCH
-            ),
+            "structured_event_agent_qwen3635b_recent_patch": _sha256(QWEN_STRUCTURED_EVENTS_PATCH),
             "structured_event_agent_deepseek_v06": _sha256(DEEPSEEK_STRUCTURED_EVENTS),
         },
         "row_count": len(rows),
@@ -183,9 +174,7 @@ def _load_data_rows(path: Path) -> list[dict[str, Any]]:
 
 def _rows_by_source_index(rows: list[dict[str, Any]]) -> dict[int, dict[str, Any]]:
     return {
-        int(row["source_row_index"]): row
-        for row in rows
-        if row.get("source_row_index") is not None
+        int(row["source_row_index"]): row for row in rows if row.get("source_row_index") is not None
     }
 
 

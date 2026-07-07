@@ -171,8 +171,7 @@ CALL_COUNT_ANNOTATIONS: dict[str, tuple[str, str]] = {
         "Diagnosis mentions.'.",
     ),
     "exectv2_hybrid_diagnosis_reconciler": (
-        "1 call/letter (Diagnosis-only reconciler stage over verifier+decomposer "
-        "candidates)",
+        "1 call/letter (Diagnosis-only reconciler stage over verifier+decomposer candidates)",
         "model_role: 'Diagnosis reconciler ... over Diagnosis verifier v0.6 and Diagnosis "
         "decomposer v0.1 candidates.'.",
     ),
@@ -436,9 +435,9 @@ def derived_numbers(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
     # --- hybrid premium by split ----------------------------------------
-    hybrid_full200 = by_run["exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624"][
-        "all_f1_fields"
-    ]["clinical_headline_f1"]
+    hybrid_full200 = by_run[
+        "exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624"
+    ]["all_f1_fields"]["clinical_headline_f1"]
     hybrid_full200_corroboration = by_run["exectv2_robustness_validation_audit_2026-06-25"][
         "all_f1_fields"
     ]["overall_f1"]
@@ -459,9 +458,17 @@ def derived_numbers(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "all_f1_fields"
     ]["clinical_headline_f1"]
 
-    gepa_full200_rows = [r for r in rows if r["pipeline_family"] == "gepa_from_scratch" and r["split_norm"] == "full200"]
+    gepa_full200_rows = [
+        r
+        for r in rows
+        if r["pipeline_family"] == "gepa_from_scratch" and r["split_norm"] == "full200"
+    ]
     gepa_dev140_best = max(
-        (r for r in rows if r["pipeline_family"] == "gepa_from_scratch" and r["split_norm"] == "dev140"),
+        (
+            r
+            for r in rows
+            if r["pipeline_family"] == "gepa_from_scratch" and r["split_norm"] == "dev140"
+        ),
         key=lambda r: r["primary_metric_value"],
     )
 
@@ -532,7 +539,9 @@ def derived_numbers(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "gepa_dev140_best_run_id": gepa_dev140_best["run_id"],
         "gepa_dev140_best_value": gepa_dev140_best["primary_metric_value"],
         "gepa_full200_available": bool(gepa_full200_rows),
-        "gepa_vs_hybrid_dev140_only_delta": round(hybrid_dev140 - gepa_dev140_best["primary_metric_value"], 4),
+        "gepa_vs_hybrid_dev140_only_delta": round(
+            hybrid_dev140 - gepa_dev140_best["primary_metric_value"], 4
+        ),
     }
 
     return {"one_to_two_call": one_to_two_call, "hybrid_premium": hybrid_premium}

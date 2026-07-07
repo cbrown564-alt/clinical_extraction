@@ -110,8 +110,12 @@ def _change_pr(gold_list, pred_list):
 
     tp = fp = fn = 0
     for g, p in zip(gold_list, pred_list, strict=True):
-        gc = "changed" in {frequency_state_faithful(a.attributes) for a in g.entities("SeizureFrequency")}
-        pc = "changed" in {frequency_state_faithful(a.attributes) for a in p.entities("SeizureFrequency")}
+        gc = "changed" in {
+            frequency_state_faithful(a.attributes) for a in g.entities("SeizureFrequency")
+        }
+        pc = "changed" in {
+            frequency_state_faithful(a.attributes) for a in p.entities("SeizureFrequency")
+        }
         tp += gc and pc
         fp += pc and not gc
         fn += gc and not pc
@@ -122,7 +126,10 @@ def _change_pr(gold_list, pred_list):
 
 def _evaluate(program, letters, num_threads):
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
-    pairs = [(program, {"letter_text": le.note_text, "output_schema": EVENT_SCHEMA_JSON}) for le in letters]
+    pairs = [
+        (program, {"letter_text": le.note_text, "output_schema": EVENT_SCHEMA_JSON})
+        for le in letters
+    ]
     predictions = evaluator(pairs)
     gold_list, pred_list, rows = [], [], []
     for letter, pred in zip(letters, predictions, strict=True):
@@ -135,13 +142,15 @@ def _evaluate(program, letters, num_threads):
         pred_exect = to_exect_letter(predicted)
         gold_list.append(letter)
         pred_list.append(pred_exect)
-        rows.append({
-            "letter_id": letter.letter_id,
-            "predicted_mentions": [
-                {"entity": m.entity, "text": m.text, "attributes": dict(m.attributes)}
-                for m in predicted.mentions
-            ],
-        })
+        rows.append(
+            {
+                "letter_id": letter.letter_id,
+                "predicted_mentions": [
+                    {"entity": m.entity, "text": m.text, "attributes": dict(m.attributes)}
+                    for m in predicted.mentions
+                ],
+            }
+        )
     return rows, score_frequency_state(gold_list, pred_list), _change_pr(gold_list, pred_list)
 
 
@@ -159,9 +168,15 @@ def main() -> None:
     ap.add_argument("--extraction-model", default="deepseek/deepseek-reasoner")
     ap.add_argument("--verify-model", default="deepseek/deepseek-reasoner")
     ap.add_argument("--reflection-model", default="deepseek/deepseek-reasoner")
-    ap.add_argument("--with-examples", action="store_true", help="attach hand-curated H-examples demos")
-    ap.add_argument("--change-precision-weight", type=float, default=0.0,
-                    help="0.0 = feedback-only (scoring identical, lift attributable to feedback)")
+    ap.add_argument(
+        "--with-examples", action="store_true", help="attach hand-curated H-examples demos"
+    )
+    ap.add_argument(
+        "--change-precision-weight",
+        type=float,
+        default=0.0,
+        help="0.0 = feedback-only (scoring identical, lift attributable to feedback)",
+    )
     ap.add_argument("--max-metric-calls", type=int, default=1000)
     ap.add_argument("--minibatch", type=int, default=8)
     ap.add_argument("--trainset-size", type=int, default=gepa_data.DEFAULT_TRAINSET_SIZE)
@@ -182,15 +197,21 @@ def main() -> None:
         args.run_id += "_smoke"
 
     task_lm = build_dspy_lm(
-        args.extraction_model, temperature=0.0,
-        max_tokens=_max_tokens_for(args.extraction_model), cache=True,
+        args.extraction_model,
+        temperature=0.0,
+        max_tokens=_max_tokens_for(args.extraction_model),
+        cache=True,
     )
     verify_lm = build_dspy_lm(
-        args.verify_model, temperature=0.0,
-        max_tokens=_max_tokens_for(args.verify_model), cache=True,
+        args.verify_model,
+        temperature=0.0,
+        max_tokens=_max_tokens_for(args.verify_model),
+        cache=True,
     )
     dspy.configure(lm=task_lm)
-    reflection_lm = build_dspy_lm(args.reflection_model, temperature=1.0, max_tokens=12000, cache=False)
+    reflection_lm = build_dspy_lm(
+        args.reflection_model, temperature=1.0, max_tokens=12000, cache=False
+    )
 
     gen_demos, ver_demos = build_sf_verify_demos() if args.with_examples else (None, None)
     demo_budget = 2400 if args.with_examples else LengthPenaltyConfig().demo_token_budget
@@ -252,16 +273,23 @@ def main() -> None:
 
     print(f"[p5 {args.run_id}] evaluating OPTIMIZED on dev ({len(dev)})...", flush=True)
     opt_rows, opt_scores, opt_cpr = _evaluate(optimized, dev, args.num_threads)
-    print(f"[p5 {args.run_id}] OPT   {_fmt(opt_scores, opt_cpr)}  ({elapsed/60:.1f} min)", flush=True)
-    print("[p5] comparators — P2 mini 0.597/0.741 | recall-lanes SF 0.580/0.710 | "
-          "Phase3b+proj 0.650/0.779 | hybrid 0.926/0.930 (changed 0.85R/1.00P)")
+    print(
+        f"[p5 {args.run_id}] OPT   {_fmt(opt_scores, opt_cpr)}  ({elapsed / 60:.1f} min)",
+        flush=True,
+    )
+    print(
+        "[p5] comparators — P2 mini 0.597/0.741 | recall-lanes SF 0.580/0.710 | "
+        "Phase3b+proj 0.650/0.779 | hybrid 0.926/0.930 (changed 0.85R/1.00P)"
+    )
     print("[p5] gate — state_profile >= 0.80 AND clinical_headline SF >= 0.65 (LLM-only)")
 
     instruction = combined_instruction(optimized)
     (EXPERIMENTS / f"{args.run_id}.jsonl").write_text(
         "\n".join(json.dumps(r) for r in opt_rows) + "\n", encoding="utf-8"
     )
-    (EXPERIMENTS / f"{args.run_id}.instruction.txt").write_text(instruction + "\n", encoding="utf-8")
+    (EXPERIMENTS / f"{args.run_id}.instruction.txt").write_text(
+        instruction + "\n", encoding="utf-8"
+    )
     summary = {
         "run_id": args.run_id,
         "extraction_model": args.extraction_model,
@@ -291,11 +319,18 @@ def main() -> None:
             "p2_sf_verify_mini": {"clinical_headline": 0.597, "state_profile": 0.741},
             "recall_lanes_sf": {"clinical_headline": 0.580, "state_profile": 0.710},
             "phase3b_with_projection": {"clinical_headline": 0.650, "state_profile": 0.779},
-            "v08_hybrid": {"clinical_headline": 0.926, "state_profile": 0.930,
-                           "changed_recall": 0.85, "changed_precision": 1.00},
+            "v08_hybrid": {
+                "clinical_headline": 0.926,
+                "state_profile": 0.930,
+                "changed_recall": 0.85,
+                "changed_precision": 1.00,
+            },
         },
-        "gate": {"state_profile": 0.80, "clinical_headline_sf": 0.65,
-                 "feedback_lever_min_state_profile": 0.771},
+        "gate": {
+            "state_profile": 0.80,
+            "clinical_headline_sf": 0.65,
+            "feedback_lever_min_state_profile": 0.771,
+        },
     }
     (EXPERIMENTS / f"{args.run_id}.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import re
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -15,9 +13,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
+
 from ..rule_metadata import Portability, RuleGroup
 
 _OWNER_PREFIX = "deterministic"
+
 
 def _sentence_start(text: str, start: int) -> int:
     return max(text.rfind(".", 0, start), text.rfind("\n", 0, start)) + 1

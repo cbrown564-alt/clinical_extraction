@@ -46,21 +46,23 @@ def main() -> None:
         c["verdict"] = v["verdict"]
         c["verdict_reason"] = v["reason"]
         crosstab[(c["mechanism"], v["verdict"])] += 1
-        csv_rows.append({
-            "case_id": c["case_id"],
-            "letter": c["letter_id"],
-            "mechanism": c["mechanism"],
-            "verdict": v["verdict"],
-            "missed_text": c["gold_missed"]["text"],
-            "missed_state": c["gold_missed"]["state"],
-            "cross_entity_overlap": c["cross_entity_overlap"],
-            "reason": v["reason"],
-        })
+        csv_rows.append(
+            {
+                "case_id": c["case_id"],
+                "letter": c["letter_id"],
+                "mechanism": c["mechanism"],
+                "verdict": v["verdict"],
+                "missed_text": c["gold_missed"]["text"],
+                "missed_state": c["gold_missed"]["state"],
+                "cross_entity_overlap": c["cross_entity_overlap"],
+                "reason": v["reason"],
+            }
+        )
 
     mech_counts = Counter(c["mechanism"] for c in cases)
     verdict_counts = Counter(c["verdict"] for c in cases)
     total = len(cases)
-    h1, h2 = mech_counts["H1_CARDINALITY"], mech_counts["H2_GENUINE_DIVERGENCE"]
+    h1, _h2 = mech_counts["H1_CARDINALITY"], mech_counts["H2_GENUINE_DIVERGENCE"]
 
     h1_gold_right = crosstab[("H1_CARDINALITY", "GOLD_RIGHT")]
     h2_gold_right = crosstab[("H2_GENUINE_DIVERGENCE", "GOLD_RIGHT")]
@@ -81,24 +83,34 @@ def main() -> None:
     genuine_verdict_only = verdict_counts["GOLD_RIGHT"]
 
     print("=== mechanism x verdict cross-tab (72 SeizureFrequency source_near FNs) ===")
-    print(f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'TOTAL':>8}")
+    print(
+        f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'TOTAL':>8}"
+    )
     for m in MECHS:
         gr, md, bd = (crosstab[(m, v)] for v in VERDICTS)
         print(f"{m:<22}{gr:>12}{md:>18}{bd:>17}{mech_counts[m]:>8}")
-    print(f"{'TOTAL':<22}{verdict_counts['GOLD_RIGHT']:>12}{verdict_counts['MODEL_DEFENSIBLE']:>18}"
-          f"{verdict_counts['BOTH_DEFENSIBLE']:>17}{total:>8}")
+    print(
+        f"{'TOTAL':<22}{verdict_counts['GOLD_RIGHT']:>12}{verdict_counts['MODEL_DEFENSIBLE']:>18}"
+        f"{verdict_counts['BOTH_DEFENSIBLE']:>17}{total:>8}"
+    )
 
-    print(f"\n=== DECISION NUMBERS ===")
-    print(f"[predeclared formula, mirrors Dx Phase 1] "
-          f"H-inflated = {inflated_strict}/{total} = {inflated_strict/total:.1%}   "
-          f"H-genuine = {genuine_strict}/{total} = {genuine_strict/total:.1%}")
-    print(f"[plain verdict-only reading]               "
-          f"H-inflated = {inflated_verdict_only}/{total} = {inflated_verdict_only/total:.1%}   "
-          f"H-genuine = {genuine_verdict_only}/{total} = {genuine_verdict_only/total:.1%}")
-    print(f"\nH1_CARDINALITY verdict split: GOLD_RIGHT={h1_gold_right}/{h1} "
-          f"({h1_gold_right/h1:.1%}) -- the divergence driver between the two readings.")
+    print("\n=== DECISION NUMBERS ===")
+    print(
+        f"[predeclared formula, mirrors Dx Phase 1] "
+        f"H-inflated = {inflated_strict}/{total} = {inflated_strict / total:.1%}   "
+        f"H-genuine = {genuine_strict}/{total} = {genuine_strict / total:.1%}"
+    )
+    print(
+        f"[plain verdict-only reading]               "
+        f"H-inflated = {inflated_verdict_only}/{total} = {inflated_verdict_only / total:.1%}   "
+        f"H-genuine = {genuine_verdict_only}/{total} = {genuine_verdict_only / total:.1%}"
+    )
+    print(
+        f"\nH1_CARDINALITY verdict split: GOLD_RIGHT={h1_gold_right}/{h1} "
+        f"({h1_gold_right / h1:.1%}) -- the divergence driver between the two readings."
+    )
 
-    for label, inflated, genuine in (
+    for label, inflated, _genuine in (
         ("predeclared", inflated_strict, genuine_strict),
         ("verdict-only", inflated_verdict_only, genuine_verdict_only),
     ):
@@ -123,8 +135,10 @@ def main() -> None:
         "verdict_counts": dict(verdict_counts),
         "crosstab": {f"{m}|{v}": crosstab[(m, v)] for m in MECHS for v in VERDICTS},
         "h1_gold_right_subset": h1_gold_right,
-        "inflated_strict": inflated_strict, "inflated_strict_share": inflated_strict / total,
-        "genuine_strict": genuine_strict, "genuine_strict_share": genuine_strict / total,
+        "inflated_strict": inflated_strict,
+        "inflated_strict_share": inflated_strict / total,
+        "genuine_strict": genuine_strict,
+        "genuine_strict_share": genuine_strict / total,
         "inflated_verdict_only": inflated_verdict_only,
         "inflated_verdict_only_share": inflated_verdict_only / total,
         "genuine_verdict_only": genuine_verdict_only,

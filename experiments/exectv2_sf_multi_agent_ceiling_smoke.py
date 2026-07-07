@@ -3,6 +3,7 @@ Runs multi_agent_d3_static and multi_agent_dynamic_orchestrator on 5 dev
 letters, scores via the production score_frequency_state, and reports
 call/parse failures and tool-use behavior.
 """
+
 from __future__ import annotations
 
 import json
@@ -68,7 +69,9 @@ def smoke_dynamic_orchestrator(letters) -> tuple[int, int]:
         f1, notes = score_extraction(letter, str(prediction.extraction_json))
         if f1 is None:
             parse_failures += 1
-        print(f"{letter.letter_id}: f1={f1} turns={n_turns} tools_used={tools_used} notes={notes[:2]}")
+        print(
+            f"{letter.letter_id}: f1={f1} turns={n_turns} tools_used={tools_used} notes={notes[:2]}"
+        )
     return call_failures, parse_failures
 
 

@@ -68,12 +68,10 @@ def build_component_stress_panel_rows(
     )
 
     panel_rows = [
-        _panel_row(row, panel_role="hard", match_quality="target_failure")
-        for row in hard_rows
+        _panel_row(row, panel_role="hard", match_quality="target_failure") for row in hard_rows
     ]
     panel_rows.extend(
-        _panel_row(row, panel_role="control", match_quality=quality)
-        for row, quality in controls
+        _panel_row(row, panel_role="control", match_quality=quality) for row, quality in controls
     )
     panel_rows.sort(
         key=lambda row: (
@@ -128,15 +126,10 @@ def summarize_component_stress_panel_rows(
         "clinical_subproblem_counts": dict(sorted(by_subproblem.items())),
         "baseline_transition_counts": dict(sorted(by_transition.items())),
         "control_match_quality_counts": dict(sorted(by_match_quality.items())),
-        "hard_exact_evidence_rows": sum(
-            row.get("evidence_exact") is True for row in hard_rows
-        ),
-        "hard_valid_source_id_rows": sum(
-            row.get("source_ids_valid") is True for row in hard_rows
-        ),
+        "hard_exact_evidence_rows": sum(row.get("evidence_exact") is True for row in hard_rows),
+        "hard_valid_source_id_rows": sum(row.get("source_ids_valid") is True for row in hard_rows),
         "hard_nonprediction_rows": sum(
-            row.get("baseline_transition", "").endswith(("abstain", "review"))
-            for row in hard_rows
+            row.get("baseline_transition", "").endswith(("abstain", "review")) for row in hard_rows
         ),
         "locked_test_row_level_artifacts_used": 0,
         "claim_boundary": (
@@ -252,9 +245,7 @@ def _limit_by_stratum(
         grouped[_stratum_key(row)].append(row)
     selected: list[Mapping[str, Any]] = []
     for key in sorted(grouped):
-        selected.extend(
-            sorted(grouped[key], key=lambda row: int(row["source_row_index"]))[:limit]
-        )
+        selected.extend(sorted(grouped[key], key=lambda row: int(row["source_row_index"]))[:limit])
     return selected
 
 

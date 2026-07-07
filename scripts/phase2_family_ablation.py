@@ -88,9 +88,7 @@ def _gold_letter(row: dict[str, Any], note: str) -> ExectLetter:
             ExectAnnotation(
                 entity=str(m["entity"]),
                 text=str(m.get("text", "")),
-                attributes={
-                    str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
-                },
+                attributes={str(k): str(v) for k, v in dict(m.get("attributes", {})).items()},
             )
             for m in row.get("gold_mentions", [])
             if str(m.get("entity")) in TARGET_INDICATORS
@@ -123,9 +121,11 @@ def _score_config(
         pred_letters.append(predicted)
         for warning in warnings:
             for family in QUARANTINED_TARGET_PROJECTION_FAMILIES:
-                if family in warning and not warning.startswith(
-                    "SeizureFrequency: quarantined_projection_family"
-                ) and "quarantined_projection_family" not in warning:
+                if (
+                    family in warning
+                    and not warning.startswith("SeizureFrequency: quarantined_projection_family")
+                    and "quarantined_projection_family" not in warning
+                ):
                     family_fires[family] += 1
 
     report = architecture_report(
@@ -140,26 +140,18 @@ def _score_config(
     fid = cr.get("fidelity_companions", {})
     return {
         "headline_overall": float(cr["cui_projected_overall"]["f1"]),
-        "benchmark_overall": float(
-            cui_audit["overall"]["benchmark_f1_after_cui_projection"]
-        ),
+        "benchmark_overall": float(cui_audit["overall"]["benchmark_f1_after_cui_projection"]),
         "headline_by_indicator": {
-            ind: float(cr["cui_projected_headline_scores"][ind]["f1"])
-            for ind in TARGET_INDICATORS
+            ind: float(cr["cui_projected_headline_scores"][ind]["f1"]) for ind in TARGET_INDICATORS
         },
         "benchmark_by_indicator": {
-            ind: float(cui_audit["per_entity"][ind]["benchmark_f1"])
-            for ind in TARGET_INDICATORS
+            ind: float(cui_audit["per_entity"][ind]["benchmark_f1"]) for ind in TARGET_INDICATORS
         },
         "dx_concept_negation_f1": (
-            float(fid["Diagnosis"]["companion_f1"])
-            if "Diagnosis" in fid
-            else None
+            float(fid["Diagnosis"]["companion_f1"]) if "Diagnosis" in fid else None
         ),
         "sf_active_rate_fidelity_f1": (
-            float(fid["SeizureFrequency"]["companion_f1"])
-            if "SeizureFrequency" in fid
-            else None
+            float(fid["SeizureFrequency"]["companion_f1"]) if "SeizureFrequency" in fid else None
         ),
         "family_fires": dict(family_fires),
     }
@@ -177,9 +169,7 @@ def _verdict(family: str, base: dict[str, Any], cfg: dict[str, Any]) -> tuple[st
 
     d_dx = _d("dx_concept_negation_f1")
     d_sf = _d("sf_active_rate_fidelity_f1")
-    hurts_fidelity = (d_dx is not None and d_dx < -1e-9) or (
-        d_sf is not None and d_sf < -1e-9
-    )
+    hurts_fidelity = (d_dx is not None and d_dx < -1e-9) or (d_sf is not None and d_sf < -1e-9)
     if fires == 0 and abs(d_bench) < 1e-9 and abs(d_head) < 1e-9:
         return "INSUFFICIENT EVIDENCE", "no same-raw fire or score change on source rows"
     if hurts_fidelity:

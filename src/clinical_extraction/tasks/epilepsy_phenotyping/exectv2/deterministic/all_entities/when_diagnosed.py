@@ -9,12 +9,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     when_diagnosed_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import WHEN_DIAGNOSED
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _overlaps, _owner
-from .text import _MONTHS, _MONTH_PATTERN, _number_value
+from .text import _MONTH_PATTERN, _MONTHS, _number_value
 
 _WHEN_DIAGNOSED_TEXT = "epileps"
 _WHEN_DIAGNOSED_AGE_PATTERNS: tuple[re.Pattern[str], ...] = (
@@ -71,6 +73,8 @@ _WHEN_DIAGNOSED_DATE_PATTERNS: tuple[re.Pattern[str], ...] = (
         re.IGNORECASE,
     ),
 )
+
+
 def _extract_when_diagnosed(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -108,6 +112,8 @@ def _extract_when_diagnosed(text: str) -> tuple[PredictedMention, ...]:
                 occupied.append(match.span())
     mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
     return tuple(mentions)
+
+
 def _when_diagnosed_age_attrs(match: re.Match[str]) -> dict[str, str]:
     return {"Age": _number_value(match.group("age")), "AgeUnit": "Year"}
 

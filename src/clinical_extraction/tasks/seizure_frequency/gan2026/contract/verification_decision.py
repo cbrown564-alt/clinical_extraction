@@ -29,9 +29,9 @@ class VerificationDecision(BaseModel):
 
     source_row_index: int
     component_owner: Literal["verification_decision"]
-    verification_policy_id: Literal[
-        "gan2026_validation250_verification_decision_policy_v0"
-    ] = VERIFICATION_POLICY_ID
+    verification_policy_id: Literal["gan2026_validation250_verification_decision_policy_v0"] = (
+        VERIFICATION_POLICY_ID
+    )
     source_route_policy_id: str = ROUTE_POLICY_ID
     route_families: list[VerificationRouteFamily] = Field(default_factory=list)
     route_reasons: list[str] = Field(default_factory=list)

@@ -109,22 +109,14 @@ def _parse_summary(report_text: str) -> dict[str, str]:
 def _build_metrics(summary: dict[str, str]) -> dict[str, Any]:
     final_purist_correct, final_purist_rows = _parse_count(summary.get("Final Purist"))
     raw_purist_correct, raw_purist_rows = _parse_count(summary.get("Raw model Purist"))
-    format_purist_correct, format_purist_rows = _parse_count(
-        summary.get("Format-only Purist")
-    )
+    format_purist_correct, format_purist_rows = _parse_count(summary.get("Format-only Purist"))
     v0_purist_correct, v0_purist_rows = _parse_count(summary.get("V0 Purist"))
-    final_pragmatic_correct, final_pragmatic_rows = _parse_count(
-        summary.get("Final Pragmatic")
-    )
-    raw_pragmatic_correct, raw_pragmatic_rows = _parse_count(
-        summary.get("Raw model Pragmatic")
-    )
+    final_pragmatic_correct, final_pragmatic_rows = _parse_count(summary.get("Final Pragmatic"))
+    raw_pragmatic_correct, raw_pragmatic_rows = _parse_count(summary.get("Raw model Pragmatic"))
     format_pragmatic_correct, format_pragmatic_rows = _parse_count(
         summary.get("Format-only Pragmatic")
     )
-    v0_pragmatic_correct, v0_pragmatic_rows = _parse_count(
-        summary.get("V0 Pragmatic")
-    )
+    v0_pragmatic_correct, v0_pragmatic_rows = _parse_count(summary.get("V0 Pragmatic"))
     rows = final_purist_rows or raw_purist_rows or v0_purist_rows
     final_purist_rate = (
         final_purist_correct / final_purist_rows
@@ -167,22 +159,12 @@ def _build_metrics(summary: dict[str, str]) -> dict[str, Any]:
         "prediction_bearing_rows": _parse_int(summary.get("Prediction-bearing rows")),
         "model_calls_attempted": _parse_int(summary.get("Model calls attempted")),
         "call_failures": _parse_int(summary.get("Call failures")),
-        "parse_or_validation_failures": _parse_int(
-            summary.get("Parse/schema/label failures")
-        ),
-        "fresh_evidence_replace_actions": _parse_int(
-            summary.get("Fresh-evidence replace actions")
-        ),
-        "fresh_evidence_gate_fallbacks": _parse_int(
-            summary.get("Evidence-gate fallbacks")
-        ),
-        "evidence_exact_substrings": _parse_int(
-            summary.get("Exact evidence substrings")
-        ),
+        "parse_or_validation_failures": _parse_int(summary.get("Parse/schema/label failures")),
+        "fresh_evidence_replace_actions": _parse_int(summary.get("Fresh-evidence replace actions")),
+        "fresh_evidence_gate_fallbacks": _parse_int(summary.get("Evidence-gate fallbacks")),
+        "evidence_exact_substrings": _parse_int(summary.get("Exact evidence substrings")),
         "net_purist_gain_vs_v0": _parse_int(summary.get("Net Purist gain vs V0")),
-        "changed_label_precision_vs_v0": _parse_float(
-            summary.get("Changed-label precision vs V0")
-        ),
+        "changed_label_precision_vs_v0": _parse_float(summary.get("Changed-label precision vs V0")),
         "actions": summary.get("Actions"),
     }
 
@@ -195,8 +177,7 @@ def _check_expected_metrics(metrics: dict[str, Any], failures: list[str]) -> Non
         )
     if metrics.get("rows") != EXPECTED_TEST_ROW_COUNT:
         failures.append(
-            f"aggregate readout row count is not {EXPECTED_TEST_ROW_COUNT}: "
-            f"{metrics.get('rows')}"
+            f"aggregate readout row count is not {EXPECTED_TEST_ROW_COUNT}: {metrics.get('rows')}"
         )
     if metrics.get("final_pragmatic_rows") != EXPECTED_TEST_ROW_COUNT:
         failures.append(
@@ -265,10 +246,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     if not _same_cli_path(args.markdown, DEFAULT_TEST_REPORT_PATH):
-        parser.error(
-            "frozen test readout must use --markdown "
-            f"{DEFAULT_TEST_REPORT_PATH}"
-        )
+        parser.error(f"frozen test readout must use --markdown {DEFAULT_TEST_REPORT_PATH}")
 
     readout = read_aggregate_report(args.markdown)
     if args.json:

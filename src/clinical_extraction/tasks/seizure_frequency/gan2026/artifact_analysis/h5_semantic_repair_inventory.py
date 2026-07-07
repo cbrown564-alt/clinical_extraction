@@ -11,15 +11,10 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_REPLACEMENT_JSON_PATH = Path(
-    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_"
-    "2026-06-02.json"
+    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json"
 )
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_h5_repair_inventory_v0_2026-06-05.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_h5_repair_inventory_v0_2026-06-05.md"
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_h5_repair_inventory_v0_2026-06-05.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_h5_repair_inventory_v0_2026-06-05.md")
 DEFAULT_ABLATION_JSON_PATH = Path(
     "experiments/gan2026_h5_repair_family_ablation_v0_2026-06-05.json"
 )
@@ -152,9 +147,7 @@ def build_h5_semantic_repair_inventory(
         "artifact_kind": "gan2026_h5_semantic_repair_inventory_v0",
         "date": "2026-06-05",
         "hypothesis_id": "H5",
-        "split_manifest": str(
-            replacement_ablation.get("split_manifest") or "gan2026_split_v1"
-        ),
+        "split_manifest": str(replacement_ablation.get("split_manifest") or "gan2026_split_v1"),
         "claim_boundary": (
             "Validation-development repair-family inventory only. This artifact "
             "uses saved validation repair-ladder summaries and static repair "
@@ -295,8 +288,7 @@ def write_h5_inventory_report(artifact: Mapping[str, Any], path: Path) -> None:
     lines = [
         "# Gan 2026 H5 Semantic Repair Inventory",
         "",
-        "Validation-development repair taxonomy only. No locked-test row-level "
-        "artifacts are used.",
+        "Validation-development repair taxonomy only. No locked-test row-level artifacts are used.",
         "",
         f"- Hypothesis: `{artifact.get('hypothesis_id')}`",
         f"- Split manifest: `{artifact.get('split_manifest')}`",
@@ -460,9 +452,7 @@ def _family_ablation_decision(row: Mapping[str, Any]) -> str:
         return "revise_or_bound"
     if row.get("default_policy") in {"review_required", "quarantine_until_panel_ablation"}:
         return str(row.get("default_policy"))
-    if _int(row.get("semantic_kind_transitions")) or _int(
-        row.get("purist_category_transitions")
-    ):
+    if _int(row.get("semantic_kind_transitions")) or _int(row.get("purist_category_transitions")):
         return "allowed_with_explicit_ablation"
     return "diagnostic_only"
 
@@ -486,17 +476,11 @@ def _condition_ladder(replacement_ablation: Mapping[str, Any]) -> dict[str, dict
             "exact_normalized_label_transitions": _int(
                 repair.get("exact_normalized_label_transitions")
             ),
-            "pragmatic_category_transitions": _int(
-                repair.get("pragmatic_category_transitions")
-            ),
+            "pragmatic_category_transitions": _int(repair.get("pragmatic_category_transitions")),
             "purist_category_transitions": _int(repair.get("purist_category_transitions")),
             "semantic_kind_transitions": _int(repair.get("semantic_kind_transitions")),
-            "raw_wrong_to_condition_correct": _int(
-                repair.get("raw_wrong_to_condition_correct")
-            ),
-            "raw_correct_to_condition_wrong": _int(
-                repair.get("raw_correct_to_condition_wrong")
-            ),
+            "raw_wrong_to_condition_correct": _int(repair.get("raw_wrong_to_condition_correct")),
+            "raw_correct_to_condition_wrong": _int(repair.get("raw_correct_to_condition_wrong")),
         }
     return ladder
 

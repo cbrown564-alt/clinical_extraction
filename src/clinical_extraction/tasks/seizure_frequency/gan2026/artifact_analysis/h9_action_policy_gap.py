@@ -166,8 +166,7 @@ def write_h9_report(summary: Mapping[str, Any], path: Path) -> None:
             "",
             "## Validation By Hidden Family",
             "",
-            "| Family | Rows | Nonprediction rows | Nonprediction rate | Blocked C | "
-            "Blocked W |",
+            "| Family | Rows | Nonprediction rows | Nonprediction rate | Blocked C | Blocked W |",
             "| --- | ---: | ---: | ---: | ---: | ---: |",
         ]
     )

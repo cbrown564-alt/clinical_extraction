@@ -30,13 +30,11 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SOURCE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
 RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_9_"
-    "residual_component_generation_audit_2026-06-15"
+    "gan2026_consensus_fresh_agreement_selector_v0_9_residual_component_generation_audit_2026-06-15"
 )
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
 MD_PATH = EXPERIMENTS / f"{RUN_ID}.md"
@@ -65,9 +63,7 @@ def main() -> None:
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -75,8 +71,7 @@ def _audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
     selected_wrong = [
         row
         for row in rows
-        if row["score_layers"]["selected"]["comparison"].get("purist_correct")
-        is not True
+        if row["score_layers"]["selected"]["comparison"].get("purist_correct") is not True
     ]
     availability_counter: Counter[str] = Counter()
     band_counter: Counter[str] = Counter()
@@ -97,9 +92,7 @@ def _audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
             no_correct_category_counter.update(categories)
         records.append(_selected_wrong_record(row, correct_components, categories))
 
-    correct_available = sum(
-        count for key, count in availability_counter.items() if key != "none"
-    )
+    correct_available = sum(count for key, count in availability_counter.items() if key != "none")
     no_correct = availability_counter["none"]
     selected_correct = len(rows) - len(selected_wrong)
     return {
@@ -110,9 +103,7 @@ def _audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "selected_wrong_by_band": dict(sorted(band_counter.items())),
         "selected_wrong_by_action": dict(action_counter),
         "selected_wrong_by_category": dict(sorted(category_counter.items())),
-        "no_correct_component_by_category": dict(
-            sorted(no_correct_category_counter.items())
-        ),
+        "no_correct_component_by_category": dict(sorted(no_correct_category_counter.items())),
         "correct_component_available": correct_available,
         "no_correct_component": no_correct,
         "selector_only_oracle_correct": selected_correct + correct_available,
@@ -126,8 +117,7 @@ def _correct_components(row: dict[str, Any]) -> tuple[str, ...]:
     return tuple(
         component
         for component in ("deterministic", "consensus", "fresh_evidence")
-        if row["score_layers"][component]["comparison"].get("purist_correct")
-        is True
+        if row["score_layers"][component]["comparison"].get("purist_correct") is True
     )
 
 
@@ -141,8 +131,7 @@ def _categories(
     consensus = _lower(row["consensus_label"])
     fresh = _lower(row["fresh_evidence_label"])
     profile = " ".join(
-        _lower(item)
-        for item in row["decision_features"].get("fresh_boundary_profile", [])
+        _lower(item) for item in row["decision_features"].get("fresh_boundary_profile", [])
     )
     gold_band = boundary_band(row["reference"]["gold_monthly_frequency"])
     labels = " ".join((selected, deterministic, consensus, fresh, profile))
@@ -158,9 +147,8 @@ def _categories(
         categories.append("fresh_only_correct_candidate")
     if correct_components == ("consensus", "fresh_evidence"):
         categories.append("consensus_fresh_correct_but_blocked")
-    if (
-        gold_band != "band_unknown"
-        and ("highest active" in profile or "denominator/window" in profile)
+    if gold_band != "band_unknown" and (
+        "highest active" in profile or "denominator/window" in profile
     ):
         categories.append("highest_semiology_or_denominator_conflict")
     if not correct_components and not categories:
@@ -229,10 +217,7 @@ def _markdown(payload: dict[str, Any]) -> str:
             "- Selector-only oracle ceiling with current components: "
             f"{summary['selector_only_oracle_correct']}/{summary['rows']}"
         ),
-        (
-            "- Residual selector-only headroom: "
-            f"{summary['residual_selector_only_headroom']} rows"
-        ),
+        (f"- Residual selector-only headroom: {summary['residual_selector_only_headroom']} rows"),
         (
             "- Residual component-generation required: "
             f"{summary['residual_component_generation_required']} rows"
@@ -297,9 +282,7 @@ def _markdown(payload: dict[str, Any]) -> str:
 
 
 def _register(summary: dict[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -323,16 +306,10 @@ def _register(summary: dict[str, Any]) -> None:
             primary_metrics={
                 "selected_correct": summary["selected_correct"],
                 "selected_wrong": summary["selected_wrong"],
-                "correct_component_available": summary[
-                    "correct_component_available"
-                ],
+                "correct_component_available": summary["correct_component_available"],
                 "no_correct_component": summary["no_correct_component"],
-                "selector_only_oracle_correct": summary[
-                    "selector_only_oracle_correct"
-                ],
-                "residual_selector_only_headroom": summary[
-                    "residual_selector_only_headroom"
-                ],
+                "selector_only_oracle_correct": summary["selector_only_oracle_correct"],
+                "residual_selector_only_headroom": summary["residual_selector_only_headroom"],
                 "residual_component_generation_required": summary[
                     "residual_component_generation_required"
                 ],

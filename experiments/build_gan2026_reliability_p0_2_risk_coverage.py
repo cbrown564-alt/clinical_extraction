@@ -36,7 +36,6 @@ Usage:
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
@@ -103,15 +102,18 @@ def risk_coverage_curve(items: list[dict[str, Any]]) -> dict[str, Any]:
 
     # AUC of selective risk vs coverage (trapezoidal over coverage). Lower = better.
     auc = 0.0
-    for a, b in zip(points, points[1:]):
+    for a, b in zip(points, points[1:], strict=False):
         auc += (b["coverage"] - a["coverage"]) * (a["selective_risk"] + b["selective_risk"]) / 2
 
     # Risk at fixed coverage by step lookup (first operating point with coverage >= c).
     def risk_at(cov: float) -> dict[str, Any] | None:
         for p in points:
             if p["coverage"] >= cov - 1e-9:
-                return {"coverage": p["coverage"], "selective_risk": p["selective_risk"],
-                        "selective_risk_ci95": p["selective_risk_ci95"]}
+                return {
+                    "coverage": p["coverage"],
+                    "selective_risk": p["selective_risk"],
+                    "selective_risk_ci95": p["selective_risk_ci95"],
+                }
         return None
 
     return {
@@ -120,7 +122,9 @@ def risk_coverage_curve(items: list[dict[str, Any]]) -> dict[str, Any]:
         "base_error_rate": total_errors / n,
         "operating_points": points,
         "auc_selective_risk_vs_coverage": auc,
-        "risk_at_fixed_coverage": {f"{c:.2f}": risk_at(c) for c in (1.0, 0.95, 0.90, 0.80, 0.70, 0.50)},
+        "risk_at_fixed_coverage": {
+            f"{c:.2f}": risk_at(c) for c in (1.0, 0.95, 0.90, 0.80, 0.70, 0.50)
+        },
         "plateau_lowest_coverage": {
             "coverage": points[0]["coverage"],
             "selective_risk": points[0]["selective_risk"],
@@ -145,7 +149,7 @@ def baseline_curves(items: list[dict[str, Any]]) -> dict[str, Any]:
         covered += 1
         err += 0 if it["correct"] else 1
         pts.append((covered / n, err / covered))
-    oracle_auc = sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:]))
+    oracle_auc = sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:], strict=False))
     scores = [it["risk"] for it in items]
     labels = [not it["correct"] for it in items]  # positive = error
     return {
@@ -193,14 +197,20 @@ def main() -> None:
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
-    print(f"  base error rate: {curve['base_error_rate']:.3f} ({curve['total_errors']}/{curve['n']})")
-    print(f"  AUC (selective risk vs coverage): {curve['auc_selective_risk_vs_coverage']:.4f}"
-          f"  (oracle {context['oracle_auc_selective_risk_vs_coverage']:.4f},"
-          f" random ~{curve['base_error_rate']:.4f})")
+    print(
+        f"  base error rate: {curve['base_error_rate']:.3f} ({curve['total_errors']}/{curve['n']})"
+    )
+    print(
+        f"  AUC (selective risk vs coverage): {curve['auc_selective_risk_vs_coverage']:.4f}"
+        f"  (oracle {context['oracle_auc_selective_risk_vs_coverage']:.4f},"
+        f" random ~{curve['base_error_rate']:.4f})"
+    )
     print(f"  AUROC external score for error: {context['external_score_auroc_for_error']:.4f}")
-    pl = curve['plateau_lowest_coverage']
-    print(f"  plateau @ coverage {pl['coverage']:.2f}: selective risk {pl['selective_risk']:.3f}"
-          f" CI {pl['selective_risk_ci95'][0]:.3f}-{pl['selective_risk_ci95'][1]:.3f}")
+    pl = curve["plateau_lowest_coverage"]
+    print(
+        f"  plateau @ coverage {pl['coverage']:.2f}: selective risk {pl['selective_risk']:.3f}"
+        f" CI {pl['selective_risk_ci95'][0]:.3f}-{pl['selective_risk_ci95'][1]:.3f}"
+    )
 
 
 def render_md(result: dict[str, Any]) -> str:
@@ -221,21 +231,29 @@ def render_md(result: dict[str, Any]) -> str:
         "point carries a 95% Wilson CI.\n"
     )
     L.append("## Headline numbers\n")
-    L.append(f"- **AUC (selective risk vs coverage):** {c['auc_selective_risk_vs_coverage']:.4f} "
-             f"(lower is better; oracle {ctx['oracle_auc_selective_risk_vs_coverage']:.4f}, "
-             f"random ≈ {c['base_error_rate']:.4f})")
-    L.append(f"- **AUROC of external score for predicting error:** "
-             f"{ctx['external_score_auroc_for_error']:.4f}")
+    L.append(
+        f"- **AUC (selective risk vs coverage):** {c['auc_selective_risk_vs_coverage']:.4f} "
+        f"(lower is better; oracle {ctx['oracle_auc_selective_risk_vs_coverage']:.4f}, "
+        f"random ≈ {c['base_error_rate']:.4f})"
+    )
+    L.append(
+        f"- **AUROC of external score for predicting error:** "
+        f"{ctx['external_score_auroc_for_error']:.4f}"
+    )
     pl = c["plateau_lowest_coverage"]
-    L.append(f"- **Plateau (safest rows, coverage {pl['coverage']:.2f}):** selective risk "
-             f"{pl['selective_risk']:.1%} (CI {pl['selective_risk_ci95'][0]:.1%}–{pl['selective_risk_ci95'][1]:.1%})\n")
+    L.append(
+        f"- **Plateau (safest rows, coverage {pl['coverage']:.2f}):** selective risk "
+        f"{pl['selective_risk']:.1%} (CI {pl['selective_risk_ci95'][0]:.1%}–{pl['selective_risk_ci95'][1]:.1%})\n"
+    )
     L.append("## Risk at fixed coverage\n")
     L.append("| Coverage | Selective risk | 95% CI |")
     L.append("|---:|---:|:--|")
     for cov, p in c["risk_at_fixed_coverage"].items():
         if p:
-            L.append(f"| {float(cov):.0%} | {p['selective_risk']:.1%} | "
-                     f"{p['selective_risk_ci95'][0]:.1%}–{p['selective_risk_ci95'][1]:.1%} |")
+            L.append(
+                f"| {float(cov):.0%} | {p['selective_risk']:.1%} | "
+                f"{p['selective_risk_ci95'][0]:.1%}–{p['selective_risk_ci95'][1]:.1%} |"
+            )
     L.append("\n## Operating points (step function)\n")
     L.append("| Risk ≤ | Covered | Coverage | Sel. errors | Selective risk | 95% CI |")
     L.append("|---:|---:|---:|---:|---:|:--|")

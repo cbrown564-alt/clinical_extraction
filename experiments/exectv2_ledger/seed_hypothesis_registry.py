@@ -17,7 +17,10 @@ _EXPERIMENTS_DIR = Path(__file__).resolve().parents[1]
 if str(_EXPERIMENTS_DIR) not in sys.path:
     sys.path.insert(0, str(_EXPERIMENTS_DIR))
 
-from exectv2_ledger.hypothesis_registry import HypothesisEntry, write_hypothesis_registry  # noqa: E402
+from exectv2_ledger.hypothesis_registry import (  # noqa: E402
+    HypothesisEntry,
+    write_hypothesis_registry,
+)
 
 ROOT = _EXPERIMENTS_DIR.parent
 OUT = _EXPERIMENTS_DIR.parent / "experiments" / "hypothesis_registry.jsonl"
@@ -38,7 +41,9 @@ ENTRIES: list[HypothesisEntry] = [
         date="2026-06-30",
         owner="ExECTv2 workstream",
         evidence_run_ids=("exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",),
-        evidence_docs=("docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",
+        ),
         notes="Only 14.8% genuine error, 85.2% gold multiplicity/consolidation; adjusted F1 0.6617 -> 0.9501.",
     ),
     HypothesisEntry(
@@ -54,7 +59,9 @@ ENTRIES: list[HypothesisEntry] = [
         date="2026-06-29",
         owner="ExECTv2 workstream",
         evidence_run_ids=("exectv2_gepa_sf_verify_gpt41mini_20260628",),
-        evidence_docs=("docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
+        ),
         notes=(
             "62.1% metric-defensible -> 89.3% clinically defensible; only 15/53 disagreements genuine "
             "error; metric itself noisy (+-0.03 band across identical re-runs)."
@@ -73,7 +80,9 @@ ENTRIES: list[HypothesisEntry] = [
         verdict="PARTIAL",
         date="2026-06-29",
         owner="ExECTv2 workstream",
-        evidence_docs=("docs/experiments/exectv2/seizure_frequency/exectv2_sf_changed_class_row_analysis_2026-06-29.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/seizure_frequency/exectv2_sf_changed_class_row_analysis_2026-06-29.md",
+        ),
         notes="~52% fixable representation defect, 31% genuine IAA-0.47 ambiguity, 17% gold convention.",
     ),
     HypothesisEntry(
@@ -91,7 +100,9 @@ ENTRIES: list[HypothesisEntry] = [
         date="2026-06-30",
         owner="ExECTv2 GEPA workstream",
         evidence_run_ids=("exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",),
-        evidence_docs=("docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",
+        ),
         notes=(
             "52.2% H-inflated, knife's-edge (one case from the null); of 12 inflated, only 4 "
             "cardinality-linked, 8 typo/substring-artifact. 11 genuine misses = absent 2nd/3rd drug "
@@ -113,7 +124,9 @@ ENTRIES: list[HypothesisEntry] = [
         date="2026-06-30",
         owner="ExECTv2 GEPA workstream",
         evidence_run_ids=("exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628",),
-        evidence_docs=("docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",
+        ),
         notes="25.9-29.6% H-inflated, both readings under threshold -- cleanest negative of the 4-family sweep.",
     ),
     HypothesisEntry(
@@ -132,7 +145,9 @@ ENTRIES: list[HypothesisEntry] = [
             "exectv2_gepa_investigations_lane_deepseekreasoner_20260630",
             "exectv2_gepa_baseline_multifamily_deepseekchat_20260628",
         ),
-        evidence_docs=("docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",),
+        evidence_docs=(
+            "docs/experiments/exectv2/exectv2_rx_inv_ev_recall_consolidation_check_2026-06-30.md",
+        ),
         notes=(
             "0.9254/0.9412 vs baseline 0.9259/0.9412, statistically identical despite ~4x wall-clock. "
             "The DeepSeek model-family swap, not the instruction, closed the gap."
@@ -208,13 +223,13 @@ ENTRIES: list[HypothesisEntry] = [
         ),
         predeclaration_doc="docs/canon/workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md",
         kill_criterion="dev140 replay after the scope fix must not regress any of the "
-                        "11 scorer_mechanics_artifact cases' sibling GOLD_RIGHT letters",
+        "11 scorer_mechanics_artifact cases' sibling GOLD_RIGHT letters",
         verdict="OPEN",
         date="2026-07-02",
         owner="ExECTv2 workstream",
         evidence_docs=("docs/canon/workstreams/PRESCRIPTION_CANONICAL_LEDGER_CANON.md",),
         notes="Not yet implemented or run. 11/48 (22.9%) of Prescription's row-adjudicated "
-              "disagreements are this scorer_mechanics_artifact.",
+        "disagreements are this scorer_mechanics_artifact.",
     ),
     HypothesisEntry(
         hypothesis_id="rx_current_vs_future_dose_conflation_2026-07-02",
@@ -263,7 +278,9 @@ ENTRIES: list[HypothesisEntry] = [
         verdict="REFUTED",
         date="2026-07-01",
         owner="ExECTv2 workstream",
-        evidence_docs=("docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md",),
+        evidence_docs=(
+            "docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md",
+        ),
         downstream_corrections=(
             "PROJECT_STATUS.md",
             "docs/research/exploratory_research_directions_multiagent_review_2026-07-01.md",

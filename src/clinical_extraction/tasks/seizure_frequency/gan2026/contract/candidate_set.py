@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
 from calendar import monthrange
+from collections.abc import Sequence
 from datetime import date, datetime, timedelta
 from typing import Literal
 

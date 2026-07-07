@@ -38,8 +38,7 @@ def test_unknown_suppression_drops_drug_response_scope() -> None:
 
     assert suppressed["predicted_mentions"] == []
     assert (
-        suppressed["suppression_actions"][0]["rule_id"]
-        == "unknown_suppression.drug_response_scope"
+        suppressed["suppression_actions"][0]["rule_id"] == "unknown_suppression.drug_response_scope"
     )
 
 

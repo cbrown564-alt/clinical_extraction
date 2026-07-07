@@ -62,9 +62,7 @@ def attach_hard_case_metadata(
 ) -> list[dict[str, Any]]:
     """Attach case ids/families to saved hybrid rows without exposing gold in prompts."""
 
-    case_by_index = {
-        source_index_base + offset: case for offset, case in enumerate(cases)
-    }
+    case_by_index = {source_index_base + offset: case for offset, case in enumerate(cases)}
     enriched = []
     for row in rows:
         row_copy = dict(row)
@@ -75,9 +73,7 @@ def attach_hard_case_metadata(
                 "failure_family": case["failure_family"],
                 "expected_answer_kind": case["expected_answer_kind"],
                 "allowed_llm_action": case["allowed_llm_action"],
-                "deterministic_failure_rationale": case[
-                    "deterministic_failure_rationale"
-                ],
+                "deterministic_failure_rationale": case["deterministic_failure_rationale"],
             }
         enriched.append(row_copy)
     return enriched

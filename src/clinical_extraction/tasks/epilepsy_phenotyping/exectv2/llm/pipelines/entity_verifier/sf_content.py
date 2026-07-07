@@ -21,7 +21,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.entity_v
     load_sf_clinical_rules,
     load_sf_worked_examples,
 )
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -56,9 +55,7 @@ OUTPUT_SCHEMA = {
                 "UpperNumberOfTimePeriods": "upper bound period count",
                 "TimePeriod": "Day | Week | Month | Year",
                 "TimeSince_or_TimeOfEvent": "Since | During",
-                "FrequencyChange": (
-                    "Decreased | Frequent | Increased | Infrequent | Same"
-                ),
+                "FrequencyChange": ("Decreased | Frequent | Increased | Infrequent | Same"),
                 "PointInTime": (
                     "Birthday | DrugChange | LastClinic | Last_Month | "
                     "Last_Week | Last_Year | Surgery"
@@ -94,11 +91,12 @@ class ExECTv2SFVerifierSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
+
 
 def _clinical_rules() -> list[str]:
     return load_sf_clinical_rules()

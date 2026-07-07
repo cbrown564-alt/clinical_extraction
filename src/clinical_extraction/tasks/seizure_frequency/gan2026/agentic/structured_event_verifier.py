@@ -47,9 +47,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 
 PROMPT_VERSION = "gan2026_structured_event_verifier_v0_5"
 PIPELINE_FAMILY = "structured_event_verifier"
-DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
-    llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_STRUCTURED_EVENT_JSONL_PATH = llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_structured_event_verifier_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_structured_event_verifier_validation.md")
 
@@ -177,9 +175,7 @@ def run_split(
             api_base=api_base,
         )
 
-    structured_rows_by_index = llm_event_reasoner._rows_by_source_index(
-        structured_event_rows
-    )
+    structured_rows_by_index = llm_event_reasoner._rows_by_source_index(structured_event_rows)
     metadata = build_stage_metadata(
         records,
         split=split,
@@ -212,9 +208,7 @@ def run_split(
         rows.append(
             _build_row(
                 record,
-                structured_event_row=structured_rows_by_index.get(
-                    record.source_row_index
-                ),
+                structured_event_row=structured_rows_by_index.get(record.source_row_index),
                 split=split,
                 split_manifest=split_manifest,
                 model=model,
@@ -252,9 +246,7 @@ def _build_verifier_prompt_input(
 ) -> str:
     """Build a model-facing verifier payload without IDs, gold, split, or rules top."""
 
-    structured_input = llm_event_reasoner.inspect_structured_events(
-        structured_event_row
-    )
+    structured_input = llm_event_reasoner.inspect_structured_events(structured_event_row)
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 structured-event final-answer verification",
@@ -452,9 +444,7 @@ def parse_verifier_decision_json(
         )
 
     raw_common_decision = _common_decision_from_verifier(raw_verifier_decision)
-    format_decision, repair_events, format_notes = _format_only_decision(
-        raw_common_decision
-    )
+    format_decision, repair_events, format_notes = _format_only_decision(raw_common_decision)
     parse_errors.extend(format_notes)
     try:
         label_to_frequency_record(format_decision.final_label)
@@ -534,9 +524,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             ("final", "final"),
         ):
             comparison = dict(
-                dict(dict(row.get("score_layers") or {}).get(layer_name) or {}).get(
-                    "comparison"
-                )
+                dict(dict(row.get("score_layers") or {}).get(layer_name) or {}).get("comparison")
                 or {}
             )
             summary[f"{summary_prefix}_purist_correct"] += int(
@@ -558,9 +546,9 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         verifier_record = dict(row.get("verifier_decision_record") or {})
         if verifier_record.get("action") is not None:
             verifier_actions[str(verifier_record["action"])] += 1
-        final_label = dict(
-            dict(row.get("score_layers") or {}).get("final") or {}
-        ).get("final_label")
+        final_label = dict(dict(row.get("score_layers") or {}).get("final") or {}).get(
+            "final_label"
+        )
         if final_label is not None:
             final_labels[str(final_label)] += 1
     summary["net_purist_gain_vs_v0"] = (
@@ -622,10 +610,7 @@ def write_report(
             f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
             f"- Action-render failures: {summary.get('action_render_failures', 0)}",
             f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-            (
-                f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-                f"{summary.get('rows', 0)}"
-            ),
+            (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
             (
                 f"- Raw model Purist: {summary.get('raw_model_purist_correct', 0)}/"
                 f"{summary.get('rows', 0)}"
@@ -634,15 +619,9 @@ def write_report(
                 f"- Format-only Purist: {summary.get('format_only_purist_correct', 0)}/"
                 f"{summary.get('rows', 0)}"
             ),
-            (
-                f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-                f"{summary.get('rows', 0)}"
-            ),
+            (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
             f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-            (
-                "- Changed-label precision vs V0: "
-                f"{summary.get('changed_label_precision_vs_v0')}"
-            ),
+            (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
             f"- Verifier actions: `{summary.get('verifier_actions', {})}`",
         ],
         row_table_header=(
@@ -794,9 +773,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 
@@ -892,12 +869,9 @@ def _format_only_decision(
     raw_decision: llm_event_reasoner.ReasonedFrequencyDecision,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision, list[dict[str, Any]], list[str]]:
     parse_notes: list[str] = []
-    repair_trace = repair_prediction_label_format_preserving_with_trace(
-        raw_decision.final_label
-    )
+    repair_trace = repair_prediction_label_format_preserving_with_trace(raw_decision.final_label)
     repair_events = [
-        llm_event_reasoner._repair_event_to_dict(event)
-        for event in repair_trace.events
+        llm_event_reasoner._repair_event_to_dict(event) for event in repair_trace.events
     ]
     format_decision = raw_decision
     if repair_trace.final_label != raw_decision.final_label:
@@ -1007,9 +981,9 @@ def _render_existing_event_action(
     )
     if event_id is None:
         return None, None, "action_render_error: replace_existing_event_missing_selected_event"
-    normalized = llm_event_reasoner._normalized_event_by_id(
-        structured_event_row or {}
-    ).get(event_id)
+    normalized = llm_event_reasoner._normalized_event_by_id(structured_event_row or {}).get(
+        event_id
+    )
     if normalized is None:
         return None, event_id, f"action_render_error: selected_event_not_normalized:{event_id}"
     label = _as_optional_str(normalized.get("normalized_label"))
@@ -1068,9 +1042,7 @@ def _render_recomputed_action(
 def _structured_selection(structured_event_row: Mapping[str, Any] | None) -> dict[str, Any]:
     if structured_event_row is None:
         return {}
-    return dict(
-        dict(structured_event_row.get("structured_record") or {}).get("selection") or {}
-    )
+    return dict(dict(structured_event_row.get("structured_record") or {}).get("selection") or {})
 
 
 def _event_evidence_tuple(

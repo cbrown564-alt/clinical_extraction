@@ -55,7 +55,9 @@ def main() -> None:
     V2_PATH.write_text(json.dumps(v2, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {V2_PATH.relative_to(ROOT)}")
     print(f"dev: {v2['splits']['dev']['count']} letters (unchanged)")
-    print(f"test: {v2['splits']['test']['count']} letters (was {len(test_ids)}, dropped {DROPPED_LETTER})")
+    print(
+        f"test: {v2['splits']['test']['count']} letters (was {len(test_ids)}, dropped {DROPPED_LETTER})"
+    )
 
 
 if __name__ == "__main__":

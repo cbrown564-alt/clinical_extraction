@@ -25,12 +25,8 @@ def test_selective_replay_scores_policy_transitions_against_fallback() -> None:
 
     replay_rows, metadata = run_selective_fallback_replay(rows, manifest_records=[])
 
-    assert replay_rows[0]["policies"]["all_agree_tool_accept"]["transition"] == (
-        "wrong_to_correct"
-    )
-    assert replay_rows[1]["policies"]["all_agree_tool_accept"]["transition"] == (
-        "correct_to_wrong"
-    )
+    assert replay_rows[0]["policies"]["all_agree_tool_accept"]["transition"] == ("wrong_to_correct")
+    assert replay_rows[1]["policies"]["all_agree_tool_accept"]["transition"] == ("correct_to_wrong")
 
     summary = metadata["policy_summaries"]["all_agree_tool_accept"]
     assert summary["changed_labels"] == 2
@@ -167,10 +163,7 @@ def _trace(
             {
                 "tool_name": "parse_seizure_frequency_candidates",
                 "result": {
-                    "candidates": [
-                        {"candidate_kind": kind}
-                        for kind in tool_candidate_kinds
-                    ]
+                    "candidates": [{"candidate_kind": kind} for kind in tool_candidate_kinds]
                 },
             }
         ],

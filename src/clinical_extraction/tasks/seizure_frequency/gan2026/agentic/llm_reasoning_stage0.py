@@ -45,12 +45,10 @@ DEFAULT_V0_ARTIFACTS: dict[str, Path] = {
         "gpt41mini_2026-06-07.jsonl"
     ),
     "qwen3635b_hybrid_structured_events_v0_6": Path(
-        "experiments/gan2026_v06_validation750_hybrid_structured_events_"
-        "qwen3635b_2026-06-12.jsonl"
+        "experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.jsonl"
     ),
     "deepseek_hybrid_structured_events_v0_6": Path(
-        "experiments/gan2026_v06_validation750_hybrid_structured_events_"
-        "deepseek_2026-06-12.jsonl"
+        "experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.jsonl"
     ),
 }
 
@@ -152,8 +150,7 @@ def build_family_slice_manifests(
     """Create validation-only family-slice manifests for the plan's Stage 0 gate."""
 
     rows_by_artifact = {
-        artifact_id: _rows_by_source_index(rows)
-        for artifact_id, rows in v0_artifact_rows.items()
+        artifact_id: _rows_by_source_index(rows) for artifact_id, rows in v0_artifact_rows.items()
     }
     validation_order = {
         int(record.source_row_index): index for index, record in enumerate(validation_records)
@@ -179,8 +176,7 @@ def build_family_slice_manifests(
             candidates.append((score, _slice_record(record, artifact_rows, reasons)))
 
         selected = [
-            row
-            for _, row in sorted(candidates, key=lambda item: item[0], reverse=True)[:max_rows]
+            row for _, row in sorted(candidates, key=lambda item: item[0], reverse=True)[:max_rows]
         ]
         for rank, row in enumerate(selected, start=1):
             row["selection_rank"] = rank
@@ -241,8 +237,7 @@ def score_v0_artifacts(
     """Score each saved pure structured-event artifact on each Stage 0 surface."""
 
     rows_by_artifact = {
-        artifact_id: _rows_by_source_index(rows)
-        for artifact_id, rows in v0_artifact_rows.items()
+        artifact_id: _rows_by_source_index(rows) for artifact_id, rows in v0_artifact_rows.items()
     }
     scored: dict[str, dict[str, Any]] = {}
     for surface_name, source_indices in surfaces.items():
@@ -283,9 +278,7 @@ def summarize_saved_structured_rows(
         "pragmatic_correct": pragmatic_correct,
         "pragmatic_accuracy": round(pragmatic_correct / row_count, 4) if row_count else 0.0,
         "final_kind_counts": dict(
-            sorted(
-                Counter(_final_kind(row) or "missing_final_kind" for row in loaded_rows).items()
-            )
+            sorted(Counter(_final_kind(row) or "missing_final_kind" for row in loaded_rows).items())
         ),
     }
 
@@ -356,10 +349,7 @@ def write_stage0_report(
     ]
     for slice_name in FAMILY_SLICE_NAMES:
         manifest = stage0["family_manifests"][slice_name]
-        lines.append(
-            f"| `{slice_name}` | {manifest['row_count']} | "
-            f"{manifest['trigger_rule']} |"
-        )
+        lines.append(f"| `{slice_name}` | {manifest['row_count']} | {manifest['trigger_rule']} |")
 
     lines.extend(
         [
@@ -420,9 +410,7 @@ def load_default_stage0_inputs() -> tuple[
     }
     split_manifest = load_split_manifest()
     split_manifest_version = str(split_manifest.get("manifest_version", DEFAULT_SPLIT_MANIFEST))
-    fixed_hard50_manifest = json.loads(
-        DEFAULT_FIXED_HARD50_MANIFEST.read_text(encoding="utf-8")
-    )
+    fixed_hard50_manifest = json.loads(DEFAULT_FIXED_HARD50_MANIFEST.read_text(encoding="utf-8"))
     return (
         validation_records,
         v0_rows,
@@ -667,9 +655,7 @@ def _rows_by_source_index(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[int, Mapping[str, Any]]:
     return {
-        int(row["source_row_index"]): row
-        for row in rows
-        if row.get("source_row_index") is not None
+        int(row["source_row_index"]): row for row in rows if row.get("source_row_index") is not None
     }
 
 

@@ -163,15 +163,11 @@ def ontology_coverage_summary(
             include_no_reference_fallback=True,
         )
         validation = dual_validate_graph(graph, ontology=ontology)
-        admitted_nodes = tuple(
-            node for node in graph.nodes if validation.is_admitted(node.node_id)
-        )
+        admitted_nodes = tuple(node for node in graph.nodes if validation.is_admitted(node.node_id))
 
         baseline_repr = _gold_is_representable(record, graph_node_labels(graph))
         admitted_repr = _gold_is_representable(record, _node_labels(admitted_nodes))
-        projection_correct = _purist_correct(
-            record, project_graph_to_gan(graph).monthly_frequency
-        )
+        projection_correct = _purist_correct(record, project_graph_to_gan(graph).monthly_frequency)
         resolve_correct = _purist_correct(
             record, resolve_label(graph, ontology=ontology, validation=validation).monthly_frequency
         )
@@ -186,9 +182,7 @@ def ontology_coverage_summary(
         elif projection_correct and not resolve_correct:
             regressions.append(record.source_row_index)
 
-    by_band = {
-        band: BandCoverage(band=band, **stats) for band, stats in sorted(bands.items())
-    }
+    by_band = {band: BandCoverage(band=band, **stats) for band, stats in sorted(bands.items())}
     return OntologyCoverageSummary(
         ontology_id=ontology.ontology_id,
         row_count=len(records),
@@ -304,7 +298,7 @@ def atomic_claim_viability_summary(
 
     for graph in graphs:
         validation = dual_validate_graph(graph, ontology=ontology)
-        for node, node_validation in zip(graph.nodes, validation.node_validations):
+        for node, node_validation in zip(graph.nodes, validation.node_validations, strict=False):
             total += 1
             struct_valid += int(node_validation.structural_valid)
             exact += int(node.evidence.start_char is not None)

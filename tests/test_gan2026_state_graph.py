@@ -23,12 +23,8 @@ def test_state_graph_harvester_builds_source_near_nodes_with_exact_evidence() ->
         source_row_index=7,
     )
 
-    frequency_nodes = [
-        node for node in graph.nodes if node.kind is GraphNodeKind.FREQUENCY_RATE
-    ]
-    seizure_free_nodes = [
-        node for node in graph.nodes if node.kind is GraphNodeKind.SEIZURE_FREE
-    ]
+    frequency_nodes = [node for node in graph.nodes if node.kind is GraphNodeKind.FREQUENCY_RATE]
+    seizure_free_nodes = [node for node in graph.nodes if node.kind is GraphNodeKind.SEIZURE_FREE]
 
     assert graph.source_row_index == 7
     assert len(frequency_nodes) == 1
@@ -184,8 +180,7 @@ def test_acd_010_recent_major_relapse_overrides_minor_interictal_rate() -> None:
 
 def test_counterfactual_invariance_signature_ignores_surface_order_and_writing() -> None:
     original = build_state_graph(
-        "Current frequency: two seizures per week. "
-        "They occur in clusters of three events each.",
+        "Current frequency: two seizures per week. They occur in clusters of three events each.",
     )
     paraphrase = build_state_graph(
         "The diary describes clusters of three events each. "

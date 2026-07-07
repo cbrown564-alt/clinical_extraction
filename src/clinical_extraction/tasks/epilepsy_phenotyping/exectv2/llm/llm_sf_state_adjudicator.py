@@ -130,9 +130,9 @@ class ExECTv2SFStateAdjudicatorSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -237,9 +237,7 @@ def build_prompt_input(
                         "UpperNumberOfTimePeriods": "upper bound period count",
                         "TimePeriod": "Day | Week | Month | Year",
                         "TimeSince_or_TimeOfEvent": "Since | During",
-                        "FrequencyChange": (
-                            "Decreased | Frequent | Increased | Infrequent | Same"
-                        ),
+                        "FrequencyChange": ("Decreased | Frequent | Increased | Infrequent | Same"),
                         "PointInTime": (
                             "Birthday | DrugChange | LastClinic | Last_Month | "
                             "Last_Week | Last_Year | Surgery"
@@ -398,10 +396,7 @@ def _generic_seizure_policy() -> dict[str, list[str]]:
             ),
         ],
         "reject_generic_unknown": [
-            (
-                "Epilepsy is stable, controlled, or improved without explicitly "
-                "naming seizure(s)."
-            ),
+            ("Epilepsy is stable, controlled, or improved without explicitly naming seizure(s)."),
             "Jerks or stares improved without a scored seizure type.",
         ],
     }
@@ -694,9 +689,7 @@ def _worked_examples() -> list[dict[str, Any]]:
             "correct": [],
         },
         {
-            "note_fragment": (
-                "Before the recent seizure she had been seizure free for 3 years."
-            ),
+            "note_fragment": ("Before the recent seizure she had been seizure free for 3 years."),
             "draft": [{"text": "seizure free"}],
             "correct": [],
         },
@@ -848,9 +841,7 @@ def to_predicted_letter(
     note_text: str,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []

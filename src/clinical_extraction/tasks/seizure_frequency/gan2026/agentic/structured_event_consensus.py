@@ -169,9 +169,7 @@ def run_exact_label_consensus_replay(
         # Per-family breakdown and the held-out-family CV promotion verdict are
         # validation-only instruments; the holdout audit is aggregate-only, so
         # neither is attached for `test`.
-        summary_by_family = summarize_transitions_by_family(
-            replay_rows, **CONSENSUS_PATHS
-        )
+        summary_by_family = summarize_transitions_by_family(replay_rows, **CONSENSUS_PATHS)
         metadata["summary_by_family"] = summary_by_family
         metadata["family_holdout_cv"] = summarize_family_holdout_cv(summary_by_family)
         metadata["precision_gated_selector"] = summarize_precision_gated_selector(
@@ -242,11 +240,7 @@ def summarize_consensus_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any
 def _rows_by_source_index(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[int | str, Mapping[str, Any]]:
-    return {
-        row["source_row_index"]: row
-        for row in rows
-        if row.get("source_row_index") is not None
-    }
+    return {row["source_row_index"]: row for row in rows if row.get("source_row_index") is not None}
 
 
 def _rules_top_label(row: Mapping[str, Any]) -> str | None:

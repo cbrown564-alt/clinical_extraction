@@ -12,11 +12,18 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     ClinicalAssessment,
 )
+
+# Re-export private assembly helpers exercised by tests and internal callers.
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
+    clinical_assessment_assembly as _assembly,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
     DISABLED_SWITCH_ISSUE_PREFIX,
     NORMALIZATION_POLICY_ID,
-    assemble_clinical_assessment as _assemble_clinical_assessment,
     normalize_assessment_burden,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
+    assemble_clinical_assessment as _assemble_clinical_assessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.assessment_probe_signature import (
     DEFAULT_CANDIDATE_SET_JSONL_PATH,
@@ -32,11 +39,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.assessment_probe_si
     summarize_records,
     write_jsonl,
     write_report,
-)
-
-# Re-export private assembly helpers exercised by tests and internal callers.
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic import (
-    clinical_assessment_assembly as _assembly,
 )
 
 COMPONENT_OWNER = "llm_candidate_set_clinical_assessment"

@@ -12,10 +12,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     MentionRecord,
 )
 
-_NOTE = (
-    "MRI 2016 showed left-sided gliosis. EEG was normal. "
-    "I will arrange a CT scan."
-)
+_NOTE = "MRI 2016 showed left-sided gliosis. EEG was normal. I will arrange a CT scan."
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 

@@ -106,12 +106,8 @@ def build_selector_inputs(
                 "and choose the fact(s) that best describe the patient's current "
                 "seizure frequency burden."
             ),
-            (
-                "Return only selected_candidate_ids, selection_mode, and rationale."
-            ),
-            (
-                "Use single_candidate when exactly one candidate controls the answer."
-            ),
+            ("Return only selected_candidate_ids, selection_mode, and rationale."),
+            ("Use single_candidate when exactly one candidate controls the answer."),
             (
                 "Use related_candidate_group when two or more candidates describe "
                 "related events in the same current clinical window and should be "
@@ -125,12 +121,8 @@ def build_selector_inputs(
                 "Use ambiguous when multiple plausible candidates exist but the note "
                 "does not let you choose safely."
             ),
-            (
-                "Use conflict when current candidates make incompatible claims."
-            ),
-            (
-                "Prefer current evidence over historical or future evidence."
-            ),
+            ("Use conflict when current candidates make incompatible claims."),
+            ("Prefer current evidence over historical or future evidence."),
             (
                 "Prefer explicit seizure-frequency, seizure-free, or cluster-frequency "
                 "evidence over vague unknown-frequency evidence."
@@ -143,10 +135,7 @@ def build_selector_inputs(
                 "Preserve cluster structure: cluster cadence and events-per-cluster "
                 "are related, not interchangeable."
             ),
-            (
-                "Do not turn vague words like several, few, many, or multiple into "
-                "exact numbers."
-            ),
+            ("Do not turn vague words like several, few, many, or multiple into exact numbers."),
             "Rationale should be one short sentence.",
             "Return only selection_draft.",
         ],

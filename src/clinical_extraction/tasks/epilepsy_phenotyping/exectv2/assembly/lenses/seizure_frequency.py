@@ -199,9 +199,7 @@ def _sf_recovery_key_from_parts(
             "PointInTime",
             "TimeSince_or_TimeOfEvent",
         )
-        fingerprint = "|".join(
-            f"{key}={attrs[key]}" for key in fingerprint_keys if key in attrs
-        )
+        fingerprint = "|".join(f"{key}={attrs[key]}" for key in fingerprint_keys if key in attrs)
         if fingerprint:
             return concept, state, fingerprint
     return concept, state

@@ -99,9 +99,7 @@ def test_assemble_clinical_assessment_accepts_primary_with_context() -> None:
     assert assessment.primary_candidate_ids == ["det:302:1"]
     assert assessment.supporting_candidate_ids == ["llm:302:2"]
     assert assessment.aggregation_policy == "primary_with_context"
-    assert assessment.normalization_policy_id == (
-        "gan2026_clinical_assessment_normalization_v0"
-    )
+    assert assessment.normalization_policy_id == ("gan2026_clinical_assessment_normalization_v0")
     assert assessment.normalized_burden.count_low == 12
     assert assessment.normalized_burden.count_high == 12
     assert assessment.normalized_burden.period_low == 1
@@ -294,9 +292,7 @@ def test_assemble_clinical_assessment_parses_every_other_interval() -> None:
         assessment_kind="frequency_rate",
         primary_candidate_ids=["llm:310:1"],
         aggregation_policy="single_fact",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="seizures every other month"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="seizures every other month"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -555,9 +551,7 @@ def test_assemble_clinical_assessment_does_not_promote_medication_cadence() -> N
     assert errors == []
     assert assessment is not None
     assert assessment.assessment_kind == "cluster_frequency"
-    assert "cluster_assessment_promoted_to_frequency_rate" not in (
-        assessment.normalization_issues
-    )
+    assert "cluster_assessment_promoted_to_frequency_rate" not in (assessment.normalization_issues)
 
 
 def test_prediction_to_assessment_draft_accepts_missing_aggregation_policy() -> None:
@@ -583,9 +577,7 @@ def test_assemble_clinical_assessment_defaults_missing_aggregation_policy() -> N
     draft = assessment_probe.AssessmentDraft(
         assessment_kind="frequency_rate",
         primary_candidate_ids=["det:319:1"],
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="two seizures per month"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="two seizures per month"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -621,10 +613,7 @@ def test_assemble_clinical_assessment_repairs_single_primary_additive_policy() -
     assert errors == []
     assert assessment is not None
     assert assessment.aggregation_policy == "single_fact"
-    assert (
-        "single_primary_additive_same_window_to_single_fact"
-        in assessment.normalization_issues
-    )
+    assert "single_primary_additive_same_window_to_single_fact" in assessment.normalization_issues
 
 
 def test_assemble_clinical_assessment_repairs_single_primary_cluster_axis() -> None:
@@ -636,9 +625,7 @@ def test_assemble_clinical_assessment_repairs_single_primary_cluster_axis() -> N
         assessment_kind="cluster_frequency",
         primary_candidate_ids=["llm:321:1"],
         aggregation_policy="cluster_axis",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="clusters every four weeks"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="clusters every four weeks"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -677,10 +664,7 @@ def test_assemble_clinical_assessment_repairs_cluster_axis_without_cluster_prima
     assert assessment is not None
     assert assessment.primary_candidate_ids == ["det:322:1", "llm:322:2"]
     assert assessment.supporting_candidate_ids == []
-    assert (
-        "cluster_axis_supporting_cluster_promoted_to_primary"
-        in assessment.normalization_issues
-    )
+    assert "cluster_axis_supporting_cluster_promoted_to_primary" in assessment.normalization_issues
 
 
 def test_assemble_clinical_assessment_repairs_multi_primary_nonadditive_policy() -> None:
@@ -693,9 +677,7 @@ def test_assemble_clinical_assessment_repairs_multi_primary_nonadditive_policy()
         assessment_kind="frequency_rate",
         primary_candidate_ids=["det:323:1", "llm:323:2"],
         aggregation_policy="primary_with_context",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="daily myoclonic jerk"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="daily myoclonic jerk"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -707,10 +689,7 @@ def test_assemble_clinical_assessment_repairs_multi_primary_nonadditive_policy()
     assert assessment is not None
     assert assessment.primary_candidate_ids == ["det:323:1"]
     assert assessment.supporting_candidate_ids == ["llm:323:2"]
-    assert (
-        "multi_primary_nonadditive_demoted_to_supporting"
-        in assessment.normalization_issues
-    )
+    assert "multi_primary_nonadditive_demoted_to_supporting" in assessment.normalization_issues
 
 
 def test_assemble_clinical_assessment_does_not_additive_repair_cluster_assessment() -> None:
@@ -723,13 +702,9 @@ def test_assemble_clinical_assessment_does_not_additive_repair_cluster_assessmen
         assessment_kind="cluster_frequency",
         primary_candidate_ids=["det:325:1", "llm:325:2"],
         aggregation_policy="primary_with_context",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="two seizures this month"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="two seizures this month"),
     )
-    candidate_by_id = {
-        candidate.candidate_id: candidate for candidate in candidate_set.candidates
-    }
+    candidate_by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
 
     repaired, repair_issues = assessment_probe._repair_multi_primary_nonadditive_policy(
         draft,
@@ -761,9 +736,7 @@ def test_assemble_clinical_assessment_repairs_historical_primary() -> None:
         primary_candidate_ids=["llm:324:1"],
         supporting_candidate_ids=["llm:324:2"],
         aggregation_policy="primary_with_context",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="monthly seizures in 2020"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="monthly seizures in 2020"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -775,10 +748,7 @@ def test_assemble_clinical_assessment_repairs_historical_primary() -> None:
     assert assessment is not None
     assert assessment.primary_candidate_ids == ["llm:324:2"]
     assert assessment.supporting_candidate_ids == ["llm:324:1"]
-    assert (
-        "historical_primary_replaced_with_current:llm:324:2"
-        in assessment.normalization_issues
-    )
+    assert "historical_primary_replaced_with_current:llm:324:2" in assessment.normalization_issues
 
 
 def test_assemble_clinical_assessment_repairs_frequency_count_since_month_year_anchor() -> None:
@@ -811,9 +781,7 @@ def test_assemble_clinical_assessment_repairs_frequency_count_since_month_year_a
     assert "frequency_rate_values_repaired_from_primary_candidate" in (
         assessment.normalization_issues
     )
-    assert "frequency_rate_values_repaired_from_anchor_window" in (
-        assessment.normalization_issues
-    )
+    assert "frequency_rate_values_repaired_from_anchor_window" in (assessment.normalization_issues)
 
 
 def test_assemble_clinical_assessment_repairs_frequency_since_last_event_anchor() -> None:
@@ -830,9 +798,7 @@ def test_assemble_clinical_assessment_repairs_frequency_since_last_event_anchor(
         primary_candidate_ids=["llm:15094:1"],
         aggregation_policy="single_fact",
         normalized_burden=NormalizedBurden(
-            source_normalized_phrase=(
-                "3 morning jerks since last tonic-clonic seizure in Apr 2022"
-            )
+            source_normalized_phrase=("3 morning jerks since last tonic-clonic seizure in Apr 2022")
         ),
     )
 
@@ -848,12 +814,8 @@ def test_assemble_clinical_assessment_repairs_frequency_since_last_event_anchor(
     assert assessment.normalized_burden.period_low == 13
     assert assessment.normalized_burden.period_high == 13
     assert assessment.normalized_burden.period_unit == "month"
-    assert "frequency_rate_anchor_from_last_event_phrase" in (
-        assessment.normalization_issues
-    )
-    assert "frequency_rate_values_repaired_from_anchor_window" in (
-        assessment.normalization_issues
-    )
+    assert "frequency_rate_anchor_from_last_event_phrase" in (assessment.normalization_issues)
+    assert "frequency_rate_values_repaired_from_anchor_window" in (assessment.normalization_issues)
 
 
 def test_assemble_clinical_assessment_can_disable_anchor_window_frequency_recovery() -> None:
@@ -874,9 +836,7 @@ def test_assemble_clinical_assessment_can_disable_anchor_window_frequency_recove
     assessment, errors = assessment_probe.assemble_clinical_assessment(
         draft,
         candidate_set=candidate_set,
-        disabled_ablation_switches={
-            "normalize_frequency_anchor_window_value_recovery"
-        },
+        disabled_ablation_switches={"normalize_frequency_anchor_window_value_recovery"},
     )
 
     assert errors == []
@@ -994,8 +954,7 @@ def test_assemble_clinical_assessment_recovers_multi_month_summary_from_assessme
         aggregation_policy="single_fact",
         normalized_burden=NormalizedBurden(
             source_normalized_phrase=(
-                "Three seizures recorded over six months: September, November, "
-                "and February"
+                "Three seizures recorded over six months: September, November, and February"
             )
         ),
     )
@@ -1019,8 +978,9 @@ def test_assemble_clinical_assessment_recovers_multi_month_summary_from_assessme
     )
 
 
-def test_assemble_clinical_assessment_recovers_article_month_bucket_from_assessment_phrase(
-) -> None:
+def test_assemble_clinical_assessment_recovers_article_month_bucket_from_assessment_phrase() -> (
+    None
+):
     candidate_set = _candidate_set(
         _frequency_candidate(
             "det:16833:1",
@@ -1066,14 +1026,12 @@ def test_assemble_clinical_assessment_recovers_article_month_bucket_from_assessm
 
 
 def test_multi_month_bucket_helper_keeps_current_month_zero_in_multi_month_span() -> None:
-    burden, issues, matched = (
-        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
-            (
-                "This month so far she has no seizures; earlier 4 in February, "
-                "0 in January and 7 in December"
-            ),
-            reference_date="2024-03-24",
-        )
+    burden, issues, matched = assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+        (
+            "This month so far she has no seizures; earlier 4 in February, "
+            "0 in January and 7 in December"
+        ),
+        reference_date="2024-03-24",
     )
 
     assert matched is True
@@ -1088,11 +1046,9 @@ def test_multi_month_bucket_helper_keeps_current_month_zero_in_multi_month_span(
 
 
 def test_multi_month_bucket_helper_adds_numeric_current_month_bucket() -> None:
-    burden, issues, matched = (
-        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
-            "she has had 6 seizures so far this month, 2 in august, five in july and 3 in june",
-            reference_date="2024-09-20",
-        )
+    burden, issues, matched = assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+        "she has had 6 seizures so far this month, 2 in august, five in july and 3 in june",
+        reference_date="2024-09-20",
     )
 
     assert matched is True
@@ -1107,14 +1063,9 @@ def test_multi_month_bucket_helper_adds_numeric_current_month_bucket() -> None:
 
 
 def test_multi_month_bucket_helper_counts_article_based_month_bucket_event() -> None:
-    burden, issues, matched = (
-        assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
-            (
-                "5 drop attacks in October, 2 myoclonic jerks in December, "
-                "and a prolonged event in July"
-            ),
-            reference_date="2024-12-20",
-        )
+    burden, issues, matched = assessment_probe._frequency_burden_from_multi_month_bucket_phrase(
+        ("5 drop attacks in October, 2 myoclonic jerks in December, and a prolonged event in July"),
+        reference_date="2024-12-20",
     )
 
     assert matched is True
@@ -1163,9 +1114,7 @@ def test_assemble_clinical_assessment_parses_hyphenated_clinical_term_rate() -> 
         assessment_kind="frequency_rate",
         primary_candidate_ids=["llm:2795:1"],
         aggregation_policy="single_fact",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="weekly tonic-clonic seizures"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="weekly tonic-clonic seizures"),
     )
 
     assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -1210,8 +1159,7 @@ def test_assemble_clinical_assessment_does_not_force_single_month_bucket_without
     )
 
 
-def test_assemble_clinical_assessment_can_disable_multi_month_bucket_frequency_recovery(
-) -> None:
+def test_assemble_clinical_assessment_can_disable_multi_month_bucket_frequency_recovery() -> None:
     candidate_set = _candidate_set(
         _frequency_candidate(
             "llm:16758:1",
@@ -1234,9 +1182,7 @@ def test_assemble_clinical_assessment_can_disable_multi_month_bucket_frequency_r
     assessment, errors = assessment_probe.assemble_clinical_assessment(
         draft,
         candidate_set=candidate_set,
-        disabled_ablation_switches={
-            "normalize_frequency_multi_month_bucket_value_recovery"
-        },
+        disabled_ablation_switches={"normalize_frequency_multi_month_bucket_value_recovery"},
     )
 
     assert errors == []
@@ -1249,8 +1195,9 @@ def test_assemble_clinical_assessment_can_disable_multi_month_bucket_frequency_r
     )
 
 
-def test_assemble_clinical_assessment_does_not_force_trigger_only_phrase_into_numeric_rate(
-) -> None:
+def test_assemble_clinical_assessment_does_not_force_trigger_only_phrase_into_numeric_rate() -> (
+    None
+):
     candidate_set = _candidate_set(
         _frequency_candidate(
             "llm:5974:1",
@@ -1413,9 +1360,7 @@ def _frequency_candidate(
     temporality: str = "current",
 ) -> ExtractedCandidate:
     source_row_index = int(candidate_id.split(":")[1])
-    source_type = (
-        "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
-    )
+    source_type = "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
     return ExtractedCandidate(
         candidate_id=candidate_id,
         component_owner="test",

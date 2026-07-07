@@ -15,18 +15,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
-    clinical_assessment_projection_render as projection_render,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
-    clinical_assessment_projection_score as projection_score,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
-    clinical_assessment_verification_decision as verification_decision,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
-    clinical_assessment_verification_route as verification_route,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
 )
@@ -40,6 +28,18 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_candidate_set_selector_schema_probe as selector_probe,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
+    clinical_assessment_projection_render as projection_render,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
+    clinical_assessment_projection_score as projection_score,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
+    clinical_assessment_verification_decision as verification_decision,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.stages import (
+    clinical_assessment_verification_route as verification_route,
 )
 
 PIPELINE_FAMILY = "reset_clinical_assessment_pipeline"
@@ -170,9 +170,7 @@ def summarize_pipeline_artifact(
             "input_assessment_rows": len(assessment_rows),
             "projection_rows": int(projection_summary.get("projection_rows", 0)),
             "rendered_label_rows": int(projection_summary.get("rendered_label_rows", 0)),
-            "null_rendered_label_rows": int(
-                projection_summary.get("null_rendered_label_rows", 0)
-            ),
+            "null_rendered_label_rows": int(projection_summary.get("null_rendered_label_rows", 0)),
             "scored_rows": int(score_summary.get("scored_rows", 0)),
             "purist_correct": int(score_summary.get("purist_correct", 0)),
             "routed_rows": int(route_summary.get("routed_rows", 0)),

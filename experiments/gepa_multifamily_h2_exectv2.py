@@ -141,8 +141,12 @@ def main() -> None:
             flush=True,
         )
     except Exception as exc:
-        status.update(state="failed", finished_at=_now(), error=f"{type(exc).__name__}: {exc}",
-                      traceback=traceback.format_exc()[-3000:])
+        status.update(
+            state="failed",
+            finished_at=_now(),
+            error=f"{type(exc).__name__}: {exc}",
+            traceback=traceback.format_exc()[-3000:],
+        )
         print(f"[mf-h2] FAILED {config.run_id}: {exc}", flush=True)
     _write_status(status)
 

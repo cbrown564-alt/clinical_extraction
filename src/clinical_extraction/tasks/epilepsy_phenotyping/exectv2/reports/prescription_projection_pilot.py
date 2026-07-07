@@ -16,11 +16,11 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.scoring import PRF1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.core.scoring import PRF1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
     canonicalize_medication_name,
@@ -40,9 +40,7 @@ SOURCE_FREQUENCY_RE = re.compile(
 
 
 class ProjectionScoreLine(StrEnum):
-    LLM_ONLY_MEANING_PRESERVING_PROJECTION = (
-        "llm_only_meaning_preserving_projection"
-    )
+    LLM_ONLY_MEANING_PRESERVING_PROJECTION = "llm_only_meaning_preserving_projection"
     HYBRID_RESCUE = "hybrid_rescue"
     VERIFIER_FILTERED = "verifier_filtered"
 
@@ -319,9 +317,7 @@ def _letter_from_row(row: Mapping[str, Any], key: str) -> ExectLetter:
 
 def _note_text_from_row(row: Mapping[str, Any]) -> str:
     prompt_json = str(
-        row.get("inventory_prompt_input_json")
-        or row.get("generation_prompt_input_json")
-        or ""
+        row.get("inventory_prompt_input_json") or row.get("generation_prompt_input_json") or ""
     )
     if not prompt_json:
         return ""
@@ -347,9 +343,7 @@ def _prescription_scores(
         "dose": _score_counts(components.dose),
         "frequency": _score_counts(components.frequency),
         "source_stated_frequency": _score_counts(components.source_stated_frequency),
-        "guideline_defaulted_frequency": _score_counts(
-            components.guideline_defaulted_frequency
-        ),
+        "guideline_defaulted_frequency": _score_counts(components.guideline_defaulted_frequency),
         "phrase_scope": _score_counts(projection.phrase_scope),
         "semantic_without_cui": _score_counts(projection.semantic_without_cui),
         "benchmark_with_cui": _score_counts(projection.benchmark_with_cui),
@@ -567,9 +561,7 @@ def _score_line_counts(
     score_line: ProjectionScoreLine,
 ) -> dict[str, int]:
     rule_ids = {
-        rule.rule_id
-        for rule in PRESCRIPTION_PROJECTION_RULES
-        if rule.score_line is score_line
+        rule.rule_id for rule in PRESCRIPTION_PROJECTION_RULES if rule.score_line is score_line
     }
     return {rule_id: int(counts.get(rule_id, 0)) for rule_id in sorted(rule_ids)}
 
@@ -596,9 +588,6 @@ def _examples_lines(examples: Sequence[Mapping[str, Any]]) -> list[str]:
     if not examples:
         return ["No examples observed."]
     return [
-        (
-            f"- `{example.get('letter_id', '')}` "
-            f"`{example.get('rule_id', '')}`: {example}"
-        )
+        (f"- `{example.get('letter_id', '')}` `{example.get('rule_id', '')}`: {example}")
         for example in examples
     ]

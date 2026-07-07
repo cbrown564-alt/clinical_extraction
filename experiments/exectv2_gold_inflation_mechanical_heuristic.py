@@ -119,9 +119,7 @@ def content_tokens(text: str) -> list[str]:
     return filtered if filtered else toks
 
 
-def best_orthographic_match(
-    missed_texts: list[str], candidate_texts: list[str]
-) -> dict | None:
+def best_orthographic_match(missed_texts: list[str], candidate_texts: list[str]) -> dict | None:
     """Minimum edit-distance token pair across every (missed span, candidate span) combination.
     Returns None if either side has no usable tokens at all."""
     best = None
@@ -158,7 +156,9 @@ def reason_keyword_hit(reason: str) -> bool:
 # --------------------------------------------------------------------------- #
 def sf_rows() -> list[dict]:
     adjud = list(csv.DictReader((SF_DIR / "_adjudication.csv").open(encoding="utf-8")))
-    cases = {c["case_id"]: c for c in json.loads((SF_DIR / "_cases.json").read_text(encoding="utf-8"))}
+    cases = {
+        c["case_id"]: c for c in json.loads((SF_DIR / "_cases.json").read_text(encoding="utf-8"))
+    }
     out = []
     for row in adjud:
         if row["mechanism"] != H2:
@@ -166,15 +166,17 @@ def sf_rows() -> list[dict]:
         case = cases[int(row["case_id"])]
         missed_texts = [case["gold_missed"]["text"]]
         candidate_texts = [p["text"] for p in case["pred_sf_all"]]
-        out.append({
-            "family": "SeizureFrequency",
-            "letter_id": row["letter"],
-            "row_key": row["case_id"],
-            "verdict": row["verdict"],
-            "missed_text": missed_texts[0],
-            "candidate_texts": candidate_texts,
-            "reason": row.get("reason", ""),
-        })
+        out.append(
+            {
+                "family": "SeizureFrequency",
+                "letter_id": row["letter"],
+                "row_key": row["case_id"],
+                "verdict": row["verdict"],
+                "missed_text": missed_texts[0],
+                "candidate_texts": candidate_texts,
+                "reason": row.get("reason", ""),
+            }
+        )
     return out
 
 
@@ -191,15 +193,17 @@ def rx_inv_rows(entity: str) -> list[dict]:
         case = cases[(entity, int(row["case_id"]))]
         missed_texts = [case["gold_missed"]["text"]]
         candidate_texts = [p["text"] for p in case["pred_family_all"]]
-        out.append({
-            "family": entity,
-            "letter_id": row["letter"],
-            "row_key": row["case_id"],
-            "verdict": row["verdict"],
-            "missed_text": missed_texts[0],
-            "candidate_texts": candidate_texts,
-            "reason": row.get("reason", ""),
-        })
+        out.append(
+            {
+                "family": entity,
+                "letter_id": row["letter"],
+                "row_key": row["case_id"],
+                "verdict": row["verdict"],
+                "missed_text": missed_texts[0],
+                "candidate_texts": candidate_texts,
+                "reason": row.get("reason", ""),
+            }
+        )
     return out
 
 
@@ -214,7 +218,9 @@ def dx_rows() -> list[dict]:
     gold_letters = {g.letter_id: g for g in gepa_data.load_dev_letters()}
     pred_rows = [
         json.loads(line)
-        for line in (EXPERIMENTS / f"{DX_PRED_RUN_ID}.jsonl").read_text(encoding="utf-8").splitlines()
+        for line in (EXPERIMENTS / f"{DX_PRED_RUN_ID}.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
         if line.strip()
     ]
     pred_dx_texts_by_letter: dict[str, list[str]] = {}
@@ -230,19 +236,22 @@ def dx_rows() -> list[dict]:
         letter_id, concept = row["letter_id"], row["concept"]
         gold_letter = gold_letters[letter_id]
         missed_texts = [
-            a.text for a in gold_letter.entities("Diagnosis")
+            a.text
+            for a in gold_letter.entities("Diagnosis")
             if canonicalize_diagnosis_concept(a.text) == concept
         ]
         candidate_texts = pred_dx_texts_by_letter.get(letter_id, [])
-        out.append({
-            "family": "Diagnosis",
-            "letter_id": letter_id,
-            "row_key": concept,
-            "verdict": row["adjudication_verdict"],
-            "missed_text": missed_texts[0] if missed_texts else concept,
-            "candidate_texts": candidate_texts,
-            "reason": dx_reason.get((letter_id, concept), ""),
-        })
+        out.append(
+            {
+                "family": "Diagnosis",
+                "letter_id": letter_id,
+                "row_key": concept,
+                "verdict": row["adjudication_verdict"],
+                "missed_text": missed_texts[0] if missed_texts else concept,
+                "candidate_texts": candidate_texts,
+                "reason": dx_reason.get((letter_id, concept), ""),
+            }
+        )
     return out
 
 
@@ -258,23 +267,25 @@ def main() -> None:
         sim_hit = qualifies_h3(best)
         kw_hit = reason_keyword_hit(row["reason"])
         revised_mechanism = H3 if sim_hit else H2
-        out_records.append({
-            "family": row["family"],
-            "letter_id": row["letter_id"],
-            "row_key": row["row_key"],
-            "original_mechanism": H2,
-            "verdict": row["verdict"],
-            "missed_text": row["missed_text"],
-            "best_candidate_text": best["candidate_text"] if best else "",
-            "best_missed_token": best["missed_token"] if best else "",
-            "best_candidate_token": best["candidate_token"] if best else "",
-            "edit_distance": best["distance"] if best else "",
-            "distance_ratio": f"{best['ratio']:.3f}" if best else "",
-            "text_similarity_hit": sim_hit,
-            "reason_keyword_hit": kw_hit,
-            "revised_mechanism": revised_mechanism,
-            "reason": row["reason"],
-        })
+        out_records.append(
+            {
+                "family": row["family"],
+                "letter_id": row["letter_id"],
+                "row_key": row["row_key"],
+                "original_mechanism": H2,
+                "verdict": row["verdict"],
+                "missed_text": row["missed_text"],
+                "best_candidate_text": best["candidate_text"] if best else "",
+                "best_missed_token": best["missed_token"] if best else "",
+                "best_candidate_token": best["candidate_token"] if best else "",
+                "edit_distance": best["distance"] if best else "",
+                "distance_ratio": f"{best['ratio']:.3f}" if best else "",
+                "text_similarity_hit": sim_hit,
+                "reason_keyword_hit": kw_hit,
+                "revised_mechanism": revised_mechanism,
+                "reason": row["reason"],
+            }
+        )
 
     with OUT_CSV.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(out_records[0].keys()))
@@ -292,7 +303,9 @@ def main() -> None:
         fam_rows = [r for r in out_records if r["family"] == fam]
         n_h2 = len(fam_rows)
         n_h3_sim = sum(1 for r in fam_rows if r["text_similarity_hit"])
-        n_h3_kw_only = sum(1 for r in fam_rows if r["reason_keyword_hit"] and not r["text_similarity_hit"])
+        n_h3_kw_only = sum(
+            1 for r in fam_rows if r["reason_keyword_hit"] and not r["text_similarity_hit"]
+        )
         n_residual = n_h2 - n_h3_sim
         print(f"{fam:<18}{n_h2:>6}{n_h3_sim:>10}{n_h3_kw_only:>14}{n_residual:>16}")
 
@@ -328,14 +341,18 @@ def main() -> None:
         r = rx_by_case[cid]
         hit = r["text_similarity_hit"]
         (recovered if hit else missed).append((cid, r["letter_id"], r["missed_text"]))
-        print(f"  case_id={cid:<3} letter={r['letter_id']:<8} missed={r['missed_text']!r:<28} "
-              f"best_candidate={r['best_candidate_text']!r:<20} dist={r['edit_distance']} "
-              f"ratio={r['distance_ratio']} -> {'RECOVERED' if hit else 'MISSED'}")
+        print(
+            f"  case_id={cid:<3} letter={r['letter_id']:<8} missed={r['missed_text']!r:<28} "
+            f"best_candidate={r['best_candidate_text']!r:<20} dist={r['edit_distance']} "
+            f"ratio={r['distance_ratio']} -> {'RECOVERED' if hit else 'MISSED'}"
+        )
     bg = rx_by_case[known_brand_generic_case_id]
-    print(f"  case_id={known_brand_generic_case_id} (EA0093, brand/generic, expected NOT flagged): "
-          f"missed={bg['missed_text']!r} best_candidate={bg['best_candidate_text']!r} "
-          f"dist={bg['edit_distance']} ratio={bg['distance_ratio']} -> "
-          f"{'FLAGGED (unexpected)' if bg['text_similarity_hit'] else 'not flagged (as expected)'}")
+    print(
+        f"  case_id={known_brand_generic_case_id} (EA0093, brand/generic, expected NOT flagged): "
+        f"missed={bg['missed_text']!r} best_candidate={bg['best_candidate_text']!r} "
+        f"dist={bg['edit_distance']} ratio={bg['distance_ratio']} -> "
+        f"{'FLAGGED (unexpected)' if bg['text_similarity_hit'] else 'not flagged (as expected)'}"
+    )
 
     print(f"\nRecovered {len(recovered)}/7 genuine typo cases.")
     if missed:
@@ -343,23 +360,33 @@ def main() -> None:
 
     inv_rows = [r for r in out_records if r["family"] == "Investigations"]
     inv_false_positives = [r for r in inv_rows if r["text_similarity_hit"]]
-    print(f"\nInvestigations false positives (any H2 row flagged H3; family's H2 bucket is "
-          f"100% GOLD_RIGHT per the source doc so ANY flag here is a false positive): "
-          f"{len(inv_false_positives)}/{len(inv_rows)}")
+    print(
+        f"\nInvestigations false positives (any H2 row flagged H3; family's H2 bucket is "
+        f"100% GOLD_RIGHT per the source doc so ANY flag here is a false positive): "
+        f"{len(inv_false_positives)}/{len(inv_rows)}"
+    )
     for r in inv_false_positives:
-        print(f"  letter={r['letter_id']} missed={r['missed_text']!r} "
-              f"best_candidate={r['best_candidate_text']!r} dist={r['edit_distance']} "
-              f"ratio={r['distance_ratio']} verdict={r['verdict']}")
+        print(
+            f"  letter={r['letter_id']} missed={r['missed_text']!r} "
+            f"best_candidate={r['best_candidate_text']!r} dist={r['edit_distance']} "
+            f"ratio={r['distance_ratio']} verdict={r['verdict']}"
+        )
 
     # Secondary due-diligence: flags landing on GOLD_RIGHT-verdict rows in any family
     # (SF, Diagnosis, Prescription itself) are also mechanical-heuristic false positives,
     # since GOLD_RIGHT means the adjudicator already ruled the miss genuine.
-    print("\n=== SECONDARY FALSE-POSITIVE CHECK: flags on GOLD_RIGHT-verdict rows, all families ===")
-    gold_right_fp = [r for r in out_records if r["text_similarity_hit"] and r["verdict"] == "GOLD_RIGHT"]
+    print(
+        "\n=== SECONDARY FALSE-POSITIVE CHECK: flags on GOLD_RIGHT-verdict rows, all families ==="
+    )
+    gold_right_fp = [
+        r for r in out_records if r["text_similarity_hit"] and r["verdict"] == "GOLD_RIGHT"
+    ]
     print(f"Total: {len(gold_right_fp)}")
     for r in gold_right_fp:
-        print(f"  family={r['family']:<16} letter={r['letter_id']:<8} missed={r['missed_text']!r:<28} "
-              f"best_candidate={r['best_candidate_text']!r:<20} dist={r['edit_distance']} ratio={r['distance_ratio']}")
+        print(
+            f"  family={r['family']:<16} letter={r['letter_id']:<8} missed={r['missed_text']!r:<28} "
+            f"best_candidate={r['best_candidate_text']!r:<20} dist={r['edit_distance']} ratio={r['distance_ratio']}"
+        )
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ single_greedy and single_agent_tools_react on 5 dev letters, scores each
 via the production score_frequency_state, and reports call/parse failures
 and tool-use behavior.
 """
+
 from __future__ import annotations
 
 import json
@@ -42,7 +43,9 @@ SPEC = ENTITY_REGISTRY[SEIZURE_FREQUENCY.name]
 
 
 def score_extraction(letter, raw_output: str) -> tuple[float | None, list[str]]:
-    extraction, parse_errors = parse_extraction_json(raw_output) if raw_output else (None, ["not_run"])
+    extraction, parse_errors = (
+        parse_extraction_json(raw_output) if raw_output else (None, ["not_run"])
+    )
     if extraction is None:
         return None, parse_errors
     predicted_letter, warnings = to_predicted_letter(
@@ -90,12 +93,20 @@ def main() -> None:
         if f1 is None:
             parse_failures += 1
         print(
-            f"{letter.letter_id}: f1={f1} turns={n_turns} tools_used={tools_used} "
-            f"notes={notes[:2]}"
+            f"{letter.letter_id}: f1={f1} turns={n_turns} tools_used={tools_used} notes={notes[:2]}"
         )
 
     print("\n" + "=" * 70)
-    print(json.dumps({"rows": len(letters), "call_failures": call_failures, "parse_failures": parse_failures}, indent=2))
+    print(
+        json.dumps(
+            {
+                "rows": len(letters),
+                "call_failures": call_failures,
+                "parse_failures": parse_failures,
+            },
+            indent=2,
+        )
+    )
     if call_failures or parse_failures:
         raise SystemExit("Smoke test found call or parse failures.")
     print("Smoke test passed cleanly.")

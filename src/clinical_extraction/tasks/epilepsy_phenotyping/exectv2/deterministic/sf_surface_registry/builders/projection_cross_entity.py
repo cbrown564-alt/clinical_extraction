@@ -8,7 +8,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
     CONTROLLED_ON_DOSE,
     EVERY_N_TO_M_PERIODS,
@@ -21,8 +20,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import local_evidence_context, period_to_canonical
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import MentionLike
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import (
+    local_evidence_context,
+    period_to_canonical,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import (
+    MentionLike,
+)
+
 
 def project_dropped_sf_to_diagnosis(
     text: str,
@@ -50,6 +55,7 @@ def project_dropped_sf_to_diagnosis(
         component_owner=component_owner,
     )
 
+
 def project_empty_sf_candidate_to_diagnosis(
     mention: MentionLike,
 ) -> MentionLike | None:
@@ -71,6 +77,7 @@ def project_empty_sf_candidate_to_diagnosis(
             },
         }
     )
+
 
 def project_diagnosis_frequency_header_to_sf(
     mention: PredictedMention,
@@ -104,6 +111,7 @@ def project_diagnosis_frequency_header_to_sf(
             },
         }
     )
+
 
 def project_focal_diagnosis_context_to_sf(
     mention: PredictedMention,
@@ -156,6 +164,7 @@ def project_focal_diagnosis_context_to_sf(
         }
     )
 
+
 def project_sf_context_to_focal_diagnosis(
     mention: PredictedMention,
     note_text: str,
@@ -205,6 +214,7 @@ def project_sf_context_to_focal_diagnosis(
         }
     )
 
+
 def project_controlled_context_to_infrequent_state(
     mention: PredictedMention,
     note_text: str,
@@ -228,6 +238,7 @@ def project_controlled_context_to_infrequent_state(
         }
     )
 
+
 def project_returned_context_to_increased_state(
     mention: PredictedMention,
     note_text: str,
@@ -249,6 +260,7 @@ def project_returned_context_to_increased_state(
             },
         }
     )
+
 
 def project_infrequent_context_state(
     mention: PredictedMention,
@@ -272,6 +284,7 @@ def project_infrequent_context_state(
         }
     )
 
+
 def project_diagnosis_context_to_sf_states(
     mention: PredictedMention,
     note_text: str,
@@ -286,10 +299,7 @@ def project_diagnosis_context_to_sf_states(
     normalized_text = normalize_phrase(mention.text)
     states: list[PredictedMention] = []
     warnings: list[str] = []
-    if (
-        normalized_text == "focal epilepsy"
-        and REMOTE_LAST_SEIZURES_IN_TEENS.search(context)
-    ):
+    if normalized_text == "focal epilepsy" and REMOTE_LAST_SEIZURES_IN_TEENS.search(context):
         family = "projected_diagnosis_context_to_remote_last_seizures_state"
         if is_projection_family_enabled(family, projection_family_switches):
             states.append(
@@ -304,10 +314,7 @@ def project_diagnosis_context_to_sf_states(
                             "AgeUpper": "19",
                             "AgeUnit": "Year",
                         },
-                        "evidence": (
-                            remote_last_seizures_evidence(note_text)
-                            or mention.evidence
-                        ),
+                        "evidence": (remote_last_seizures_evidence(note_text) or mention.evidence),
                     }
                 )
             )
@@ -375,6 +382,7 @@ def project_diagnosis_context_to_sf_states(
             warnings.append(quarantined_projection_family_warning(family))
     return states, list(dict.fromkeys(warnings))
 
+
 def remote_last_seizures_evidence(note_text: str) -> str | None:
     match = re.search(
         r"\bHis\s+last\s+seizures\s+were\s+in\s+his\s+teenage\s+years\b",
@@ -382,6 +390,7 @@ def remote_last_seizures_evidence(note_text: str) -> str | None:
         re.IGNORECASE,
     )
     return match.group(0) if match else None
+
 
 def controlled_focal_seizures_evidence(note_text: str) -> str | None:
     match = re.search(
@@ -391,6 +400,7 @@ def controlled_focal_seizures_evidence(note_text: str) -> str | None:
     )
     return match.group(0) if match else None
 
+
 def frequent_myoclonic_jerks_evidence(note_text: str) -> str | None:
     match = re.search(
         r"\bvery\s+frequent\s+myoclonic\s+jerks\b",
@@ -398,6 +408,7 @@ def frequent_myoclonic_jerks_evidence(note_text: str) -> str | None:
         re.IGNORECASE,
     )
     return match.group(0) if match else None
+
 
 def project_context_parent_epilepsy(
     mention: PredictedMention,
@@ -422,6 +433,7 @@ def project_context_parent_epilepsy(
             "evidence": match.group(0),
         }
     )
+
 
 def project_diagnosis_header_parent_epilepsy(
     mention: PredictedMention,
@@ -454,6 +466,7 @@ def project_diagnosis_header_parent_epilepsy(
             "evidence": evidence,
         }
     )
+
 
 def project_dated_diagnosis_context_to_sf(
     mention: PredictedMention,

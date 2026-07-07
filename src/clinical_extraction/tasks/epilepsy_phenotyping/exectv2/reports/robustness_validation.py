@@ -22,8 +22,7 @@ from . import validation_audit_scaffold as scaffold
 
 REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_robustness_validation_audit_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_robustness_validation_audit_2026-06-25.md"
 )
 
 _FULL200_ARTIFACT: dict[str, str] = {
@@ -89,9 +88,7 @@ def build_robustness_validation_audit(
                 "exectv2_robustness_panels_preflight_2026-06-25.md"
             ),
             "preflight_split": preflight["split"],
-            "preflight_minimum_coverage_met": preflight["panel_coverage"][
-                "minimum_coverage_met"
-            ],
+            "preflight_minimum_coverage_met": preflight["panel_coverage"]["minimum_coverage_met"],
             "preflight_by_perturbation_family": preflight["panel_coverage"][
                 "by_perturbation_family"
             ],
@@ -135,34 +132,28 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
     lines = scaffold.render_preflight_section(
         audit,
         title="# ExECTv2 Robustness Validation Audit",
-        status_line=(
-            "Status: aggregate-only robustness validation and stop-rule readout."
-        ),
+        status_line=("Status: aggregate-only robustness validation and stop-rule readout."),
     )
     lines.extend(
         [
-        "",
-        "## Frozen Robustness Candidate",
-        "",
-        f"- Candidate: `{candidate['candidate']}`",
-        f"- Taxonomy source: `{candidate['taxonomy_source']}`",
-        f"- Preflight split: `{candidate['preflight_split']}`",
-        (
-            "- Preflight minimum coverage met: "
-            f"`{candidate['preflight_minimum_coverage_met']}`"
-        ),
-        f"- Full-200 tagging policy: {candidate['full200_tagging_policy']}",
-        "",
-        "### Preflight Taxonomy Coverage",
-        "",
-        "| Perturbation family | Fixture count |",
-        "| --- | ---: |",
+            "",
+            "## Frozen Robustness Candidate",
+            "",
+            f"- Candidate: `{candidate['candidate']}`",
+            f"- Taxonomy source: `{candidate['taxonomy_source']}`",
+            f"- Preflight split: `{candidate['preflight_split']}`",
+            (f"- Preflight minimum coverage met: `{candidate['preflight_minimum_coverage_met']}`"),
+            f"- Full-200 tagging policy: {candidate['full200_tagging_policy']}",
+            "",
+            "### Preflight Taxonomy Coverage",
+            "",
+            "| Perturbation family | Fixture count |",
+            "| --- | ---: |",
         ]
     )
     for family in robustness_panels.MINIMUM_PERTURBATION_FAMILIES:
         lines.append(
-            f"| `{family}` | "
-            f"{candidate['preflight_by_perturbation_family'].get(family, 0)} |"
+            f"| `{family}` | {candidate['preflight_by_perturbation_family'].get(family, 0)} |"
         )
 
     lines.extend(scaffold.render_artifact_inventory_section(audit["artifact_inventory"]))
@@ -188,14 +179,8 @@ def render_markdown(audit: Mapping[str, Any]) -> str:
                     "- Hard-slice delta vs overall: "
                     f"{validation['hard_slice_delta_vs_overall']['f1']:.4f}"
                 ),
-                (
-                    "- Schema validity: "
-                    f"{validation['schema_validity_rate']:.4f}"
-                ),
-                (
-                    "- Evidence validity: "
-                    f"{validation['evidence_validity_rate']:.4f}"
-                ),
+                (f"- Schema validity: {validation['schema_validity_rate']:.4f}"),
+                (f"- Evidence validity: {validation['evidence_validity_rate']:.4f}"),
                 f"- Call failures: {validation['call_failures']}",
                 f"- Parse/schema failures: {validation['parse_schema_failures']}",
                 "",
@@ -265,10 +250,7 @@ def _validation_readout(repo_root: Path, artifact: Mapping[str, Any]) -> dict[st
     hard_slice_overall = _aggregate_cell_scores(hard_slice_cells)
     non_hard_slice_overall = _aggregate_cell_scores(non_hard_slice_cells)
     validity = _validity_summary(rows)
-    by_family = [
-        _family_validation_row(family, cells)
-        for family in reliability.FAMILIES
-    ]
+    by_family = [_family_validation_row(family, cells) for family in reliability.FAMILIES]
     return {
         "artifact_path": artifact["path"],
         "rows": len(rows),
@@ -329,10 +311,9 @@ def _perturbation_tags(
         if bool(features.get("result_state")) or _INVESTIGATION_RESULT_RE.search(text):
             tags.append("investigations_result_state")
     elif family == "Diagnosis":
-        if (
-            int(features.get("deterministic_action_count") or 0) > 0
-            or _DIAGNOSIS_ASSERTION_RE.search(text)
-        ):
+        if int(
+            features.get("deterministic_action_count") or 0
+        ) > 0 or _DIAGNOSIS_ASSERTION_RE.search(text):
             tags.append("diagnosis_assertion_hierarchy")
 
     predicted = _family_mentions(row, family, field="predicted_mentions")
@@ -365,9 +346,7 @@ def _family_mentions(
     field: str,
 ) -> list[dict[str, Any]]:
     return [
-        dict(mention)
-        for mention in row.get(field, [])
-        if str(mention.get("entity", "")) == family
+        dict(mention) for mention in row.get(field, []) if str(mention.get("entity", "")) == family
     ]
 
 
@@ -419,11 +398,7 @@ def _perturbation_family_row(
     cells: Sequence[Mapping[str, Any]],
     overall: Mapping[str, Any],
 ) -> dict[str, Any]:
-    family_cells = [
-        cell
-        for cell in cells
-        if perturbation_family in cell["perturbation_families"]
-    ]
+    family_cells = [cell for cell in cells if perturbation_family in cell["perturbation_families"]]
     score = _aggregate_cell_scores(family_cells)
     return {
         "perturbation_family": perturbation_family,
@@ -457,10 +432,7 @@ def _cell_validity_rates(cells: Sequence[Mapping[str, Any]]) -> dict[str, float 
             "evidence_validity_rate": None,
         }
     parse_failures = sum(int(cell["parse_schema_failures"]) for cell in cells)
-    mentions = sum(
-        int(cell["mention_validity"]["predicted_mentions"])
-        for cell in cells
-    )
+    mentions = sum(int(cell["mention_validity"]["predicted_mentions"]) for cell in cells)
     evidence_issues = sum(
         int(cell["mention_validity"]["evidence_invalid_mentions"])
         + int(cell["mention_validity"]["evidence_empty_mentions"])
@@ -490,7 +462,9 @@ def _promotion_gates(
 ) -> list[dict[str, str]]:
     if validation is None:
         return [
-            scaffold.gate("Frozen panel run completed once", "not_evaluable", "No eligible artifact."),
+            scaffold.gate(
+                "Frozen panel run completed once", "not_evaluable", "No eligible artifact."
+            ),
             scaffold.gate(
                 "Minimum perturbation taxonomy covered",
                 "not_evaluable",

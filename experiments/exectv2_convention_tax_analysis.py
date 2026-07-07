@@ -65,11 +65,15 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
-def _headline_prf(gold: list[ExectLetter], pred: list[ExectLetter]) -> dict[str, tuple[float, float, float]]:
+def _headline_prf(
+    gold: list[ExectLetter], pred: list[ExectLetter]
+) -> dict[str, tuple[float, float, float]]:
     """Per-family canonical-key headline P/R/F1 (Dx=concept_negation)."""
 
     dx = score_concept_identity(gold, pred, "Diagnosis").concept_negation
@@ -77,12 +81,19 @@ def _headline_prf(gold: list[ExectLetter], pred: list[ExectLetter]) -> dict[str,
     rx = score_prescription_components(gold, pred).clinical_headline
     inv = score_investigations_components(gold, pred).clinical_headline
     out = {}
-    for name, s in (("Diagnosis", dx), ("SeizureFrequency", sf), ("Prescription", rx), ("Investigations", inv)):
+    for name, s in (
+        ("Diagnosis", dx),
+        ("SeizureFrequency", sf),
+        ("Prescription", rx),
+        ("Investigations", inv),
+    ):
         out[name] = (s.precision, s.recall, s.f1)
     return out
 
 
-def _fn_breakdown(gold: list[ExectLetter], pred: list[ExectLetter], entity: str, key_fn) -> dict[str, int]:
+def _fn_breakdown(
+    gold: list[ExectLetter], pred: list[ExectLetter], entity: str, key_fn
+) -> dict[str, int]:
     """Of an entity's headline-FN gold units, how many have an overlapping pred span?
 
     convention-miss = the model emitted a same-entity mention whose normalized phrase
@@ -160,7 +171,9 @@ def _diagnosis_cui_headroom(gold: list[ExectLetter], pred: list[ExectLetter]) ->
         pred_cui_cov += sum(1 for s in pred_sigs if s[2])
 
         # canonical-text-only multiset match
-        text_counts[0] += _multiset_tp([(s[0], s[1]) for s in gold_sigs], [(s[0], s[1]) for s in pred_sigs])
+        text_counts[0] += _multiset_tp(
+            [(s[0], s[1]) for s in gold_sigs], [(s[0], s[1]) for s in pred_sigs]
+        )
         text_counts[1] += len(pred_sigs)
         text_counts[2] += len(gold_sigs)
         # CUI-only (mentions with a CUI on both sides)
@@ -187,13 +200,21 @@ def _diagnosis_cui_headroom(gold: list[ExectLetter], pred: list[ExectLetter]) ->
         union_counts[2] += len(gold_sigs)
 
     print("## Diagnosis CUI headroom (mention-level, no split — isolates the normalizer)")
-    print(f"  pred Dx CUI coverage: {pred_cui_cov}/{pred_total} "
-          f"({100 * pred_cui_cov / pred_total:.0f}%)")
+    print(
+        f"  pred Dx CUI coverage: {pred_cui_cov}/{pred_total} "
+        f"({100 * pred_cui_cov / pred_total:.0f}%)"
+    )
     print(f"  {'key':<16}{'P':>7}{'R':>7}{'F1':>7}")
-    for name, c in (("canonical_text", text_counts), ("cui_only", cui_counts), ("union(alias+CUI)", union_counts)):
+    for name, c in (
+        ("canonical_text", text_counts),
+        ("cui_only", cui_counts),
+        ("union(alias+CUI)", union_counts),
+    ):
         p, r, f = _f1(c[0], c[1], c[2])
         print(f"  {name:<16}{p:>7.3f}{r:>7.3f}{f:>7.3f}")
-    print("  (union = realistic alias+CUI normalizer ceiling; cui_only denom = mentions WITH a CUI)\n")
+    print(
+        "  (union = realistic alias+CUI normalizer ceiling; cui_only denom = mentions WITH a CUI)\n"
+    )
 
 
 def main() -> None:
@@ -203,7 +224,9 @@ def main() -> None:
 
     gold = gepa_data.load_dev_letters()
     pred_by_id = _pred_letters(args.run)
-    pred = [pred_by_id.get(g.letter_id, ExectLetter(letter_id=g.letter_id, note_text="")) for g in gold]
+    pred = [
+        pred_by_id.get(g.letter_id, ExectLetter(letter_id=g.letter_id, note_text="")) for g in gold
+    ]
 
     headline = _headline_prf(gold, pred)
     source_near = source_near_diagnostic(gold, pred, ENTITIES, semantic_config_for).per_entity
@@ -235,7 +258,9 @@ def main() -> None:
     )
 
     breakdowns = {
-        "Diagnosis": _fn_breakdown(gold, pred, "Diagnosis", lambda a: concept_keys(a, "Diagnosis", "negation")),
+        "Diagnosis": _fn_breakdown(
+            gold, pred, "Diagnosis", lambda a: concept_keys(a, "Diagnosis", "negation")
+        ),
         "SeizureFrequency": _fn_breakdown(
             gold, pred, "SeizureFrequency", lambda a: frequency_state_keys(a, "clinical_headline")
         ),
@@ -245,8 +270,10 @@ def main() -> None:
         if not b["total_fn"]:
             continue
         conv_pct = 100 * b["convention_miss"] / b["total_fn"]
-        print(f"  {entity:<16} FNs={b['total_fn']:>3}  convention-miss={b['convention_miss']:>3} "
-              f"({conv_pct:.0f}%)  genuine-recall-miss={b['recall_miss']:>3} ({100 - conv_pct:.0f}%)")
+        print(
+            f"  {entity:<16} FNs={b['total_fn']:>3}  convention-miss={b['convention_miss']:>3} "
+            f"({conv_pct:.0f}%)  genuine-recall-miss={b['recall_miss']:>3} ({100 - conv_pct:.0f}%)"
+        )
     print()
     _diagnosis_cui_headroom(gold, pred)
     _normalized_rescore(gold, pred)
@@ -265,7 +292,9 @@ def _normalized_rescore(gold: list[ExectLetter], pred: list[ExectLetter]) -> Non
         InSampleConceptNormalizer,
         normalize_letter,
     )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.run_gepa import _canonical_headline
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.run_gepa import (
+        _canonical_headline,
+    )
 
     normalizer = InSampleConceptNormalizer.from_gold(gold)
     pred_norm = [normalize_letter(p, normalizer) for p in pred]
@@ -282,8 +311,10 @@ def _normalized_rescore(gold: list[ExectLetter], pred: list[ExectLetter]) -> Non
         b = before["per_family"][fam]
         a = after["per_family"][fam]
         print(f"  {fam:<16}{b:>9.3f}{a:>9.3f}{a - b:>+9.3f}")
-    print(f"  precision      before {before['precision']:.3f} -> after {after['precision']:.3f}; "
-          f"recall before {before['recall']:.3f} -> after {after['recall']:.3f}")
+    print(
+        f"  precision      before {before['precision']:.3f} -> after {after['precision']:.3f}; "
+        f"recall before {before['recall']:.3f} -> after {after['recall']:.3f}"
+    )
     print("  (ceiling vs v08 hybrid 0.9155; the gap that remains is genuine clinical recall)")
 
 

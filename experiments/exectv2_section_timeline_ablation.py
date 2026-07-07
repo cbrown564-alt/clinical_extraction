@@ -22,6 +22,7 @@ Stages, run via --stage:
            --confirm-live-spend. Runs the "with timeline" arm fresh and
            writes a baseline-vs-with-timeline result JSON.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -76,8 +77,12 @@ BASE_MANIFEST_PATH = Path(
 )
 SF_BASELINE_PRODUCER_ID = "sf_union_arbitration_v08"
 INV_BASELINE_PRODUCER_ID = "investigations_arbitration_v02"
-SF_BASELINE_JSONL = Path("experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl")
-INV_BASELINE_JSONL = Path("experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl")
+SF_BASELINE_JSONL = Path(
+    "experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
+)
+INV_BASELINE_JSONL = Path(
+    "experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl"
+)
 
 OUT_DIR = Path("experiments")
 RUN_TAG = "exectv2_section_timeline_ablation_dev140"
@@ -193,9 +198,7 @@ def smoke_test(letters: list[ExectLetter], n: int = 8) -> None:
     print("\nSmoke test passed. Safe to proceed to --stage live with --confirm-live-spend.")
 
 
-def run_sf_with_timeline(
-    letters: list[ExectLetter], timeline_by_letter: dict[str, str]
-) -> Path:
+def run_sf_with_timeline(letters: list[ExectLetter], timeline_by_letter: dict[str, str]) -> Path:
     baseline_rows = load_baseline_rows(SF_BASELINE_JSONL)
     draft_rows = draft_rows_from_baseline(baseline_rows, SEIZURE_FREQUENCY.name)
 
@@ -241,9 +244,7 @@ def run_sf_with_timeline(
     return union_jsonl
 
 
-def run_inv_with_timeline(
-    letters: list[ExectLetter], timeline_by_letter: dict[str, str]
-) -> Path:
+def run_inv_with_timeline(letters: list[ExectLetter], timeline_by_letter: dict[str, str]) -> Path:
     baseline_rows = load_baseline_rows(INV_BASELINE_JSONL)
     draft_rows = draft_rows_from_baseline(baseline_rows, INVESTIGATIONS.name)
 

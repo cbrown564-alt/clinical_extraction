@@ -1,5 +1,4 @@
 from dataclasses import replace
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
@@ -8,6 +7,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     INVESTIGATIONS,
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -28,7 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     frequency_state_faithful,
     headline_duplicate_tags,
     match_key,
-        score_concept_identity,
+    score_concept_identity,
     score_entity,
     score_frequency_state,
     score_investigations_components,
@@ -45,8 +45,7 @@ def _ann(entity: str, text: str, **attrs: str) -> ExectAnnotation:
 
 def test_normalize_phrase_strips_hyphens_quotes_and_case() -> None:
     assert (
-        normalize_phrase("generalised-tonic-clonic-seizures")
-        == "generalised tonic clonic seizures"
+        normalize_phrase("generalised-tonic-clonic-seizures") == "generalised tonic clonic seizures"
     )
     assert normalize_phrase("“absence-like”-episodes") == "absence like episodes"
 
@@ -1442,8 +1441,8 @@ def test_wrong_attribute_breaks_full_feature_match_but_not_phrase_match() -> Non
         for letter in letters
     ]
 
-    strict = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name,PHRASE_AND_FEATURES)
-    lenient = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name,PHRASE_ONLY)
+    strict = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name, PHRASE_AND_FEATURES)
+    lenient = score_entity(letters, perturbed, SEIZURE_FREQUENCY.name, PHRASE_ONLY)
     assert strict.per_item.fp == 1
     assert strict.per_item.fn == 1
     assert lenient.per_item.f1 == 1.0
@@ -1569,7 +1568,9 @@ def test_concepts_hierarchically_related_only_true_ancestor_descendant() -> None
     assert concepts_hierarchically_related("epilepsy", "epilepsy")
     # ...siblings and unrelated concepts are NOT (the kill-criterion guarantee).
     assert not concepts_hierarchically_related("focal epilepsy", "generalised epilepsy")
-    assert not concepts_hierarchically_related("temporal lobe epilepsy", "juvenile myoclonic epilepsy")
+    assert not concepts_hierarchically_related(
+        "temporal lobe epilepsy", "juvenile myoclonic epilepsy"
+    )
 
 
 def test_diagnosis_headline_credits_gold_parent_when_pred_emits_descendant() -> None:

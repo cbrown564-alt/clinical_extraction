@@ -62,12 +62,10 @@ def test_frozen_test_readout_rejects_row_level_report(
 
     assert readout.ok is False
     assert any(
-        "report exposes row-level marker: ## Rows" in failure
-        for failure in readout.failures
+        "report exposes row-level marker: ## Rows" in failure for failure in readout.failures
     )
     assert any(
-        "report exposes row-level marker: | Row |" in failure
-        for failure in readout.failures
+        "report exposes row-level marker: | Row |" in failure for failure in readout.failures
     )
 
 

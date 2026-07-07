@@ -49,9 +49,7 @@ def project_graph_to_gan(
         )
 
     if _should_emit_competing_uncertainty(selected_nodes, policy):
-        rationale = (
-            "Preserved uncertainty because competing current frequency hypotheses remain."
-        )
+        rationale = "Preserved uncertainty because competing current frequency hypotheses remain."
         return _projection_from_label(
             "unknown",
             selected_nodes=selected_nodes,
@@ -196,17 +194,15 @@ def _acd_projection_rationale(node: StateGraphNode) -> str | None:
 
 def _is_major_recent_relapse(node: StateGraphNode) -> bool:
     evidence = node.evidence.text.lower()
-    return (
-        ("yesterday" in evidence or "today" in evidence)
-        and any(term in evidence for term in ("tonic-clonic", "convulsive", "generalised"))
+    return ("yesterday" in evidence or "today" in evidence) and any(
+        term in evidence for term in ("tonic-clonic", "convulsive", "generalised")
     )
 
 
 def _has_vague_count_with_denominator(node: StateGraphNode) -> bool:
     evidence = node.evidence.text.lower()
     return any(
-        token in evidence
-        for token in ("several", "frequent", "many", "handful", "a few", "few")
+        token in evidence for token in ("several", "frequent", "many", "handful", "a few", "few")
     ) and any(
         denominator in evidence
         for denominator in ("last week", "per week", "weekly", "last month", "per month", "monthly")

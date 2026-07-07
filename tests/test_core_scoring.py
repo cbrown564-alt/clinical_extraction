@@ -44,7 +44,5 @@ def test_multiset_prf1_counts_missing_and_spurious() -> None:
 
 
 def test_sum_prf1_micro_averages() -> None:
-    total = sum_prf1(
-        [prf1_from_counts(2, 1, 0), prf1_from_counts(1, 0, 3)]
-    )
+    total = sum_prf1([prf1_from_counts(2, 1, 0), prf1_from_counts(1, 0, 3)])
     assert (total.tp, total.fp, total.fn) == (3, 1, 3)

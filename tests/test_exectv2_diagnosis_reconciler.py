@@ -59,9 +59,7 @@ def test_build_prompt_input_carries_two_candidate_sources_and_rules() -> None:
         "generic_epilepsy",
         "focal_epilepsy_family",
     }
-    focal_group = next(
-        group for group in groups if group["group_id"] == "focal_epilepsy_family"
-    )
+    focal_group = next(group for group in groups if group["group_id"] == "focal_epilepsy_family")
     assert focal_group["decision_question"] == (
         "Which focal-family Diagnosis concepts are directly asserted?"
     )

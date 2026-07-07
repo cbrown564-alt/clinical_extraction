@@ -260,9 +260,7 @@ def _summarize_slice(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "rows": len(rows),
         "selected_purist_correct": sum(_purist_correct(row, "selected") for row in rows),
         "selected_pragmatic_correct": sum(_pragmatic_correct(row, "selected") for row in rows),
-        "deterministic_purist_correct": sum(
-            _purist_correct(row, "deterministic") for row in rows
-        ),
+        "deterministic_purist_correct": sum(_purist_correct(row, "deterministic") for row in rows),
         "deterministic_pragmatic_correct": sum(
             _pragmatic_correct(row, "deterministic") for row in rows
         ),

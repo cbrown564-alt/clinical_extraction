@@ -24,10 +24,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_ent
 )
 from tests.helpers.prompt_hygiene import FORBIDDEN_PHRASES
 
-_NOTE = (
-    "She has focal epilepsy. Her EEG was abnormal. "
-    "She has 2 focal seizures per month."
-)
+_NOTE = "She has focal epilepsy. Her EEG was abnormal. She has 2 focal seizures per month."
 _LETTER = ExectLetter(letter_id="TEST001", note_text=_NOTE)
 
 
@@ -46,18 +43,20 @@ def test_all_entities_prompt_hygiene_and_registry_vocab() -> None:
 
 
 def test_all_entities_parse_keeps_entity_and_coerces_attribute_values() -> None:
-    raw = json.dumps({
-        "mentions": [
-            {
-                "entity": DIAGNOSIS.name,
-                "text": "focal epilepsy",
-                "attributes": {"DiagCategory": "Epilepsy", "Certainty": 5},
-                "evidence": "focal epilepsy",
-                "confidence": "high",
-                "rationale": "Direct diagnosis.",
-            }
-        ]
-    })
+    raw = json.dumps(
+        {
+            "mentions": [
+                {
+                    "entity": DIAGNOSIS.name,
+                    "text": "focal epilepsy",
+                    "attributes": {"DiagCategory": "Epilepsy", "Certainty": 5},
+                    "evidence": "focal epilepsy",
+                    "confidence": "high",
+                    "rationale": "Direct diagnosis.",
+                }
+            ]
+        }
+    )
     record, errors = parse_extraction_json(raw)
 
     assert record is not None
@@ -109,8 +108,7 @@ def test_to_predicted_letter_repairs_attributes_per_mentions_entity() -> None:
     assert letter.diagnostics["cui_projected_mentions"] == 2
     assert any("Diagnosis: dropped_illegal_attribute" in warning for warning in warnings)
     assert not any(
-        "DiagCategory" in warning and "SeizureFrequency" in warning
-        for warning in warnings
+        "DiagCategory" in warning and "SeizureFrequency" in warning for warning in warnings
     )
 
 

@@ -166,9 +166,7 @@ def has_seizure_free_proxy_evidence_overreach(
         for candidate in primary_candidates
     ]
     explicit = any(is_explicit_seizure_free_text(text) for text in texts)
-    proxy_or_conditional = any(
-        is_seizure_free_proxy_or_conditional_text(text) for text in texts
-    )
+    proxy_or_conditional = any(is_seizure_free_proxy_or_conditional_text(text) for text in texts)
     unresolved = any(
         any("unresolved" in source_id for source_id in candidate.source_ids)
         for candidate in primary_candidates
@@ -236,9 +234,7 @@ def dominant_vague_current_burden_label(
         text = canonicalize_derivation_text(text)
         if not text or is_medication_cadence_text(text):
             continue
-        label = selected_evidence_derivation.prediction_label_from_selected_evidence(
-            text
-        )
+        label = selected_evidence_derivation.prediction_label_from_selected_evidence(text)
         if label in {None, "unknown", "no seizure frequency reference"}:
             continue
         try:
@@ -264,9 +260,7 @@ def dominant_vague_current_burden_label(
     if not vague or len(derived) < 2:
         return None
     dominant_label, dominant_frequency, _ = max(vague, key=lambda item: item[1])
-    context_frequencies = [
-        frequency for label, frequency, _ in derived if label != dominant_label
-    ]
+    context_frequencies = [frequency for label, frequency, _ in derived if label != dominant_label]
     if not context_frequencies:
         return None
     if all(frequency < dominant_frequency for frequency in context_frequencies):

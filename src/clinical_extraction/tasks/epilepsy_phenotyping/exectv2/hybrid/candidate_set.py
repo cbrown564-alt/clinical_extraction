@@ -12,6 +12,7 @@ An optional LLM candidate extractor can be unioned in for recall the rules miss
 (``llm_candidates`` argument); the deterministic candidates always anchor the
 set so every dev letter gets a real candidate set.
 """
+
 from __future__ import annotations
 
 import re

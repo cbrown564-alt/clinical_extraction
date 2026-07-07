@@ -14,14 +14,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -37,8 +37,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
 RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_5_"
-    "boundary_rescue_synthetic_stress_2026-06-15"
+    "gan2026_consensus_fresh_agreement_selector_v0_5_boundary_rescue_synthetic_stress_2026-06-15"
 )
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
 MD_PATH = EXPERIMENTS / f"{RUN_ID}.md"
@@ -82,8 +81,7 @@ CASES: tuple[BoundaryRescueCase, ...] = (
         desired_future_action="accept_fresh_boundary_rescue",
         risk_type="intended_positive",
         rationale=(
-            "Last-event-only evidence should not be converted into a "
-            "seizure-free duration."
+            "Last-event-only evidence should not be converted into a seizure-free duration."
         ),
     ),
     BoundaryRescueCase(
@@ -196,9 +194,7 @@ CASES: tuple[BoundaryRescueCase, ...] = (
         expected_v05_action="accept_fresh_boundary_rescue",
         desired_future_action="keep_deterministic_baseline",
         risk_type="current_rule_false_positive",
-        rationale=(
-            "A valid zero-event interval should not be demoted to no-reference."
-        ),
+        rationale=("A valid zero-event interval should not be demoted to no-reference."),
     ),
     BoundaryRescueCase(
         case_id="valid_no_reference_false_seizure_free",
@@ -264,8 +260,7 @@ CASES: tuple[BoundaryRescueCase, ...] = (
         case_id="unknown_last_event_specific_rate_blocked",
         family="unknown_origin_safety",
         note_text=(
-            "The note gives a last seizure date but does not give a count over "
-            "a defined period."
+            "The note gives a last seizure date but does not give a count over a defined period."
         ),
         gold_label="unknown",
         deterministic_label="unknown",
@@ -281,8 +276,7 @@ CASES: tuple[BoundaryRescueCase, ...] = (
         case_id="cluster_cadence_demote_still_blocked",
         family="v04_regression_guard",
         note_text=(
-            "Diary describes three clusters per month, with multiple seizures "
-            "in each cluster."
+            "Diary describes three clusters per month, with multiple seizures in each cluster."
         ),
         gold_label="3 cluster per month, multiple per cluster",
         deterministic_label="3 cluster per month, multiple per cluster",
@@ -382,12 +376,8 @@ def main() -> None:
         source_row_index = 910000 + offset
         row = dict(by_index[source_row_index])
         row["synthetic_case"] = _case_record(case)
-        row["expected_v05_action_match"] = (
-            row["selector_action"] == case.expected_v05_action
-        )
-        row["desired_future_action_match"] = (
-            row["selector_action"] == case.desired_future_action
-        )
+        row["expected_v05_action_match"] = row["selector_action"] == case.expected_v05_action
+        row["desired_future_action_match"] = row["selector_action"] == case.desired_future_action
         row["gold_band"] = boundary_band(_monthly_frequency(case.gold_label))
         enriched_rows.append(row)
 
@@ -482,15 +472,9 @@ def _stress_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "deterministic_purist_correct": sum(
             _is_layer_correct(row, "deterministic") for row in rows
         ),
-        "consensus_purist_correct": sum(
-            _is_layer_correct(row, "consensus") for row in rows
-        ),
-        "fresh_purist_correct": sum(
-            _is_layer_correct(row, "fresh_evidence") for row in rows
-        ),
-        "selected_purist_correct": sum(
-            _is_layer_correct(row, "selected") for row in rows
-        ),
+        "consensus_purist_correct": sum(_is_layer_correct(row, "consensus") for row in rows),
+        "fresh_purist_correct": sum(_is_layer_correct(row, "fresh_evidence") for row in rows),
+        "selected_purist_correct": sum(_is_layer_correct(row, "selected") for row in rows),
         "expected_v05_action_matches": sum(
             row["expected_v05_action_match"] is True for row in rows
         ),
@@ -502,33 +486,22 @@ def _stress_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "conservative_false_negative_case_ids": conservative_false_negatives,
         "safety_success_case_ids": safety_successes,
         "by_family": {key: dict(value) for key, value in sorted(families.items())},
-        "by_risk_type": {
-            key: dict(value) for key, value in sorted(risk_types.items())
-        },
+        "by_risk_type": {key: dict(value) for key, value in sorted(risk_types.items())},
     }
 
 
 def _accumulate_bucket(bucket: dict[str, Any], row: dict[str, Any]) -> None:
     bucket["rows"] += 1
     bucket["selected_purist_correct"] += int(_is_layer_correct(row, "selected"))
-    bucket["deterministic_purist_correct"] += int(
-        _is_layer_correct(row, "deterministic")
-    )
+    bucket["deterministic_purist_correct"] += int(_is_layer_correct(row, "deterministic"))
     bucket["consensus_purist_correct"] += int(_is_layer_correct(row, "consensus"))
     bucket["fresh_purist_correct"] += int(_is_layer_correct(row, "fresh_evidence"))
-    bucket["expected_v05_action_matches"] += int(
-        row["expected_v05_action_match"] is True
-    )
-    bucket["desired_future_action_matches"] += int(
-        row["desired_future_action_match"] is True
-    )
+    bucket["expected_v05_action_matches"] += int(row["expected_v05_action_match"] is True)
+    bucket["desired_future_action_matches"] += int(row["desired_future_action_match"] is True)
 
 
 def _is_layer_correct(row: dict[str, Any], layer: str) -> bool:
-    return (
-        row["score_layers"][layer]["comparison"].get("purist_correct")
-        is True
-    )
+    return row["score_layers"][layer]["comparison"].get("purist_correct") is True
 
 
 def _markdown_report(payload: dict[str, Any]) -> str:
@@ -568,14 +541,8 @@ def _markdown_report(payload: dict[str, Any]) -> str:
             "- Desired future action matches: "
             f"{stress['desired_future_action_matches']}/{stress['rows']}"
         ),
-        (
-            "- Current-rule false positives: "
-            f"{len(stress['current_rule_false_positive_case_ids'])}"
-        ),
-        (
-            "- Conservative false negatives: "
-            f"{len(stress['conservative_false_negative_case_ids'])}"
-        ),
+        (f"- Current-rule false positives: {len(stress['current_rule_false_positive_case_ids'])}"),
+        (f"- Conservative false negatives: {len(stress['conservative_false_negative_case_ids'])}"),
         f"- Safety successes: {len(stress['safety_success_case_ids'])}",
         f"- Selector changed labels: {selector_summary['changed_labels']}",
         (
@@ -623,9 +590,7 @@ def _markdown_report(payload: dict[str, Any]) -> str:
     )
     for row in payload["rows"]:
         case = row["synthetic_case"]
-        selected_correct = row["score_layers"]["selected"]["comparison"][
-            "purist_correct"
-        ]
+        selected_correct = row["score_layers"]["selected"]["comparison"]["purist_correct"]
         lines.append(
             f"| `{case['case_id']}` | `{case['risk_type']}` | "
             f"`{case['gold_label']}` | `{case['deterministic_label']}` | "
@@ -674,9 +639,7 @@ def _summary_row(name: str, info: dict[str, Any]) -> str:
 
 
 def _register(summary: dict[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entry = RunRegistryEntry(
         run_id=RUN_ID,
         artifact_paths=(
@@ -699,18 +662,12 @@ def _register(summary: dict[str, Any]) -> None:
         cache_reuse_source="Synthetic hand-specified component outputs only.",
         primary_metrics={
             "rows": summary["rows"],
-            "deterministic_purist_correct": summary[
-                "deterministic_purist_correct"
-            ],
+            "deterministic_purist_correct": summary["deterministic_purist_correct"],
             "consensus_purist_correct": summary["consensus_purist_correct"],
             "fresh_purist_correct": summary["fresh_purist_correct"],
             "selected_purist_correct": summary["selected_purist_correct"],
-            "expected_v05_action_matches": summary[
-                "expected_v05_action_matches"
-            ],
-            "desired_future_action_matches": summary[
-                "desired_future_action_matches"
-            ],
+            "expected_v05_action_matches": summary["expected_v05_action_matches"],
+            "desired_future_action_matches": summary["desired_future_action_matches"],
             "current_rule_false_positive_count": len(
                 summary["current_rule_false_positive_case_ids"]
             ),

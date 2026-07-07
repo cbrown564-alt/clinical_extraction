@@ -136,21 +136,23 @@ def test_candidate_set_union_with_llm_candidates() -> None:
 
 
 def test_parse_valid_assessment() -> None:
-    raw = json.dumps({
-        "assessments": [
-            {
-                "candidate_id": "C0",
-                "keep": True,
-                "text": "seizures",
-                "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
-                "confidence": "high",
-                "uncertainty_flags": [],
-                "rationale": "2 per month.",
-            }
-        ],
-        "additional_mentions": [],
-        "aggregation_policy": "one_mention_per_seizure_type",
-    })
+    raw = json.dumps(
+        {
+            "assessments": [
+                {
+                    "candidate_id": "C0",
+                    "keep": True,
+                    "text": "seizures",
+                    "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Month"},
+                    "confidence": "high",
+                    "uncertainty_flags": [],
+                    "rationale": "2 per month.",
+                }
+            ],
+            "additional_mentions": [],
+            "aggregation_policy": "one_mention_per_seizure_type",
+        }
+    )
     record, errors = parse_assessment_json(raw)
     assert record is not None
     assert len(record.assessments) == 1
@@ -188,11 +190,13 @@ def test_parse_python_dict_literal_is_repaired() -> None:
 
 
 def test_parse_coerces_numeric_attribute_values() -> None:
-    raw = json.dumps({
-        "assessments": [
-            {"candidate_id": "C0", "keep": True, "attributes": {"NumberOfSeizures": 2}}
-        ]
-    })
+    raw = json.dumps(
+        {
+            "assessments": [
+                {"candidate_id": "C0", "keep": True, "attributes": {"NumberOfSeizures": 2}}
+            ]
+        }
+    )
     record, errors = parse_assessment_json(raw)
     assert record is not None
     assert record.assessments[0].attributes["NumberOfSeizures"] == "2"
@@ -339,15 +343,26 @@ def test_run_split_resume_skips_completed(tmp_path) -> None:
 
     # First pass: only the first 3 letters, checkpointed.
     rows3, _ = run_split(
-        letters[:3], split="dev", model="x", temperature=0.0, max_tokens=10,
-        mode="prompt-only", checkpoint_jsonl_path=ckpt,
+        letters[:3],
+        split="dev",
+        model="x",
+        temperature=0.0,
+        max_tokens=10,
+        mode="prompt-only",
+        checkpoint_jsonl_path=ckpt,
     )
     write_jsonl(rows3, ckpt)
 
     # Resume over all 5: must reuse the 3, process 2, return 5 in order.
     rows5, meta = run_split(
-        letters, split="dev", model="x", temperature=0.0, max_tokens=10,
-        mode="prompt-only", checkpoint_jsonl_path=ckpt, resume=True,
+        letters,
+        split="dev",
+        model="x",
+        temperature=0.0,
+        max_tokens=10,
+        mode="prompt-only",
+        checkpoint_jsonl_path=ckpt,
+        resume=True,
     )
     assert meta["n_resumed"] == 3
     assert [r["letter_id"] for r in rows5] == [letter.letter_id for letter in letters]

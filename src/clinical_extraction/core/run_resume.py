@@ -19,6 +19,7 @@ The contract is deliberately small:
 No row is recomputed and none is lost or duplicated, regardless of where the
 previous run stopped.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,9 +53,7 @@ def read_completed(
         for line in handle:
             if line.strip():
                 rows.append(json.loads(line))
-    completed = {
-        str(r[key]) for r in rows if isinstance(r, dict) and r.get(key) is not None
-    }
+    completed = {str(r[key]) for r in rows if isinstance(r, dict) and r.get(key) is not None}
     return rows, completed
 
 

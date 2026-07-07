@@ -10,9 +10,7 @@ def test_calibration_validation_promotes_aggregate_current_code_surface() -> Non
 
     assert audit["surface"] == "rich-schema holistic assembly reliability scorecard"
     assert audit["eligible_validation_artifacts"] == 1
-    assert audit["stop_rule_outcome"]["status"] == (
-        "completed_current_code_surface_validation"
-    )
+    assert audit["stop_rule_outcome"]["status"] == ("completed_current_code_surface_validation")
     assert audit["stop_rule_outcome"]["validation_run_executed"] is True
     # After the calibration scoring-rule redesign (L2 raised 0.015 -> 0.03 in
     # reliability/calibration.py to clear the post-scorer-fix (7949a9d4)

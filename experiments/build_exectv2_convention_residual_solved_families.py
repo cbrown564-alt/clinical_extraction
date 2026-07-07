@@ -30,12 +30,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 
 PRESC_JSONL = Path("experiments/exectv2_llm_med_inv_verifier_v01_dev140_gpt41mini_20260618.jsonl")
-INV_JSONL = Path("experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl")
+INV_JSONL = Path(
+    "experiments/exectv2_llm_investigations_verifier_v01_dev140_gpt41mini_20260618.jsonl"
+)
 OUT_JSON = Path("experiments/exectv2_convention_residual_solved_families_dev140_20260618.json")
 
 
 def _rows(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def _ann(mention: dict[str, Any]) -> SimpleNamespace:
@@ -50,7 +54,9 @@ def _f1(tp: int, fp: int, fn: int) -> float:
     return 2 * tp / (2 * tp + fp + fn) if tp else 0.0
 
 
-def _decompose(rows: list[dict[str, Any]], headline_keys, identity_of, family: str, candidate: str, f1: float) -> dict[str, Any]:
+def _decompose(
+    rows: list[dict[str, Any]], headline_keys, identity_of, family: str, candidate: str, f1: float
+) -> dict[str, Any]:
     tot = Counter()
     fn_bucket = Counter()
     fp_bucket = Counter()
@@ -116,23 +122,45 @@ def _inv_headline_keys(mentions: list[dict[str, Any]]) -> list[Any]:
 
 def main() -> None:
     presc = _decompose(
-        _rows(PRESC_JSONL), _presc_headline_keys, lambda k: k[1], "Prescription", "prescription verifier v0.1", 0.817
+        _rows(PRESC_JSONL),
+        _presc_headline_keys,
+        lambda k: k[1],
+        "Prescription",
+        "prescription verifier v0.1",
+        0.817,
     )
     inv = _decompose(
-        _rows(INV_JSONL), _inv_headline_keys, lambda k: k[0], "Investigations", "investigations verifier v0.1", 0.872
+        _rows(INV_JSONL),
+        _inv_headline_keys,
+        lambda k: k[0],
+        "Investigations",
+        "investigations verifier v0.1",
+        0.872,
     )
-    out = {"generated": "2026-06-18", "split": "dev", "letters": 140, "prescription": presc, "investigations": inv}
+    out = {
+        "generated": "2026-06-18",
+        "split": "dev",
+        "letters": 140,
+        "prescription": presc,
+        "investigations": inv,
+    }
     OUT_JSON.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
 
     for d in (presc, inv):
         c = d["counts"]
         print(f"\n=== {d['family']} ({d['candidate']}) ===")
-        print(f"  reconstructed tp/fp/fn = {c['tp']}/{c['fp']}/{c['fn']}  (F1 {d['reconstructed_f1']} vs reported {d['headline_f1']})")
+        print(
+            f"  reconstructed tp/fp/fn = {c['tp']}/{c['fp']}/{c['fn']}  (F1 {d['reconstructed_f1']} vs reported {d['headline_f1']})"
+        )
         print(f"  FN buckets ({d['fn_total']}): {d['fn_buckets']}")
         print(f"  FP buckets ({d['fp_total']}): {d['fp_buckets']}")
         conv = d["fn_buckets"].get("attribute", 0) + d["fp_buckets"].get("attribute", 0)
         total = d["fn_total"] + d["fp_total"]
-        print(f"  attribute-convention share of residual = {conv}/{total} = {conv/total:.1%}" if total else "  no residual")
+        print(
+            f"  attribute-convention share of residual = {conv}/{total} = {conv / total:.1%}"
+            if total
+            else "  no residual"
+        )
     print(f"\nWrote {OUT_JSON}")
 
 

@@ -48,7 +48,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.entity_v
     load_med_inv_clinical_rules,
     load_med_inv_worked_examples,
 )
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -128,9 +127,9 @@ class ExECTv2MedInvVerifierSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"entity\": ..., "
-            "\"text\": ..., \"attributes\": {...}, \"evidence\": ..., "
-            "\"confidence\": ..., \"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"entity": ..., '
+            '"text": ..., "attributes": {...}, "evidence": ..., '
+            '"confidence": ..., "rationale": ...}, ...]}'
         )
     )
 
@@ -171,9 +170,7 @@ def to_predicted_letter(
     note_text: str,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []
@@ -260,8 +257,9 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         },
         "format_layers": {
             "phrase_only": {
-                entity: score_entity(gold_letters, pred_letters, entity, PHRASE_ONLY)
-                .per_item.model_dump()
+                entity: score_entity(
+                    gold_letters, pred_letters, entity, PHRASE_ONLY
+                ).per_item.model_dump()
                 for entity in TARGET_ENTITIES
             },
             "semantic": {
@@ -270,8 +268,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
                     pred_letters,
                     entity,
                     semantic_config_for(entity),
-                )
-                .per_item.model_dump()
+                ).per_item.model_dump()
                 for entity in TARGET_ENTITIES
             },
             "benchmark": {
@@ -280,8 +277,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
                     pred_letters,
                     entity,
                     benchmark_config_for(entity),
-                )
-                .per_item.model_dump()
+                ).per_item.model_dump()
                 for entity in TARGET_ENTITIES
             },
         },

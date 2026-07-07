@@ -53,7 +53,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -73,17 +75,24 @@ def _relaxation_ladder(gold: dict, pred: dict) -> None:
             return list(dict.fromkeys(ks)) if dedup else ks
 
         ids = sorted(gold.keys() | pred.keys())
-        return sum_prf1(
-            multiset_prf1(keys(_sf(gold.get(i))), keys(_sf(pred.get(i)))) for i in ids
-        )
+        return sum_prf1(multiset_prf1(keys(_sf(gold.get(i))), keys(_sf(pred.get(i)))) for i in ids)
 
     variants = [
-        ("(type_cui, state)   production clinical_headline",
-         lambda a: (_frequency_type_key(a), _frequency_state(a.attributes)), True),
-        ("(state,) multiset   drop seizure type",
-         lambda a: (_frequency_state(a.attributes),), False),
-        ("(state,) presence   per letter [Gan framing]",
-         lambda a: (frequency_state_faithful(a.attributes),), True),
+        (
+            "(type_cui, state)   production clinical_headline",
+            lambda a: (_frequency_type_key(a), _frequency_state(a.attributes)),
+            True,
+        ),
+        (
+            "(state,) multiset   drop seizure type",
+            lambda a: (_frequency_state(a.attributes),),
+            False,
+        ),
+        (
+            "(state,) presence   per letter [Gan framing]",
+            lambda a: (frequency_state_faithful(a.attributes),),
+            True,
+        ),
     ]
     print("## Key-relaxation ladder (same predictions)")
     for name, fn, dd in variants:
@@ -118,7 +127,11 @@ def _loss_decomposition(gold: dict, pred: dict) -> None:
                 continue
             fn += 1
             same_type = [i for i, (pkey, _) in enumerate(pk) if not used[i] and pkey[0] == gkey[0]]
-            phrase_ov = [i for i, (_, pann) in enumerate(pk) if not used[i] and _overlaps(gann.text, pann.text)]
+            phrase_ov = [
+                i
+                for i, (_, pann) in enumerate(pk)
+                if not used[i] and _overlaps(gann.text, pann.text)
+            ]
             if same_type:
                 cause["state mismatch (same type-key, diff state)"] += 1
                 used[same_type[0]] = True
@@ -139,8 +152,10 @@ def _loss_decomposition(gold: dict, pred: dict) -> None:
     p = tp / (tp + fp) if tp + fp else 0.0
     r = tp / (tp + fn) if tp + fn else 0.0
     f1 = 2 * p * r / (p + r) if p + r else 0.0
-    print(f"\n## clinical_headline loss decomposition  P={p:.3f} R={r:.3f} F1={f1:.3f}"
-          f"  (gold={n_gold} pred={n_pred} tp={tp} fp={fp} fn={fn})")
+    print(
+        f"\n## clinical_headline loss decomposition  P={p:.3f} R={r:.3f} F1={f1:.3f}"
+        f"  (gold={n_gold} pred={n_pred} tp={tp} fp={fp} fn={fn})"
+    )
     print("  recall loss (FN) by cause:")
     for k, n in cause.most_common():
         print(f"    {k:<50} {n:>4} ({100 * n / fn:.0f}%)")
@@ -161,7 +176,9 @@ def _per_state(gold: dict, pred: dict) -> None:
             tp += st in gs and st in ps
         rec = tp / g if g else 0.0
         prec = tp / p if p else 0.0
-        print(f"  {st:14} gold_letters={g:3} pred_letters={p:3} recall={rec:.2f} precision={prec:.2f}")
+        print(
+            f"  {st:14} gold_letters={g:3} pred_letters={p:3} recall={rec:.2f} precision={prec:.2f}"
+        )
 
 
 def main() -> None:

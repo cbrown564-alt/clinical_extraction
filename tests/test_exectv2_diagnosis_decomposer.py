@@ -29,9 +29,7 @@ def test_diagnosis_spans_decompose_heading_and_narrative() -> None:
     assert "epilepsy" in heading["concept_hints"]
     assert "focal epilepsy" in heading["concept_hints"]
 
-    narrative = next(
-        item for item in payloads if item["span_role"] == "narrative-seizure-type"
-    )
+    narrative = next(item for item in payloads if item["span_role"] == "narrative-seizure-type")
     assert "generalised tonic clonic seizures" in narrative["evidence"]
     assert "tonic clonic seizures" in narrative["concept_hints"]
 

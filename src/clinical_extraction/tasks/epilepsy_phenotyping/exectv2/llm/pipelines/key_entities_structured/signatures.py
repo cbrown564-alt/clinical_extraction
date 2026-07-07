@@ -19,10 +19,10 @@ class ExECTv2KeyEntitiesStructuredSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"clinical_events\": [{\"family\": ..., "
-            "\"anchor_text\": ..., \"evidence\": ..., \"event_state\": {...}, "
-            "\"mentions\": [{\"entity\": ..., \"text\": ..., \"attributes\": {...}}], "
-            "\"confidence\": ..., \"rationale\": \"\"}, ...]}. Rationale may be "
+            'One strict JSON object: {"clinical_events": [{"family": ..., '
+            '"anchor_text": ..., "evidence": ..., "event_state": {...}, '
+            '"mentions": [{"entity": ..., "text": ..., "attributes": {...}}], '
+            '"confidence": ..., "rationale": ""}, ...]}. Rationale may be '
             "an empty string; do not include analysis or first-person reasoning."
         )
     )

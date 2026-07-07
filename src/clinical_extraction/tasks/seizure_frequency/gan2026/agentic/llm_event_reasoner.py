@@ -232,9 +232,7 @@ def build_prompt_input(
             "For multiple active semiologies, choose the highest current clinically active burden.",
             "Evidence entries should be exact substrings from the note when possible.",
             "Use spaces in labels, for example 'multiple per day', not underscores.",
-            (
-                "Copy evidence with exact capitalization and punctuation from the note."
-            ),
+            ("Copy evidence with exact capitalization and punctuation from the note."),
             (
                 "final_label must be a valid Gan label only: unknown, no seizure "
                 "frequency reference, seizure free, multiple per day/week/month/year, "
@@ -368,9 +366,7 @@ def parse_reasoned_decision_json(raw_output: str) -> ParsedReasonedDecision:
             parse_errors=[*parse_errors, f"schema_validation_error: {exc.errors()[0]['msg']}"],
         )
 
-    repair_trace = repair_prediction_label_format_preserving_with_trace(
-        raw_decision.final_label
-    )
+    repair_trace = repair_prediction_label_format_preserving_with_trace(raw_decision.final_label)
     repair_events = [_repair_event_to_dict(event) for event in repair_trace.events]
     format_decision = raw_decision
     if repair_trace.final_label != raw_decision.final_label:
@@ -438,9 +434,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             ("final", "final"),
         ):
             comparison = dict(
-                dict(dict(row.get("score_layers") or {}).get(layer_name) or {}).get(
-                    "comparison"
-                )
+                dict(dict(row.get("score_layers") or {}).get(layer_name) or {}).get("comparison")
                 or {}
             )
             summary[f"{summary_prefix}_purist_correct"] += int(
@@ -458,9 +452,9 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         )
         summary["changed_labels_vs_v0"] += int(bool(transition.get("label_changed")))
         summary["format_repair_rows"] += int(bool(row.get("format_repair_events")))
-        final_label = dict(
-            dict(row.get("score_layers") or {}).get("final") or {}
-        ).get("final_label")
+        final_label = dict(dict(row.get("score_layers") or {}).get("final") or {}).get(
+            "final_label"
+        )
         if final_label is not None:
             final_labels[str(final_label)] += 1
     summary["net_purist_gain_vs_v0"] = (
@@ -552,10 +546,7 @@ def write_report(
         f"- Call failures: {summary.get('call_failures', 0)}",
         f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
         (
             f"- Raw model Purist: {summary.get('raw_model_purist_correct', 0)}/"
             f"{summary.get('rows', 0)}"
@@ -564,15 +555,9 @@ def write_report(
             f"- Format-only Purist: {summary.get('format_only_purist_correct', 0)}/"
             f"{summary.get('rows', 0)}"
         ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         "",
         "## Gate",
         "",
@@ -709,9 +694,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 
@@ -844,11 +827,7 @@ def _repair_decision_shape(payload: Any) -> tuple[Any, list[str]]:
         value = repaired.get(field_name)
         if isinstance(value, (list, tuple)):
             selected_value = next(
-                (
-                    str(item)
-                    for item in value
-                    if str(item) in allowed_values
-                ),
+                (str(item) for item in value if str(item) in allowed_values),
                 None,
             )
             if selected_value is not None:
@@ -1004,9 +983,7 @@ def _rows_by_source_index(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[int, Mapping[str, Any]]:
     return {
-        int(row["source_row_index"]): row
-        for row in rows
-        if row.get("source_row_index") is not None
+        int(row["source_row_index"]): row for row in rows if row.get("source_row_index") is not None
     }
 
 
@@ -1034,5 +1011,3 @@ def _has_blocking_parse_issue(errors: Any) -> bool:
         )
         for error in (errors or [])
     )
-
-

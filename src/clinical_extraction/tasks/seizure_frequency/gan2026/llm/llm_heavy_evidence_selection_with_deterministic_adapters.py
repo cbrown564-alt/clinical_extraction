@@ -328,9 +328,7 @@ def build_typed_inputs(record: GanFrequencyRecord) -> dict[str, Any]:
                 "forbid_normalized_symbol_substitutes": True,
             },
             "clinical_kind_operand_consistency": {
-                "frequency": (
-                    "total seizure burden, even when the note mentions clustering"
-                ),
+                "frequency": ("total seizure burden, even when the note mentions clustering"),
                 "cluster_frequency": (
                     "cluster cadence only when the selected answer is a cluster cadence"
                 ),
@@ -720,8 +718,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             for row in rows
         ),
         "operand_complete_rows": sum(
-            int(bool((row.get("mechanical_adapter") or {}).get("operand_complete")))
-            for row in rows
+            int(bool((row.get("mechanical_adapter") or {}).get("operand_complete"))) for row in rows
         ),
         "component_failures": dict(sorted(component_failures.items())),
         "repair_changed_rows": sum(bool(row.get("repair_changes")) for row in rows),

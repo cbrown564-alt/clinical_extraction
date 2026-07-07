@@ -17,8 +17,7 @@ from . import validation_audit_scaffold as scaffold
 
 REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_review_routing_validation_audit_2026-06-24.md"
+    "docs/experiments/exectv2/reliability/exectv2_review_routing_validation_audit_2026-06-24.md"
 )
 
 _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
@@ -64,8 +63,7 @@ _FULL200_CANDIDATES: tuple[dict[str, str], ...] = (
         "surface": "historical SF-only deterministic-rules audit",
         "eligibility": "ineligible",
         "reason": (
-            "Rules-only SF audit artifact; not the rich-schema holistic "
-            "assembly scorecard surface."
+            "Rules-only SF audit artifact; not the rich-schema holistic assembly scorecard surface."
         ),
     },
 )
@@ -83,9 +81,7 @@ def build_review_routing_validation_audit(
     """
 
     scorecard = reliability.build_cross_model_reliability_analysis(repo_root=repo_root)
-    operating_points = {
-        row["id"]: row for row in scorecard["review_routing"]["operating_points"]
-    }
+    operating_points = {row["id"]: row for row in scorecard["review_routing"]["operating_points"]}
     high_recall = operating_points["high_recall_predeclared"]
     balanced = operating_points["balanced_dev_candidate"]
     inventory = scaffold.artifact_inventory_multi(repo_root, _FULL200_CANDIDATES)
@@ -373,9 +369,7 @@ def _aggregate_operating_point(
         "catch_rate": scaffold.round_rate(caught, total_errors),
         "false_alarm_cells": false_alarm,
         "missed_error_cells": total_errors - caught,
-        "false_alarms_per_caught_error": round(false_alarm / caught, 4)
-        if caught
-        else 0.0,
+        "false_alarms_per_caught_error": round(false_alarm / caught, 4) if caught else 0.0,
         "by_family": by_family_rows,
     }
 
@@ -456,9 +450,7 @@ def _promotion_gates(
         ),
         scaffold.gate(
             "Overall error catch at least 0.80",
-            "pass"
-            if float(validation_balanced["catch_rate"]) >= 0.80
-            else "fail",
+            "pass" if float(validation_balanced["catch_rate"]) >= 0.80 else "fail",
             f"Validation catch is {validation_balanced['catch_rate']:.4f}.",
         ),
         scaffold.gate(
@@ -474,10 +466,7 @@ def _promotion_gates(
         scaffold.gate(
             "False alarms per caught error lower than high-recall policy",
             "pass" if balanced_cost < high_cost else "fail",
-            (
-                f"Validation high-recall cost {high_cost:.4f}; "
-                f"balanced cost {balanced_cost:.4f}."
-            ),
+            (f"Validation high-recall cost {high_cost:.4f}; balanced cost {balanced_cost:.4f}."),
         ),
     ]
 
@@ -486,8 +475,7 @@ def _family_catch_floor_pass(validation: dict[str, Any], operating_point: str) -
     rows = [
         row
         for row in validation["by_family"]
-        if row["operating_point"] == operating_point
-        and int(row["total_error_cells"]) >= 10
+        if row["operating_point"] == operating_point and int(row["total_error_cells"]) >= 10
     ]
     return all(float(row["catch_rate"]) >= 0.70 for row in rows)
 

@@ -26,7 +26,9 @@ from pathlib import Path
 import dotenv
 import dspy
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import to_exect_letter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    to_exect_letter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions.diagnosis import (
     diagnosis_convention_target,
@@ -111,7 +113,9 @@ def _apply_projection(facts: list[dict], *, dx: bool = True, rx: bool = True) ->
             target = diagnosis_convention_target(concept, evidence)
             new_concept = target if target is not None else concept
             diag_cat = diagnosis_category_for_concept(new_concept)
-            if is_diagnosis_convention_noise(new_concept, evidence=evidence, diag_category=diag_cat):
+            if is_diagnosis_convention_noise(
+                new_concept, evidence=evidence, diag_category=diag_cat
+            ):
                 continue
             fact = dict(fact)
             fact["concept"] = new_concept
@@ -119,7 +123,9 @@ def _apply_projection(facts: list[dict], *, dx: bool = True, rx: bool = True) ->
             continue
         if rx and family == "prescription":
             drug = str(fact.get("drug", ""))
-            if is_prescription_convention_noise(drug, evidence=evidence, attributes={"DrugName": drug}):
+            if is_prescription_convention_noise(
+                drug, evidence=evidence, attributes={"DrugName": drug}
+            ):
                 continue
             out.append(fact)
             continue
@@ -152,20 +158,28 @@ def main() -> None:
 
     program = _rebuild_program()
     evaluator = dspy.Parallel(num_threads=12, provide_traceback=True)
-    predictions = evaluator([(program, {"letter_text": g.note_text, "output_schema": OUTPUT_SCHEMA_JSON})
-                             for g in GOLD])
+    predictions = evaluator(
+        [(program, {"letter_text": g.note_text, "output_schema": OUTPUT_SCHEMA_JSON}) for g in GOLD]
+    )
 
     base: dict[str, ExectLetter] = {}
     proj: dict[str, ExectLetter] = {}
     for g, prediction in zip(GOLD, predictions, strict=True):
         raw = str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
         try:
-            facts = (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", []) if raw else []
+            facts = (
+                (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", [])
+                if raw
+                else []
+            )
         except Exception:
             facts = []
         facts = [f for f in facts if isinstance(f, dict)]
 
-        for label, fact_list, store in (("base", facts, base), ("proj", _apply_projection(facts), proj)):
+        for _label, fact_list, store in (
+            ("base", facts, base),
+            ("proj", _apply_projection(facts), proj),
+        ):
             payload = json.dumps({"clinical_facts": fact_list}, ensure_ascii=False)
             record, _err = parse_dedup_clinical_facts_json(payload)
             if record is None:
@@ -176,19 +190,31 @@ def main() -> None:
 
     f_base, fam_base = _score(base)
     f_proj, fam_proj = _score(proj)
-    ev_base = _evidence_recall(GOLD, [base.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD])
-    ev_proj = _evidence_recall(GOLD, [proj.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD])
+    ev_base = _evidence_recall(
+        GOLD, [base.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD]
+    )
+    ev_proj = _evidence_recall(
+        GOLD, [proj.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD]
+    )
 
-    print(f"# Phase 3 — deterministic Dx re-key on recall-lanes (replayed, dev140)\n")
+    print("# Phase 3 — deterministic Dx re-key on recall-lanes (replayed, dev140)\n")
     print(f"{'config':<34}{'headline':>9}{'Dx':>7}{'SF':>7}{'Rx':>7}{'Inv':>7}{'ev-recall':>11}")
-    print(f"{'recall-lanes (replayed)':<34}{f_base:>9.3f}{fam_base['Diagnosis']:>7.3f}"
-          f"{fam_base['SeizureFrequency']:>7.3f}{fam_base['Prescription']:>7.3f}"
-          f"{fam_base['Investigations']:>7.3f}{ev_base['overall_recall']:>11.3f}")
-    print(f"{'+ deterministic Dx+Rx projection':<34}{f_proj:>9.3f}{fam_proj['Diagnosis']:>7.3f}"
-          f"{fam_proj['SeizureFrequency']:>7.3f}{fam_proj['Prescription']:>7.3f}"
-          f"{fam_proj['Investigations']:>7.3f}{ev_proj['overall_recall']:>11.3f}")
-    print(f"\n  Δ headline {f_proj - f_base:+.3f}  (Dx {fam_proj['Diagnosis'] - fam_base['Diagnosis']:+.3f})")
-    print(f"  comparators: mini per-family 0.731 / hybrid 0.920; Phase-1 gate 0.761; oracle re-key ceiling 0.876")
+    print(
+        f"{'recall-lanes (replayed)':<34}{f_base:>9.3f}{fam_base['Diagnosis']:>7.3f}"
+        f"{fam_base['SeizureFrequency']:>7.3f}{fam_base['Prescription']:>7.3f}"
+        f"{fam_base['Investigations']:>7.3f}{ev_base['overall_recall']:>11.3f}"
+    )
+    print(
+        f"{'+ deterministic Dx+Rx projection':<34}{f_proj:>9.3f}{fam_proj['Diagnosis']:>7.3f}"
+        f"{fam_proj['SeizureFrequency']:>7.3f}{fam_proj['Prescription']:>7.3f}"
+        f"{fam_proj['Investigations']:>7.3f}{ev_proj['overall_recall']:>11.3f}"
+    )
+    print(
+        f"\n  Δ headline {f_proj - f_base:+.3f}  (Dx {fam_proj['Diagnosis'] - fam_base['Diagnosis']:+.3f})"
+    )
+    print(
+        "  comparators: mini per-family 0.731 / hybrid 0.920; Phase-1 gate 0.761; oracle re-key ceiling 0.876"
+    )
 
 
 if __name__ == "__main__":

@@ -28,9 +28,12 @@ def test_build_surfaced_runs_includes_live_and_replay_comparators() -> None:
 
 
 def test_resolve_run_id_maps_legacy_family_values() -> None:
-    assert resolve_run_id("hybrid_structured_events") == CURATED_BY_RUN_ID[
-        "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07"
-    ].run_id
+    assert (
+        resolve_run_id("hybrid_structured_events")
+        == CURATED_BY_RUN_ID[
+            "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07"
+        ].run_id
+    )
     assert resolve_run_id("rules_only") == "rules_only"
 
 
@@ -57,8 +60,7 @@ def test_reconcile_registry_seeds_missing_qwen_rows(tmp_path: Path) -> None:
     assert by_id[existing.run_id].display_label == "Hybrid (LLM extract) · GPT-4.1-mini"
     assert by_id[existing.run_id].registry_roles == ("architecture_comparator",)
     qwen_id = (
-        "gan2026_three_way_comparison_validation750_"
-        "hybrid_structured_events_qwen3635b_2026-06-08"
+        "gan2026_three_way_comparison_validation750_hybrid_structured_events_qwen3635b_2026-06-08"
     )
     assert qwen_id in by_id
     assert by_id[qwen_id].surface_as_architecture is True

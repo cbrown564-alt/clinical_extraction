@@ -9,7 +9,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     investigation_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import INVESTIGATIONS
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
@@ -33,6 +35,8 @@ _EEG_TYPE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bsleep\s*deprived\b", re.IGNORECASE), "SleepDeprived"),
     (re.compile(r"\bvideo\s*telemetry\b", re.IGNORECASE), "VideoTelemetry"),
 )
+
+
 def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     for match in _INVESTIGATION_PATTERN.finditer(text):
@@ -65,6 +69,8 @@ def _extract_investigations(text: str) -> tuple[PredictedMention, ...]:
             )
         )
     return tuple(mentions)
+
+
 def _investigation_result(text: str) -> str | None:
     if _RESULT_UNKNOWN.search(text):
         return "Unknown"

@@ -60,7 +60,9 @@ def load_replay_specs(
 ) -> tuple[ComponentImpactReplaySpec, ...]:
     """Load dev140 replay specs from the catalog."""
 
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import ComponentImpactReplaySpec
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
+        ComponentImpactReplaySpec,
+    )
 
     path = catalog_path or DEFAULT_CATALOG_PATH
     catalog = _load_catalog(path)
@@ -72,7 +74,9 @@ def load_full200_specs(
 ) -> tuple[ComponentImpactReplaySpec, ...]:
     """Load full200 replay specs from the catalog."""
 
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import ComponentImpactReplaySpec
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
+        ComponentImpactReplaySpec,
+    )
 
     path = catalog_path or DEFAULT_CATALOG_PATH
     catalog = _load_catalog(path)

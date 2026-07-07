@@ -48,9 +48,7 @@ def read_ledger(path: Path = DEFAULT_LEDGER_JSON) -> dict[str, Any]:
 
 def read_rows(path: Path = DEFAULT_SOURCE_JSONL) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -63,9 +61,7 @@ def build_panel(
 ) -> dict[str, Any]:
     row_by_id = {str(row["letter_id"]): row for row in rows}
     residual_records = [
-        record
-        for record in ledger.get("records", [])
-        if str(record.get("entity", "")) == SF_ENTITY
+        record for record in ledger.get("records", []) if str(record.get("entity", "")) == SF_ENTITY
     ]
     by_letter = _records_by_letter(residual_records)
     panel = [
@@ -144,8 +140,7 @@ def _panel_entry(
         "evidence": str(record.get("evidence", "")),
         "text": str(record.get("example_text", "")),
         "attributes": {
-            str(k): str(v)
-            for k, v in dict(record.get("example_attributes") or {}).items()
+            str(k): str(v) for k, v in dict(record.get("example_attributes") or {}).items()
         },
         "opposite_summary": _opposite_summary(opposite),
         "pair_pattern": _pair_pattern(letter_records),
@@ -268,9 +263,8 @@ def _matching_candidates(
             and (evidence in candidate_evidence or candidate_evidence in evidence)
         )
         text_match = bool(text and hint and (text in hint or hint in text))
-        type_match = (
-            _generic_phrase(hint) == want_generic
-            or (_seizure_free_phrase(hint) and want_seizure_free)
+        type_match = _generic_phrase(hint) == want_generic or (
+            _seizure_free_phrase(hint) and want_seizure_free
         )
         if state_match and (evidence_match or text_match or type_match):
             out.append(candidate)
@@ -311,10 +305,10 @@ def _is_generic_type(key_type: Any) -> bool:
     kind = str(key_type[0])
     raw_value = str(key_type[1])
     value = _norm(raw_value)
-    return (kind == "cui" and value in GENERIC_CUIS) or (
-        kind == "cui" and raw_value.upper() in GENERIC_CUIS
-    ) or (
-        kind == "phrase" and value in GENERIC_PHRASES
+    return (
+        (kind == "cui" and value in GENERIC_CUIS)
+        or (kind == "cui" and raw_value.upper() in GENERIC_CUIS)
+        or (kind == "phrase" and value in GENERIC_PHRASES)
     )
 
 
@@ -324,10 +318,10 @@ def _is_seizure_free_type(key_type: Any) -> bool:
     kind = str(key_type[0])
     raw_value = str(key_type[1])
     value = _norm(raw_value)
-    return (kind == "cui" and value in SEIZURE_FREE_CUIS) or (
-        kind == "cui" and raw_value.upper() in SEIZURE_FREE_CUIS
-    ) or (
-        kind == "phrase" and value in SEIZURE_FREE_PHRASES
+    return (
+        (kind == "cui" and value in SEIZURE_FREE_CUIS)
+        or (kind == "cui" and raw_value.upper() in SEIZURE_FREE_CUIS)
+        or (kind == "phrase" and value in SEIZURE_FREE_PHRASES)
     )
 
 
@@ -435,9 +429,7 @@ def _pair_pattern(records: Sequence[Mapping[str, Any]]) -> str:
     parts = []
     for side in ("gold", "predicted"):
         if by_side[side]:
-            states = "+".join(
-                state for state, _count in sorted(by_side[side].items())
-            )
+            states = "+".join(state for state, _count in sorted(by_side[side].items()))
             parts.append(f"{side}:{states}")
     return " -> ".join(parts) if parts else "unpaired"
 

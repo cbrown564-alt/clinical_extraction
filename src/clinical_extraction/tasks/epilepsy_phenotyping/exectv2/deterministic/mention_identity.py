@@ -1,4 +1,5 @@
 """Mention span and identity helpers for deterministic ExECTv2 extraction."""
+
 from __future__ import annotations
 
 import re
@@ -12,6 +13,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
+
 def match_span(match: re.Match[str]) -> EvidenceSpan:
     """Return the exact source slice that triggered a mention."""
 

@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
     EVERY_N_PERIODS,
     EVERY_N_TO_M_PERIODS,
@@ -23,7 +22,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import period_to_canonical
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import (
+    period_to_canonical,
+)
+
 
 def project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
     source = normalize_phrase(f"{text} {evidence}")
@@ -33,15 +35,9 @@ def project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
         return "epileptic attack"
     if "generalised tonic clonic seizures with myoclonic jerks" in source:
         return "generalised tonic clonic seizures"
-    if (
-        text == "epilepsy with generalised tonic clonic seizures"
-        and "alone" in source
-    ):
+    if text == "epilepsy with generalised tonic clonic seizures" and "alone" in source:
         return "epilepsy with generalised tonic clonic seizures alone"
-    if (
-        text == "general seizures"
-        and "general and complex partial seizures" in source
-    ):
+    if text == "general seizures" and "general and complex partial seizures" in source:
         return "complex partial seizures"
     if "genetic generalised epilepsy" in source or "genetic generalized epilepsy" in source:
         return "genetic generalised epilepsy"
@@ -70,6 +66,7 @@ def project_diagnosis_text_from_evidence(text: str, evidence: str) -> str:
         if "possibly generalised" in source or "possibly generalized" in source:
             return "generalised epilepsy"
     return text
+
 
 def project_sf_state_from_evidence(
     text: str,
@@ -287,9 +284,7 @@ def project_sf_state_from_evidence(
             match = EVERY_N_PERIODS.search(evidence)
             if match:
                 projected = {
-                    key: value
-                    for key, value in attrs.items()
-                    if key not in {"FrequencyChange"}
+                    key: value for key, value in attrs.items() if key not in {"FrequencyChange"}
                 }
                 projected["NumberOfSeizures"] = "1"
                 projected["NumberOfTimePeriods"] = match.group("n")

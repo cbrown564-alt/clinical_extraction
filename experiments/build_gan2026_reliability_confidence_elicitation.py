@@ -54,13 +54,13 @@ PILOT_RESIDUAL_TARGET = 80
 PILOT_TOTAL_TARGET = 160
 
 DIRECT_LABELER_COMPARATOR = (
-    rc.EXPERIMENTS
-    / "gan2026_three_way_comparison_validation750"
+    rc.EXPERIMENTS / "gan2026_three_way_comparison_validation750"
     "_llm_only_direct_labeler_gpt41mini_2026-06-07.jsonl"
 )
 
 
 # ── Elicitation signature + per-variant prompts ─────────────────────────────────
+
 
 class ConfidenceElicitationSignature(dspy.Signature):
     """Estimate a calibrated probability for a pre-existing seizure-frequency answer.
@@ -106,8 +106,9 @@ VARIANT_INSTRUCTIONS: dict[str, list[str]] = {
 }
 
 
-def build_elicitation_payload(variant: str, note_text: str, final_label: str | None,
-                              final_kind: str | None) -> str:
+def build_elicitation_payload(
+    variant: str, note_text: str, final_label: str | None, final_kind: str | None
+) -> str:
     payload = {
         "task": "Gan 2026 seizure-frequency confidence elicitation",
         "variant": variant,
@@ -129,6 +130,7 @@ class ElicitationModule(dspy.Module):
 
 
 # ── Parsing ─────────────────────────────────────────────────────────────────────
+
 
 def parse_probability(raw: str) -> tuple[int | None, str | None, str | None]:
     """Return (probability_0_100, reason, error)."""
@@ -156,6 +158,7 @@ def _clamp(value: int) -> int:
 
 # ── Sample selection (deterministic, residual-enriched) ─────────────────────────
 
+
 def is_residual(note_text: str, gold_pm: float | None) -> bool:
     band = boundary_band(gold_pm)
     fams = classify_boundary_families(note_text=note_text, gold_per_month=gold_pm)
@@ -175,6 +178,7 @@ def select_pilot_indices(records) -> list[int]:
 
 # ── Resumable per-variant elicitation ───────────────────────────────────────────
 
+
 def load_done(path: Path) -> dict[int, dict[str, Any]]:
     if not path.exists():
         return {}
@@ -185,15 +189,26 @@ def load_done(path: Path) -> dict[int, dict[str, Any]]:
     return out
 
 
-def run_variant(variant: str, records_by_idx: dict[int, Any], answers: dict[int, dict[str, Any]],
-                indices: list[int], out_path: Path) -> list[dict[str, Any]]:
+def run_variant(
+    variant: str,
+    records_by_idx: dict[int, Any],
+    answers: dict[int, dict[str, Any]],
+    indices: list[int],
+    out_path: Path,
+) -> list[dict[str, Any]]:
     done = load_done(out_path)
     pending = [i for i in indices if i not in done]
     print(f"[variant {variant}] {len(indices)} rows · {len(done)} cached · {len(pending)} pending")
     if pending:
         dspy.configure(
-            lm=build_dspy_lm(MODEL, temperature=TEMPERATURE, max_tokens=MAX_TOKENS,
-                             cache=False, num_retries=2, timeout=60)
+            lm=build_dspy_lm(
+                MODEL,
+                temperature=TEMPERATURE,
+                max_tokens=MAX_TOKENS,
+                cache=False,
+                num_retries=2,
+                timeout=60,
+            )
         )
         module = ElicitationModule()
         for n, idx in enumerate(pending, 1):
@@ -227,17 +242,20 @@ def run_variant(variant: str, records_by_idx: dict[int, Any], answers: dict[int,
 
 def _write_samples(done: dict[int, dict[str, Any]], indices: list[int], path: Path) -> None:
     rows = [done[i] for i in indices if i in done]
-    path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
-                    encoding="utf-8")
+    path.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8"
+    )
 
 
 # ── Analysis ─────────────────────────────────────────────────────────────────────
 
-def variant_metrics(samples: list[dict[str, Any]], answers: dict[int, dict[str, Any]],
-                    residual_idx: set[int]) -> dict[str, Any]:
-    pairs: list[tuple[float, bool]] = []      # (p_correct, purist_correct)
-    risks: list[float] = []                    # 1 - p_correct
-    failures: list[bool] = []                  # not purist_correct
+
+def variant_metrics(
+    samples: list[dict[str, Any]], answers: dict[int, dict[str, Any]], residual_idx: set[int]
+) -> dict[str, Any]:
+    pairs: list[tuple[float, bool]] = []  # (p_correct, purist_correct)
+    risks: list[float] = []  # 1 - p_correct
+    failures: list[bool] = []  # not purist_correct
     p_values: list[float] = []
     resid_p, resid_correct, nonresid_p, nonresid_correct = [], [], [], []
     n_parse_fail = 0
@@ -287,10 +305,16 @@ def variant_metrics(samples: list[dict[str, Any]], answers: dict[int, dict[str, 
         "residual_sensitivity": {
             "residual_n": len(resid_p),
             "residual_mean_p": (sum(resid_p) / len(resid_p)) if resid_p else float("nan"),
-            "residual_accuracy": (sum(resid_correct) / len(resid_correct)) if resid_correct else float("nan"),
+            "residual_accuracy": (sum(resid_correct) / len(resid_correct))
+            if resid_correct
+            else float("nan"),
             "nonresidual_n": len(nonresid_p),
-            "nonresidual_mean_p": (sum(nonresid_p) / len(nonresid_p)) if nonresid_p else float("nan"),
-            "nonresidual_accuracy": (sum(nonresid_correct) / len(nonresid_correct)) if nonresid_correct else float("nan"),
+            "nonresidual_mean_p": (sum(nonresid_p) / len(nonresid_p))
+            if nonresid_p
+            else float("nan"),
+            "nonresidual_accuracy": (sum(nonresid_correct) / len(nonresid_correct))
+            if nonresid_correct
+            else float("nan"),
         },
     }
 
@@ -360,18 +384,26 @@ def analyse(samples_by_variant, answers, residual_idx, indices, tag, out_json, o
 def render_md(r: dict[str, Any]) -> str:
     L: list[str] = []
     L.append(f"# Confidence-Elicitation Calibration Probe ({r['mode']})\n")
-    L.append(f"Date: {r['date']} · Model: {r['model']} (elicitation temp {r['elicitation_temperature']}) "
-             f"· n={r['n_rows_selected']} · subject: {r['subject']}\n")
-    L.append("Decoupled second-pass elicitation over the production answers; the production "
-             "path is NOT modified. Predeclared in "
-             "`docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`.\n")
+    L.append(
+        f"Date: {r['date']} · Model: {r['model']} (elicitation temp {r['elicitation_temperature']}) "
+        f"· n={r['n_rows_selected']} · subject: {r['subject']}\n"
+    )
+    L.append(
+        "Decoupled second-pass elicitation over the production answers; the production "
+        "path is NOT modified. Predeclared in "
+        "`docs/experiments/gan2026/reliability/gan2026_confidence_elicitation_predeclaration_2026-06-17.md`.\n"
+    )
     c = r.get("comparator_self_confidence")
     if c:
-        L.append(f"**[comparator] degenerate joint self-confidence** (direct labeler): "
-                 f"top-bucket share {c['top_bucket_share']:.1%} (n={c['n']}), "
-                 f"failure AUROC {c['failure_prediction_auroc']:.3f}. "
-                 f"External-signal comparator AUROC (P0.3) = {r['external_signal_comparator_auroc']}.\n")
-    L.append("| Variant | n | top-bucket share | mean p | std p | ECE | Brier | failure AUROC | verdict |")
+        L.append(
+            f"**[comparator] degenerate joint self-confidence** (direct labeler): "
+            f"top-bucket share {c['top_bucket_share']:.1%} (n={c['n']}), "
+            f"failure AUROC {c['failure_prediction_auroc']:.3f}. "
+            f"External-signal comparator AUROC (P0.3) = {r['external_signal_comparator_auroc']}.\n"
+        )
+    L.append(
+        "| Variant | n | top-bucket share | mean p | std p | ECE | Brier | failure AUROC | verdict |"
+    )
     L.append("|---|---:|---:|---:|---:|---:|---:|---:|---|")
     names = {"C": "C second-reader", "D": "D failure-primed"}
     for v, m in r["variants"].items():
@@ -382,7 +414,9 @@ def render_md(r: dict[str, Any]) -> str:
             f"{ca['brier']:.3f} | {di['failure_prediction_auroc']:.3f} | `{r['verdicts'][v]}` |"
         )
     L.append("\n## Residual sensitivity (does confidence drop where the model is wrong?)\n")
-    L.append("| Variant | residual n | residual mean p | residual acc | non-resid mean p | non-resid acc |")
+    L.append(
+        "| Variant | residual n | residual mean p | residual acc | non-resid mean p | non-resid acc |"
+    )
     L.append("|---|---:|---:|---:|---:|---:|")
     for v, m in r["variants"].items():
         rs = m["residual_sensitivity"]
@@ -395,42 +429,60 @@ def render_md(r: dict[str, Any]) -> str:
     # Decompose the two axes the conjunctive gate combines: SPREAD (top-bucket < 70%)
     # and DISCRIMINATION (failure AUROC >= 0.65). The pilot showed these can come apart.
     spread_v = [v for v, m in r["variants"].items() if m["spread"]["top_bucket_share"] < 0.70]
-    disc_v = [v for v, m in r["variants"].items()
-              if (m["discrimination"]["failure_prediction_auroc"] or 0) >= 0.65]
+    disc_v = [
+        v
+        for v, m in r["variants"].items()
+        if (m["discrimination"]["failure_prediction_auroc"] or 0) >= 0.65
+    ]
     nfail = {v: m["discrimination"]["n_failures"] for v, m in r["variants"].items()}
     if h1:
-        L.append(f"**H1 on variant(s) {', '.join(h1)}.** Decoupled elicitation breaks the "
-                 "degeneracy AND produces a discriminative self-signal (AUROC ≥ 0.65) — "
-                 "candidate for scaling to validation750.\n")
+        L.append(
+            f"**H1 on variant(s) {', '.join(h1)}.** Decoupled elicitation breaks the "
+            "degeneracy AND produces a discriminative self-signal (AUROC ≥ 0.65) — "
+            "candidate for scaling to validation750.\n"
+        )
     else:
-        L.append("**Strict predeclared gate: H0 on both variants** (no single variant clears "
-                 "BOTH top-bucket < 70% AND AUROC ≥ 0.65). But the two axes came apart, and "
-                 "the conjunctive gate conflated *spread* with *usefulness* — the decomposition "
-                 "is the actual finding:\n")
-        L.append(f"- **Baseline is dead** — joint self-confidence AUROC is at chance "
-                 f"({(r.get('comparator_self_confidence') or {}).get('failure_prediction_auroc', float('nan')):.3f}); "
-                 "any lift over that is real signal recovered by re-asking.")
+        L.append(
+            "**Strict predeclared gate: H0 on both variants** (no single variant clears "
+            "BOTH top-bucket < 70% AND AUROC ≥ 0.65). But the two axes came apart, and "
+            "the conjunctive gate conflated *spread* with *usefulness* — the decomposition "
+            "is the actual finding:\n"
+        )
+        L.append(
+            f"- **Baseline is dead** — joint self-confidence AUROC is at chance "
+            f"({(r.get('comparator_self_confidence') or {}).get('failure_prediction_auroc', float('nan')):.3f}); "
+            "any lift over that is real signal recovered by re-asking."
+        )
         if spread_v:
-            L.append(f"- **Spread recovered by {', '.join(spread_v)} (second-reader framing)**, "
-                     "but it is largely *noise*: confidence is lowered on rows that are often "
-                     "still correct, so AUROC stays weak. Spread ≠ signal.")
+            L.append(
+                f"- **Spread recovered by {', '.join(spread_v)} (second-reader framing)**, "
+                "but it is largely *noise*: confidence is lowered on rows that are often "
+                "still correct, so AUROC stays weak. Spread ≠ signal."
+            )
         if disc_v:
-            L.append(f"- **Discrimination recovered by {', '.join(disc_v)} (failure-mode priming)** "
-                     "— AUROC approaches the external-corroboration signal (0.781) while staying "
-                     "high-valued on average. Its low-confidence bins are genuinely error-enriched. "
-                     "This is a *partial crack in the wall*: a forward-observable SELF-signal that "
-                     "ranks errors, obtained from one extra mini call (cheaper than 3-model "
-                     "agreement). The lever is **naming the failure mode**, not merely decoupling.")
-        L.append(f"- **Caveat:** only {nfail} failures in this stratified subset → AUROC CIs are "
-                 "wide; validation750 is required to confirm the discrimination number.")
-        L.append("\nNet: self-confidence is not *irrecoverable* (the closeout's strong null is "
-                 "softened) — but recovery comes from priming the known failure mode, and even "
-                 "then leaves residual failures hidden at high confidence, so external "
-                 "corroboration (P0.2/P0.3) remains the stronger signal.\n")
+            L.append(
+                f"- **Discrimination recovered by {', '.join(disc_v)} (failure-mode priming)** "
+                "— AUROC approaches the external-corroboration signal (0.781) while staying "
+                "high-valued on average. Its low-confidence bins are genuinely error-enriched. "
+                "This is a *partial crack in the wall*: a forward-observable SELF-signal that "
+                "ranks errors, obtained from one extra mini call (cheaper than 3-model "
+                "agreement). The lever is **naming the failure mode**, not merely decoupling."
+            )
+        L.append(
+            f"- **Caveat:** only {nfail} failures in this stratified subset → AUROC CIs are "
+            "wide; validation750 is required to confirm the discrimination number."
+        )
+        L.append(
+            "\nNet: self-confidence is not *irrecoverable* (the closeout's strong null is "
+            "softened) — but recovery comes from priming the known failure mode, and even "
+            "then leaves residual failures hidden at high confidence, so external "
+            "corroboration (P0.2/P0.3) remains the stronger signal.\n"
+        )
     return "\n".join(L)
 
 
 # ── Entry ────────────────────────────────────────────────────────────────────────
+
 
 def load_answers() -> dict[int, dict[str, Any]]:
     """Per-row production answer + correctness from the canonical v0_reference layer."""
@@ -450,7 +502,9 @@ def load_answers() -> dict[int, dict[str, Any]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--pilot", action="store_true", help="stratified ~160-row residual-enriched pilot")
+    ap.add_argument(
+        "--pilot", action="store_true", help="stratified ~160-row residual-enriched pilot"
+    )
     ap.add_argument("--full", action="store_true", help="full validation750 run")
     args = ap.parse_args()
     if not (args.pilot or args.full):
@@ -468,24 +522,32 @@ def main() -> None:
         tag = "validation750"
 
     residual_idx = {
-        i for i in indices
+        i
+        for i in indices
         if is_residual(records_by_idx[i].note_text, records_by_idx[i].gold_monthly_frequency)
     }
     print(f"selected {len(indices)} rows ({len(residual_idx)} residual) · tag={tag}")
 
     samples_by_variant: dict[str, list[dict[str, Any]]] = {}
     for variant in ("C", "D"):
-        out_path = rc.EXPERIMENTS / f"gan2026_reliability_confidence_elicitation_samples_{tag}_{variant}_{DATE}.jsonl"
-        samples_by_variant[variant] = run_variant(variant, records_by_idx, answers, indices, out_path)
+        out_path = (
+            rc.EXPERIMENTS
+            / f"gan2026_reliability_confidence_elicitation_samples_{tag}_{variant}_{DATE}.jsonl"
+        )
+        samples_by_variant[variant] = run_variant(
+            variant, records_by_idx, answers, indices, out_path
+        )
 
     out_json = rc.EXPERIMENTS / f"gan2026_reliability_confidence_elicitation_{tag}_{DATE}.json"
     out_md = rc.EXPERIMENTS / f"gan2026_reliability_confidence_elicitation_{tag}_{DATE}.md"
     result = analyse(samples_by_variant, answers, residual_idx, indices, tag, out_json, out_md)
     print(f"wrote {out_json}")
     for v, m in result["variants"].items():
-        print(f"  variant {v}: top-bucket {m['spread']['top_bucket_share']:.1%} · "
-              f"AUROC {m['discrimination']['failure_prediction_auroc']:.3f} · "
-              f"verdict {result['verdicts'][v]}")
+        print(
+            f"  variant {v}: top-bucket {m['spread']['top_bucket_share']:.1%} · "
+            f"AUROC {m['discrimination']['failure_prediction_auroc']:.3f} · "
+            f"verdict {result['verdicts'][v]}"
+        )
 
 
 if __name__ == "__main__":

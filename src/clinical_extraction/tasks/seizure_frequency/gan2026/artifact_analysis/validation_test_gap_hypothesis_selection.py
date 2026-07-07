@@ -153,15 +153,13 @@ def build_hypothesis_selection(
             {
                 "hypothesis_id": "H1",
                 "reason": (
-                    "Needs predeclared test slice aggregates before accepting "
-                    "hidden-family mix."
+                    "Needs predeclared test slice aggregates before accepting hidden-family mix."
                 ),
             },
             {
                 "hypothesis_id": "H3",
                 "reason": (
-                    "Requires candidate-exposure instrumentation not present in "
-                    "gap_matrix_v0."
+                    "Requires candidate-exposure instrumentation not present in gap_matrix_v0."
                 ),
             },
             {
@@ -185,8 +183,7 @@ def build_hypothesis_selection(
             {
                 "hypothesis_id": "H9",
                 "reason": (
-                    "Monitor-policy rows are available, but H2/H4 should own first "
-                    "stress panels."
+                    "Monitor-policy rows are available, but H2/H4 should own first stress panels."
                 ),
             },
             {
@@ -287,9 +284,7 @@ def write_selection_report(selection: Mapping[str, Any], path: Path) -> None:
     lines.extend(["", "## Deferred Hypotheses", ""])
     lines.extend(["| Hypothesis | Reason |", "| --- | --- |"])
     for item in selection.get("deferred_hypotheses", []):
-        lines.append(
-            f"| `{_md(item.get('hypothesis_id'))}` | {_md(item.get('reason'))} |"
-        )
+        lines.append(f"| `{_md(item.get('hypothesis_id'))}` | {_md(item.get('reason'))} |")
 
     path.write_text("\n".join(lines) + "\n")
 

@@ -125,9 +125,7 @@ def _generate_live_candidates(
             resume=args.resume,
         )
         per_entity.write_jsonl(rows, jsonl_path)
-        per_entity.write_report(
-            rows, _meta, report_path, jsonl_path=jsonl_path
-        )
+        per_entity.write_report(rows, _meta, report_path, jsonl_path=jsonl_path)
         rows_by_entity[entity] = rows
     return hybrid.candidates_from_per_entity_rows(rows_by_entity)
 

@@ -17,18 +17,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     write_jsonl_rows,
 )
 
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_selective_verifier_predeclaration_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_selective_verifier_predeclaration_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
-DEFAULT_PROTOCOL_PATH = Path(
-    ""
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_selective_verifier_predeclaration_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_selective_verifier_predeclaration_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("")
+DEFAULT_PROTOCOL_PATH = Path("")
 
 ALLOWED_RECOMMENDATIONS = [
     "render_as_selected_state",
@@ -92,9 +84,7 @@ SUPPORT_PARTS_OUTPUT_SCHEMA = {
     "current_highest_frequency_supported": "true or false.",
     "all_required_parts_supported": "true or false.",
     "recommended_action": ["use_proposed_answer", "use_unknown", "needs_review"],
-    "missing_or_conflicting_parts": [
-        "Short names of any unsupported or conflicting parts."
-    ],
+    "missing_or_conflicting_parts": ["Short names of any unsupported or conflicting parts."],
     "quotes": ["Exact copied phrases from clinical_text."],
     "reason": "Brief explanation using only the provided clinical text.",
 }
@@ -320,9 +310,7 @@ def _predeclaration_row(row: Mapping[str, Any]) -> dict[str, Any]:
                 (row.get("selected_evidence_status") or {}).get("exact_trace")
             ),
             "selected_evidence_present": bool(
-                (row.get("selected_evidence_status") or {}).get(
-                    "selected_evidence_present"
-                )
+                (row.get("selected_evidence_status") or {}).get("selected_evidence_present")
             ),
         },
         "verifier_model_input": {
@@ -403,11 +391,7 @@ def _prompt_design_candidates(
 
 
 def _review_reasons(flags: Sequence[Any]) -> list[str]:
-    reasons = [
-        FLAG_REVIEW_REASONS[str(flag)]
-        for flag in flags
-        if str(flag) in FLAG_REVIEW_REASONS
-    ]
+    reasons = [FLAG_REVIEW_REASONS[str(flag)] for flag in flags if str(flag) in FLAG_REVIEW_REASONS]
     return reasons or ["The proposed answer was routed for extra review."]
 
 

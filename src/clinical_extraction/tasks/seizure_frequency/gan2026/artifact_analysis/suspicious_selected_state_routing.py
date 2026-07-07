@@ -33,18 +33,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     write_jsonl_rows,
 )
 
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_suspicious_selected_state_routing_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_suspicious_selected_state_routing_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
-DEFAULT_PROTOCOL_PATH = Path(
-    ""
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_suspicious_selected_state_routing_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_suspicious_selected_state_routing_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("")
+DEFAULT_PROTOCOL_PATH = Path("")
 
 
 def build_suspicious_routing_rows(
@@ -243,9 +235,7 @@ def _suspicious_routing_row(
     exact_trace = bool(state.get("selected_evidence")) and evidence_is_substring(
         note_text, str(state.get("selected_evidence") or "")
     )
-    source_id_trace = build_selected_source_id_trace(
-        structured_record, exact_trace=exact_trace
-    )
+    source_id_trace = build_selected_source_id_trace(structured_record, exact_trace=exact_trace)
     source_id_status = source_id_trace["source_id_status"]
     flags = suspicious_flags(
         state,

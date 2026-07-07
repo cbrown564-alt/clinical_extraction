@@ -18,6 +18,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.runner import (
     mention_to_row,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.runner import (
     to_predicted_letter as _runner_to_predicted_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.sf import (

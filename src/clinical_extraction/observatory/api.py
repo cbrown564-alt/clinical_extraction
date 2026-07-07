@@ -1,4 +1,4 @@
-﻿"""Thin FastAPI wrapper for the clinical-extraction Observatory.
+"""Thin FastAPI wrapper for the clinical-extraction Observatory.
 
 Shared cross-task backend the frontend consumes: Gan 2026 (registry, records,
 rules, live pipeline/ablation execution) and ExECTv2 (the live ``/exectv2/runs``

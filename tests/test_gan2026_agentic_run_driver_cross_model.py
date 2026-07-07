@@ -475,5 +475,3 @@ def test_dispatch_cross_model_matches_direct_run_split(monkeypatch) -> None:
     assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
         dispatched_metadata
     )
-
-

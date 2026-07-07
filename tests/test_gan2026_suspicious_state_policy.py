@@ -10,9 +10,7 @@ def test_suspicious_policy_routes_count_blocking_ambiguity_to_unknown() -> None:
     flags = suspicious_flags(
         {
             "state_kind": "frequency",
-            "ambiguity_flags": [
-                "The exact number of current seizure events is unclear."
-            ],
+            "ambiguity_flags": ["The exact number of current seizure events is unclear."],
         },
         exact_trace=True,
         source_id_status="valid",
@@ -56,4 +54,3 @@ def test_suspicious_policy_renders_clean_state() -> None:
     assert routing_action(flags) == "render"
     assert final_policy_label("1 per month", "render") == "1 per month"
     assert first_failure_owner(flags) == "none"
-

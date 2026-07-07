@@ -153,9 +153,7 @@ def render_self_consistency_markdown(payload: Mapping[str, Any]) -> str:
         "| Family | Exact agreement | Mean Jaccard | Mean entropy | Non-zero entropy cells |",
         "| --- | ---: | ---: | ---: | ---: |",
     ]
-    entropy_by_family = {
-        row["family"]: row for row in entropy["by_family"]
-    }
+    entropy_by_family = {row["family"]: row for row in entropy["by_family"]}
     for row in pairwise["by_family"]:
         family_entropy = entropy_by_family[row["family"]]
         lines.append(
@@ -259,8 +257,7 @@ def _load_repeat(path: Path, letter_by_id: Mapping[str, ExectLetter]) -> dict[st
             if mention.entity in by_family:
                 by_family[mention.entity].append(mention)
         cells[letter_id] = {
-            family: _keyset(family, by_family[family], note_text)
-            for family in TARGET_FAMILIES
+            family: _keyset(family, by_family[family], note_text) for family in TARGET_FAMILIES
         }
     return {"path": path, "rows": rows, "cells": cells}
 
@@ -329,9 +326,7 @@ def _entropy_metrics(
             {
                 "family": family,
                 "cell_count": len(by_family[family]),
-                "mean_entropy": round(
-                    sum(by_family[family]) / len(by_family[family]), 4
-                )
+                "mean_entropy": round(sum(by_family[family]) / len(by_family[family]), 4)
                 if by_family[family]
                 else 0.0,
                 "nonzero_entropy_cells": sum(value > 0 for value in by_family[family]),
@@ -421,7 +416,11 @@ def _producer_variation(
         varied = 0
         for letter_id in common_ids:
             outputs = {
-                str(next(row for row in rows if str(row["letter_id"]) == letter_id).get("raw_output", ""))
+                str(
+                    next(row for row in rows if str(row["letter_id"]) == letter_id).get(
+                        "raw_output", ""
+                    )
+                )
                 for rows in rows_by_path
             }
             unique_counts.append(len(outputs))
@@ -430,9 +429,7 @@ def _producer_variation(
         result[producer] = {
             "producer": producer,
             "rows_compared": len(common_ids),
-            "mean_unique_raw_outputs_per_row": round(
-                sum(unique_counts) / len(unique_counts), 4
-            )
+            "mean_unique_raw_outputs_per_row": round(sum(unique_counts) / len(unique_counts), 4)
             if unique_counts
             else 0.0,
             "rows_with_raw_output_variation": varied,
@@ -451,8 +448,7 @@ def _interpretation(
     curve = majority["agreement_accuracy_curve"]
     top = curve[0] if curve else {"majority_top_k": "n/a", "accuracy": 0.0}
     raw_varied = any(
-        int(row.get("rows_with_raw_output_variation", 0)) > 0
-        for row in producer_variation.values()
+        int(row.get("rows_with_raw_output_variation", 0)) > 0 for row in producer_variation.values()
     )
     raw_clause = (
         "Raw producer outputs vary across repeats, so stable clinical-headline cells "
@@ -511,9 +507,7 @@ def _load_summary_for_jsonl(path: Path) -> dict[str, Any]:
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 

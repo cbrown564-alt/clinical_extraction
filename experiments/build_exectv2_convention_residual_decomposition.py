@@ -21,13 +21,13 @@ TP/FP/FN against the published residual ledgers before reporting.
 """
 
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import json
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     DIAGNOSIS_PARENT,
     annotation_clinical_concepts,
@@ -36,7 +36,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
-    )
+)
 
 DIAG_JSONL = Path(
     "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl"
@@ -51,7 +51,9 @@ GENERIC_SF_FREE_CUIS = {"C1299590"}  # seizure free
 
 
 def _rows(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +170,11 @@ def decompose_diagnosis(rows: list[dict[str, Any]]) -> dict[str, Any]:
 # SeizureFrequency
 # ---------------------------------------------------------------------------
 def _sf_state(attrs: dict[str, str]) -> str:
-    vals = [attrs.get("NumberOfSeizures"), attrs.get("LowerNumberOfSeizures"), attrs.get("UpperNumberOfSeizures")]
+    vals = [
+        attrs.get("NumberOfSeizures"),
+        attrs.get("LowerNumberOfSeizures"),
+        attrs.get("UpperNumberOfSeizures"),
+    ]
     if any(v == "0" for v in vals if v is not None):
         return "seizure-free"
     if any(v for v in vals):
@@ -280,7 +286,13 @@ def main() -> None:
     sf = decompose_sf(_rows(SF_JSONL))
     diag["oracle_ceilings"] = _oracle_ceilings(diag, ["assertion", "granularity", "family"])
     sf["oracle_ceilings"] = _oracle_ceilings(sf, ["state", "ownership"])
-    out = {"generated": "2026-06-18", "split": "dev", "letters": 140, "diagnosis": diag, "seizure_frequency": sf}
+    out = {
+        "generated": "2026-06-18",
+        "split": "dev",
+        "letters": 140,
+        "diagnosis": diag,
+        "seizure_frequency": sf,
+    }
     OUT_JSON.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
 
     for d in (diag, sf):
@@ -295,7 +307,9 @@ def main() -> None:
             v for k, v in pb.items() if k != "genuine"
         )
         total = fn_t + fp_t
-        print(f"  convention-bound share of all residual events = {conv}/{total} = {conv/total:.1%}")
+        print(
+            f"  convention-bound share of all residual events = {conv}/{total} = {conv / total:.1%}"
+        )
         print(f"  oracle ceilings: {d['oracle_ceilings']}")
     print(f"\nWrote {OUT_JSON}")
 

@@ -12,4 +12,3 @@ class ValidationIssue(BaseModel):
 class ValidationResult(BaseModel):
     ok: bool
     issues: list[ValidationIssue] = Field(default_factory=list)
-

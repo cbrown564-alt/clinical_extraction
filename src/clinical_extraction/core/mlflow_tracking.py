@@ -220,9 +220,7 @@ def registry_entry_to_mlflow_payload(
         "repair_mode": repair_mode,
     }
     metrics = {
-        name: value
-        for name, value in dict(primary_metrics).items()
-        if _is_metric_value(value)
+        name: value for name, value in dict(primary_metrics).items() if _is_metric_value(value)
     }
     tags: dict[str, TagValue] = {
         REGISTRY_RUN_ID_TAG: str(entry.run_id),
@@ -255,9 +253,7 @@ def normalized_params(payload: MlflowRunPayload) -> dict[str, str]:
     """Return MLflow-safe params, dropping unset values."""
 
     return {
-        str(key): _stringify(value)
-        for key, value in payload.params.items()
-        if value is not None
+        str(key): _stringify(value) for key, value in payload.params.items() if value is not None
     }
 
 
@@ -277,11 +273,7 @@ def normalized_metrics(payload: MlflowRunPayload) -> dict[str, float]:
 def normalized_tags(payload: MlflowRunPayload) -> dict[str, str]:
     """Return MLflow-safe tags, dropping unset values."""
 
-    return {
-        str(key): _stringify(value)
-        for key, value in payload.tags.items()
-        if value is not None
-    }
+    return {str(key): _stringify(value) for key, value in payload.tags.items() if value is not None}
 
 
 def safe_artifact_paths(payload: MlflowRunPayload, *, repo_root: Path) -> tuple[Path, ...]:
@@ -354,9 +346,7 @@ def _is_metric_value(value: Any) -> bool:
 def _claim_status_from_decision(decision: str, comparison_role: Any) -> str:
     if comparison_role == "diagnostic":
         return "diagnostic"
-    if decision in {"promote", "promote_to_phase3_report"} or decision.startswith(
-        "promote_"
-    ):
+    if decision in {"promote", "promote_to_phase3_report"} or decision.startswith("promote_"):
         return "promote"
     if decision == "reject":
         return "reject"

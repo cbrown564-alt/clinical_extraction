@@ -36,11 +36,13 @@ def lens_from_manifest(config: LensManifest) -> EntityLens:
             "investigations_convention_dictionary_v09",
         ): InvestigationsDictionaryLens,
     }
-    legacy_diagnosis_dictionary_lens_ids = frozenset({
-        "diagnosis_heading_recovery_residual_benchmark_v05",
-        "diagnosis_heading_recovery_convention_alias_v04",
-        "diagnosis_heading_recovery_convention_cleanup_v03",
-    })
+    legacy_diagnosis_dictionary_lens_ids = frozenset(
+        {
+            "diagnosis_heading_recovery_residual_benchmark_v05",
+            "diagnosis_heading_recovery_convention_alias_v04",
+            "diagnosis_heading_recovery_convention_cleanup_v03",
+        }
+    )
     key = (config.entity, config.lens)
     if key in dictionary_lens_by_manifest:
         return dictionary_lens_by_manifest[key](lens_id=config.lens, entity=config.entity)

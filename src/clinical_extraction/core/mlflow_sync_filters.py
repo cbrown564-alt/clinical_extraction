@@ -5,7 +5,11 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from datetime import date
 
-from clinical_extraction.core.mlflow_sync_types import BACKFILL_SCOPES, BackfillScope, BackfillScopeName
+from clinical_extraction.core.mlflow_sync_types import (
+    BACKFILL_SCOPES,
+    BackfillScope,
+    BackfillScopeName,
+)
 from clinical_extraction.core.registry import REGISTRY_ROLES, RegistryRole, RunRegistryEntry
 
 
@@ -18,17 +22,15 @@ def resolve_backfill_filters(
     """Resolve operator scope presets into concrete sync filters."""
 
     scope = BACKFILL_SCOPES[backfill_scope] if backfill_scope is not None else None
-    resolved_since_date = since_date if since_date is not None else (
-        scope.since_date if scope is not None else None
+    resolved_since_date = (
+        since_date if since_date is not None else (scope.since_date if scope is not None else None)
     )
     role_list = tuple(registry_roles)
     if role_list:
         unknown = sorted(set(role_list) - set(REGISTRY_ROLES))
         if unknown:
             allowed = ", ".join(sorted(REGISTRY_ROLES))
-            raise ValueError(
-                f"unknown registry role(s): {', '.join(unknown)}; allowed: {allowed}"
-            )
+            raise ValueError(f"unknown registry role(s): {', '.join(unknown)}; allowed: {allowed}")
         resolved_roles = frozenset(role_list)
     elif scope is not None and scope.registry_roles is not None:
         resolved_roles = scope.registry_roles

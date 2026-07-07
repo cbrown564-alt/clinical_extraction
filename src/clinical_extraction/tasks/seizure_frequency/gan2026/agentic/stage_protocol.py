@@ -413,10 +413,7 @@ def has_blocking_parse_issue(
 ) -> bool:
     """Return whether parse errors contain a blocking failure."""
 
-    return any(
-        str(error).startswith(tuple(blocking_prefixes))
-        for error in (errors or [])
-    )
+    return any(str(error).startswith(tuple(blocking_prefixes)) for error in (errors or []))
 
 
 def has_repair_note(
@@ -439,12 +436,15 @@ def emit_progress_checkpoint(
     total: int,
     summarize_rows: Callable[[Sequence[Mapping[str, Any]]], dict[str, Any]],
     gate_interpretation: Callable[[Mapping[str, Any]], dict[str, Any]] | None = None,
-    finalize_metadata: Callable[[Sequence[Mapping[str, Any]], dict[str, Any]], None]
-    | None = None,
+    finalize_metadata: Callable[[Sequence[Mapping[str, Any]], dict[str, Any]], None] | None = None,
     jsonl_path: Path | None = None,
     report_path: Path | None = None,
     write_report: Callable[..., None] | None = None,
-    progress_fields: Sequence[str] = ("call_failures", "parse_or_validation_failures", "purist_correct"),
+    progress_fields: Sequence[str] = (
+        "call_failures",
+        "parse_or_validation_failures",
+        "purist_correct",
+    ),
 ) -> None:
     """Write optional checkpoint artifacts and emit a stderr progress line."""
 

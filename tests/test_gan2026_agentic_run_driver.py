@@ -508,5 +508,3 @@ def test_dispatch_tool_self_consistency_matches_direct_run_split(monkeypatch) ->
     assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
         dispatched_metadata
     )
-
-

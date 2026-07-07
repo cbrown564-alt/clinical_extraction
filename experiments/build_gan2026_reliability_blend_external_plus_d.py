@@ -32,7 +32,6 @@ Usage:
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
@@ -68,6 +67,7 @@ OUT_MD = rc.EXPERIMENTS / f"gan2026_reliability_blend_external_plus_d_validation
 
 # ── small stats (no sklearn) ────────────────────────────────────────────────────
 
+
 def fractional_ranks(values: list[float]) -> list[float]:
     """Map values to fractional ranks in [0,1] (ties share the average rank)."""
     n = len(values)
@@ -96,14 +96,15 @@ def spearman(a: list[float], b: list[float]) -> float:
     ra, rb = fractional_ranks(a), fractional_ranks(b)
     n = len(ra)
     ma, mb = sum(ra) / n, sum(rb) / n
-    cov = sum((x - ma) * (y - mb) for x, y in zip(ra, rb))
+    cov = sum((x - ma) * (y - mb) for x, y in zip(ra, rb, strict=False))
     va = sum((x - ma) ** 2 for x in ra) ** 0.5
     vb = sum((y - mb) ** 2 for y in rb) ** 0.5
     return cov / (va * vb) if va and vb else float("nan")
 
 
-def cv_weighted_auroc(ext: list[float], d: list[float], labels: list[bool],
-                      *, folds: int = 5) -> tuple[float, float, list[float]]:
+def cv_weighted_auroc(
+    ext: list[float], d: list[float], labels: list[bool], *, folds: int = 5
+) -> tuple[float, float, list[float]]:
     """Per-fold pick the blend weight on train, evaluate held-out. Returns
     (mean held-out AUROC, whole-data best-w AUROC, per-fold best weights)."""
     ne, nd = minmax(ext), minmax(d)
@@ -139,8 +140,9 @@ def cv_weighted_auroc(ext: list[float], d: list[float], labels: list[bool],
 
 # ── selective risk-coverage AUC (lower = better), reused from P0.2 logic ─────────
 
+
 def risk_coverage_auc(risk: list[float], correct: list[bool]) -> float:
-    items = sorted(zip(risk, correct), key=lambda t: t[0])
+    items = sorted(zip(risk, correct, strict=False), key=lambda t: t[0])
     n = len(items)
     pts: list[tuple[float, float]] = []
     covered = err = 0
@@ -152,7 +154,7 @@ def risk_coverage_auc(risk: list[float], correct: list[bool]) -> float:
             err += 0 if items[i][1] else 1
             i += 1
         pts.append((covered / n, err / covered))
-    return sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:]))
+    return sum((b[0] - a[0]) * (a[1] + b[1]) / 2 for a, b in zip(pts, pts[1:], strict=False))
 
 
 def main() -> None:
@@ -176,7 +178,7 @@ def main() -> None:
             continue
         comp = external_risk_score(agree.get(idx, 2), feats.get(idx, {}))
         v0_correct = rc.subject_purist_correct(row)
-        se_correct = bool(((srow.get("comparison") or {}).get("purist_correct")))
+        se_correct = bool((srow.get("comparison") or {}).get("purist_correct"))
         if v0_correct != se_correct:
             se_target_mismatch += 1
         ext_risk.append(float(comp["score"]))
@@ -188,7 +190,10 @@ def main() -> None:
 
     auroc_ext = rc.auroc(ext_risk, labels)
     auroc_d = rc.auroc(d_risk, labels)
-    rank_blend = [(a + b) / 2 for a, b in zip(fractional_ranks(ext_risk), fractional_ranks(d_risk))]
+    rank_blend = [
+        (a + b) / 2
+        for a, b in zip(fractional_ranks(ext_risk), fractional_ranks(d_risk), strict=False)
+    ]
     auroc_rank = rc.auroc(rank_blend, labels)
     cv_auroc, bestw_auroc, chosen_w = cv_weighted_auroc(ext_risk, d_risk, labels)
     rho = spearman(ext_risk, d_risk)
@@ -227,8 +232,12 @@ def main() -> None:
         "hypothesis_verdict": verdict,
         "provenance": {
             "model_calls": 0,
-            "sources": [str(rc.REASONER_VALIDATION750), str(rc.CONSENSUS_VALIDATION750),
-                        str(rc.RQ9_ROUTER), str(SHADOW)],
+            "sources": [
+                str(rc.REASONER_VALIDATION750),
+                str(rc.CONSENSUS_VALIDATION750),
+                str(rc.RQ9_ROUTER),
+                str(SHADOW),
+            ],
             "combiners": "rank-average (headline, unsupervised) + 5-fold CV weighted",
         },
     }
@@ -271,25 +280,29 @@ def render_md(r: dict[str, Any]) -> str:
         "## Reading\n",
     ]
     if r["hypothesis_verdict"] == "H1_complementary":
-        L.append("**H1 — the self-signal is complementary.** Blending variant D with the external "
-                 "composite ranks errors better than corroboration alone, and the modest "
-                 "Spearman correlation explains why: D and the external score make partly "
-                 "*independent* errors, so fusion helps. A cheap single extra mini call adds "
-                 "signal on top of 3-model agreement.\n")
+        L.append(
+            "**H1 — the self-signal is complementary.** Blending variant D with the external "
+            "composite ranks errors better than corroboration alone, and the modest "
+            "Spearman correlation explains why: D and the external score make partly "
+            "*independent* errors, so fusion helps. A cheap single extra mini call adds "
+            "signal on top of 3-model agreement.\n"
+        )
     else:
         rho = r["spearman_extrisk_vs_drisk"]
-        L.append("**H0 — D does not materially boost the external score.** The unsupervised "
-                 f"rank-average edges external alone by only {r['auroc_delta_rankblend_minus_external']:+.3f} "
-                 "(within CI on this error count), and crucially the **honest CV-weighted blend "
-                 f"({a['cv_weighted_blend_heldout']:.3f}) collapses back to external alone "
-                 f"({a['external_alone']:.3f})** — when the weight is chosen without peeking, "
-                 "fusion buys nothing. Note this is NOT because the signals are redundant: "
-                 f"Spearman is only {rho:.2f}, so D and the external composite make partly "
-                 "*independent* errors. The problem is that D is simply the weaker, noisier "
-                 "ranker (0.684 vs 0.783), so averaging it in mostly adds noise. External "
-                 "corroboration stays the single best forward-observable signal; D's value is "
-                 "as a cheaper standalone proxy where 3-model agreement is unavailable, not as "
-                 "an additive booster.\n")
+        L.append(
+            "**H0 — D does not materially boost the external score.** The unsupervised "
+            f"rank-average edges external alone by only {r['auroc_delta_rankblend_minus_external']:+.3f} "
+            "(within CI on this error count), and crucially the **honest CV-weighted blend "
+            f"({a['cv_weighted_blend_heldout']:.3f}) collapses back to external alone "
+            f"({a['external_alone']:.3f})** — when the weight is chosen without peeking, "
+            "fusion buys nothing. Note this is NOT because the signals are redundant: "
+            f"Spearman is only {rho:.2f}, so D and the external composite make partly "
+            "*independent* errors. The problem is that D is simply the weaker, noisier "
+            "ranker (0.684 vs 0.783), so averaging it in mostly adds noise. External "
+            "corroboration stays the single best forward-observable signal; D's value is "
+            "as a cheaper standalone proxy where 3-model agreement is unavailable, not as "
+            "an additive booster.\n"
+        )
     return "\n".join(L)
 
 

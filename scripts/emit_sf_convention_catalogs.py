@@ -50,19 +50,71 @@ def _rewrite_catalog() -> None:
 
 def _noise_catalog() -> None:
     rules = [
-        {"rule_id": "noise_vague_episode_phrase", "phases": ["noise"], "builder": "noise_branch_01"},
-        {"rule_id": "noise_prompt_selection_phrase_set", "phases": ["noise"], "builder": "noise_branch_02"},
-        {"rule_id": "noise_one_seizure_risk_counselling", "phases": ["noise"], "builder": "noise_branch_03"},
-        {"rule_id": "noise_further_seizures_risk_counselling", "phases": ["noise"], "builder": "noise_branch_04"},
-        {"rule_id": "noise_previous_seizures_phrase", "phases": ["noise"], "builder": "noise_branch_05"},
-        {"rule_id": "noise_absence_contextual_history", "phases": ["noise"], "builder": "noise_branch_06"},
-        {"rule_id": "noise_generic_around_three_per_month", "phases": ["noise"], "builder": "noise_branch_07"},
-        {"rule_id": "noise_ftb_dated_or_asleep_context", "phases": ["noise"], "builder": "noise_branch_08"},
-        {"rule_id": "noise_canonical_seizure_free_contextual_rate", "phases": ["noise"], "builder": "noise_branch_09"},
-        {"rule_id": "noise_keep_canonical_seizure_free", "phases": ["noise"], "builder": "noise_keep_canonical_seizure_free"},
-        {"rule_id": "noise_generic_contextual_rate", "phases": ["noise"], "builder": "noise_branch_11"},
-        {"rule_id": "noise_contextual_seizure_free_phrase", "phases": ["noise"], "builder": "noise_branch_12"},
-        {"rule_id": "noise_historical_comparator_seizure", "phases": ["noise"], "builder": "noise_branch_13"},
+        {
+            "rule_id": "noise_vague_episode_phrase",
+            "phases": ["noise"],
+            "builder": "noise_branch_01",
+        },
+        {
+            "rule_id": "noise_prompt_selection_phrase_set",
+            "phases": ["noise"],
+            "builder": "noise_branch_02",
+        },
+        {
+            "rule_id": "noise_one_seizure_risk_counselling",
+            "phases": ["noise"],
+            "builder": "noise_branch_03",
+        },
+        {
+            "rule_id": "noise_further_seizures_risk_counselling",
+            "phases": ["noise"],
+            "builder": "noise_branch_04",
+        },
+        {
+            "rule_id": "noise_previous_seizures_phrase",
+            "phases": ["noise"],
+            "builder": "noise_branch_05",
+        },
+        {
+            "rule_id": "noise_absence_contextual_history",
+            "phases": ["noise"],
+            "builder": "noise_branch_06",
+        },
+        {
+            "rule_id": "noise_generic_around_three_per_month",
+            "phases": ["noise"],
+            "builder": "noise_branch_07",
+        },
+        {
+            "rule_id": "noise_ftb_dated_or_asleep_context",
+            "phases": ["noise"],
+            "builder": "noise_branch_08",
+        },
+        {
+            "rule_id": "noise_canonical_seizure_free_contextual_rate",
+            "phases": ["noise"],
+            "builder": "noise_branch_09",
+        },
+        {
+            "rule_id": "noise_keep_canonical_seizure_free",
+            "phases": ["noise"],
+            "builder": "noise_keep_canonical_seizure_free",
+        },
+        {
+            "rule_id": "noise_generic_contextual_rate",
+            "phases": ["noise"],
+            "builder": "noise_branch_11",
+        },
+        {
+            "rule_id": "noise_contextual_seizure_free_phrase",
+            "phases": ["noise"],
+            "builder": "noise_branch_12",
+        },
+        {
+            "rule_id": "noise_historical_comparator_seizure",
+            "phases": ["noise"],
+            "builder": "noise_branch_13",
+        },
     ]
     path = CATALOG / "convention_noise.yaml"
     _dump(path, rules)

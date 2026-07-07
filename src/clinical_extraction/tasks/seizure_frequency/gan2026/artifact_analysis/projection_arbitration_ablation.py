@@ -469,13 +469,10 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "best_non_oracle_variant": best_variant,
             "best_non_oracle_exact": best_exact,
             "oracle_exact": sum(
-                bool(row["variant_results"]["oracle_gold_node"]["correct"])
-                for row in family_rows
+                bool(row["variant_results"]["oracle_gold_node"]["correct"]) for row in family_rows
             ),
         }
-    row_best = {
-        str(row["source_row_index"]): _best_non_oracle_variants(row) for row in rows
-    }
+    row_best = {str(row["source_row_index"]): _best_non_oracle_variants(row) for row in rows}
     return {
         "row_sources": dict(sorted(row_sources.items())),
         "variants": variants,
@@ -486,15 +483,11 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 def _variant_summary(rows: Sequence[Mapping[str, Any]], variant_name: str) -> dict[str, Any]:
     y_true = [float(row["gold_monthly_frequency"]) for row in rows]
-    y_pred = [
-        float(row["variant_results"][variant_name]["monthly_frequency"]) for row in rows
-    ]
+    y_pred = [float(row["variant_results"][variant_name]["monthly_frequency"]) for row in rows]
     purist = evaluate_predictions(y_true, y_pred, method="purist")
     pragmatic = evaluate_predictions(y_true, y_pred, method="pragmatic")
     return {
-        "exact_matches": sum(
-            bool(row["variant_results"][variant_name]["correct"]) for row in rows
-        ),
+        "exact_matches": sum(bool(row["variant_results"][variant_name]["correct"]) for row in rows),
         "purist_accuracy": purist["micro"]["accuracy"],
         "purist_f1": purist["micro"]["f1"],
         "pragmatic_accuracy": pragmatic["micro"]["accuracy"],

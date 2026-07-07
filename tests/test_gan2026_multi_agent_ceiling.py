@@ -3,6 +3,7 @@
 constraints and construction only; forward()/live calls are exercised by
 the smoke/battery/hard50 stages, not here.
 """
+
 from __future__ import annotations
 
 import dspy

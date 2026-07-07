@@ -87,11 +87,14 @@ _NUMBER_WORDS: dict[str, str] = {
     "twenty-two": "22",
 }
 
+
 def _frequency_from_text(text: str) -> str | None:
     for pattern, value in _FREQUENCY_PATTERNS:
         if pattern.search(text):
             return value
     return None
+
+
 def _temporal_unit(value: str | None) -> str:
     if value and value.lower().startswith("month"):
         return "Month"

@@ -7,6 +7,7 @@ Phase C). This is deliberately conservative and letter-wide, unlike
 `frequency_section.py`'s SeizureFrequency-anchored parsing: it never emits a
 `PredictedMention` or a clinical fact, only prompt context.
 """
+
 from __future__ import annotations
 
 import re
@@ -17,7 +18,10 @@ from .normalizer import MONTH_NAME_PATTERN, normalize_month
 _SECTION_HEADERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("Diagnosis", re.compile(r"(?i)^\s*diagnosis\s*:")),
     ("SeizureFrequency", re.compile(r"(?i)^\s*seizure\s+type\s+and\s+frequency\s*:")),
-    ("Medication", re.compile(r"(?i)^\s*(?:current\s+)?(?:anti[- ]?epileptic\s+)?medications?\s*:")),
+    (
+        "Medication",
+        re.compile(r"(?i)^\s*(?:current\s+)?(?:anti[- ]?epileptic\s+)?medications?\s*:"),
+    ),
     ("Investigations", re.compile(r"(?i)^\s*investigations?\s*:")),
     ("Plan", re.compile(r"(?i)^\s*(?:plan|comments?)\s*:?\s*$")),
 )
@@ -26,12 +30,28 @@ _YEAR = r"(?:19|20)\d{2}"
 _INVESTIGATION_LABEL = r"EEG|MRI|CT(?:\s+head)?|CT\s+scan|ECG"
 
 _DATE_DMY = re.compile(rf"\b(?P<day>\d{{1,2}})[/.](?P<month>\d{{1,2}})[/.](?P<year>{_YEAR})\b")
-_DATE_MONTH_YEAR = re.compile(rf"\b(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>{_YEAR})\b", re.IGNORECASE)
-_DATE_LABELLED_YEAR = re.compile(rf"\b(?:{_INVESTIGATION_LABEL})\b[^.\n]{{0,40}}?\b(?P<year>{_YEAR})\b", re.IGNORECASE)
+_DATE_MONTH_YEAR = re.compile(
+    rf"\b(?P<month>{MONTH_NAME_PATTERN})\s+(?P<year>{_YEAR})\b", re.IGNORECASE
+)
+_DATE_LABELLED_YEAR = re.compile(
+    rf"\b(?:{_INVESTIGATION_LABEL})\b[^.\n]{{0,40}}?\b(?P<year>{_YEAR})\b", re.IGNORECASE
+)
 
 _RELATIVE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("since last clinic", re.compile(r"\bsince\s+(?:the\s+)?(?:last|previous)\s+(?:clinic|appointment|review|visit)\b", re.IGNORECASE)),
-    ("N units ago", re.compile(r"\b(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?P<unit>year|month|week|day)s?\s+ago\b", re.IGNORECASE)),
+    (
+        "since last clinic",
+        re.compile(
+            r"\bsince\s+(?:the\s+)?(?:last|previous)\s+(?:clinic|appointment|review|visit)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "N units ago",
+        re.compile(
+            r"\b(?P<count>\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?P<unit>year|month|week|day)s?\s+ago\b",
+            re.IGNORECASE,
+        ),
+    ),
     ("at age N", re.compile(r"\b(?:at\s+the\s+age\s+of|aged)\s+(?P<age>\d{1,3})\b", re.IGNORECASE)),
     ("at time of diagnosis", re.compile(r"\bat\s+the\s+time\s+of\s+diagnosis\b", re.IGNORECASE)),
     ("last year", re.compile(r"\blast\s+year\b", re.IGNORECASE)),
@@ -130,9 +150,18 @@ def build_timeline(note_text: str) -> list[TimelineEvent]:
         seen_spans.append(span)
         year = int(match.group("year"))
         month = int(match.group("month"))
-        dated.append((year, month, TimelineEvent(
-            context=_context_window(note_text, *span), year=year, month=month, anchor=None,
-        )))
+        dated.append(
+            (
+                year,
+                month,
+                TimelineEvent(
+                    context=_context_window(note_text, *span),
+                    year=year,
+                    month=month,
+                    anchor=None,
+                ),
+            )
+        )
 
     for match in _DATE_MONTH_YEAR.finditer(note_text):
         span = match.span()
@@ -141,9 +170,18 @@ def build_timeline(note_text: str) -> list[TimelineEvent]:
         seen_spans.append(span)
         year = int(match.group("year"))
         month = int(normalize_month(match.group("month")))
-        dated.append((year, month, TimelineEvent(
-            context=_context_window(note_text, *span), year=year, month=month, anchor=None,
-        )))
+        dated.append(
+            (
+                year,
+                month,
+                TimelineEvent(
+                    context=_context_window(note_text, *span),
+                    year=year,
+                    month=month,
+                    anchor=None,
+                ),
+            )
+        )
 
     for match in _DATE_LABELLED_YEAR.finditer(note_text):
         span = match.span()
@@ -151,9 +189,18 @@ def build_timeline(note_text: str) -> list[TimelineEvent]:
             continue
         seen_spans.append(span)
         year = int(match.group("year"))
-        dated.append((year, 0, TimelineEvent(
-            context=_context_window(note_text, *span), year=year, month=None, anchor=None,
-        )))
+        dated.append(
+            (
+                year,
+                0,
+                TimelineEvent(
+                    context=_context_window(note_text, *span),
+                    year=year,
+                    month=None,
+                    anchor=None,
+                ),
+            )
+        )
 
     for anchor_label, pattern in _RELATIVE_PATTERNS:
         for match in pattern.finditer(note_text):
@@ -161,9 +208,14 @@ def build_timeline(note_text: str) -> list[TimelineEvent]:
             if overlaps(span):
                 continue
             seen_spans.append(span)
-            relative.append(TimelineEvent(
-                context=_context_window(note_text, *span), year=None, month=None, anchor=anchor_label,
-            ))
+            relative.append(
+                TimelineEvent(
+                    context=_context_window(note_text, *span),
+                    year=None,
+                    month=None,
+                    anchor=anchor_label,
+                )
+            )
 
     dated.sort(key=lambda row: (row[0], row[1]))
     return [event for _, _, event in dated] + relative

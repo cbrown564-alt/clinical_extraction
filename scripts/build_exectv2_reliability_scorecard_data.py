@@ -18,12 +18,7 @@ def main() -> None:
     }
     for dataset, payload in outputs.items():
         out_path = (
-            REPO_ROOT
-            / "frontend"
-            / "public"
-            / "mock-data"
-            / dataset
-            / "reliability-scorecard.json"
+            REPO_ROOT / "frontend" / "public" / "mock-data" / dataset / "reliability-scorecard.json"
         )
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(

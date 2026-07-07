@@ -39,13 +39,11 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SLICE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_residual_slice_live_gpt41_v0_6_safety_v0_9_"
     "2026-06-15.jsonl"
 )
 RESIDUAL_AUDIT_JSON = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "residual_component_generation_audit_2026-06-15.json"
 )
 
@@ -87,9 +85,7 @@ def main() -> None:
         "prior_residual_audit": str(RESIDUAL_AUDIT_JSON),
         "summary": summary,
     }
-    JSON_PATH.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    JSON_PATH.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     MD_PATH.write_text(_markdown(payload), encoding="utf-8")
     _register(summary)
     print(json.dumps(summary["headline"], indent=2, sort_keys=True))
@@ -115,9 +111,7 @@ def _load_residual_records(path: Path) -> dict[int, dict[str, Any]]:
 
 
 def _new_fresh_correct(slice_row: dict[str, Any]) -> bool:
-    return bool(
-        slice_row["score_layers"]["final"]["comparison"].get("purist_correct") is True
-    )
+    return bool(slice_row["score_layers"]["final"]["comparison"].get("purist_correct") is True)
 
 
 def _new_fresh_view(slice_row: dict[str, Any]) -> dict[str, Any]:
@@ -169,9 +163,7 @@ def _audit(
         else:
             recoverable_rows.append(entry)
 
-    no_correct_fixed = sum(
-        1 for entry in no_correct_rows if entry["new_fresh_purist_correct"]
-    )
+    no_correct_fixed = sum(1 for entry in no_correct_rows if entry["new_fresh_purist_correct"])
     recoverable_preserved = sum(
         1 for entry in recoverable_rows if entry["new_fresh_purist_correct"]
     )
@@ -199,9 +191,7 @@ def _audit(
         "recoverable_fresh_regressions": recoverable_fresh_regressions,
         "residual_rows_with_correct_component_now": residual_with_correct_component_now,
         "no_correct_rows": sorted(no_correct_rows, key=lambda e: e["source_row_index"]),
-        "recoverable_rows": sorted(
-            recoverable_rows, key=lambda e: e["source_row_index"]
-        ),
+        "recoverable_rows": sorted(recoverable_rows, key=lambda e: e["source_row_index"]),
         "supervisor_panel": panel,
     }
 
@@ -223,9 +213,7 @@ def _supervisor_panel(slice_rows: dict[int, dict[str, Any]]) -> dict[str, Any]:
                 "new_fresh_label": view["new_fresh_label"],
                 "new_ambiguity_classification": view["ambiguity_classification"],
                 "label_purist_correct": label_correct,
-                "class_matches_expected": (
-                    view["ambiguity_classification"] == expected_class
-                ),
+                "class_matches_expected": (view["ambiguity_classification"] == expected_class),
             }
         )
     return {
@@ -406,9 +394,7 @@ def _interpretation(summary: dict[str, Any]) -> str:
 
 def _register(summary: dict[str, Any]) -> None:
     head = summary["headline"]
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,
@@ -439,9 +425,7 @@ def _register(summary: dict[str, Any]) -> None:
                 "prior_oracle_ceiling": head["prior_oracle_ceiling"],
                 "new_oracle_ceiling": head["new_oracle_ceiling"],
                 "oracle_ceiling_delta": head["oracle_ceiling_delta"],
-                "recoverable_rows_fresh_preserved": (
-                    summary["recoverable_rows_fresh_preserved"]
-                ),
+                "recoverable_rows_fresh_preserved": (summary["recoverable_rows_fresh_preserved"]),
                 "supervisor_panel_pass": head["supervisor_panel_pass"],
             },
             evidence_validity=(

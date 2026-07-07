@@ -203,9 +203,7 @@ def _markdown(payload: dict[str, Any], summary: AtomicClaimViabilitySummary) -> 
 
 def _register(summary: AtomicClaimViabilitySummary) -> None:
     admission = summary.node_admission
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entries.append(
         RunRegistryEntry(
             run_id=RUN_ID,

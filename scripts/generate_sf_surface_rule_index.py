@@ -50,12 +50,8 @@ _PROJECTION_PATH = (
     / "reports"
     / "projection_rule_attribution.py"
 )
-_REWRITE_RULE_ID = re.compile(
-    r'"(rewrite_[a-z0-9_]+|drop_[a-z0-9_]+|collapse_[a-z0-9_]+)"'
-)
-_PROJECTION_RULE_ID = re.compile(
-    r'_(?:spec|quarantined_spec)\(\s*"([^"]+)"\s*,\s*([A-Z_]+)\.name'
-)
+_REWRITE_RULE_ID = re.compile(r'"(rewrite_[a-z0-9_]+|drop_[a-z0-9_]+|collapse_[a-z0-9_]+)"')
+_PROJECTION_RULE_ID = re.compile(r'_(?:spec|quarantined_spec)\(\s*"([^"]+)"\s*,\s*([A-Z_]+)\.name')
 _ENTITY_NAME = {
     "DIAGNOSIS": "Diagnosis",
     "SEIZURE_FREQUENCY": "SeizureFrequency",
@@ -123,9 +119,7 @@ def _build_rule_index() -> dict[str, object]:
                 "seizure_frequency_rule_ids": projection_sf,
             },
         },
-        "total_unique_rule_ids": len(
-            set(extract) | set(convention) | set(projection_all)
-        ),
+        "total_unique_rule_ids": len(set(extract) | set(convention) | set(projection_all)),
     }
 
 

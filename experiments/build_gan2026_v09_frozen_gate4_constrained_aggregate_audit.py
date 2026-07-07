@@ -15,14 +15,14 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -42,23 +42,19 @@ JSON_OUT = EXPERIMENTS / f"{RUN_ID}.json"
 MD_OUT = EXPERIMENTS / f"{RUN_ID}.md"
 
 DET_PATH = (
-    EXPERIMENTS
-    / "gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_"
+    EXPERIMENTS / "gan2026_test450_phase4_frozen_audit_deterministic_canonical_pipeline_"
     "gpt41mini_2026-06-09.jsonl"
 )
 CONSENSUS_PATH = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_consensus_available_two_agent_exact_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_consensus_available_two_agent_exact_"
     "test450_2026-06-13.jsonl"
 )
 FRESH_PATH = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
     "2026-06-15.jsonl"
 )
 GATE3_JSON = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate3_"
     "source_symmetry_preflight_2026-06-26.json"
 )
 
@@ -143,20 +139,14 @@ def _aggregate_payload(
         "consensus_purist_correct": summary["consensus_purist_correct"],
         "consensus_purist_rate": _rate(summary["consensus_purist_correct"]),
         "fresh_evidence_purist_correct": summary["fresh_evidence_purist_correct"],
-        "fresh_evidence_purist_rate": _rate(
-            summary["fresh_evidence_purist_correct"]
-        ),
+        "fresh_evidence_purist_rate": _rate(summary["fresh_evidence_purist_correct"]),
         "selected_purist_correct": summary["selected_purist_correct"],
         "selected_purist_rate": _rate(summary["selected_purist_correct"]),
-        "selected_pragmatic_correct": _count_layer(
-            selector_rows, "selected", "pragmatic_correct"
-        ),
+        "selected_pragmatic_correct": _count_layer(selector_rows, "selected", "pragmatic_correct"),
         "selected_pragmatic_rate": _rate(
             _count_layer(selector_rows, "selected", "pragmatic_correct")
         ),
-        "net_purist_gain_vs_deterministic": summary[
-            "net_purist_gain_vs_deterministic"
-        ],
+        "net_purist_gain_vs_deterministic": summary["net_purist_gain_vs_deterministic"],
         "changed_labels": summary["changed_labels"],
         "wrong_to_correct": summary["wrong_to_correct"],
         "correct_to_wrong": summary["correct_to_wrong"],
@@ -240,9 +230,7 @@ def _source_artifacts() -> dict[str, str]:
 
 
 def _count_layer(rows: list[dict[str, Any]], layer: str, field: str) -> int:
-    return sum(
-        row["score_layers"][layer]["comparison"].get(field) is True for row in rows
-    )
+    return sum(row["score_layers"][layer]["comparison"].get(field) is True for row in rows)
 
 
 def _rate(count: int) -> float:
@@ -372,9 +360,7 @@ def _register(payload: dict[str, Any]) -> None:
             "deterministic_purist_correct": aggregate["deterministic_purist_correct"],
             "selected_purist_correct": aggregate["selected_purist_correct"],
             "selected_pragmatic_correct": aggregate["selected_pragmatic_correct"],
-            "net_purist_gain_vs_deterministic": aggregate[
-                "net_purist_gain_vs_deterministic"
-            ],
+            "net_purist_gain_vs_deterministic": aggregate["net_purist_gain_vs_deterministic"],
             "changed_labels": aggregate["changed_labels"],
             "wrong_to_correct": aggregate["wrong_to_correct"],
             "correct_to_wrong": aggregate["correct_to_wrong"],

@@ -40,9 +40,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 
 PROMPT_VERSION = "gan2026_represented_event_normalizer_v0_2"
 PIPELINE_FAMILY = "represented_event_normalizer"
-DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
-    structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_STRUCTURED_EVENT_JSONL_PATH = structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_represented_event_normalizer_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_represented_event_normalizer_validation.md")
 STAGE_ID = "represented_event_normalizer"
@@ -146,9 +144,7 @@ def build_prompt_input(
 ) -> str:
     """Build a model-facing normalizer payload without IDs, gold, or split."""
 
-    structured_input = llm_event_reasoner.inspect_structured_events(
-        structured_event_row
-    )
+    structured_input = llm_event_reasoner.inspect_structured_events(structured_event_row)
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 represented-event normalization reasoning",
@@ -314,10 +310,7 @@ def parse_normalizer_decision_json(
         update={
             "action_render_events": [
                 *parsed.action_render_events,
-                (
-                    "normalizer_action_validated:"
-                    "replace_with_recomputed_fact_from_selected_evidence"
-                ),
+                ("normalizer_action_validated:replace_with_recomputed_fact_from_selected_evidence"),
             ]
         }
     )
@@ -381,15 +374,9 @@ def write_report(
         f"- Recomputed-fact actions: {summary.get('recomputed_fact_actions', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
         f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}",
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Actions: `{summary.get('verifier_actions', {})}`",
         f"- Profiles: `{summary.get('normalizer_profiles', {})}`",
         "",
@@ -549,9 +536,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 
@@ -564,9 +549,7 @@ def _run_model_call(
     max_tokens: int,
 ) -> str:
     del model, temperature, max_tokens
-    prediction = DspyRepresentedEventNormalizerCaller()(
-        prompt_input_json=prompt_input_json
-    )
+    prediction = DspyRepresentedEventNormalizerCaller()(prompt_input_json=prompt_input_json)
     return str(prediction.decision_json)
 
 
@@ -581,10 +564,7 @@ def _recomputed_action_errors(
         errors.append("action_render_error: recomputed_selected_event_missing")
     missing = sorted(event_id for event_id in selected_ids if event_id not in event_ids)
     if missing:
-        errors.append(
-            "action_render_error: recomputed_selected_event_missing:"
-            + ",".join(missing)
-        )
+        errors.append("action_render_error: recomputed_selected_event_missing:" + ",".join(missing))
     return errors
 
 

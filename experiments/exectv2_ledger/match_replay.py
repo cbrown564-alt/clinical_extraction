@@ -21,7 +21,9 @@ from dataclasses import dataclass
 
 from clinical_extraction.core.scoring import PRF1, prf1_from_counts
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import clinical_headline_unit_keys
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    clinical_headline_unit_keys,
+)
 
 SUPPORTED_ENTITIES: tuple[str, ...] = ("Prescription", "Investigations")
 

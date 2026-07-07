@@ -27,16 +27,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     Gan2026PipelineV1,
 )
 
-DEFAULT_MATRIX_PATH = Path(
-    "experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.jsonl"
-)
+DEFAULT_MATRIX_PATH = Path("experiments/gan2026_rq1_rq2_component_control_matrix_2026-06-04.jsonl")
 DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_projection_instruction_heavy_clinical_defensibility_"
-    "2026-06-04.jsonl"
+    "experiments/gan2026_projection_instruction_heavy_clinical_defensibility_2026-06-04.jsonl"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_projection_instruction_heavy_clinical_defensibility_"
-    "2026-06-04.md"
+    "experiments/gan2026_projection_instruction_heavy_clinical_defensibility_2026-06-04.md"
 )
 
 DEFENSIBILITY_VALUES = {
@@ -321,9 +317,7 @@ def write_report(
     error_rows = [
         row
         for row in rows
-        if _is_projection_error(
-            row["clinical_defensibility_audit"]["note_relative_defensibility"]
-        )
+        if _is_projection_error(row["clinical_defensibility_audit"]["note_relative_defensibility"])
     ]
     non_error_rows = [
         row
@@ -333,12 +327,10 @@ def write_report(
         )
     ]
     by_error = Counter(
-        row["clinical_defensibility_audit"]["primary_error_family"]
-        for row in error_rows
+        row["clinical_defensibility_audit"]["primary_error_family"] for row in error_rows
     )
     by_non_error_family = Counter(
-        row["clinical_defensibility_audit"]["primary_error_family"]
-        for row in non_error_rows
+        row["clinical_defensibility_audit"]["primary_error_family"] for row in non_error_rows
     )
     by_panel: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -384,8 +376,7 @@ def write_report(
             for audit in panel_audits
         )
         debatable = sum(
-            audit["note_relative_defensibility"] == "clinically_debatable"
-            for audit in panel_audits
+            audit["note_relative_defensibility"] == "clinically_debatable" for audit in panel_audits
         )
         not_defensible = sum(
             audit["note_relative_defensibility"] == "not_clinically_defensible"
@@ -463,9 +454,7 @@ def _md(value: Any) -> str:
 
 def _input_defensible_note_error_count(rows: Sequence[Mapping[str, Any]]) -> int:
     return sum(
-        _is_projection_error(
-            row["clinical_defensibility_audit"]["note_relative_defensibility"]
-        )
+        _is_projection_error(row["clinical_defensibility_audit"]["note_relative_defensibility"])
         and row["clinical_defensibility_audit"]["input_relative_defensibility"]
         in {"clinically_defensible", "clinically_debatable"}
         for row in rows

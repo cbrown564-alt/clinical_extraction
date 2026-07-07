@@ -289,8 +289,7 @@ def main() -> None:
                 cited = cited_dev if split == "dev" else cited_full
                 gap = round(ch["f1"] - cited, 4)
                 print(
-                    f"  {'':22s}  gap to cited hybrid Inv clinical_headline "
-                    f"({cited}): {gap:+.4f}"
+                    f"  {'':22s}  gap to cited hybrid Inv clinical_headline ({cited}): {gap:+.4f}"
                 )
             split_out[surface] = scored
 

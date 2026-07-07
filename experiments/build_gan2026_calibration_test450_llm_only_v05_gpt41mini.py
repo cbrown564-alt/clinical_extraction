@@ -32,9 +32,7 @@ VALIDATION_REFERENCE = (575, 750)
 
 
 def main() -> None:
-    llm_only_direct_labeler.set_active_prompt_version(
-        llm_only_direct_labeler.PROMPT_VERSION_V0_5
-    )
+    llm_only_direct_labeler.set_active_prompt_version(llm_only_direct_labeler.PROMPT_VERSION_V0_5)
     records = load_records_for_split("test")
     assert len(records) == 450, f"expected 450 test rows, got {len(records)}"
     manifest = load_split_manifest()
@@ -92,7 +90,10 @@ def main() -> None:
             "coverage, no row-level tuning."
         ),
     }
-    JSON_PATH.write_text(json.dumps({**summary, "metadata_keys": sorted(metadata)}, indent=2) + "\n", encoding="utf-8")
+    JSON_PATH.write_text(
+        json.dumps({**summary, "metadata_keys": sorted(metadata)}, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(json.dumps(summary, indent=2))
 
 

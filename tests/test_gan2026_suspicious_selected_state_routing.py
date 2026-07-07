@@ -71,9 +71,7 @@ def test_suspicious_routing_routes_missing_exact_trace_to_review() -> None:
     saved = _saved_row()
     saved["structured_record"]["selected_state"]["selected_evidence"] = "not in the note"
 
-    rows, metadata = suspicious_selected_state_routing.build_suspicious_routing_rows(
-        [saved]
-    )
+    rows, metadata = suspicious_selected_state_routing.build_suspicious_routing_rows([saved])
 
     row = rows[0]
     assert row["suspicious_state_action"] == "route_review"
@@ -93,9 +91,7 @@ def test_suspicious_routing_routes_invalid_source_id_trace_to_review() -> None:
     saved["structured_record"]["selected_source_ids"] = []
     saved["structured_record"]["source_id_status"] = "invalid"
 
-    rows, _metadata = suspicious_selected_state_routing.build_suspicious_routing_rows(
-        [saved]
-    )
+    rows, _metadata = suspicious_selected_state_routing.build_suspicious_routing_rows([saved])
 
     row = rows[0]
     assert row["selected_evidence_status"]["exact_trace"] is True

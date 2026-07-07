@@ -265,9 +265,7 @@ def _duration_row(
         )
         for variant in DURATION_PROJECTION_VARIANTS
     }
-    exact_gold_nodes = [
-        node for node in seizure_free_nodes if node.normalized_label == gold_label
-    ]
+    exact_gold_nodes = [node for node in seizure_free_nodes if node.normalized_label == gold_label]
     return {
         "source_row_index": int(row["source_row_index"]),
         "source": str(row.get("source") or row.get("split") or "unknown"),
@@ -399,9 +397,7 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         variant.name: _variant_summary(rows, variant.name)
         for variant in DURATION_PROJECTION_VARIANTS
     }
-    row_best = {
-        str(row["source_row_index"]): _best_non_oracle_variants(row) for row in rows
-    }
+    row_best = {str(row["source_row_index"]): _best_non_oracle_variants(row) for row in rows}
     return {
         "row_sources": dict(sorted(row_sources.items())),
         "failure_modes": dict(sorted(failure_modes.items())),
@@ -412,12 +408,9 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 def _variant_summary(rows: Sequence[Mapping[str, Any]], variant_name: str) -> dict[str, Any]:
     return {
-        "exact_matches": sum(
-            bool(row["variant_results"][variant_name]["correct"]) for row in rows
-        ),
+        "exact_matches": sum(bool(row["variant_results"][variant_name]["correct"]) for row in rows),
         "selected_seizure_free_rows": sum(
-            bool(row["variant_results"][variant_name]["selected_seizure_free"])
-            for row in rows
+            bool(row["variant_results"][variant_name]["selected_seizure_free"]) for row in rows
         ),
         "baseline_wrong_to_variant_correct": sum(
             not bool(row["variant_results"]["baseline_v0"]["correct"])
@@ -492,12 +485,8 @@ def _numeric_duration_sort_key(node: StateGraphNode) -> tuple[int, float]:
 
 def _month_bucket_duration_sort_key(node: StateGraphNode) -> tuple[int, int, float]:
     duration = _duration_record(node.normalized_label or "")
-    is_broad_month = (
-        duration["known"] and not duration["numeric"] and duration["unit"] == "month"
-    )
-    is_numeric_month = (
-        duration["known"] and duration["numeric"] and duration["unit"] == "month"
-    )
+    is_broad_month = duration["known"] and not duration["numeric"] and duration["unit"] == "month"
+    is_numeric_month = duration["known"] and duration["numeric"] and duration["unit"] == "month"
     return int(is_broad_month), int(is_numeric_month), -float(duration["months"])
 
 

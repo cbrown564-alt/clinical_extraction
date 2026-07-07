@@ -46,12 +46,20 @@ _CASES: list[tuple[str, str, str]] = [
         "His epilepsy was well controlled until December, when it worsened. His focal "
         "seizures now occur 2 to 3 times per month.",
         _events(
-            {"applies_to": "focal seizures", "kind": "frequency_rate", "evidence": "2 to 3 times per month"},
+            {
+                "applies_to": "focal seizures",
+                "kind": "frequency_rate",
+                "evidence": "2 to 3 times per month",
+            },
             {"applies_to": "focal seizures", "kind": "changed", "evidence": "worsened"},
         ),
         # Draft consolidated to the rate only and missed the change.
         _events(
-            {"applies_to": "focal seizures", "kind": "frequency_rate", "evidence": "2 to 3 times per month"},
+            {
+                "applies_to": "focal seizures",
+                "kind": "frequency_rate",
+                "evidence": "2 to 3 times per month",
+            },
         ),
     ),
     # A (FP) — a stability statement is not a SEPARATE changed fact alongside a rate.
@@ -74,16 +82,22 @@ _CASES: list[tuple[str, str, str]] = [
         _events(),
         # Draft over-emitted on the non-epileptic events.
         _events(
-            {"applies_to": "dissociative events", "kind": "frequency_rate", "evidence": "events around twice a week"},
+            {
+                "applies_to": "dissociative events",
+                "kind": "frequency_rate",
+                "evidence": "events around twice a week",
+            },
         ),
     ),
     # C — a dated past count is an active_rate, not the current seizure-free status.
     (
-        "He had 2 generalised tonic-clonic seizures in 2014. He remains seizure free "
-        "currently.",
+        "He had 2 generalised tonic-clonic seizures in 2014. He remains seizure free currently.",
         _events(
-            {"applies_to": "generalised tonic-clonic seizures", "kind": "frequency_rate",
-             "evidence": "2 generalised tonic-clonic seizures in 2014"},
+            {
+                "applies_to": "generalised tonic-clonic seizures",
+                "kind": "frequency_rate",
+                "evidence": "2 generalised tonic-clonic seizures in 2014",
+            },
         ),
         # Draft replaced the historical rate with current seizure-free.
         _events(

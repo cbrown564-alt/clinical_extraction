@@ -24,6 +24,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+# The validation driver owns the joint-arm transform; import it byte-identical.
+import experiments.build_gan2026_confidence_one_vs_two_call_paired as vmod
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import confidence_reviewer as cr
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.confidence_reviewer import (
     ConfidenceReviewer,
@@ -37,9 +39,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.cli.frozen_test_preflig
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records_for_split
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events as hse
-
-# The validation driver owns the joint-arm transform; import it byte-identical.
-import experiments.build_gan2026_confidence_one_vs_two_call_paired as vmod
 
 DATE = "2026-06-17"
 JOINT_CKPT = rc.EXPERIMENTS / f"gan2026_confidence_one_vs_two_joint_test450_{DATE}.jsonl"
@@ -102,8 +101,8 @@ def aggregate(
     boot = vmod.bootstrap_auroc_diff(joint_p, dec_p, correct)
 
     def _resid(pvals, corr, flags, want):
-        sp = [p for p, f in zip(pvals, flags) if f == want]
-        sc = [c for c, f in zip(corr, flags) if f == want]
+        sp = [p for p, f in zip(pvals, flags, strict=False) if f == want]
+        sc = [c for c, f in zip(corr, flags, strict=False) if f == want]
         return {
             "n": len(sp),
             "mean_p": (sum(sp) / len(sp)) if sp else float("nan"),
@@ -114,7 +113,8 @@ def aggregate(
         "n_scored_paired": len(correct),
         "n_failures": sum(1 for c in correct if not c),
         "joint_arm_purist_accuracy": (n_purist_correct / n_with_comparison)
-        if n_with_comparison else float("nan"),
+        if n_with_comparison
+        else float("nan"),
         "joint_arm_one_call": {
             **joint_m,
             "residual": _resid(joint_p, correct, resid_flags, True),
@@ -131,17 +131,22 @@ def aggregate(
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--run", action="store_true",
-                    help="REQUIRED to issue live test450 calls (freeze-warden gate).")
+    ap.add_argument(
+        "--run",
+        action="store_true",
+        help="REQUIRED to issue live test450 calls (freeze-warden gate).",
+    )
     args = ap.parse_args()
     if not args.run:
         ap.error("refusing to touch test450 without --run (freeze-warden gated).")
 
-    preflight = run_single_model_preflight(SingleModelPreflightConfig(
-        split="test",
-        subject_artifact_path=rc.REASONER_TEST450,
-        outputs_must_be_absent=(OUT_JSON, OUT_MD),
-    ))
+    preflight = run_single_model_preflight(
+        SingleModelPreflightConfig(
+            split="test",
+            subject_artifact_path=rc.REASONER_TEST450,
+            outputs_must_be_absent=(OUT_JSON, OUT_MD),
+        )
+    )
     if not preflight.ok:
         for f in preflight.failures:
             print(f"PREFLIGHT FAIL: {f}")
@@ -149,9 +154,11 @@ def main() -> None:
     print(f"single-model preflight OK ({len(preflight.checks)} checks passed)")
 
     frozen = frozen_transform_hashes()
-    print(f"frozen transforms: joint {frozen['joint_transform_sha256'][:16]}… "
-          f"reviewer {frozen['confidence_reviewer_module_sha256'][:16]}… "
-          f"readout {frozen['readout_sha256'][:16]}…")
+    print(
+        f"frozen transforms: joint {frozen['joint_transform_sha256'][:16]}… "
+        f"reviewer {frozen['confidence_reviewer_module_sha256'][:16]}… "
+        f"readout {frozen['readout_sha256'][:16]}…"
+    )
 
     records = load_records_for_split("test")
     records_by_idx = {r.source_row_index: r for r in records}
@@ -178,7 +185,8 @@ def main() -> None:
         raw = raw_by_idx.get(idx, "")
         extraction, _norm, _errs = (
             hse.parse_structured_json(raw, note_text=rec.note_text)
-            if raw else (None, [], ["not_run"])
+            if raw
+            else (None, [], ["not_run"])
         )
         comparison = hse._compare_to_gold(rec, extraction) if extraction else None
         if not comparison:
@@ -219,8 +227,14 @@ def main() -> None:
     checkpoint_decoupled(dec_done)
 
     agg = aggregate(
-        joint_pairs, dec_pairs, paired_joint_p, paired_dec_p, paired_correct, resid_flags,
-        n_purist_correct=n_purist_correct, n_with_comparison=n_with_comparison,
+        joint_pairs,
+        dec_pairs,
+        paired_joint_p,
+        paired_dec_p,
+        paired_correct,
+        resid_flags,
+        n_purist_correct=n_purist_correct,
+        n_with_comparison=n_with_comparison,
     )
     result = {
         "artifact_kind": "gan2026_confidence_one_vs_two_call_test450",
@@ -245,26 +259,39 @@ def main() -> None:
             "se_test450_baseline_purist_accuracy": 0.809,
         },
         "provenance": rc.provenance_block(
-            subject="fresh_joint_se_mini_paired", sources=[rc.REASONER_TEST450],
-        ) | {"model_calls": f"{len(raw_by_idx)} joint + {n_processed} reviewer live calls (temp 0)",
-             "reviewer_version": cr.CONFIDENCE_REVIEWER_VERSION,
-             "answers_shared_across_arms": True},
+            subject="fresh_joint_se_mini_paired",
+            sources=[rc.REASONER_TEST450],
+        )
+        | {
+            "model_calls": f"{len(raw_by_idx)} joint + {n_processed} reviewer live calls (temp 0)",
+            "reviewer_version": cr.CONFIDENCE_REVIEWER_VERSION,
+            "answers_shared_across_arms": True,
+        },
         "aggregate_results": agg,
     }
     OUT_JSON.write_text(json.dumps(result, indent=2), encoding="utf-8")
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
-    j = agg["joint_arm_one_call"]; d = agg["decoupled_arm_two_call"]; b = agg["paired_auroc_difference"]
-    print(f"  joint(1-call) AUROC {j['failure_prediction_auroc']:.3f} · "
-          f"decoupled(2-call) AUROC {d['failure_prediction_auroc']:.3f}")
-    print(f"  paired diff (dec - joint) {b['point_diff_decoupled_minus_joint']:+.3f} "
-          f"CI [{b['ci95_lo']:+.3f}, {b['ci95_hi']:+.3f}]")
+    j = agg["joint_arm_one_call"]
+    d = agg["decoupled_arm_two_call"]
+    b = agg["paired_auroc_difference"]
+    print(
+        f"  joint(1-call) AUROC {j['failure_prediction_auroc']:.3f} · "
+        f"decoupled(2-call) AUROC {d['failure_prediction_auroc']:.3f}"
+    )
+    print(
+        f"  paired diff (dec - joint) {b['point_diff_decoupled_minus_joint']:+.3f} "
+        f"CI [{b['ci95_lo']:+.3f}, {b['ci95_hi']:+.3f}]"
+    )
 
 
 def render_md(r: dict[str, Any]) -> str:
     agg = r["aggregate_results"]
-    j = agg["joint_arm_one_call"]; d = agg["decoupled_arm_two_call"]
-    b = agg["paired_auroc_difference"]; c = r["comparators"]; ft = r["frozen_transforms"]
+    j = agg["joint_arm_one_call"]
+    d = agg["decoupled_arm_two_call"]
+    b = agg["paired_auroc_difference"]
+    c = r["comparators"]
+    ft = r["frozen_transforms"]
     ci_excludes_zero = b["ci95_lo"] > 0 or b["ci95_hi"] < 0
     aj = j["failure_prediction_auroc"]
     L = [

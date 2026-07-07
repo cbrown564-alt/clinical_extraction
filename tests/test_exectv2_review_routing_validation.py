@@ -10,9 +10,7 @@ def test_review_routing_validation_runs_current_code_surface_without_promotion()
 
     assert audit["surface"] == "rich-schema holistic assembly reliability scorecard"
     assert audit["eligible_validation_artifacts"] == 1
-    assert audit["stop_rule_outcome"]["status"] == (
-        "completed_current_code_surface_validation"
-    )
+    assert audit["stop_rule_outcome"]["status"] == ("completed_current_code_surface_validation")
     assert audit["stop_rule_outcome"]["validation_run_executed"] is True
     assert audit["stop_rule_outcome"]["promotion_decision"] == "not_promoted"
 
@@ -21,17 +19,16 @@ def test_review_routing_validation_runs_current_code_surface_without_promotion()
     assert candidates["high_recall_predeclared"]["catch_rate"] == 0.8712
     assert candidates["balanced_dev_candidate"]["review_burden"] == 0.7522
     assert candidates["balanced_dev_candidate"]["catch_rate"] == 0.8033
-    assert candidates["balanced_dev_candidate"]["false_alarms_per_caught_error"] < (
-        candidates["high_recall_predeclared"]["false_alarms_per_caught_error"]
+    assert (
+        candidates["balanced_dev_candidate"]["false_alarms_per_caught_error"]
+        < (candidates["high_recall_predeclared"]["false_alarms_per_caught_error"])
     )
     validation = audit["validation_readout"]
     validation_points = {row["id"]: row for row in validation["operating_points"]}
     assert validation_points["balanced_dev_candidate"]["catch_rate"] >= 0.80
     assert validation_points["balanced_dev_candidate"]["review_burden"] > 0.95
     burden_gate = next(
-        gate
-        for gate in audit["promotion_gates"]
-        if gate["gate"].startswith("Review burden")
+        gate for gate in audit["promotion_gates"] if gate["gate"].startswith("Review burden")
     )
     assert burden_gate["outcome"] == "fail"
 

@@ -19,9 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_EXECTV2_COMPONENT_OFF = Path(
     "experiments/exectv2_component_off_replay_dev140_20260626.json"
 )
-DEFAULT_GAN2026_LADDER = Path(
-    "experiments/gan2026_component_stage_ladder_validation_20260624.json"
-)
+DEFAULT_GAN2026_LADDER = Path("experiments/gan2026_component_stage_ladder_validation_20260624.json")
 DEFINITIONS_YAML = Path(
     "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/"
     "component_ablation/definitions.yaml"
@@ -174,8 +172,7 @@ def extract_gan2026_row(
     )
     if stage_index is None:
         raise ValueError(
-            f"architecture {mapping.representative_run_id!r} lacks stage "
-            f"{mapping.stage_id!r}"
+            f"architecture {mapping.representative_run_id!r} lacks stage {mapping.stage_id!r}"
         )
     baseline = float(stages[stage_index]["score"])
     if stage_index == 0:

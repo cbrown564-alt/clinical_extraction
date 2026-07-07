@@ -154,10 +154,8 @@ def test_model_swap_readiness_marks_completed_operational_failures(tmp_path: Pat
     assert payload["readiness_gates"]["operational_stability"]["status"] == "fail"
     assert "operational stability is not promoted" in payload["claim_boundary"]
     assert payload["next_actions"] == [
-        "Record the completed dev140 same-core comparison with an "
-        "operational-stability caveat.",
-        "Review Qwen call/parse failures before any full-200 "
-        "aggregate-only predeclaration.",
+        "Record the completed dev140 same-core comparison with an operational-stability caveat.",
+        "Review Qwen call/parse failures before any full-200 aggregate-only predeclaration.",
     ]
 
 
@@ -181,9 +179,7 @@ def test_model_swap_full200_payload_uses_aggregate_only_boundary(tmp_path: Path)
         split="full200",
         row_count=200,
     )
-    configs = [
-        model_swap.load_model_swap_config(path) for path in (gpt_path, deepseek_path)
-    ]
+    configs = [model_swap.load_model_swap_config(path) for path in (gpt_path, deepseek_path)]
     parity = model_swap.validate_same_core_configs(configs)
     rows = [
         _complete_model_row("swap_gpt_full200", "GPT-4.1-mini", row_count=200),
@@ -205,10 +201,7 @@ def test_model_swap_full200_payload_uses_aggregate_only_boundary(tmp_path: Path)
 
     assert payload["artifact_kind"] == "exectv2_same_core_model_swap_full200"
     assert payload["overall_status"] == "ready_for_same_core_scorecard_review"
-    assert (
-        payload["readiness_gates"]["operational_stability"]["status"]
-        == "pass_with_caveat"
-    )
+    assert payload["readiness_gates"]["operational_stability"]["status"] == "pass_with_caveat"
     assert payload["row_inspection_policy"] == (
         "aggregate_only_no_full200_or_holdout_row_level_inspection"
     )
@@ -216,9 +209,7 @@ def test_model_swap_full200_payload_uses_aggregate_only_boundary(tmp_path: Path)
         "exectv2_same_core_full200_predeclaration_2026-06-25.md"
     )
     assert "# ExECTv2 Same-Core Model-Swap Full-200 Aggregate Validation" in markdown
-    assert "accepted with an explicit schema-stability caveat" in payload[
-        "claim_boundary"
-    ]
+    assert "accepted with an explicit schema-stability caveat" in payload["claim_boundary"]
 
 
 def test_model_swap_parity_fails_when_component_graph_changes(tmp_path: Path) -> None:
@@ -246,9 +237,7 @@ def test_model_swap_parity_fails_when_component_graph_changes(tmp_path: Path) ->
     assert parity["mismatched_candidates"] == ["swap_changed"]
 
 
-def test_model_swap_runner_passes_api_base_to_live_components(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_model_swap_runner_passes_api_base_to_live_components(monkeypatch, tmp_path: Path) -> None:
     captured: dict[str, str | None] = {}
 
     def fake_structured_run_split(*args, **kwargs):
@@ -264,9 +253,7 @@ def test_model_swap_runner_passes_api_base_to_live_components(
     monkeypatch.setattr(runner.dx_decomposer, "run_split", fake_dx_run_split)
     monkeypatch.setattr(runner, "write_jsonl", lambda *args, **kwargs: None)
     monkeypatch.setattr(runner.structured, "write_report", lambda *args, **kwargs: None)
-    monkeypatch.setattr(
-        runner.dx_decomposer, "write_report", lambda *args, **kwargs: None
-    )
+    monkeypatch.setattr(runner.dx_decomposer, "write_report", lambda *args, **kwargs: None)
     config = SimpleNamespace(
         model="ollama_chat/qwen3.6:35b",
         temperature=0,
@@ -284,9 +271,7 @@ def test_model_swap_runner_passes_api_base_to_live_components(
         resume=True,
     )
 
-    structured_rows = runner._run_structured(
-        config, [], tmp_path / "structured.jsonl", args
-    )
+    structured_rows = runner._run_structured(config, [], tmp_path / "structured.jsonl", args)
     runner._run_diagnosis(config, [], structured_rows, tmp_path / "dx.jsonl", args)
 
     assert captured == {
@@ -534,9 +519,7 @@ def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> Path:
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 

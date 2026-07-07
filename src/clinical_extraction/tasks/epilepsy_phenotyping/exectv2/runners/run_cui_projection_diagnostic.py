@@ -67,12 +67,8 @@ def main() -> None:
     pred = _letters_from_rows(rows, "predicted_mentions")
     diagnostic = cui_projection_diagnostic(gold, pred, ENTITY_NAMES)
 
-    out_md = args.out_md or args.in_jsonl.with_name(
-        args.in_jsonl.stem + "_cui_projection.md"
-    )
-    out_json = args.out_json or args.in_jsonl.with_name(
-        args.in_jsonl.stem + "_cui_projection.json"
-    )
+    out_md = args.out_md or args.in_jsonl.with_name(args.in_jsonl.stem + "_cui_projection.md")
+    out_json = args.out_json or args.in_jsonl.with_name(args.in_jsonl.stem + "_cui_projection.json")
     markdown = render_markdown(diagnostic, entities=ENTITY_NAMES, source=str(args.in_jsonl))
     out_md.write_text(markdown, encoding="utf-8")
 

@@ -64,22 +64,24 @@ def main() -> None:
         crosstab: Counter[tuple[str, str]] = Counter()
         for c in ecases:
             crosstab[(c["mechanism"], c["verdict"])] += 1
-            csv_rows.append({
-                "entity": c["entity"],
-                "case_id": c["case_id"],
-                "letter": c["letter_id"],
-                "mechanism": c["mechanism"],
-                "verdict": c["verdict"],
-                "missed_text": c["gold_missed"]["text"],
-                "cross_entity_overlap": c["cross_entity_overlap"],
-                "reason": c["verdict_reason"],
-            })
+            csv_rows.append(
+                {
+                    "entity": c["entity"],
+                    "case_id": c["case_id"],
+                    "letter": c["letter_id"],
+                    "mechanism": c["mechanism"],
+                    "verdict": c["verdict"],
+                    "missed_text": c["gold_missed"]["text"],
+                    "cross_entity_overlap": c["cross_entity_overlap"],
+                    "reason": c["verdict_reason"],
+                }
+            )
 
         mech_counts = Counter(c["mechanism"] for c in ecases)
         verdict_counts = Counter(c["verdict"] for c in ecases)
         total = len(ecases)
         h1 = mech_counts["H1_CARDINALITY"]
-        h2 = mech_counts["H2_GENUINE_DIVERGENCE"]
+        mech_counts["H2_GENUINE_DIVERGENCE"]
 
         h1_gold_right = crosstab[("H1_CARDINALITY", "GOLD_RIGHT")]
         h2_gold_right = crosstab[("H2_GENUINE_DIVERGENCE", "GOLD_RIGHT")]
@@ -92,25 +94,37 @@ def main() -> None:
         genuine_strict = h2_gold_right
 
         # Plain verdict-only reading.
-        inflated_verdict_only = verdict_counts["MODEL_DEFENSIBLE"] + verdict_counts["BOTH_DEFENSIBLE"]
+        inflated_verdict_only = (
+            verdict_counts["MODEL_DEFENSIBLE"] + verdict_counts["BOTH_DEFENSIBLE"]
+        )
         genuine_verdict_only = verdict_counts["GOLD_RIGHT"]
 
         print(f"\n=== {entity}: mechanism x verdict cross-tab ({total} source_near FNs) ===")
-        print(f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'TOTAL':>8}")
+        print(
+            f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'TOTAL':>8}"
+        )
         for m in MECHS:
             gr, md, bd = (crosstab[(m, v)] for v in VERDICTS)
             print(f"{m:<22}{gr:>12}{md:>18}{bd:>17}{mech_counts[m]:>8}")
-        print(f"{'TOTAL':<22}{verdict_counts['GOLD_RIGHT']:>12}{verdict_counts['MODEL_DEFENSIBLE']:>18}"
-              f"{verdict_counts['BOTH_DEFENSIBLE']:>17}{total:>8}")
+        print(
+            f"{'TOTAL':<22}{verdict_counts['GOLD_RIGHT']:>12}{verdict_counts['MODEL_DEFENSIBLE']:>18}"
+            f"{verdict_counts['BOTH_DEFENSIBLE']:>17}{total:>8}"
+        )
 
         share_strict = inflated_strict / total if total else 0.0
         share_verdict_only = inflated_verdict_only / total if total else 0.0
-        print(f"\n[predeclared formula] H-inflated = {inflated_strict}/{total} = {share_strict:.1%}   "
-              f"H-genuine = {genuine_strict}/{total} = {genuine_strict/total:.1%}")
-        print(f"[plain verdict-only]   H-inflated = {inflated_verdict_only}/{total} = {share_verdict_only:.1%}   "
-              f"H-genuine = {genuine_verdict_only}/{total} = {genuine_verdict_only/total:.1%}")
+        print(
+            f"\n[predeclared formula] H-inflated = {inflated_strict}/{total} = {share_strict:.1%}   "
+            f"H-genuine = {genuine_strict}/{total} = {genuine_strict / total:.1%}"
+        )
+        print(
+            f"[plain verdict-only]   H-inflated = {inflated_verdict_only}/{total} = {share_verdict_only:.1%}   "
+            f"H-genuine = {genuine_verdict_only}/{total} = {genuine_verdict_only / total:.1%}"
+        )
         if h1:
-            print(f"H1_CARDINALITY verdict split: GOLD_RIGHT={h1_gold_right}/{h1} ({h1_gold_right/h1:.1%})")
+            print(
+                f"H1_CARDINALITY verdict split: GOLD_RIGHT={h1_gold_right}/{h1} ({h1_gold_right / h1:.1%})"
+            )
         print(f"VERDICT [{entity}, predeclared]:   {classify(share_strict)}")
         print(f"VERDICT [{entity}, verdict-only]:  {classify(share_verdict_only)}")
 
@@ -120,9 +134,12 @@ def main() -> None:
             "verdict_counts": dict(verdict_counts),
             "crosstab": {f"{m}|{v}": crosstab[(m, v)] for m in MECHS for v in VERDICTS},
             "h1_gold_right_subset": h1_gold_right,
-            "inflated_strict": inflated_strict, "inflated_strict_share": share_strict,
-            "genuine_strict": genuine_strict, "genuine_strict_share": genuine_strict / total if total else 0.0,
-            "inflated_verdict_only": inflated_verdict_only, "inflated_verdict_only_share": share_verdict_only,
+            "inflated_strict": inflated_strict,
+            "inflated_strict_share": share_strict,
+            "genuine_strict": genuine_strict,
+            "genuine_strict_share": genuine_strict / total if total else 0.0,
+            "inflated_verdict_only": inflated_verdict_only,
+            "inflated_verdict_only_share": share_verdict_only,
             "genuine_verdict_only": genuine_verdict_only,
             "genuine_verdict_only_share": genuine_verdict_only / total if total else 0.0,
             "verdict_predeclared": classify(share_strict),

@@ -12,7 +12,6 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as gepa_data
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import frequency_state_faithful
 
@@ -120,44 +119,60 @@ def main() -> None:
                     subtype = "FN_unknown"
 
             error_type_counts[subtype] += 1
-            errors.append({
-                "letter_id": lid,
-                "subtype": subtype,
-                "state": state,
-                "direction": "FP" if (in_pred and not in_gold) else "FN",
-                "gold_states": sorted(gold_states),
-                "pred_states": sorted(pred_states),
-                "gold_mentions": [_fmt_mention(m) for m in _mentions_for_state(gold_sf, state)] if in_gold else [],
-                "pred_mentions": [_fmt_mention(m) for m in _mentions_for_state(pred_sf, state)] if in_pred else [],
-                "all_gold": [_fmt_mention(m) for m in gold_sf],
-                "all_pred": [_fmt_mention(m) for m in pred_sf],
-            })
+            errors.append(
+                {
+                    "letter_id": lid,
+                    "subtype": subtype,
+                    "state": state,
+                    "direction": "FP" if (in_pred and not in_gold) else "FN",
+                    "gold_states": sorted(gold_states),
+                    "pred_states": sorted(pred_states),
+                    "gold_mentions": [_fmt_mention(m) for m in _mentions_for_state(gold_sf, state)]
+                    if in_gold
+                    else [],
+                    "pred_mentions": [_fmt_mention(m) for m in _mentions_for_state(pred_sf, state)]
+                    if in_pred
+                    else [],
+                    "all_gold": [_fmt_mention(m) for m in gold_sf],
+                    "all_pred": [_fmt_mention(m) for m in pred_sf],
+                }
+            )
 
     # Aggregate report
     print("# SF Verify P2 (mini) — full row-by-row error analysis\n")
-    print(f"Run: exectv2_gepa_sf_verify_gpt41mini_20260628")
+    print("Run: exectv2_gepa_sf_verify_gpt41mini_20260628")
     print(f"Letters: {len(gold_letters)}, Total errors: {len(errors)}\n")
 
     print("## Error type summary\n")
     print(f"{'subtype':<40}{'count':>6}")
-    print(f"{'-'*40}{'-'*6}")
+    print(f"{'-' * 40}{'-' * 6}")
     for subtype, count in error_type_counts.most_common():
         print(f"{subtype:<40}{count:>6}")
 
     # Per-state confusion matrix
     print("\n## Per-state presence confusion (state_profile)\n")
     for state in STATES:
-        tp = sum(1 for g in gold_letters if state in _state_set([
-            {"text": a.text, "attributes": dict(a.attributes), "entity": "SeizureFrequency"}
-            for a in g.entities("SeizureFrequency")
-        ]) and state in _state_set(preds.get(g.letter_id, [])))
+        tp = sum(
+            1
+            for g in gold_letters
+            if state
+            in _state_set(
+                [
+                    {"text": a.text, "attributes": dict(a.attributes), "entity": "SeizureFrequency"}
+                    for a in g.entities("SeizureFrequency")
+                ]
+            )
+            and state in _state_set(preds.get(g.letter_id, []))
+        )
         fp = sum(1 for e in errors if e["state"] == state and e["direction"] == "FP")
         fn = sum(1 for e in errors if e["state"] == state and e["direction"] == "FN")
         gold_n = tp + fn
         prec = tp / (tp + fp) if (tp + fp) > 0 else 0
         rec = tp / gold_n if gold_n > 0 else 0
         f1 = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0
-        print(f"  {state:<14} TP={tp:>3} FP={fp:>3} FN={fn:>3}  P={prec:.2f} R={rec:.2f} F1={f1:.3f}")
+        print(
+            f"  {state:<14} TP={tp:>3} FP={fp:>3} FN={fn:>3}  P={prec:.2f} R={rec:.2f} F1={f1:.3f}"
+        )
 
     # Detailed errors by category
     for category in [
@@ -175,7 +190,9 @@ def main() -> None:
             continue
         print(f"\n## {category} ({len(cat_errors)} cases)\n")
         for e in cat_errors[:12]:
-            print(f"  [{e['letter_id']}] gold_states={e['gold_states']} pred_states={e['pred_states']}")
+            print(
+                f"  [{e['letter_id']}] gold_states={e['gold_states']} pred_states={e['pred_states']}"
+            )
             if e["pred_mentions"]:
                 print(f"    pred: {' | '.join(e['pred_mentions'])}")
             if e["gold_mentions"]:

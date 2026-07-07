@@ -70,8 +70,13 @@ def test_partial_run_excluded_from_table_and_listed_separately() -> None:
             "rules", "deterministic_sf", "(model-independent)", 140, _FULL_METRICS, "live"
         ),
         ComparisonRow(
-            "hybrid", "candidate_assessment", "m", 50, _FULL_METRICS,
-            "registry:partial", partial=True,
+            "hybrid",
+            "candidate_assessment",
+            "m",
+            50,
+            _FULL_METRICS,
+            "registry:partial",
+            partial=True,
         ),
     ]
     md = render_comparison_markdown("m", rows, "dev")

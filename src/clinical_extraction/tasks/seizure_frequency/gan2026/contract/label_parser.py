@@ -2,6 +2,7 @@
 
 Every existing import of this module continues to work unchanged.
 """
+
 from clinical_extraction.tasks.shared.epilepsy.normalization import (  # noqa: F401
     DAY_IN_YEAR,
     DAYS_PER,

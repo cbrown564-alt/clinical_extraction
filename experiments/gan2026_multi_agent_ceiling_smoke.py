@@ -7,6 +7,7 @@ resolver actually cites specialist evidence, and (for the orchestrator)
 which tools it chose to invoke. Does not score against gold or write to
 the registry.
 """
+
 from __future__ import annotations
 
 import json
@@ -111,9 +112,7 @@ def smoke_dynamic_orchestrator(records) -> tuple[int, int]:
 
 
 def main() -> None:
-    dspy.configure(
-        lm=build_dspy_lm(MODEL, temperature=0.2, max_tokens=600, cache=True)
-    )
+    dspy.configure(lm=build_dspy_lm(MODEL, temperature=0.2, max_tokens=600, cache=True))
     records = load_records_for_split("validation")[:N_ROWS]
 
     d3_failures, d3_parse_failures = smoke_d3_static(records)
@@ -134,7 +133,9 @@ def main() -> None:
         )
     )
     if d3_failures or d3_parse_failures or orch_failures or orch_parse_failures:
-        raise SystemExit("Smoke test found call or parse failures — do not proceed to battery/hard50.")
+        raise SystemExit(
+            "Smoke test found call or parse failures — do not proceed to battery/hard50."
+        )
     print("Smoke test passed cleanly for both Angle 2 conditions.")
 
 

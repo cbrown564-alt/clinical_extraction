@@ -5,6 +5,7 @@ the model itself chooses whether/when to call
 `check_evidence_in_letter`/`read_sf_boundary_guide`, stopping on its own
 `finish`, rather than a scripted tool sequence.
 """
+
 from __future__ import annotations
 
 import dspy

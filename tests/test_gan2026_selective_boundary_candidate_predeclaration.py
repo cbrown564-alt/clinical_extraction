@@ -118,6 +118,7 @@ def test_boundary_candidate_schema_presents_choice_fields_as_scalars() -> None:
     assert isinstance(schema_candidate["rate"]["time_unit"], str)
     assert isinstance(schema_candidate["seizure_free"]["duration_unit"], str)
     assert "seizures_per_cluster_is_multiple" in schema_candidate["cluster"]
-    assert "does not give exact low/high numbers" in schema_candidate["cluster"][
-        "seizures_per_cluster_is_multiple"
-    ]
+    assert (
+        "does not give exact low/high numbers"
+        in schema_candidate["cluster"]["seizures_per_cluster_is_multiple"]
+    )

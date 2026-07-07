@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel
@@ -13,13 +13,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation 
     benchmark_ignore_attributes_for,
     semantic_ignore_attributes_for,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     annotation_clinical_concepts,
     collapse_concepts_to_most_specific,
     concepts_hierarchically_related,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
 )
@@ -252,9 +252,7 @@ def headline_duplicate_tags(
     family so each family's collapse semantics apply within that family.
     """
     annotations = list(annotations)
-    per_mention_keys = [
-        clinical_headline_unit_keys(a.entity, [a], note_text) for a in annotations
-    ]
+    per_mention_keys = [clinical_headline_unit_keys(a.entity, [a], note_text) for a in annotations]
     tags: list[str | None] = [None] * len(annotations)
     by_entity: dict[str, list[int]] = {}
     for index, annotation in enumerate(annotations):
@@ -411,9 +409,7 @@ def _score_concept_identity(
 
     precision_tp = recall_tp = pred_count = gold_count = 0
     for letter_id in all_ids:
-        gold_mentions = (
-            gold_by_id[letter_id].entities(entity) if letter_id in gold_by_id else ()
-        )
+        gold_mentions = gold_by_id[letter_id].entities(entity) if letter_id in gold_by_id else ()
         pred_mentions = pred_by_id[letter_id].annotations if letter_id in pred_by_id else ()
         home_pred_mentions = (
             pred_by_id[letter_id].entities(entity) if letter_id in pred_by_id else ()
@@ -616,7 +612,9 @@ def _first_overlapping_prediction(
 
 
 def _phrase_overlap(gold_phrase: str, pred_phrase: str) -> bool:
-    return bool(gold_phrase and pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase))
+    return bool(
+        gold_phrase and pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase)
+    )
 
 
 def _match_gold_to_predictions(

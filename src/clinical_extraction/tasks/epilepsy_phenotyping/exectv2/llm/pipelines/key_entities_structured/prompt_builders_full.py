@@ -67,8 +67,7 @@ def build_full_prompt_input(letter: ExectLetter, *, prompt_profile: PromptProfil
                     "mentions": [
                         {
                             "entity": (
-                                "One of Prescription, Diagnosis, SeizureFrequency, "
-                                "Investigations."
+                                "One of Prescription, Diagnosis, SeizureFrequency, Investigations."
                             ),
                             "text": "Short exact substring used for scoring this entity.",
                             "attributes": "Only attributes legal for that entity.",

@@ -46,9 +46,7 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
     )
 
     disabled_switches = {
-        group.value
-        for group in RuleGroup
-        if group not in config.ablation_config.enabled_groups
+        group.value for group in RuleGroup if group not in config.ablation_config.enabled_groups
     } | set(config.ablation_config.disabled_rule_ids)
 
     evidence_valid, clinical_assessment = canonical_stages.evidence_trace_check_stage(
@@ -64,8 +62,6 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
         "normalized_events": [event.model_dump(mode="json") for event in normalized_events],
         "final_selection": final_selection.model_dump(mode="json"),
         "evidence_valid": evidence_valid,
-        "clinical_assessment": (
-            clinical_assessment.model_dump() if clinical_assessment else None
-        ),
+        "clinical_assessment": (clinical_assessment.model_dump() if clinical_assessment else None),
     }
     return PipelineResult(output=output, diagnostics=diagnostics)

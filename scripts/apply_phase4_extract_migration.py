@@ -11,7 +11,10 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 RULES = REPO / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/rules"
-REGISTRY = REPO / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry"
+REGISTRY = (
+    REPO
+    / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry"
+)
 
 
 def _write_support_files() -> None:
@@ -283,7 +286,7 @@ def _fix_anchor() -> None:
     if "def __getattr__" not in text:
         text = text.rstrip() + (
             "\n\n\ndef __getattr__(name: str):\n"
-            "    if name.startswith(\"__\") and name.endswith(\"__\"):\n"
+            '    if name.startswith("__") and name.endswith("__"):\n'
             "        raise AttributeError(name)\n"
             "    from .extract_reexports import extract_reexport\n\n"
             "    return extract_reexport(name)\n"
@@ -298,7 +301,7 @@ def _add_getattr(module: str) -> None:
         return
     text = text.rstrip() + (
         "\n\n\ndef __getattr__(name: str):\n"
-        "    if name.startswith(\"__\") and name.endswith(\"__\"):\n"
+        '    if name.startswith("__") and name.endswith("__"):\n'
         "        raise AttributeError(name)\n"
         "    from .extract_reexports import extract_reexport\n\n"
         "    return extract_reexport(name)\n"

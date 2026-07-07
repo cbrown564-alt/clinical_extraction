@@ -44,7 +44,6 @@ Usage: uv run python experiments/exectv2_ledger/backfill_dx_sf.py
 from __future__ import annotations
 
 import csv
-import json
 import sys
 from pathlib import Path
 
@@ -52,10 +51,11 @@ _EXPERIMENTS_DIR = Path(__file__).resolve().parents[1]
 if str(_EXPERIMENTS_DIR) not in sys.path:
     sys.path.insert(0, str(_EXPERIMENTS_DIR))
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import (
+    data as gepa_data,  # noqa: E402
+)
 from exectv2_ledger.mechanism import Mechanism, Verdict  # noqa: E402
 from exectv2_ledger.schema import GoldCaseRow, write_gold_case_ledger  # noqa: E402
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as gepa_data  # noqa: E402
 
 ROOT = _EXPERIMENTS_DIR.parent
 DX_RUN_ID = "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628"
@@ -87,7 +87,9 @@ def _provenance(reason: str, extra_note: str = "") -> dict:
 
 def backfill_diagnosis() -> list[GoldCaseRow]:
     if not (DX_DIR / "_adjudication.csv").exists():
-        print(f"SKIP Diagnosis: {DX_DIR / '_adjudication.csv'} not found (local scratch, gitignored)")
+        print(
+            f"SKIP Diagnosis: {DX_DIR / '_adjudication.csv'} not found (local scratch, gitignored)"
+        )
         return []
 
     letters_by_id = {letter.letter_id: letter.note_text for letter in gepa_data.load_dev_letters()}
@@ -137,7 +139,9 @@ def _classify_sf_mechanism(verdict: str, mechanism_text: str) -> str:
 
 def backfill_seizure_frequency() -> list[GoldCaseRow]:
     if not (SF_DIR / "_adjudication.csv").exists():
-        print(f"SKIP SeizureFrequency: {SF_DIR / '_adjudication.csv'} not found (local scratch, gitignored)")
+        print(
+            f"SKIP SeizureFrequency: {SF_DIR / '_adjudication.csv'} not found (local scratch, gitignored)"
+        )
         return []
 
     letters_by_id = {letter.letter_id: letter.note_text for letter in gepa_data.load_dev_letters()}
@@ -151,40 +155,46 @@ def backfill_seizure_frequency() -> list[GoldCaseRow]:
         mechanism_text = rec["mechanism"]
         mechanism = _classify_sf_mechanism(verdict, mechanism_text)
         mapped_verdict = _VERDICT_MAP[verdict]
-        provenance = _provenance(rec["reason"], extra_note=f"mechanism={mechanism_text}" if mechanism_text else "")
+        provenance = _provenance(
+            rec["reason"], extra_note=f"mechanism={mechanism_text}" if mechanism_text else ""
+        )
 
         missed_states = [s for s in rec["missed"].split("|") if s]
         spurious_states = [s for s in rec["spurious"].split("|") if s]
         for state in missed_states:
-            rows.append(GoldCaseRow(
-                row_id=f"seizurefrequency:{SF_RUN_ID}:{letter_id}:missed:{state}",
-                family="SeizureFrequency",
-                run_id=SF_RUN_ID,
-                letter_id=letter_id,
-                disagreement_type="missed",
-                match_key=state,
-                source_letter_text=letters_by_id.get(letter_id, ""),
-                gold=_mention(state),
-                pred=None,
-                mechanism=mechanism,
-                verdict=mapped_verdict,
-                provenance=provenance,
-            ))
+            rows.append(
+                GoldCaseRow(
+                    row_id=f"seizurefrequency:{SF_RUN_ID}:{letter_id}:missed:{state}",
+                    family="SeizureFrequency",
+                    run_id=SF_RUN_ID,
+                    letter_id=letter_id,
+                    disagreement_type="missed",
+                    match_key=state,
+                    source_letter_text=letters_by_id.get(letter_id, ""),
+                    gold=_mention(state),
+                    pred=None,
+                    mechanism=mechanism,
+                    verdict=mapped_verdict,
+                    provenance=provenance,
+                )
+            )
         for state in spurious_states:
-            rows.append(GoldCaseRow(
-                row_id=f"seizurefrequency:{SF_RUN_ID}:{letter_id}:spurious:{state}",
-                family="SeizureFrequency",
-                run_id=SF_RUN_ID,
-                letter_id=letter_id,
-                disagreement_type="spurious",
-                match_key=state,
-                source_letter_text=letters_by_id.get(letter_id, ""),
-                gold=None,
-                pred=_mention(state),
-                mechanism=mechanism,
-                verdict=mapped_verdict,
-                provenance=provenance,
-            ))
+            rows.append(
+                GoldCaseRow(
+                    row_id=f"seizurefrequency:{SF_RUN_ID}:{letter_id}:spurious:{state}",
+                    family="SeizureFrequency",
+                    run_id=SF_RUN_ID,
+                    letter_id=letter_id,
+                    disagreement_type="spurious",
+                    match_key=state,
+                    source_letter_text=letters_by_id.get(letter_id, ""),
+                    gold=None,
+                    pred=_mention(state),
+                    mechanism=mechanism,
+                    verdict=mapped_verdict,
+                    provenance=provenance,
+                )
+            )
     return rows
 
 
@@ -196,15 +206,19 @@ def main() -> None:
         out = LEDGER_DIR / "gold_case_ledger_diagnosis.jsonl"
         write_gold_case_ledger(dx_rows, out)
         genuine = sum(1 for r in dx_rows if r.mechanism == Mechanism.GENUINE_MODEL_ERROR.value)
-        print(f"Diagnosis: {len(dx_rows)} rows -> {out.relative_to(ROOT)} "
-              f"({genuine}/{len(dx_rows)} = {genuine/len(dx_rows):.1%} genuine_model_error)")
+        print(
+            f"Diagnosis: {len(dx_rows)} rows -> {out.relative_to(ROOT)} "
+            f"({genuine}/{len(dx_rows)} = {genuine / len(dx_rows):.1%} genuine_model_error)"
+        )
 
     if sf_rows:
         out = LEDGER_DIR / "gold_case_ledger_seizurefrequency.jsonl"
         write_gold_case_ledger(sf_rows, out)
         genuine = sum(1 for r in sf_rows if r.mechanism == Mechanism.GENUINE_MODEL_ERROR.value)
-        print(f"SeizureFrequency: {len(sf_rows)} rows -> {out.relative_to(ROOT)} "
-              f"({genuine}/{len(sf_rows)} = {genuine/len(sf_rows):.1%} genuine_model_error)")
+        print(
+            f"SeizureFrequency: {len(sf_rows)} rows -> {out.relative_to(ROOT)} "
+            f"({genuine}/{len(sf_rows)} = {genuine / len(sf_rows):.1%} genuine_model_error)"
+        )
 
 
 if __name__ == "__main__":

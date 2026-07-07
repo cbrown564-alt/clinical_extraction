@@ -22,6 +22,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     PRESCRIPTION,
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
@@ -29,7 +30,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
     TARGET_INDICATORS,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 DEFAULT_RUNS: tuple[tuple[str, Path, Path], ...] = (
     (
         "v08_dev140_control",
@@ -38,18 +39,30 @@ DEFAULT_RUNS: tuple[tuple[str, Path, Path], ...] = (
     ),
     (
         "v09_partial_hybrid",
-        Path("experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json"),
-        Path("experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json"
+        ),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
+        ),
     ),
     (
         "v0916_deepseek_diagnostic",
-        Path("experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"),
-        Path("experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json"
+        ),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
+        ),
     ),
     (
         "v0922_qwen_diagnostic",
-        Path("experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"),
-        Path("experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json"
+        ),
+        Path(
+            "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
+        ),
     ),
 )
 
@@ -281,9 +294,7 @@ def _duplicate_compression(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         pred_keys: list[str] = []
         for row in rows:
             gold_keys.extend(
-                _fact_key(m)
-                for m in row.get("gold_mentions", [])
-                if m.get("entity") == entity
+                _fact_key(m) for m in row.get("gold_mentions", []) if m.get("entity") == entity
             )
             pred_keys.extend(
                 _fact_key(m) for m in row.get("predicted_mentions", []) if m.get("entity") == entity
@@ -372,16 +383,11 @@ def _row_review(row: Mapping[str, Any], gold_letter: ExectLetter) -> dict[str, A
     if any(_gold_span_drift(m) for m in gold_mentions):
         flags.add("gold_span_drift_or_truncation")
     if any(
-        _status_bucket(str(m.get("evidence", "")))
-        in {"family_history", "future", "uncertain"}
+        _status_bucket(str(m.get("evidence", ""))) in {"family_history", "future", "uncertain"}
         for m in mentions
     ):
         flags.add("prediction_plausible_but_overcalled")
-    if any(
-        _is_deterministic(p)
-        for mention in mentions
-        for p in mention.get("provenance", [])
-    ):
+    if any(_is_deterministic(p) for mention in mentions for p in mention.get("provenance", [])):
         flags.add("deterministic_repair_changed_clinical_meaning")
     return {
         "letter_id": row["letter_id"],
@@ -417,12 +423,10 @@ def _question_answers(runs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         key=lambda r: r["clinical_utility"]["evidence_quality"]["attribute_signal_rate"],
     )
     benchmark_buckets = sum(
-        r["deterministic_action_buckets"]["bucket_counts"].get("benchmark_format", 0)
-        for r in runs
+        r["deterministic_action_buckets"]["bucket_counts"].get("benchmark_format", 0) for r in runs
     )
     clinical_buckets = sum(
-        r["deterministic_action_buckets"]["bucket_counts"].get("clinical_useful", 0)
-        for r in runs
+        r["deterministic_action_buckets"]["bucket_counts"].get("clinical_useful", 0) for r in runs
     )
     return {
         "are_predictions_better_than_gold": (
@@ -659,9 +663,7 @@ def _gold_span_drift(mention: Mapping[str, Any]) -> bool:
     text = str(mention.get("text", "")).strip()
     normalized = normalize_phrase(text)
     return (
-        text.endswith("-")
-        or len(normalized) <= 4
-        or normalized in {"mri", "eeg", "ct", "seizures"}
+        text.endswith("-") or len(normalized) <= 4 or normalized in {"mri", "eeg", "ct", "seizures"}
     )
 
 
@@ -692,9 +694,7 @@ def _action_bucket(provenance: Mapping[str, Any], entity: str) -> str:
     portability = str(provenance.get("portability", "") or "")
     owner = str(provenance.get("owner", ""))
     detail = (
-        provenance.get("detail", {})
-        if isinstance(provenance.get("detail", {}), Mapping)
-        else {}
+        provenance.get("detail", {}) if isinstance(provenance.get("detail", {}), Mapping) else {}
     )
     rule_category = str(detail.get("rule_category", ""))
     if portability == "clinical_epilepsy":

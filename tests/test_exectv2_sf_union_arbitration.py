@@ -92,10 +92,7 @@ def test_sf_union_arbitration_applies_benchmark_surface_rewrites() -> None:
         deterministic_mentions=[],
     )
 
-    assert [
-        (mention["text"], mention["attributes"].get("CUI"))
-        for mention in mentions
-    ] == [
+    assert [(mention["text"], mention["attributes"].get("CUI")) for mention in mentions] == [
         ("seizure cluster", "C3203523"),
         ("typical absences", "C4316903"),
         ("seizures", "C0036572"),

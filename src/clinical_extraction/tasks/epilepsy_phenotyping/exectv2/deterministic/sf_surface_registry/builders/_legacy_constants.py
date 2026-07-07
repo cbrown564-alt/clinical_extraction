@@ -11,14 +11,32 @@ import re
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     CONTEXTUAL_RATE_NOISE as _SF_CONTEXTUAL_RATE_NOISE_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     DATED_GTC as _SF_DATED_GTC_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     GTC_FOUR_LAST_THREE_WEEKS as _SF_GTC_FOUR_LAST_THREE_WEEKS_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     GTC_FURTHER_SINCE as _SF_GTC_FURTHER_SINCE_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     GTC_PER_MONTH as _SF_GTC_PER_MONTH_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     GTC_RANGE_PER_WEEK as _SF_GTC_RANGE_PER_WEEK_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     GTCS_ACTIVE_WITHOUT_COUNT as _SF_GTCS_ACTIVE_WITHOUT_COUNT_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     NO_FURTHER_GTC_SINCE as _SF_NO_FURTHER_GTC_SINCE_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     NO_FURTHER_SINCE as _SF_GENERIC_NO_FURTHER_SINCE_RE,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.patterns import (
     SEIZURES_EVERY_RANGE_WEEKS as _SF_GENERIC_EVERY_RANGE_RE,
 )
 

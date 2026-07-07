@@ -203,12 +203,13 @@ def test_recent_unresolved_policy_abstains_on_historical_or_boundary_candidates(
         candidate_event_kind="cluster_frequency",
     )
 
-    assert propose_selection_patch(
-        historical_row, policy="recent_unresolved_burden_v0"
-    ).action == "keep"
-    assert propose_selection_patch(
-        boundary_row, policy="recent_unresolved_burden_v0"
-    ).action == "keep"
+    assert (
+        propose_selection_patch(historical_row, policy="recent_unresolved_burden_v0").action
+        == "keep"
+    )
+    assert (
+        propose_selection_patch(boundary_row, policy="recent_unresolved_burden_v0").action == "keep"
+    )
 
 
 def test_propose_selection_patches_omits_keep_actions() -> None:

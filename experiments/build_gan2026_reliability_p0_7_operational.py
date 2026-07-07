@@ -51,8 +51,9 @@ INTEGRITY_ARTIFACTS = {
 
 
 def _comparison(row: dict[str, Any]) -> dict[str, Any]:
-    return (rc.subject_layer(row).get("comparison") if "v0_reference" in row
-            else row.get("comparison")) or {}
+    return (
+        rc.subject_layer(row).get("comparison") if "v0_reference" in row else row.get("comparison")
+    ) or {}
 
 
 def integrity_row(name: str, path: Path) -> dict[str, Any]:
@@ -114,10 +115,20 @@ def main() -> None:
     token_estimate = {
         "basis": "tiktoken o200k_base over saved prompt_input_json (input proxy) + raw_output",
         "n_rows_measured": len(se_rows),
-        "prompt_tokens": {"mean": mean_in, "median": statistics.median(in_toks),
-                          "min": min(in_toks), "max": max(in_toks), "total": sum(in_toks)},
-        "completion_tokens": {"mean": mean_out, "median": statistics.median(out_toks),
-                              "min": min(out_toks), "max": max(out_toks), "total": sum(out_toks)},
+        "prompt_tokens": {
+            "mean": mean_in,
+            "median": statistics.median(in_toks),
+            "min": min(in_toks),
+            "max": max(in_toks),
+            "total": sum(in_toks),
+        },
+        "completion_tokens": {
+            "mean": mean_out,
+            "median": statistics.median(out_toks),
+            "min": min(out_toks),
+            "max": max(out_toks),
+            "total": sum(out_toks),
+        },
         "assumed_rates_usd_per_1m": {"input": RATE_INPUT_PER_1M, "output": RATE_OUTPUT_PER_1M},
         "estimated_cost_per_1000_notes_usd": cost_per_1000,
         "estimated": True,
@@ -168,7 +179,9 @@ def main() -> None:
             "required_fields": guard["required_telemetry_fields"],
             "missing_field_counts": guard["missing_field_counts"],
             "reconstructed_fields": [
-                f for f in guard["required_telemetry_fields"] if f not in guard["missing_field_counts"]
+                f
+                for f in guard["required_telemetry_fields"]
+                if f not in guard["missing_field_counts"]
             ],
             "still_blocked_fields": list(guard["missing_field_counts"].keys()),
             "status": "partially_reconstructed_offline_estimated",
@@ -178,12 +191,20 @@ def main() -> None:
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
-    print(f"  integrity: {total_rows} rows, {total_model_fail} model render failures, "
-          f"{total_call_err} call errors, {total_unscorable} unscorable-gold, "
-          f"{total_repair_events} recoverable repairs")
-    print(f"  est tokens: in~{mean_in:.0f} out~{mean_out:.0f}; cost/1000 notes ~${cost_per_1000:.2f}")
-    print(f"  RQ8 reconstructed: {result['rq8_guard_over_reconstructed_matrix']['reconstructed_fields']}")
-    print(f"  RQ8 still blocked: {result['rq8_guard_over_reconstructed_matrix']['still_blocked_fields']}")
+    print(
+        f"  integrity: {total_rows} rows, {total_model_fail} model render failures, "
+        f"{total_call_err} call errors, {total_unscorable} unscorable-gold, "
+        f"{total_repair_events} recoverable repairs"
+    )
+    print(
+        f"  est tokens: in~{mean_in:.0f} out~{mean_out:.0f}; cost/1000 notes ~${cost_per_1000:.2f}"
+    )
+    print(
+        f"  RQ8 reconstructed: {result['rq8_guard_over_reconstructed_matrix']['reconstructed_fields']}"
+    )
+    print(
+        f"  RQ8 still blocked: {result['rq8_guard_over_reconstructed_matrix']['still_blocked_fields']}"
+    )
 
 
 def render_md(result: dict[str, Any]) -> str:
@@ -192,42 +213,60 @@ def render_md(result: dict[str, Any]) -> str:
     L.append(f"Date: {result['date']}  ·  Model calls: 0 (tiktoken only, no API)\n")
     ig = result["integrity"]
     L.append("## Operational integrity (recomputed)\n")
-    L.append("| Artifact | Rows | Repair-event rows | Call errors | Model render fails | Unscorable gold | Idx unique |")
+    L.append(
+        "| Artifact | Rows | Repair-event rows | Call errors | Model render fails | Unscorable gold | Idx unique |"
+    )
     L.append("|---|---:|---:|---:|---:|---:|:--:|")
     for r in ig["per_artifact"]:
-        L.append(f"| {r['artifact']} | {r['rows']} | {r['repair_event_rows']} | "
-                 f"{r['call_errors']} | {r['model_render_failures']} | "
-                 f"{r['unscorable_gold_rows']} | "
-                 f"{'✓' if r['source_row_index_unique'] else '✗'} |")
-    L.append(f"\n- **Totals: {ig['total_rows']} rows, "
-             f"{ig['total_model_render_failures']} model render failures, "
-             f"{ig['total_call_errors']} call errors**, "
-             f"{ig['total_unscorable_gold_rows']} unscorable-gold exclusions, "
-             f"all source indices unique: {ig['all_source_indices_unique']}.")
-    L.append(f"- Recoverable deterministic repair events: {ig['total_recoverable_repair_events']} "
-             "(label normalization + decision-field-shape repair; load-bearing per RQ5 ablation, "
-             "not failures).")
+        L.append(
+            f"| {r['artifact']} | {r['rows']} | {r['repair_event_rows']} | "
+            f"{r['call_errors']} | {r['model_render_failures']} | "
+            f"{r['unscorable_gold_rows']} | "
+            f"{'✓' if r['source_row_index_unique'] else '✗'} |"
+        )
+    L.append(
+        f"\n- **Totals: {ig['total_rows']} rows, "
+        f"{ig['total_model_render_failures']} model render failures, "
+        f"{ig['total_call_errors']} call errors**, "
+        f"{ig['total_unscorable_gold_rows']} unscorable-gold exclusions, "
+        f"all source indices unique: {ig['all_source_indices_unique']}."
+    )
+    L.append(
+        f"- Recoverable deterministic repair events: {ig['total_recoverable_repair_events']} "
+        "(label normalization + decision-field-shape repair; load-bearing per RQ5 ablation, "
+        "not failures)."
+    )
     L.append(f"- Resumability: `{ig['resumability']}`.\n")
     te = result["offline_cost_token_estimate"]
     L.append("## Offline cost/token estimate (ESTIMATED, no API)\n")
     L.append(f"Basis: {te['basis']}; n={te['n_rows_measured']}.\n")
-    L.append(f"- Prompt tokens: mean {te['prompt_tokens']['mean']:.0f}, "
-             f"median {te['prompt_tokens']['median']:.0f} "
-             f"(range {te['prompt_tokens']['min']}–{te['prompt_tokens']['max']})")
-    L.append(f"- Completion tokens: mean {te['completion_tokens']['mean']:.0f}, "
-             f"median {te['completion_tokens']['median']:.0f} "
-             f"(range {te['completion_tokens']['min']}–{te['completion_tokens']['max']})")
-    L.append(f"- Assumed rates (USD/1M): input ${te['assumed_rates_usd_per_1m']['input']}, "
-             f"output ${te['assumed_rates_usd_per_1m']['output']}")
-    L.append(f"- **Estimated cost per 1,000 notes: ~${te['estimated_cost_per_1000_notes_usd']:.2f}** "
-             "(estimate, not billed).\n")
+    L.append(
+        f"- Prompt tokens: mean {te['prompt_tokens']['mean']:.0f}, "
+        f"median {te['prompt_tokens']['median']:.0f} "
+        f"(range {te['prompt_tokens']['min']}–{te['prompt_tokens']['max']})"
+    )
+    L.append(
+        f"- Completion tokens: mean {te['completion_tokens']['mean']:.0f}, "
+        f"median {te['completion_tokens']['median']:.0f} "
+        f"(range {te['completion_tokens']['min']}–{te['completion_tokens']['max']})"
+    )
+    L.append(
+        f"- Assumed rates (USD/1M): input ${te['assumed_rates_usd_per_1m']['input']}, "
+        f"output ${te['assumed_rates_usd_per_1m']['output']}"
+    )
+    L.append(
+        f"- **Estimated cost per 1,000 notes: ~${te['estimated_cost_per_1000_notes_usd']:.2f}** "
+        "(estimate, not billed).\n"
+    )
     g = result["rq8_guard_over_reconstructed_matrix"]
     L.append("## RQ8 telemetry guard over the reconstructed matrix\n")
     L.append(f"- Reconstructed offline: {', '.join(g['reconstructed_fields'])}")
     L.append(f"- Still blocked (no offline source): {', '.join(g['still_blocked_fields'])}")
-    L.append(f"- Status: **{g['status']}** — RQ8 moves from fully blocked to partially "
-             "reconstructed; latency and retry remain genuinely unmeasured and require a "
-             "telemetry-instrumented re-pass (P2.2).\n")
+    L.append(
+        f"- Status: **{g['status']}** — RQ8 moves from fully blocked to partially "
+        "reconstructed; latency and retry remain genuinely unmeasured and require a "
+        "telemetry-instrumented re-pass (P2.2).\n"
+    )
     L.append("---\n")
     L.append(
         "**Reading.** Operational *integrity* is 5/5 (zero model render failures, "

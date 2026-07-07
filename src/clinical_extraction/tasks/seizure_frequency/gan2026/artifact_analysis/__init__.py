@@ -56,8 +56,7 @@ def phase_f_completion_summary() -> dict[str, object]:
         "phase": "F",
         "consolidated_analyzer_modules": len(_PHASE_F_ANALYZER_REGISTRY),
         "survey_cluster_files_replaced": sum(
-            spec.survey_cluster_files_replaced
-            for spec in _PHASE_F_ANALYZER_REGISTRY.values()
+            spec.survey_cluster_files_replaced for spec in _PHASE_F_ANALYZER_REGISTRY.values()
         ),
         "claim_boundary": "cluster-level analysis API; no scoring-policy change",
         "registry": {
@@ -76,4 +75,3 @@ __all__ = [
     "get_phase_f_analyzer_registry",
     "phase_f_completion_summary",
 ]
-

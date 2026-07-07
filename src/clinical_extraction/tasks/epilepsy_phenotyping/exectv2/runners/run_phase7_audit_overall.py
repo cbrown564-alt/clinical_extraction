@@ -167,11 +167,14 @@ def _git_head() -> str:
             text=True,
             stderr=subprocess.DEVNULL,
         ).strip()[:12]
-        dirty = subprocess.run(
-            ["git", "diff", "--quiet"],
-            stderr=subprocess.DEVNULL,
-            check=False,
-        ).returncode != 0
+        dirty = (
+            subprocess.run(
+                ["git", "diff", "--quiet"],
+                stderr=subprocess.DEVNULL,
+                check=False,
+            ).returncode
+            != 0
+        )
         untracked = bool(
             subprocess.check_output(
                 ["git", "ls-files", "--others", "--exclude-standard"],

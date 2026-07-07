@@ -294,9 +294,7 @@ def _print_anchors(surface: str) -> None:
             f"directional raw {d_raw} / hybrid {d_hyb}"
         )
     elif surface == "candidate_substrate":
-        print(
-            f"  {'':22s}  dspy E1 analogue: broad payload expected high-recall / low-precision"
-        )
+        print(f"  {'':22s}  dspy E1 analogue: broad payload expected high-recall / low-precision")
 
 
 def main() -> None:

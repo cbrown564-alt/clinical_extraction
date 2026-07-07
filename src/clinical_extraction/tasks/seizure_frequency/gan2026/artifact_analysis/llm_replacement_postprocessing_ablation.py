@@ -32,19 +32,13 @@ DEFAULT_SOURCE_JSONL_PATH = Path(
     "2026-06-02.jsonl"
 )
 DEFAULT_JSONL_PATH = Path(
-    "experiments/"
-    "gan2026_llm_replacement_postprocessing_ablation_validation250_v0_"
-    "2026-06-02.jsonl"
+    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.jsonl"
 )
 DEFAULT_JSON_PATH = Path(
-    "experiments/"
-    "gan2026_llm_replacement_postprocessing_ablation_validation250_v0_"
-    "2026-06-02.json"
+    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json"
 )
 DEFAULT_REPORT_PATH = Path(
-    "experiments/"
-    "gan2026_llm_replacement_postprocessing_ablation_validation250_v0_"
-    "2026-06-02.md"
+    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.md"
 )
 DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
 DEFAULT_RUN_INDEX_PATH = Path("experiments/RUN_INDEX.md")
@@ -272,9 +266,7 @@ def registry_entry_for_replacement_ablation(
         primary_metrics={
             "row_count": int(summary["row_count"]),
             "condition_rows": int(summary["condition_row_count"]),
-            "reused_raw_output_rows": int(
-                summary["replay_variance"]["reused_raw_output_rows"]
-            ),
+            "reused_raw_output_rows": int(summary["replay_variance"]["reused_raw_output_rows"]),
             **condition_metrics,
         },
         repair_mode="raw_llm + format_only + selected_evidence_arithmetic + benchmark_aligned",
@@ -295,9 +287,7 @@ def append_registry_entry(
     run_index_path: Path | None = None,
 ) -> None:
     entries = [
-        existing
-        for existing in load_run_registry(registry_path)
-        if existing.run_id != entry.run_id
+        existing for existing in load_run_registry(registry_path) if existing.run_id != entry.run_id
     ]
     entries.append(entry)
     write_run_registry(entries, registry_path)
@@ -401,9 +391,7 @@ def _condition_row(
         "scorable": bool(score_layer.get("scorable")),
         "purist_correct": bool(score_layer.get("purist_correct")),
         "pragmatic_correct": bool(score_layer.get("pragmatic_correct")),
-        "selected_evidence_valid": _optional_bool(
-            evidence_summary.get("selected_evidence_valid")
-        ),
+        "selected_evidence_valid": _optional_bool(evidence_summary.get("selected_evidence_valid")),
         "event_or_node_evidence_valid": _event_or_node_evidence_valid(evidence_summary),
         "changed_from_raw": raw_label != final_label,
         "changed_from_comparator": (
@@ -537,10 +525,7 @@ def _overall_summary(
             ),
             "run_seed_or_cache_key": _first_text(saved_rows, "cache_key") or "not_recorded",
         },
-        "hard_slice_breakdown": {
-            tag: dict(stats)
-            for tag, stats in sorted(hard_slices.items())
-        },
+        "hard_slice_breakdown": {tag: dict(stats) for tag, stats in sorted(hard_slices.items())},
     }
 
 
@@ -628,8 +613,7 @@ def _hard_slice_tags(
 
 def _has_parse_or_schema_failure(row: Mapping[str, Any]) -> bool:
     return any(
-        "parse" in str(error) or "schema" in str(error)
-        for error in row.get("parse_errors") or ()
+        "parse" in str(error) or "schema" in str(error) for error in row.get("parse_errors") or ()
     )
 
 

@@ -17,20 +17,19 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any
 
 # ── Canonical artifact registry (the only place paths are named) ────────────────
 
 EXPERIMENTS = Path("experiments")
 
 REASONER_TEST450 = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 REASONER_VALIDATION750 = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 CONSENSUS_VALIDATION750 = (
     EXPERIMENTS
@@ -49,8 +48,7 @@ SE_MINI_VALIDATION750 = (
     / "gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07.jsonl"
 )
 ROBUSTNESS_BATTERY = {
-    "direct_labeler_v0_5": EXPERIMENTS
-    / "gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json",
+    "direct_labeler_v0_5": EXPERIMENTS / "gan2026_robustness_battery_v1_gpt41mini_2026-06-15.json",
     "evidence_v0_6": EXPERIMENTS
     / "gan2026_robustness_battery_v1_evidence_v0_6_gpt41mini_2026-06-15.json",
     "evidence_v0_7": EXPERIMENTS
@@ -60,6 +58,7 @@ ROBUSTNESS_CASES = EXPERIMENTS / "gan2026_robustness_battery_v1_cases.json"
 
 
 # ── BOM-safe loaders ────────────────────────────────────────────────────────────
+
 
 def load_jsonl(path: Path, *, skip_metadata: bool = True) -> list[dict[str, Any]]:
     """Load a JSONL artifact, tolerating a UTF-8 BOM and a leading
@@ -96,6 +95,7 @@ def load_json(path: Path) -> Any:
 
 
 # ── Canonical subject accessors (decision 0018) ─────────────────────────────────
+
 
 def subject_layer(row: Mapping[str, Any]) -> dict[str, Any]:
     """The canonical subject layer: single-SE-mini, byte-identical to the
@@ -152,6 +152,7 @@ def gold_monthly(row: Mapping[str, Any]) -> float | None:
 
 # ── Cross-model agreement (consensus votes) ─────────────────────────────────────
 
+
 def agreement_count_by_source_index(consensus_rows: Sequence[Mapping[str, Any]]) -> dict[int, int]:
     """Map ``source_row_index`` -> size of the largest cluster of identical
     agent ``final_label`` votes (3 = unanimous, 2 = majority, 1 = all differ).
@@ -178,7 +179,9 @@ def agreement_count_by_source_index(consensus_rows: Sequence[Mapping[str, Any]])
     return out
 
 
-def rq9_boundary_features_by_source_index(rq9_rows: Sequence[Mapping[str, Any]]) -> dict[int, dict[str, Any]]:
+def rq9_boundary_features_by_source_index(
+    rq9_rows: Sequence[Mapping[str, Any]],
+) -> dict[int, dict[str, Any]]:
     """Map ``source_row_index`` -> the router packet's boundary_features
     (``source_has_*`` flags, ``ambiguity_reasons``)."""
     out: dict[int, dict[str, Any]] = {}
@@ -194,6 +197,7 @@ def rq9_boundary_features_by_source_index(rq9_rows: Sequence[Mapping[str, Any]])
 
 
 # ── Statistics ──────────────────────────────────────────────────────────────────
+
 
 def wilson_interval(successes: int, total: int, *, z: float = 1.96) -> tuple[float, float]:
     """Wilson score interval for a binomial proportion (95% default)."""
@@ -251,11 +255,11 @@ def auroc(scores: Sequence[float], labels: Sequence[bool]) -> float:
     ``labels`` True = positive class (here: the event we want the score to
     predict, e.g. *failure*). Returns 0.5 for degenerate single-class input.
     """
-    pos = [s for s, y in zip(scores, labels) if y]
-    neg = [s for s, y in zip(scores, labels) if not y]
+    pos = [s for s, y in zip(scores, labels, strict=False) if y]
+    neg = [s for s, y in zip(scores, labels, strict=False) if not y]
     if not pos or not neg:
         return float("nan")
-    ranked = sorted(zip(scores, labels), key=lambda t: t[0])
+    ranked = sorted(zip(scores, labels, strict=False), key=lambda t: t[0])
     # average ranks for ties
     ranks: list[float] = [0.0] * len(ranked)
     i = 0
@@ -267,7 +271,7 @@ def auroc(scores: Sequence[float], labels: Sequence[bool]) -> float:
         for k in range(i, j + 1):
             ranks[k] = avg_rank
         i = j + 1
-    sum_ranks_pos = sum(r for r, (_, y) in zip(ranks, ranked) if y)
+    sum_ranks_pos = sum(r for r, (_, y) in zip(ranks, ranked, strict=False) if y)
     n_pos, n_neg = len(pos), len(neg)
     u = sum_ranks_pos - n_pos * (n_pos + 1) / 2
     return u / (n_pos * n_neg)

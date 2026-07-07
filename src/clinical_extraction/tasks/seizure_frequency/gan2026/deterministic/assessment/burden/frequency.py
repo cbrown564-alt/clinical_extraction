@@ -50,9 +50,8 @@ def _frequency_burden_specificity_score(burden: NormalizedBurden) -> tuple[int, 
 def _is_renderable_frequency_burden(burden: NormalizedBurden) -> bool:
     if burden.period_low is None or burden.period_high is None or burden.period_unit is None:
         return False
-    return (
-        burden.vague_count is not None
-        or (burden.count_low is not None and burden.count_high is not None)
+    return burden.vague_count is not None or (
+        burden.count_low is not None and burden.count_high is not None
     )
 
 
@@ -74,8 +73,8 @@ def _frequency_burden(
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
             "conditional_only_trigger_without_baseline"
         ]
-    selected_evidence_label = (
-        selected_evidence_derivation.prediction_label_from_selected_evidence(parse_phrase)
+    selected_evidence_label = selected_evidence_derivation.prediction_label_from_selected_evidence(
+        parse_phrase
     )
     if (
         selected_evidence_label is not None
@@ -104,13 +103,10 @@ def _frequency_burden(
         )
     if (
         _is_previous_month_active_rate_phrase(parse_phrase)
-        and "project_previous_active_month_over_current_month_zero"
-        in disabled_ablation_switches
+        and "project_previous_active_month_over_current_month_zero" in disabled_ablation_switches
     ):
         return NormalizedBurden(source_normalized_phrase=source_phrase), [
-            _disabled_switch_issue(
-                "project_previous_active_month_over_current_month_zero"
-            )
+            _disabled_switch_issue("project_previous_active_month_over_current_month_zero")
         ]
     label = _deterministic_label_from_source_phrase(
         parse_phrase,
@@ -244,8 +240,7 @@ def _frequency_burden_from_multi_month_bucket_phrase(
         reference_date=reference_date,
     )
     if current_month_bucket is not None and not any(
-        match["month_iso"] == current_month_bucket["month_iso"]
-        for match in bucket_matches
+        match["month_iso"] == current_month_bucket["month_iso"] for match in bucket_matches
     ):
         bucket_matches.append(current_month_bucket)
     for article_match in _extract_frequency_article_month_bucket_matches(
@@ -302,9 +297,7 @@ def _frequency_burden_from_multi_month_bucket_phrase(
         denominator_months = explicit_window_months
         denominator_issue = "frequency_rate_multi_month_window_from_source_phrase"
     else:
-        denominator_months = _inclusive_month_span(
-            [match["month_iso"] for match in bucket_matches]
-        )
+        denominator_months = _inclusive_month_span([match["month_iso"] for match in bucket_matches])
         denominator_issue = "frequency_rate_multi_month_window_from_named_buckets"
     if denominator_months is None or denominator_months <= 1:
         return None, [], False
@@ -588,9 +581,7 @@ def _deterministic_label_from_source_phrase(
     ]
     if preferred:
         return _prefer_most_specific_label(preferred)
-    fallback = selected_evidence_derivation.prediction_label_from_selected_evidence(
-        source_phrase
-    )
+    fallback = selected_evidence_derivation.prediction_label_from_selected_evidence(source_phrase)
     return fallback
 
 
@@ -642,9 +633,7 @@ def _rate_burden_from_label(
             "frequency_label_values_unparsed"
         ]
     count_low, count_high, count_issue = _parse_label_range(match.group("count"))
-    period_low, period_high, period_issue = _parse_label_range(
-        match.group("period_count") or "1"
-    )
+    period_low, period_high, period_issue = _parse_label_range(match.group("period_count") or "1")
     issues = [issue for issue in (count_issue, period_issue) if issue is not None]
     return (
         NormalizedBurden(

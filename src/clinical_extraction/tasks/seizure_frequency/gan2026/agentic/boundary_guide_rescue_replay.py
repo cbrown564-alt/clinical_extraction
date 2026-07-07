@@ -73,8 +73,7 @@ def run_boundary_guide_rescue_replay(
         for index in source_indices
     ]
     policy_summaries = {
-        policy: _summarize_policy(replay_rows, policy)
-        for policy in POLICY_ELIGIBILITY
+        policy: _summarize_policy(replay_rows, policy) for policy in POLICY_ELIGIBILITY
     }
     metadata = {
         "artifact_kind": "gan2026_agentic_boundary_guide_rescue_replay",
@@ -117,9 +116,7 @@ def run_boundary_guide_rescue_replay(
             "rows": len(replay_rows),
             "best_promotable_policy": _best_promotable_policy(policy_summaries),
             "promoted_policy_count": sum(
-                1
-                for summary in policy_summaries.values()
-                if summary["gate_status"] == "promote"
+                1 for summary in policy_summaries.values() if summary["gate_status"] == "promote"
             ),
             "any_positive_changed_label_precision": any(
                 (summary.get("changed_label_precision") or 0) > 0
@@ -218,10 +215,7 @@ def write_replay_report(
                 "eligible gate feature."
             ),
             "",
-            (
-                "| Policy | Hidden family | Changed | Wrong->Correct | "
-                "Correct->Wrong | Net |"
-            ),
+            ("| Policy | Hidden family | Changed | Wrong->Correct | Correct->Wrong | Net |"),
             "| --- | --- | ---: | ---: | ---: | ---: |",
         ]
     )
@@ -539,8 +533,7 @@ def _score_label(label: str | None, gold_monthly: float) -> dict[str, Any]:
         "purist_correct": map_purist(predicted_monthly) == map_purist(gold_monthly),
         "predicted_pragmatic_category": str(map_pragmatic(predicted_monthly)),
         "gold_pragmatic_category": str(map_pragmatic(gold_monthly)),
-        "pragmatic_correct": map_pragmatic(predicted_monthly)
-        == map_pragmatic(gold_monthly),
+        "pragmatic_correct": map_pragmatic(predicted_monthly) == map_pragmatic(gold_monthly),
     }
 
 
@@ -569,9 +562,7 @@ def _summarize_policy(
     decisions = [dict(row["policies"][policy]) for row in replay_rows]
     transition_counts = Counter(decision["transition"] for decision in decisions)
     action_counts = Counter(decision["action"] for decision in decisions)
-    kind_transition_counts = Counter(
-        str(decision.get("kind_transition")) for decision in decisions
-    )
+    kind_transition_counts = Counter(str(decision.get("kind_transition")) for decision in decisions)
     changed_labels = sum(bool(decision["changed_label"]) for decision in decisions)
     wrong_to_correct = transition_counts["wrong_to_correct"]
     correct_to_wrong = transition_counts["correct_to_wrong"]
@@ -596,8 +587,7 @@ def _summarize_policy(
         ),
         "changed_labels": changed_labels,
         "fallback_count": sum(
-            decision["selected_condition"] == E2_FALLBACK_CONDITION
-            for decision in decisions
+            decision["selected_condition"] == E2_FALLBACK_CONDITION for decision in decisions
         ),
         "wrong_to_correct": wrong_to_correct,
         "correct_to_wrong": correct_to_wrong,
@@ -643,20 +633,14 @@ def _hidden_family_summaries(
             for family in families:
                 counter = by_family[str(family)]
                 counter["changed_labels"] += int(bool(decision["changed_label"]))
-                counter["wrong_to_correct"] += int(
-                    decision["transition"] == "wrong_to_correct"
-                )
-                counter["correct_to_wrong"] += int(
-                    decision["transition"] == "correct_to_wrong"
-                )
+                counter["wrong_to_correct"] += int(decision["transition"] == "wrong_to_correct")
+                counter["correct_to_wrong"] += int(decision["transition"] == "correct_to_wrong")
         summaries[policy] = {
             family: {
                 "changed_labels": counter["changed_labels"],
                 "wrong_to_correct": counter["wrong_to_correct"],
                 "correct_to_wrong": counter["correct_to_wrong"],
-                "net_purist_gain": (
-                    counter["wrong_to_correct"] - counter["correct_to_wrong"]
-                ),
+                "net_purist_gain": (counter["wrong_to_correct"] - counter["correct_to_wrong"]),
             }
             for family, counter in sorted(by_family.items())
         }
@@ -754,9 +738,8 @@ def _introduces_boundary_demotion(
     candidate_label: str | None,
     fallback_label: str | None,
 ) -> bool:
-    return (
-        _label_kind(candidate_label) in BOUNDARY_KINDS
-        and _is_frequency_or_cluster_label(fallback_label)
+    return _label_kind(candidate_label) in BOUNDARY_KINDS and _is_frequency_or_cluster_label(
+        fallback_label
     )
 
 

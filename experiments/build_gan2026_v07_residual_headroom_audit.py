@@ -33,14 +33,10 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SOURCE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_7_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_7_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
-RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_7_"
-    "residual_headroom_audit_2026-06-15"
-)
+RUN_ID = "gan2026_consensus_fresh_agreement_selector_v0_7_residual_headroom_audit_2026-06-15"
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
 MD_PATH = EXPERIMENTS / f"{RUN_ID}.md"
 
@@ -68,9 +64,7 @@ def main() -> None:
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -78,8 +72,7 @@ def _audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
     selected_wrong = [
         row
         for row in rows
-        if row["score_layers"]["selected"]["comparison"].get("purist_correct")
-        is not True
+        if row["score_layers"]["selected"]["comparison"].get("purist_correct") is not True
     ]
     oracle_counter: Counter[str] = Counter()
     band_counter: Counter[str] = Counter()
@@ -89,8 +82,7 @@ def _audit(rows: list[dict[str, Any]]) -> dict[str, Any]:
         correct_components = tuple(
             component
             for component in ("deterministic", "consensus", "fresh_evidence")
-            if row["score_layers"][component]["comparison"].get("purist_correct")
-            is True
+            if row["score_layers"][component]["comparison"].get("purist_correct") is True
         )
         oracle_counter[_component_key(correct_components)] += 1
         band_counter[boundary_band(row["reference"]["gold_monthly_frequency"])] += 1
@@ -171,8 +163,7 @@ def _parseable_other_probe(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "correct_to_wrong": transitions["correct_to_wrong"],
         "correct_to_correct": transitions["correct_to_correct"],
         "wrong_to_wrong": transitions["wrong_to_wrong"],
-        "net_purist_gain": transitions["wrong_to_correct"]
-        - transitions["correct_to_wrong"],
+        "net_purist_gain": transitions["wrong_to_correct"] - transitions["correct_to_wrong"],
         "by_band": {key: dict(value) for key, value in sorted(bands.items())},
         "examples": examples,
         "decision": "reject_broad_parseable_other_relaxation",
@@ -189,12 +180,10 @@ def _parseable_specific(label: str) -> bool:
 
 def _transition_if_fresh_selected(row: dict[str, Any]) -> str:
     deterministic_correct = (
-        row["score_layers"]["deterministic"]["comparison"].get("purist_correct")
-        is True
+        row["score_layers"]["deterministic"]["comparison"].get("purist_correct") is True
     )
     fresh_correct = (
-        row["score_layers"]["fresh_evidence"]["comparison"].get("purist_correct")
-        is True
+        row["score_layers"]["fresh_evidence"]["comparison"].get("purist_correct") is True
     )
     if not deterministic_correct and fresh_correct:
         return "wrong_to_correct"
@@ -286,9 +275,7 @@ def _markdown(payload: dict[str, Any]) -> str:
 
 
 def _register(summary: dict[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     probe = summary["parseable_other_relaxation_probe"]
     entries.append(
         RunRegistryEntry(
@@ -314,9 +301,7 @@ def _register(summary: dict[str, Any]) -> None:
                 "selected_correct": summary["selected_correct"],
                 "selected_wrong": summary["selected_wrong"],
                 "oracle_correct_available": summary["oracle_correct_available"],
-                "oracle_correct_unavailable": summary[
-                    "oracle_correct_unavailable"
-                ],
+                "oracle_correct_unavailable": summary["oracle_correct_unavailable"],
                 "parseable_other_candidate_actions": probe["candidate_actions"],
                 "parseable_other_wrong_to_correct": probe["wrong_to_correct"],
                 "parseable_other_correct_to_wrong": probe["correct_to_wrong"],

@@ -35,7 +35,7 @@ from pathlib import Path
 import dotenv
 import dspy
 
-from clinical_extraction.core.scoring import multiset_prf1, prf1_from_counts, sum_prf1
+from clinical_extraction.core.scoring import multiset_prf1, prf1_from_counts
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     to_exect_letter,
@@ -62,7 +62,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RUN_ID = "exectv2_gepa_sf_verify_gpt41mini_20260628"
 INSTRUCTION_PATH = ROOT / "experiments" / f"{RUN_ID}.instruction.txt"
 STORED_S2_JSONL = ROOT / "experiments" / f"{RUN_ID}.jsonl"
-REASONER_EX_JSONL = ROOT / "experiments" / "exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.jsonl"
+REASONER_EX_JSONL = (
+    ROOT / "experiments" / "exectv2_gepa_sf_verify_p5_reasoner_reasoner_ex_20260629.jsonl"
+)
 MODEL = "openai/gpt-4.1-mini"
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "_sf_canonical"
 
@@ -75,8 +77,8 @@ def parse_instructions(path: Path) -> tuple[str, str]:
     text = path.read_text(encoding="utf-8")
     gen_marker, ver_marker = "=== generate ===", "=== verify ==="
     gi, vi = text.index(gen_marker), text.index(ver_marker)
-    generate = text[gi + len(gen_marker):vi].strip()
-    verify = text[vi + len(ver_marker):].strip()
+    generate = text[gi + len(gen_marker) : vi].strip()
+    verify = text[vi + len(ver_marker) :].strip()
     return generate, verify
 
 
@@ -109,16 +111,18 @@ def gold_mentions_dump(letter) -> list[dict]:
     out = []
     for e in letter.entities("SeizureFrequency"):
         a = {str(k): str(v) for k, v in e.attributes.items()}
-        out.append({
-            "text": e.raw_text,
-            "state": frequency_state_faithful(e.attributes),
-            "FC": a.get("FrequencyChange", ""),
-            "N": a.get("NumberOfSeizures", ""),
-            "Lo": a.get("LowerNumberOfSeizures", ""),
-            "Hi": a.get("UpperNumberOfSeizures", ""),
-            "CUI": a.get("CUI", ""),
-            "CUIPhrase": a.get("CUIPhrase", ""),
-        })
+        out.append(
+            {
+                "text": e.raw_text,
+                "state": frequency_state_faithful(e.attributes),
+                "FC": a.get("FrequencyChange", ""),
+                "N": a.get("NumberOfSeizures", ""),
+                "Lo": a.get("LowerNumberOfSeizures", ""),
+                "Hi": a.get("UpperNumberOfSeizures", ""),
+                "CUI": a.get("CUI", ""),
+                "CUIPhrase": a.get("CUIPhrase", ""),
+            }
+        )
     return out
 
 
@@ -129,11 +133,13 @@ def fact_dump(facts: list[dict], kept_entities) -> list[dict]:
     out = []
     for f in facts:
         ev = f.get("evidence", "")
-        out.append({
-            "applies_to": f.get("seizure_type", ""),
-            "state": f.get("state", ""),
-            "evidence": ev,
-        })
+        out.append(
+            {
+                "applies_to": f.get("seizure_type", ""),
+                "state": f.get("state", ""),
+                "evidence": ev,
+            }
+        )
     return out, kept_states
 
 
@@ -151,10 +157,10 @@ def load_jsonl_states(path: Path, letters_by_id) -> dict[str, list[str]]:
             continue
         row = json.loads(line)
         lid = row["letter_id"]
-        letter = letters_by_id.get(lid)
+        letters_by_id.get(lid)
         sf = [m for m in row.get("predicted_mentions", []) if m.get("entity") == "SeizureFrequency"]
         # Build an ExectLetter via the same projection used by the metric.
-        facts = [
+        [
             {
                 "family": "seizure_frequency",
                 "seizure_type": m.get("text", "seizures"),
@@ -177,17 +183,23 @@ def main() -> None:
     lm = build_dspy_lm(MODEL, temperature=0.0, max_tokens=8000, cache=True)
     dspy.configure(lm=lm)
     program = SfVerifyExtractor(
-        generate_seed=generate_seed, verify_seed=verify_seed,
-        generate_lm=lm, verify_lm=lm,
+        generate_seed=generate_seed,
+        verify_seed=verify_seed,
+        generate_lm=lm,
+        verify_lm=lm,
     )
 
     letters = gepa_data.load_dev_letters()
     letters_by_id = {le.letter_id: le for le in letters}
     # Mark trainset membership (dev140 superset of valset; trainset letters are optimizer-seen).
-    trainset_ids = {le.letter_id for le in gepa_data._shuffled_dev()[: gepa_data.DEFAULT_TRAINSET_SIZE]}
+    trainset_ids = {
+        le.letter_id for le in gepa_data._shuffled_dev()[: gepa_data.DEFAULT_TRAINSET_SIZE]
+    }
 
     stored_s2 = load_jsonl_states(STORED_S2_JSONL, letters_by_id)
-    reasoner_ex = load_jsonl_states(REASONER_EX_JSONL, letters_by_id) if REASONER_EX_JSONL.exists() else {}
+    reasoner_ex = (
+        load_jsonl_states(REASONER_EX_JSONL, letters_by_id) if REASONER_EX_JSONL.exists() else {}
+    )
 
     gold_list, s1_pred_list, s2_pred_list = [], [], []
     index = []
@@ -195,7 +207,13 @@ def main() -> None:
     s2_tp = s2_fp = s2_fn = 0
     # Per-state confusion (stage 2).
     state_conf = {s: {"tp": 0, "fp": 0, "fn": 0} for s in STATE_ORDER}
-    verify_effect = {"fixed": 0, "broke": 0, "same_correct": 0, "same_wrong": 0, "changed_partial": 0}
+    verify_effect = {
+        "fixed": 0,
+        "broke": 0,
+        "same_correct": 0,
+        "same_wrong": 0,
+        "changed_partial": 0,
+    }
     s2_repro_match = 0
 
     n = len(letters)
@@ -203,7 +221,9 @@ def main() -> None:
         drafted = program.generate(letter_text=letter.note_text, output_schema=EVENT_SCHEMA_JSON)
         draft_json = str(getattr(drafted, "events_json", "") or "")
         verified = program.verify(
-            letter_text=letter.note_text, draft_events_json=draft_json, output_schema=EVENT_SCHEMA_JSON,
+            letter_text=letter.note_text,
+            draft_events_json=draft_json,
+            output_schema=EVENT_SCHEMA_JSON,
         )
         verify_json = str(getattr(verified, "events_json", "") or "")
 
@@ -219,9 +239,13 @@ def main() -> None:
         s2_pred_list.append(s2_letter)
 
         a, b, c = per_letter_prf1(gold_states, s1_states)
-        s1_tp += a; s1_fp += b; s1_fn += c
+        s1_tp += a
+        s1_fp += b
+        s1_fn += c
         d, e, f = per_letter_prf1(gold_states, s2_states)
-        s2_tp += d; s2_fp += e; s2_fn += f
+        s2_tp += d
+        s2_fp += e
+        s2_fn += f
 
         gset, s2set = set(gold_states), set(s2_states)
         for s in STATE_ORDER:
@@ -269,9 +293,16 @@ def main() -> None:
 
         # Write substrate for any letter the model got wrong at either stage.
         if not s1_correct or not s2_correct:
-            write_substrate(OUT, letter, rec, gold_mentions_dump(letter),
-                            fact_dump(s1_facts, s1_kept), fact_dump(s2_facts, s2_kept),
-                            draft_json, verify_json)
+            write_substrate(
+                OUT,
+                letter,
+                rec,
+                gold_mentions_dump(letter),
+                fact_dump(s1_facts, s1_kept),
+                fact_dump(s2_facts, s2_kept),
+                draft_json,
+                verify_json,
+            )
         if i % 20 == 0:
             print(f"  ...{i}/{n}", flush=True)
 
@@ -308,24 +339,36 @@ def main() -> None:
     (OUT / "_index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
 
     print("\n=== CANONICAL SF STATE_PROFILE ANALYSIS ===")
-    print(f"STAGE 1 (generate): F1={s1.f1:.4f} P={s1.precision:.4f} R={s1.recall:.4f}  "
-          f"(tp={s1.tp} fp={s1.fp} fn={s1.fn})")
-    print(f"STAGE 2 (verify)  : F1={s2.f1:.4f} P={s2.precision:.4f} R={s2.recall:.4f}  "
-          f"(tp={s2.tp} fp={s2.fp} fn={s2.fn})")
-    print(f"official metric stage2 F1={official.f1:.4f} (decomposition matches: "
-          f"{summary['decomposition_matches_official_stage2']})")
-    print(f"per-letter EXACT match: stage1 {s1_exact}/{n} ({s1_exact/n:.1%})  "
-          f"stage2 {s2_exact}/{n} ({s2_exact/n:.1%})")
+    print(
+        f"STAGE 1 (generate): F1={s1.f1:.4f} P={s1.precision:.4f} R={s1.recall:.4f}  "
+        f"(tp={s1.tp} fp={s1.fp} fn={s1.fn})"
+    )
+    print(
+        f"STAGE 2 (verify)  : F1={s2.f1:.4f} P={s2.precision:.4f} R={s2.recall:.4f}  "
+        f"(tp={s2.tp} fp={s2.fp} fn={s2.fn})"
+    )
+    print(
+        f"official metric stage2 F1={official.f1:.4f} (decomposition matches: "
+        f"{summary['decomposition_matches_official_stage2']})"
+    )
+    print(
+        f"per-letter EXACT match: stage1 {s1_exact}/{n} ({s1_exact / n:.1%})  "
+        f"stage2 {s2_exact}/{n} ({s2_exact / n:.1%})"
+    )
     print(f"verify effect: {verify_effect}")
     print(f"stage2 reproduces stored jsonl: {s2_repro_match}/{n}")
     print("per-state confusion (stage2):")
     for s in STATE_ORDER:
         c = state_conf[s]
         pr = prf1_from_counts(c["tp"], c["fp"], c["fn"])
-        print(f"  {s:12s} tp={c['tp']:3d} fp={c['fp']:3d} fn={c['fn']:3d}  "
-              f"P={pr.precision:.2f} R={pr.recall:.2f} F1={pr.f1:.2f}")
-    print(f"\nWrote per-letter substrate for {sum(1 for r in index if not r['s2_exact'] or not r['s1_exact'])} "
-          f"letters + _index.json + _summary.json to {OUT}")
+        print(
+            f"  {s:12s} tp={c['tp']:3d} fp={c['fp']:3d} fn={c['fn']:3d}  "
+            f"P={pr.precision:.2f} R={pr.recall:.2f} F1={pr.f1:.2f}"
+        )
+    print(
+        f"\nWrote per-letter substrate for {sum(1 for r in index if not r['s2_exact'] or not r['s1_exact'])} "
+        f"letters + _index.json + _summary.json to {OUT}"
+    )
 
 
 def write_substrate(out_dir, letter, rec, gold_dump, s1_dump, s2_dump, draft_json, verify_json):
@@ -343,9 +386,15 @@ def write_substrate(out_dir, letter, rec, gold_dump, s1_dump, s2_dump, draft_jso
         for d in gold_dump
     ] or ["(none)"]
     lines += ["", "## STAGE 1 (generate) facts — projected states: " + str(s1_states)]
-    lines += [f"- applies_to={d['applies_to']!r} state={d['state']} evidence={d['evidence']!r}" for d in s1_facts] or ["(none)"]
+    lines += [
+        f"- applies_to={d['applies_to']!r} state={d['state']} evidence={d['evidence']!r}"
+        for d in s1_facts
+    ] or ["(none)"]
     lines += ["", "## STAGE 2 (verify) facts — projected states: " + str(s2_states)]
-    lines += [f"- applies_to={d['applies_to']!r} state={d['state']} evidence={d['evidence']!r}" for d in s2_facts] or ["(none)"]
+    lines += [
+        f"- applies_to={d['applies_to']!r} state={d['state']} evidence={d['evidence']!r}"
+        for d in s2_facts
+    ] or ["(none)"]
     lines += ["", "## RAW stage-1 events_json", "```json", draft_json.strip(), "```"]
     lines += ["", "## RAW stage-2 events_json", "```json", verify_json.strip(), "```"]
     lines += ["", "## FULL LETTER TEXT", "```", letter.note_text, "```"]

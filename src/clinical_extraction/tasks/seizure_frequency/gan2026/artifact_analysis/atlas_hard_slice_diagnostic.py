@@ -532,9 +532,7 @@ def _slice_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "rows": len(rows),
         "baseline_correct": sum(bool(row["baseline_correct"]) for row in rows),
         "deterministic_correct": sum(row.get("deterministic_correct") is True for row in rows),
-        "llm_sidecar_scorable": sum(
-            bool(row["llm_candidate_selector_scorable"]) for row in rows
-        ),
+        "llm_sidecar_scorable": sum(bool(row["llm_candidate_selector_scorable"]) for row in rows),
         "llm_sidecar_correct": sum(
             row.get("llm_candidate_selector_correct") is True for row in rows
         ),

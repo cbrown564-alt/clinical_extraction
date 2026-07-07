@@ -26,6 +26,7 @@ Prior art: sf_direction_extraction_probe_2026-07-03 (REFUTED, free-write family)
 Usage:
   python scripts/run_exectv2_sf_closed_option_direction_probe.py --cache
 """
+
 from __future__ import annotations
 
 import argparse
@@ -145,9 +146,7 @@ def _pred_letters_from_raw(
             ExectAnnotation(
                 entity=SF_ENTITY,
                 text=str(m.get("text", "")),
-                attributes={
-                    str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
-                },
+                attributes={str(k): str(v) for k, v in dict(m.get("attributes", {})).items()},
             )
             for m in sf
         )

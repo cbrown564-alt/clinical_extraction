@@ -44,10 +44,7 @@ FRESH_EVIDENCE_PATHS: dict[str, tuple[str, ...]] = {
     "candidate_correct_path": ("score_layers", "final", "comparison", "purist_correct"),
 }
 
-_MULTILABEL_NOTE = (
-    "rows are multi-label; per-family counts overlap and do not partition "
-    "total_rows"
-)
+_MULTILABEL_NOTE = "rows are multi-label; per-family counts overlap and do not partition total_rows"
 
 
 def note_text_from_rules_row(
@@ -162,9 +159,7 @@ def summarize_transitions_by_family(
             "wrong_to_correct": wrong_to_correct,
             "correct_to_wrong": correct_to_wrong,
             "net_purist_gain": wrong_to_correct - correct_to_wrong,
-            "changed_label_precision": (
-                round(wrong_to_correct / changed, 4) if changed else None
-            ),
+            "changed_label_precision": (round(wrong_to_correct / changed, 4) if changed else None),
         }
 
     return {

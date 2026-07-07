@@ -22,8 +22,7 @@ class ClinicalFindingStore:
     def add(self, finding: ClinicalFinding) -> None:
         if finding.letter_id != self.letter_id:
             raise ValueError(
-                f"finding {finding.finding_id} belongs to {finding.letter_id}, "
-                f"not {self.letter_id}"
+                f"finding {finding.finding_id} belongs to {finding.letter_id}, not {self.letter_id}"
             )
         self._findings.append(finding)
 

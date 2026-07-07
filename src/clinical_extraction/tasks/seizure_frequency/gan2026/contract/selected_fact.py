@@ -35,14 +35,16 @@ class SelectedCandidateDecision(BaseModel):
         if self.selection_mode == "single_candidate" and selected_count != 1:
             raise ValueError("single_candidate requires exactly one selected_candidate_id")
         if self.selection_mode == "related_candidate_group" and selected_count < 2:
-            raise ValueError(
-                "related_candidate_group requires two or more selected_candidate_ids"
-            )
-        if self.selection_mode in {
-            "no_reliable_candidate",
-            "ambiguous",
-            "conflict",
-        } and selected_count:
+            raise ValueError("related_candidate_group requires two or more selected_candidate_ids")
+        if (
+            self.selection_mode
+            in {
+                "no_reliable_candidate",
+                "ambiguous",
+                "conflict",
+            }
+            and selected_count
+        ):
             raise ValueError(f"{self.selection_mode} must not select candidate ids")
         if selected_count != len(set(self.selected_candidate_ids)):
             raise ValueError("selected_candidate_ids must be unique")

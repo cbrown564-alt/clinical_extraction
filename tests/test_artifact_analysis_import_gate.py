@@ -10,7 +10,6 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 import pytest
-
 from check_artifact_analysis_imports import (  # noqa: E402
     ALLOWLIST,
     ARTIFACT_ANALYSIS_PKG,
@@ -38,8 +37,7 @@ def test_allowlist_paths_are_real_importers(repo_root: Path) -> None:
     not_importing = [
         rel
         for rel in ALLOWLIST
-        if (package_root / rel).is_file()
-        and not file_imports_artifact_analysis(package_root / rel)
+        if (package_root / rel).is_file() and not file_imports_artifact_analysis(package_root / rel)
     ]
     assert not_importing == [], f"allowlist entries that no longer import: {not_importing}"
 
@@ -74,10 +72,7 @@ def test_new_unallowlisted_importer_is_caught(tmp_path: Path) -> None:
 def test_relative_star_import_is_caught(tmp_path: Path) -> None:
     """Relative star re-export shims (the experiments pattern) are detected."""
     package_root = tmp_path / "src" / "clinical_extraction"
-    target = (
-        package_root
-        / "tasks/seizure_frequency/gan2026/experiments/new_shim.py"
-    )
+    target = package_root / "tasks/seizure_frequency/gan2026/experiments/new_shim.py"
     target.parent.mkdir(parents=True)
     target.write_text(
         "from ..artifact_analysis.some_module import *  # noqa: F403\n",
@@ -126,10 +121,7 @@ def test_string_mention_is_not_an_import(tmp_path: Path) -> None:
 def test_files_inside_artifact_analysis_are_skipped(tmp_path: Path) -> None:
     """Imports *within* the research layer itself are out of scope."""
     package_root = tmp_path / "src" / "clinical_extraction"
-    target = (
-        package_root
-        / f"tasks/seizure_frequency/gan2026/{ARTIFACT_ANALYSIS_PKG}/internal.py"
-    )
+    target = package_root / f"tasks/seizure_frequency/gan2026/{ARTIFACT_ANALYSIS_PKG}/internal.py"
     target.parent.mkdir(parents=True)
     target.write_text(
         "from .candidate_union import main  # internal wiring\n"
@@ -149,8 +141,7 @@ def test_unparseable_file_falls_back_to_regex(tmp_path: Path) -> None:
     target.parent.mkdir(parents=True)
     # Syntactically invalid (dangling def) but the import line is still present.
     target.write_text(
-        "from ..artifact_analysis.replay_io import load\n"
-        "def broken(:\n",
+        "from ..artifact_analysis.replay_io import load\ndef broken(:\n",
         encoding="utf-8",
     )
 

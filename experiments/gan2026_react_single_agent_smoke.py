@@ -9,6 +9,7 @@ actually chose to make per row. Does not score against gold or write to
 the registry — that is the hard50/battery stage (Task 13), gated on this
 smoke test passing cleanly.
 """
+
 from __future__ import annotations
 
 import json
@@ -85,7 +86,9 @@ def main() -> None:
             parse_failures += 1
             print(f"PARSE FAILURE: {parse_errors} | raw={decision_json[:300]}")
         else:
-            print(f"decision: final_label={decision.final_label!r} answer_kind={decision.answer_kind!r}")
+            print(
+                f"decision: final_label={decision.final_label!r} answer_kind={decision.answer_kind!r}"
+            )
 
     print("=" * 70)
     print(
@@ -99,7 +102,9 @@ def main() -> None:
         )
     )
     if call_failures or parse_failures:
-        raise SystemExit("Smoke test found call or parse failures — do not proceed to battery/hard50.")
+        raise SystemExit(
+            "Smoke test found call or parse failures — do not proceed to battery/hard50."
+        )
     print("Smoke test passed cleanly.")
 
 

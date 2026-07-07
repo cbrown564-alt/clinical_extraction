@@ -97,11 +97,15 @@ def main() -> None:
     OUTPUT_PATH.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     print(f"Letters: {result['total_letters']}")
-    print(f"Duplicate .txt pairs: {result['txt_duplicate_pair_count']} "
-          f"({result['duplicate_letters_total']} letters)")
+    print(
+        f"Duplicate .txt pairs: {result['txt_duplicate_pair_count']} "
+        f"({result['duplicate_letters_total']} letters)"
+    )
     for p in pairs_report:
         flag = " <-- CROSS-SPLIT" if p["cross_split"] else ""
-        ann_flag = "" if p["ann_byte_identical"] else f" [ANN DIFFERS: {p['ann_diff_line_count']} lines]"
+        ann_flag = (
+            "" if p["ann_byte_identical"] else f" [ANN DIFFERS: {p['ann_diff_line_count']} lines]"
+        )
         print(f"  {p['pair']}: {p['splits']}{flag}{ann_flag}")
     print(f"\nWrote {OUTPUT_PATH.relative_to(ROOT)}")
 

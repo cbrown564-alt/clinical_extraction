@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+
 @dataclass(frozen=True)
 class ComponentImpactReplaySpec:
     run_id: str
@@ -44,4 +45,3 @@ class ComponentOffDefinition:
     component_off_surface: str
     scorer_view: str = "clinical_headline"
     scorer_version: str = "exectv2_component_ablation_replay_v20260626"
-

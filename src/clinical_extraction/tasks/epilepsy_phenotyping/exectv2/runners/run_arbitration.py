@@ -26,10 +26,10 @@ from pathlib import Path
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import arbitration
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import (
     all_entity_assessment as hybrid,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid import arbitration
 
 
 def _build_parser() -> argparse.ArgumentParser:

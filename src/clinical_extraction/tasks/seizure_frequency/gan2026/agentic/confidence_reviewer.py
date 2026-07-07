@@ -153,7 +153,9 @@ class ConfidenceReviewStage(AgenticStage[ConfidenceReviewDecision]):
     ) -> str:
         return build_review_payload(record.note_text, final_label, final_kind)
 
-    def parse_response(self, raw_output: str, **_: object) -> ParsedStageResponse[ConfidenceReviewDecision]:
+    def parse_response(
+        self, raw_output: str, **_: object
+    ) -> ParsedStageResponse[ConfidenceReviewDecision]:
         return _parse_confidence_response(raw_output)
 
 
@@ -255,9 +257,7 @@ def _parse_confidence_response(raw: str) -> ParsedStageResponse[ConfidenceReview
     if not raw or not raw.strip():
         return ParsedStageResponse(None, parse_errors=["empty_output"])
     try:
-        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
-            extract_json_object(raw)
-        )
+        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(extract_json_object(raw))
     except json.JSONDecodeError:
         digits = re.search(r"\b(\d{1,3})\b", raw)
         if digits:

@@ -21,7 +21,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.diagnosi
     load_verifier_clinical_rules,
     load_verifier_worked_examples,
 )
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -78,9 +77,9 @@ class ExECTv2DiagnosisVerifierSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 

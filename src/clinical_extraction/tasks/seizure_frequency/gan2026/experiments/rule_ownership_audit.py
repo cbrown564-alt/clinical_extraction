@@ -37,12 +37,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     BENCHMARK_REPAIR_RULES,
 )
 
-DEFAULT_CSV_PATH = Path(
-    "experiments/gan2026_rule_ownership_matrix_2026-06-02.csv"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_rule_ownership_audit_2026-06-02.md"
-)
+DEFAULT_CSV_PATH = Path("experiments/gan2026_rule_ownership_matrix_2026-06-02.csv")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rule_ownership_audit_2026-06-02.md")
 
 
 @dataclass(frozen=True)
@@ -91,8 +87,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         current_prediction_effect="Parses scorer-facing labels into semantic kind and rates.",
         proposed_owner="deterministic_extraction_or_adapter",
         prompt_instruction_status=(
-            "Do not prompt-train parser grammar except in explicit "
-            "LLM-owned-rendering smokes."
+            "Do not prompt-train parser grammar except in explicit LLM-owned-rendering smokes."
         ),
         deterministic_adapter_status="Keep as scorer contract and format validator.",
         ablation_switch="repair_mode/raw vs strict parser layers",
@@ -117,8 +112,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         ablation_switch="strict/raw/schema-replay score layers",
         target_failure_rows="schema enum drift and alias-only failures",
         claim_language_constraint=(
-            "Allowed only when it does not change selected clinical fact or "
-            "semantic kind."
+            "Allowed only when it does not change selected clinical fact or semantic kind."
         ),
         notes="Semantic repair must stay outside this bucket.",
     ),
@@ -151,8 +145,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         portability="seizure_frequency",
         current_module="selected_evidence.selected_evidence_cluster",
         current_prediction_effect=(
-            "Converts selected cluster evidence into cluster cadence and "
-            "per-cluster labels."
+            "Converts selected cluster evidence into cluster cadence and per-cluster labels."
         ),
         proposed_owner="deterministic_extraction_or_adapter",
         prompt_instruction_status=(
@@ -160,8 +153,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
             "may render selected operands."
         ),
         deterministic_adapter_status=(
-            "Allowed as benchmark/arithmetic adapter when cluster operands are "
-            "model-selected."
+            "Allowed as benchmark/arithmetic adapter when cluster operands are model-selected."
         ),
         ablation_switch="selected-evidence-arithmetic component ablation",
         target_failure_rows="row 187 and cluster-cadence/flattening failures",
@@ -186,12 +178,10 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         ),
         ablation_switch="selected-evidence-arithmetic component ablation",
         target_failure_rows=(
-            "monthly diary/log rows from replacement ablation and claim-table "
-            "failures"
+            "monthly diary/log rows from replacement ablation and claim-table failures"
         ),
         claim_language_constraint=(
-            "Treat gains as dataset-pattern or side-car gains until cross-template "
-            "evidence exists."
+            "Treat gains as dataset-pattern or side-car gains until cross-template evidence exists."
         ),
         notes="High validation utility but likely local-template sensitive.",
     ),
@@ -204,8 +194,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         proposed_owner="deterministic_extraction_or_adapter",
         prompt_instruction_status="Model should emit selected operands and arithmetic trace.",
         deterministic_adapter_status=(
-            "Allowed in primary LLM-heavy score layer when operands are "
-            "model-selected."
+            "Allowed in primary LLM-heavy score layer when operands are model-selected."
         ),
         ablation_switch="selected-evidence-arithmetic component ablation",
         target_failure_rows="single-total-window and compact interval rendering failures",
@@ -230,8 +219,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
             "or adjudicator prompts."
         ),
         deterministic_adapter_status=(
-            "Allowed for named hybrid runs; diagnostic only for LLM-heavy primary "
-            "score layers."
+            "Allowed for named hybrid runs; diagnostic only for LLM-heavy primary score layers."
         ),
         ablation_switch="projection policy variant and graph projection ablations",
         target_failure_rows="projection/arbitration miss-only rows and competing-state hard slices",
@@ -247,8 +235,7 @@ POSTPROCESSING_ADAPTER_ROWS: tuple[OwnershipRow, ...] = (
         portability="gan2026_specific",
         current_module="artifact_analysis.month_bucket_duration_selection_ablation",
         current_prediction_effect=(
-            "Selects enriched seizure-free duration labels when graph metadata "
-            "allows it."
+            "Selects enriched seizure-free duration labels when graph metadata allows it."
         ),
         proposed_owner="research_comparison",
         prompt_instruction_status=(
@@ -384,8 +371,7 @@ def write_ownership_report(
     preview_rows = rows[:20]
     for row in preview_rows:
         lines.append(
-            f"| `{row.rule_id}` | `{row.group}` | `{row.proposed_owner}` | "
-            f"`{row.current_module}` |"
+            f"| `{row.rule_id}` | `{row.group}` | `{row.proposed_owner}` | `{row.current_module}` |"
         )
     lines.append("")
     lines.append(
@@ -420,8 +406,7 @@ def _policy_for_spec(spec: RuleSpec) -> Mapping[str, str]:
             owner="deterministic_extraction_or_adapter",
             prompt="Teach as a source-reading principle in LLM-owned extraction prompts.",
             adapter=(
-                "Keep deterministic extraction for rules-only and as "
-                "format/arithmetic adapter."
+                "Keep deterministic extraction for rules-only and as format/arithmetic adapter."
             ),
             target="direct rates, intervals, compact intervals, vague quantities",
             claim="Deterministic rate replacement makes the scored layer hybrid or adapter-owned.",
@@ -434,8 +419,7 @@ def _policy_for_spec(spec: RuleSpec) -> Mapping[str, str]:
             adapter="Keep deterministic cluster arithmetic as side-car unless explicitly promoted.",
             target="cluster syntax, cadence flattening, events-per-cluster rows",
             claim=(
-                "Cluster corrections are not LLM-owned unless raw output selects "
-                "and renders them."
+                "Cluster corrections are not LLM-owned unless raw output selects and renders them."
             ),
             notes="Clinical burden and Gan syntax must remain separately attributed.",
         )
@@ -502,8 +486,7 @@ def _policy_for_spec(spec: RuleSpec) -> Mapping[str, str]:
         return _policy(
             owner="research_comparison",
             prompt=(
-                "Use only in targeted shorthand smokes if the model is expected "
-                "to own shorthand."
+                "Use only in targeted shorthand smokes if the model is expected to own shorthand."
             ),
             adapter="Keep deterministic shorthand expansion as Gan-specific ablation condition.",
             target="TC/sz/abs compact shorthand and q-interval rows",
@@ -561,10 +544,7 @@ def _ablation_switch(spec: RuleSpec) -> str:
         return "repair_mode raw/strict/clean/benchmark-aligned"
     if spec.group is RuleGroup.GOLD_NORMALIZATION_POLICY:
         return f"gold policy rule_id {spec.rule_id}"
-    return (
-        f"AblationConfig enabled_groups={spec.group}; "
-        f"disabled_rule_ids={spec.rule_id}"
-    )
+    return f"AblationConfig enabled_groups={spec.group}; disabled_rule_ids={spec.rule_id}"
 
 
 def main() -> None:

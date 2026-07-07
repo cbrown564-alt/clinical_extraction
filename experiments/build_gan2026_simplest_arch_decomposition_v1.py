@@ -19,13 +19,9 @@ from pathlib import Path
 from typing import Any
 
 ARTIFACT = Path(
-    "experiments/"
-    "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
+    "experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
-REPORT = Path(
-    "experiments/"
-    "gan2026_simplest_arch_decomposition_v1_validation750_2026-06-16.md"
-)
+REPORT = Path("experiments/gan2026_simplest_arch_decomposition_v1_validation750_2026-06-16.md")
 
 
 def _purist(layer: dict[str, Any] | None) -> bool:
@@ -33,7 +29,11 @@ def _purist(layer: dict[str, Any] | None) -> bool:
 
 
 def main() -> None:
-    rows = [json.loads(line) for line in ARTIFACT.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in ARTIFACT.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     n = len(rows)
 
     # Ladder-middle layers (all free from saved scores).
@@ -93,10 +93,10 @@ def main() -> None:
         "",
         "| Layer | Model passes | Purist | Δ vs above |",
         "| --- | ---: | ---: | ---: |",
-        f"| GPT structured-event only (`v0_reference`) | 1 | {v0}/{n} = {v0/n:.3f} | — |",
-        f"| + fresh-evidence reasoner, raw | 3+reasoner | {raw}/{n} = {raw/n:.3f} | {raw - v0:+d} |",
-        f"| + format-only label repair | 3+reasoner | {fmt}/{n} = {fmt/n:.3f} | {fmt - raw:+d} |",
-        f"| + full deterministic guard layer (`final`) | 3+reasoner | {fin}/{n} = {fin/n:.3f} | {fin - fmt:+d} |",
+        f"| GPT structured-event only (`v0_reference`) | 1 | {v0}/{n} = {v0 / n:.3f} | — |",
+        f"| + fresh-evidence reasoner, raw | 3+reasoner | {raw}/{n} = {raw / n:.3f} | {raw - v0:+d} |",
+        f"| + format-only label repair | 3+reasoner | {fmt}/{n} = {fmt / n:.3f} | {fmt - raw:+d} |",
+        f"| + full deterministic guard layer (`final`) | 3+reasoner | {fin}/{n} = {fin / n:.3f} | {fin - fmt:+d} |",
         "",
         f"Reasoner net vs GPT-only: **{fin - v0:+d}** rows. "
         f"Deterministic guard layer net: **{fin - fmt:+d}** rows.",
@@ -122,8 +122,7 @@ def main() -> None:
     total_fired = sum(gate_detail.values())
     lines += [
         "",
-        f"Total guard fallbacks fired: **{total_fired}** of {n} rows "
-        f"({total_fired / n:.1%}).",
+        f"Total guard fallbacks fired: **{total_fired}** of {n} rows ({total_fired / n:.1%}).",
         "",
         "## Reading",
         "",
@@ -139,7 +138,9 @@ def main() -> None:
     ]
     REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {REPORT}")
-    print(f"GPT-only {v0}/{n}={v0/n:.3f}  raw {raw}/{n}  fmt {fmt}/{n}  final {fin}/{n}={fin/n:.3f}")
+    print(
+        f"GPT-only {v0}/{n}={v0 / n:.3f}  raw {raw}/{n}  fmt {fmt}/{n}  final {fin}/{n}={fin / n:.3f}"
+    )
     print(f"reasoner net {fin - v0:+d}  guard net {fin - fmt:+d}  guards fired {total_fired}")
 
 

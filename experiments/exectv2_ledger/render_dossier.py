@@ -134,18 +134,23 @@ def _mechanism_table(rows: list[GoldCaseRow]) -> list[str]:
     unadjudicated = counts.get(Mechanism.UNADJUDICATED.value, 0)
     lines += [
         "",
-        f"**{genuine}/{n} = {genuine/n:.1%} of disagreements are genuine model error "
-        f"(the rest are gold-quality or scorer-mechanics artifacts).**" if n else
-        "No disagreements recorded.",
+        f"**{genuine}/{n} = {genuine / n:.1%} of disagreements are genuine model error "
+        f"(the rest are gold-quality or scorer-mechanics artifacts).**"
+        if n
+        else "No disagreements recorded.",
         "",
         f"**Unadjudicated: {unadjudicated}/{n}** -- this must be driven toward zero over "
         f"time; a nonzero count here means part of this family's F1 gap is still unexplained, "
-        f"not that it's been checked and found genuine." if n else "",
+        f"not that it's been checked and found genuine."
+        if n
+        else "",
     ]
     return lines
 
 
-def _worst_offenders(rows: list[GoldCaseRow], substrate_dir: str | None, limit: int = 8) -> list[str]:
+def _worst_offenders(
+    rows: list[GoldCaseRow], substrate_dir: str | None, limit: int = 8
+) -> list[str]:
     genuine = [r for r in rows if r.mechanism == Mechanism.GENUINE_MODEL_ERROR.value]
     genuine_sorted = sorted(genuine, key=lambda r: r.row_id)[:limit]
     lines = [f"## Worked genuine-model-error examples (up to {limit})", ""]
@@ -176,7 +181,9 @@ def _hypothesis_table(family: str) -> list[str]:
     lines.append("| Date | Hypothesis | Verdict | Doc |")
     lines.append("| --- | --- | --- | --- |")
     for entry in relevant:
-        lines.append(f"| {entry.date} | {entry.statement} | **{entry.verdict}** | `{entry.predeclaration_doc}` |")
+        lines.append(
+            f"| {entry.date} | {entry.statement} | **{entry.verdict}** | `{entry.predeclaration_doc}` |"
+        )
     return lines
 
 
@@ -217,7 +224,10 @@ def render_family(family: str, ledger_filename: str, substrate_dir: str | None) 
     ]
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = OUT_DIR / f"{family.upper() if family.isupper() else _to_screaming_snake(family)}_CANONICAL_LEDGER_CANON.md"
+    out_path = (
+        OUT_DIR
+        / f"{family.upper() if family.isupper() else _to_screaming_snake(family)}_CANONICAL_LEDGER_CANON.md"
+    )
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"{family}: {len(rows)} rows -> {out_path.relative_to(ROOT)}")
 

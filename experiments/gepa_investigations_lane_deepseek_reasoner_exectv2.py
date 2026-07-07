@@ -69,7 +69,9 @@ SUFFIX = DATE.replace("-", "")
 DEEPSEEK_REASONER = "deepseek/deepseek-reasoner"
 
 # Same four-predictor program shape as program_multifamily / program_recall_lanes.
-INVESTIGATIONS_LANE_PENALTY = LengthPenaltyConfig(instruction_token_budget=2000, output_token_budget=2000)
+INVESTIGATIONS_LANE_PENALTY = LengthPenaltyConfig(
+    instruction_token_budget=2000, output_token_budget=2000
+)
 
 
 class OnlyInvestigationSelector:
@@ -81,8 +83,14 @@ class OnlyInvestigationSelector:
     to select between.
     """
 
-    def __call__(self, state: Any, trajectories: Any, subsample_scores: Any,
-                 candidate_idx: int, candidate: dict[str, str]) -> list[str]:
+    def __call__(
+        self,
+        state: Any,
+        trajectories: Any,
+        subsample_scores: Any,
+        candidate_idx: int,
+        candidate: dict[str, str],
+    ) -> list[str]:
         return ["investigation"]
 
 
@@ -149,9 +157,17 @@ def main() -> None:
         return
 
     GEPA_LOG_ROOT.mkdir(parents=True, exist_ok=True)
-    status: dict = {"started_at": _now(), "smoke": args.smoke, "run_id": config.run_id, "state": "running"}
+    status: dict = {
+        "started_at": _now(),
+        "smoke": args.smoke,
+        "run_id": config.run_id,
+        "state": "running",
+    }
     status_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"[inv-lane] start {config.run_id} (task=deepseek-reasoner, investigation-only mutation)", flush=True)
+    print(
+        f"[inv-lane] start {config.run_id} (task=deepseek-reasoner, investigation-only mutation)",
+        flush=True,
+    )
     try:
         payload = run_experiment(
             config,
@@ -162,7 +178,8 @@ def main() -> None:
         headline = payload["final_eval"]["clinical_headline"]
         ev = payload["final_eval"]["evidence_recall"]
         status.update(
-            state="done", finished_at=_now(),
+            state="done",
+            finished_at=_now(),
             clinical_headline_overall_f1=headline["overall_f1"],
             per_family=headline["per_family"],
             evidence_recall_overall=ev["overall_recall"],
@@ -177,8 +194,12 @@ def main() -> None:
             flush=True,
         )
     except Exception as exc:
-        status.update(state="failed", finished_at=_now(), error=f"{type(exc).__name__}: {exc}",
-                      traceback=traceback.format_exc()[-3000:])
+        status.update(
+            state="failed",
+            finished_at=_now(),
+            error=f"{type(exc).__name__}: {exc}",
+            traceback=traceback.format_exc()[-3000:],
+        )
         print(f"[inv-lane] FAILED {config.run_id}: {exc}", flush=True)
     status_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 

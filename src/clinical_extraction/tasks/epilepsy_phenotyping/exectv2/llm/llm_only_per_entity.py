@@ -116,8 +116,8 @@ class ExECTv2PerEntitySignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., \"attributes\": {...}, "
-            "\"evidence\": ..., \"confidence\": ..., \"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., "attributes": {...}, '
+            '"evidence": ..., "confidence": ..., "rationale": ...}, ...]}'
         )
     )
 
@@ -184,7 +184,7 @@ _SF_FRAME = EntityFrame(
             "frequency — not the per-episode daily burst rate."
         ),
         "Do NOT emit Certainty or Negation for SeizureFrequency.",
-        "If no seizure frequency information is present, return {\"mentions\": []}.",
+        'If no seizure frequency information is present, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -273,7 +273,7 @@ _PRESCRIPTION_FRAME = EntityFrame(
             "(prn / rescue / as needed)."
         ),
         "Both text and evidence must be exact substrings of the letter.",
-        "If no medication is mentioned, return {\"mentions\": []}.",
+        'If no medication is mentioned, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -352,7 +352,7 @@ _INVESTIGATIONS_FRAME = EntityFrame(
         ),
         "text is the test phrase only; never put the result words in text.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no investigation is mentioned, return {\"mentions\": []}.",
+        'If no investigation is mentioned, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -423,7 +423,7 @@ _DIAGNOSIS_FRAME = EntityFrame(
         ),
         "text is the compact diagnostic term, not the surrounding sentence.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no diagnosis is stated, return {\"mentions\": []}.",
+        'If no diagnosis is stated, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -497,14 +497,11 @@ _ONSET_FRAME = EntityFrame(
             "TimePeriod='Year')."
         ),
         "Use PointInTime='From_Birth' when the condition is present from birth.",
-        (
-            "Certainty is '1'-'5' (5 = definite); Negation is 'Affirmed' or "
-            "'Negated'."
-        ),
+        ("Certainty is '1'-'5' (5 = definite); Negation is 'Affirmed' or 'Negated'."),
         "ONSET is when the condition BEGAN — not when it was diagnosed.",
         "text is the condition phrase only, never the age/time clause.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no onset information is present, return {\"mentions\": []}.",
+        'If no onset information is present, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -573,7 +570,7 @@ _WHEN_DIAGNOSED_FRAME = EntityFrame(
         ),
         "text is the condition phrase only, never the date clause.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no diagnosis date/age is stated, return {\"mentions\": []}.",
+        'If no diagnosis date/age is stated, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -635,7 +632,7 @@ _BIRTH_HISTORY_FRAME = EntityFrame(
         ),
         "text is the compact birth phrase, not the surrounding sentence.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no birth-history finding is present, return {\"mentions\": []}.",
+        'If no birth-history finding is present, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -690,14 +687,12 @@ _EPILEPSY_CAUSE_FRAME = EntityFrame(
         ),
         "text is the compact cause phrase, not the whole clause.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no cause is offered, return {\"mentions\": []}.",
+        'If no cause is offered, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
         {
-            "note_fragment": (
-                "His epilepsy is due to a previous traumatic brain injury."
-            ),
+            "note_fragment": ("His epilepsy is due to a previous traumatic brain injury."),
             "correct": {
                 "text": "traumatic brain injury",
                 "attributes": {"Certainty": "5", "Negation": "Affirmed"},
@@ -708,8 +703,7 @@ _EPILEPSY_CAUSE_FRAME = EntityFrame(
         },
         {
             "note_fragment": (
-                "The likely cause is a previous stroke; meningitis was considered "
-                "but excluded."
+                "The likely cause is a previous stroke; meningitis was considered but excluded."
             ),
             "correct": [
                 {
@@ -754,7 +748,7 @@ _PATIENT_HISTORY_FRAME = EntityFrame(
         "Certainty is '1'-'5'; Negation is 'Affirmed' or 'Negated'.",
         "text is the compact concept phrase, not the full historical sentence.",
         "Both text and evidence must be exact substrings of the letter.",
-        "If no relevant history is present, return {\"mentions\": []}.",
+        'If no relevant history is present, return {"mentions": []}.',
         "Return exactly one JSON object. No markdown code fences.",
     ),
     worked_examples=(
@@ -816,7 +810,7 @@ def _generic_frame(entity_name: str) -> EntityFrame:
             "One record per distinct finding.",
             "Include only attributes explicitly supported by the letter.",
             "Both text and evidence must be exact substrings of the letter.",
-            f"If no {entity_name} finding is present, return {{\"mentions\": []}}.",
+            f'If no {entity_name} finding is present, return {{"mentions": []}}.',
             "Return exactly one JSON object. No markdown code fences.",
         ),
     )
@@ -861,9 +855,7 @@ def _attribute_vocabulary(spec: EntitySpec) -> dict[str, Any]:
     return attrs
 
 
-def build_prompt_input(
-    letter: ExectLetter, *, entity_name: str = DEFAULT_ENTITY_NAME
-) -> str:
+def build_prompt_input(letter: ExectLetter, *, entity_name: str = DEFAULT_ENTITY_NAME) -> str:
     """Build a focused per-entity v0.3 prompt for one entity.
 
     The clinical content (task, text definition, worked examples, clinical rules)
@@ -921,16 +913,12 @@ def to_predicted_letter(
     All drops/repairs are logged; no clinical fact is invented or altered.
     """
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []
     for mention in evidence_valid:
-        repaired_attrs, attr_warnings = repair_attributes(
-            dict(mention.attributes), spec=spec
-        )
+        repaired_attrs, attr_warnings = repair_attributes(dict(mention.attributes), spec=spec)
         all_warnings.extend(attr_warnings)
         predicted_mentions.append(
             PredictedMention(
@@ -1004,9 +992,7 @@ def run_split(
     existing_rows, completed = read_completed(
         checkpoint_jsonl_path if resume else None, key="letter_id"
     )
-    rows: list[dict[str, Any]] = [
-        r for r in existing_rows if r.get("letter_id") in requested
-    ]
+    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
 
@@ -1199,9 +1185,7 @@ def _prf1_to_dict(score: Any) -> dict[str, Any]:
     }
 
 
-def _reconstruct_gold_letters(
-    rows: Sequence[dict[str, Any]], entity: str
-) -> list[ExectLetter]:
+def _reconstruct_gold_letters(rows: Sequence[dict[str, Any]], entity: str) -> list[ExectLetter]:
     letters: list[ExectLetter] = []
     for row in rows:
         annotations = tuple(
@@ -1222,9 +1206,7 @@ def _reconstruct_gold_letters(
     return letters
 
 
-def _reconstruct_pred_letters(
-    rows: Sequence[dict[str, Any]], entity: str
-) -> list[ExectLetter]:
+def _reconstruct_pred_letters(rows: Sequence[dict[str, Any]], entity: str) -> list[ExectLetter]:
     letters: list[ExectLetter] = []
     for row in rows:
         pred_letter = PredictedLetter(
@@ -1269,30 +1251,32 @@ def write_report(
     if is_checkpoint:
         total = int(metadata.get("total_letters") or summary.get("examples", 0))
         lines.extend([f"CHECKPOINT ONLY: processed {summary.get('examples', 0)} / {total}", ""])
-    lines.extend([
-        f"- JSONL: `{jsonl_path}`",
-        f"- Prompt version: `{metadata.get('prompt_version', PROMPT_VERSION)}`",
-        f"- Entity: `{entity}`",
-        f"- Split: `{metadata.get('split')}`",
-        f"- Model: `{metadata.get('model')}`",
-        f"- Mode: `{metadata.get('mode')}`",
-        f"- Letters: {summary.get('examples', 0)}",
-        f"- Published per-item F1 target: {target if target is None else f'{target:.2f}'}",
-        "",
-        "## Gate Summary",
-        "",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
-        f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
-        f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
-        f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
-        f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",
-        "",
-        "## Format Layers",
-        "",
-        "| Layer | Item F1 | Item P | Item R | Letter F1 | TP | FP | FN |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            f"- JSONL: `{jsonl_path}`",
+            f"- Prompt version: `{metadata.get('prompt_version', PROMPT_VERSION)}`",
+            f"- Entity: `{entity}`",
+            f"- Split: `{metadata.get('split')}`",
+            f"- Model: `{metadata.get('model')}`",
+            f"- Mode: `{metadata.get('mode')}`",
+            f"- Letters: {summary.get('examples', 0)}",
+            f"- Published per-item F1 target: {target if target is None else f'{target:.2f}'}",
+            "",
+            "## Gate Summary",
+            "",
+            f"- Call failures: {summary.get('call_failures', 0)}",
+            f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
+            f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
+            f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
+            f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
+            f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",
+            "",
+            "## Format Layers",
+            "",
+            "| Layer | Item F1 | Item P | Item R | Letter F1 | TP | FP | FN |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for config_name in ("phrase_only", "semantic", "benchmark"):
         s = scores.get(config_name, {})
         pi = s.get("per_item", {})
@@ -1302,20 +1286,22 @@ def write_report(
             f"| {pi.get('recall', 0):.3f} | {pl.get('f1', 0):.3f} "
             f"| {pi.get('tp', 0)} | {pi.get('fp', 0)} | {pi.get('fn', 0)} |"
         )
-    lines.extend([
-        "",
-        "## Source-Near Candidate Diagnostic (format-blind)",
-        "",
-        f"- Overlap recall: {overlap.get('recall', 0):.3f} "
-        f"(TP={overlap.get('tp', 0)} FN={overlap.get('fn', 0)})",
-        f"- Overlap F1: {overlap.get('f1', 0):.3f}",
-        f"- Over-emission (overlap FP): {summary.get('over_emission', 0)}",
-        f"- Attribute agreement on overlaps: "
-        f"{source_near.get('attribute_agreement_rate', 0):.3f} "
-        f"({source_near.get('attribute_agreement_tp', 0)}/"
-        f"{source_near.get('attribute_agreement_total', 0)})",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Source-Near Candidate Diagnostic (format-blind)",
+            "",
+            f"- Overlap recall: {overlap.get('recall', 0):.3f} "
+            f"(TP={overlap.get('tp', 0)} FN={overlap.get('fn', 0)})",
+            f"- Overlap F1: {overlap.get('f1', 0):.3f}",
+            f"- Over-emission (overlap FP): {summary.get('over_emission', 0)}",
+            f"- Attribute agreement on overlaps: "
+            f"{source_near.get('attribute_agreement_rate', 0):.3f} "
+            f"({source_near.get('attribute_agreement_tp', 0)}/"
+            f"{source_near.get('attribute_agreement_total', 0)})",
+            "",
+        ]
+    )
     path.write_text("\n".join(lines), encoding="utf-8")
 
 

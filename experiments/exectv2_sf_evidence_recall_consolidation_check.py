@@ -81,7 +81,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -153,13 +155,17 @@ def main() -> None:
 
     gate_pass = own_tp == official_sf.overlap.tp and own_fn == official_sf.overlap.fn
     print("=== PHASE 0: self-validation gate ===")
-    print(f"official source_near SeizureFrequency: tp={official_sf.overlap.tp} fn={official_sf.overlap.fn} "
-          f"recall={official_sf.overlap.recall:.4f}")
+    print(
+        f"official source_near SeizureFrequency: tp={official_sf.overlap.tp} fn={official_sf.overlap.fn} "
+        f"recall={official_sf.overlap.recall:.4f}"
+    )
     print(f"own trace reproduction                : tp={own_tp} fn={own_fn}")
     print(f"GATE {'PASS' if gate_pass else 'FAIL'}")
     if not gate_pass:
-        raise SystemExit("Phase 0 gate failed -- own trace does not reproduce official source_near "
-                          "SeizureFrequency tp/fn. Stopping before Phase 1.")
+        raise SystemExit(
+            "Phase 0 gate failed -- own trace does not reproduce official source_near "
+            "SeizureFrequency tp/fn. Stopping before Phase 1."
+        )
 
     # --- Phase 1: mechanical H1/H2 split + substrate dump ------------------ #
     mechanism_counts: Counter[str] = Counter()
@@ -218,11 +224,13 @@ def main() -> None:
     h1 = mechanism_counts[H1_CARDINALITY]
     h2 = mechanism_counts[H2_GENUINE_DIVERGENCE]
     print(f"\n=== PHASE 1: mechanical H1/H2 split ({total} SeizureFrequency source_near FNs) ===")
-    print(f"H1_CARDINALITY        = {h1} ({h1/total:.1%})")
-    print(f"H2_GENUINE_DIVERGENCE = {h2} ({h2/total:.1%})")
+    print(f"H1_CARDINALITY        = {h1} ({h1 / total:.1%})")
+    print(f"H2_GENUINE_DIVERGENCE = {h2} ({h2 / total:.1%})")
     print(f"  cross-entity overlap among H2 (informational): {cross_entity_flags}/{h2}")
-    print("\nNo existing per-case clinical verdict to cross-reference (unlike Dx Phase 1) -- "
-          "wrote full adjudication substrate for a FRESH pass.")
+    print(
+        "\nNo existing per-case clinical verdict to cross-reference (unlike Dx Phase 1) -- "
+        "wrote full adjudication substrate for a FRESH pass."
+    )
 
     out = {
         "run_id": RUN_ID,

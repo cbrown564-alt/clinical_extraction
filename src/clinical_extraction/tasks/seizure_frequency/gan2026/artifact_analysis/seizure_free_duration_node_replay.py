@@ -120,8 +120,7 @@ def run_duration_node_replay(
         "row_count": len(rows),
         "source_artifact": source_artifact,
         "graph_builder": (
-            "saved_gan2026_state_graph_projection_v0 + "
-            "seizure_free_duration_node_normalization_v0"
+            "saved_gan2026_state_graph_projection_v0 + seizure_free_duration_node_normalization_v0"
         ),
         "projection_policy": "gan2026_state_graph_projection_v0",
         "claim_language": (
@@ -180,8 +179,7 @@ def write_duration_node_replay_report(
         f"{coverage['replayed_exact_gold_duration_rows']}/{metadata['row_count']}",
         f"- Month-scale representability: "
         f"{coverage['month_scale_representable_rows']}/{metadata['row_count']}",
-        f"- Month-scale representability gains: "
-        f"{coverage['month_scale_representability_gains']}",
+        f"- Month-scale representability gains: {coverage['month_scale_representability_gains']}",
         f"- Rows still only over-broad year: {coverage['still_only_over_broad_year_rows']}",
         "",
         "## Evidence Validity",
@@ -406,8 +404,7 @@ def _explicit_numeric_month_candidates(note_text: str) -> list[DurationNodeCandi
                     label=f"seizure free for {amount} month",
                     evidence=evidence,
                     rule_id=(
-                        "seizure_free_duration_node_normalization_v0."
-                        "numeric_month_from_evidence"
+                        "seizure_free_duration_node_normalization_v0.numeric_month_from_evidence"
                     ),
                     rule_taxonomy="general",
                 )
@@ -446,8 +443,7 @@ def _current_control_month_boundary_candidates(note_text: str) -> list[DurationN
                     label="seizure free for multiple month",
                     evidence=match.group(0),
                     rule_id=(
-                        "seizure_free_duration_node_normalization_v0."
-                        "since_without_date_boundary"
+                        "seizure_free_duration_node_normalization_v0.since_without_date_boundary"
                     ),
                     rule_taxonomy="gan2026_specific",
                 )
@@ -471,10 +467,7 @@ def _date_interval_candidates(note_text: str) -> list[DurationNodeCandidate]:
             DurationNodeCandidate(
                 label=f"seizure free for {max(1, round(months))} month",
                 evidence=match.group(0),
-                rule_id=(
-                    "seizure_free_duration_node_normalization_v0."
-                    "dated_since_interval"
-                ),
+                rule_id=("seizure_free_duration_node_normalization_v0.dated_since_interval"),
                 rule_taxonomy="general",
             )
         )
@@ -493,10 +486,7 @@ def _date_interval_candidates(note_text: str) -> list[DurationNodeCandidate]:
             DurationNodeCandidate(
                 label="seizure free for multiple month",
                 evidence=match.group(0),
-                rule_id=(
-                    "seizure_free_duration_node_normalization_v0."
-                    "dated_month_boundary"
-                ),
+                rule_id=("seizure_free_duration_node_normalization_v0.dated_month_boundary"),
                 rule_taxonomy="gan2026_specific",
             )
         )
@@ -516,10 +506,7 @@ def _date_interval_candidates(note_text: str) -> list[DurationNodeCandidate]:
             DurationNodeCandidate(
                 label=f"seizure free for {max(1, round(months))} month",
                 evidence=evidence,
-                rule_id=(
-                    "seizure_free_duration_node_normalization_v0."
-                    "dated_diary_interval"
-                ),
+                rule_id=("seizure_free_duration_node_normalization_v0.dated_diary_interval"),
                 rule_taxonomy="general",
             )
         )
@@ -582,9 +569,7 @@ def _append_nodes(
     return graph.model_copy(
         update={
             "nodes": all_nodes,
-            "graph_builder": (
-                f"{graph.graph_builder}+seizure_free_duration_node_normalization_v0"
-            ),
+            "graph_builder": (f"{graph.graph_builder}+seizure_free_duration_node_normalization_v0"),
             "competing_hypothesis_node_ids": graph.competing_hypothesis_node_ids,
             "missing_variable_flags": graph.missing_variable_flags,
             "metadata": {
@@ -640,17 +625,12 @@ def _still_only_over_broad_year(
 
 
 def _labels(graph: ClinicalFrequencyStateGraph) -> list[dict[str, str | None]]:
-    return [
-        {"kind": kind.value, "label": label}
-        for kind, label in graph_node_labels(graph)
-    ]
+    return [{"kind": kind.value, "label": label} for kind, label in graph_node_labels(graph)]
 
 
 def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     rule_counts = Counter(
-        str(node["rule_id"])
-        for row in rows
-        for node in row["new_duration_nodes"]
+        str(node["rule_id"]) for row in rows for node in row["new_duration_nodes"]
     )
     rule_taxonomy: dict[str, str] = {}
     for row in rows:
@@ -659,9 +639,7 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             rule_taxonomy.setdefault(rule_id, _taxonomy_for_rule(rule_id))
     new_nodes = sum(int(row["new_duration_node_count"]) for row in rows)
     exact_nodes = sum(
-        not node["graph_errors"]
-        for row in rows
-        for node in row["new_duration_nodes"]
+        not node["graph_errors"] for row in rows for node in row["new_duration_nodes"]
     )
     return {
         "node_coverage": {
@@ -689,8 +667,7 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "new_duration_nodes": new_nodes,
             "exact_evidence_valid_nodes": exact_nodes,
             "rows_with_evidence_errors": sum(
-                any(node["graph_errors"] for node in row["new_duration_nodes"])
-                for row in rows
+                any(node["graph_errors"] for node in row["new_duration_nodes"]) for row in rows
             ),
         },
         "unchanged_projection": {

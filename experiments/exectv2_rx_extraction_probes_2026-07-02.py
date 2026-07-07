@@ -33,7 +33,7 @@ import json
 import re
 import time
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import dspy
 
@@ -178,9 +178,7 @@ def score_arm(
 # --------------------------------------------------------------------------------------
 # Live arm runner.
 # --------------------------------------------------------------------------------------
-def run_arm(
-    instruction: str, letters: list[ExectLetter], num_threads: int
-) -> dict[str, str]:
+def run_arm(instruction: str, letters: list[ExectLetter], num_threads: int) -> dict[str, str]:
     program = RxProbeExtractor(instruction)
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
     exec_pairs = [(program, {"letter_text": letter.note_text}) for letter in letters]
@@ -316,7 +314,9 @@ def main() -> None:
             started = time.time()
             raw_by_id = run_arm(arm_instructions[name], gold_letters, args.num_threads)
             print(f"[probe]   done in {time.time() - started:.1f}s", flush=True)
-            raw_path.write_text(json.dumps(raw_by_id, ensure_ascii=False, indent=2), encoding="utf-8")
+            raw_path.write_text(
+                json.dumps(raw_by_id, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
         raw_by_arm[name] = raw_by_id
         row, pred_letters = score_arm(gold_letters, raw_by_id)
         pred_by_arm[name] = pred_letters

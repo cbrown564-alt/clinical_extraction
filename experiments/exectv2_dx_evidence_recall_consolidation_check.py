@@ -47,11 +47,11 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
 )
@@ -90,7 +90,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -131,11 +133,7 @@ def _any_entity_overlap(gold: ExectAnnotation, all_pred_anns: list[ExectAnnotati
 
 def load_adjudication() -> dict[tuple[str, str], str]:
     rows = list(csv.DictReader((DX_CANONICAL / "_adjudication.csv").open(encoding="utf-8")))
-    return {
-        (r["letter"], r["concept"]): r["verdict"]
-        for r in rows
-        if r["direction"] == "MISSED"
-    }
+    return {(r["letter"], r["concept"]): r["verdict"] for r in rows if r["direction"] == "MISSED"}
 
 
 def main() -> None:
@@ -148,7 +146,9 @@ def main() -> None:
 
     # --- Phase 0: self-validation gate -------------------------------------- #
     pred_letters = [pred_by_id.get(g.letter_id) or empty_letter(g.letter_id) for g in gold_letters]
-    official_sn = source_near_diagnostic(gold_letters, pred_letters, ["Diagnosis"], benchmark_config_for)
+    official_sn = source_near_diagnostic(
+        gold_letters, pred_letters, ["Diagnosis"], benchmark_config_for
+    )
     official_dx = official_sn.per_entity["Diagnosis"]
 
     own_tp = own_fn = 0
@@ -162,13 +162,17 @@ def main() -> None:
 
     gate_pass = own_tp == official_dx.overlap.tp and own_fn == official_dx.overlap.fn
     print("=== PHASE 0: self-validation gate ===")
-    print(f"official source_near Diagnosis: tp={official_dx.overlap.tp} fn={official_dx.overlap.fn} "
-          f"recall={official_dx.overlap.recall:.4f}")
+    print(
+        f"official source_near Diagnosis: tp={official_dx.overlap.tp} fn={official_dx.overlap.fn} "
+        f"recall={official_dx.overlap.recall:.4f}"
+    )
     print(f"own trace reproduction        : tp={own_tp} fn={own_fn}")
     print(f"GATE {'PASS' if gate_pass else 'FAIL'}")
     if not gate_pass:
-        raise SystemExit("Phase 0 gate failed -- own _first_overlapping_prediction trace does not "
-                          "reproduce the official source_near Diagnosis tp/fn. Stopping before Phase 1.")
+        raise SystemExit(
+            "Phase 0 gate failed -- own _first_overlapping_prediction trace does not "
+            "reproduce the official source_near Diagnosis tp/fn. Stopping before Phase 1."
+        )
 
     # --- Phase 1: the decomposition ------------------------------------------ #
     rows_out = []
@@ -218,12 +222,14 @@ def main() -> None:
                 if any(_any_entity_overlap(a, all_pred_anns) for a in concept_anns):
                     cross_entity_flags += 1
 
-            rows_out.append({
-                "letter_id": letter_id,
-                "concept": concept,
-                "mechanism": mechanism,
-                "adjudication_verdict": verdict,
-            })
+            rows_out.append(
+                {
+                    "letter_id": letter_id,
+                    "concept": concept,
+                    "mechanism": mechanism,
+                    "adjudication_verdict": verdict,
+                }
+            )
 
     total = sum(mechanism_counts.values())
     assert total == 92, f"expected 92 missed concepts, classified {total}"
@@ -238,12 +244,14 @@ def main() -> None:
 
     inflated_bucket = h1 + not_fn + h2_model_defensible + h2_both_defensible
     genuine_bucket = h2_gold_right
-    decided_total = inflated_bucket + genuine_bucket
+    inflated_bucket + genuine_bucket
     inflated_share = inflated_bucket / total
     genuine_share = genuine_bucket / total
 
     print("\n=== PHASE 1: mechanism x verdict cross-tab (92 Diagnosis missed_concepts) ===")
-    print(f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'UNKNOWN':>9}{'TOTAL':>8}")
+    print(
+        f"{'mechanism':<22}{'GOLD_RIGHT':>12}{'MODEL_DEFENSIBLE':>18}{'BOTH_DEFENSIBLE':>17}{'UNKNOWN':>9}{'TOTAL':>8}"
+    )
     for mech in (H1_CARDINALITY, H2_GENUINE_DIVERGENCE, NOT_SOURCE_NEAR_FN):
         gr = crosstab[(mech, "GOLD_RIGHT")]
         md = crosstab[(mech, "MODEL_DEFENSIBLE")]
@@ -252,18 +260,28 @@ def main() -> None:
         print(f"{mech:<22}{gr:>12}{md:>18}{bd:>17}{uk:>9}{mechanism_counts[mech]:>8}")
     print(f"{'TOTAL':<22}{'':>12}{'':>18}{'':>17}{'':>9}{total:>8}")
 
-    print(f"\nmechanism marginals: H1_CARDINALITY={h1} ({h1/total:.1%})  "
-          f"H2_GENUINE_DIVERGENCE={h2} ({h2/total:.1%})  NOT_SOURCE_NEAR_FN={not_fn} ({not_fn/total:.1%})")
-    print(f"  (NOT_SOURCE_NEAR_FN = concept-key miss under clinical_headline that is ALREADY a "
-          f"source_near TP -- the looser phrase-overlap match credits it despite the concept-key miss)")
-    print(f"cross-entity overlap among H2 cases (informational, not folded into split): "
-          f"{cross_entity_flags}/{h2}")
+    print(
+        f"\nmechanism marginals: H1_CARDINALITY={h1} ({h1 / total:.1%})  "
+        f"H2_GENUINE_DIVERGENCE={h2} ({h2 / total:.1%})  NOT_SOURCE_NEAR_FN={not_fn} ({not_fn / total:.1%})"
+    )
+    print(
+        "  (NOT_SOURCE_NEAR_FN = concept-key miss under clinical_headline that is ALREADY a "
+        "source_near TP -- the looser phrase-overlap match credits it despite the concept-key miss)"
+    )
+    print(
+        f"cross-entity overlap among H2 cases (informational, not folded into split): "
+        f"{cross_entity_flags}/{h2}"
+    )
 
     print("\n=== DECISION NUMBER (plan section 3 kill-criterion) ===")
-    print(f"H-inflated bucket (H1 + NOT_SOURCE_NEAR_FN + H2-but-MODEL_DEFENSIBLE/BOTH_DEFENSIBLE): "
-          f"{inflated_bucket}/{total} = {inflated_share:.1%}")
-    print(f"H-genuine bucket  (H2_GENUINE_DIVERGENCE and GOLD_RIGHT, the unambiguous real-miss bucket): "
-          f"{genuine_bucket}/{total} = {genuine_share:.1%}")
+    print(
+        f"H-inflated bucket (H1 + NOT_SOURCE_NEAR_FN + H2-but-MODEL_DEFENSIBLE/BOTH_DEFENSIBLE): "
+        f"{inflated_bucket}/{total} = {inflated_share:.1%}"
+    )
+    print(
+        f"H-genuine bucket  (H2_GENUINE_DIVERGENCE and GOLD_RIGHT, the unambiguous real-miss bucket): "
+        f"{genuine_bucket}/{total} = {genuine_share:.1%}"
+    )
     if inflated_share >= 0.50:
         verdict_line = "H-inflated CONFIRMED (>= 50%)"
     elif inflated_share < 0.30:

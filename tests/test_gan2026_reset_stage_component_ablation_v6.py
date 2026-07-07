@@ -80,9 +80,12 @@ def test_component_ablation_isolates_recovered_frequency_families_and_audit_coun
     assert summary["recovered_frequency_family_rows"][
         "selected_evidence_frequency_value_recovery"
     ] == [1]
-    assert summary["audit_only_transition_counts_v5_to_v6"]["by_family"][
-        "relative_only_trend"
-    ]["W_to_C"] == 1
+    assert (
+        summary["audit_only_transition_counts_v5_to_v6"]["by_family"]["relative_only_trend"][
+            "W_to_C"
+        ]
+        == 1
+    )
 
     by_family = {
         row["family"]: row for row in artifact["sections"]["clinical_policy_route_families"]

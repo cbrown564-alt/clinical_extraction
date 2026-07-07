@@ -37,11 +37,10 @@ def compare_rewrite_outputs(
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders._legacy_impl import (
         sf_convention_rewrite as legacy_sf_convention_rewrite,
     )
+
     from ..adapters.convention import apply_rewrite_adapter
 
-    legacy_result = legacy_sf_convention_rewrite(
-        text, evidence=evidence, attributes=attributes
-    )
+    legacy_result = legacy_sf_convention_rewrite(text, evidence=evidence, attributes=attributes)
     registry_result = apply_rewrite_adapter(text, evidence=evidence, attributes=attributes)
     return ShadowDiff(
         case_name="inline",

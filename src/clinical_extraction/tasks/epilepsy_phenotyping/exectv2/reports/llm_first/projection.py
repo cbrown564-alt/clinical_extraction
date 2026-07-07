@@ -17,7 +17,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.constants import (
     CUI,
     CUI_PHRASE,
@@ -35,9 +34,7 @@ def strip_and_project(pred_letters: Sequence[PredictedLetter]) -> list[Predicted
                 m.model_copy(
                     update={
                         "attributes": {
-                            k: v
-                            for k, v in m.attributes.items()
-                            if k not in (CUI, CUI_PHRASE)
+                            k: v for k, v in m.attributes.items() if k not in (CUI, CUI_PHRASE)
                         }
                     }
                 )
@@ -62,9 +59,7 @@ def strip_prediction_cui(pred_letters: Sequence[PredictedLetter]) -> list[Predic
                     m.model_copy(
                         update={
                             "attributes": {
-                                k: v
-                                for k, v in m.attributes.items()
-                                if k not in (CUI, CUI_PHRASE)
+                                k: v for k, v in m.attributes.items() if k not in (CUI, CUI_PHRASE)
                             }
                         }
                     )

@@ -43,9 +43,7 @@ def test_frozen_test_preflight_passes_when_protocol_and_artifacts_match(
     assert report.failures == ()
 
 
-def test_frozen_test_preflight_rejects_hash_drift(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_frozen_test_preflight_rejects_hash_drift(tmp_path: Path, monkeypatch) -> None:
     frozen_file = tmp_path / "frozen.py"
     frozen_file.write_text("first\n", encoding="utf-8")
     protocol = _write_protocol(tmp_path, {str(frozen_file): _sha256(frozen_file)})
@@ -66,9 +64,7 @@ def test_frozen_test_preflight_rejects_hash_drift(
     assert any("hash mismatch" in failure for failure in report.failures)
 
 
-def test_frozen_test_preflight_rejects_existing_test_outputs(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_frozen_test_preflight_rejects_existing_test_outputs(tmp_path: Path, monkeypatch) -> None:
     frozen_file = tmp_path / "frozen.py"
     frozen_file.write_text("frozen = True\n", encoding="utf-8")
     protocol = _write_protocol(tmp_path, {str(frozen_file): _sha256(frozen_file)})
@@ -115,9 +111,7 @@ def test_frozen_test_preflight_rejects_existing_test_resume_part_outputs(
     assert any("test.resume-part.jsonl" in failure for failure in report.failures)
 
 
-def test_frozen_test_preflight_rejects_partial_test_command(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_frozen_test_preflight_rejects_partial_test_command(tmp_path: Path, monkeypatch) -> None:
     frozen_file = tmp_path / "frozen.py"
     frozen_file.write_text("frozen = True\n", encoding="utf-8")
     protocol = _write_protocol(
@@ -139,14 +133,11 @@ def test_frozen_test_preflight_rejects_partial_test_command(
 
     assert report.ok is False
     assert any(
-        "authorized command must not include --limit" in failure
-        for failure in report.failures
+        "authorized command must not include --limit" in failure for failure in report.failures
     )
 
 
-def test_frozen_test_preflight_rejects_output_path_drift(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_frozen_test_preflight_rejects_output_path_drift(tmp_path: Path, monkeypatch) -> None:
     frozen_file = tmp_path / "frozen.py"
     frozen_file.write_text("frozen = True\n", encoding="utf-8")
     protocol = _write_protocol(
@@ -178,11 +169,7 @@ def test_frozen_test_preflight_rejects_unfrozen_command_modifiers(
     protocol = _write_protocol(
         tmp_path,
         {str(frozen_file): _sha256(frozen_file)},
-        command_extra=(
-            "  --overwrite-existing `\n"
-            "  --temperature 0.2 `\n"
-            "  --mode prompt-only `\n"
-        ),
+        command_extra=("  --overwrite-existing `\n  --temperature 0.2 `\n  --mode prompt-only `\n"),
     )
     _patch_valid_spec_and_manifest(monkeypatch)
 
@@ -277,9 +264,7 @@ def test_frozen_test_preflight_rejects_cli_frozen_launch_path_drift(
     )
 
 
-def test_frozen_test_preflight_rejects_unredacted_test_summary(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_frozen_test_preflight_rejects_unredacted_test_summary(tmp_path: Path, monkeypatch) -> None:
     frozen_file = tmp_path / "frozen.py"
     frozen_file.write_text("frozen = True\n", encoding="utf-8")
     protocol = _write_protocol(tmp_path, {str(frozen_file): _sha256(frozen_file)})
@@ -289,9 +274,7 @@ def test_frozen_test_preflight_rejects_unredacted_test_summary(
         del rows, split
         return {
             "rows": 1,
-            "fresh_evidence_profiles": {
-                frozen_test_preflight.SYNTHETIC_HOLDOUT_PROFILE: 1
-            },
+            "fresh_evidence_profiles": {frozen_test_preflight.SYNTHETIC_HOLDOUT_PROFILE: 1},
             "final_labels": {frozen_test_preflight.SYNTHETIC_HOLDOUT_LABEL: 1},
             "aggregate_only_omitted_fields": [],
         }
@@ -447,13 +430,11 @@ def test_frozen_test_preflight_rejects_test_source_coverage_drift(
     deepseek_source = tmp_path / "deepseek_test.jsonl"
     gpt_source.write_text('{"source_row_index": 1, "split": "test"}\n', encoding="utf-8")
     qwen_source.write_text(
-        '{"source_row_index": 1, "split": "test"}\n'
-        '{"source_row_index": 2, "split": "test"}\n',
+        '{"source_row_index": 1, "split": "test"}\n{"source_row_index": 2, "split": "test"}\n',
         encoding="utf-8",
     )
     deepseek_source.write_text(
-        '{"source_row_index": 1, "split": "test"}\n'
-        '{"source_row_index": 2, "split": "test"}\n',
+        '{"source_row_index": 1, "split": "test"}\n{"source_row_index": 2, "split": "test"}\n',
         encoding="utf-8",
     )
     monkeypatch.setattr(frozen_test_preflight, "EXPECTED_TEST_ROW_COUNT", 2)
@@ -531,21 +512,9 @@ def _write_protocol(
     markdown_path: Path = frozen_test_preflight.DEFAULT_TEST_REPORT_PATH,
 ) -> Path:
     hash_lines = "\n".join(f"{digest}  {path}" for path, digest in hashes.items())
-    gpt_source = (
-        frozen_test_preflight.fresh_evidence_reasoner
-        .TEST_GPT_STRUCTURED_EVENT_JSONL_PATH
-        .as_posix()
-    )
-    qwen_source = (
-        frozen_test_preflight.fresh_evidence_reasoner
-        .TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH
-        .as_posix()
-    )
-    deepseek_source = (
-        frozen_test_preflight.fresh_evidence_reasoner
-        .TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
-        .as_posix()
-    )
+    gpt_source = frozen_test_preflight.fresh_evidence_reasoner.TEST_GPT_STRUCTURED_EVENT_JSONL_PATH.as_posix()
+    qwen_source = frozen_test_preflight.fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH.as_posix()
+    deepseek_source = frozen_test_preflight.fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH.as_posix()
     protocol = tmp_path / "protocol.md"
     protocol.write_text(
         f"""# Protocol

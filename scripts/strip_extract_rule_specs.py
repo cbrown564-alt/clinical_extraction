@@ -92,7 +92,7 @@ def main() -> None:
         body = _strip_rule_specs(source)
         body = _update_imports(body)
         note = textwrap.dedent(
-            f"""
+            """
             # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
             # Assembled via sf_surface_registry/adapters/extraction.py
             """

@@ -216,8 +216,7 @@ def _investigation_added_finding(
             ),
         ),
         rationale=(
-            "The source phrase matches a bounded dev residual completed-investigation "
-            "pattern."
+            "The source phrase matches a bounded dev residual completed-investigation pattern."
         ),
         evidence_valid=evidence_is_grounded(store.note_text, evidence),
         raw_surface=False,

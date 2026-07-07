@@ -112,9 +112,7 @@ def build_merged_predictions(
     gold_letters: Sequence[ExectLetter],
     family_sources: Mapping[str, tuple[Path, str]],
 ) -> tuple[list[PredictedLetter], dict[str, Any]]:
-    deterministic_families = tuple(
-        name for name in ALL_ENTITY_NAMES if name not in family_sources
-    )
+    deterministic_families = tuple(name for name in ALL_ENTITY_NAMES if name not in family_sources)
     deterministic = {pred.letter_id: pred for pred in run_all9_on_letters(gold_letters)}
     family_mentions: dict[str, dict[str, list[PredictedMention]]] = {}
     provenance: dict[str, Any] = {}
@@ -224,9 +222,7 @@ def render_markdown(scorecard: Mapping[str, Any], *, json_path: Path) -> str:
     lines.append(f"- JSON: `{json_path}`")
     lines.append(f"- Pipeline family: `{scorecard['pipeline_family']}`")
     lines.append(f"- Row count: {scorecard['row_count']}")
-    lines.append(
-        "- Key families (hybrid verifier): " + ", ".join(scorecard["key_families"])
-    )
+    lines.append("- Key families (hybrid verifier): " + ", ".join(scorecard["key_families"]))
     lines.append(
         "- Deterministic fallback families: "
         + ", ".join(scorecard["deterministic_fallback_families"])
@@ -252,7 +248,9 @@ def render_markdown(scorecard: Mapping[str, Any], *, json_path: Path) -> str:
     lines.append("")
     lines.append("## Per-Entity Benchmark F1 vs Paper")
     lines.append("")
-    lines.append("| Entity | Source | Item F1 | Paper item F1 | Δ vs paper | Letter F1 | TP | FP | FN |")
+    lines.append(
+        "| Entity | Source | Item F1 | Paper item F1 | Δ vs paper | Letter F1 | TP | FP | FN |"
+    )
     lines.append("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
     for entity in ALL_ENTITY_NAMES:
         cell = scorecard["per_entity_benchmark"][entity]

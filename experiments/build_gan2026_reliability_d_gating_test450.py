@@ -50,7 +50,9 @@ OUT_MD = rc.EXPERIMENTS / f"gan2026_reliability_d_gating_test450_{DATE}.md"
 def frozen_transform_hashes() -> dict[str, str]:
     """SHA-256 of the predeclared deterministic transforms (frozen by hash)."""
     reviewer_src = inspect.getsource(cr)
-    gating_src = inspect.getsource(gating_table) + inspect.getsource(failure_auroc) + repr(COVERAGES)
+    gating_src = (
+        inspect.getsource(gating_table) + inspect.getsource(failure_auroc) + repr(COVERAGES)
+    )
     return {
         "confidence_reviewer_module_sha256": hashlib.sha256(reviewer_src.encode()).hexdigest(),
         "gating_readout_sha256": hashlib.sha256(gating_src.encode()).hexdigest(),
@@ -69,20 +71,30 @@ def gating_table(risk: list[float], correct: list[bool]) -> list[dict[str, Any]]
         cov_correct = sum(1 for i in covered if correct[i])
         abst_err = sum(1 for i in abstained if not correct[i])
         lo, hi = rc.wilson_interval(cov_correct, len(covered))
-        plo, phi = rc.wilson_interval(abst_err, len(abstained)) if abstained else (float("nan"), float("nan"))
-        out.append({
-            "coverage": len(covered) / n,
-            "covered": len(covered),
-            "abstained": len(abstained),
-            "selective_accuracy": cov_correct / len(covered),
-            "selective_accuracy_ci95": [lo, hi],
-            "abstention_precision": (abst_err / len(abstained)) if abstained else float("nan"),
-            "abstention_precision_ci95": [plo, phi],
-            "random_abstention_precision": base_err,
-            "abstention_lift_over_random": (abst_err / len(abstained) - base_err) if abstained else float("nan"),
-            "errors_shed": abst_err,
-            "errors_shed_frac_of_total": (abst_err / total_errors) if total_errors else float("nan"),
-        })
+        plo, phi = (
+            rc.wilson_interval(abst_err, len(abstained))
+            if abstained
+            else (float("nan"), float("nan"))
+        )
+        out.append(
+            {
+                "coverage": len(covered) / n,
+                "covered": len(covered),
+                "abstained": len(abstained),
+                "selective_accuracy": cov_correct / len(covered),
+                "selective_accuracy_ci95": [lo, hi],
+                "abstention_precision": (abst_err / len(abstained)) if abstained else float("nan"),
+                "abstention_precision_ci95": [plo, phi],
+                "random_abstention_precision": base_err,
+                "abstention_lift_over_random": (abst_err / len(abstained) - base_err)
+                if abstained
+                else float("nan"),
+                "errors_shed": abst_err,
+                "errors_shed_frac_of_total": (abst_err / total_errors)
+                if total_errors
+                else float("nan"),
+            }
+        )
     return out
 
 
@@ -102,8 +114,11 @@ def load_done(path: Path) -> dict[int, dict[str, Any]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--run", action="store_true",
-                    help="REQUIRED to issue live test450 reviewer calls (freeze-warden gate).")
+    ap.add_argument(
+        "--run",
+        action="store_true",
+        help="REQUIRED to issue live test450 reviewer calls (freeze-warden gate).",
+    )
     args = ap.parse_args()
     if not args.run:
         ap.error("refusing to touch test450 without --run (freeze-warden gated).")
@@ -111,11 +126,13 @@ def main() -> None:
     # First-class single-model integrity preflight (fail-closed gate). The final
     # aggregate outputs must be absent (a completed prior run); the resumable per-row
     # samples checkpoint is allowed to exist so resume works.
-    preflight = run_single_model_preflight(SingleModelPreflightConfig(
-        split="test",
-        subject_artifact_path=rc.REASONER_TEST450,
-        outputs_must_be_absent=(OUT_JSON, OUT_MD),
-    ))
+    preflight = run_single_model_preflight(
+        SingleModelPreflightConfig(
+            split="test",
+            subject_artifact_path=rc.REASONER_TEST450,
+            outputs_must_be_absent=(OUT_JSON, OUT_MD),
+        )
+    )
     if not preflight.ok:
         for f in preflight.failures:
             print(f"PREFLIGHT FAIL: {f}")
@@ -128,7 +145,6 @@ def main() -> None:
 
     done = load_done(SAMPLES)
     reviewer = ConfidenceReviewer()
-    samples: list[dict[str, Any]] = []
     risk: list[float] = []
     correct: list[bool] = []
     pending = [idx for idx in rsn if idx not in done]
@@ -177,8 +193,11 @@ def main() -> None:
         "provenance": rc.provenance_block(
             subject="single_se_mini_v0_reference",
             sources=[rc.REASONER_TEST450],
-        ) | {"model_calls": f"{n_processed} live gpt-4.1-mini reviewer calls (temp 0)",
-             "reviewer_version": cr.CONFIDENCE_REVIEWER_VERSION},
+        )
+        | {
+            "model_calls": f"{n_processed} live gpt-4.1-mini reviewer calls (temp 0)",
+            "reviewer_version": cr.CONFIDENCE_REVIEWER_VERSION,
+        },
         "aggregate_results": {
             "rows_scored": n,
             "base_accuracy": base_correct / n,
@@ -198,14 +217,17 @@ def main() -> None:
     ar = result["aggregate_results"]
     print(f"  base acc {ar['base_accuracy']:.3f} · D AUROC {ar['d_failure_auroc']:.3f}")
     for x in ar["gating_operating_points"]:
-        print(f"  cov {x['coverage']:.0%}: sel acc {x['selective_accuracy']:.3f} · "
-              f"abst prec {x['abstention_precision']:.3f} vs random {x['random_abstention_precision']:.3f}")
+        print(
+            f"  cov {x['coverage']:.0%}: sel acc {x['selective_accuracy']:.3f} · "
+            f"abst prec {x['abstention_precision']:.3f} vs random {x['random_abstention_precision']:.3f}"
+        )
 
 
 def _checkpoint(done: dict[int, dict[str, Any]]) -> None:
     rows = [{"source_row_index": idx, "review": rev} for idx, rev in sorted(done.items())]
-    SAMPLES.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
-                       encoding="utf-8")
+    SAMPLES.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8"
+    )
 
 
 def render_md(result: dict[str, Any]) -> str:

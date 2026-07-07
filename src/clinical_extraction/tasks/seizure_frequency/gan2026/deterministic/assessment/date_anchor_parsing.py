@@ -16,14 +16,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _small_number_to_float,
 )
 
+
 def _extract_frequency_multi_month_bucket_matches(
     source_phrase: str,
     *,
     reference_date: str | None,
 ) -> list[dict[str, Any]]:
-    count_token = (
-        r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
-    )
+    count_token = r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
     month_token = (
         r"Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|"
         r"Jul(?:y)?|Aug(?:ust)?|Sep(?:t|tember)?|Oct(?:ober)?|Nov(?:ember)?|"
@@ -64,6 +63,7 @@ def _extract_frequency_multi_month_bucket_matches(
             }
         )
     return matches
+
 
 def _extract_frequency_current_month_bucket_match(
     source_phrase: str,
@@ -108,6 +108,7 @@ def _extract_frequency_current_month_bucket_match(
         }
     return None
 
+
 def _extract_frequency_article_month_bucket_matches(
     source_phrase: str,
     *,
@@ -146,6 +147,7 @@ def _extract_frequency_article_month_bucket_matches(
         )
     return matches
 
+
 def _extract_frequency_summary_count_with_month_list(
     source_phrase: str,
     *,
@@ -174,6 +176,7 @@ def _extract_frequency_summary_count_with_month_list(
     inferred_year = any(mention["year_inferred"] for mention in month_mentions)
     return count_low, count_high, inferred_year
 
+
 def _extract_explicit_multi_month_window_months(source_phrase: str) -> int | None:
     match = re.search(
         r"\b(?:over|during|across|within)\s+(?:the\s+past\s+|past\s+|last\s+)?"
@@ -188,6 +191,7 @@ def _extract_explicit_multi_month_window_months(source_phrase: str) -> int | Non
     if count is None or count <= 1:
         return None
     return int(count)
+
 
 def _extract_month_mentions(
     source_phrase: str,
@@ -222,6 +226,7 @@ def _extract_month_mentions(
         )
     return mentions
 
+
 def _month_token_to_iso(
     month: str,
     *,
@@ -233,6 +238,7 @@ def _month_token_to_iso(
     if reference_date is None:
         return None, False
     return _month_without_year_to_iso(month, reference_date=reference_date), True
+
 
 def _reference_month_iso(reference_date: str | None) -> str | None:
     if reference_date is None:
@@ -249,6 +255,7 @@ def _reference_month_iso(reference_date: str | None) -> str | None:
         return None
     return f"{year:04d}-{month:02d}"
 
+
 def _inclusive_month_span(month_isos: Sequence[str]) -> int | None:
     if not month_isos:
         return None
@@ -262,6 +269,7 @@ def _inclusive_month_span(month_isos: Sequence[str]) -> int | None:
     start_year, start_month = min(parsed)
     end_year, end_month = max(parsed)
     return (end_year - start_year) * 12 + (end_month - start_month) + 1
+
 
 def _extract_frequency_anchor_window_date(
     source_phrase: str,
@@ -325,6 +333,7 @@ def _extract_frequency_anchor_window_date(
                 True,
             )
     return None, [], False
+
 
 def _extract_seizure_free_anchor_date(
     source_phrase: str,
@@ -555,10 +564,7 @@ def _extract_seizure_free_anchor_date(
             return DateReference(
                 date=parsed,
                 date_precision="month",
-                source=(
-                    "seizure_free_event_anchor_month_"
-                    "year_inferred_from_reference_date"
-                ),
+                source=("seizure_free_event_anchor_month_year_inferred_from_reference_date"),
                 source_phrase=event_month_without_year.group(0),
             ), [
                 "seizure_free_anchor_year_inferred_from_reference_date",
@@ -596,14 +602,17 @@ def _extract_seizure_free_anchor_date(
             ]
     return None, []
 
+
 def _mentions_since_anchor(source_phrase: str) -> bool:
     return bool(re.search(r"\bsince\b", source_phrase, flags=re.IGNORECASE))
+
 
 def _month_year_to_iso(month: str, year: str) -> str | None:
     month_number = _month_number(month)
     if month_number is None:
         return None
     return f"{int(year):04d}-{month_number:02d}"
+
 
 def _day_month_year_to_iso(day: str, month: str, year: str) -> str | None:
     month_number = _month_number(month)
@@ -615,12 +624,14 @@ def _day_month_year_to_iso(day: str, month: str, year: str) -> str | None:
         return None
     return parsed.isoformat()
 
+
 def _numeric_day_month_year_to_iso(day: str, month: str, year: str) -> str | None:
     try:
         parsed = date(int(year), int(month), int(day))
     except ValueError:
         return None
     return parsed.isoformat()
+
 
 def _numeric_month_year_to_iso(month: str, year: str) -> str | None:
     try:
@@ -630,6 +641,7 @@ def _numeric_month_year_to_iso(month: str, year: str) -> str | None:
     if not 1 <= month_number <= 12:
         return None
     return f"{int(year):04d}-{month_number:02d}"
+
 
 def _day_month_without_year_to_iso(
     day: str,
@@ -646,6 +658,7 @@ def _day_month_without_year_to_iso(
         reference_date=reference_date,
     )
 
+
 def _numeric_day_month_without_year_to_iso(
     day: str,
     month: str,
@@ -657,6 +670,7 @@ def _numeric_day_month_without_year_to_iso(
         month,
         reference_date=reference_date,
     )
+
 
 def _day_numeric_month_without_year_to_iso(
     day: str,
@@ -684,6 +698,7 @@ def _day_numeric_month_without_year_to_iso(
             return None
     return parsed.isoformat()
 
+
 def _approximate_year_to_iso(qualifier: str, year: str) -> str | None:
     month = {
         "early": 1,
@@ -693,6 +708,7 @@ def _approximate_year_to_iso(qualifier: str, year: str) -> str | None:
     if month is None:
         return None
     return f"{int(year):04d}-{month:02d}"
+
 
 def _season_without_year_to_iso(
     season: str,
@@ -728,6 +744,7 @@ def _season_without_year_to_iso(
         year -= 1
     return f"{year:04d}-{month_number:02d}"
 
+
 def _month_without_year_to_iso(month: str, *, reference_date: str) -> str | None:
     month_number = _month_number(month)
     if month_number is None:
@@ -740,6 +757,7 @@ def _month_without_year_to_iso(month: str, *, reference_date: str) -> str | None
     if month_number > reference.month:
         year -= 1
     return f"{year:04d}-{month_number:02d}"
+
 
 def _month_number(month: str) -> int | None:
     lookup = {
@@ -769,6 +787,7 @@ def _month_number(month: str) -> int | None:
         "december": 12,
     }
     return lookup.get(month.strip().lower())
+
 
 def _whole_months_between(anchor_date: str, reference_date: str) -> int | None:
     try:

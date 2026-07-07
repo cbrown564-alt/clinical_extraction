@@ -67,9 +67,7 @@ def _finalize(stats: Mapping[str, int]) -> dict[str, Any]:
         "wrong_to_correct": wrong_to_correct,
         "correct_to_wrong": correct_to_wrong,
         "net_purist_gain": wrong_to_correct - correct_to_wrong,
-        "changed_label_precision": (
-            round(wrong_to_correct / changed, 4) if changed else None
-        ),
+        "changed_label_precision": (round(wrong_to_correct / changed, 4) if changed else None),
     }
 
 
@@ -140,13 +138,9 @@ def summarize_family_holdout_cv(
     if not present:
         reasons.append("no partitioning fold families present; cannot assess holdout")
     if aggregate_final["net_purist_gain"] <= 0:
-        reasons.append(
-            f"aggregate net Purist gain {aggregate_final['net_purist_gain']} <= 0"
-        )
+        reasons.append(f"aggregate net Purist gain {aggregate_final['net_purist_gain']} <= 0")
     if regressing:
-        reasons.append(
-            "held-out bands regress (net Purist gain < 0): " + ", ".join(regressing)
-        )
+        reasons.append("held-out bands regress (net Purist gain < 0): " + ", ".join(regressing))
     if low_precision:
         reasons.append(
             "held-out bands below changed-label precision "
@@ -159,9 +153,7 @@ def summarize_family_holdout_cv(
         "fold_kind": "leave_one_boundary_band_out",
         "min_changed_label_precision": min_changed_label_precision,
         "fold_families_present": present,
-        "fold_families_absent": [
-            name for name in fold_families if name not in families
-        ],
+        "fold_families_absent": [name for name in fold_families if name not in families],
         "aggregate": aggregate_final,
         "folds": folds,
         "worst_held_out_fold": worst_fold,

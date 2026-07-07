@@ -27,17 +27,11 @@ def test_component_stress_ablation_counts_transitions_and_nonpredictions() -> No
         ),
     ]
 
-    rows = validation_component_stress_ablation.build_component_stress_ablation_rows(
-        panel_rows
-    )
-    summary = validation_component_stress_ablation.summarize_component_stress_ablation_rows(
-        rows
-    )
+    rows = validation_component_stress_ablation.build_component_stress_ablation_rows(panel_rows)
+    summary = validation_component_stress_ablation.summarize_component_stress_ablation_rows(rows)
 
     final_comparison = next(
-        item
-        for item in summary["comparisons"]
-        if item["candidate"] == "staged_final_policy"
+        item for item in summary["comparisons"] if item["candidate"] == "staged_final_policy"
     )
     assert final_comparison["wrong_to_correct"] == 1
     assert final_comparison["correct_to_wrong"] == 0
@@ -60,12 +54,8 @@ def test_component_stress_ablation_preserves_h6_controls() -> None:
         )
     ]
 
-    rows = validation_component_stress_ablation.build_component_stress_ablation_rows(
-        panel_rows
-    )
-    summary = validation_component_stress_ablation.summarize_component_stress_ablation_rows(
-        rows
-    )
+    rows = validation_component_stress_ablation.build_component_stress_ablation_rows(panel_rows)
+    summary = validation_component_stress_ablation.summarize_component_stress_ablation_rows(rows)
 
     assert summary["h6_control_summary"] == {
         "control_rows": 1,

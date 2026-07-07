@@ -300,9 +300,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "wins_vs_reference": wins,
         "losses_vs_reference": losses,
         "changed_labels_vs_reference": changed_labels,
-        "changed_label_precision": round(wins / changed_labels, 4)
-        if changed_labels
-        else None,
+        "changed_label_precision": round(wins / changed_labels, 4) if changed_labels else None,
         "boundary_demotion_count": boundary_demotion_count,
         "e2_loss_sentinel_regressions": sentinel_regressions,
         "cluster_burden_preservation_count": cluster_burden_preserved,
@@ -327,9 +325,7 @@ def gate_interpretation(
     parser_context_disabled = bool(summary.get("parser_context_disabled"))
     if surface == "hard50":
         passes_win_loss_gate = wins >= 5 and losses <= 1
-        passes_precision_gate = (
-            precision is not None and float(precision) >= 0.70 and losses <= 1
-        )
+        passes_precision_gate = precision is not None and float(precision) >= 0.70 and losses <= 1
         if (
             parse_failures == 0
             and parser_context_disabled
@@ -437,10 +433,7 @@ def write_report(
             f"- Changed labels vs reference: {summary.get('changed_labels_vs_reference', 0)}",
             f"- Changed-label precision: {summary.get('changed_label_precision')}",
             f"- Boundary demotions: {summary.get('boundary_demotion_count', 0)}",
-            (
-                "- E2 loss sentinel regressions: "
-                f"{summary.get('e2_loss_sentinel_regressions', 0)}"
-            ),
+            (f"- E2 loss sentinel regressions: {summary.get('e2_loss_sentinel_regressions', 0)}"),
             (
                 "- Cluster-burden preservation count: "
                 f"{summary.get('cluster_burden_preservation_count', 0)}"
@@ -536,9 +529,7 @@ def _build_row(
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,
         "reused_raw_output": bool(reuse_raw_output),
-        "raw_model_final_label": _extract_raw_model_final_label(raw_output)
-        if raw_output
-        else None,
+        "raw_model_final_label": _extract_raw_model_final_label(raw_output) if raw_output else None,
         "call_error": call_error,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
@@ -790,9 +781,7 @@ def _reference_labels(reference_rows: Sequence[Mapping[str, Any]]) -> dict[int, 
         source_row_index = row.get("source_row_index")
         if source_row_index is None:
             continue
-        trace = dict(
-            dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {}
-        )
+        trace = dict(dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {})
         label = trace.get("final_label")
         if label is not None:
             labels[int(source_row_index)] = str(label)
@@ -848,10 +837,11 @@ def _introduces_boundary_demotion(
     candidate_label: str | None,
     reference_label: str | None,
 ) -> bool:
-    return (
-        _label_kind(candidate_label) in {"seizure_free", "unknown", "no_reference"}
-        and _is_frequency_or_cluster_label(reference_label)
-    )
+    return _label_kind(candidate_label) in {
+        "seizure_free",
+        "unknown",
+        "no_reference",
+    } and _is_frequency_or_cluster_label(reference_label)
 
 
 def _metadata(

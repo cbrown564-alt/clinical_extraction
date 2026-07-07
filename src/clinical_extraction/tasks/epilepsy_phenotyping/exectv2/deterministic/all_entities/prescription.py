@@ -16,8 +16,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.drug_lexico
     resolve_drug_surface,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import PRESCRIPTION
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _owner, _right_context_until_separator
@@ -105,6 +108,8 @@ _LEFT_DOSE_BEFORE_MEDICATION = re.compile(
     r"\s+of\s+$",
     re.IGNORECASE,
 )
+
+
 def _extract_prescriptions(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     medication_matches = tuple(_MEDICATION_PATTERN.finditer(text))
@@ -399,4 +404,3 @@ def _prescription_phrase_text(surface: str, evidence: str, attrs: dict[str, str]
     if "DrugDose" in attrs or "Frequency" in attrs:
         return evidence
     return surface
-

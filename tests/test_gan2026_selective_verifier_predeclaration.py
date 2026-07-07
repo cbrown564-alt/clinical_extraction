@@ -46,10 +46,8 @@ def _routing_row(
 
 
 def test_predeclaration_includes_exact_suspicious_rows_and_model_input_contract() -> None:
-    rows, metadata = (
-        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
-            [_routing_row()]
-        )
+    rows, metadata = selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+        [_routing_row()]
     )
 
     assert len(rows) == 1
@@ -77,10 +75,8 @@ def test_predeclaration_includes_exact_suspicious_rows_and_model_input_contract(
 
 
 def test_predeclaration_adds_plain_language_prompt_design_candidates() -> None:
-    rows, metadata = (
-        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
-            [_routing_row()]
-        )
+    rows, metadata = selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+        [_routing_row()]
     )
 
     candidates = rows[0]["prompt_design_candidates"]
@@ -101,9 +97,10 @@ def test_predeclaration_adds_plain_language_prompt_design_candidates() -> None:
         "use_unknown",
         "needs_review",
     ]
-    assert candidates["support_parts_fact_check"]["output_schema"][
-        "all_required_parts_supported"
-    ] == "true or false."
+    assert (
+        candidates["support_parts_fact_check"]["output_schema"]["all_required_parts_supported"]
+        == "true or false."
+    )
     assert metadata["prompt_design_candidates"] == [
         "veto_first_safety_reviewer",
         "support_parts_fact_check",
@@ -111,10 +108,8 @@ def test_predeclaration_adds_plain_language_prompt_design_candidates() -> None:
 
 
 def test_rendered_verifier_payload_keeps_research_metadata_out_of_model_input() -> None:
-    rows, _ = (
-        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
-            [_routing_row()]
-        )
+    rows, _ = selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+        [_routing_row()]
     )
 
     payload_text = str(rows[0]["verifier_model_input"])
@@ -134,14 +129,12 @@ def test_rendered_verifier_payload_keeps_research_metadata_out_of_model_input() 
 
 
 def test_predeclaration_excludes_non_exact_suspicious_rows() -> None:
-    rows, metadata = (
-        selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
-            [
-                _routing_row(source_row_index=101, exact_trace=True),
-                _routing_row(source_row_index=202, exact_trace=False),
-                _routing_row(source_row_index=303, action="render"),
-            ]
-        )
+    rows, metadata = selective_verifier_predeclaration.build_selective_verifier_predeclaration_rows(
+        [
+            _routing_row(source_row_index=101, exact_trace=True),
+            _routing_row(source_row_index=202, exact_trace=False),
+            _routing_row(source_row_index=303, action="render"),
+        ]
     )
 
     assert [row["source_row_index"] for row in rows] == [101]

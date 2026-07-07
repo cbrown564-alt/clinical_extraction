@@ -50,10 +50,7 @@ def build_scoring_artifact(
     gold_records: Mapping[int, GanFrequencyRecord],
     project_render_artifact_path: str = str(DEFAULT_PROJECT_RENDER_JSONL_PATH),
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    rows = [
-        build_scoring_row(row, gold_records=gold_records)
-        for row in project_render_rows
-    ]
+    rows = [build_scoring_row(row, gold_records=gold_records) for row in project_render_rows]
     return rows, summarize_rows(
         rows,
         project_render_artifact_path=project_render_artifact_path,
@@ -266,8 +263,7 @@ def write_report(
         lines.append("- None.")
     else:
         lines.append(
-            "- First rows: "
-            + ", ".join(str(i) for i in summary["non_scored_source_row_indices"])
+            "- First rows: " + ", ".join(str(i) for i in summary["non_scored_source_row_indices"])
         )
     lines.append("")
     path.parent.mkdir(parents=True, exist_ok=True)

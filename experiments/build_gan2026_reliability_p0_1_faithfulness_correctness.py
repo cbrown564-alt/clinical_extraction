@@ -40,7 +40,12 @@ def analyse_split(name: str, path: Path) -> dict[str, Any]:
     n = len(rows)
 
     # 2x2 faithfulness x correctness on the canonical subject layer.
-    cells = {"faithful_correct": 0, "faithful_wrong": 0, "unfaithful_correct": 0, "unfaithful_wrong": 0}
+    cells = {
+        "faithful_correct": 0,
+        "faithful_wrong": 0,
+        "unfaithful_correct": 0,
+        "unfaithful_wrong": 0,
+    }
     faithful = correct = 0
     # comparator faithfulness (full-gpt-4.1 V12 final-layer flag).
     comparator_faithful = 0

@@ -74,9 +74,7 @@ def test_month_bucket_ablation_reports_target_gains_and_regression_cost() -> Non
         "cluster_or_diary": {"rows": 1, "changed_labels": 1},
         "temporal_conflict": {"rows": 1, "changed_labels": 1},
     }
-    assert rows[0]["month_bucket_projection"]["final_label"] == (
-        "seizure free for multiple month"
-    )
+    assert rows[0]["month_bucket_projection"]["final_label"] == ("seizure free for multiple month")
     assert rows[1]["regression_tags"] == [
         "already_projection_correct",
         "cluster_or_diary",
@@ -164,9 +162,7 @@ def test_gated_month_bucket_blocks_frequency_override_but_keeps_duration_gain() 
         )
     )
 
-    assert rows[0]["month_bucket_projection"]["final_label"] == (
-        "seizure free for multiple month"
-    )
+    assert rows[0]["month_bucket_projection"]["final_label"] == ("seizure free for multiple month")
     assert rows[1]["month_bucket_projection"]["final_label"] == "2 per month"
     assert rows[1]["label_changed"] is False
     assert metadata["summary"]["target"]["exact_duration_corrections"] == 1
@@ -176,9 +172,7 @@ def test_gated_month_bucket_blocks_frequency_override_but_keeps_duration_gain() 
 def test_gated_month_bucket_preserves_already_correct_numeric_month_surface() -> None:
     graph = ClinicalFrequencyStateGraph(
         source_row_index=6,
-        nodes=(
-            _node("sg-001", "seizure free for 7 month", GraphNodeKind.SEIZURE_FREE),
-        ),
+        nodes=(_node("sg-001", "seizure free for 7 month", GraphNodeKind.SEIZURE_FREE),),
     )
 
     rows, metadata = (
@@ -215,10 +209,7 @@ def test_graph_gated_month_bucket_requires_duration_normalizer_node() -> None:
                 "duration-sg-002",
                 "seizure free for multiple month",
                 GraphNodeKind.SEIZURE_FREE,
-                rule_id=(
-                    "seizure_free_duration_node_normalization_v0."
-                    "since_without_date_boundary"
-                ),
+                rule_id=("seizure_free_duration_node_normalization_v0.since_without_date_boundary"),
                 certainty="medium",
             ),
         ),
@@ -265,13 +256,9 @@ def test_graph_gated_month_bucket_requires_duration_normalizer_node() -> None:
         )
     )
 
-    assert rows[0]["month_bucket_projection"]["final_label"] == (
-        "seizure free for multiple month"
-    )
+    assert rows[0]["month_bucket_projection"]["final_label"] == ("seizure free for multiple month")
     assert rows[0]["graph_gate"]["blocked"] is False
-    assert rows[1]["month_bucket_projection"]["final_label"] == (
-        "seizure free for multiple year"
-    )
+    assert rows[1]["month_bucket_projection"]["final_label"] == ("seizure free for multiple year")
     assert rows[1]["graph_gate"] == {
         "blocked": True,
         "flags": ["selected_rule_not_duration_normalization_v0"],
@@ -319,9 +306,7 @@ def test_graph_gated_month_bucket_records_boundary_state_risk() -> None:
         )
     )
 
-    assert rows[0]["month_bucket_projection"]["final_label"] == (
-        "seizure free for multiple year"
-    )
+    assert rows[0]["month_bucket_projection"]["final_label"] == ("seizure free for multiple year")
     assert rows[0]["graph_gate"]["flags"] == ["active_boundary_state_node"]
 
 

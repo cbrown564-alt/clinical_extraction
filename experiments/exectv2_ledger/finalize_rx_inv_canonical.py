@@ -71,7 +71,11 @@ RUN_ID = "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628"
 # i.e. the case set the positional verdict batches were authored against.
 PRE_SWEEP_COMMIT = "4def0b73"
 _VALID_VERDICTS = {"GOLD_RIGHT", "MODEL_DEFENSIBLE", "BOTH_DEFENSIBLE"}
-_VERDICT_MAP = {"GOLD_RIGHT": "gold_right", "MODEL_DEFENSIBLE": "model_defensible", "BOTH_DEFENSIBLE": "both_defensible"}
+_VERDICT_MAP = {
+    "GOLD_RIGHT": "gold_right",
+    "MODEL_DEFENSIBLE": "model_defensible",
+    "BOTH_DEFENSIBLE": "both_defensible",
+}
 
 _FAMILY_CONFIG = {
     "Prescription": {
@@ -174,9 +178,7 @@ def _load_new_case_verdicts(case_dir: Path) -> dict[tuple[str, str, str], dict]:
         if entry["verdict"] not in _VALID_VERDICTS:
             raise ValueError(f"{path.name}: unrecognized verdict {entry['verdict']!r}")
         if entry["mechanism"] not in MECHANISM_VALUES:
-            raise ValueError(
-                f"{path.name}: mechanism {entry['mechanism']!r} not in taxonomy"
-            )
+            raise ValueError(f"{path.name}: mechanism {entry['mechanism']!r} not in taxonomy")
         out[key] = entry  # type: ignore[assignment]
     return out
 
@@ -197,49 +199,61 @@ def finalize_family(entity: str) -> None:
         key = _content_key(case)
         verdict = content_verdicts.get(key) or new_verdicts.get(key)
         if verdict is None:
-            unresolved.append(f"{case['letter_id']} {case['match_key']} {case['disagreement_type']}")
+            unresolved.append(
+                f"{case['letter_id']} {case['match_key']} {case['disagreement_type']}"
+            )
             continue
-        csv_rows.append({
-            "entity": entity,
-            "letter_id": case["letter_id"],
-            "case_id": case["case_id"],
-            "disagreement_type": case["disagreement_type"],
-            "match_key": case["match_key"],
-            "verdict": verdict["verdict"],
-            "mechanism": verdict["mechanism"],
-            "reason": verdict["reason"],
-        })
+        csv_rows.append(
+            {
+                "entity": entity,
+                "letter_id": case["letter_id"],
+                "case_id": case["case_id"],
+                "disagreement_type": case["disagreement_type"],
+                "match_key": case["match_key"],
+                "verdict": verdict["verdict"],
+                "mechanism": verdict["mechanism"],
+                "reason": verdict["reason"],
+            }
+        )
 
         gold_ann = case["gold_mentions"][0] if case["gold_mentions"] else None
         pred_ann = case["pred_mentions"][0] if case["pred_mentions"] else None
         gold_record = None
         pred_record = None
         if gold_ann is not None:
-            gold_record = {"raw_text": gold_ann["raw_text"], "normalized_text": gold_ann["text"],
-                            "attributes": gold_ann["attributes"]}
+            gold_record = {
+                "raw_text": gold_ann["raw_text"],
+                "normalized_text": gold_ann["text"],
+                "attributes": gold_ann["attributes"],
+            }
         if pred_ann is not None:
-            pred_record = {"raw_text": pred_ann["raw_text"], "normalized_text": pred_ann["text"],
-                            "attributes": pred_ann["attributes"]}
+            pred_record = {
+                "raw_text": pred_ann["raw_text"],
+                "normalized_text": pred_ann["text"],
+                "attributes": pred_ann["attributes"],
+            }
 
-        ledger_rows.append(GoldCaseRow(
-            row_id=f"{config['row_prefix']}:{RUN_ID}:{case['letter_id']}:{case['disagreement_type']}:case{case['case_id']}",
-            family=entity,
-            run_id=RUN_ID,
-            letter_id=case["letter_id"],
-            disagreement_type=case["disagreement_type"],
-            match_key=case["match_key"],
-            source_letter_text=case["source_letter_text"],
-            gold=gold_record,
-            pred=pred_record,
-            mechanism=verdict["mechanism"],
-            verdict=_VERDICT_MAP[verdict["verdict"]],
-            provenance={
-                "adjudicated_by": "4 parallel general-purpose agents, 2026-07-02 canonical row adjudication",
-                "adjudicated_at": "2026-07-02",
-                "hypothesis_id": None,
-                "reason": verdict["reason"],
-            },
-        ))
+        ledger_rows.append(
+            GoldCaseRow(
+                row_id=f"{config['row_prefix']}:{RUN_ID}:{case['letter_id']}:{case['disagreement_type']}:case{case['case_id']}",
+                family=entity,
+                run_id=RUN_ID,
+                letter_id=case["letter_id"],
+                disagreement_type=case["disagreement_type"],
+                match_key=case["match_key"],
+                source_letter_text=case["source_letter_text"],
+                gold=gold_record,
+                pred=pred_record,
+                mechanism=verdict["mechanism"],
+                verdict=_VERDICT_MAP[verdict["verdict"]],
+                provenance={
+                    "adjudicated_by": "4 parallel general-purpose agents, 2026-07-02 canonical row adjudication",
+                    "adjudicated_at": "2026-07-02",
+                    "hypothesis_id": None,
+                    "reason": verdict["reason"],
+                },
+            )
+        )
 
     if unresolved:
         raise ValueError(
@@ -249,8 +263,19 @@ def finalize_family(entity: str) -> None:
 
     csv_path = case_dir / "_adjudication.csv"
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["entity", "letter_id", "case_id", "disagreement_type",
-                                                      "match_key", "verdict", "mechanism", "reason"])
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "entity",
+                "letter_id",
+                "case_id",
+                "disagreement_type",
+                "match_key",
+                "verdict",
+                "mechanism",
+                "reason",
+            ],
+        )
         writer.writeheader()
         writer.writerows(csv_rows)
 
@@ -269,8 +294,10 @@ def finalize_family(entity: str) -> None:
     print(f"=== {entity} finalized: {n} cases ===")
     print(f"  verdicts: {verdict_counts}")
     print(f"  mechanisms: {mechanism_counts}")
-    print(f"  genuine_model_error share: {genuine}/{n} = {genuine/n:.1%}")
-    print(f"  content-bridge recovered: {bridge_recovered} | new-case-verdicts sourced: {new_sourced}")
+    print(f"  genuine_model_error share: {genuine}/{n} = {genuine / n:.1%}")
+    print(
+        f"  content-bridge recovered: {bridge_recovered} | new-case-verdicts sourced: {new_sourced}"
+    )
     print(f"  -> {csv_path.relative_to(ROOT)}")
     print(f"  -> {config['ledger_out'].relative_to(ROOT)}\n")
 

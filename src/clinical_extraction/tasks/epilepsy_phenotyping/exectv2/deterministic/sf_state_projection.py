@@ -26,6 +26,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_sf_state_adjudicator as adjudicator_base,
 )
@@ -35,7 +36,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     frequency_state_faithful,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 PROJECTION_VERSION = "exectv2_hybrid_sf_state_projection_v0.6"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_projection"
 COMPONENT_OWNER = "deterministic_sf_state_ownership_projection"
@@ -93,9 +94,7 @@ _WORD_NUMBER: dict[str, str] = {
 
 def read_rows(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -372,9 +371,7 @@ def _change_attrs(evidence: str) -> dict[str, str] | None:
     elif re.search(r"\b(fairly frequent|very frequent|frequent)\b", lower):
         attrs["FrequencyChange"] = "Frequent"
     elif re.search(r"\b(well controlled|under control|controlled)\b", lower):
-        attrs["FrequencyChange"] = (
-            "Infrequent" if _drug_change_context(lower) else "Same"
-        )
+        attrs["FrequencyChange"] = "Infrequent" if _drug_change_context(lower) else "Same"
     else:
         return None
     point = _point_in_time(lower)
@@ -551,8 +548,7 @@ def _has_equivalent_state_mention(
 ) -> bool:
     candidate_key = (normalize_phrase(str(candidate["text"])), _state(candidate))
     return any(
-        (normalize_phrase(str(m.get("text", ""))), _state(m)) == candidate_key
-        for m in mentions
+        (normalize_phrase(str(m.get("text", ""))), _state(m)) == candidate_key for m in mentions
     )
 
 
@@ -590,10 +586,7 @@ def _dedupe_exact_mentions(mentions: Sequence[Mapping[str, Any]]) -> list[dict[s
         key = (
             normalize_phrase(str(mention.get("text", ""))),
             tuple(
-                sorted(
-                    (str(k), str(v))
-                    for k, v in dict(mention.get("attributes") or {}).items()
-                )
+                sorted((str(k), str(v)) for k, v in dict(mention.get("attributes") or {}).items())
             ),
             normalize_phrase(str(mention.get("evidence", ""))),
         )

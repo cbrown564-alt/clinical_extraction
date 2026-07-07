@@ -101,9 +101,9 @@ def residual_candidates(note_text: str) -> list[ResidualCandidate]:
 
 
 def _load_builders() -> None:
-    from . import rewrite_builders as _rewrite_builders  # noqa: F401
     from . import noise_builders as _noise_builders  # noqa: F401
     from . import residual_builders as _residual_builders  # noqa: F401
+    from . import rewrite_builders as _rewrite_builders  # noqa: F401
 
 
 _load_builders()

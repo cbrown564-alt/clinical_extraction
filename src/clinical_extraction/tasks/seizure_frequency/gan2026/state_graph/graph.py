@@ -265,9 +265,7 @@ def _acd_summary_rate_candidates(note_text: str) -> list[RawCandidate]:
 
 
 def _partial_seizure_free_candidates(note_text: str) -> list[RawCandidate]:
-    duration_tokens = (
-        r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
-    )
+    duration_tokens = r"\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
     pattern = re.compile(
         rf"\bNo\s+(?P<target>[\w -]+?)\s+seizures?\s+for\s+"
         rf"(?P<duration>{duration_tokens})\s+"

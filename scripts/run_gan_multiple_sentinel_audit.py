@@ -19,6 +19,7 @@ Outputs JSON to stdout. The audit note
 ``docs/research/gan_multiple_sentinel_audit_2026-07.md`` is written by hand from
 the printed numbers.
 """
+
 from __future__ import annotations
 
 import json
@@ -129,8 +130,7 @@ def main() -> None:
             mismatches += 1
     n_match = len(rows) - mismatches
     print(
-        f"[audit] dynamic-resolution reproduces stored gold monthly "
-        f"on {n_match}/{len(rows)} rows"
+        f"[audit] dynamic-resolution reproduces stored gold monthly on {n_match}/{len(rows)} rows"
     )
 
     # Count mover rows.
@@ -159,9 +159,7 @@ def main() -> None:
     dyn = results["schemes"]["dynamic"]
     for key in ("fixed-2", "fixed-3"):
         alt = results["schemes"][key]
-        alt["purist_accuracy_delta_vs_dynamic"] = (
-            alt["purist_accuracy"] - dyn["purist_accuracy"]
-        )
+        alt["purist_accuracy_delta_vs_dynamic"] = alt["purist_accuracy"] - dyn["purist_accuracy"]
         alt["pragmatic_accuracy_delta_vs_dynamic"] = (
             alt["pragmatic_accuracy"] - dyn["pragmatic_accuracy"]
         )

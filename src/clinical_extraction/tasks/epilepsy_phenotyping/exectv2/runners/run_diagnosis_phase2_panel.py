@@ -62,11 +62,7 @@ def main() -> None:
         print("ERROR: test split is locked; only dev is permitted.", file=sys.stderr)
         sys.exit(1)
 
-    variants = (
-        phase2.VARIANTS
-        if args.variant == "both"
-        else (args.variant,)
-    )
+    variants = phase2.VARIANTS if args.variant == "both" else (args.variant,)
     panel = phase2.load_panel_from_ledger(args.ledger_json, panel_size=args.panel_size)
     if not panel:
         print("ERROR: no panel rows selected from ledger.", file=sys.stderr)
@@ -120,8 +116,7 @@ def main() -> None:
     print(f"\nDone. JSONL: {jsonl_path}  Report: {report_path}", flush=True)
     print(f"Panel letters: {summary.get('panel_letters', 0)}", flush=True)
     print(
-        "v02 panel control: "
-        f"F1={summary.get('baseline_v02', {}).get('f1', 0):.3f}",
+        f"v02 panel control: F1={summary.get('baseline_v02', {}).get('f1', 0):.3f}",
         flush=True,
     )
     for variant, score in summary.get("variant_scores", {}).items():

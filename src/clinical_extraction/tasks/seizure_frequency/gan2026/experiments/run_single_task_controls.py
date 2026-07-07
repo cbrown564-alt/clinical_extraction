@@ -192,10 +192,8 @@ def main():
             # Condition on the deterministic selected candidate
             cand_event, norm_event = selected_candidate_and_normalized_event(diag)
             cand_schema = map_candidate_to_schema(cand_event, norm_event)
-            prompt_input = (
-                prompt_builders.build_candidate_conditioned_evidence_only_prompt_input(
-                    record, cand_schema
-                )
+            prompt_input = prompt_builders.build_candidate_conditioned_evidence_only_prompt_input(
+                record, cand_schema
             )
         elif condition_id == "projection_only":
             final_sel = diag["final_selection"]
@@ -226,9 +224,7 @@ def main():
             )
         elif condition_id == "candidate_plus_evidence_plus_projection":
             prompt_input = (
-                prompt_builders.build_candidate_plus_evidence_plus_projection_prompt_input(
-                    record
-                )
+                prompt_builders.build_candidate_plus_evidence_plus_projection_prompt_input(record)
             )
 
         # Call prediction
@@ -255,19 +251,19 @@ def main():
         row["prompt_version"] = prompt_builders.PROMPT_VERSIONS.get(condition_id, "v0")
         row["component_output"] = parsed_out
         row["claim_boundary"] = "validation_development_isolated_control_run"
-        
+
         exact_ev = exact_evidence_status(parsed_out, record.note_text)
         row["exact_evidence_status"] = exact_ev
         row["source_id_status"] = source_id_status(parsed_out)
-        
+
         # Populate basic metrics
         row["component_metrics"] = {
             "parsed_successfully": "error" not in parsed_out,
-            "exact_evidence": exact_ev == "exact"
+            "exact_evidence": exact_ev == "exact",
         }
-        
+
         updated_rows.append(row)
-        
+
     # Write matrix updates
     write_jsonl_rows(updated_rows, MATRIX_JSONL_PATH)
     print("Done running RQ1/RQ2 component controls.")
@@ -334,6 +330,7 @@ def iter_source_ids(value):
     elif isinstance(value, list):
         for child in value:
             yield from iter_source_ids(child)
+
 
 if __name__ == "__main__":
     main()

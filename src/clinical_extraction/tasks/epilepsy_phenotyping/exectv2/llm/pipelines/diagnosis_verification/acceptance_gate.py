@@ -27,16 +27,18 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
-    reconciler as reconciler_base,
-    verifier as verifier_base,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     MentionRecord,
     _has_blocking_parse_issue,
     check_evidence,
     repair_attributes,
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
+    reconciler as reconciler_base,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
+    verifier as verifier_base,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     extract_json_object,
@@ -56,9 +58,9 @@ class ExECTv2DiagnosisAcceptanceGateSignature(dspy.Signature):
     )
     decision_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"decisions\": [{\"candidate_id\": \"C0\", "
-            "\"decision\": \"accept\", \"reason_code\": \"...\", "
-            "\"rationale\": \"...\"}, ...]}"
+            'One strict JSON object: {"decisions": [{"candidate_id": "C0", '
+            '"decision": "accept", "reason_code": "...", '
+            '"rationale": "..."}, ...]}'
         )
     )
 
@@ -205,8 +207,7 @@ def to_predicted_letter(
             evidence=str(candidate.get("evidence", "")),
             confidence="medium",
             rationale=(
-                "Accepted fixed Diagnosis candidate from "
-                f"{','.join(candidate.get('sources', []))}."
+                f"Accepted fixed Diagnosis candidate from {','.join(candidate.get('sources', []))}."
             ),
         )
         for candidate in candidates

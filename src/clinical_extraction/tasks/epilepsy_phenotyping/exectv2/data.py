@@ -97,11 +97,7 @@ def load_annotations(path: Path) -> tuple[ExectAnnotation, ...]:
         raw_text = str(row["text"])
         attributes = {str(k): str(v) for k, v in dict(row["attributes"]).items()}
         cui_phrase = attributes.get("CUIPhrase")
-        text = (
-            cui_phrase
-            if uses_cuiphrase_as_gold_text(entity) and cui_phrase
-            else raw_text
-        )
+        text = cui_phrase if uses_cuiphrase_as_gold_text(entity) and cui_phrase else raw_text
         annotations.append(
             ExectAnnotation(
                 entity=entity,

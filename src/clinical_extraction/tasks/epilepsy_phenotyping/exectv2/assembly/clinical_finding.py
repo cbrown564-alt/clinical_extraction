@@ -82,8 +82,7 @@ class ClinicalFinding:
         evidence_valid: bool,
     ) -> ClinicalFinding:
         attributes = {
-            str(key): str(value)
-            for key, value in dict(mention.get("attributes", {})).items()
+            str(key): str(value) for key, value in dict(mention.get("attributes", {})).items()
         }
         confidence = mention.get("confidence")
         if confidence not in _CONFIDENCE_VALUES:

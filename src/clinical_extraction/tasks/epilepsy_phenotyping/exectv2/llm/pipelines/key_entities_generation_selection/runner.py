@@ -134,9 +134,7 @@ def run_split(
                 "generation_call_error": generation_call_error,
                 "selection_call_error": selection_call_error,
                 "call_error": generation_call_error or selection_call_error,
-                "parse_errors": [
-                    f"generation:{error}" for error in generation_parse_errors
-                ]
+                "parse_errors": [f"generation:{error}" for error in generation_parse_errors]
                 + [f"selection:{error}" for error in selection_parse_errors],
                 "n_events_generation": len(first_pass_record.clinical_events),
                 "n_events_raw": len(final_record.clinical_events),
@@ -196,12 +194,8 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     summary["selection_parse_failures"] = sum(
         _has_parse_or_schema_error(r.get("selection_parse_errors")) for r in rows
     )
-    summary["generation_call_failures"] = sum(
-        bool(r.get("generation_call_error")) for r in rows
-    )
-    summary["selection_call_failures"] = sum(
-        bool(r.get("selection_call_error")) for r in rows
-    )
+    summary["generation_call_failures"] = sum(bool(r.get("generation_call_error")) for r in rows)
+    summary["selection_call_failures"] = sum(bool(r.get("selection_call_error")) for r in rows)
     summary["inventory_parse_failures"] = sum(
         _has_parse_or_schema_error(r.get("inventory_parse_errors")) for r in rows
     )
@@ -333,9 +327,7 @@ def replay_dedup_facts_from_rows(
         replay_row["gold_mentions"] = list(row.get("gold_mentions") or [])
         replay_row["adapter_provenance"] = provenance
         replay_row["adapter_parse_errors"] = [*fact_notes, *adapter_notes]
-        replay_row["structured_mentions_final"] = [
-            mention.model_dump() for mention in mentions
-        ]
+        replay_row["structured_mentions_final"] = [mention.model_dump() for mention in mentions]
         replay_rows.append(replay_row)
     metadata = {
         "prompt_version": PROMPT_VERSION,

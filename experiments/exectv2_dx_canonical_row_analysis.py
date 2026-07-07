@@ -72,7 +72,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -149,7 +151,9 @@ def main() -> None:
 
         recall_tp = len(gold_set & recall_pool)
         precision_tp = len(gold_set & home_set)
-        missed = gold_set - recall_pool  # genuine FN: no overlapping prediction anywhere in the letter
+        missed = (
+            gold_set - recall_pool
+        )  # genuine FN: no overlapping prediction anywhere in the letter
         spurious = home_set - gold_set  # FP: home-tagged Diagnosis prediction with no gold match
 
         sum_recall_tp += recall_tp
@@ -211,17 +215,25 @@ def main() -> None:
     (OUT / "_index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
 
     print("=== CANONICAL DIAGNOSIS clinical_headline ANALYSIS ===")
-    print(f"OFFICIAL  concept_only: P={official.precision:.4f} R={official.recall:.4f} F1={official.f1:.4f} "
-          f"(precision_tp={official.precision_tp} recall_tp={official.recall_tp} "
-          f"pred_count={official.pred_count} gold_count={official.gold_count})")
-    print(f"DECOMPOSED from index : P={decomposed.precision:.4f} R={decomposed.recall:.4f} F1={decomposed.f1:.4f}")
+    print(
+        f"OFFICIAL  concept_only: P={official.precision:.4f} R={official.recall:.4f} F1={official.f1:.4f} "
+        f"(precision_tp={official.precision_tp} recall_tp={official.recall_tp} "
+        f"pred_count={official.pred_count} gold_count={official.gold_count})"
+    )
+    print(
+        f"DECOMPOSED from index : P={decomposed.precision:.4f} R={decomposed.recall:.4f} F1={decomposed.f1:.4f}"
+    )
     print(f"decomposition matches official: {decomposition_matches_official}")
-    print(f"disagreement letters: {n_disagreement_letters}/{len(gold_letters)} "
-          f"({n_disagreement_letters/len(gold_letters):.1%})")
+    print(
+        f"disagreement letters: {n_disagreement_letters}/{len(gold_letters)} "
+        f"({n_disagreement_letters / len(gold_letters):.1%})"
+    )
     print(f"genuine missed (FN): {total_missed}  by category: {dict(cat_missed.most_common())}")
     print(f"spurious (FP)      : {total_spurious}  by category: {dict(cat_spurious.most_common())}")
-    print(f"\nWrote per-letter substrate for {n_disagreement_letters} letters + "
-          f"_index.json + _summary.json to {OUT}")
+    print(
+        f"\nWrote per-letter substrate for {n_disagreement_letters} letters + "
+        f"_index.json + _summary.json to {OUT}"
+    )
 
 
 def write_substrate(out_dir, gold_letter, pred_letter, rec, missed, spurious, gold_set, home_set):
@@ -245,17 +257,28 @@ def write_substrate(out_dir, gold_letter, pred_letter, rec, missed, spurious, go
     ] or ["(none)"]
     other_pred = [a for a in pred_letter.annotations if a.entity != "Diagnosis"]
     dx_like_other = [
-        a for a in other_pred
-        if ("Diagnosis", canonicalize_diagnosis_concept(a.text)) in gold_set
+        a for a in other_pred if ("Diagnosis", canonicalize_diagnosis_concept(a.text)) in gold_set
     ]
     if dx_like_other:
-        lines += ["", "## PREDICTED under a DIFFERENT entity label that still covers a gold Dx concept"]
-        lines += [f"- entity={a.entity!r} {a.text!r} -> concept={canonicalize_diagnosis_concept(a.text)!r}" for a in dx_like_other]
+        lines += [
+            "",
+            "## PREDICTED under a DIFFERENT entity label that still covers a gold Dx concept",
+        ]
+        lines += [
+            f"- entity={a.entity!r} {a.text!r} -> concept={canonicalize_diagnosis_concept(a.text)!r}"
+            for a in dx_like_other
+        ]
 
     lines += ["", "## Context for MISSED gold concepts"]
-    lines += [f"- MISSED {canonicalize_diagnosis_concept(a.text)!r}: {_context(gold_letter.note_text, a)}" for a in missed_anns] or ["(none)"]
+    lines += [
+        f"- MISSED {canonicalize_diagnosis_concept(a.text)!r}: {_context(gold_letter.note_text, a)}"
+        for a in missed_anns
+    ] or ["(none)"]
     lines += ["", "## Context for SPURIOUS predicted concepts"]
-    lines += [f"- SPURIOUS {canonicalize_diagnosis_concept(a.text)!r}: {_context(gold_letter.note_text, a)}" for a in spurious_anns] or ["(none)"]
+    lines += [
+        f"- SPURIOUS {canonicalize_diagnosis_concept(a.text)!r}: {_context(gold_letter.note_text, a)}"
+        for a in spurious_anns
+    ] or ["(none)"]
 
     lines += ["", "## FULL LETTER TEXT", "```", gold_letter.note_text, "```"]
     (out_dir / f"{gold_letter.letter_id}.md").write_text("\n".join(lines), encoding="utf-8")

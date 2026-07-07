@@ -39,11 +39,7 @@ def summarize_union_rows(
     *,
     artifact_name: str = DEFAULT_ARTIFACT_NAME,
 ) -> dict[str, Any]:
-    candidates = [
-        candidate
-        for row in rows
-        for candidate in row["candidate_set"]["candidates"]
-    ]
+    candidates = [candidate for row in rows for candidate in row["candidate_set"]["candidates"]]
     kind_counts = Counter(str(candidate["candidate_kind"]) for candidate in candidates)
     source_counts = Counter(str(candidate["source_type"]) for candidate in candidates)
     per_row_counts = [len(row["candidate_set"]["candidates"]) for row in rows]
@@ -136,9 +132,7 @@ def _union_row(
     if duplicate_count:
         assembly_issues.append(f"merged_duplicate_candidate_count:{duplicate_count}")
     if nested_duplicate_count:
-        assembly_issues.append(
-            f"merged_nested_duplicate_candidate_count:{nested_duplicate_count}"
-        )
+        assembly_issues.append(f"merged_nested_duplicate_candidate_count:{nested_duplicate_count}")
 
     candidate_set = CandidateSet(
         source_row_index=source_row_index,
@@ -180,14 +174,8 @@ def _merge_duplicate(
             "source_ids": sorted(set(existing.source_ids) | set(duplicate.source_ids)),
             "extraction_issues": [
                 *existing.extraction_issues,
-                (
-                    f"{issue_prefix}:"
-                    f"{duplicate.source_type}:{duplicate.candidate_id}"
-                ),
-                *[
-                    f"duplicate_issue:{issue}"
-                    for issue in duplicate.extraction_issues
-                ],
+                (f"{issue_prefix}:{duplicate.source_type}:{duplicate.candidate_id}"),
+                *[f"duplicate_issue:{issue}" for issue in duplicate.extraction_issues],
             ],
         }
     )
@@ -259,10 +247,7 @@ def _is_nested_duplicate(
         return (
             _span_contains(left_span, right_span)
             or _span_contains(right_span, left_span)
-            or (
-                _spans_overlap(left_span, right_span)
-                and _text_contains(left_text, right_text)
-            )
+            or (_spans_overlap(left_span, right_span) and _text_contains(left_text, right_text))
         )
     return _text_contains(left_text, right_text)
 
@@ -290,9 +275,7 @@ def _spans_overlap(
 
 
 def _text_contains(left_text: str, right_text: str) -> bool:
-    return bool(left_text and right_text) and (
-        left_text in right_text or right_text in left_text
-    )
+    return bool(left_text and right_text) and (left_text in right_text or right_text in left_text)
 
 
 def _candidate_detail_score(candidate: ExtractedCandidate) -> tuple[int, int]:
@@ -311,8 +294,7 @@ def _llm_row_issues(llm_row: Mapping[str, Any] | None) -> list[str]:
         issues.append(f"llm_call_error:{llm_row['call_error']}")
     if llm_row:
         issues.extend(
-            f"llm_parse_or_validation_error:{error}"
-            for error in llm_row.get("parse_errors") or []
+            f"llm_parse_or_validation_error:{error}" for error in llm_row.get("parse_errors") or []
         )
     return issues
 
@@ -323,14 +305,8 @@ def _merge_row_context(
 ) -> RowContext:
     deterministic_context = deterministic_set.row_context
     llm_context = llm_set.row_context if llm_set is not None else RowContext()
-    reference_date = (
-        deterministic_context.reference_date
-        or llm_context.reference_date
-    )
-    prior_encounter = (
-        deterministic_context.prior_encounter
-        or llm_context.prior_encounter
-    )
+    reference_date = deterministic_context.reference_date or llm_context.reference_date
+    prior_encounter = deterministic_context.prior_encounter or llm_context.prior_encounter
     context_issues = _dedupe(
         [
             *deterministic_context.context_issues,
@@ -338,9 +314,7 @@ def _merge_row_context(
         ]
     )
     if reference_date is not None:
-        context_issues = [
-            issue for issue in context_issues if issue != "reference_date_missing"
-        ]
+        context_issues = [issue for issue in context_issues if issue != "reference_date_missing"]
     return RowContext(
         reference_date=reference_date,
         prior_encounter=prior_encounter,

@@ -16,14 +16,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -43,14 +43,10 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SOURCE_JSONL = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_9_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_9_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
-RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_10_"
-    "component_repair_probe_2026-06-15"
-)
+RUN_ID = "gan2026_consensus_fresh_agreement_selector_v0_10_component_repair_probe_2026-06-15"
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
 MD_PATH = EXPERIMENTS / f"{RUN_ID}.md"
 
@@ -129,9 +125,7 @@ def main() -> None:
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -143,19 +137,14 @@ def _evaluate_rule(
     summary = selector.summarize_rows(repaired_rows)
     baseline_summary = selector.summarize_rows(source_rows)
     selected_changes = _selected_changes(source_rows, repaired_rows)
-    fresh_repair_transitions = Counter(
-        _repair_transition(record) for record in repair_records
-    )
-    selected_change_transitions = Counter(
-        change["transition"] for change in selected_changes
-    )
+    fresh_repair_transitions = Counter(_repair_transition(record) for record in repair_records)
+    selected_change_transitions = Counter(change["transition"] for change in selected_changes)
     return {
         "rule_id": rule.rule_id,
         "description": rule.description,
         "selector_summary": summary,
         "delta_selected_purist_correct": (
-            summary["selected_purist_correct"]
-            - baseline_summary["selected_purist_correct"]
+            summary["selected_purist_correct"] - baseline_summary["selected_purist_correct"]
         ),
         "repair_count": len(repair_records),
         "fresh_repair_transitions": dict(fresh_repair_transitions),
@@ -217,12 +206,8 @@ def _replay_with_repair(
             {
                 "source_row_index": source_row_index,
                 "consensus_final_label": row["consensus_label"],
-                "consensus_comparison": row["score_layers"]["consensus"][
-                    "comparison"
-                ],
-                "consensus_decision": {
-                    "reason": row["decision_features"].get("consensus_reason")
-                },
+                "consensus_comparison": row["score_layers"]["consensus"]["comparison"],
+                "consensus_decision": {"reason": row["decision_features"].get("consensus_reason")},
             }
         )
         fresh_rows.append(
@@ -234,15 +219,11 @@ def _replay_with_repair(
                         "fresh_boundary_profile",
                     )
                     or [],
-                    "uncertainty": row["decision_features"].get(
-                        "fresh_uncertainty"
-                    ),
+                    "uncertainty": row["decision_features"].get("fresh_uncertainty"),
                 },
                 "decision_record": {"final_label": repaired_fresh},
                 "score_layers": {
-                    "final": {
-                        "comparison": _comparison(repaired_fresh, gold_monthly)
-                    }
+                    "final": {"comparison": _comparison(repaired_fresh, gold_monthly)}
                 },
             }
         )
@@ -381,20 +362,16 @@ def _selected_changes(
         if before["selected_label"] == after["selected_label"]:
             continue
         before_correct = (
-            before["score_layers"]["selected"]["comparison"].get("purist_correct")
-            is True
+            before["score_layers"]["selected"]["comparison"].get("purist_correct") is True
         )
         after_correct = (
-            after["score_layers"]["selected"]["comparison"].get("purist_correct")
-            is True
+            after["score_layers"]["selected"]["comparison"].get("purist_correct") is True
         )
         changes.append(
             {
                 "source_row_index": before["source_row_index"],
                 "gold_label": before["reference"]["gold_label"],
-                "gold_band": boundary_band(
-                    before["reference"]["gold_monthly_frequency"]
-                ),
+                "gold_band": boundary_band(before["reference"]["gold_monthly_frequency"]),
                 "selected_label_before": before["selected_label"],
                 "selected_label_after": after["selected_label"],
                 "selected_correct_before": before_correct,
@@ -424,10 +401,7 @@ def _rule_decision(
 ) -> str:
     if summary["selected_purist_correct"] < baseline_summary["selected_purist_correct"]:
         return "reject_validation_negative"
-    if any(
-        change["transition"] == "selected_correct_to_wrong"
-        for change in selected_changes
-    ):
+    if any(change["transition"] == "selected_correct_to_wrong" for change in selected_changes):
         return "reject_regresses_selected_rows"
     if summary["selected_purist_correct"] == baseline_summary["selected_purist_correct"]:
         return "diagnostic_no_selected_gain"
@@ -466,10 +440,8 @@ def _markdown(payload: Mapping[str, Any]) -> str:
         "",
         "## Baseline",
         "",
-        f"- v0.9 selected Purist: {baseline['selected_purist_correct']}/"
-        f"{baseline['rows']}",
-        f"- v0.9 W->C / C->W: {baseline['wrong_to_correct']} / "
-        f"{baseline['correct_to_wrong']}",
+        f"- v0.9 selected Purist: {baseline['selected_purist_correct']}/{baseline['rows']}",
+        f"- v0.9 W->C / C->W: {baseline['wrong_to_correct']} / {baseline['correct_to_wrong']}",
         "",
         "## Rule Results",
         "",
@@ -511,9 +483,7 @@ def _markdown(payload: Mapping[str, Any]) -> str:
 
 
 def _register(payload: Mapping[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     best = max(
         payload["rule_results"],
         key=lambda result: result["selector_summary"]["selected_purist_correct"],
@@ -545,9 +515,7 @@ def _register(payload: Mapping[str, Any]) -> None:
                 "best_probe_selected_purist_correct": best["selector_summary"][
                     "selected_purist_correct"
                 ],
-                "best_probe_delta_selected_purist_correct": best[
-                    "delta_selected_purist_correct"
-                ],
+                "best_probe_delta_selected_purist_correct": best["delta_selected_purist_correct"],
                 "rules_tested": len(payload["rule_results"]),
             },
             evidence_validity=(

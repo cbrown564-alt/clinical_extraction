@@ -69,11 +69,9 @@ def main() -> None:
     print(f"Target overall F1: {candidate['overall_target_score']['f1']:.4f}")
     for indicator, score in candidate["headline_scores"].items():
         print(
-            f"{indicator}: F1={score['f1']:.4f} "
-            f"P={score['precision']:.4f} R={score['recall']:.4f}"
+            f"{indicator}: F1={score['f1']:.4f} P={score['precision']:.4f} R={score['recall']:.4f}"
         )
 
 
 if __name__ == "__main__":
     main()
-

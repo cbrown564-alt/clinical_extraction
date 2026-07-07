@@ -64,10 +64,10 @@ class ExECTv2FamilyConditionedCandidateAdjudicatorSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"clinical_events\": [{\"family\": ..., "
-            "\"anchor_text\": ..., \"evidence\": ..., \"event_state\": {...}, "
-            "\"mentions\": [{\"entity\": ..., \"text\": ..., \"attributes\": {...}}], "
-            "\"confidence\": ..., \"rationale\": ...}, ...]}"
+            'One strict JSON object: {"clinical_events": [{"family": ..., '
+            '"anchor_text": ..., "evidence": ..., "event_state": {...}, '
+            '"mentions": [{"entity": ..., "text": ..., "attributes": {...}}], '
+            '"confidence": ..., "rationale": ...}, ...]}'
         )
     )
 
@@ -92,9 +92,9 @@ class ExECTv2FamilyConditionedCandidateActionSignature(dspy.Signature):
     )
     candidate_actions_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"candidate_actions\": [{\"candidate_id\": ..., "
-            "\"action\": \"keep\"|\"reject\", \"reason_code\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"candidate_actions": [{"candidate_id": ..., '
+            '"action": "keep"|"reject", "reason_code": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -112,9 +112,7 @@ def read_candidate_rows(path: Path | None) -> list[dict[str, Any]]:
     if path is None:
         return []
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -408,9 +406,7 @@ def apply_candidate_actions(
             {"action": default_missing_action, "reason_code": "missing"},
         )
         if _honor_reject(candidate, action, profile.entity, note_text):
-            warnings.append(
-                f"honored_reject: {candidate_id}: {action.get('reason_code', '')}"
-            )
+            warnings.append(f"honored_reject: {candidate_id}: {action.get('reason_code', '')}")
             continue
         if action.get("action") == "reject" and action.get("reason_code") == "missing":
             warnings.append(f"missing_action_rejected: {candidate_id}")
@@ -592,9 +588,7 @@ def run_split(
                 candidate_actions,
                 target_family=profile.entity,
                 note_text=letter.note_text,
-                default_missing_action=(
-                    "reject" if mode == "live-actions-strict" else "keep"
-                ),
+                default_missing_action=("reject" if mode == "live-actions-strict" else "keep"),
             )
         elif action_mode:
             parse_errors = ["not_run"]
@@ -603,9 +597,7 @@ def run_split(
                 [],
                 target_family=profile.entity,
                 note_text=letter.note_text,
-                default_missing_action=(
-                    "reject" if mode == "live-actions-strict" else "keep"
-                ),
+                default_missing_action=("reject" if mode == "live-actions-strict" else "keep"),
             )
         elif raw_output:
             record, parse_errors = parse_candidate_events_json(raw_output)
@@ -810,14 +802,18 @@ def _action_decision_procedure(entity: str) -> list[str]:
 
 def _clinical_rules(entity: str) -> list[str]:
     profile = direct.family_profile(entity)
-    return [
-        "Candidate bundle rows are proposals to transcribe into events.",
-        "Every final evidence value must be an exact substring of the letter.",
-        "Every final mention text must be supported by its evidence.",
-        "Do not emit CUI or CUIPhrase unless it came from a candidate mention.",
-        "If no target-family finding is supported, return {\"clinical_events\": []}.",
-        "Return exactly one JSON object. No markdown code fences.",
-    ] + profile.attribute_policy + profile.lane_policy
+    return (
+        [
+            "Candidate bundle rows are proposals to transcribe into events.",
+            "Every final evidence value must be an exact substring of the letter.",
+            "Every final mention text must be supported by its evidence.",
+            "Do not emit CUI or CUIPhrase unless it came from a candidate mention.",
+            'If no target-family finding is supported, return {"clinical_events": []}.',
+            "Return exactly one JSON object. No markdown code fences.",
+        ]
+        + profile.attribute_policy
+        + profile.lane_policy
+    )
 
 
 def _action_clinical_rules(entity: str) -> list[str]:

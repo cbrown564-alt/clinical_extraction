@@ -36,7 +36,9 @@ from pathlib import Path
 import dotenv
 import dspy
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import to_exect_letter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    to_exect_letter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions.diagnosis import (
     diagnosis_convention_target,
@@ -48,7 +50,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conven
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     diagnosis_category_for_concept,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalizer import clean_span
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rule_metadata import (
     ExtractionContext,
 )
@@ -137,7 +138,9 @@ def _apply_dx_rx_projection(facts: list[dict], *, dx: bool = True, rx: bool = Tr
             target = diagnosis_convention_target(concept, evidence)
             new_concept = target if target is not None else concept
             diag_cat = diagnosis_category_for_concept(new_concept)
-            if is_diagnosis_convention_noise(new_concept, evidence=evidence, diag_category=diag_cat):
+            if is_diagnosis_convention_noise(
+                new_concept, evidence=evidence, diag_category=diag_cat
+            ):
                 continue
             fact = dict(fact)
             fact["concept"] = new_concept
@@ -145,7 +148,9 @@ def _apply_dx_rx_projection(facts: list[dict], *, dx: bool = True, rx: bool = Tr
             continue
         if rx and family == "prescription":
             drug = str(fact.get("drug", ""))
-            if is_prescription_convention_noise(drug, evidence=evidence, attributes={"DrugName": drug}):
+            if is_prescription_convention_noise(
+                drug, evidence=evidence, attributes={"DrugName": drug}
+            ):
                 continue
             out.append(fact)
             continue
@@ -225,12 +230,14 @@ def _apply_sf_projection(facts: list[dict], note_text: str) -> list[dict]:
                 else:
                     continue
             seizure_type = _seizure_type_from_evidence(evidence)
-            kept.append({
-                "family": "seizure_frequency",
-                "seizure_type": seizure_type,
-                "state": "changed",
-                "evidence": evidence,
-            })
+            kept.append(
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": seizure_type,
+                    "state": "changed",
+                    "evidence": evidence,
+                }
+            )
             existing_evidence.add(ev_norm)
             n_added += 1
 
@@ -238,7 +245,12 @@ def _apply_sf_projection(facts: list[dict], note_text: str) -> list[dict]:
 
 
 def _apply_all_projection(
-    facts: list[dict], note_text: str, *, dx: bool, rx: bool, sf: bool,
+    facts: list[dict],
+    note_text: str,
+    *,
+    dx: bool,
+    rx: bool,
+    sf: bool,
 ) -> tuple[list[dict], int]:
     facts = _apply_dx_rx_projection(facts, dx=dx, rx=rx)
     if sf:
@@ -290,7 +302,11 @@ def main() -> None:
     for g, prediction in zip(GOLD, predictions, strict=True):
         raw = str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
         try:
-            facts = (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", []) if raw else []
+            facts = (
+                (json.loads(extract_json_object(raw)) or {}).get("clinical_facts", [])
+                if raw
+                else []
+            )
         except Exception:
             facts = []
         facts = [f for f in facts if isinstance(f, dict)]
@@ -322,7 +338,9 @@ def main() -> None:
     for label in ("base", "dx_rx", "dx_rx_sf"):
         store = stores[label]
         f1, fam = _score(store)
-        ev = _evidence_recall(GOLD, [store.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD])
+        ev = _evidence_recall(
+            GOLD, [store.get(g.letter_id) or ExectLetter(g.letter_id, "", ()) for g in GOLD]
+        )
         sf_state = _sf_state_score(store)
         tag = {
             "base": "recall-lanes (replayed)",
@@ -340,13 +358,19 @@ def main() -> None:
     sf_proj = _sf_state_score(stores["dx_rx_sf"])
     print("## SF state_profile detail (4-way, type-agnostic)")
     print(f"  {'config':<38}{'state_profile':>14}{'clin_headline':>14}")
-    print(f"  {'recall-lanes':<38}{_prf1_str(sf_base.state_profile):>14}{_prf1_str(sf_base.clinical_headline):>14}")
-    print(f"  {'+ SF projection':<38}{_prf1_str(sf_proj.state_profile):>14}{_prf1_str(sf_proj.clinical_headline):>14}")
+    print(
+        f"  {'recall-lanes':<38}{_prf1_str(sf_base.state_profile):>14}{_prf1_str(sf_base.clinical_headline):>14}"
+    )
+    print(
+        f"  {'+ SF projection':<38}{_prf1_str(sf_proj.state_profile):>14}{_prf1_str(sf_proj.clinical_headline):>14}"
+    )
 
     total_added = sum(sf_added.values())
-    print(f"\n  Recall-additive change facts added: {total_added} across {sum(1 for v in sf_added.values() if v > 0)} letters")
-    print(f"\n  Comparators: recall-lanes SF headline 0.580 / state_profile 0.710;")
-    print(f"  Phase 3 (Dx+Rx) headline 0.763; hybrid SF 0.926 / state_profile 0.930")
+    print(
+        f"\n  Recall-additive change facts added: {total_added} across {sum(1 for v in sf_added.values() if v > 0)} letters"
+    )
+    print("\n  Comparators: recall-lanes SF headline 0.580 / state_profile 0.710;")
+    print("  Phase 3 (Dx+Rx) headline 0.763; hybrid SF 0.926 / state_profile 0.930")
 
 
 if __name__ == "__main__":

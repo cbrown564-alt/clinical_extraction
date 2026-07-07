@@ -50,9 +50,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 
 PROMPT_VERSION = "gan2026_event_completion_reasoner_v0_3"
 PIPELINE_FAMILY = "event_completion_reasoner"
-DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
-    structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_STRUCTURED_EVENT_JSONL_PATH = structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_event_completion_reasoner_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_event_completion_reasoner_validation.md")
 STAGE_ID = "event_completion_reasoner"
@@ -209,9 +207,7 @@ def build_prompt_input(
 ) -> str:
     """Build a model-facing completion payload without IDs, gold, split, or rules top."""
 
-    structured_input = llm_event_reasoner.inspect_structured_events(
-        structured_event_row
-    )
+    structured_input = llm_event_reasoner.inspect_structured_events(structured_event_row)
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 structured-event completion reasoning",
@@ -414,19 +410,10 @@ def write_report(
         f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
         f"- Completed-event actions: {summary.get('completed_event_actions', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Completion profiles: `{summary.get('completion_profiles', {})}`",
         "",
         "## Gate",
@@ -581,9 +568,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 
@@ -685,12 +670,9 @@ def _format_only_decision(
     raw_decision: llm_event_reasoner.ReasonedFrequencyDecision,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision, list[dict[str, Any]], list[str]]:
     parse_notes: list[str] = []
-    repair_trace = repair_prediction_label_format_preserving_with_trace(
-        raw_decision.final_label
-    )
+    repair_trace = repair_prediction_label_format_preserving_with_trace(raw_decision.final_label)
     repair_events = [
-        llm_event_reasoner._repair_event_to_dict(event)
-        for event in repair_trace.events
+        llm_event_reasoner._repair_event_to_dict(event) for event in repair_trace.events
     ]
     format_decision = raw_decision
     if repair_trace.final_label != raw_decision.final_label:
@@ -735,9 +717,7 @@ def _render_completion_action(
     if errors:
         return None, [], errors
     return (
-        format_decision.model_copy(
-            update={"attribution": format_decision.attribution}
-        ),
+        format_decision.model_copy(update={"attribution": format_decision.attribution}),
         ["completion_action_rendered:create_completed_event_final"],
         [],
     )
@@ -774,9 +754,7 @@ def _render_keep_original_action(
 def _structured_selection(structured_event_row: Mapping[str, Any] | None) -> dict[str, Any]:
     if structured_event_row is None:
         return {}
-    return dict(
-        dict(structured_event_row.get("structured_record") or {}).get("selection") or {}
-    )
+    return dict(dict(structured_event_row.get("structured_record") or {}).get("selection") or {})
 
 
 def _evidence_tuple(value: Any) -> tuple[str, ...]:

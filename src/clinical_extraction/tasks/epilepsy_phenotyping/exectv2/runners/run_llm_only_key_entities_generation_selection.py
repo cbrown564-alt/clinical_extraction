@@ -224,10 +224,7 @@ def main() -> None:
     route.write_report(rows, metadata, report_path, jsonl_path=jsonl_path)
 
     summary = metadata.get("summary", {})
-    canonical = (
-        summary.get("protocol_surfaces", {})
-        .get("model_preserving_canonical", {})
-    )
+    canonical = summary.get("protocol_surfaces", {}).get("model_preserving_canonical", {})
     print(f"\nDone. JSONL: {jsonl_path}  Report: {report_path}", flush=True)
     print(f"Letters: {summary.get('examples', 0)}", flush=True)
     print(f"Generation call failures: {summary.get('generation_call_failures', 0)}", flush=True)

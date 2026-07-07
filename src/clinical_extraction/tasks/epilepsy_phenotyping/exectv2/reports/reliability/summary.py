@@ -14,14 +14,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import run_ref
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     headline_keys,
-    jaccard as pairwise_jaccard,
     round_rate,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+    jaccard as pairwise_jaccard,
+)
+
 
 def latest_run_check() -> dict[str, Any]:
-    rich_deepseek = run_ref(
-        next(run for run in RICH_SCHEMA_RUNS if "deepseek" in run.candidate)
-    )
+    rich_deepseek = run_ref(next(run for run in RICH_SCHEMA_RUNS if "deepseek" in run.candidate))
     rich_qwen = run_ref(next(run for run in RICH_SCHEMA_RUNS if "qwen" in run.candidate))
     active_deepseek = run_ref(
         next(run for run in ACTIVE_LLM_ONLY_RUNS if "deepseek" in run.candidate)
@@ -86,9 +87,7 @@ def family_error_table(summaries: dict[str, dict[str, Any]]) -> list[dict[str, A
                     "over_emission_rate": round_rate(fp, pred_count),
                     "miss_rate": round_rate(fn, gold_count),
                     "candidate_miss": int(family_errors.get("candidate_miss", 0)),
-                    "wrong_detail_selection": int(
-                        family_errors.get("wrong_detail_selection", 0)
-                    ),
+                    "wrong_detail_selection": int(family_errors.get("wrong_detail_selection", 0)),
                     "projection_gap": int(family_errors.get("projection_gap", 0)),
                     "evidence_failure": evidence_failure,
                     "evidence_valid_error_count": max(0, fp + fn - evidence_failure),
@@ -102,8 +101,7 @@ def family_parity(summaries: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     for run in RICH_SCHEMA_RUNS:
         candidate = summaries[run.candidate]["target_report"]["candidates"][0]
         family_scores = {
-            family: float(candidate["headline_scores"][family]["f1"])
-            for family in FAMILIES
+            family: float(candidate["headline_scores"][family]["f1"]) for family in FAMILIES
         }
         worst_family, worst_f1 = min(family_scores.items(), key=lambda item: item[1])
         best_family, best_f1 = max(family_scores.items(), key=lambda item: item[1])
@@ -116,11 +114,7 @@ def family_parity(summaries: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
                 "best_family": best_family,
                 "best_family_f1": round(best_f1, 4),
                 "family_f1_spread": round(best_f1 - worst_f1, 4),
-                "families_below_0_90": [
-                    family
-                    for family, f1 in family_scores.items()
-                    if f1 < 0.9
-                ],
+                "families_below_0_90": [family for family, f1 in family_scores.items() if f1 < 0.9],
             }
         )
     return rows
@@ -158,9 +152,7 @@ def cross_model_agreement(rich_rows: dict[str, list[dict[str, Any]]]) -> dict[st
                     "family": family,
                     "cells": len(common_ids),
                     "exact_cell_agreement_rate": round_rate(family_exact, len(common_ids)),
-                    "mean_jaccard": round(
-                        sum(family_jaccards) / len(family_jaccards), 4
-                    )
+                    "mean_jaccard": round(sum(family_jaccards) / len(family_jaccards), 4)
                     if family_jaccards
                     else 0.0,
                 }
@@ -177,9 +169,7 @@ def cross_model_agreement(rich_rows: dict[str, list[dict[str, Any]]]) -> dict[st
         "by_family": [
             {
                 "family": family,
-                "mean_pairwise_jaccard": round(sum(values) / len(values), 4)
-                if values
-                else 0.0,
+                "mean_pairwise_jaccard": round(sum(values) / len(values), 4) if values else 0.0,
             }
             for family, values in sorted(family_accumulator.items())
         ],
@@ -226,5 +216,3 @@ def coverage_update() -> list[dict[str, Any]]:
             "evidence_added": "Residual subtype and parity metrics across all selected models.",
         },
     ]
-
-

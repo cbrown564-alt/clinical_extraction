@@ -293,7 +293,9 @@ def _sync_comparison_plan_to_mlflow(plan: MlflowSyncPlan, *, repo_root: Path) ->
         metrics=parent.metrics,
         tags=parent.tags,
         artifact_paths=tuple(
-            Path(artifact.path) for artifact in parent.artifacts if artifact.action == "log_artifact"
+            Path(artifact.path)
+            for artifact in parent.artifacts
+            if artifact.action == "log_artifact"
         ),
     )
     parent_run_id = mirror_payload_to_mlflow(parent_payload, repo_root=repo_root)
@@ -370,8 +372,7 @@ def _comparison_parent_metrics(child_runs: Sequence[MlflowRunSyncPlan]) -> dict[
         "child_run_count": float(len(child_runs)),
         "call_failures_total": sum(run.metrics.get("call_failures", 0.0) for run in child_runs),
         "parse_schema_failures_total": sum(
-            run.metrics.get("parse_schema_failures", 0.0)
-            + run.metrics.get("parse_failures", 0.0)
+            run.metrics.get("parse_schema_failures", 0.0) + run.metrics.get("parse_failures", 0.0)
             for run in child_runs
         ),
     }
@@ -396,4 +397,3 @@ def _run_sync_plan_to_payload(
         ),
         parent_run_id=parent_run_id,
     )
-

@@ -7,10 +7,16 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import TARGET_INDICATORS
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import LAYER_DEFINITIONS
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import LayerDefinition
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.telemetry import round_rate
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import (
+    LAYER_DEFINITIONS,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
+    LayerDefinition,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
+    TARGET_INDICATORS,
+)
+
 
 def load_summary(path: Path) -> dict[str, Any]:
     return json.loads((REPO_ROOT / path).read_text(encoding="utf-8"))
@@ -130,4 +136,3 @@ def score_counts(score: dict[str, Any]) -> dict[str, Any]:
 
 def delta(after: float, before: float) -> float:
     return round(float(after) - float(before), 4)
-

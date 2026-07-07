@@ -13,14 +13,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -39,13 +39,11 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 SOURCE_VALIDATION_JSONL = (
-    EXPERIMENTS
-    / "gan2026_consensus_fresh_agreement_selector_v0_8_"
+    EXPERIMENTS / "gan2026_consensus_fresh_agreement_selector_v0_8_"
     "validation750_no_call_replay_2026-06-15.jsonl"
 )
 VALIDATION_RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_9_"
-    "validation750_no_call_replay_2026-06-15"
+    "gan2026_consensus_fresh_agreement_selector_v0_9_validation750_no_call_replay_2026-06-15"
 )
 SYNTHETIC_RUN_ID = (
     "gan2026_consensus_fresh_agreement_selector_v0_9_"
@@ -214,9 +212,7 @@ def main() -> None:
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -258,9 +254,7 @@ def _component_rows(
             {
                 "source_row_index": source_row_index,
                 "consensus_final_label": row["consensus_label"],
-                "consensus_comparison": row["score_layers"]["consensus"][
-                    "comparison"
-                ],
+                "consensus_comparison": row["score_layers"]["consensus"]["comparison"],
                 "consensus_decision": {"reason": features.get("consensus_reason")},
             }
         )
@@ -269,17 +263,12 @@ def _component_rows(
                 "source_row_index": source_row_index,
                 "fresh_evidence_decision_record": {
                     "action": features.get("fresh_action"),
-                    "boundary_profile": features.get("fresh_boundary_profile")
-                    or [],
+                    "boundary_profile": features.get("fresh_boundary_profile") or [],
                     "uncertainty": features.get("fresh_uncertainty"),
                 },
                 "decision_record": {"final_label": row["fresh_evidence_label"]},
                 "score_layers": {
-                    "final": {
-                        "comparison": row["score_layers"]["fresh_evidence"][
-                            "comparison"
-                        ]
-                    }
+                    "final": {"comparison": row["score_layers"]["fresh_evidence"]["comparison"]}
                 },
             }
         )
@@ -422,33 +411,21 @@ def _synthetic_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "deterministic_purist_correct": sum(
             _is_layer_correct(row, "deterministic") for row in rows
         ),
-        "consensus_purist_correct": sum(
-            _is_layer_correct(row, "consensus") for row in rows
-        ),
-        "fresh_purist_correct": sum(
-            _is_layer_correct(row, "fresh_evidence") for row in rows
-        ),
-        "selected_purist_correct": sum(
-            _is_layer_correct(row, "selected") for row in rows
-        ),
-        "desired_action_matches": sum(
-            row["desired_action_match"] is True for row in rows
-        ),
+        "consensus_purist_correct": sum(_is_layer_correct(row, "consensus") for row in rows),
+        "fresh_purist_correct": sum(_is_layer_correct(row, "fresh_evidence") for row in rows),
+        "selected_purist_correct": sum(_is_layer_correct(row, "selected") for row in rows),
+        "desired_action_matches": sum(row["desired_action_match"] is True for row in rows),
         "desired_action_miss_case_ids": desired_misses,
         "current_rule_false_positive_case_ids": false_positives,
         "conservative_false_negative_case_ids": false_negatives,
         "safety_success_case_ids": safety_successes,
-        "by_risk_type": {
-            key: dict(value) for key, value in sorted(by_risk_type.items())
-        },
+        "by_risk_type": {key: dict(value) for key, value in sorted(by_risk_type.items())},
     }
 
 
 def _accumulate_bucket(bucket: dict[str, int], row: dict[str, Any]) -> None:
     bucket["rows"] += 1
-    bucket["deterministic_purist_correct"] += int(
-        _is_layer_correct(row, "deterministic")
-    )
+    bucket["deterministic_purist_correct"] += int(_is_layer_correct(row, "deterministic"))
     bucket["consensus_purist_correct"] += int(_is_layer_correct(row, "consensus"))
     bucket["fresh_purist_correct"] += int(_is_layer_correct(row, "fresh_evidence"))
     bucket["selected_purist_correct"] += int(_is_layer_correct(row, "selected"))
@@ -474,25 +451,13 @@ def _synthetic_markdown(payload: dict[str, Any]) -> str:
         "## Summary",
         "",
         f"- Rows: {stress['rows']}",
-        (
-            "- Deterministic Purist: "
-            f"{stress['deterministic_purist_correct']}/{stress['rows']}"
-        ),
+        (f"- Deterministic Purist: {stress['deterministic_purist_correct']}/{stress['rows']}"),
         f"- Consensus Purist: {stress['consensus_purist_correct']}/{stress['rows']}",
         f"- Fresh Purist: {stress['fresh_purist_correct']}/{stress['rows']}",
         f"- Selected Purist: {stress['selected_purist_correct']}/{stress['rows']}",
-        (
-            "- Desired action matches: "
-            f"{stress['desired_action_matches']}/{stress['rows']}"
-        ),
-        (
-            "- Current-rule false positives: "
-            f"{len(stress['current_rule_false_positive_case_ids'])}"
-        ),
-        (
-            "- Conservative false negatives: "
-            f"{len(stress['conservative_false_negative_case_ids'])}"
-        ),
+        (f"- Desired action matches: {stress['desired_action_matches']}/{stress['rows']}"),
+        (f"- Current-rule false positives: {len(stress['current_rule_false_positive_case_ids'])}"),
+        (f"- Conservative false negatives: {len(stress['conservative_false_negative_case_ids'])}"),
         f"- Safety successes: {len(stress['safety_success_case_ids'])}",
         f"- Selector changed labels: {selector_summary['changed_labels']}",
         (
@@ -510,9 +475,7 @@ def _synthetic_markdown(payload: dict[str, Any]) -> str:
     ]
     for row in payload["rows"]:
         case = row["synthetic_case"]
-        selected_correct = row["score_layers"]["selected"]["comparison"][
-            "purist_correct"
-        ]
+        selected_correct = row["score_layers"]["selected"]["comparison"]["purist_correct"]
         lines.append(
             f"| `{case['case_id']}` | `{case['risk_type']}` | "
             f"`{row['selector_action']}` | `{row['selector_gate']}` | "
@@ -561,13 +524,9 @@ def _register_validation(summary: dict[str, Any]) -> None:
             repair_mode="selector_v0_9_semantic_equiv_unknown_uncertainty",
             cache_reuse_source=str(SOURCE_VALIDATION_JSONL),
             primary_metrics={
-                "deterministic_purist_correct": summary[
-                    "deterministic_purist_correct"
-                ],
+                "deterministic_purist_correct": summary["deterministic_purist_correct"],
                 "consensus_purist_correct": summary["consensus_purist_correct"],
-                "fresh_evidence_purist_correct": summary[
-                    "fresh_evidence_purist_correct"
-                ],
+                "fresh_evidence_purist_correct": summary["fresh_evidence_purist_correct"],
                 "selected_purist_correct": summary["selected_purist_correct"],
                 "changed_labels": summary["changed_labels"],
                 "wrong_to_correct": summary["wrong_to_correct"],
@@ -623,13 +582,10 @@ def _register_synthetic(
                 ),
                 "wrong_to_correct": selector_summary["wrong_to_correct"],
                 "correct_to_wrong": selector_summary["correct_to_wrong"],
-                "changed_label_precision": selector_summary[
-                    "changed_label_precision"
-                ],
+                "changed_label_precision": selector_summary["changed_label_precision"],
             },
             evidence_validity=(
-                "Synthetic mechanism evidence only; no validation or holdout "
-                "records are read."
+                "Synthetic mechanism evidence only; no validation or holdout records are read."
             ),
             decision="revise",
             supersedes=(
@@ -646,9 +602,7 @@ def _register_synthetic(
 
 def _upsert_entry(new_entry: RunRegistryEntry) -> None:
     entries = [
-        entry
-        for entry in load_run_registry(REGISTRY_PATH)
-        if entry.run_id != new_entry.run_id
+        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != new_entry.run_id
     ]
     entries.append(new_entry)
     write_run_registry(entries, REGISTRY_PATH)

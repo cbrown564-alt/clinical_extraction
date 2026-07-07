@@ -67,7 +67,10 @@ def _examples(letters):
 
 def _evaluate(program, letters, num_threads):
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
-    pairs = [(program, {"letter_text": letter.note_text, "output_schema": EVENT_SCHEMA_JSON}) for letter in letters]
+    pairs = [
+        (program, {"letter_text": letter.note_text, "output_schema": EVENT_SCHEMA_JSON})
+        for letter in letters
+    ]
     predictions = evaluator(pairs)
     gold_list, pred_list, rows = [], [], []
     for letter, pred in zip(letters, predictions, strict=True):
@@ -119,7 +122,9 @@ def main() -> None:
 
     task_lm = build_dspy_lm(args.model, temperature=0.0, max_tokens=6000, cache=True)
     dspy.configure(lm=task_lm)
-    reflection_lm = build_dspy_lm(args.reflection_model, temperature=1.0, max_tokens=12000, cache=False)
+    reflection_lm = build_dspy_lm(
+        args.reflection_model, temperature=1.0, max_tokens=12000, cache=False
+    )
 
     shuffled = gepa_data._shuffled_dev()
     trainset = _examples(shuffled[: args.trainset_size])
@@ -128,7 +133,9 @@ def main() -> None:
         val_letters = val_letters[:8]
     valset = _examples(val_letters)
 
-    metric = build_sf_verify_metric(LengthPenaltyConfig(instruction_token_budget=1400), recall_beta=args.recall_beta)
+    metric = build_sf_verify_metric(
+        LengthPenaltyConfig(instruction_token_budget=1400), recall_beta=args.recall_beta
+    )
     seed_program = build_sf_verify_program()
 
     dev = gepa_data.load_dev_letters()
@@ -162,14 +169,16 @@ def main() -> None:
 
     print(f"[sf-verify] evaluating OPTIMIZED on dev ({len(dev)})...", flush=True)
     opt_rows, opt_scores = _evaluate(optimized, dev, args.num_threads)
-    print(f"[sf-verify] OPT    {_fmt(opt_scores)}  ({elapsed/60:.1f} min)", flush=True)
-    print(f"[sf-verify] comparators — de-dup 0.592/0.713 | P3 0.569/0.708 | hybrid 0.926/0.930")
+    print(f"[sf-verify] OPT    {_fmt(opt_scores)}  ({elapsed / 60:.1f} min)", flush=True)
+    print("[sf-verify] comparators — de-dup 0.592/0.713 | P3 0.569/0.708 | hybrid 0.926/0.930")
 
     instruction = combined_instruction(optimized)
     (EXPERIMENTS / f"{args.run_id}.jsonl").write_text(
         "\n".join(json.dumps(r) for r in opt_rows) + "\n", encoding="utf-8"
     )
-    (EXPERIMENTS / f"{args.run_id}.instruction.txt").write_text(instruction + "\n", encoding="utf-8")
+    (EXPERIMENTS / f"{args.run_id}.instruction.txt").write_text(
+        instruction + "\n", encoding="utf-8"
+    )
     summary = {
         "run_id": args.run_id,
         "model": args.model,

@@ -38,25 +38,15 @@ def build_candidate_set_comparison(
 
 
 def summarize_comparison(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    both = [
-        row
-        for row in rows
-        if row["deterministic_compatible"] and row["llm_compatible"]
-    ]
+    both = [row for row in rows if row["deterministic_compatible"] and row["llm_compatible"]]
     deterministic_only = [
-        row
-        for row in rows
-        if row["deterministic_compatible"] and not row["llm_compatible"]
+        row for row in rows if row["deterministic_compatible"] and not row["llm_compatible"]
     ]
     llm_only = [
-        row
-        for row in rows
-        if row["llm_compatible"] and not row["deterministic_compatible"]
+        row for row in rows if row["llm_compatible"] and not row["deterministic_compatible"]
     ]
     neither = [
-        row
-        for row in rows
-        if not row["deterministic_compatible"] and not row["llm_compatible"]
+        row for row in rows if not row["deterministic_compatible"] and not row["llm_compatible"]
     ]
     union = [row for row in rows if row["union_compatible"]]
     by_gold_kind: dict[str, Counter[str]] = {}

@@ -27,10 +27,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
-RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_9_"
-    "frozen_gate2_robustness_stress_2026-06-26"
-)
+RUN_ID = "gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate2_robustness_stress_2026-06-26"
 JSON_OUT = EXPERIMENTS / f"{RUN_ID}.json"
 MD_OUT = EXPERIMENTS / f"{RUN_ID}.md"
 
@@ -631,8 +628,7 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         )
         >= 0.90,
         "no_family_below_0_80": all(
-            summary["desired_action_match_rate"] >= 0.80
-            for summary in by_family.values()
+            summary["desired_action_match_rate"] >= 0.80 for summary in by_family.values()
         ),
         "correct_to_wrong_zero": purist["correct_to_wrong"] == 0,
         "deterministic_correct_negative_false_positives_zero": len(false_positive_rows) == 0,
@@ -652,9 +648,7 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             row["gate2_case"]["case_id"] for row in rows if not row["desired_action_match"]
         ],
         "selected_purist_correct": sum(_correct(row, "selected", "purist") for row in rows),
-        "selected_pragmatic_correct": sum(
-            _correct(row, "selected", "pragmatic") for row in rows
-        ),
+        "selected_pragmatic_correct": sum(_correct(row, "selected", "pragmatic") for row in rows),
         "changed_labels": len(changed_rows),
         "changed_label_precision": _rate(purist["wrong_to_correct"], len(changed_rows)),
         "wrong_to_correct": purist["wrong_to_correct"],

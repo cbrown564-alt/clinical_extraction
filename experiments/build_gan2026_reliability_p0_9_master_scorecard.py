@@ -14,7 +14,6 @@ Usage:
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
@@ -27,13 +26,15 @@ OUT_MD = rc.EXPERIMENTS / "gan2026_reliability_master_scorecard_2026-06-17.md"
 P = {
     "p0_1": rc.EXPERIMENTS / "gan2026_reliability_p0_1_faithfulness_correctness_2026-06-17.json",
     "p0_2": rc.EXPERIMENTS / "gan2026_reliability_p0_2_risk_coverage_validation750_2026-06-17.json",
-    "p0_3": rc.EXPERIMENTS / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json",
+    "p0_3": rc.EXPERIMENTS
+    / "gan2026_reliability_p0_3_external_calibration_validation750_2026-06-17.json",
     "p0_4": rc.EXPERIMENTS / "gan2026_reliability_p0_4_robustness_index_2026-06-17.json",
     "p0_5": rc.EXPERIMENTS / "gan2026_reliability_p0_5_error_parity_validation750_2026-06-17.json",
     "p0_6": rc.EXPERIMENTS / "gan2026_reliability_p0_6_safety_table_2026-06-17.json",
     "p0_7": rc.EXPERIMENTS / "gan2026_reliability_p0_7_operational_2026-06-17.json",
     "p0_8": rc.EXPERIMENTS / "gan2026_reliability_p0_8_self_consistency_hard50_2026-06-17.json",
-    "p2_1": rc.EXPERIMENTS / "gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json",
+    "p2_1": rc.EXPERIMENTS
+    / "gan2026_reliability_p2_1_semantic_entropy_preflight150_2026-06-17.json",
 }
 
 
@@ -58,7 +59,10 @@ def main() -> None:
 
     dimensions = [
         {
-            "n": 1, "dimension": "Task correctness", "coverage": "4/5", "axis": "reliability+accuracy",
+            "n": 1,
+            "dimension": "Task correctness",
+            "coverage": "4/5",
+            "axis": "reliability+accuracy",
             "metric": (
                 f"Subject Purist {acc(val1['purist_accuracy_subject']):.3f} val / "
                 f"{acc(test1['purist_accuracy_subject']):.3f} test (v0_reference); "
@@ -66,14 +70,20 @@ def main() -> None:
             ),
         },
         {
-            "n": 2, "dimension": "Factuality (over-inference)", "coverage": "3/5", "axis": "reliability",
+            "n": 2,
+            "dimension": "Factuality (over-inference)",
+            "coverage": "3/5",
+            "axis": "reliability",
             "metric": (
                 f"Unknown-gold over-read rate {val1['over_inference_unknown_gold']['over_read_rate']:.3f} val / "
                 f"{test1['over_inference_unknown_gold']['over_read_rate']:.3f} test."
             ),
         },
         {
-            "n": 3, "dimension": "Faithfulness", "coverage": "5/5", "axis": "reliability",
+            "n": 3,
+            "dimension": "Faithfulness",
+            "coverage": "5/5",
+            "axis": "reliability",
             "metric": (
                 f"Faithfulness rate {acc(val1['faithfulness_rate']['subject_v0_reference']):.3f} val / "
                 f"{acc(test1['faithfulness_rate']['subject_v0_reference']):.3f} test (subject); "
@@ -83,7 +93,10 @@ def main() -> None:
             ),
         },
         {
-            "n": 4, "dimension": "Calibration", "coverage": "3/5", "axis": "reliability",
+            "n": 4,
+            "dimension": "Calibration",
+            "coverage": "3/5",
+            "axis": "reliability",
             "metric": (
                 f"Self-confidence degenerate ({p3['self_confidence_degeneracy']['dominant_bucket_share']:.1%} "
                 f"one bucket); external-confidence ECE {p3['external_confidence']['ece_10bin']:.3f}, "
@@ -93,7 +106,10 @@ def main() -> None:
             "coverage_note": "upgraded 2/5 -> 3/5: real ECE/Brier/AUROC now exist on external signals.",
         },
         {
-            "n": 5, "dimension": "Abstention", "coverage": "5/5", "axis": "reliability",
+            "n": 5,
+            "dimension": "Abstention",
+            "coverage": "5/5",
+            "axis": "reliability",
             "metric": (
                 f"Full risk-coverage curve: AUC {p2c['auc_selective_risk_vs_coverage']:.4f} "
                 f"(oracle {p2ctx['oracle_auc_selective_risk_vs_coverage']:.4f}); selective risk "
@@ -103,20 +119,28 @@ def main() -> None:
             "coverage_note": "upgraded 4/5 -> 5/5: three operating points -> full curve.",
         },
         {
-            "n": 6, "dimension": "Robustness", "coverage": "4/5", "axis": "reliability",
-            "metric": "Continuous index: " + ", ".join(
-                f"{c['candidate']} {c['robustness_index']:.3f}" for c in p4
-            ) + " (overfit-gap is the diagnostic leg).",
+            "n": 6,
+            "dimension": "Robustness",
+            "coverage": "4/5",
+            "axis": "reliability",
+            "metric": "Continuous index: "
+            + ", ".join(f"{c['candidate']} {c['robustness_index']:.3f}" for c in p4)
+            + " (overfit-gap is the diagnostic leg).",
         },
         {
-            "n": 7, "dimension": "Consistency", "coverage": "4/5", "axis": "reliability",
+            "n": 7,
+            "dimension": "Consistency",
+            "coverage": "4/5",
+            "axis": "reliability",
             "metric": (
                 "P2.1 varying-temperature (0.3/0.5/0.7/1.0) semantic entropy, n="
                 f"{p21['n_rows']} ({p21['residual']['n']} residual): mean label entropy "
                 f"{p21['mean_label_entropy_purist']:.3f}, residual {p21['residual']['mean_label_entropy']:.3f} "
                 f"(band_unknown 0.000); raw prose varies, decisions do not -> "
                 f"`{p21['hypothesis_verdict']}`. [also: hard50 temp-0 unanimous acc {p8['unanimous_accuracy']:.3f}]"
-            ) if p21 else (
+            )
+            if p21
+            else (
                 f"Hard50 TEMP-0 reproducibility only: unanimous accuracy {p8['unanimous_accuracy']:.3f}; "
                 "varying-temperature P2.1 not yet run."
             ),
@@ -125,14 +149,20 @@ def main() -> None:
             "over-reading residual is confident, not uncertain).",
         },
         {
-            "n": 8, "dimension": "Safety & compliance", "coverage": "4/5", "axis": "reliability",
+            "n": 8,
+            "dimension": "Safety & compliance",
+            "coverage": "4/5",
+            "axis": "reliability",
             "metric": (
                 "0 C→W selective floor (RQ6); abstain-to-unknown gate v0_9; canaries + hash "
                 "pinning + aggregate-only readout guard; PHI/demographic evals N/A on synthetic."
             ),
         },
         {
-            "n": 9, "dimension": "Fairness (clinical family)", "coverage": "3/5", "axis": "reliability",
+            "n": 9,
+            "dimension": "Fairness (clinical family)",
+            "coverage": "3/5",
+            "axis": "reliability",
             "metric": (
                 f"Per-band error spread {p5['parity']['error_rate_spread_max_minus_min']:.1%}, "
                 f"CV {p5['parity']['accuracy_coefficient_of_variation']:.3f}; worst subgroup "
@@ -140,7 +170,10 @@ def main() -> None:
             ),
         },
         {
-            "n": 10, "dimension": "Operational reliability", "coverage": "4/5", "axis": "reliability",
+            "n": 10,
+            "dimension": "Operational reliability",
+            "coverage": "4/5",
+            "axis": "reliability",
             "metric": (
                 f"0 model render failures / {p7['integrity']['total_recoverable_repair_events']} "
                 f"recoverable repairs across {p7['integrity']['total_rows']} rows; offline est "
@@ -172,9 +205,11 @@ def render_md(s: dict[str, Any]) -> str:
     L.append("# Gan 2026 — Master Reliability Scorecard (Phase 0)\n")
     L.append(f"Date: {s['date']}  ·  {s['phase']}  ·  Model calls: 0\n")
     L.append(f"Canonical subject: {s['canonical_subject']}.\n")
-    L.append("Every metric below is computed on the canonical subject layer unless tagged "
-             "`[comparator: ...]`. All figures are re-derived from frozen artifacts by the "
-             "P0.1–P0.8 drivers; no number is admissible without a layer.\n")
+    L.append(
+        "Every metric below is computed on the canonical subject layer unless tagged "
+        "`[comparator: ...]`. All figures are re-derived from frozen artifacts by the "
+        "P0.1–P0.8 drivers; no number is admissible without a layer.\n"
+    )
     L.append("| # | Dimension | Cov. | Computed metric (Phase 0) |")
     L.append("|---|---|:--:|---|")
     for d in s["dimensions"]:

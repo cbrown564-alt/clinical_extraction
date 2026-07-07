@@ -7,6 +7,7 @@ test them with tiny hand-built fixtures per the TDD skill. The dspy signature an
 apply-then-rescore plumbing are integration-shaped and mirror item 2 verbatim, so
 they are not unit-tested here (matching item 2's convention).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -15,13 +16,9 @@ from pathlib import Path
 # The driver is a standalone script under scripts/, not an installed package, so
 # load it by path (mirroring how other scripts have been tested in this repo).
 _SCRIPT = (
-    Path(__file__).resolve().parents[1]
-    / "scripts"
-    / "run_exectv2_sf_retrieval_highlight_probe.py"
+    Path(__file__).resolve().parents[1] / "scripts" / "run_exectv2_sf_retrieval_highlight_probe.py"
 )
-_spec = importlib.util.spec_from_file_location(
-    "run_exectv2_sf_retrieval_highlight_probe", _SCRIPT
-)
+_spec = importlib.util.spec_from_file_location("run_exectv2_sf_retrieval_highlight_probe", _SCRIPT)
 assert _spec is not None and _spec.loader is not None
 _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
@@ -79,10 +76,7 @@ class TestSelectHighlightSpans:
             )
 
     def test_spans_are_sorted_by_start(self) -> None:
-        text = (
-            "Seizure frequency has decreased. She had last seizure in 2019. "
-            "Now seizure free."
-        )
+        text = "Seizure frequency has decreased. She had last seizure in 2019. Now seizure free."
         spans = select_highlight_spans(text)
         starts = [s["start"] for s in spans]
         assert starts == sorted(starts)
@@ -119,10 +113,7 @@ class TestRenderHighlightedText:
         assert render_highlighted_text(text, []) == text
 
     def test_multiple_spans_each_wrapped_and_offsets_preserved(self) -> None:
-        text = (
-            "Seizure frequency has decreased. "
-            "In the last year she had increased episodes."
-        )
+        text = "Seizure frequency has decreased. In the last year she had increased episodes."
         spans = select_highlight_spans(text)
         # Keep at most two change-rule spans for a deterministic multi-span case.
         change_spans = [s for s in spans if s["rule_id"].startswith("change.")]

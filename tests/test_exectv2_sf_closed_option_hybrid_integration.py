@@ -180,9 +180,7 @@ class TestLetterQualifies:
 
     def test_does_not_qualify_when_no_kept_assessments(self):
         cands = [_candidate("C0", suggested={"FrequencyChange": "Increased"})]
-        record = AssessmentRecord(
-            assessments=[CandidateAssessment(candidate_id="C0", keep=False)]
-        )
+        record = AssessmentRecord(assessments=[CandidateAssessment(candidate_id="C0", keep=False)])
         assert _letter_qualifies_for_direction_selector(cands, record) is False
 
 

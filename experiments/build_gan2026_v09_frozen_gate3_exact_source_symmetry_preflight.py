@@ -28,46 +28,37 @@ JSON_OUT = EXPERIMENTS / f"{RUN_ID}.json"
 MD_OUT = EXPERIMENTS / f"{RUN_ID}.md"
 
 VALIDATION_CONSENSUS = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_consensus_unanimous_exact_validation750_"
     "2026-06-13.jsonl"
 )
 VALIDATION_FRESH = (
     EXPERIMENTS / "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl"
 )
 DETERMINISTIC_RULES_TOOL = (
-    EXPERIMENTS
-    / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
+    EXPERIMENTS / "gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_"
     "v02_cluster_diary_candidate_recall_live_2026-06-02.jsonl"
 )
 EXACT_CONSENSUS = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_"
     "2026-06-26.jsonl"
 )
 EXACT_CONSENSUS_MD = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_"
-    "2026-06-26.md"
+    EXPERIMENTS / "gan2026_agentic_structured_event_consensus_unanimous_exact_test450_2026-06-26.md"
 )
 FRESH_EVIDENCE = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
     "2026-06-15.jsonl"
 )
 FRESH_EVIDENCE_MD = (
-    EXPERIMENTS
-    / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
+    EXPERIMENTS / "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_"
     "2026-06-15.md"
 )
 GPT_SE = (
-    EXPERIMENTS
-    / "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
+    EXPERIMENTS / "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_"
     "2026-06-09.jsonl"
 )
 QWEN_SE_PATCH = (
-    EXPERIMENTS
-    / "gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_"
+    EXPERIMENTS / "gan2026_agentic_structured_event_patch_recent_unresolved_burden_test450_"
     "qwen3635b_2026-06-13.jsonl"
 )
 DEEPSEEK_SE = EXPERIMENTS / "gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.jsonl"
@@ -186,9 +177,7 @@ def main() -> None:
 
     all_required = component_audits + substrate_audits
     coverage_ok = all(item.get("coverage_ok") for item in all_required)
-    prompt_hygiene_ok = all(
-        item.get("prompt_hygiene_ok") is not False for item in all_required
-    )
+    prompt_hygiene_ok = all(item.get("prompt_hygiene_ok") is not False for item in all_required)
     row_content_boundary_ok = all(
         item.get("row_content_boundary_ok") is not False for item in all_required
     )
@@ -264,8 +253,8 @@ def _role_parity() -> dict[str, Any]:
     validation_fresh_meta = _sample_metadata(VALIDATION_FRESH)
     test_fresh_meta = _sample_metadata(FRESH_EVIDENCE)
 
-    validation_floor = (
-        validation_consensus_meta.get("source_artifacts", {}).get("rules_tool_baseline")
+    validation_floor = validation_consensus_meta.get("source_artifacts", {}).get(
+        "rules_tool_baseline"
     )
     exact_floor = exact_consensus_meta.get("source_artifacts", {}).get("rules_tool_baseline")
     deterministic_role_parity_ok = (
@@ -380,9 +369,7 @@ def _audit_artifact(spec: ComponentSpec, manifest_rows: set[int]) -> dict[str, A
         "path": _rel(spec.path),
         "sha256": _sha256(spec.path),
         "markdown_path": (
-            _rel(spec.markdown_path)
-            if spec.markdown_path and spec.markdown_path.exists()
-            else None
+            _rel(spec.markdown_path) if spec.markdown_path and spec.markdown_path.exists() else None
         ),
         "markdown_sha256": _sha256(spec.markdown_path)
         if spec.markdown_path and spec.markdown_path.exists()

@@ -38,9 +38,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 
 PROMPT_VERSION = "gan2026_targeted_boundary_router_v0_4"
 PIPELINE_FAMILY = "targeted_boundary_router"
-DEFAULT_STRUCTURED_EVENT_JSONL_PATH = (
-    structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-)
+DEFAULT_STRUCTURED_EVENT_JSONL_PATH = structured_event_verifier.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_JSONL_PATH = Path("experiments/gan2026_targeted_boundary_router_validation.jsonl")
 DEFAULT_REPORT_PATH = Path("experiments/gan2026_targeted_boundary_router_validation.md")
 STAGE_ID = "targeted_boundary_router"
@@ -169,9 +167,7 @@ def build_prompt_input(
 ) -> str:
     """Build a model-facing targeted-router payload without IDs, gold, or split."""
 
-    structured_input = llm_event_reasoner.inspect_structured_events(
-        structured_event_row
-    )
+    structured_input = llm_event_reasoner.inspect_structured_events(structured_event_row)
     payload = {
         "prompt_version": PROMPT_VERSION,
         "task": "Gan 2026 targeted structured-event boundary routing",
@@ -366,8 +362,7 @@ def _router_hints(structured_event_row: Mapping[str, Any] | None) -> dict[str, A
     ):
         risk_checks.append("selected_seizure_free_replacement_disallowed")
     selected_evidence = " ".join(
-        str(event_by_id.get(event_id, {}).get("evidence") or "")
-        for event_id in selected_ids
+        str(event_by_id.get(event_id, {}).get("evidence") or "") for event_id in selected_ids
     )
     if (
         original_kind == "frequency"
@@ -512,19 +507,10 @@ def write_report(
         f"- Parse/schema/label failures: {summary.get('parse_or_validation_failures', 0)}",
         f"- Action-render failures: {summary.get('action_render_failures', 0)}",
         f"- Exact evidence substrings: {summary.get('evidence_exact_substrings', 0)}",
-        (
-            f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
-        (
-            f"- Final Purist: {summary.get('final_purist_correct', 0)}/"
-            f"{summary.get('rows', 0)}"
-        ),
+        (f"- V0 Purist: {summary.get('v0_purist_correct', 0)}/{summary.get('rows', 0)}"),
+        (f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}"),
         f"- Net Purist gain vs V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Verifier actions: `{summary.get('verifier_actions', {})}`",
         f"- Router profiles: `{summary.get('router_profiles', {})}`",
         "",
@@ -685,9 +671,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + (["missing_structured_event_row"] if structured_event_row is None else []),
     }
 

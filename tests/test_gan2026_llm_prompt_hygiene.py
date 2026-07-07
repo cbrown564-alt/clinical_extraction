@@ -1,10 +1,12 @@
-﻿import json
+import json
 
 import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_per_entity as exectv2_per_entity,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_single_pass as exectv2_single_pass,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
@@ -105,7 +107,5 @@ def test_llm_model_facing_payloads_do_not_expose_internal_protocol_language(
     input_obj = _record() if arg == "_record" else _exect_letter()
     text = _payload_text(builder(input_obj))
 
-    leaked_phrases = [
-        phrase for phrase in INTERNAL_MODEL_FACING_PHRASES if phrase in text
-    ]
+    leaked_phrases = [phrase for phrase in INTERNAL_MODEL_FACING_PHRASES if phrase in text]
     assert leaked_phrases == [], name

@@ -104,8 +104,7 @@ def write_report(
         raw_issue = _format_raw_scorer_issue((row.get("score_layers") or {}).get("raw") or {})
         if contract_issue or evidence_issue or raw_issue:
             lines.append(
-                f"| {row['source_row_index']} | {contract_issue} | {evidence_issue} | "
-                f"{raw_issue} |"
+                f"| {row['source_row_index']} | {contract_issue} | {evidence_issue} | {raw_issue} |"
             )
 
     lines.extend(

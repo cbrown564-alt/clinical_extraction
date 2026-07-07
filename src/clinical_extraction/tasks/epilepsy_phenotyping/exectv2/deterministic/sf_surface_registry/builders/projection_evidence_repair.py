@@ -6,15 +6,22 @@ import re
 from collections.abc import Sequence
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import ASYMMETRIC_DOSING
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.constants import (
+    ASYMMETRIC_DOSING,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.policy import (
     ProjectionFamilySwitches,
     is_projection_family_enabled,
     quarantined_projection_family_warning,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import clean_number, local_evidence_context
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import MentionT
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.shared import (
+    clean_number,
+    local_evidence_context,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.target_projection.types import (
+    MentionT,
+)
+
 
 def repair_case_only_evidence(
     mentions: Sequence[MentionT],
@@ -32,10 +39,7 @@ def repair_case_only_evidence(
                 extended = extend_asymmetric_prescription_evidence(mention, note_text)
                 if extended and extended != evidence:
                     repaired.append(mention.model_copy(update={"evidence": extended}))
-                    warnings.append(
-                        "extended_asymmetric_prescription_evidence: "
-                        f"{mention.text!r}"
-                    )
+                    warnings.append(f"extended_asymmetric_prescription_evidence: {mention.text!r}")
                     continue
             if mention.entity == "Diagnosis":
                 extended = extend_probable_temporal_diagnosis_evidence(
@@ -45,8 +49,7 @@ def repair_case_only_evidence(
                 if extended and extended != evidence:
                     repaired.append(mention.model_copy(update={"evidence": extended}))
                     warnings.append(
-                        "extended_probable_temporal_diagnosis_evidence: "
-                        f"{mention.text!r}"
+                        f"extended_probable_temporal_diagnosis_evidence: {mention.text!r}"
                     )
                     continue
         if evidence and evidence not in note_text:
@@ -61,12 +64,8 @@ def repair_case_only_evidence(
                 note_text,
             )
             if whitespace_equivalent:
-                repaired.append(
-                    mention.model_copy(update={"evidence": whitespace_equivalent})
-                )
-                warnings.append(
-                    f"repaired_whitespace_equivalent_evidence: {mention.text!r}"
-                )
+                repaired.append(mention.model_copy(update={"evidence": whitespace_equivalent}))
+                warnings.append(f"repaired_whitespace_equivalent_evidence: {mention.text!r}")
                 continue
             stripped = evidence.rstrip(" .;:")
             if stripped != evidence and stripped in note_text:
@@ -123,12 +122,12 @@ def repair_case_only_evidence(
                 if synonym:
                     repaired.append(mention.model_copy(update={"evidence": synonym}))
                     warnings.append(
-                        "repaired_prescription_frequency_synonym_evidence: "
-                        f"{mention.text!r}"
+                        f"repaired_prescription_frequency_synonym_evidence: {mention.text!r}"
                     )
                     continue
         repaired.append(mention)
     return repaired, warnings
+
 
 def repair_whitespace_equivalent_evidence(evidence: str, note_text: str) -> str | None:
     tokens = [token for token in re.split(r"\s+", evidence.strip()) if token]
@@ -137,6 +136,7 @@ def repair_whitespace_equivalent_evidence(evidence: str, note_text: str) -> str 
     pattern = re.compile(r"\s+".join(re.escape(token) for token in tokens), re.IGNORECASE)
     match = pattern.search(note_text)
     return match.group(0) if match else None
+
 
 def repair_ellipsis_evidence(evidence: str, note_text: str) -> str | None:
     if "..." not in evidence:
@@ -149,6 +149,7 @@ def repair_ellipsis_evidence(evidence: str, note_text: str) -> str | None:
     if suffix_index < 0:
         return None
     return note_text[suffix_index : suffix_index + len(suffix)]
+
 
 def repair_absence_like_frequency_evidence(
     mention: MentionT,
@@ -169,6 +170,7 @@ def repair_absence_like_frequency_evidence(
     )
     match = pattern.search(note_text)
     return match.group(0) if match else None
+
 
 def repair_since_last_clinic_count_evidence(
     mention: MentionT,
@@ -192,6 +194,7 @@ def repair_since_last_clinic_count_evidence(
     match = pattern.search(note_text)
     return match.group(0) if match else None
 
+
 def repair_no_further_since_evidence(
     mention: MentionT,
     note_text: str,
@@ -206,6 +209,7 @@ def repair_no_further_since_evidence(
     match = pattern.search(note_text)
     return match.group(0) if match else None
 
+
 def extend_asymmetric_prescription_evidence(
     mention: MentionT,
     note_text: str,
@@ -219,6 +223,7 @@ def extend_asymmetric_prescription_evidence(
     context = local_evidence_context(note_text, mention.evidence, before=0, after=80)
     match = ASYMMETRIC_DOSING.search(context)
     return match.group(0) if match else None
+
 
 def extend_probable_temporal_diagnosis_evidence(
     mention: MentionT,
@@ -235,6 +240,7 @@ def extend_probable_temporal_diagnosis_evidence(
     match = pattern.search(note_text)
     return match.group(0) if match else None
 
+
 def repair_prescription_frequency_synonym_evidence(
     mention: MentionT,
     note_text: str,
@@ -250,6 +256,7 @@ def repair_prescription_frequency_synonym_evidence(
     )
     match = pattern.search(note_text)
     return match.group(0) if match else None
+
 
 def repair_prescription_attrs_from_text(
     attrs: dict[str, str],
@@ -302,6 +309,7 @@ def repair_prescription_attrs_from_text(
             warnings.append(f"projected_prescription_frequency_from_evidence: {frequency}")
     return warnings
 
+
 def is_daily_total_dose(raw_dose: str, source_dose: str, frequency: str) -> bool:
     if not raw_dose or not source_dose or not frequency.isdigit():
         return False
@@ -309,6 +317,7 @@ def is_daily_total_dose(raw_dose: str, source_dose: str, frequency: str) -> bool
         return float(raw_dose) == float(source_dose) * int(frequency)
     except ValueError:
         return False
+
 
 def frequency_from_prescription_source(normalized_source: str) -> str | None:
     if re.search(r"\b(?:bd|twice\s+(?:a\s+)?day|twice\s+daily)\b", normalized_source):

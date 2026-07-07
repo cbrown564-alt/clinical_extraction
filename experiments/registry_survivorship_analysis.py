@@ -193,7 +193,7 @@ CITED_RUNS: tuple[CitedRun, ...] = (
         "direct",
         "The companion doc is itself the registered analysis-only entry (matched "
         "by run_id == doc-filename-slug convention). Note: its own "
-        "`artifact_paths` field is `[\"\"]` -- a placeholder, not a real path "
+        '`artifact_paths` field is `[""]` -- a placeholder, not a real path '
         "back to this doc -- a minor registry-hygiene gap distinct from the "
         "chain-length question this script answers.",
     ),
@@ -220,7 +220,9 @@ CITED_RUNS: tuple[CitedRun, ...] = (
 NOT_REGISTERED_CITATIONS: tuple[UnregisteredCitation, ...] = (
     UnregisteredCitation(
         "exectv2_gepa_sf_verify_gpt41mini_20260628",
-        ("docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",),
+        (
+            "docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
+        ),
         "The canonical P2 two-stage GEPA run the SF plateau finding (state_profile "
         "0.710 stage1 / 0.772 stage2) rests on. Artifacts exist on disk "
         "(experiments/exectv2_gepa_sf_verify_gpt41mini_20260628.{json,jsonl,"
@@ -235,8 +237,7 @@ NOT_REGISTERED_CITATIONS: tuple[UnregisteredCitation, ...] = (
     UnregisteredCitation(
         "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator",
         ("docs/research/exectv2_results_section_draft_2026-06-26.md",),
-        "The lean 2-call cost-performance frontier row (full-200 0.8356 overall, "
-        "400 calls).",
+        "The lean 2-call cost-performance frontier row (full-200 0.8356 overall, 400 calls).",
     ),
     UnregisteredCitation(
         "gan2026_research_closeout_synthesis_2026-06-17 (the companion doc itself)",
@@ -377,7 +378,9 @@ def main() -> None:
     print(f"Registry: {REGISTRY_PATH} ({total_rows} rows)")
     print(f"Companion docs scanned: {len(COMPANION_DOCS)}")
     print(f"Cited, registry-resolved run_ids: {len(CITED_RUNS)}")
-    print(f"Cited, NOT registered (real artifacts, no registry row): {len(NOT_REGISTERED_CITATIONS)}")
+    print(
+        f"Cited, NOT registered (real artifacts, no registry row): {len(NOT_REGISTERED_CITATIONS)}"
+    )
     print()
 
     print("-" * 78)
@@ -389,8 +392,10 @@ def main() -> None:
         result = _walk_supersedes(cited.run_id, by_id)
         results.append(result)
         absorbed.update(result.ancestors)
-        stale_flag = "" if result.is_terminal else "  *** STALE: superseded_by chain -> " + " -> ".join(
-            result.superseded_by_chain
+        stale_flag = (
+            ""
+            if result.is_terminal
+            else "  *** STALE: superseded_by chain -> " + " -> ".join(result.superseded_by_chain)
         )
         print(f"- {cited.run_id}")
         print(f"    resolution: {cited.resolution}; source docs: {', '.join(cited.source_docs)}")
@@ -398,7 +403,9 @@ def main() -> None:
         if result.ancestors:
             print(f"    ancestors: {', '.join(result.ancestors)}")
         if result.unregistered_ancestors:
-            print(f"    unregistered ancestors named in supersedes: {', '.join(result.unregistered_ancestors)}")
+            print(
+                f"    unregistered ancestors named in supersedes: {', '.join(result.unregistered_ancestors)}"
+            )
         print(f"    terminal (not itself superseded): {result.is_terminal}{stale_flag}")
     print()
 
@@ -424,7 +431,9 @@ def main() -> None:
     accounted = cited_ids | absorbed_only
     untouched = set(by_id) - accounted
     print(f"total registry rows: {total_rows}")
-    print(f"  directly cited by the manuscript's citation graph: {len(cited_ids)} ({len(cited_ids) / total_rows:.1%})")
+    print(
+        f"  directly cited by the manuscript's citation graph: {len(cited_ids)} ({len(cited_ids) / total_rows:.1%})"
+    )
     print(
         f"  silently absorbed as an ancestor via supersedes: {len(absorbed_only)} "
         f"({len(absorbed_only) / total_rows:.1%})"

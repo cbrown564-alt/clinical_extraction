@@ -27,8 +27,7 @@ def _find_repo_root() -> Path:
 
 REPO_ROOT = _find_repo_root()
 RELIABILITY_SCORECARD_PATH = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_cross_model_reliability_scorecard_2026-06-22.md"
+    "docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md"
 )
 CROSS_MODEL_REPORT_PATH = Path(
     "docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md"
@@ -115,10 +114,7 @@ def _rows_from_table(table: list[list[str]]) -> list[dict[str, str]]:
         if len(row) < len(headers):
             row = [*row, *([""] * (len(headers) - len(row)))]
         rows.append(
-            {
-                headers[index]: _strip_inline(cell)
-                for index, cell in enumerate(row[: len(headers)])
-            }
+            {headers[index]: _strip_inline(cell) for index, cell in enumerate(row[: len(headers)])}
         )
     return rows
 
@@ -349,9 +345,7 @@ def build_gan_reliability_scorecard_payload(
         ],
         "dimensions": dimensions,
         "weak_dimensions": [
-            dimension
-            for dimension in dimensions
-            if dimension.get("strength") == "weak"
+            dimension for dimension in dimensions if dimension.get("strength") == "weak"
         ],
         "metrics_available_now": [
             {

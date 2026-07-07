@@ -4,6 +4,7 @@ hard50 run? Reruns single_greedy on hard50 ONLY, at temperature=0.0, and
 reports accuracy for direct comparison against the temperature=0.2 result
 already on disk in gan2026_agentic_redo_battery_hard50_results.jsonl.
 """
+
 from __future__ import annotations
 
 import json

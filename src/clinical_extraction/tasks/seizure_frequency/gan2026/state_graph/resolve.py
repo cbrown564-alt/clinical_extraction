@@ -109,9 +109,7 @@ def resolve_label(
     superseded_ids = {
         edge.target_node_id for edge in edges if edge.kind is GraphEdgeKind.SUPERSEDES
     }
-    refined_ids = {
-        edge.target_node_id for edge in edges if edge.kind is GraphEdgeKind.REFINES
-    }
+    refined_ids = {edge.target_node_id for edge in edges if edge.kind is GraphEdgeKind.REFINES}
     used_edges: list[GraphEdge] = [
         edge
         for edge in edges

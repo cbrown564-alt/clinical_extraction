@@ -10,6 +10,7 @@ Specialists target SF's two documented weak spots specifically: cluster-
 axis ambiguity and the direction-blind "changed" class (see
 docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md).
 """
+
 from __future__ import annotations
 
 import json
@@ -120,9 +121,7 @@ class SFResolverSignature(dspy.Signature):
 
 def run_d3_static(prompt_input_json: str) -> dict[str, Any]:
     """Always run all three specialists, then the resolver. 4 model calls."""
-    active_rate = dspy.Predict(ActiveRateFactListerSignature)(
-        prompt_input_json=prompt_input_json
-    )
+    active_rate = dspy.Predict(ActiveRateFactListerSignature)(prompt_input_json=prompt_input_json)
     seizure_free = dspy.Predict(SeizureFreeHazardListerSignature)(
         prompt_input_json=prompt_input_json
     )

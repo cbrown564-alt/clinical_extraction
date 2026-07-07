@@ -88,7 +88,9 @@ def _queue(args: argparse.Namespace) -> list[GepaExperimentConfig]:
         ]
     queue = [_config(f"exectv2_gepa_multifamily_dedup_gpt41mini_{SUFFIX}", MINI)]
     if args.deepseek:
-        queue.append(_config(f"exectv2_gepa_multifamily_dedup_deepseek_reasoner_{SUFFIX}", DEEPSEEK))
+        queue.append(
+            _config(f"exectv2_gepa_multifamily_dedup_deepseek_reasoner_{SUFFIX}", DEEPSEEK)
+        )
     return queue
 
 
@@ -104,7 +106,9 @@ def _write_status(status: dict) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deepseek", action="store_true", help="Also run the deepseek-reasoner arm.")
+    parser.add_argument(
+        "--deepseek", action="store_true", help="Also run the deepseek-reasoner arm."
+    )
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
 

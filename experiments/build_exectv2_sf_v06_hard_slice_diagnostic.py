@@ -16,11 +16,12 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     _frequency_state_keys as frequency_state_keys,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 DEFAULT_JSONL = Path(
     "experiments/exectv2_hybrid_sf_state_projection_v06_combined_dev140_20260618.jsonl"
 )
@@ -59,9 +60,7 @@ class ResidualEvent:
 
 def read_rows(path: Path = DEFAULT_JSONL) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -241,10 +240,7 @@ def _is_generic_type(typ: Hashable) -> bool:
 def _opposite_summary(items: Sequence[tuple[tuple[Hashable, str], Mapping[str, Any]]]) -> str:
     parts = []
     for key, mention in items[:4]:
-        parts.append(
-            f"{_key_to_string(key[0])}/{key[1]}:"
-            f"{mention.get('text', '')}"
-        )
+        parts.append(f"{_key_to_string(key[0])}/{key[1]}:{mention.get('text', '')}")
     if len(items) > 4:
         parts.append("...")
     return "; ".join(parts)

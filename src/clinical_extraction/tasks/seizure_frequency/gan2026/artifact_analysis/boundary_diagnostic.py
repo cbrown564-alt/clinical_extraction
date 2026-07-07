@@ -36,10 +36,7 @@ class BoundaryDiagnosticAnalyzer:
 
         for row in rows:
             normalized_label = str(row.get("normalized_label", "")).lower()
-            is_sf = (
-                row.get("semantic_kind") == "seizure_free"
-                or "seizure free" in normalized_label
-            )
+            is_sf = row.get("semantic_kind") == "seizure_free" or "seizure free" in normalized_label
             if is_sf:
                 seizure_free_count += 1
 
@@ -47,13 +44,15 @@ class BoundaryDiagnosticAnalyzer:
             if matched:
                 boundary_matches += 1
 
-            details.append({
-                "source_row_index": row.get("source_row_index"),
-                "semantic_kind": row.get("semantic_kind", "unknown"),
-                "normalized_label": row.get("normalized_label"),
-                "gold_normalized_label": row.get("gold_normalized_label"),
-                "boundary_matched": matched,
-            })
+            details.append(
+                {
+                    "source_row_index": row.get("source_row_index"),
+                    "semantic_kind": row.get("semantic_kind", "unknown"),
+                    "normalized_label": row.get("normalized_label"),
+                    "gold_normalized_label": row.get("gold_normalized_label"),
+                    "boundary_matched": matched,
+                }
+            )
 
         return {
             "phase_f_consolidated": True,

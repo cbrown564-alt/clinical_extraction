@@ -40,12 +40,18 @@ def test_candidate_set_diagnostics_reports_empty_and_high_burden_rows() -> None:
     assert metadata["summary"]["high_burden_rows"] == 1
     assert metadata["summary"]["rows_with_no_candidates"] == 1
     assert metadata["summary"]["compatible_kind_coverage_rows"] == 1
-    assert metadata["summary"]["by_gold_candidate_kind"]["frequency_rate"][
-        "compatible_kind_coverage_rate"
-    ] == 1.0
-    assert metadata["summary"]["by_gold_candidate_kind"]["unknown_frequency"][
-        "compatible_kind_coverage_rate"
-    ] == 0.0
+    assert (
+        metadata["summary"]["by_gold_candidate_kind"]["frequency_rate"][
+            "compatible_kind_coverage_rate"
+        ]
+        == 1.0
+    )
+    assert (
+        metadata["summary"]["by_gold_candidate_kind"]["unknown_frequency"][
+            "compatible_kind_coverage_rate"
+        ]
+        == 0.0
+    )
     assert "not normalized-label recall" in metadata["claim_boundary"]
 
 

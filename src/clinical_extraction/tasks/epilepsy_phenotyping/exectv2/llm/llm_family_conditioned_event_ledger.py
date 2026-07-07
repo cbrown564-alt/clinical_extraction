@@ -124,10 +124,10 @@ class ExECTv2FamilyConditionedEventLedgerSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"clinical_events\": [{\"family\": ..., "
-            "\"anchor_text\": ..., \"evidence\": ..., \"event_state\": {...}, "
-            "\"mentions\": [{\"entity\": ..., \"text\": ..., \"attributes\": {...}}], "
-            "\"confidence\": ..., \"rationale\": ...}, ...]}"
+            'One strict JSON object: {"clinical_events": [{"family": ..., '
+            '"anchor_text": ..., "evidence": ..., "event_state": {...}, '
+            '"mentions": [{"entity": ..., "text": ..., "attributes": {...}}], '
+            '"confidence": ..., "rationale": ...}, ...]}'
         )
     )
 
@@ -239,8 +239,7 @@ def _target_candidate_ledger(
 
 def _target_decision_procedure(profile: FamilyProfile) -> list[str]:
     return [
-        step.replace("the four key families", f"the {profile.entity} family")
-        .replace(
+        step.replace("the four key families", f"the {profile.entity} family").replace(
             "for medication, diagnosis, seizure frequency, and investigations",
             f"for {profile.event_family}",
         )
@@ -268,15 +267,19 @@ def _attribute_vocabulary(entity_name: str) -> dict[str, Any]:
 
 
 def _shared_clinical_rules(profile: FamilyProfile) -> list[str]:
-    return [
-        "Candidate ledger rows are not predictions; reject unsupported candidates.",
-        "Every final evidence value must be an exact substring of the letter.",
-        "Every final mention text must be an exact substring of its evidence.",
-        f"Return only {profile.entity} mentions.",
-        "Do not emit CUI or CUIPhrase; ontology projection is handled after validation.",
-        "If no target-family findings are present, return {\"clinical_events\": []}.",
-        "Return exactly one JSON object. No markdown code fences.",
-    ] + profile.attribute_policy + profile.lane_policy
+    return (
+        [
+            "Candidate ledger rows are not predictions; reject unsupported candidates.",
+            "Every final evidence value must be an exact substring of the letter.",
+            "Every final mention text must be an exact substring of its evidence.",
+            f"Return only {profile.entity} mentions.",
+            "Do not emit CUI or CUIPhrase; ontology projection is handled after validation.",
+            'If no target-family findings are present, return {"clinical_events": []}.',
+            "Return exactly one JSON object. No markdown code fences.",
+        ]
+        + profile.attribute_policy
+        + profile.lane_policy
+    )
 
 
 FAMILY_PROFILES: dict[str, FamilyProfile] = {
@@ -909,16 +912,13 @@ def _apply_family_safety_gates(
     kept: list[PredictedMention] = []
     for mention in mentions:
         lower = f"{mention.text} {mention.evidence}".lower()
-        if (
-            re.search(
-                r"\b(not had any other episode which may resemble|"
-                r"no events which resemble|not had any events which resemble)\b",
-                lower,
-            )
+        if re.search(
+            r"\b(not had any other episode which may resemble|"
+            r"no events which resemble|not had any events which resemble)\b",
+            lower,
         ):
             warnings.append(
-                "SeizureFrequency: dropped_negated_resemblance_statement: "
-                f"{mention.text!r}"
+                f"SeizureFrequency: dropped_negated_resemblance_statement: {mention.text!r}"
             )
             continue
         if (
@@ -930,8 +930,7 @@ def _apply_family_safety_gates(
             )
         ):
             warnings.append(
-                "SeizureFrequency: dropped_bare_seizure_free_without_anchor: "
-                f"{mention.text!r}"
+                f"SeizureFrequency: dropped_bare_seizure_free_without_anchor: {mention.text!r}"
             )
             continue
         kept.append(mention)
@@ -1100,22 +1099,21 @@ def summarize_rows(
             "current_comparator_f1": CURRENT_COMPARATOR_HEADLINE_F1[entity],
         },
         "format_layers": {
-            "phrase_only": score_entity(gold_letters, pred_letters, entity, PHRASE_ONLY)
-            .per_item.model_dump(),
+            "phrase_only": score_entity(
+                gold_letters, pred_letters, entity, PHRASE_ONLY
+            ).per_item.model_dump(),
             "semantic": score_entity(
                 gold_letters,
                 pred_letters,
                 entity,
                 semantic_config_for(entity),
-            )
-            .per_item.model_dump(),
+            ).per_item.model_dump(),
             "benchmark": score_entity(
                 gold_letters,
                 pred_letters,
                 entity,
                 benchmark_config_for(entity),
-            )
-            .per_item.model_dump(),
+            ).per_item.model_dump(),
         },
         "source_near": source_near.per_entity[entity].model_dump(),
     }

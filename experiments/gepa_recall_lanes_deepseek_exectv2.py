@@ -41,6 +41,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifa
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_recall_lanes import (
     build_recall_lanes_program,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_recall_lanes import (
     combined_instruction as recall_combined_instruction,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.run_gepa import (
@@ -110,8 +112,11 @@ def _now() -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--smoke", action="store_true")
-    parser.add_argument("--baseline", action="store_true",
-                        help="Phase 0c: existing per-family program on DeepSeek (model swap only).")
+    parser.add_argument(
+        "--baseline",
+        action="store_true",
+        help="Phase 0c: existing per-family program on DeepSeek (model swap only).",
+    )
     args = parser.parse_args()
     dotenv.load_dotenv(ROOT / ".env")
 
@@ -130,8 +135,13 @@ def main() -> None:
         final_instruction_fn = recall_combined_instruction
 
     GEPA_LOG_ROOT.mkdir(parents=True, exist_ok=True)
-    status: dict = {"started_at": _now(), "smoke": args.smoke, "run_id": config.run_id,
-                    "arm": "baseline" if args.baseline else "recall_lanes", "state": "running"}
+    status: dict = {
+        "started_at": _now(),
+        "smoke": args.smoke,
+        "run_id": config.run_id,
+        "arm": "baseline" if args.baseline else "recall_lanes",
+        "state": "running",
+    }
     status_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"[recall-lanes] start {config.run_id} (task=DeepSeek-chat, 4 predictors)", flush=True)
     try:
@@ -144,7 +154,8 @@ def main() -> None:
         headline = payload["final_eval"]["clinical_headline"]
         ev = payload["final_eval"]["evidence_recall"]
         status.update(
-            state="done", finished_at=_now(),
+            state="done",
+            finished_at=_now(),
             clinical_headline_overall_f1=headline["overall_f1"],
             per_family=headline["per_family"],
             evidence_recall_overall=ev["overall_recall"],
@@ -158,8 +169,12 @@ def main() -> None:
             flush=True,
         )
     except Exception as exc:
-        status.update(state="failed", finished_at=_now(), error=f"{type(exc).__name__}: {exc}",
-                      traceback=traceback.format_exc()[-3000:])
+        status.update(
+            state="failed",
+            finished_at=_now(),
+            error=f"{type(exc).__name__}: {exc}",
+            traceback=traceback.format_exc()[-3000:],
+        )
         print(f"[recall-lanes] FAILED {config.run_id}: {exc}", flush=True)
     status_path.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 

@@ -63,10 +63,7 @@ def build_release_candidate_rows(
     for row in component_rows:
         hidden_families = _split_hidden_families(row.get("hidden_families", ""))
         original_action = row.get("final_action")
-        release_applied = (
-            original_action in NONPREDICTION_ACTIONS
-            and not hidden_families
-        )
+        release_applied = original_action in NONPREDICTION_ACTIONS and not hidden_families
         candidate_action = "predict" if release_applied else original_action
         candidate_label = (
             row.get("deterministic_comparator_label")
@@ -94,9 +91,7 @@ def build_release_candidate_rows(
                 "original_action": original_action,
                 "candidate_action": candidate_action,
                 "release_applied": release_applied,
-                "release_reason": (
-                    "untagged_nonprediction" if release_applied else "unchanged"
-                ),
+                "release_reason": ("untagged_nonprediction" if release_applied else "unchanged"),
                 "original_label": row.get("prediction_label") or None,
                 "candidate_label": candidate_label or None,
                 "baseline_label": row.get("deterministic_comparator_label"),
@@ -141,10 +136,7 @@ def build_assembled_candidate_rows(
         h6_member = "H6" in set(panel_row.get("hypothesis_ids", []))
         rows.append(
             {
-                "artifact_kind": (
-                    "gan2026_untagged_nonprediction_release_candidate_"
-                    "assembled_row"
-                ),
+                "artifact_kind": ("gan2026_untagged_nonprediction_release_candidate_assembled_row"),
                 "policy_name": POLICY_NAME,
                 "candidate_version": f"{POLICY_NAME}_assembled_candidate",
                 "source_artifact_id": "staged_assembly_validation750_component_matrix",
@@ -189,9 +181,7 @@ def build_assembled_candidate_rows(
                 "h6_member": h6_member,
                 "h6_panel_role": panel_row.get("panel_role", ""),
                 "surface_membership": (
-                    "h2_h4_component_stress_panel"
-                    if panel_row
-                    else "validation750_nonpanel"
+                    "h2_h4_component_stress_panel" if panel_row else "validation750_nonpanel"
                 ),
                 "selected_evidence_exact": _bool(row.get("selected_evidence_exact")),
                 "selected_source_ids_exist": _bool(row.get("selected_source_ids_exist")),
@@ -223,12 +213,9 @@ def summarize_release_candidate_rows(
     h6_controls = [
         row
         for row in panel_rows
-        if row["original_action"] == "predict"
-        and row["baseline_transition"] == "C_to_C"
+        if row["original_action"] == "predict" and row["baseline_transition"] == "C_to_C"
     ]
-    candidate_prediction_rows = [
-        row for row in rows if row["candidate_action"] == "predict"
-    ]
+    candidate_prediction_rows = [row for row in rows if row["candidate_action"] == "predict"]
     return {
         "artifact_kind": "gan2026_untagged_nonprediction_release_candidate_summary",
         "policy_name": POLICY_NAME,
@@ -243,15 +230,11 @@ def summarize_release_candidate_rows(
         "release_correct_rows": sum(
             row["candidate_purist_correct"] is True for row in release_rows
         ),
-        "release_wrong_rows": sum(
-            row["candidate_purist_correct"] is False for row in release_rows
-        ),
+        "release_wrong_rows": sum(row["candidate_purist_correct"] is False for row in release_rows),
         "release_transition_counts": dict(
             Counter(str(row["baseline_transition"]) for row in release_rows)
         ),
-        "release_reason_counts": dict(
-            Counter(str(row["router_reason"]) for row in release_rows)
-        ),
+        "release_reason_counts": dict(Counter(str(row["router_reason"]) for row in release_rows)),
         "h6_control_rows": len(h6_controls),
         "h6_control_preserved_rows": sum(
             row["candidate_purist_correct"] is True for row in h6_controls
@@ -285,13 +268,9 @@ def summarize_assembled_candidate_rows(
         and row["original_staged_action"] == "predict"
         and row["baseline_transition"] == "C_to_C"
     ]
-    candidate_prediction_rows = [
-        row for row in rows if row["candidate_action"] == "predict"
-    ]
+    candidate_prediction_rows = [row for row in rows if row["candidate_action"] == "predict"]
     return {
-        "artifact_kind": (
-            "gan2026_untagged_nonprediction_release_candidate_assembled_summary"
-        ),
+        "artifact_kind": ("gan2026_untagged_nonprediction_release_candidate_assembled_summary"),
         "policy_name": POLICY_NAME,
         "candidate_version": f"{POLICY_NAME}_assembled_candidate",
         "split_manifest": _first_nonempty(row.get("split_manifest") for row in rows),
@@ -308,9 +287,7 @@ def summarize_assembled_candidate_rows(
         "release_correct_rows": sum(
             row["candidate_purist_correct"] is True for row in release_rows
         ),
-        "release_wrong_rows": sum(
-            row["candidate_purist_correct"] is False for row in release_rows
-        ),
+        "release_wrong_rows": sum(row["candidate_purist_correct"] is False for row in release_rows),
         "h6_member_rows": len(h6_rows),
         "h6_control_rows": len(h6_controls),
         "h6_control_preserved_rows": sum(
@@ -319,9 +296,7 @@ def summarize_assembled_candidate_rows(
         "h6_control_regression_rows": sum(
             row["candidate_purist_correct"] is not True for row in h6_controls
         ),
-        "component_owner_counts": dict(
-            Counter(str(row["component_owner"]) for row in rows)
-        ),
+        "component_owner_counts": dict(Counter(str(row["component_owner"]) for row in rows)),
         "release_transition_counts": dict(
             Counter(str(row["baseline_transition"]) for row in release_rows)
         ),
@@ -388,8 +363,7 @@ def materialize_release_candidate(
     )
     assembled_output_json_path.parent.mkdir(parents=True, exist_ok=True)
     assembled_output_json_path.write_text(
-        json.dumps(assembled_summary, ensure_ascii=False, indent=2, sort_keys=True)
-        + "\n",
+        json.dumps(assembled_summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     write_report(summary, output_report_path)

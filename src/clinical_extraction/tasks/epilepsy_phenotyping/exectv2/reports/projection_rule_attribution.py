@@ -10,6 +10,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.scoring import PRF1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
     INVESTIGATIONS,
@@ -20,7 +21,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.core.scoring import PRF1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_concept_identity,
     score_entity,
@@ -388,8 +388,7 @@ def build_projection_rule_sidecar(rows: Sequence[Mapping[str, Any]]) -> dict[str
             "single-rule causal ablations, until switches are wired into the adapter."
         ),
         "registry": {
-            rule_id: spec.as_dict()
-            for rule_id, spec in sorted(PROJECTION_RULE_REGISTRY.items())
+            rule_id: spec.as_dict() for rule_id, spec in sorted(PROJECTION_RULE_REGISTRY.items())
         },
         "rules": rules,
         "unknown_projection_warnings": sorted(set(unknown_projection_warnings)),

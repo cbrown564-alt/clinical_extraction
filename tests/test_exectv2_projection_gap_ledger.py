@@ -83,19 +83,31 @@ def test_attribute_bundle_vs_cui_projection_pairing() -> None:
         "L2",
         "note",
         (
-            _ann(PATIENT_HISTORY.name, "depression", Certainty="4", Negation="Affirmed",
-                 CUI="C0011570"),
-            _ann(PATIENT_HISTORY.name, "migraine", Certainty="5", Negation="Affirmed",
-                 CUI="C0149931"),
+            _ann(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="4",
+                Negation="Affirmed",
+                CUI="C0011570",
+            ),
+            _ann(
+                PATIENT_HISTORY.name, "migraine", Certainty="5", Negation="Affirmed", CUI="C0149931"
+            ),
         ),
     )
     prediction = PredictedLetter(
         letter_id="L2",
         mentions=(
-            _pred(PATIENT_HISTORY.name, "depression", Certainty="5", Negation="Affirmed",
-                  CUI="C0011570"),
-            _pred(PATIENT_HISTORY.name, "migraine", Certainty="5", Negation="Affirmed",
-                  CUI="C0149999"),
+            _pred(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+            ),
+            _pred(
+                PATIENT_HISTORY.name, "migraine", Certainty="5", Negation="Affirmed", CUI="C0149999"
+            ),
         ),
     )
 
@@ -125,13 +137,29 @@ def test_full_benchmark_match_emits_no_records() -> None:
     gold = ExectLetter(
         "L3",
         "note",
-        (_ann(PATIENT_HISTORY.name, "depression", Certainty="5", Negation="Affirmed",
-              CUI="C0011570", CUIPhrase="depression"),),
+        (
+            _ann(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+                CUIPhrase="depression",
+            ),
+        ),
     )
     prediction = PredictedLetter(
         letter_id="L3",
-        mentions=(_pred(PATIENT_HISTORY.name, "depression", Certainty="5", Negation="Affirmed",
-                        CUI="C0011570", CUIPhrase="depression"),),
+        mentions=(
+            _pred(
+                PATIENT_HISTORY.name,
+                "depression",
+                Certainty="5",
+                Negation="Affirmed",
+                CUI="C0011570",
+                CUIPhrase="depression",
+            ),
+        ),
     )
 
     records = build_projection_gap_records([gold], [prediction])
@@ -178,9 +206,7 @@ def test_build_ledger_on_dev_split_is_consistent_and_has_rx_families() -> None:
     summary = ledger["summary"]
     totals = summary["totals"]
     # Totals reconcile with the per-entity rollup.
-    assert totals["gold_misses"] == sum(
-        e["gold_misses"] for e in summary["per_entity"].values()
-    )
+    assert totals["gold_misses"] == sum(e["gold_misses"] for e in summary["per_entity"].values())
     assert totals["projection_misses"] + totals["candidate_source_misses"] == totals["gold_misses"]
 
     # Every gold-side record is one of the three FN families; predicted-side is

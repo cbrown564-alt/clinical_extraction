@@ -37,8 +37,13 @@ if str(_EXPERIMENTS_DIR) not in sys.path:
 
 from exectv2_ledger.match_replay import DisagreementCase, replay_clinical_headline  # noqa: E402
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter  # noqa: E402
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as gepa_data  # noqa: E402
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (  # noqa: E402
+    ExectAnnotation,
+    ExectLetter,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import (
+    data as gepa_data,  # noqa: E402
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (  # noqa: E402
     score_investigations_components,
     score_prescription_components,
@@ -75,7 +80,9 @@ def _pred_letters(run_id: str) -> dict[str, ExectLetter]:
             )
             for m in row.get("predicted_mentions", [])
         )
-        letters[row["letter_id"]] = ExectLetter(letter_id=row["letter_id"], note_text="", annotations=anns)
+        letters[row["letter_id"]] = ExectLetter(
+            letter_id=row["letter_id"], note_text="", annotations=anns
+        )
     return letters
 
 
@@ -120,15 +127,23 @@ def analyze_family(entity: str) -> None:
         letter_cases = cases_by_letter.get(letter_id, [])
         missed = [c for c in letter_cases if c.disagreement_type == "missed"]
         spurious = [c for c in letter_cases if c.disagreement_type == "spurious"]
-        index.append({
-            "letter_id": letter_id,
-            "n_missed": len(missed),
-            "n_spurious": len(spurious),
-            "letter_exact": not missed and not spurious,
-        })
+        index.append(
+            {
+                "letter_id": letter_id,
+                "n_missed": len(missed),
+                "n_spurious": len(spurious),
+                "letter_exact": not missed and not spurious,
+            }
+        )
         if letter_cases:
-            write_substrate(out_dir, gold_by_id.get(letter_id), pred_by_letter_id.get(letter_id),
-                             entity, missed, spurious)
+            write_substrate(
+                out_dir,
+                gold_by_id.get(letter_id),
+                pred_by_letter_id.get(letter_id),
+                entity,
+                missed,
+                spurious,
+            )
 
     n_disagreement_letters = sum(1 for rec in index if not rec["letter_exact"])
     summary = {
@@ -147,35 +162,52 @@ def analyze_family(entity: str) -> None:
     (out_dir / "_index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
 
     case_records = []
-    for case_id, case in enumerate(sorted(cases, key=lambda c: (c.letter_id, c.disagreement_type, str(c.match_key))), start=1):
+    for case_id, case in enumerate(
+        sorted(cases, key=lambda c: (c.letter_id, c.disagreement_type, str(c.match_key))), start=1
+    ):
         letter = gold_by_id.get(case.letter_id)
         pred_letter = pred_by_letter_id.get(case.letter_id)
-        case_records.append({
-            "case_id": case_id,
-            "entity": entity,
-            "letter_id": case.letter_id,
-            "disagreement_type": case.disagreement_type,
-            "match_key": repr(case.match_key),
-            "gold_mentions": [_mention_record(a) for a in case.gold_mentions],
-            "pred_mentions": [_mention_record(a) for a in case.pred_mentions],
-            "gold_family_all": [_mention_record(a) for a in (letter.entities(entity) if letter else ())],
-            "pred_family_all": [_mention_record(a) for a in (pred_letter.entities(entity) if pred_letter else ())],
-            "source_letter_text": letter.note_text if letter else "",
-            "mechanism": "UNADJUDICATED",
-            "verdict": "UNADJUDICATED",
-        })
+        case_records.append(
+            {
+                "case_id": case_id,
+                "entity": entity,
+                "letter_id": case.letter_id,
+                "disagreement_type": case.disagreement_type,
+                "match_key": repr(case.match_key),
+                "gold_mentions": [_mention_record(a) for a in case.gold_mentions],
+                "pred_mentions": [_mention_record(a) for a in case.pred_mentions],
+                "gold_family_all": [
+                    _mention_record(a) for a in (letter.entities(entity) if letter else ())
+                ],
+                "pred_family_all": [
+                    _mention_record(a)
+                    for a in (pred_letter.entities(entity) if pred_letter else ())
+                ],
+                "source_letter_text": letter.note_text if letter else "",
+                "mechanism": "UNADJUDICATED",
+                "verdict": "UNADJUDICATED",
+            }
+        )
     (out_dir / "_cases.json").write_text(json.dumps(case_records, indent=2), encoding="utf-8")
 
     print(f"=== CANONICAL {entity.upper()} clinical_headline ANALYSIS ===")
-    print(f"OFFICIAL : P={official.precision:.4f} R={official.recall:.4f} F1={official.f1:.4f} "
-          f"(tp={official.tp} fp={official.fp} fn={official.fn})")
-    print(f"REPLAYED : P={replayed.precision:.4f} R={replayed.recall:.4f} F1={replayed.f1:.4f} "
-          f"(tp={replayed.tp} fp={replayed.fp} fn={replayed.fn})")
+    print(
+        f"OFFICIAL : P={official.precision:.4f} R={official.recall:.4f} F1={official.f1:.4f} "
+        f"(tp={official.tp} fp={official.fp} fn={official.fn})"
+    )
+    print(
+        f"REPLAYED : P={replayed.precision:.4f} R={replayed.recall:.4f} F1={replayed.f1:.4f} "
+        f"(tp={replayed.tp} fp={replayed.fp} fn={replayed.fn})"
+    )
     print(f"decomposition matches official: {decomposition_matches_official}")
-    print(f"disagreement letters: {n_disagreement_letters}/{len(index)}  "
-          f"cases: {len(cases)} ({summary['n_missed']} missed, {summary['n_spurious']} spurious)")
-    print(f"Wrote {len(case_records)} cases + {n_disagreement_letters} letter substrate files + "
-          f"_index.json + _summary.json to {out_dir}\n")
+    print(
+        f"disagreement letters: {n_disagreement_letters}/{len(index)}  "
+        f"cases: {len(cases)} ({summary['n_missed']} missed, {summary['n_spurious']} spurious)"
+    )
+    print(
+        f"Wrote {len(case_records)} cases + {n_disagreement_letters} letter substrate files + "
+        f"_index.json + _summary.json to {out_dir}\n"
+    )
 
 
 def write_substrate(out_dir: Path, gold_letter, pred_letter, entity: str, missed, spurious) -> None:
@@ -187,9 +219,13 @@ def write_substrate(out_dir: Path, gold_letter, pred_letter, entity: str, missed
         f"spurious (FP, predicted key with no matching gold) = {[repr(c.match_key) for c in spurious]}\n",
         f"## GOLD {entity} mentions",
     ]
-    lines += [_mention_line(a) for a in (gold_letter.entities(entity) if gold_letter else ())] or ["(none)"]
+    lines += [_mention_line(a) for a in (gold_letter.entities(entity) if gold_letter else ())] or [
+        "(none)"
+    ]
     lines += ["", f"## PREDICTED {entity} mentions"]
-    lines += [_mention_line(a) for a in (pred_letter.entities(entity) if pred_letter else ())] or ["(none)"]
+    lines += [_mention_line(a) for a in (pred_letter.entities(entity) if pred_letter else ())] or [
+        "(none)"
+    ]
 
     lines += ["", "## MISSED (FN) detail"]
     for case in missed:

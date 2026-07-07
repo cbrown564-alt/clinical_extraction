@@ -128,9 +128,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
         dropped: list[ClinicalFinding] = []
         for finding in recovered.findings:
             current = finding
-            target = sd.diagnosis_convention_target(
-                finding.text, finding.evidence or finding.text
-            )
+            target = sd.diagnosis_convention_target(finding.text, finding.evidence or finding.text)
             if target is not None:
                 current = diagnosis_finding_with_text(
                     finding,

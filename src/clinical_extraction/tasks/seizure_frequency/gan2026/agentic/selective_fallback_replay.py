@@ -63,8 +63,7 @@ def run_selective_fallback_replay(
         for row in rows
     ]
     policy_summaries = {
-        policy: _summarize_policy(replay_rows, policy)
-        for policy in POLICY_ELIGIBILITY
+        policy: _summarize_policy(replay_rows, policy) for policy in POLICY_ELIGIBILITY
     }
     metadata = {
         "artifact_kind": "gan2026_agentic_selective_fallback_replay",
@@ -87,9 +86,7 @@ def run_selective_fallback_replay(
             "rows": len(replay_rows),
             "best_promotable_policy": _best_promotable_policy(policy_summaries),
             "promoted_policy_count": sum(
-                1
-                for summary in policy_summaries.values()
-                if summary["gate_status"] == "promote"
+                1 for summary in policy_summaries.values() if summary["gate_status"] == "promote"
             ),
             "diagnostic_policy_count": sum(
                 1
@@ -289,9 +286,7 @@ def _policy_boundary_coordinator_agree(
     candidate_label = _trace_label(multi_trace)
     fallback_kind = _label_kind(fallback_label)
     candidate_kind = _label_kind(candidate_label)
-    introduces_seizure_free = (
-        candidate_kind == "seizure_free" and fallback_kind != "seizure_free"
-    )
+    introduces_seizure_free = candidate_kind == "seizure_free" and fallback_kind != "seizure_free"
     if (
         boundary_label is not None
         and coordinator_label is not None
@@ -461,8 +456,7 @@ def _score_label(label: str | None, gold_monthly: float) -> dict[str, Any]:
         "purist_correct": map_purist(predicted_monthly) == map_purist(gold_monthly),
         "predicted_pragmatic_category": str(map_pragmatic(predicted_monthly)),
         "gold_pragmatic_category": str(map_pragmatic(gold_monthly)),
-        "pragmatic_correct": map_pragmatic(predicted_monthly)
-        == map_pragmatic(gold_monthly),
+        "pragmatic_correct": map_pragmatic(predicted_monthly) == map_pragmatic(gold_monthly),
     }
 
 
@@ -525,14 +519,11 @@ def _summarize_policy(
         "wrong_to_correct": wrong_to_correct,
         "correct_to_wrong": correct_to_wrong,
         "net_purist_gain": wrong_to_correct - correct_to_wrong,
-        "changed_label_precision": (
-            wrong_to_correct / changed_labels if changed_labels else None
-        ),
+        "changed_label_precision": (wrong_to_correct / changed_labels if changed_labels else None),
         "transition_counts": dict(transition_counts),
         "action_counts": dict(action_counts),
         "kind_transition_counts": {
-            f"{before}->{after}": count
-            for (before, after), count in kind_transition_counts.items()
+            f"{before}->{after}": count for (before, after), count in kind_transition_counts.items()
         },
     }
 

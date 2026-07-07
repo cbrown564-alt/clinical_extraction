@@ -59,7 +59,9 @@ RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 
 MULTISTAGE_COMPARATORS = {
     "dev140_hand_tuned_single_prompt_headline": {
-        "gpt-4.1-mini": 0.710, "deepseek-chat": 0.745, "qwen3.6-35b": 0.694
+        "gpt-4.1-mini": 0.710,
+        "deepseek-chat": 0.745,
+        "qwen3.6-35b": 0.694,
     },
     "dev140_v08_hybrid_headline": 0.9155,
     "dev140_per_family_gepa_ceiling": 0.731,
@@ -72,10 +74,19 @@ SF_VERIFY_COMPARATORS = {
 
 
 def _multistage_entry() -> RunRegistryEntry:
-    payload = json.loads((EXPERIMENTS / "exectv2_gepa_multistage_dedup_gpt41mini_20260628.json").read_text(encoding="utf-8"))
+    payload = json.loads(
+        (EXPERIMENTS / "exectv2_gepa_multistage_dedup_gpt41mini_20260628.json").read_text(
+            encoding="utf-8"
+        )
+    )
     h = payload["final_eval"]["clinical_headline"]
     run_id = payload["run_id"]
-    artifact_names = [f"{run_id}.json", f"{run_id}.md", f"{run_id}.jsonl", f"{run_id}.instruction.txt"]
+    artifact_names = [
+        f"{run_id}.json",
+        f"{run_id}.md",
+        f"{run_id}.jsonl",
+        f"{run_id}.instruction.txt",
+    ]
     return RunRegistryEntry(
         run_id=run_id,
         artifact_paths=tuple(f"experiments/{name}" for name in artifact_names),
@@ -140,7 +151,11 @@ def _sf_verify_entry(run_id: str, date: str) -> RunRegistryEntry:
     opt = payload["optimized"]
     seed = payload["seed"]
     artifact_names = [f"{run_id}.json", f"{run_id}.jsonl", f"{run_id}.instruction.txt"]
-    task_model = payload.get("model") or payload.get("verify_model") or payload.get("extraction_model", "unknown")
+    task_model = (
+        payload.get("model")
+        or payload.get("verify_model")
+        or payload.get("extraction_model", "unknown")
+    )
     reflection_model = payload["reflection_model"]
     metrics = {
         "clinical_headline_f1": opt["clinical_headline_f1"],
@@ -149,7 +164,12 @@ def _sf_verify_entry(run_id: str, date: str) -> RunRegistryEntry:
         "seed_state_profile_f1": seed["state_profile_f1"],
         "instruction_tokens": payload["instruction_tokens"],
     }
-    for key in ("state_profile_precision", "state_profile_recall", "changed_precision", "changed_recall"):
+    for key in (
+        "state_profile_precision",
+        "state_profile_recall",
+        "changed_precision",
+        "changed_recall",
+    ):
         if key in opt:
             metrics[key] = opt[key]
     model_role = (

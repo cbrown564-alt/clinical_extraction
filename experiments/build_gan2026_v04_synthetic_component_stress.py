@@ -14,14 +14,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    consensus_fresh_agreement_selector as selector,
-)
 from clinical_extraction.core.registry import (
     RunRegistryEntry,
     load_run_registry,
     validate_run_registry_artifacts,
     write_run_registry,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
+    consensus_fresh_agreement_selector as selector,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,
@@ -36,10 +36,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
-RUN_ID = (
-    "gan2026_consensus_fresh_agreement_selector_v0_4_"
-    "synthetic_component_stress_2026-06-15"
-)
+RUN_ID = "gan2026_consensus_fresh_agreement_selector_v0_4_synthetic_component_stress_2026-06-15"
 JSON_PATH = EXPERIMENTS / f"{RUN_ID}.json"
 MD_PATH = EXPERIMENTS / f"{RUN_ID}.md"
 REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
@@ -95,8 +92,7 @@ CASES: tuple[StressCase, ...] = (
         case_id="same_cadence_burden_refinement",
         family="cluster_cadence",
         note_text=(
-            "There are 2 to 3 clusters per month and each cluster contains about "
-            "5 seizures."
+            "There are 2 to 3 clusters per month and each cluster contains about 5 seizures."
         ),
         gold_label="2 to 3 cluster per month, 5 per cluster",
         deterministic_label="2 to 3 cluster per month, multiple per cluster",
@@ -109,10 +105,7 @@ CASES: tuple[StressCase, ...] = (
     StressCase(
         case_id="plain_monthly_to_cluster_weekly",
         family="cluster_cadence",
-        note_text=(
-            "Mother reports one cluster each week, usually 2 to 3 seizures in "
-            "the cluster."
-        ),
+        note_text=("Mother reports one cluster each week, usually 2 to 3 seizures in the cluster."),
         gold_label="1 cluster per week, 2 to 3 per cluster",
         deterministic_label="2 per month",
         consensus_label="1 cluster per week, 2 to 3 per cluster",
@@ -203,8 +196,7 @@ CASES: tuple[StressCase, ...] = (
         case_id="seizure_free_replacement_suppressed",
         family="seizure_free_boundary",
         note_text=(
-            "She averages two seizures per month; the older seizure-free period "
-            "has resolved."
+            "She averages two seizures per month; the older seizure-free period has resolved."
         ),
         gold_label="2 per month",
         deterministic_label="2 per month",
@@ -264,8 +256,7 @@ CASES: tuple[StressCase, ...] = (
         expected_v04_action="accept_consensus_fresh_agreement",
         desired_future_action="accept_consensus_fresh_agreement",
         rationale=(
-            "The selected current burden should follow the highest current "
-            "seizure frequency."
+            "The selected current burden should follow the highest current seizure frequency."
         ),
     ),
     StressCase(
@@ -295,10 +286,7 @@ CASES: tuple[StressCase, ...] = (
     StressCase(
         case_id="same_day_cluster_demotion_category_neutral",
         family="cluster_cadence",
-        note_text=(
-            "Every five days she has a cluster with 2 to 4 seizures in that "
-            "cluster."
-        ),
+        note_text=("Every five days she has a cluster with 2 to 4 seizures in that cluster."),
         gold_label="1 cluster per 5 day, 2 to 4 per cluster",
         deterministic_label="1 cluster per 5 day, 2 to 4 per cluster",
         consensus_label="1 per 5 day",
@@ -311,8 +299,7 @@ CASES: tuple[StressCase, ...] = (
         case_id="explicit_followup_from_unknown",
         family="unknown_boundary",
         note_text=(
-            "Since the medication change three months ago, exactly three "
-            "seizures are documented."
+            "Since the medication change three months ago, exactly three seizures are documented."
         ),
         gold_label="3 per month",
         deterministic_label="unknown",
@@ -321,8 +308,7 @@ CASES: tuple[StressCase, ...] = (
         expected_v04_action="keep_deterministic_baseline",
         desired_future_action="accept_consensus_fresh_agreement",
         rationale=(
-            "Another explicit count-window case exposes the conservative "
-            "unknown-origin cost."
+            "Another explicit count-window case exposes the conservative unknown-origin cost."
         ),
     ),
     StressCase(
@@ -364,9 +350,7 @@ def main() -> None:
                 "source_row_index": source_row_index,
                 "final_label": case.deterministic_label,
                 "comparison": {
-                    "purist_correct": _purist_correct(
-                        case.deterministic_label, case.gold_label
-                    )
+                    "purist_correct": _purist_correct(case.deterministic_label, case.gold_label)
                 },
                 "reference": {
                     "gold_label": case.gold_label,
@@ -380,9 +364,7 @@ def main() -> None:
                 "source_row_index": source_row_index,
                 "consensus_final_label": case.consensus_label,
                 "consensus_comparison": {
-                    "purist_correct": _purist_correct(
-                        case.consensus_label, case.gold_label
-                    )
+                    "purist_correct": _purist_correct(case.consensus_label, case.gold_label)
                 },
                 "consensus_decision": {"reason": "synthetic_predeclared_case"},
             }
@@ -399,9 +381,7 @@ def main() -> None:
                 "score_layers": {
                     "final": {
                         "comparison": {
-                            "purist_correct": _purist_correct(
-                                case.fresh_label, case.gold_label
-                            )
+                            "purist_correct": _purist_correct(case.fresh_label, case.gold_label)
                         }
                     }
                 },
@@ -420,12 +400,8 @@ def main() -> None:
         source_row_index = 900000 + offset
         row = dict(by_index[source_row_index])
         row["synthetic_case"] = _case_record(case)
-        row["expected_v04_action_match"] = (
-            row["selector_action"] == case.expected_v04_action
-        )
-        row["desired_future_action_match"] = (
-            row["selector_action"] == case.desired_future_action
-        )
+        row["expected_v04_action_match"] = row["selector_action"] == case.expected_v04_action
+        row["desired_future_action_match"] = row["selector_action"] == case.desired_future_action
         row["gold_band"] = boundary_band(_monthly_frequency(case.gold_label))
         enriched_rows.append(row)
 
@@ -502,8 +478,7 @@ def _stress_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             row["score_layers"]["consensus"]["comparison"]["purist_correct"] is True
         )
         families[family]["fresh_purist_correct"] += int(
-            row["score_layers"]["fresh_evidence"]["comparison"]["purist_correct"]
-            is True
+            row["score_layers"]["fresh_evidence"]["comparison"]["purist_correct"] is True
         )
         families[family]["expected_v04_action_matches"] += int(
             row["expected_v04_action_match"] is True
@@ -511,15 +486,9 @@ def _stress_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         families[family]["desired_future_action_matches"] += int(
             row["desired_future_action_match"] is True
         )
-        det_correct = row["score_layers"]["deterministic"]["comparison"][
-            "purist_correct"
-        ] is True
-        consensus_correct = row["score_layers"]["consensus"]["comparison"][
-            "purist_correct"
-        ] is True
-        selected_correct = row["score_layers"]["selected"]["comparison"][
-            "purist_correct"
-        ] is True
+        det_correct = row["score_layers"]["deterministic"]["comparison"]["purist_correct"] is True
+        consensus_correct = row["score_layers"]["consensus"]["comparison"]["purist_correct"] is True
+        selected_correct = row["score_layers"]["selected"]["comparison"]["purist_correct"] is True
         if not det_correct and consensus_correct and not selected_correct:
             false_negatives.append(case["case_id"])
         if det_correct and not consensus_correct and selected_correct:
@@ -537,16 +506,14 @@ def _stress_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             for row in rows
         ),
         "consensus_purist_correct": sum(
-            row["score_layers"]["consensus"]["comparison"]["purist_correct"] is True
-            for row in rows
+            row["score_layers"]["consensus"]["comparison"]["purist_correct"] is True for row in rows
         ),
         "fresh_purist_correct": sum(
             row["score_layers"]["fresh_evidence"]["comparison"]["purist_correct"] is True
             for row in rows
         ),
         "selected_purist_correct": sum(
-            row["score_layers"]["selected"]["comparison"]["purist_correct"] is True
-            for row in rows
+            row["score_layers"]["selected"]["comparison"]["purist_correct"] is True for row in rows
         ),
         "expected_v04_action_matches": sum(
             row["expected_v04_action_match"] is True for row in rows
@@ -650,9 +617,7 @@ def _markdown_report(payload: dict[str, Any]) -> str:
     )
     for row in payload["rows"]:
         case = row["synthetic_case"]
-        selected_correct = row["score_layers"]["selected"]["comparison"][
-            "purist_correct"
-        ]
+        selected_correct = row["score_layers"]["selected"]["comparison"]["purist_correct"]
         lines.append(
             f"| `{case['case_id']}` | `{case['family']}` | "
             f"`{case['gold_label']}` | `{case['deterministic_label']}` | "
@@ -690,9 +655,7 @@ def _markdown_report(payload: dict[str, Any]) -> str:
 
 
 def _register(summary: dict[str, Any]) -> None:
-    entries = [
-        entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID
-    ]
+    entries = [entry for entry in load_run_registry(REGISTRY_PATH) if entry.run_id != RUN_ID]
     entry = RunRegistryEntry(
         run_id=RUN_ID,
         artifact_paths=(
@@ -715,20 +678,12 @@ def _register(summary: dict[str, Any]) -> None:
         cache_reuse_source="Synthetic hand-specified component outputs only.",
         primary_metrics={
             "rows": summary["rows"],
-            "deterministic_purist_correct": summary[
-                "deterministic_purist_correct"
-            ],
-            "consensus_purist_correct": summary[
-                "consensus_purist_correct"
-            ],
+            "deterministic_purist_correct": summary["deterministic_purist_correct"],
+            "consensus_purist_correct": summary["consensus_purist_correct"],
             "fresh_purist_correct": summary["fresh_purist_correct"],
             "selected_purist_correct": summary["selected_purist_correct"],
-            "expected_v04_action_matches": summary[
-                "expected_v04_action_matches"
-            ],
-            "desired_future_action_matches": summary[
-                "desired_future_action_matches"
-            ],
+            "expected_v04_action_matches": summary["expected_v04_action_matches"],
+            "desired_future_action_matches": summary["desired_future_action_matches"],
             "false_negative_count": len(summary["false_negative_case_ids"]),
             "safety_success_count": len(summary["safety_success_case_ids"]),
         },
@@ -738,9 +693,7 @@ def _register(summary: dict[str, Any]) -> None:
             "mapping; no validation or holdout records are read."
         ),
         decision="revise",
-        supersedes=(
-            "gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15",
-        ),
+        supersedes=("gan2026_consensus_fresh_agreement_selector_v0_4_hard_slice_audit_2026-06-15",),
         claim_language_notes=(
             "Predeclared synthetic component-stress probe for selector v0.4. "
             "Supports the cluster-cadence and unknown-boundary mechanics, exposes "

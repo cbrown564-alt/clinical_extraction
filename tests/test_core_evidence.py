@@ -66,9 +66,7 @@ def test_repair_evidence_text_if_source_exact_repairs_header_with_numbered_item(
         "\t\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess\n\n"
         "Medication:\tLevetiracetam 1000mg bd"
     )
-    evidence = (
-        "Diagnosis\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess"
-    )
+    evidence = "Diagnosis\t2. Symptomatic structural epilepsy secondary to previous cerebral abcess"
 
     repaired = repair_evidence_text_if_source_exact(evidence, note_text)
 

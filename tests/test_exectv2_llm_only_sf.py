@@ -76,21 +76,23 @@ def test_prompt_hygiene_no_internal_vocabulary(name: str, builder) -> None:
 
 
 def test_parse_valid_json_returns_extraction_record() -> None:
-    raw = json.dumps({
-        "mentions": [
-            {
-                "text": "2 seizures per month",
-                "attributes": {
-                    "NumberOfSeizures": "2",
-                    "NumberOfTimePeriods": "1",
-                    "TimePeriod": "Month",
-                },
-                "evidence": "2 seizures per month",
-                "confidence": "high",
-                "rationale": "The note states 2 seizures per month.",
-            }
-        ]
-    })
+    raw = json.dumps(
+        {
+            "mentions": [
+                {
+                    "text": "2 seizures per month",
+                    "attributes": {
+                        "NumberOfSeizures": "2",
+                        "NumberOfTimePeriods": "1",
+                        "TimePeriod": "Month",
+                    },
+                    "evidence": "2 seizures per month",
+                    "confidence": "high",
+                    "rationale": "The note states 2 seizures per month.",
+                }
+            ]
+        }
+    )
     record, errors = parse_extraction_json(raw)
     assert record is not None
     assert len(record.mentions) == 1
@@ -121,17 +123,19 @@ def test_parse_missing_mentions_key_defaults_to_empty() -> None:
 
 
 def test_parse_numeric_attribute_values_are_coerced_to_strings() -> None:
-    raw = json.dumps({
-        "mentions": [
-            {
-                "text": "2 per month",
-                "attributes": {"NumberOfSeizures": 2, "NumberOfTimePeriods": 1},
-                "evidence": "2 per month",
-                "confidence": "high",
-                "rationale": "Two per month.",
-            }
-        ]
-    })
+    raw = json.dumps(
+        {
+            "mentions": [
+                {
+                    "text": "2 per month",
+                    "attributes": {"NumberOfSeizures": 2, "NumberOfTimePeriods": 1},
+                    "evidence": "2 per month",
+                    "confidence": "high",
+                    "rationale": "Two per month.",
+                }
+            ]
+        }
+    )
     record, errors = parse_extraction_json(raw)
     assert record is not None
     assert record.mentions[0].attributes["NumberOfSeizures"] == "2"
@@ -155,15 +159,17 @@ def test_parse_repairs_python_literal_payload() -> None:
 
 
 def test_parse_coerces_top_level_mention_array() -> None:
-    raw = json.dumps([
-        {
-            "text": "focal seizures",
-            "attributes": {"Certainty": "5"},
-            "evidence": "focal seizures",
-            "confidence": "high",
-            "rationale": "Directly stated.",
-        }
-    ])
+    raw = json.dumps(
+        [
+            {
+                "text": "focal seizures",
+                "attributes": {"Certainty": "5"},
+                "evidence": "focal seizures",
+                "confidence": "high",
+                "rationale": "Directly stated.",
+            }
+        ]
+    )
 
     record, errors = parse_extraction_json(raw)
 
@@ -175,7 +181,7 @@ def test_parse_coerces_top_level_mention_array() -> None:
 def test_recovers_raw_payload_from_adapter_parse_error() -> None:
     error = (
         "AdapterParseError: Adapter JSONAdapter failed to parse the LM response.\n\n"
-        "LM Response: {\"mentions\": []} \n\n"
+        'LM Response: {"mentions": []} \n\n'
         "Expected to find output fields in the LM response: [extraction_json]"
     )
 
@@ -293,7 +299,7 @@ def test_check_evidence_empty_evidence_is_dropped() -> None:
 def test_check_evidence_mixed_batch() -> None:
     mentions = [
         _make_mention("2 seizures per month", "2 seizures per month"),  # valid
-        _make_mention("ghost phrase", "ghost phrase"),                  # invalid
+        _make_mention("ghost phrase", "ghost phrase"),  # invalid
         _make_mention("seizure free for 3 months", "seizure free for 3 months"),  # valid
     ]
     valid, invalid, _ = check_evidence(mentions, note_text=_NOTE)
@@ -314,9 +320,7 @@ def test_to_predicted_letter_produces_correct_shape() -> None:
             rationale="Stated directly.",
         )
     ]
-    letter, warnings = to_predicted_letter(
-        "TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE
-    )
+    letter, warnings = to_predicted_letter("TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE)
     assert letter.letter_id == "TEST001"
     assert len(letter.mentions) == 1
     m = letter.mentions[0]
@@ -344,9 +348,7 @@ def test_to_predicted_letter_drops_evidence_invalid_mentions() -> None:
             rationale="bad",
         ),
     ]
-    letter, warnings = to_predicted_letter(
-        "TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE
-    )
+    letter, warnings = to_predicted_letter("TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE)
     assert len(letter.mentions) == 1
     assert letter.mentions[0].text == "valid phrase"
     assert any("dropped" in w for w in warnings)
@@ -362,9 +364,7 @@ def test_to_predicted_letter_strips_illegal_attributes() -> None:
             rationale="ok",
         )
     ]
-    letter, warnings = to_predicted_letter(
-        "TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE
-    )
+    letter, warnings = to_predicted_letter("TEST001", mentions, spec=_SF_SPEC, note_text=_NOTE)
     assert len(letter.mentions) == 1
     assert "BadAttr" not in letter.mentions[0].attributes
     assert any("dropped_illegal_attribute" in w for w in warnings)
@@ -382,16 +382,11 @@ def test_to_predicted_letter_projects_known_cuis_after_schema_gate() -> None:
         )
     ]
 
-    letter, warnings = to_predicted_letter(
-        "TEST001", mentions, spec=_SF_SPEC, note_text=note
-    )
+    letter, warnings = to_predicted_letter("TEST001", mentions, spec=_SF_SPEC, note_text=note)
 
     assert warnings == []
     assert letter.mentions[0].attributes["CUI"] == "C0270834"
-    assert (
-        letter.mentions[0].attributes["CUIPhrase"]
-        == "focal seizures with impaired awareness"
-    )
+    assert letter.mentions[0].attributes["CUIPhrase"] == "focal seizures with impaired awareness"
     assert letter.diagnostics["cui_projected_mentions"] == 1
 
 

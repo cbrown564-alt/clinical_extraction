@@ -32,7 +32,9 @@ OUT_MD = rc.EXPERIMENTS / "gan2026_reliability_p0_6_safety_table_2026-06-17.md"
 
 def transition_floor(path) -> dict[str, Any]:
     rows = rc.load_jsonl(path)
-    t = collections.Counter((r.get("transition_vs_v0") or {}).get("purist_transition") for r in rows)
+    t = collections.Counter(
+        (r.get("transition_vs_v0") or {}).get("purist_transition") for r in rows
+    )
     changed = sum(1 for r in rows if (r.get("transition_vs_v0") or {}).get("label_changed"))
     return {
         "rows": len(rows),
@@ -133,8 +135,10 @@ def main() -> None:
     OUT_MD.write_text(render_md(result), encoding="utf-8")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
-    print(f"  V12 reasoner C->W: validation {val['correct_to_wrong']}, test {test['correct_to_wrong']}")
-    print(f"  selective floor: 0 C->W (cited RQ6)")
+    print(
+        f"  V12 reasoner C->W: validation {val['correct_to_wrong']}, test {test['correct_to_wrong']}"
+    )
+    print("  selective floor: 0 C->W (cited RQ6)")
 
 
 def render_md(result: dict[str, Any]) -> str:

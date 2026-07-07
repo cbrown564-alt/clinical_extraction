@@ -33,8 +33,7 @@ def _build_parser() -> argparse.ArgumentParser:
 def _auto_path(suffix: str) -> Path:
     today = date.today().isoformat().replace("-", "")
     return (
-        Path("experiments")
-        / f"exectv2_llm_investigations_arbitration_v02_dev140_{today}.{suffix}"
+        Path("experiments") / f"exectv2_llm_investigations_arbitration_v02_dev140_{today}.{suffix}"
     )
 
 
@@ -51,9 +50,13 @@ def main() -> None:
         jsonl_path=jsonl_path,
         report_path=report_path,
     )
-    clinical = metadata.get("summary", {}).get("clinical_recovery", {}).get(
-        "investigations",
-        {},
+    clinical = (
+        metadata.get("summary", {})
+        .get("clinical_recovery", {})
+        .get(
+            "investigations",
+            {},
+        )
     )
     print(f"Done. JSONL: {jsonl_path}  Report: {report_path}", flush=True)
     print(

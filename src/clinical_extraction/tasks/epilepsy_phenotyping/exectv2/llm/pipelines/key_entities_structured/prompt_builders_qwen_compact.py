@@ -26,6 +26,7 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
     event frame per clinically supported fact.
     """
 
+
 def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
     """Build a shorter Qwen-oriented event-frame prompt.
 
@@ -54,8 +55,7 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                     "mentions": [
                         {
                             "entity": (
-                                "Prescription | Diagnosis | SeizureFrequency | "
-                                "Investigations"
+                                "Prescription | Diagnosis | SeizureFrequency | Investigations"
                             ),
                             "text": "short source-near scoring text",
                             "attributes": "legal attributes only; omit CUI/CUIPhrase",
@@ -275,7 +275,7 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
                 "night doses, and bracketed regimen fragments like '200mg BD'."
             ),
             "Do not invent CUI values; omit CUI and CUIPhrase.",
-            "If no requested findings are present, return {\"clinical_events\": []}.",
+            'If no requested findings are present, return {"clinical_events": []}.',
         ],
         "worked_examples": _qwen_compact_examples(),
         "letter_id": letter.letter_id,

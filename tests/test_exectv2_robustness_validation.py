@@ -10,9 +10,7 @@ def test_robustness_validation_promotes_aggregate_current_code_surface() -> None
 
     assert audit["surface"] == "rich-schema holistic assembly reliability scorecard"
     assert audit["eligible_validation_artifacts"] == 1
-    assert audit["stop_rule_outcome"]["status"] == (
-        "completed_current_code_surface_validation"
-    )
+    assert audit["stop_rule_outcome"]["status"] == ("completed_current_code_surface_validation")
     assert audit["stop_rule_outcome"]["validation_run_executed"] is True
     assert audit["stop_rule_outcome"]["promotion_decision"] == "promoted"
 
@@ -24,8 +22,7 @@ def test_robustness_validation_promotes_aggregate_current_code_surface() -> None
     assert validation["evidence_validity_rate"] == 1.0
 
     by_perturbation = {
-        row["perturbation_family"]: row
-        for row in validation["by_perturbation_family"]
+        row["perturbation_family"]: row for row in validation["by_perturbation_family"]
     }
     assert by_perturbation["sf_current_vs_historical"]["cells"] > 0
     assert by_perturbation["sf_current_vs_future"]["cells"] > 0

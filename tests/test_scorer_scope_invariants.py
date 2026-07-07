@@ -46,9 +46,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.prescription
 
 # An unrelated trailing sentence — text that is genuinely outside every fact's
 # own clause. No family's headline key may react to it.
-_OUT_OF_SCOPE_SENTENCE = (
-    " The patient will be reviewed again in six months in the epilepsy clinic."
-)
+_OUT_OF_SCOPE_SENTENCE = " The patient will be reviewed again in six months in the epilepsy clinic."
 
 
 def _ann(entity: str, text: str, **attrs: str) -> ExectAnnotation:
@@ -204,12 +202,20 @@ def test_prefix_full_span_behavior_would_have_flipped_membership() -> None:
 
     # Current clause-scoped behavior: the perturbation is inert (no flip).
     future_clean_ann = _ann(
-        "Prescription", clean_future, DrugName="Lamotrigine",
-        DrugDose="150", DoseUnit="mg", Frequency="2",
+        "Prescription",
+        clean_future,
+        DrugName="Lamotrigine",
+        DrugDose="150",
+        DoseUnit="mg",
+        Frequency="2",
     )
     future_pert_ann = _ann(
-        "Prescription", perturbed_future, DrugName="Lamotrigine",
-        DrugDose="150", DoseUnit="mg", Frequency="2",
+        "Prescription",
+        perturbed_future,
+        DrugName="Lamotrigine",
+        DrugDose="150",
+        DoseUnit="mg",
+        Frequency="2",
     )
     assert _is_future_medication(future_clean_ann) is False
     assert _is_future_medication(future_pert_ann) is False

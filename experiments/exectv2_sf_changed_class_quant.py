@@ -6,6 +6,7 @@ For every changed-involved letter, compute:
     (within ADJ chars) -> the deterministic-whitelist-recoverable signal
   - whether a change lexeme occurs anywhere in the note (weaker)
 """
+
 from __future__ import annotations
 
 import json
@@ -79,13 +80,26 @@ def main() -> None:
             verdict = "FP"
         else:
             verdict = "FN"
-        gold_fc = [str(e.attributes.get("FrequencyChange", "")) for e in gold_sf
-                   if e.attributes.get("FrequencyChange")]
-        pred_fc = [str(m.get("attributes", {}).get("FrequencyChange", "")) for m in pred_sf
-                   if m.get("attributes", {}).get("FrequencyChange")]
+        gold_fc = [
+            str(e.attributes.get("FrequencyChange", ""))
+            for e in gold_sf
+            if e.attributes.get("FrequencyChange")
+        ]
+        pred_fc = [
+            str(m.get("attributes", {}).get("FrequencyChange", ""))
+            for m in pred_sf
+            if m.get("attributes", {}).get("FrequencyChange")
+        ]
         adj = adjacent_change_lexeme(g.note_text)
-        rows.append({"lid": lid, "verdict": verdict, "gold_fc": gold_fc, "pred_fc": pred_fc,
-                     "adj_lexeme": sorted(set(adj))})
+        rows.append(
+            {
+                "lid": lid,
+                "verdict": verdict,
+                "gold_fc": gold_fc,
+                "pred_fc": pred_fc,
+                "adj_lexeme": sorted(set(adj)),
+            }
+        )
 
     rows.sort(key=lambda r: (r["verdict"], r["lid"]))
 
@@ -101,8 +115,10 @@ def main() -> None:
     for v in ("FP", "FN", "TP"):
         vr = [r for r in rows if r["verdict"] == v]
         adj_yes = sum(1 for r in vr if r["adj_lexeme"])
-        print(f"\n{v} (n={len(vr)}): adjacent change-lexeme present in {adj_yes}/{len(vr)} "
-              f"({adj_yes/len(vr)*100:.0f}%)")
+        print(
+            f"\n{v} (n={len(vr)}): adjacent change-lexeme present in {adj_yes}/{len(vr)} "
+            f"({adj_yes / len(vr) * 100:.0f}%)"
+        )
         if v == "FP":
             fc = Counter(x for r in vr for x in r["pred_fc"])
             print(f"   pred FC composition: {dict(fc)}")

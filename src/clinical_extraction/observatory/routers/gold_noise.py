@@ -74,9 +74,7 @@ def _settings(request: Request) -> ObservatorySettings:
 
 
 def _ledger_path(settings: ObservatorySettings, key: str) -> Path:
-    return resolve_under_root(
-        settings.repo_root, Path(f"experiments/gold_case_ledger_{key}.jsonl")
-    )
+    return resolve_under_root(settings.repo_root, Path(f"experiments/gold_case_ledger_{key}.jsonl"))
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -192,8 +190,9 @@ def gold_noise_row(
     spec = next((s for s in FAMILIES if s["family"] == family), None)
     if spec is None:
         raise HTTPException(
-            status_code=404, detail=f"Unknown family: {family!r}. "
-            f"Expected one of {[s['family'] for s in FAMILIES]}."
+            status_code=404,
+            detail=f"Unknown family: {family!r}. "
+            f"Expected one of {[s['family'] for s in FAMILIES]}.",
         )
     rows = _read_jsonl(_ledger_path(settings, spec["key"]))
     record = next((row for row in rows if row.get("row_id") == row_id), None)
@@ -213,6 +212,4 @@ def gold_noise_hypotheses(request: Request) -> GoldNoiseHypothesesResponse:
     by_family: dict[str, list[dict[str, Any]]] = {}
     for entry in entries:
         by_family.setdefault(str(entry.get("family", "cross_family")), []).append(entry)
-    return GoldNoiseHypothesesResponse(
-        count=len(entries), by_family=by_family, entries=entries
-    )
+    return GoldNoiseHypothesesResponse(count=len(entries), by_family=by_family, entries=entries)

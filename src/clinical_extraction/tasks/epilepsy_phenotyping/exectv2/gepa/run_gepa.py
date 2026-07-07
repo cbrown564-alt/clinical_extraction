@@ -73,7 +73,12 @@ REGISTRY_PATH = EXPERIMENTS / "registry.jsonl"
 RUN_INDEX_PATH = EXPERIMENTS / "RUN_INDEX.md"
 GEPA_LOG_ROOT = EXPERIMENTS / "gepa_overnight_exectv2"
 
-KEY_ENTITY_NAMES: tuple[str, ...] = ("Prescription", "Diagnosis", "SeizureFrequency", "Investigations")
+KEY_ENTITY_NAMES: tuple[str, ...] = (
+    "Prescription",
+    "Diagnosis",
+    "SeizureFrequency",
+    "Investigations",
+)
 #: The hand-tuned single-prompt de-dup plateau (plan 13) and the v08 hybrid control,
 #: recorded so every report frames the GEPA number against what it must beat.
 DEV140_HAND_TUNED_HEADLINE = {"gpt-4.1-mini": 0.710, "deepseek-chat": 0.745, "qwen3.6-35b": 0.694}
@@ -144,9 +149,13 @@ def _canonical_headline(
 
     scores = {
         "Prescription": score_prescription_components(gold_letters, pred_letters).clinical_headline,
-        "Diagnosis": score_concept_identity(gold_letters, pred_letters, "Diagnosis").concept_negation,
+        "Diagnosis": score_concept_identity(
+            gold_letters, pred_letters, "Diagnosis"
+        ).concept_negation,
         "SeizureFrequency": score_frequency_state(gold_letters, pred_letters).clinical_headline,
-        "Investigations": score_investigations_components(gold_letters, pred_letters).clinical_headline,
+        "Investigations": score_investigations_components(
+            gold_letters, pred_letters
+        ).clinical_headline,
     }
     precision_tp = recall_tp = pred_count = gold_count = 0
     per_family: dict[str, float] = {}
@@ -176,7 +185,9 @@ def _evidence_recall(
     more?", independent of keying. GEPA per-family baseline 0.694; v08 hybrid 0.883.
     """
 
-    diag = source_near_diagnostic(gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for)
+    diag = source_near_diagnostic(
+        gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for
+    )
     return {
         "overall_recall": round(diag.overall.overlap.recall, 4),
         "per_family": {
@@ -238,8 +249,12 @@ def _evaluate_program(
         )
 
     headline = _canonical_headline(gold_letters, pred_letters)
-    strict = score_overall(gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for).per_item
-    semantic = score_overall(gold_letters, pred_letters, KEY_ENTITY_NAMES, semantic_config_for).per_item
+    strict = score_overall(
+        gold_letters, pred_letters, KEY_ENTITY_NAMES, benchmark_config_for
+    ).per_item
+    semantic = score_overall(
+        gold_letters, pred_letters, KEY_ENTITY_NAMES, semantic_config_for
+    ).per_item
     evidence_recall = _evidence_recall(gold_letters, pred_letters)
     summary = {
         "letters": len(rows),

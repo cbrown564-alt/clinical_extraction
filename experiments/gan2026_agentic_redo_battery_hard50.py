@@ -12,6 +12,7 @@ Usage:
     python experiments/gan2026_agentic_redo_battery_hard50.py --stage run
     python experiments/gan2026_agentic_redo_battery_hard50.py --stage report
 """
+
 from __future__ import annotations
 
 import argparse
@@ -123,9 +124,7 @@ def _build_battery_record(panel: str, case: dict[str, Any]) -> GanFrequencyRecor
 def load_battery() -> list[GanFrequencyRecord]:
     payload = json.loads(BATTERY_CASES_PATH.read_text(encoding="utf-8"))
     panels = payload["panels"]
-    records = [
-        _build_battery_record(panel, case) for panel in PANELS for case in panels[panel]
-    ]
+    records = [_build_battery_record(panel, case) for panel in PANELS for case in panels[panel]]
     assert len(records) == 27, f"expected 27 battery cases, got {len(records)}"
     return records
 
@@ -173,7 +172,11 @@ def _placeholder_decision(final_label: str) -> LlmOnlyDirectLabelerDecisionRecor
 
 
 def _temperature_for(condition: str) -> float:
-    return SELF_CONSISTENCY_TEMPERATURE if condition == "single_self_consistency_temperature" else DEFAULT_TEMPERATURE
+    return (
+        SELF_CONSISTENCY_TEMPERATURE
+        if condition == "single_self_consistency_temperature"
+        else DEFAULT_TEMPERATURE
+    )
 
 
 def _configure_lm_for_condition(condition: str) -> None:
@@ -306,7 +309,11 @@ def run_stage() -> None:
 
 
 def report_stage() -> None:
-    rows = [json.loads(line) for line in RESULTS_JSONL.read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in RESULTS_JSONL.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
     by_panel_condition: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
@@ -324,9 +331,9 @@ def report_stage() -> None:
     lines.append("## Condition-Final Accuracy")
     lines.append("")
     lines.append(
-        "\"True failures\" = no usable answer produced at all (call error or "
+        '"True failures" = no usable answer produced at all (call error or '
         "unparseable/missing final_label) -- this is the reliability-relevant "
-        "failure metric. \"Repair rate\" = the schema/label repair layer fixed a "
+        'failure metric. "Repair rate" = the schema/label repair layer fixed a '
         "format issue but still produced a scored answer -- informative, not a "
         "failure (see predeclaration's evidence/schema-validity reporting "
         "requirement)."
@@ -352,7 +359,9 @@ def report_stage() -> None:
             repairs = sum(
                 1
                 for r in panel_rows
-                if not r.get("call_error") and r.get("final_label") is not None and r.get("parse_errors")
+                if not r.get("call_error")
+                and r.get("final_label") is not None
+                and r.get("parse_errors")
             )
             lines.append(
                 f"| {panel_source} | {condition} | {purist_correct}/{n} | {pragmatic_correct}/{n} | "
@@ -372,7 +381,9 @@ def report_stage() -> None:
     lines.append("| Candidate | Comparator | Wins | Losses | Both correct | Both wrong |")
     lines.append("| --- | --- | ---: | ---: | ---: | ---: |")
 
-    def win_loss(candidate: str, comparator: str, panel_source: str = "hard50") -> tuple[int, int, int, int]:
+    def win_loss(
+        candidate: str, comparator: str, panel_source: str = "hard50"
+    ) -> tuple[int, int, int, int]:
         cand_by_row = {
             r["source_row_index"]: r for r in by_panel_condition.get((panel_source, candidate), [])
         }
@@ -420,7 +431,9 @@ def report_stage() -> None:
         f"wins={react_wins} losses={react_losses} -> "
         f"{'PASS' if angle1_pass else 'FAIL'} (locked threshold: wins>=5, losses<=1)"
     )
-    orch_wins, orch_losses = gate_results[("multi_agent_dynamic_orchestrator", "multi_agent_d3_static")]
+    orch_wins, orch_losses = gate_results[
+        ("multi_agent_dynamic_orchestrator", "multi_agent_d3_static")
+    ]
     dynamism_pass = orch_wins >= 3 and orch_losses <= 1
     lines.append(
         f"- Angle 2 dynamism gate (dynamic_orchestrator vs d3_static, hard50): "

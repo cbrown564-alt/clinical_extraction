@@ -99,8 +99,7 @@ def test_v02_suppresses_no_reference_origin_switches() -> None:
     assert rows[0]["selector_version"] == selector.SELECTOR_V0_2_VERSION
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
     assert (
-        rows[0]["selector_gate"]
-        == "nonboundary_precision_v0_2:deterministic_no_reference_origin"
+        rows[0]["selector_gate"] == "nonboundary_precision_v0_2:deterministic_no_reference_origin"
     )
     assert rows[0]["selected_label"] == "no seizure frequency reference"
 
@@ -260,10 +259,7 @@ def test_v04_suppresses_cluster_cadence_changes() -> None:
     )
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
-    assert (
-        rows[0]["selector_gate"]
-        == "cluster_cadence_precision_v0_4:cluster_cadence_changed"
-    )
+    assert rows[0]["selector_gate"] == "cluster_cadence_precision_v0_4:cluster_cadence_changed"
     assert rows[0]["selected_label"] == "5 cluster per month, multiple per cluster"
 
 
@@ -313,8 +309,7 @@ def test_v05_rescues_deterministic_seizure_free_overreach_to_unknown() -> None:
     assert rows[0]["selector_version"] == selector.SELECTOR_V0_5_VERSION
     assert rows[0]["selector_action"] == "accept_fresh_boundary_rescue"
     assert rows[0]["selector_gate"] == (
-        "fresh_boundary_rescue_v0_5:"
-        "deterministic_seizure_free_to_fresh_uncertain_boundary"
+        "fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary"
     )
     assert rows[0]["selected_label"] == "unknown"
     assert rows[0]["score_layers"]["selected"]["source"] == "fresh_evidence"
@@ -365,8 +360,7 @@ def test_v05_rescues_no_reference_origin_to_fresh_seizure_free() -> None:
 
     assert rows[0]["selector_action"] == "accept_fresh_boundary_rescue"
     assert rows[0]["selector_gate"] == (
-        "fresh_boundary_rescue_v0_5:"
-        "deterministic_no_reference_to_fresh_seizure_free"
+        "fresh_boundary_rescue_v0_5:deterministic_no_reference_to_fresh_seizure_free"
     )
     assert rows[0]["selected_label"] == "seizure free for multiple year"
 
@@ -391,10 +385,7 @@ def test_v05_keeps_v04_cluster_cadence_protection() -> None:
     )
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
-    assert (
-        rows[0]["selector_gate"]
-        == "fresh_boundary_rescue_v0_5:cluster_cadence_changed"
-    )
+    assert rows[0]["selector_gate"] == "fresh_boundary_rescue_v0_5:cluster_cadence_changed"
     assert rows[0]["selected_label"] == "5 cluster per month, multiple per cluster"
 
 
@@ -446,8 +437,7 @@ def test_v06_allows_profile_supported_seizure_free_to_unknown_rescue() -> None:
     assert rows[0]["selector_version"] == selector.SELECTOR_V0_6_VERSION
     assert rows[0]["selector_action"] == "accept_fresh_boundary_rescue"
     assert rows[0]["selector_gate"] == (
-        "profile_guard_boundary_rescue_v0_6:"
-        "seizure_free_to_uncertain_supported"
+        "profile_guard_boundary_rescue_v0_6:seizure_free_to_uncertain_supported"
     )
     assert rows[0]["selected_label"] == "unknown"
 
@@ -515,8 +505,7 @@ def test_v06_allows_profile_supported_no_reference_to_seizure_free_rescue() -> N
 
     assert rows[0]["selector_action"] == "accept_fresh_boundary_rescue"
     assert rows[0]["selector_gate"] == (
-        "profile_guard_boundary_rescue_v0_6:"
-        "no_reference_to_seizure_free_supported"
+        "profile_guard_boundary_rescue_v0_6:no_reference_to_seizure_free_supported"
     )
     assert rows[0]["selected_label"] == "seizure free for multiple year"
 
@@ -695,9 +684,7 @@ def test_v07_requires_consensus_and_fresh_agreement_for_unknown_rescue() -> None
     )
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
-    assert rows[0]["selector_gate"] == (
-        "unknown_count_window_rescue_v0_7:fresh_consensus_disagree"
-    )
+    assert rows[0]["selector_gate"] == ("unknown_count_window_rescue_v0_7:fresh_consensus_disagree")
     assert rows[0]["selected_label"] == "unknown"
 
 
@@ -726,8 +713,7 @@ def test_v08_accepts_parseable_denominator_window_refinement() -> None:
     assert rows[0]["selector_version"] == selector.SELECTOR_V0_8_VERSION
     assert rows[0]["selector_action"] == "accept_parseable_denominator_window_refinement"
     assert rows[0]["selector_gate"] == (
-        "parseable_denominator_window_refinement_v0_8:"
-        "profile_supported_parseable_refinement"
+        "parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement"
     )
     assert rows[0]["selected_label"] == "11 per 3 month"
     assert rows[0]["transition_vs_deterministic"]["purist"] == "wrong_to_correct"
@@ -811,8 +797,7 @@ def test_v08_blocks_highest_active_semiology_refinement() -> None:
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
     assert rows[0]["selector_gate"] == (
-        "parseable_denominator_window_refinement_v0_8:"
-        "unsafe_parseable_refinement_profile"
+        "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile"
     )
     assert rows[0]["selected_label"] == "3 to 4 per 15 month"
 
@@ -842,8 +827,7 @@ def test_v08_blocks_seizure_free_interval_refinement() -> None:
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
     assert rows[0]["selector_gate"] == (
-        "parseable_denominator_window_refinement_v0_8:"
-        "unsafe_parseable_refinement_profile"
+        "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile"
     )
     assert rows[0]["selected_label"] == "9 per 3 month"
 
@@ -872,8 +856,7 @@ def test_v08_blocks_unparseable_consensus_replacement() -> None:
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
     assert rows[0]["selector_gate"] == (
-        "parseable_denominator_window_refinement_v0_8:"
-        "replacement_not_parseable_specific_rate"
+        "parseable_denominator_window_refinement_v0_8:replacement_not_parseable_specific_rate"
     )
     assert rows[0]["selected_label"] == "1 per day"
 
@@ -905,8 +888,7 @@ def test_v09_accepts_normalized_equivalent_consensus_fresh_disagreement() -> Non
     assert rows[0]["selector_version"] == selector.SELECTOR_V0_9_VERSION
     assert rows[0]["selector_action"] == "accept_normalized_equivalent_agreement"
     assert rows[0]["selector_gate"] == (
-        "semantic_equiv_unknown_uncertainty_v0_9:"
-        "normalized_equivalent_consensus_fresh"
+        "semantic_equiv_unknown_uncertainty_v0_9:normalized_equivalent_consensus_fresh"
     )
     assert rows[0]["selected_label"] == "1 per month"
     assert rows[0]["transition_vs_deterministic"]["purist"] == "wrong_to_correct"
@@ -966,8 +948,7 @@ def test_v09_accepts_specific_rate_to_unknown_uncertainty_rescue() -> None:
 
     assert rows[0]["selector_action"] == "accept_unknown_uncertainty_rescue"
     assert rows[0]["selector_gate"] == (
-        "semantic_equiv_unknown_uncertainty_v0_9:"
-        "specific_rate_to_unknown_uncertainty_supported"
+        "semantic_equiv_unknown_uncertainty_v0_9:specific_rate_to_unknown_uncertainty_supported"
     )
     assert rows[0]["selected_label"] == "unknown"
     assert rows[0]["transition_vs_deterministic"]["purist"] == "wrong_to_correct"
@@ -1003,8 +984,7 @@ def test_v09_blocks_unknown_rescue_when_cluster_burden_fully_specified() -> None
 
     assert rows[0]["selector_action"] == "keep_deterministic_baseline"
     assert rows[0]["selector_gate"] == (
-        "semantic_equiv_unknown_uncertainty_v0_9:"
-        "unknown_uncertainty_profile_blocked"
+        "semantic_equiv_unknown_uncertainty_v0_9:unknown_uncertainty_profile_blocked"
     )
     assert rows[0]["selected_label"] == "3 cluster per 6 week, 2 to 4 per cluster"
 

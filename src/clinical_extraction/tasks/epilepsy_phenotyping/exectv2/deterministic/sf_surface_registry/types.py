@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rule_metadata import (
     Portability,

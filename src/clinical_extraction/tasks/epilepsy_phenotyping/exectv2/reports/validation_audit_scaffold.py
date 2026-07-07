@@ -34,13 +34,16 @@ def git_head(repo_root: Path) -> str:
             text=True,
             stderr=subprocess.DEVNULL,
         ).strip()
-        dirty = subprocess.run(
-            ["git", "diff", "--quiet"],
-            cwd=repo_root,
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode != 0
+        dirty = (
+            subprocess.run(
+                ["git", "diff", "--quiet"],
+                cwd=repo_root,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            ).returncode
+            != 0
+        )
     except (OSError, subprocess.SubprocessError):
         return "unavailable"
     return f"{head}+dirty" if dirty else head
@@ -211,9 +214,7 @@ def render_promotion_gates_section(audit: Mapping[str, Any]) -> list[str]:
         "| --- | --- | --- |",
     ]
     for gate_row in audit["promotion_gates"]:
-        lines.append(
-            f"| {gate_row['gate']} | {gate_row['outcome']} | {gate_row['note']} |"
-        )
+        lines.append(f"| {gate_row['gate']} | {gate_row['outcome']} | {gate_row['note']} |")
     return lines
 
 

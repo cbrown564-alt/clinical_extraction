@@ -57,8 +57,7 @@ def primary_recovery(
     scorecard: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     scores = {
-        entity: score_for_primary(entity, scorecard)
-        for entity in ESSENTIAL_CLINICAL_ENTITIES
+        entity: score_for_primary(entity, scorecard) for entity in ESSENTIAL_CLINICAL_ENTITIES
     }
     return aggregate_score_dicts(tuple(scores.values())), scores
 
@@ -73,8 +72,7 @@ def evidence_validation_summary(
     note_by_id = {letter.letter_id: letter.note_text or "" for letter in gold_letters}
     entity_set = set(entities)
     per_entity: dict[str, dict[str, int]] = {
-        e: {"predicted_mentions": 0, "evidence_present": 0, "exact_evidence": 0}
-        for e in entities
+        e: {"predicted_mentions": 0, "evidence_present": 0, "exact_evidence": 0} for e in entities
     }
     for pred in pred_letters:
         note = note_by_id.get(pred.letter_id, "")
@@ -103,9 +101,7 @@ def evidence_validation_summary(
             "evidence_present_rate": round(stats["evidence_present"] / pred_n, 4)
             if pred_n
             else 0.0,
-            "exact_evidence_rate": round(stats["exact_evidence"] / pred_n, 4)
-            if pred_n
-            else 0.0,
+            "exact_evidence_rate": round(stats["exact_evidence"] / pred_n, 4) if pred_n else 0.0,
             "invalid_evidence_rate": round(invalid / pred_n, 4) if pred_n else 0.0,
         }
     pred_n = totals["predicted_mentions"]
@@ -113,12 +109,8 @@ def evidence_validation_summary(
     out["overall"] = {
         **totals,
         "invalid_evidence": invalid,
-        "evidence_present_rate": round(totals["evidence_present"] / pred_n, 4)
-        if pred_n
-        else 0.0,
-        "exact_evidence_rate": round(totals["exact_evidence"] / pred_n, 4)
-        if pred_n
-        else 0.0,
+        "evidence_present_rate": round(totals["evidence_present"] / pred_n, 4) if pred_n else 0.0,
+        "exact_evidence_rate": round(totals["exact_evidence"] / pred_n, 4) if pred_n else 0.0,
         "invalid_evidence_rate": round(invalid / pred_n, 4) if pred_n else 0.0,
     }
     return out
@@ -138,9 +130,7 @@ def error_taxonomy_summary(
         row = {
             "candidate_miss": int(score["fn"]),
             "wrong_detail_selection": int(score["fp"]),
-            "evidence_failure": int(
-                evidence["predicted_mentions"] - evidence["exact_evidence"]
-            ),
+            "evidence_failure": int(evidence["predicted_mentions"] - evidence["exact_evidence"]),
         }
         per_entity[entity] = row
         for key in totals:

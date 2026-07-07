@@ -34,8 +34,7 @@ DEFAULT_DIRECT_JSONL = Path(
     "gpt41mini_20260624.jsonl"
 )
 DEFAULT_VERIFIER_JSONL = Path(
-    "experiments/exectv2_v08_full200_currentcode_investigations_verifier_gpt41mini_"
-    "20260624.jsonl"
+    "experiments/exectv2_v08_full200_currentcode_investigations_verifier_gpt41mini_20260624.jsonl"
 )
 DEFAULT_ARBITRATION_JSONL = Path(
     "experiments/exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl"
@@ -52,8 +51,7 @@ DEFAULT_DEV_ARBITRATION_JSONL = Path(
 )
 DEFAULT_JSON = Path("experiments/exectv2_investigations_rule_ablation_20260625.json")
 DEFAULT_MARKDOWN = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_investigations_rule_ablation_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_investigations_rule_ablation_2026-06-25.md"
 )
 SELECTIVE_POLICY_V01 = "v01_broad_ambiguous"
 SELECTIVE_POLICY_V02 = "v02_empty_pending_or_explicit_not_performed"
@@ -232,9 +230,7 @@ def selective_verifier_rows(
 
     verifier_by_id = {str(row["letter_id"]): dict(row) for row in arbitrated_verifier_rows}
     capped_route_ids = (
-        _capped_direct_risk_route_ids(direct_rows)
-        if policy == SELECTIVE_POLICY_V04
-        else set()
+        _capped_direct_risk_route_ids(direct_rows) if policy == SELECTIVE_POLICY_V04 else set()
     )
     selected: list[dict[str, Any]] = []
     routed = 0
@@ -396,10 +392,7 @@ def render_investigations_rule_ablation_markdown(
                 "- Deterministic replacement promoted: "
                 f"`{decision['deterministic_replacement_promoted']}`"
             ),
-            (
-                "- Selective burden acceptable: "
-                f"`{decision['selective_v02_burden_acceptable']}`"
-            ),
+            (f"- Selective burden acceptable: `{decision['selective_v02_burden_acceptable']}`"),
             f"- Rationale: {decision['rationale']}",
             "",
             "## Interpretation",
@@ -486,9 +479,7 @@ def _decision(
     selective_v03_f1 = by_id["selective_verifier_v03_empty_output_only"]["metrics"]["f1"]
     selective_v04_f1 = by_id["selective_verifier_v04_capped_direct_risk_top20"]["metrics"]["f1"]
     deterministic_promoted = direct_suppression_f1 >= verifier_arbitrated_f1 - 0.01
-    selective_v02_burden_acceptable = (
-        selective_v02_burden <= MAX_ACCEPTABLE_SELECTIVE_BURDEN
-    )
+    selective_v02_burden_acceptable = selective_v02_burden <= MAX_ACCEPTABLE_SELECTIVE_BURDEN
     selected_low_burden_policy = str(selective_gate.get("selected_policy_id") or "")
     selected = (
         "deterministic_investigations_replacement"
@@ -544,20 +535,14 @@ def changed_rows(
     comparator_rows: Sequence[Mapping[str, Any]],
 ) -> int:
     comparator = {str(row["letter_id"]): _signature(row) for row in comparator_rows}
-    return sum(
-        _signature(row) != comparator.get(str(row["letter_id"]))
-        for row in rows
-    )
+    return sum(_signature(row) != comparator.get(str(row["letter_id"])) for row in rows)
 
 
 def _signature(row: Mapping[str, Any]) -> tuple[tuple[Any, ...], ...]:
     mentions = []
     for mention in row.get("predicted_mentions", []):
         attrs = tuple(
-            sorted(
-                (str(k), str(v))
-                for k, v in dict(mention.get("attributes") or {}).items()
-            )
+            sorted((str(k), str(v)) for k, v in dict(mention.get("attributes") or {}).items())
         )
         mentions.append((str(mention.get("entity", "")), str(mention.get("text", "")), attrs))
     return tuple(sorted(mentions))
@@ -674,8 +659,10 @@ def _needs_investigations_adjudicator(
     if policy == SELECTIVE_POLICY_V02:
         return route_pending_or_not_performed
     if policy == SELECTIVE_POLICY_V01:
-        return route_pending_or_not_performed or route_broad_ambiguity or (
-            len(mentions) > 1 and len(modalities) > 1
+        return (
+            route_pending_or_not_performed
+            or route_broad_ambiguity
+            or (len(mentions) > 1 and len(modalities) > 1)
         )
     raise ValueError(f"Unknown Investigations selective policy: {policy}")
 

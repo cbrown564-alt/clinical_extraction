@@ -137,7 +137,9 @@ class SeizureFrequencyVerifySignature(dspy.Signature):
     """Recall-additively verify: complete and correct the draft seizure-frequency events."""
 
     letter_text: str = dspy.InputField(desc="One clinical letter.")
-    draft_events_json: str = dspy.InputField(desc="The draft 'events' list to complete and correct.")
+    draft_events_json: str = dspy.InputField(
+        desc="The draft 'events' list to complete and correct."
+    )
     output_schema: str = dspy.InputField(desc="Required JSON schema. Match it exactly.")
     events_json: str = dspy.OutputField(
         desc="One JSON object with the COMPLETED 'events' list per output_schema. No markdown."
@@ -307,7 +309,10 @@ def _epilepsy_dx_status(gold_letter) -> str:
         if str(attrs.get("DiagCategory", "")) not in _EPILEPSY_DIAG_CATEGORIES:
             continue
         has_epilepsy = True
-        if str(attrs.get("Certainty", "")) == "5" and str(attrs.get("Negation", "Affirmed")) == "Affirmed":
+        if (
+            str(attrs.get("Certainty", "")) == "5"
+            and str(attrs.get("Negation", "Affirmed")) == "Affirmed"
+        ):
             return "confirmed"
     return "uncertain" if has_epilepsy else "absent"
 
@@ -351,9 +356,7 @@ def build_sf_verify_metric(
         if gold_letter is None:
             raise ValueError("GEPA example is missing the gold ExectLetter ('letter').")
         raw = _facts_json_of(pred)
-        record, errors = (
-            parse_dedup_clinical_facts_json(raw) if raw else (None, ["empty_output"])
-        )
+        record, errors = parse_dedup_clinical_facts_json(raw) if raw else (None, ["empty_output"])
         instr_tokens, demo_tokens = _prompt_lengths(pred, pred_trace)
         out_tokens = approx_tokens(raw)
         penalty = _length_penalty(instr_tokens, demo_tokens, out_tokens, cfg)
@@ -372,12 +375,18 @@ def build_sf_verify_metric(
         sp = scores.state_profile
         quality = _fbeta_from(sp.tp, sp.tp, sp.tp + sp.fp, sp.tp + sp.fn, beta=recall_beta)
 
-        gold_states = list(dict.fromkeys(
-            frequency_state_faithful(a.attributes) for a in gold_letter.entities("SeizureFrequency")
-        ))
-        pred_states = list(dict.fromkeys(
-            frequency_state_faithful(a.attributes) for a in pred_exect.entities("SeizureFrequency")
-        ))
+        gold_states = list(
+            dict.fromkeys(
+                frequency_state_faithful(a.attributes)
+                for a in gold_letter.entities("SeizureFrequency")
+            )
+        )
+        pred_states = list(
+            dict.fromkeys(
+                frequency_state_faithful(a.attributes)
+                for a in pred_exect.entities("SeizureFrequency")
+            )
+        )
         missed = [s for s in gold_states if s not in pred_states]
         spurious = [s for s in pred_states if s not in gold_states]
 
@@ -415,7 +424,9 @@ def build_sf_verify_metric(
                     continue
                 add = [s for s in gstates if s not in pred_bt[key][1] and s in missed_set]
                 if add:
-                    multiplicity.append(f"'{label}' needs {gstates} but you emitted {pred_bt[key][1]} (ADD {add})")
+                    multiplicity.append(
+                        f"'{label}' needs {gstates} but you emitted {pred_bt[key][1]} (ADD {add})"
+                    )
             if multiplicity:
                 parts.append(
                     "PER-TYPE MULTIPLICITY — emit BOTH facts for the SAME type: "

@@ -32,9 +32,7 @@ def _summary(**families: dict[str, int]) -> dict[str, object]:
             "wrong_to_correct": wtc,
             "correct_to_wrong": ctw,
             "net_purist_gain": wtc - ctw,
-            "changed_label_precision": (
-                round(wtc / changed, 4) if changed else None
-            ),
+            "changed_label_precision": (round(wtc / changed, 4) if changed else None),
         }
     return {"families": built, "total_rows": 0, "multilabel_note": "n/a"}
 
@@ -148,8 +146,6 @@ def test_custom_precision_bar_is_honoured() -> None:
     )
     # precision 0.7: passes the default 0.5 bar but fails a tightened 0.8 bar.
     assert summarize_family_holdout_cv(summary)["gap_robust"] is True
-    tightened = summarize_family_holdout_cv(
-        summary, min_changed_label_precision=0.8
-    )
+    tightened = summarize_family_holdout_cv(summary, min_changed_label_precision=0.8)
     assert tightened["gap_robust"] is False
     assert "band_daily" in tightened["low_precision_held_out_families"]

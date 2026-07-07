@@ -133,9 +133,7 @@ def run_month_bucket_duration_selection_ablation(
         "split": split,
         "split_manifest": split_manifest,
         "row_count": len(rows),
-        "projection_policy": (
-            _projection_policy_name(policy_variant)
-        ),
+        "projection_policy": (_projection_policy_name(policy_variant)),
         "policy_variant": policy_variant,
         "claim_language": (
             "Diagnostic validation-cycle projection ablation only. The policy "
@@ -224,8 +222,7 @@ def write_month_bucket_ablation_report(
                 "",
                 "## Graph Metadata Gate",
                 "",
-                f"- Blocked month-bucket replacements: "
-                f"{summary['graph_gate']['blocked_rows']}",
+                f"- Blocked month-bucket replacements: {summary['graph_gate']['blocked_rows']}",
                 "",
                 "| Graph flag | Rows |",
                 "| --- | ---: |",
@@ -320,8 +317,8 @@ def _baseline_projection(
     row: Mapping[str, Any],
     graph: ClinicalFrequencyStateGraph,
 ) -> GanGraphProjection:
-    projection = row.get("replayed_projection") or row.get("projection") or row.get(
-        "baseline_projection"
+    projection = (
+        row.get("replayed_projection") or row.get("projection") or row.get("baseline_projection")
     )
     if isinstance(projection, Mapping) and projection.get("final_label"):
         parsed = label_to_frequency_record(str(projection["final_label"]))
@@ -361,8 +358,7 @@ def _month_bucket_projection(
                 update={
                     "projection_policy": _projection_policy_name(policy_variant),
                     "rationale": (
-                        "Projected with diagnostic month-bucket duration policy "
-                        "graph_gated_v2."
+                        "Projected with diagnostic month-bucket duration policy graph_gated_v2."
                     ),
                 }
             ),
@@ -384,9 +380,7 @@ def _gated_month_bucket_projection(
             "projection_policy": (
                 "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_v1"
             ),
-            "rationale": (
-                "Projected with gated diagnostic month-bucket duration policy v1."
-            ),
+            "rationale": ("Projected with gated diagnostic month-bucket duration policy v1."),
         }
     )
 
@@ -404,8 +398,7 @@ def _projection_policy_name(policy_variant: str) -> str:
     if policy_variant == "v0":
         return "gan2026_state_graph_projection_ablation_month_bucket_duration_selection"
     return (
-        "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_"
-        f"{policy_variant}"
+        f"gan2026_state_graph_projection_ablation_month_bucket_duration_selection_{policy_variant}"
     )
 
 
@@ -418,8 +411,7 @@ def _graph_metadata_gate(
     if _has_active_boundary_state_node(graph):
         flags.append("active_boundary_state_node")
     if not selected or not all(
-        node.rule_id.startswith("seizure_free_duration_node_normalization_v0.")
-        for node in selected
+        node.rule_id.startswith("seizure_free_duration_node_normalization_v0.") for node in selected
     ):
         flags.append("selected_rule_not_duration_normalization_v0")
     return {
@@ -478,9 +470,8 @@ def _regression_tags(
         tags.append("already_projection_correct")
     if gold_kind == FrequencyLabelKind.SEIZURE_FREE.value and not _is_duration_label(gold_label):
         tags.append("non_duration_seizure_free")
-    if (
-        gold_kind == FrequencyLabelKind.SEIZURE_FREE.value
-        and _is_numeric_duration_label(gold_label)
+    if gold_kind == FrequencyLabelKind.SEIZURE_FREE.value and _is_numeric_duration_label(
+        gold_label
     ):
         tags.append("numeric_seizure_free_duration")
     if gold_kind == FrequencyLabelKind.FREQUENCY.value and _usable_seizure_free_nodes(graph):
@@ -497,9 +488,7 @@ def _regression_tags(
 
 def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     target_rows = [row for row in rows if row["surface"] == "target_duration_enriched"]
-    regression_rows = [
-        row for row in rows if row["surface"] == "regression_validation_hard_slice"
-    ]
+    regression_rows = [row for row in rows if row["surface"] == "regression_validation_hard_slice"]
     return {
         "all_rows": _surface_summary(rows),
         "surfaces": {
@@ -582,22 +571,13 @@ def _tag_summary(
         for tag in row["regression_tags"]
         if tag_filter is None or tag_filter(tag)
     )
-    return {
-        tag: {"rows": tags[tag], "changed_labels": changed[tag]}
-        for tag in sorted(tags)
-    }
+    return {tag: {"rows": tags[tag], "changed_labels": changed[tag]} for tag in sorted(tags)}
 
 
 def _graph_gate_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     gate_rows = [row for row in rows if row.get("graph_gate")]
-    blocked = [
-        row for row in gate_rows if bool(row.get("graph_gate", {}).get("blocked"))
-    ]
-    flags = Counter(
-        flag
-        for row in blocked
-        for flag in row.get("graph_gate", {}).get("flags", [])
-    )
+    blocked = [row for row in gate_rows if bool(row.get("graph_gate", {}).get("blocked"))]
+    flags = Counter(flag for row in blocked for flag in row.get("graph_gate", {}).get("flags", []))
     return {
         "blocked_rows": len(blocked),
         **{flag: {"rows": flags[flag]} for flag in sorted(flags)},
@@ -670,21 +650,13 @@ def main(argv: Sequence[str] | None = None) -> None:
         args.jsonl = DEFAULT_V1_JSONL_PATH if args.jsonl == DEFAULT_JSONL_PATH else args.jsonl
         args.json = DEFAULT_V1_JSON_PATH if args.json == DEFAULT_JSON_PATH else args.json
         args.markdown = (
-            DEFAULT_V1_REPORT_PATH
-            if args.markdown == DEFAULT_REPORT_PATH
-            else args.markdown
+            DEFAULT_V1_REPORT_PATH if args.markdown == DEFAULT_REPORT_PATH else args.markdown
         )
     elif args.policy_variant == "graph_gated_v2":
         args.jsonl = (
-            DEFAULT_GRAPH_GATED_JSONL_PATH
-            if args.jsonl == DEFAULT_JSONL_PATH
-            else args.jsonl
+            DEFAULT_GRAPH_GATED_JSONL_PATH if args.jsonl == DEFAULT_JSONL_PATH else args.jsonl
         )
-        args.json = (
-            DEFAULT_GRAPH_GATED_JSON_PATH
-            if args.json == DEFAULT_JSON_PATH
-            else args.json
-        )
+        args.json = DEFAULT_GRAPH_GATED_JSON_PATH if args.json == DEFAULT_JSON_PATH else args.json
         args.markdown = (
             DEFAULT_GRAPH_GATED_REPORT_PATH
             if args.markdown == DEFAULT_REPORT_PATH

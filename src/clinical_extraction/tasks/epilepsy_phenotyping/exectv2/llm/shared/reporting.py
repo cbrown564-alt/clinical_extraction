@@ -51,10 +51,7 @@ def format_gate_summary_lines(
         f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
         f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
         f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
-        (
-            f"- Evidence validity rate: "
-            f"{summary.get('evidence_validity_rate', 0.0):.4f}"
-        ),
+        (f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}"),
         "",
     ]
     for label, value in extra_lines:

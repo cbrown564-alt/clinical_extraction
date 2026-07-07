@@ -5,8 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_PATH = (
-    ROOT
-    / "docs/experiments/gan2026/validation_test_gap/"
+    ROOT / "docs/experiments/gan2026/validation_test_gap/"
     "gan2026_validation_test_gap_protocol_2026-06-05.md"
 )
 GATED_BLOCKERS_PATH = ROOT / "docs/runbooks/gated_blockers_2026-06-18.md"
@@ -24,8 +23,7 @@ def test_gap_protocol_blocks_locked_test_row_level_tuning() -> None:
     assert "Do not inspect locked-test row-level failures" in protocol
     assert "aggregate summaries and predeclared-slice summaries" in protocol
     assert (
-        "No first-wave analysis should introduce a new prediction-bearing architecture"
-        in protocol
+        "No first-wave analysis should introduce a new prediction-bearing architecture" in protocol
     )
 
 

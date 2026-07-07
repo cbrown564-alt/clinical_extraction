@@ -1,4 +1,4 @@
-﻿from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis import (
     three_way_comparison_report as report,
 )
 
@@ -29,7 +29,10 @@ def test_rendered_split_treats_llm_only_direct_labeler_as_never_null() -> None:
 
 def test_rendered_split_uses_predicted_purist_category_for_structured_events() -> None:
     rows = [
-        {"source_row_index": 1, "comparison": {"predicted_purist_category": "seizure_freq_1_per_mon"}},
+        {
+            "source_row_index": 1,
+            "comparison": {"predicted_purist_category": "seizure_freq_1_per_mon"},
+        },
         {"source_row_index": 2, "comparison": {"predicted_purist_category": None}},
     ]
 

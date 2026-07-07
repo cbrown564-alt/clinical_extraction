@@ -24,15 +24,14 @@ def test_reliability_scorecard_payload_parses_final_reports() -> None:
     assert payload["weak_dimensions"] == []
     assert len(payload["evidence_set"]) == 7
     assert len(payload["comparison_rows"]) == 4
-    assert payload["computed_reliability"]["latest_run_check"]["surfaces"][0][
-        "replacement_policy"
-    ] == "same-surface comparators retained"
+    assert (
+        payload["computed_reliability"]["latest_run_check"]["surfaces"][0]["replacement_policy"]
+        == "same-surface comparators retained"
+    )
     assert payload["computed_reliability"]["review_routing"]["caught_error_cells"] > 0
     balanced_route = next(
         item
-        for item in payload["computed_reliability"]["review_routing"][
-            "operating_points"
-        ]
+        for item in payload["computed_reliability"]["review_routing"]["operating_points"]
         if item["id"] == "balanced_dev_candidate"
     )
     assert balanced_route["review_burden"] < 0.8
@@ -57,12 +56,7 @@ def test_reliability_scorecard_payload_parses_final_reports() -> None:
 
 def test_static_frontend_scorecard_matches_builder_contract() -> None:
     static_path = (
-        REPO_ROOT
-        / "frontend"
-        / "public"
-        / "mock-data"
-        / "exectv2"
-        / "reliability-scorecard.json"
+        REPO_ROOT / "frontend" / "public" / "mock-data" / "exectv2" / "reliability-scorecard.json"
     )
     static_payload = json.loads(static_path.read_text(encoding="utf-8"))
     built_payload = build_reliability_scorecard_payload()
@@ -90,12 +84,7 @@ def test_gan_reliability_scorecard_payload_parses_master_scorecard() -> None:
 
 def test_static_gan_scorecard_matches_builder_contract() -> None:
     static_path = (
-        REPO_ROOT
-        / "frontend"
-        / "public"
-        / "mock-data"
-        / "gan2026"
-        / "reliability-scorecard.json"
+        REPO_ROOT / "frontend" / "public" / "mock-data" / "gan2026" / "reliability-scorecard.json"
     )
     static_payload = json.loads(static_path.read_text(encoding="utf-8"))
     built_payload = build_gan_reliability_scorecard_payload()
@@ -111,14 +100,13 @@ def test_observatory_serves_exectv2_reliability_scorecard() -> None:
 
     assert response.status_code == 200
     payload = response.json()
-    calibration = next(
-        item for item in payload["dimensions"] if item["id"] == "calibration"
-    )
+    calibration = next(item for item in payload["dimensions"] if item["id"] == "calibration")
     assert calibration["coverage"] == 4
     assert payload["evidence_set"][0]["role"] == "Performance control"
-    assert payload["computed_reliability"]["active_llm_only_readout"][1][
-        "model_label"
-    ] == "DeepSeek chat"
+    assert (
+        payload["computed_reliability"]["active_llm_only_readout"][1]["model_label"]
+        == "DeepSeek chat"
+    )
 
 
 def test_observatory_serves_gan_reliability_scorecard() -> None:

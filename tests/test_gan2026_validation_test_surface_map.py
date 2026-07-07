@@ -108,4 +108,3 @@ def test_surface_map_report_states_locked_test_boundary(tmp_path: Path) -> None:
     report = report_path.read_text()
     assert "aggregate-only for locked test surfaces" in report
     assert "does not expose locked-test row-level failures" in report
-

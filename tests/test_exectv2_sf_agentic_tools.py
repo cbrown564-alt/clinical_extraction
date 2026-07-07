@@ -1,6 +1,7 @@
 """Zero-LLM-cost tests for the ExECTv2 SF agentic-redo tools (Phase 3, see
 docs/experiments/exectv2/seizure_frequency/exectv2_sf_agentic_redo_predeclaration_2026-07-01.md).
 """
+
 from __future__ import annotations
 
 import pytest

@@ -46,8 +46,9 @@ def _rows(predicted: list[dict], gold: list[dict]) -> list[dict]:
 def test_gate_not_met_on_empty_prediction() -> None:
     rows = _rows([], [{"entity": "Diagnosis", "text": "epilepsy", "attributes": {"CUI": "C1"}}])
     summary = hybrid.summarize_rows(rows)
-    sc = build_scorecard(rows, summary, model="m", split="dev", augment_rules=False,
-                         bootstrap_reps=50)
+    sc = build_scorecard(
+        rows, summary, model="m", split="dev", augment_rules=False, bootstrap_reps=50
+    )
     assert sc["promotion_gate"]["gate_met"] is False
     assert sc["promotion_gate"]["full_200_audit_authorized"] is False
 
@@ -60,8 +61,9 @@ def test_gate_met_on_perfect_prediction() -> None:
     }
     rows = _rows([dict(mention)], [dict(mention)])
     summary = hybrid.summarize_rows(rows)
-    sc = build_scorecard(rows, summary, model="m", split="dev", augment_rules=False,
-                         bootstrap_reps=50)
+    sc = build_scorecard(
+        rows, summary, model="m", split="dev", augment_rules=False, bootstrap_reps=50
+    )
     assert sc["promotion_gate"]["gate_met"] is True
     assert sc["promotion_gate"]["full_200_audit_authorized"] is True
 
@@ -69,8 +71,9 @@ def test_gate_met_on_perfect_prediction() -> None:
 def test_render_markdown_states_gate() -> None:
     rows = _rows([], [{"entity": "Diagnosis", "text": "epilepsy", "attributes": {"CUI": "C1"}}])
     summary = hybrid.summarize_rows(rows)
-    sc = build_scorecard(rows, summary, model="m", split="dev", augment_rules=False,
-                         bootstrap_reps=50)
+    sc = build_scorecard(
+        rows, summary, model="m", split="dev", augment_rules=False, bootstrap_reps=50
+    )
     md = render_markdown(sc)
     assert "Gate met: False" in md
     assert "NOT authorized" in md

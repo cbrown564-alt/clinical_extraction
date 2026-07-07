@@ -67,8 +67,9 @@ def load_prior_reviews(path: Path) -> dict[int, dict[str, Any]]:
     return out
 
 
-def analyse(rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: Path,
-            *, tag: str) -> dict[str, Any]:
+def analyse(
+    rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: Path, *, tag: str
+) -> dict[str, Any]:
     pairs: list[tuple[float, bool]] = []
     risks: list[float] = []
     failures: list[bool] = []
@@ -88,7 +89,7 @@ def analyse(rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: 
             continue
         correct = bool(comp.get("purist_correct"))
         # intrinsic baseline
-        sel = ((row.get("structured_record") or {}).get("selection") or {})
+        sel = (row.get("structured_record") or {}).get("selection") or {}
         intr = intrinsic_map.get(sel.get("confidence"))
         if intr is not None:
             intr_risks.append(1.0 - intr)
@@ -104,9 +105,11 @@ def analyse(rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: 
         p_values.append(p)
         rec = records_by_idx[idx]
         if is_residual(rec.note_text, rec.gold_monthly_frequency):
-            resid_p.append(p); resid_c.append(correct)
+            resid_p.append(p)
+            resid_c.append(correct)
         else:
-            nonresid_p.append(p); nonresid_c.append(correct)
+            nonresid_p.append(p)
+            nonresid_c.append(correct)
 
     ece, table = rc.expected_calibration_error(pairs)
     n = len(p_values)
@@ -154,12 +157,17 @@ def analyse(rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: 
             "n": len(intr_failures),
             "failure_prediction_auroc": rc.auroc(intr_risks, intr_failures),
             "top_bucket_share_high": (
-                sum(1 for r in intr_risks if r == 0.0) / len(intr_risks) if intr_risks else float("nan")
+                sum(1 for r in intr_risks if r == 0.0) / len(intr_risks)
+                if intr_risks
+                else float("nan")
             ),
             "note": "in-pass joint self-confidence on the SAME rows; the degenerate signal D sits beside.",
         },
-        "provenance": {"se_calls": 0, "reviewer_calls": "live (one per scored row)",
-                       "production_path_modified": False},
+        "provenance": {
+            "se_calls": 0,
+            "reviewer_calls": "live (one per scored row)",
+            "production_path_modified": False,
+        },
     }
     out_json.write_text(json.dumps(result, indent=2), encoding="utf-8")
     out_md.write_text(render_md(result), encoding="utf-8")
@@ -167,7 +175,10 @@ def analyse(rows: list[dict[str, Any]], records_by_idx, out_json: Path, out_md: 
 
 
 def render_md(r: dict[str, Any]) -> str:
-    d = r["variant_D"]; sp = d["spread"]; di = d["discrimination"]; rs = d["residual_sensitivity"]
+    d = r["variant_D"]
+    sp = d["spread"]
+    di = d["discrimination"]
+    rs = d["residual_sensitivity"]
     b = r["intrinsic_in_pass_baseline"]
     L = [
         f"# Confidence-Reviewer Shadow Run ({r['mode']})\n",
@@ -191,15 +202,19 @@ def render_md(r: dict[str, Any]) -> str:
     ]
     auc = di["failure_prediction_auroc"]
     if isinstance(auc, float) and auc == auc and auc >= 0.65:
-        L.append(f"In production shape (hosted in the SE pass, scored on SE answers), the decoupled "
-                 f"variant-D reviewer ranks errors at AUROC **{auc:.3f}** vs the in-pass joint "
-                 f"field's {b['failure_prediction_auroc']:.3f} on the same rows — the discrimination "
-                 "survives integration. Still shadow: it complements external corroboration "
-                 f"({r['external_signal_comparator_auroc']}) and is not yet a gate.\n")
+        L.append(
+            f"In production shape (hosted in the SE pass, scored on SE answers), the decoupled "
+            f"variant-D reviewer ranks errors at AUROC **{auc:.3f}** vs the in-pass joint "
+            f"field's {b['failure_prediction_auroc']:.3f} on the same rows — the discrimination "
+            "survives integration. Still shadow: it complements external corroboration "
+            f"({r['external_signal_comparator_auroc']}) and is not yet a gate.\n"
+        )
     else:
-        L.append(f"In production shape the reviewer's discrimination is AUROC **{auc:.3f}** "
-                 f"(in-pass baseline {b['failure_prediction_auroc']:.3f}). Weaker than the pilot — "
-                 "do not gate; investigate the SE-answer vs v0_reference-answer difference.\n")
+        L.append(
+            f"In production shape the reviewer's discrimination is AUROC **{auc:.3f}** "
+            f"(in-pass baseline {b['failure_prediction_auroc']:.3f}). Weaker than the pilot — "
+            "do not gate; investigate the SE-answer vs v0_reference-answer difference.\n"
+        )
     return "\n".join(L)
 
 
@@ -249,9 +264,11 @@ def main() -> None:
     result = analyse(rows, records_by_idx, out_json, out_md, tag=tag)
     print(f"wrote {out_json}")
     d = result["variant_D"]
-    print(f"  variant D: top-bucket {d['spread']['top_bucket_share']:.1%} · "
-          f"AUROC {d['discrimination']['failure_prediction_auroc']:.3f} · "
-          f"intrinsic baseline AUROC {result['intrinsic_in_pass_baseline']['failure_prediction_auroc']:.3f}")
+    print(
+        f"  variant D: top-bucket {d['spread']['top_bucket_share']:.1%} · "
+        f"AUROC {d['discrimination']['failure_prediction_auroc']:.3f} · "
+        f"intrinsic baseline AUROC {result['intrinsic_in_pass_baseline']['failure_prediction_auroc']:.3f}"
+    )
 
 
 if __name__ == "__main__":
