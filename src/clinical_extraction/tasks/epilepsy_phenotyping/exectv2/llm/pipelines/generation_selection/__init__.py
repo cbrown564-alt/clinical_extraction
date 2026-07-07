@@ -11,8 +11,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.genera
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
     CALL_STRATEGIES,
-    DEDUP_FACT_FAMILIES,
     DECISION_TABLE_FAMILIES,
+    DEDUP_FACT_FAMILIES,
     CallStrategy,
     DedupFactFamily,
     PromptProfile,

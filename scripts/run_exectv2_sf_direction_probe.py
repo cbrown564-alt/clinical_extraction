@@ -54,6 +54,10 @@ from typing import Any
 
 import dspy
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedLetter,
+    to_exect_letter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -61,13 +65,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_sf_verify import (
-    EVENT_SCHEMA_JSON,
-    GENERATE_SEED,
-    SeizureFrequencyGenerateSignature,
-    SeizureFrequencyVerifySignature,
     SfVerifyExtractor,
-    VERIFY_SEED,
-    events_to_sf_facts,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+    write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
     parse_dedup_clinical_facts_json,
@@ -75,19 +76,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
     to_predicted_letter_from_dedup_facts,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
-    PredictedLetter,
-    to_exect_letter,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     frequency_state_faithful,
     score_frequency_state,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
-    extract_json_object,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -119,14 +113,24 @@ class DirectionAdjudicationSignature(dspy.Signature):
     """
 
     letter_text: str = dspy.InputField(desc="One clinical letter.")
-    change_mentions: str = dspy.InputField(desc="JSON list of {index, applies_to} for each change mention to adjudicate.")
+    change_mentions: str = dspy.InputField(
+        desc="JSON list of {index, applies_to} for each change mention to adjudicate."
+    )
     output_schema: str = dspy.InputField(desc="Required JSON schema. Match it exactly.")
     directions_json: str = dspy.OutputField(
         desc='One JSON object {"directions": [{"index": 0, "direction": "Increased|Decreased|Frequent|Infrequent|Same"}]}. No markdown.'
     )
 
+
 DIRECTION_SCHEMA_JSON = json.dumps(
-    {"directions": [{"index": "the change mention index", "direction": "Increased | Decreased | Frequent | Infrequent | Same"}]},
+    {
+        "directions": [
+            {
+                "index": "the change mention index",
+                "direction": "Increased | Decreased | Frequent | Infrequent | Same",
+            }
+        ]
+    },
     ensure_ascii=False,
     sort_keys=True,
 )
@@ -186,13 +190,17 @@ def _letters_with_changed_mentions(jsonl_path: Path) -> dict[str, list[dict[str,
                 continue
             attrs = m.get("attributes", {})
             if frequency_state_faithful(attrs) == "changed":
-                changed.append({"index": idx, "applies_to": m.get("text", "seizures"), "_attrs": attrs})
+                changed.append(
+                    {"index": idx, "applies_to": m.get("text", "seizures"), "_attrs": attrs}
+                )
         if changed:
             out[lid] = changed
     return out
 
 
-def _pred_letters_from_raw(jsonl_path: Path, gold_by_id: dict[str, ExectLetter]) -> list[ExectLetter]:
+def _pred_letters_from_raw(
+    jsonl_path: Path, gold_by_id: dict[str, ExectLetter]
+) -> list[ExectLetter]:
     """Build predicted ExectLetters from the raw SF-verify artifact (no adjudication)."""
 
     out: list[ExectLetter] = []
@@ -228,25 +236,38 @@ def run_b1(num_threads: int, cache: bool) -> None:
     # Baseline: score the raw SF-verify artifact unchanged (sanity check the 0.6552).
     baseline_pred = _pred_letters_from_raw(RAW_SF_VERIFY_JSONL, gold_by_id)
     baseline_scores = score_frequency_state(dev_gold, baseline_pred)
-    print(f"[b1] RAW SF-verify baseline (unchanged):")
-    print(f"  state_profile_directional F1: {baseline_scores.state_profile_directional.f1:.4f} (tp={baseline_scores.state_profile_directional.tp} fp={baseline_scores.state_profile_directional.fp} fn={baseline_scores.state_profile_directional.fn})")
+    print("[b1] RAW SF-verify baseline (unchanged):")
+    print(
+        f"  state_profile_directional F1: {baseline_scores.state_profile_directional.f1:.4f} (tp={baseline_scores.state_profile_directional.tp} fp={baseline_scores.state_profile_directional.fp} fn={baseline_scores.state_profile_directional.fn})"
+    )
     print(f"  state_profile F1:             {baseline_scores.state_profile.f1:.4f}")
 
     changed_by_letter = _letters_with_changed_mentions(RAW_SF_VERIFY_JSONL)
     total_changed = sum(len(v) for v in changed_by_letter.values())
-    print(f"[b1] {total_changed} changed-state mentions across {len(changed_by_letter)} letters; adjudicating...")
+    print(
+        f"[b1] {total_changed} changed-state mentions across {len(changed_by_letter)} letters; adjudicating..."
+    )
 
     adjudicator = DirectionAdjudicator()
-    lm = build_dspy_lm(TASK_MODEL, temperature=TASK_TEMPERATURE, max_tokens=TASK_MAX_TOKENS, cache=cache)
+    lm = build_dspy_lm(
+        TASK_MODEL, temperature=TASK_TEMPERATURE, max_tokens=TASK_MAX_TOKENS, cache=cache
+    )
     dspy.configure(lm=lm)
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
 
     pairs = []
     for lid, changed in changed_by_letter.items():
         letter = gold_by_id[lid]
-        mentions_json = json.dumps([{"index": c["index"], "applies_to": c["applies_to"]} for c in changed])
-        pairs.append((adjudicator, {"letter_text": letter.note_text, "change_mentions": mentions_json}))
-    print(f"[b1] firing {len(pairs)} adjudication calls ({TASK_MODEL}, temp {TASK_TEMPERATURE})...", flush=True)
+        mentions_json = json.dumps(
+            [{"index": c["index"], "applies_to": c["applies_to"]} for c in changed]
+        )
+        pairs.append(
+            (adjudicator, {"letter_text": letter.note_text, "change_mentions": mentions_json})
+        )
+    print(
+        f"[b1] firing {len(pairs)} adjudication calls ({TASK_MODEL}, temp {TASK_TEMPERATURE})...",
+        flush=True,
+    )
     started = time.time()
     predictions = evaluator(pairs)
 
@@ -258,11 +279,16 @@ def run_b1(num_threads: int, cache: bool) -> None:
     adj_by_id: dict[str, dict[str, Any]] = {}
     lids = list(changed_by_letter.keys())
     for lid, prediction in zip(lids, predictions, strict=True):
-        dirs = _parse_directions(str(getattr(prediction, "directions_json", "") or "")) if prediction else {}
+        dirs = (
+            _parse_directions(str(getattr(prediction, "directions_json", "") or ""))
+            if prediction
+            else {}
+        )
         changed = changed_by_letter[lid]
         row = json.loads(
             next(
-                l for l in RAW_SF_VERIFY_JSONL.read_text(encoding="utf-8").splitlines()
+                l
+                for l in RAW_SF_VERIFY_JSONL.read_text(encoding="utf-8").splitlines()
                 if l.strip() and json.loads(l)["letter_id"] == lid
             )
         )
@@ -281,28 +307,38 @@ def run_b1(num_threads: int, cache: bool) -> None:
             continue
         lid = json.loads(line)["letter_id"]
         adj_rows.append(adj_by_id.get(lid, json.loads(line)))
-    print(f"[b1] done in {time.time() - started:.1f}s; adjudicated directions (non-Same): {direction_counts}; {len(adj_rows)} letters carried through")
+    print(
+        f"[b1] done in {time.time() - started:.1f}s; adjudicated directions (non-Same): {direction_counts}; {len(adj_rows)} letters carried through"
+    )
 
     # Score the adjudicated artifact.
     adj_jsonl = EXPERIMENTS / f"exectv2_sf_verify_posthoc_direction_dev140_{RUN_DATE}.jsonl"
     write_jsonl(adj_rows, adj_jsonl)
     adj_pred = _pred_letters_from_raw(adj_jsonl, gold_by_id)
     adj_scores = score_frequency_state(dev_gold, adj_pred)
-    print(f"[b1] POST-HOC ADJUDICATED:")
-    print(f"  state_profile_directional F1: {adj_scores.state_profile_directional.f1:.4f} (tp={adj_scores.state_profile_directional.tp} fp={adj_scores.state_profile_directional.fp} fn={adj_scores.state_profile_directional.fn})")
+    print("[b1] POST-HOC ADJUDICATED:")
+    print(
+        f"  state_profile_directional F1: {adj_scores.state_profile_directional.f1:.4f} (tp={adj_scores.state_profile_directional.tp} fp={adj_scores.state_profile_directional.fp} fn={adj_scores.state_profile_directional.fn})"
+    )
     print(f"  state_profile F1:             {adj_scores.state_profile.f1:.4f} (regression check)")
 
     delta = adj_scores.state_profile_directional.f1 - baseline_scores.state_profile_directional.f1
     print(f"\n[b1] state_profile_directional delta = {delta:+.4f}")
     # Count how many gold-directional changed facts were recovered.
     gold_directional = sum(
-        1 for le in dev_gold for a in le.entities(SF_ENTITY)
+        1
+        for le in dev_gold
+        for a in le.entities(SF_ENTITY)
         if frequency_state_faithful(a.attributes) == "changed"
         and a.attributes.get("FrequencyChange", "Same") != "Same"
     )
-    recovered = adj_scores.state_profile_directional.tp - baseline_scores.state_profile_directional.tp
-    print(f"[b1] gold-directional changed facts (dev140): {gold_directional}; recovered (tp delta): +{recovered}")
-    print(f"[b1] kill-criterion: recovered must be > 2 to proceed to B2")
+    recovered = (
+        adj_scores.state_profile_directional.tp - baseline_scores.state_profile_directional.tp
+    )
+    print(
+        f"[b1] gold-directional changed facts (dev140): {gold_directional}; recovered (tp delta): +{recovered}"
+    )
+    print("[b1] kill-criterion: recovered must be > 2 to proceed to B2")
     if recovered <= 2:
         print("[b1] KILL: model cannot judge direction even when explicitly asked; B2 pointless.")
         sys.exit(2)
@@ -327,7 +363,9 @@ DIRECTIONAL_EVENT_SCHEMA: dict[str, object] = {
         }
     ]
 }
-DIRECTIONAL_EVENT_SCHEMA_JSON = json.dumps(DIRECTIONAL_EVENT_SCHEMA, ensure_ascii=False, sort_keys=True)
+DIRECTIONAL_EVENT_SCHEMA_JSON = json.dumps(
+    DIRECTIONAL_EVENT_SCHEMA, ensure_ascii=False, sort_keys=True
+)
 
 
 def events_to_sf_facts_directional(raw_output: str) -> list[dict]:
@@ -346,14 +384,23 @@ def events_to_sf_facts_directional(raw_output: str) -> list[dict]:
         fact = {
             "family": "seizure_frequency",
             "seizure_type": str(ev.get("applies_to") or "seizures"),
-            "state": {"frequency_rate": "active_rate", "cluster_frequency": "active_rate",
-                      "seizure_free": "seizure_free", "changed": "changed"}.get(kind, "unknown"),
+            "state": {
+                "frequency_rate": "active_rate",
+                "cluster_frequency": "active_rate",
+                "seizure_free": "seizure_free",
+                "changed": "changed",
+            }.get(kind, "unknown"),
             "evidence": str(ev.get("evidence") or ""),
         }
         if kind == "changed":
             direction = str(ev.get("change_direction") or "").strip().lower()
-            mapping = {"increased": "Increased", "decreased": "Decreased",
-                       "frequent": "Frequent", "infrequent": "Infrequent", "same": "Same"}
+            mapping = {
+                "increased": "Increased",
+                "decreased": "Decreased",
+                "frequent": "Frequent",
+                "infrequent": "Infrequent",
+                "same": "Same",
+            }
             if direction in mapping:
                 fact["attributes"] = {"FrequencyChange": mapping[direction]}
         facts.append(fact)
@@ -401,7 +448,9 @@ class DirectionAwareSfVerifyExtractor(SfVerifyExtractor):
     """
 
     def forward(self, letter_text: str) -> dspy.Prediction:
-        drafted = self.generate(letter_text=letter_text, output_schema=DIRECTIONAL_EVENT_SCHEMA_JSON)
+        drafted = self.generate(
+            letter_text=letter_text, output_schema=DIRECTIONAL_EVENT_SCHEMA_JSON
+        )
         draft_json = str(getattr(drafted, "events_json", "") or "")
         verified = self.verify(
             letter_text=letter_text,
@@ -417,7 +466,9 @@ class DirectionAwareSfVerifyExtractor(SfVerifyExtractor):
 def _project_sf_facts_to_letter(gold_letter: ExectLetter, facts_json: str) -> ExectLetter:
     """Project SF clinical_facts JSON through the dedup adapter to an ExectLetter."""
 
-    record, _errors = parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    record, _errors = (
+        parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    )
     if record is None:
         predicted = PredictedLetter(letter_id=gold_letter.letter_id, mentions=())
     else:
@@ -435,24 +486,34 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
         split_tag = "dev140"
     else:
         if not allow_non_dev140:
-            sys.exit("full-200 B2 requires --allow-non-dev140 (aggregate-only per standing protocol).")
+            sys.exit(
+                "full-200 B2 requires --allow-non-dev140 (aggregate-only per standing protocol)."
+            )
         gold_letters = load_letters()
         split_tag = "full200"
-    gold_by_id = {le.letter_id: le for le in gold_letters}
+    {le.letter_id: le for le in gold_letters}
 
     # Baseline: raw SF-verify program (no direction wiring) on this split.
     # For dev140 we have the stored artifact; for full-200 we must re-run.
     generate_seed, verify_seed = _load_evolved_sf_instructions()
-    lm = build_dspy_lm(TASK_MODEL, temperature=TASK_TEMPERATURE, max_tokens=TASK_MAX_TOKENS, cache=cache)
+    lm = build_dspy_lm(
+        TASK_MODEL, temperature=TASK_TEMPERATURE, max_tokens=TASK_MAX_TOKENS, cache=cache
+    )
     dspy.configure(lm=lm)
 
     # Run the direction-aware program.
     program = DirectionAwareSfVerifyExtractor(
-        generate_seed=generate_seed, verify_seed=verify_seed, generate_lm=lm, verify_lm=lm,
+        generate_seed=generate_seed,
+        verify_seed=verify_seed,
+        generate_lm=lm,
+        verify_lm=lm,
     )
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
     pairs = [(program, {"letter_text": le.note_text}) for le in gold_letters]
-    print(f"[b2-{split_tag}] running direction-aware two-stage SF-verify on {len(gold_letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...", flush=True)
+    print(
+        f"[b2-{split_tag}] running direction-aware two-stage SF-verify on {len(gold_letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...",
+        flush=True,
+    )
     started = time.time()
     predictions = evaluator(pairs)
     n_calls = sum(1 for p in predictions if p and str(getattr(p, "clinical_facts_json", "") or ""))
@@ -460,11 +521,18 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
 
     # Also run the NON-directional baseline program on the same split for a same-day comparison.
     baseline_program = SfVerifyExtractor(
-        generate_seed=generate_seed, verify_seed=verify_seed.removesuffix(DIRECTION_DISCIPLINE_DELTA),
-        generate_lm=lm, verify_lm=lm,
+        generate_seed=generate_seed,
+        verify_seed=verify_seed.removesuffix(DIRECTION_DISCIPLINE_DELTA),
+        generate_lm=lm,
+        verify_lm=lm,
     )
-    print(f"[b2-{split_tag}] running NON-directional baseline on {len(gold_letters)} letters...", flush=True)
-    base_predictions = evaluator([(baseline_program, {"letter_text": le.note_text}) for le in gold_letters])
+    print(
+        f"[b2-{split_tag}] running NON-directional baseline on {len(gold_letters)} letters...",
+        flush=True,
+    )
+    base_predictions = evaluator(
+        [(baseline_program, {"letter_text": le.note_text}) for le in gold_letters]
+    )
 
     # Build pred letters + score both.
     def to_pred_letters(preds) -> list[ExectLetter]:
@@ -472,10 +540,13 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
         for letter, pred in zip(gold_letters, preds, strict=True):
             facts_json = str(getattr(pred, "clinical_facts_json", "") or "") if pred else ""
             pred_exect = _project_sf_facts_to_letter(letter, facts_json)
-            out.append(ExectLetter(
-                letter_id=letter.letter_id, note_text=letter.note_text,
-                annotations=pred_exect.entities(SF_ENTITY),
-            ))
+            out.append(
+                ExectLetter(
+                    letter_id=letter.letter_id,
+                    note_text=letter.note_text,
+                    annotations=pred_exect.entities(SF_ENTITY),
+                )
+            )
         return out
 
     base_pred = to_pred_letters(base_predictions)
@@ -484,13 +555,19 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
     dir_scores = score_frequency_state(gold_letters, dir_pred)
 
     print(f"\n[b2-{split_tag}] NON-directional baseline (this run):")
-    print(f"  state_profile_directional F1: {base_scores.state_profile_directional.f1:.4f} (tp={base_scores.state_profile_directional.tp} fp={base_scores.state_profile_directional.fp} fn={base_scores.state_profile_directional.fn})")
+    print(
+        f"  state_profile_directional F1: {base_scores.state_profile_directional.f1:.4f} (tp={base_scores.state_profile_directional.tp} fp={base_scores.state_profile_directional.fp} fn={base_scores.state_profile_directional.fn})"
+    )
     print(f"  state_profile F1:             {base_scores.state_profile.f1:.4f}")
     print(f"  clinical_headline F1:         {base_scores.clinical_headline.f1:.4f}")
     print(f"[b2-{split_tag}] DIRECTION-AWARE treatment:")
-    print(f"  state_profile_directional F1: {dir_scores.state_profile_directional.f1:.4f} (tp={dir_scores.state_profile_directional.tp} fp={dir_scores.state_profile_directional.fp} fn={dir_scores.state_profile_directional.fn})")
+    print(
+        f"  state_profile_directional F1: {dir_scores.state_profile_directional.f1:.4f} (tp={dir_scores.state_profile_directional.tp} fp={dir_scores.state_profile_directional.fp} fn={dir_scores.state_profile_directional.fn})"
+    )
     print(f"  state_profile F1:             {dir_scores.state_profile.f1:.4f} (regression check)")
-    print(f"  clinical_headline F1:         {dir_scores.clinical_headline.f1:.4f} (regression check)")
+    print(
+        f"  clinical_headline F1:         {dir_scores.clinical_headline.f1:.4f} (regression check)"
+    )
 
     d_delta = dir_scores.state_profile_directional.f1 - base_scores.state_profile_directional.f1
     sp_delta = dir_scores.state_profile.f1 - base_scores.state_profile.f1
@@ -500,9 +577,13 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
 
     # Reference: the v08 hybrid production number (free-replay baseline from pre-work).
     hybrid_ref = {"dev140": 0.8897, "full200": 0.8483}
-    print(f"\n[b2-{split_tag}] REFERENCE: v08 hybrid production state_profile_directional = {hybrid_ref[split_tag]}")
+    print(
+        f"\n[b2-{split_tag}] REFERENCE: v08 hybrid production state_profile_directional = {hybrid_ref[split_tag]}"
+    )
     gap_to_hybrid = dir_scores.state_profile_directional.f1 - hybrid_ref[split_tag]
-    print(f"  direction-aware LLM gap to hybrid: {gap_to_hybrid:+.4f} (negative = LLM trails the hybrid)")
+    print(
+        f"  direction-aware LLM gap to hybrid: {gap_to_hybrid:+.4f} (negative = LLM trails the hybrid)"
+    )
 
     # Write artifacts.
     out_jsonl = EXPERIMENTS / f"exectv2_sf_direction_aware_{split_tag}_{RUN_DATE}.jsonl"
@@ -514,7 +595,9 @@ def run_b2(split: str, num_threads: int, cache: bool, allow_non_dev140: bool) ->
             {"entity": SF_ENTITY, "text": str(a.text), "attributes": dict(a.attributes)}
             for a in pred_exect.entities(SF_ENTITY)
         ]
-        rows.append({"letter_id": letter.letter_id, "split": split_tag, "predicted_mentions": mentions})
+        rows.append(
+            {"letter_id": letter.letter_id, "split": split_tag, "predicted_mentions": mentions}
+        )
     write_jsonl(rows, out_jsonl)
     print(f"[b2-{split_tag}] artifact -> {out_jsonl.name}")
 
@@ -535,7 +618,12 @@ def main() -> None:
     if args.phase == "b1":
         run_b1(num_threads=args.num_threads, cache=args.cache)
     elif args.phase == "b2":
-        run_b2(args.split, num_threads=args.num_threads, cache=args.cache, allow_non_dev140=args.allow_non_dev140)
+        run_b2(
+            args.split,
+            num_threads=args.num_threads,
+            cache=args.cache,
+            allow_non_dev140=args.allow_non_dev140,
+        )
 
 
 if __name__ == "__main__":

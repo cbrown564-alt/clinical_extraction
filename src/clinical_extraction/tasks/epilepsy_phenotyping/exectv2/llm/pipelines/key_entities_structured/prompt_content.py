@@ -20,16 +20,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
     residual_candidates_adapter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
-    load_qwen_compact_worked_examples,
-    load_worked_examples,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
-    KEY_ENTITY_NAMES,
     _DIAGNOSIS_RE,
     _INVESTIGATION_RE,
     _MEDICATION_RE,
     _SEIZURE_STATE_RE,
+    KEY_ENTITY_NAMES,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_qwen_compact_worked_examples,
+    load_worked_examples,
 )
 
 
@@ -174,10 +174,7 @@ def candidate_evidence_ledger_for_letter(
 
 def _decision_procedure() -> list[str]:
     return [
-        (
-            "Scan the letter globally for the four key families; do not stop at "
-            "section headers."
-        ),
+        ("Scan the letter globally for the four key families; do not stop at section headers."),
         (
             "Use candidate_evidence_ledger rows as likely evidence anchors, but "
             "do not emit a row unless the full sentence supports a requested family."

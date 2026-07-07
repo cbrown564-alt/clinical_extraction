@@ -19,8 +19,8 @@ from clinical_extraction.observatory.gan2026 import (
 from clinical_extraction.observatory.helpers import require_supported_pipeline
 from clinical_extraction.observatory.models import (
     ATLAS_HARD_SLICE_DEFINITIONS,
-    HardSliceMembershipRequest,
     PROMPT_MODULES,
+    HardSliceMembershipRequest,
     RunAblationRequest,
     RunNoteRequest,
     TagErrorRequest,
@@ -32,18 +32,13 @@ from clinical_extraction.observatory.responses import (
     HardSliceMembershipRow,
     PromptsResponse,
     RecordDetailResponse,
-    RecordsListResponse,
     RecordPreview,
+    RecordsListResponse,
     RulesResponse,
     RunAblationResponse,
     RunAblationSummary,
     RunNoteResponse,
     TagErrorResponse,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.frontend_review import (
-    cached_component_stage_ladder_json,
-    cached_component_transitions_json as cached_gan_component_transitions_json,
-    cached_gan_reliability_scorecard_json,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -53,6 +48,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
     RuleGroup,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluate import evaluate_predictions
+from clinical_extraction.tasks.seizure_frequency.gan2026.frontend_review import (
+    cached_component_stage_ladder_json,
+    cached_gan_reliability_scorecard_json,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.frontend_review import (
+    cached_component_transitions_json as cached_gan_component_transitions_json,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import Gan2026PipelineV1
 
@@ -214,15 +216,11 @@ def error_taxonomy_schema() -> dict[str, Any]:
             {"id": "correct", "description": "Prediction exactly matches gold standard."},
             {
                 "id": "false_negative",
-                "description": (
-                    "Predicted no-seizure/unknown when note describes a frequency."
-                ),
+                "description": ("Predicted no-seizure/unknown when note describes a frequency."),
             },
             {
                 "id": "false_positive",
-                "description": (
-                    "Predicted a frequency when gold is no-seizure/unknown."
-                ),
+                "description": ("Predicted a frequency when gold is no-seizure/unknown."),
             },
             {"id": "over_estimate", "description": "Predicted higher frequency than gold."},
             {"id": "under_estimate", "description": "Predicted lower frequency than gold."},
@@ -280,8 +278,7 @@ def prompt_template(module_name: str) -> dict[str, Any]:
         raise HTTPException(
             status_code=404,
             detail=(
-                f"Unknown prompt module: {module_name!r}. "
-                f"Expected one of {list(PROMPT_MODULES)}."
+                f"Unknown prompt module: {module_name!r}. Expected one of {list(PROMPT_MODULES)}."
             ),
         )
     return prompt_template_payload(module_name)

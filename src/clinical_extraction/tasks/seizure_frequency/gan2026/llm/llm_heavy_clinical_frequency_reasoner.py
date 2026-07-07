@@ -14,9 +14,6 @@ import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -39,6 +36,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+    load_raw_outputs_by_source_index,
 )
 
 PROMPT_VERSION = "gan2026_llm_heavy_clinical_frequency_reasoner_v2_compact"

@@ -3,9 +3,9 @@
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.verifier import (
     COMPONENT_OWNER,
     CONFIG,
-    DspyDiagnosisVerifier,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
+    DspyDiagnosisVerifier,
 )
 
 __all__ = [

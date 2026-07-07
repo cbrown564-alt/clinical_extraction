@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 from clinical_extraction.core.evidence import (
-    EvidenceGrade,
     GROUNDED_GRADES,
+    EvidenceGrade,
     grade_evidence,
     is_grounded,
 )
@@ -169,9 +169,7 @@ def _dedupe_preserve(items: Iterable[str]) -> list[str]:
 
 def _pick_primary_jsonl(entry: RunRegistryEntry) -> Path | None:
     candidates = [
-        Path(path)
-        for path in entry.artifact_paths
-        if path.endswith(".jsonl") and path.strip()
+        Path(path) for path in entry.artifact_paths if path.endswith(".jsonl") and path.strip()
     ]
     if not candidates:
         return None
@@ -327,8 +325,7 @@ def audit_target(
             row_all_strings_grounded += 1
 
         if all(
-            is_grounded(grade_evidence_string(note_text, evidence))
-            for evidence in evidence_strings
+            is_grounded(grade_evidence_string(note_text, evidence)) for evidence in evidence_strings
         ):
             row_grounded_after_repair += 1
 
@@ -337,9 +334,7 @@ def audit_target(
     grounded_strings = sum(grade_counts[grade.value] for grade in GROUNDED_GRADES)
     exact_invalid_total = total_strings - exact_strings
     recoverable_invalid = sum(
-        grade_counts[grade.value]
-        for grade in GROUNDED_GRADES
-        if grade != EvidenceGrade.EXACT
+        grade_counts[grade.value] for grade in GROUNDED_GRADES if grade != EvidenceGrade.EXACT
     )
     genuine_invalid = grade_counts[EvidenceGrade.ABSENT] + grade_counts[EvidenceGrade.EMPTY]
 
@@ -377,7 +372,9 @@ def audit_target(
                 if grade != EvidenceGrade.EXACT and exact_invalid_counts[grade.value]
             },
         },
-        "samples_by_grade": {grade: samples[grade.value] for grade in ALL_GRADES if samples[grade.value]},
+        "samples_by_grade": {
+            grade: samples[grade.value] for grade in ALL_GRADES if samples[grade.value]
+        },
         "row_missing_current_flag": row_missing_current_flag,
     }
 
@@ -452,7 +449,9 @@ def _headline(
         None,
     )
     return {
-        "qwen_hybrid_row_exact_valid_rate": qwen_hybrid.get("row_exact_valid_rate") if qwen_hybrid else None,
+        "qwen_hybrid_row_exact_valid_rate": qwen_hybrid.get("row_exact_valid_rate")
+        if qwen_hybrid
+        else None,
         "qwen_hybrid_grounded_rate": qwen_hybrid.get("grounded_rate") if qwen_hybrid else None,
         "qwen_hybrid_recoverable_share_of_exact_invalid": (
             (qwen_hybrid.get("exact_invalid_split") or {}).get("recoverable_share_of_exact_invalid")
@@ -592,7 +591,7 @@ def _render_task_section(
                 continue
             lines.append(f"- `{grade.value}`:")
             for sample in grade_samples:
-                lines.append(f"  - \"{sample}\"")
+                lines.append(f'  - "{sample}"')
         lines.append("")
     return lines
 
@@ -746,10 +745,7 @@ def reconcile_registry_from_audit(
 ) -> int:
     """Annotate registry rows with unified groundedness metrics (append-aware)."""
 
-    audited = {
-        run["run_id"]: run
-        for run in (*payload["gan2026_runs"], *payload["exectv2_runs"])
-    }
+    audited = {run["run_id"]: run for run in (*payload["gan2026_runs"], *payload["exectv2_runs"])}
     updated = 0
     out_lines: list[str] = []
     with registry_path.open(encoding="utf-8") as handle:
@@ -765,7 +761,9 @@ def reconcile_registry_from_audit(
                 continue
 
             previous = record.get("evidence_validity")
-            if previous and not record.get("primary_metrics", {}).get("superseded_evidence_validity"):
+            if previous and not record.get("primary_metrics", {}).get(
+                "superseded_evidence_validity"
+            ):
                 metrics = dict(record.get("primary_metrics") or {})
                 metrics["superseded_evidence_validity"] = previous
                 metrics["superseded_exact_valid_rate"] = _before_metric_rate(audit)

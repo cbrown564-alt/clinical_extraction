@@ -22,23 +22,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     normalize_month,
     normalize_unit,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    canonicalize_attribute_value,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.constants import (
-    ENTITY_NAME,
-    PLAN11_EVENT_STATE_LAYER_LADDER,
-    PLAN11_EVENT_STATE_ROUTE_VERSION,
-    PROMPT_VERSION,
     _FREQUENCY_CHANGE_ALIASES,
     _OUTPUT_LAYERS,
     _POINT_IN_TIME_ALIASES,
     _TIME_RELATION_ALIASES,
+    ENTITY_NAME,
+    PLAN11_EVENT_STATE_LAYER_LADDER,
+    PLAN11_EVENT_STATE_ROUTE_VERSION,
+    PROMPT_VERSION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.types import (
     ClinicalFindingRecord,
     ClinicalFindingsRecord,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    canonicalize_attribute_value,
+)
+
 
 def project_finding_to_attributes(
     finding: ClinicalFindingRecord,
@@ -241,9 +242,7 @@ def _repair_projected_attributes(
                 f"normalized_attribute_value: {key!r}={value!r} -> {normalized_value!r}"
             )
         if key in spec.closed_vocab and normalized_value not in spec.closed_vocab[key]:
-            warnings.append(
-                f"dropped_illegal_value: {key!r}={normalized_value!r}"
-            )
+            warnings.append(f"dropped_illegal_value: {key!r}={normalized_value!r}")
             continue
         repaired[key] = normalized_value
     return repaired, warnings
@@ -258,9 +257,7 @@ def to_predicted_letters(
     """Build format-only and CUI-projected prediction layers."""
 
     warnings: list[str] = []
-    layer_mentions: dict[str, list[PredictedMention]] = {
-        layer: [] for layer in _OUTPUT_LAYERS
-    }
+    layer_mentions: dict[str, list[PredictedMention]] = {layer: [] for layer in _OUTPUT_LAYERS}
 
     for finding in findings:
         if finding.frequency_statement_type == "current_control_no_duration":
@@ -301,9 +298,7 @@ def to_predicted_letters(
                     **dict(format_projected.diagnostics),
                     "layer": "cui_projected",
                     "source_layer": "format_projected",
-                    "cui_projected_mentions": cui_projected.diagnostics[
-                        "cui_projected_mentions"
-                    ],
+                    "cui_projected_mentions": cui_projected.diagnostics["cui_projected_mentions"],
                 }
             }
         ),
@@ -336,9 +331,7 @@ def build_plan11_event_state_route(
             "named post-LLM state policy."
         ),
         "aggregate_ownership": (
-            "llm_first"
-            if not policy_counts
-            else "llm_first_with_declared_post_llm_state_policy"
+            "llm_first" if not policy_counts else "llm_first_with_declared_post_llm_state_policy"
         ),
         "deterministic_clinical_selection": False,
         "deterministic_selection_actions": [],

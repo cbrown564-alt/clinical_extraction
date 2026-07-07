@@ -39,7 +39,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     semantic_config_for,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.bootstrap import (
-    BootstrapCI,
     bootstrap_f1_ci,
 )
 
@@ -168,8 +167,7 @@ def build_scorecard(
             },
             "benchmark_format": {
                 "semantic_minus_benchmark_item_f1": round(
-                    semantic.get("per_item", {}).get("f1", 0.0)
-                    - bench_item.get("f1", 0.0),
+                    semantic.get("per_item", {}).get("f1", 0.0) - bench_item.get("f1", 0.0),
                     4,
                 ),
                 "projection_delta_item_f1": proj.get("delta_item_f1", 0.0),
@@ -213,49 +211,51 @@ def render_markdown(scorecard: dict[str, Any], *, source: str = "") -> str:
     ]
     if source:
         lines.append(f"- Source: `{source}`")
-    lines.extend([
-        f"- Split: `{scorecard['split']}`  Letters: {scorecard['letters']}",
-        f"- Candidate model: `{scorecard['model']}`  Rule augmentation: "
-        f"`{scorecard['augment_rules']}`",
-        "",
-        "## Promotion gate",
-        "",
-        f"- Freeze targets: per-item {gate['freeze_target_per_item']:.2f} / "
-        f"per-letter {gate['freeze_target_per_letter']:.2f} (benchmark, with-CUI).",
-        f"- Benchmark per-item F1: {gate['benchmark_per_item_f1']:.3f}  "
-        f"per-letter F1: {gate['benchmark_per_letter_f1']:.3f}",
-        f"- **Gate met: {gate['gate_met']}** — full-200 audit authorized: "
-        f"{gate['full_200_audit_authorized']}.",
-        f"- {gate['verdict']}",
-        "",
-        "## Scorecard dimensions",
-        "",
-        "| Dimension | Reading |",
-        "| --- | --- |",
-        f"| Task correctness | semantic item F1 {tc['semantic_item_f1']:.3f} "
-        f"CI[{tc['semantic_item_f1_ci'][0]:.3f}, {tc['semantic_item_f1_ci'][1]:.3f}]; "
-        f"benchmark item F1 {tc['benchmark_item_f1']:.3f} "
-        f"CI[{tc['benchmark_item_f1_ci'][0]:.3f}, {tc['benchmark_item_f1_ci'][1]:.3f}]; "
-        f"letter F1 {tc['benchmark_letter_f1']:.3f} |",
-        f"| Candidate generation | source-near recall "
-        f"{dims['candidate_generation']['source_near_recall']:.3f} |",
-        f"| Faithfulness | evidence-routed "
-        f"{dims['faithfulness']['evidence_not_substring_routed']} mentions |",
-        f"| Schema reliability | scored {dims['schema_reliability']['mentions_scored']} "
-        f"/ {dims['schema_reliability']['candidates']} candidates |",
-        f"| Benchmark format | semantic−benchmark item F1 "
-        f"{dims['benchmark_format']['semantic_minus_benchmark_item_f1']:+.3f}; "
-        f"projection Δ {dims['benchmark_format']['projection_delta_item_f1']:+.3f} |",
-        f"| Calibration/routing | routed {dims['calibration_routing']['routed_total']} "
-        f"by reason {dims['calibration_routing']['by_reason']} |",
-        f"| Operational | candidates {dims['operational']['candidates']}, "
-        f"scored {dims['operational']['scored']}, routed {dims['operational']['routed']} |",
-        "",
-        "## Robustness — per-entity benchmark item F1 vs published target",
-        "",
-        "| Entity | Semantic F1 | Benchmark F1 | Published | Gap |",
-        "| --- | ---: | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            f"- Split: `{scorecard['split']}`  Letters: {scorecard['letters']}",
+            f"- Candidate model: `{scorecard['model']}`  Rule augmentation: "
+            f"`{scorecard['augment_rules']}`",
+            "",
+            "## Promotion gate",
+            "",
+            f"- Freeze targets: per-item {gate['freeze_target_per_item']:.2f} / "
+            f"per-letter {gate['freeze_target_per_letter']:.2f} (benchmark, with-CUI).",
+            f"- Benchmark per-item F1: {gate['benchmark_per_item_f1']:.3f}  "
+            f"per-letter F1: {gate['benchmark_per_letter_f1']:.3f}",
+            f"- **Gate met: {gate['gate_met']}** — full-200 audit authorized: "
+            f"{gate['full_200_audit_authorized']}.",
+            f"- {gate['verdict']}",
+            "",
+            "## Scorecard dimensions",
+            "",
+            "| Dimension | Reading |",
+            "| --- | --- |",
+            f"| Task correctness | semantic item F1 {tc['semantic_item_f1']:.3f} "
+            f"CI[{tc['semantic_item_f1_ci'][0]:.3f}, {tc['semantic_item_f1_ci'][1]:.3f}]; "
+            f"benchmark item F1 {tc['benchmark_item_f1']:.3f} "
+            f"CI[{tc['benchmark_item_f1_ci'][0]:.3f}, {tc['benchmark_item_f1_ci'][1]:.3f}]; "
+            f"letter F1 {tc['benchmark_letter_f1']:.3f} |",
+            f"| Candidate generation | source-near recall "
+            f"{dims['candidate_generation']['source_near_recall']:.3f} |",
+            f"| Faithfulness | evidence-routed "
+            f"{dims['faithfulness']['evidence_not_substring_routed']} mentions |",
+            f"| Schema reliability | scored {dims['schema_reliability']['mentions_scored']} "
+            f"/ {dims['schema_reliability']['candidates']} candidates |",
+            f"| Benchmark format | semantic−benchmark item F1 "
+            f"{dims['benchmark_format']['semantic_minus_benchmark_item_f1']:+.3f}; "
+            f"projection Δ {dims['benchmark_format']['projection_delta_item_f1']:+.3f} |",
+            f"| Calibration/routing | routed {dims['calibration_routing']['routed_total']} "
+            f"by reason {dims['calibration_routing']['by_reason']} |",
+            f"| Operational | candidates {dims['operational']['candidates']}, "
+            f"scored {dims['operational']['scored']}, routed {dims['operational']['routed']} |",
+            "",
+            "## Robustness — per-entity benchmark item F1 vs published target",
+            "",
+            "| Entity | Semantic F1 | Benchmark F1 | Published | Gap |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for r in dims["robustness"]:
         lines.append(
             f"| {r['entity']} | {r['semantic_item_f1']:.3f} | {r['benchmark_item_f1']:.3f} "

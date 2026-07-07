@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import dspy
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.prompt_builders import (
-    build_prompt_input,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.parsing import (
     parse_clinical_findings_json,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.prompt_builders import (
+    build_prompt_input,
 )
 
 __all__ = [
@@ -30,13 +30,13 @@ class ExECTv2ClinicalFindingsSFSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"event_frames\": [{\"event_id\": ..., "
-            "\"evidence\": ..., \"seizure_phrase\": ..., \"target_status\": ..., "
-            "\"statement_family\": ...}], \"findings\": [{\"text\": ..., "
-            "\"evidence\": ..., \"clinical_kind\": ..., "
-            "\"frequency_statement_type\": ..., \"source_role\": ..., "
-            "\"count\": ..., \"period_unit\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"event_frames": [{"event_id": ..., '
+            '"evidence": ..., "seizure_phrase": ..., "target_status": ..., '
+            '"statement_family": ...}], "findings": [{"text": ..., '
+            '"evidence": ..., "clinical_kind": ..., '
+            '"frequency_statement_type": ..., "source_role": ..., '
+            '"count": ..., "period_unit": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 

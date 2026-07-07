@@ -10,20 +10,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
-    FAMILIES,
     _FAMILY_BASE_RISK,
     _PLAN_LANGUAGE,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import ReliabilityRun
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
+    ReliabilityRun,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    benchmark_config_for,
     clinical_headline_unit_keys,
     score_concept_identity,
     score_frequency_state,
     score_investigations_components,
-    score_overall,
     score_prescription_components,
 )
+
 
 def ann(mention: dict[str, Any]) -> ExectAnnotation:
     return ExectAnnotation(
@@ -54,9 +54,7 @@ def letters_for_rows(
             ExectLetter(
                 letter_id=str(row["letter_id"]),
                 note_text="",
-                annotations=tuple(
-                    ann(mention) for mention in row.get("predicted_mentions", [])
-                ),
+                annotations=tuple(ann(mention) for mention in row.get("predicted_mentions", [])),
             )
         )
     return gold_letters, pred_letters
@@ -132,9 +130,7 @@ def headline_keys(
     field: str = "predicted_mentions",
 ) -> list[str]:
     mentions = [
-        ann(mention)
-        for mention in row.get(field, [])
-        if str(mention.get("entity", "")) == family
+        ann(mention) for mention in row.get(field, []) if str(mention.get("entity", "")) == family
     ]
     return [repr(key) for key in clinical_headline_unit_keys(family, mentions)]
 
@@ -167,8 +163,7 @@ def risk_features(row: dict[str, Any], family: str) -> dict[str, Any]:
     ]
     evidence_invalid = any(not bool(mention.get("evidence_valid", True)) for mention in mentions)
     low_confidence = any(
-        str(mention.get("confidence", "high")).lower() not in {"", "high"}
-        for mention in mentions
+        str(mention.get("confidence", "high")).lower() not in {"", "high"} for mention in mentions
     )
     deterministic_actions = deterministic_action_count(mentions)
     source_final_delta = (
@@ -234,9 +229,7 @@ def review_triggers(cell: dict[str, Any]) -> list[str]:
         triggers.append("evidence_invalid")
     if family == "Diagnosis" and int(features["deterministic_action_count"]) > 0:
         triggers.append("diagnosis_convention_or_assertion_repair")
-    if family == "SeizureFrequency" and (
-        features["source_final_delta"] or features["active_rate"]
-    ):
+    if family == "SeizureFrequency" and (features["source_final_delta"] or features["active_rate"]):
         triggers.append("sf_state_or_rate_fidelity")
     if family == "Prescription" and (
         features["plan_language"] or int(features["deterministic_action_count"]) > 0
@@ -288,11 +281,7 @@ def round_rate(numerator: int, denominator: int) -> float:
 
 
 def row_has_call_error(row: dict[str, Any]) -> bool:
-    if (
-        row.get("call_error")
-        or row.get("generation_call_error")
-        or row.get("selection_call_error")
-    ):
+    if row.get("call_error") or row.get("generation_call_error") or row.get("selection_call_error"):
         return True
     family_errors = row.get("dedup_fact_call_errors_by_family") or {}
     return any(family_errors.values())

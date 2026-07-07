@@ -9,14 +9,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_ent
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_target_indicators_single_call import (  # noqa: E501
     COMPONENT_OWNER,
     _parse_target_extraction_json,
-    audit_only_projection_replay_switches,
     build_prompt_input,
-    summarize_rows,
     to_predicted_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
     TARGET_INDICATORS,
 )
+
 
 def test_target_single_call_prompt_is_limited_to_adr0030_indicators() -> None:
     payload = json.loads(build_prompt_input(ExectLetter("EA1", "MRI was normal.")))
@@ -205,8 +204,7 @@ def test_target_single_call_adapter_repairs_prescription_frequency_synonym_evide
     assert len(predicted.mentions) == 1
     assert predicted.mentions[0].evidence == "carbamazepine 400 mg twice a day"
     assert any(
-        "repaired_prescription_frequency_synonym_evidence" in warning
-        for warning in warnings
+        "repaired_prescription_frequency_synonym_evidence" in warning for warning in warnings
     )
 
 
@@ -304,10 +302,7 @@ def test_target_single_call_adapter_extends_asymmetric_prescription_evidence() -
         "750",
         "500",
     ]
-    assert any(
-        "extended_asymmetric_prescription_evidence" in warning
-        for warning in warnings
-    )
+    assert any("extended_asymmetric_prescription_evidence" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_deduplicates_prescription_regimens() -> None:
@@ -443,9 +438,7 @@ def test_target_single_call_adapter_removes_cross_modal_eeg_type_from_mri() -> N
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert "EEG_Type" not in predicted.mentions[0].attributes
-    assert any(
-        "removed_cross_modal_investigation_attrs" in warning for warning in warnings
-    )
+    assert any("removed_cross_modal_investigation_attrs" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_removes_cross_modal_ct_attrs_from_mri() -> None:
@@ -462,9 +455,7 @@ def test_target_single_call_adapter_removes_cross_modal_ct_attrs_from_mri() -> N
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions == ()
-    assert any(
-        "removed_cross_modal_investigation_attrs" in warning for warning in warnings
-    )
+    assert any("removed_cross_modal_investigation_attrs" in warning for warning in warnings)
     assert any("dropped_empty_investigation_attrs" in warning for warning in warnings)
 
 
@@ -538,10 +529,7 @@ def test_target_single_call_adapter_drops_investigation_only_temporal_diagnosis(
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions == ()
-    assert any(
-        "dropped_investigation_only_diagnosis_context" in warning
-        for warning in warnings
-    )
+    assert any("dropped_investigation_only_diagnosis_context" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_drops_non_target_ecg_investigation_attrs() -> None:

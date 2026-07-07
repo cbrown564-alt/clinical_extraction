@@ -2,12 +2,12 @@
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.phase2_panel import (
     COMPONENT_OWNER,
-    DspyDiagnosisPhase2Panel,
-    ExECTv2DiagnosisPhase2Signature,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
     RESIDUAL_FAMILY_ORDER,
     VARIANTS,
+    DspyDiagnosisPhase2Panel,
+    ExECTv2DiagnosisPhase2Signature,
     PanelItem,
     Variant,
     build_prompt_input,

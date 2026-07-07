@@ -11,18 +11,18 @@ from pydantic import ValidationError
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.constants import (
-    PROMPT_VERSION,
     _SCALAR_FINDING_FIELDS,
+    PROMPT_VERSION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings.types import (
     ClinicalFindingRecord,
     EventFrameRecord,
     VerificationDecisionList,
-    VerificationDecisionRecord,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     loads_json_or_literal,
 )
+
 
 class ExECTv2ClinicalFindingsVerifierSignature(dspy.Signature):
     """Review one letter and raw findings, then return edit decisions.
@@ -36,10 +36,10 @@ class ExECTv2ClinicalFindingsVerifierSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"decisions\": [{\"raw_index\": 0, "
-            "\"target_status\": ..., \"action\": \"keep|remove|revise\", \"text\": ..., "
-            "\"evidence\": ..., \"rationale\": ...}], "
-            "\"findings_to_add\": [...]}"
+            'One strict JSON object: {"decisions": [{"raw_index": 0, '
+            '"target_status": ..., "action": "keep|remove|revise", "text": ..., '
+            '"evidence": ..., "rationale": ...}], '
+            '"findings_to_add": [...]}'
         )
     )
 
@@ -51,6 +51,7 @@ class DspyClinicalFindingsSFVerifier(dspy.Module):
 
     def forward(self, prompt_input_json: str) -> dspy.Prediction:
         return self.predict(prompt_input_json=prompt_input_json)
+
 
 def build_verification_prompt_input(
     letter: ExectLetter,
@@ -67,9 +68,7 @@ def build_verification_prompt_input(
             "a 'findings_to_add' list."
         ),
         "raw_findings": [finding.model_dump(mode="json") for finding in raw_findings],
-        "event_frames": [
-            frame.model_dump(mode="json") for frame in (event_frames or [])
-        ],
+        "event_frames": [frame.model_dump(mode="json") for frame in (event_frames or [])],
         "decision_schema": {
             "raw_index": "Zero-based index into raw_findings.",
             "target_status": (
@@ -342,8 +341,7 @@ def build_verification_prompt_input(
                     "target_status": "target_epileptic_seizure_frequency",
                     "action": "keep",
                     "rationale": (
-                        "Historical dated seizure counts are target "
-                        "seizure-frequency findings."
+                        "Historical dated seizure counts are target seizure-frequency findings."
                     ),
                 },
             },
@@ -360,9 +358,7 @@ def build_verification_prompt_input(
                     "raw_index": 4,
                     "target_status": "target_epileptic_seizure_frequency",
                     "action": "keep",
-                    "rationale": (
-                        "Last-event dates are target seizure-frequency findings."
-                    ),
+                    "rationale": ("Last-event dates are target seizure-frequency findings."),
                 },
             },
             {
@@ -380,8 +376,7 @@ def build_verification_prompt_input(
                     "time_relation": "during",
                     "point_in_time": "last week",
                     "rationale": (
-                        "The event occurred last week, so the time anchor belongs "
-                        "on the finding."
+                        "The event occurred last week, so the time anchor belongs on the finding."
                     ),
                 },
             },
@@ -389,8 +384,7 @@ def build_verification_prompt_input(
                 "raw_finding": {
                     "text": "focal seizures without change in awareness",
                     "evidence": (
-                        "In March she had 2 to 3 of her focal seizures without "
-                        "change in awareness"
+                        "In March she had 2 to 3 of her focal seizures without change in awareness"
                     ),
                     "clinical_kind": "dated_count",
                     "frequency_statement_type": "calendar_count",
@@ -435,8 +429,7 @@ def build_verification_prompt_input(
                     "target_status": "diagnosis_without_frequency",
                     "action": "remove",
                     "rationale": (
-                        "Vague epilepsy control is not a source-near seizure-frequency "
-                        "finding."
+                        "Vague epilepsy control is not a source-near seizure-frequency finding."
                     ),
                 },
             },
@@ -451,9 +444,7 @@ def build_verification_prompt_input(
                     "raw_index": 9,
                     "target_status": "non_target_episode",
                     "action": "remove",
-                    "rationale": (
-                        "The frequency clause names episodes, not epileptic seizures."
-                    ),
+                    "rationale": ("The frequency clause names episodes, not epileptic seizures."),
                 },
             },
             {
@@ -542,6 +533,7 @@ def build_verification_prompt_input(
     }
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
+
 def parse_verification_decisions_json(
     raw_output: str,
 ) -> tuple[VerificationDecisionList | None, list[str]]:
@@ -579,8 +571,7 @@ def _coerce_verification_payload(payload: Any) -> tuple[Any, list[str]]:
             kept.append(addition)
             continue
         notes.append(
-            f"dropped_invalid_findings_to_add_record: index={i} "
-            "missing text/clinical_kind"
+            f"dropped_invalid_findings_to_add_record: index={i} missing text/clinical_kind"
         )
     return {**payload, "findings_to_add": kept}, notes
 
@@ -618,15 +609,16 @@ def apply_verification_decisions(
             updates.pop("rationale")
         try:
             final_findings.append(
-                ClinicalFindingRecord.model_validate({
-                    **finding.model_dump(mode="json"),
-                    **updates,
-                })
+                ClinicalFindingRecord.model_validate(
+                    {
+                        **finding.model_dump(mode="json"),
+                        **updates,
+                    }
+                )
             )
         except ValidationError as exc:
             warnings.append(
-                f"verification_revise_invalid_kept: raw_index={index} "
-                f"{exc.errors()[0]['msg']}"
+                f"verification_revise_invalid_kept: raw_index={index} {exc.errors()[0]['msg']}"
             )
             final_findings.append(finding)
 

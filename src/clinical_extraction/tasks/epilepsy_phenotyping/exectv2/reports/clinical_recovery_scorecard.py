@@ -8,6 +8,9 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.registry import (
+    RunRegistryEntry,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     BIRTH_HISTORY,
     DIAGNOSIS,
@@ -56,9 +59,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_components,
     semantic_config_for,
     source_near_diagnostic,
-)
-from clinical_extraction.core.registry import (
-    RunRegistryEntry,
 )
 
 PIPELINE_FAMILY = "exectv2_clinical_recovery"
@@ -135,12 +135,9 @@ def build_scorecard(
         "headline_entities": list(HEADLINE_ENTITIES),
         "coverage_diagnostic_entities": [PATIENT_HISTORY.name],
         "active_entities": list(ACTIVE_DETERMINISTIC_ENTITIES),
-        "overall_clinical_recovery": recovery_to_dict(
-            aggregate_recovery(headline_scores.values())
-        ),
+        "overall_clinical_recovery": recovery_to_dict(aggregate_recovery(headline_scores.values())),
         "headline_scores": {
-            entity: _headline_score_to_dict(score)
-            for entity, score in headline_scores.items()
+            entity: _headline_score_to_dict(score) for entity, score in headline_scores.items()
         },
         "patient_history_coverage": {
             "source_near_overlap": prf1_to_dict(
@@ -242,10 +239,7 @@ def _headline_score_to_dict(score: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _model_scores_to_dict(model: Any) -> dict[str, Any]:
-    return {
-        name: score_to_dict(getattr(model, name))
-        for name in type(model).model_fields
-    }
+    return {name: score_to_dict(getattr(model, name)) for name in type(model).model_fields}
 
 
 def _render_markdown(scorecard: dict[str, Any], *, json_path: Path) -> str:
@@ -322,9 +316,9 @@ def _registry_entry(
         "coverage_diagnostic_entities": list(scorecard["coverage_diagnostic_entities"]),
     }
     for entity in scorecard["headline_entities"]:
-        metrics[f"{entity.lower()}_headline_f1"] = scorecard["headline_scores"][entity][
-            "headline"
-        ]["f1"]
+        metrics[f"{entity.lower()}_headline_f1"] = scorecard["headline_scores"][entity]["headline"][
+            "f1"
+        ]
     return RunRegistryEntry(
         run_id=f"exectv2_clinical_recovery_{scorecard['split']}_{date_slug}",
         artifact_paths=(

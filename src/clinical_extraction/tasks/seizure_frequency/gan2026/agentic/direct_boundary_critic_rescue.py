@@ -18,9 +18,9 @@ from pydantic import BaseModel, ConfigDict
 
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
-    AgenticStage,
     DEFAULT_BLOCKING_PARSE_PREFIXES,
     DEFAULT_REPAIR_NOTE_PREFIXES,
+    AgenticStage,
     ParsedStageResponse,
     build_markdown_report_skeleton,
     build_stage_metadata,
@@ -454,8 +454,7 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         )
         accepted_boundary_demotions += int(
             row.get("accepted_action") != "fallback"
-            and _label_kind(row.get("final_label"))
-            in {"seizure_free", "unknown", "no_reference"}
+            and _label_kind(row.get("final_label")) in {"seizure_free", "unknown", "no_reference"}
             and _is_frequency_or_cluster_label(row.get("direct_label"))
         )
         final_label = row.get("final_label")
@@ -490,15 +489,11 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "wins_vs_reference": wins,
         "losses_vs_reference": losses,
         "changed_labels_vs_reference": changed_labels,
-        "changed_label_precision": round(wins / changed_labels, 4)
-        if changed_labels
-        else None,
+        "changed_label_precision": round(wins / changed_labels, 4) if changed_labels else None,
         "accepted_rescue_correct": accepted_rescue_correct,
         "accepted_action_regressions": accepted_action_regressions,
         "accepted_boundary_demotions": accepted_boundary_demotions,
-        "fallback_rate": round(action_counts["fallback"] / len(rows), 4)
-        if rows
-        else 0.0,
+        "fallback_rate": round(action_counts["fallback"] / len(rows), 4) if rows else 0.0,
         "accepted_action_counts": dict(sorted(action_counts.items())),
         "blocked_reasons": dict(sorted(blocked_reasons.items())),
         "parser_context_disabled": True,
@@ -553,11 +548,7 @@ def gate_interpretation(
 
     accepted_rescue_correct = int(summary.get("accepted_rescue_correct", 0))
     accepted_boundary_demotions = int(summary.get("accepted_boundary_demotions", 0))
-    if (
-        parse_failures == 0
-        and accepted_boundary_demotions == 0
-        and accepted_rescue_correct >= 4
-    ):
+    if parse_failures == 0 and accepted_boundary_demotions == 0 and accepted_rescue_correct >= 4:
         status = "pass_panel_gate"
         interpretation = (
             "Direct plus boundary critic passed the predeclared micro-panel gate; "
@@ -852,7 +843,9 @@ def _execute_direct_call(
         except Exception as exc:  # pragma: no cover - live transport only.
             call_error = f"{type(exc).__name__}: {exc}"
     parsed = (
-        DIRECT_STAGE.parse_response(raw_output) if raw_output else ParsedStageResponse(None, ["not_run"])
+        DIRECT_STAGE.parse_response(raw_output)
+        if raw_output
+        else ParsedStageResponse(None, ["not_run"])
     )
     decision = parsed.decision
     parse_errors = parsed.parse_errors
@@ -911,7 +904,9 @@ def _execute_critic_call(
         except Exception as exc:  # pragma: no cover - live transport only.
             call_error = f"{type(exc).__name__}: {exc}"
     parsed = (
-        CRITIC_STAGE.parse_response(raw_output) if raw_output else ParsedStageResponse(None, ["not_run"])
+        CRITIC_STAGE.parse_response(raw_output)
+        if raw_output
+        else ParsedStageResponse(None, ["not_run"])
     )
     decision = parsed.decision
     parse_errors = parsed.parse_errors
@@ -1283,9 +1278,7 @@ def _reference_labels(reference_rows: Sequence[Mapping[str, Any]]) -> dict[int, 
         source_row_index = row.get("source_row_index")
         if source_row_index is None:
             continue
-        trace = dict(
-            dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {}
-        )
+        trace = dict(dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {})
         label = trace.get("final_label")
         if label is not None:
             labels[int(source_row_index)] = str(label)

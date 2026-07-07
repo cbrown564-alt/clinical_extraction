@@ -6,7 +6,9 @@ import itertools
 from collections import Counter, defaultdict
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import FAMILIES
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
+    FAMILIES,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.io import run_ref
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     aggregate_scores,
@@ -15,13 +17,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     jaccard,
     letters_for_rows,
     prompt_metadata,
+    round_rate,
     row_has_call_error,
     row_mode,
     row_parse_error_count,
-    round_rate,
     seed_label,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import ReliabilityRun
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
+    ReliabilityRun,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     score_overall,
@@ -60,8 +64,7 @@ def active_llm_only_readout(
         "call_failures": sum(1 for row in rows if row_has_call_error(row)),
         "parse_errors": sum(row_parse_error_count(row) for row in rows),
         "family_f1": {
-            family: round(float(score["f1"]), 4)
-            for family, score in family_scores.items()
+            family: round(float(score["f1"]), 4) for family, score in family_scores.items()
         },
         "claim_boundary": run.claim_boundary,
     }
@@ -138,15 +141,11 @@ def same_prompt_panel(
             for run, rows in artifacts
         ],
         **health,
-        "within_model_pairwise_clinical_headline_jaccard": agreement[
-            "mean_pairwise_jaccard"
-        ],
+        "within_model_pairwise_clinical_headline_jaccard": agreement["mean_pairwise_jaccard"],
         "family_cell_agreement": {
             "pairwise_comparisons": agreement["pairwise_comparisons"],
             "cell_count": agreement["cell_count"],
-            "exact_family_cell_agreement_rate": agreement[
-                "exact_family_cell_agreement_rate"
-            ],
+            "exact_family_cell_agreement_rate": agreement["exact_family_cell_agreement_rate"],
         },
         "per_family_disagreement_rates": agreement["per_family_disagreement_rates"],
     }
@@ -217,9 +216,7 @@ def family_cell_agreement(
     return {
         "pairwise_comparisons": pairwise_comparisons,
         "cell_count": total_cells,
-        "mean_pairwise_jaccard": round(sum(jaccards) / len(jaccards), 4)
-        if jaccards
-        else None,
+        "mean_pairwise_jaccard": round(sum(jaccards) / len(jaccards), 4) if jaccards else None,
         "exact_family_cell_agreement_rate": round_rate(exact_cells, total_cells),
         "per_family_disagreement_rates": [
             {

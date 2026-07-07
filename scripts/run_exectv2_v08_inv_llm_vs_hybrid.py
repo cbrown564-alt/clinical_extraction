@@ -74,14 +74,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifa
     InvestigationFactsSignature,
     _facts_of,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+    write_jsonl,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
     parse_dedup_clinical_facts_json,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
     to_predicted_letter_from_dedup_facts,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -89,12 +89,20 @@ RUN_DATE = date.today().isoformat().replace("-", "")
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
 REPORT_DIR = ROOT / "docs" / "experiments" / "exectv2" / "investigations"
-DEV_MANIFEST_PATH = ROOT / "configs" / "exectv2" / "finding_assembly" / "exectv2_holistic_finding_assembly_v08_dev140.yaml"
+DEV_MANIFEST_PATH = (
+    ROOT
+    / "configs"
+    / "exectv2"
+    / "finding_assembly"
+    / "exectv2_holistic_finding_assembly_v08_dev140.yaml"
+)
 
 TASK_MODEL = "openai/gpt-4.1-mini"
 TASK_TEMPERATURE = 0.0
 TASK_MAX_TOKENS = 12000
-CANONICAL_INSTRUCTION_FILE = EXPERIMENTS / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+CANONICAL_INSTRUCTION_FILE = (
+    EXPERIMENTS / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+)
 
 # Full-200 baseline producer artifact (P7 audit's currentcode manifest).
 FULL200_INV_BASELINE = EXPERIMENTS / (
@@ -184,18 +192,16 @@ def _locate_modality_in_note(modality: str, note: str) -> str:
     for cand in candidates:
         idx = note_low.find(cand.lower())
         if idx != -1:
-            return note[idx: idx + len(cand)]
+            return note[idx : idx + len(cand)]
     # Last resort: scan the canonical tokens.
     for tok in _MODALITY_TOKENS:
         idx = note_low.find(tok.lower())
         if idx != -1:
-            return note[idx: idx + len(tok)]
+            return note[idx : idx + len(tok)]
     return ""
 
 
-def _project_facts_to_mentions(
-    gold_letter: ExectLetter, facts_json: str
-) -> list[dict[str, Any]]:
+def _project_facts_to_mentions(gold_letter: ExectLetter, facts_json: str) -> list[dict[str, Any]]:
     """Project the LLM facts JSON into the saved-jsonl predicted_mentions schema.
 
     Mirrors the Rx comparator's projection: the projection path drops the
@@ -207,7 +213,9 @@ def _project_facts_to_mentions(
     """
 
     raw_facts = _facts_of(facts_json) if facts_json else []
-    record, _errors = parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    record, _errors = (
+        parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    )
     if record is None:
         predicted = PredictedLetter(letter_id=gold_letter.letter_id, mentions=())
     else:
@@ -244,17 +252,19 @@ def _project_facts_to_mentions(
                 cui = attrs.get("CUIPhrase", "") or modality
                 if cui and cui in note:
                     evidence = cui
-        mentions.append({
-            "entity": INVESTIGATIONS.name,
-            "text": modality or evidence,
-            "attributes": attrs,
-            "evidence": evidence,
-            "component_owner": "llm:tuned_inv_extractor:canonical_plus_precision_completed_only",
-            "confidence": None,
-            "rationale": None,
-            "evidence_span": None,
-            "uncertainty_flags": [],
-        })
+        mentions.append(
+            {
+                "entity": INVESTIGATIONS.name,
+                "text": modality or evidence,
+                "attributes": attrs,
+                "evidence": evidence,
+                "component_owner": "llm:tuned_inv_extractor:canonical_plus_precision_completed_only",
+                "confidence": None,
+                "rationale": None,
+                "evidence_span": None,
+                "uncertainty_flags": [],
+            }
+        )
     return mentions
 
 
@@ -271,42 +281,48 @@ def produce_llm_inv_artifact(
     dspy.configure(lm=lm)
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
     exec_pairs = [(program, {"letter_text": letter.note_text}) for letter in letters]
-    print(f"[llm-inv] extracting {len(letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...", flush=True)
+    print(
+        f"[llm-inv] extracting {len(letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...",
+        flush=True,
+    )
     started = time.time()
     predictions = evaluator(exec_pairs)
     n_calls = 0
     rows = []
     for letter, prediction in zip(letters, predictions, strict=True):
-        raw = (
-            str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
-        )
+        raw = str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
         if raw:
             n_calls += 1
         mentions = _project_facts_to_mentions(letter, raw)
-        rows.append({
-            "letter_id": letter.letter_id,
-            "split": split,
-            "pipeline_family": "exectv2_llm_inv_tuned_extractor",
-            "prompt_version": "canonical_gepa_plus_precision_completed_only",
-            "model": TASK_MODEL,
-            "mode": "live",
-            "component_owner": "llm_tuned_inv_extractor_canonical_plus_precision_completed_only",
-            "call_error": None,
-            "parse_errors": [],
-            "gate_warnings": [],
-            "n_mentions_raw": len(mentions),
-            "n_mentions_scored": len(mentions),
-            "n_evidence_invalid": 0,
-            "predicted_mentions": mentions,
-            "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
-            "gold_mentions": [
-                {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
-                for a in letter.annotations if a.entity == INVESTIGATIONS.name
-            ],
-        })
+        rows.append(
+            {
+                "letter_id": letter.letter_id,
+                "split": split,
+                "pipeline_family": "exectv2_llm_inv_tuned_extractor",
+                "prompt_version": "canonical_gepa_plus_precision_completed_only",
+                "model": TASK_MODEL,
+                "mode": "live",
+                "component_owner": "llm_tuned_inv_extractor_canonical_plus_precision_completed_only",
+                "call_error": None,
+                "parse_errors": [],
+                "gate_warnings": [],
+                "n_mentions_raw": len(mentions),
+                "n_mentions_scored": len(mentions),
+                "n_evidence_invalid": 0,
+                "predicted_mentions": mentions,
+                "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
+                "gold_mentions": [
+                    {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
+                    for a in letter.annotations
+                    if a.entity == INVESTIGATIONS.name
+                ],
+            }
+        )
     write_jsonl(rows, jsonl_path)
     mention_count = sum(len(r["predicted_mentions"]) for r in rows)
-    print(f"[llm-inv] done in {time.time() - started:.1f}s; {n_calls} calls; {mention_count} mentions across {len(rows)} rows -> {jsonl_path.name}")
+    print(
+        f"[llm-inv] done in {time.time() - started:.1f}s; {n_calls} calls; {mention_count} mentions across {len(rows)} rows -> {jsonl_path.name}"
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -352,10 +368,14 @@ def _run_assembly(
     assembly_md.write_text(markdown, encoding="utf-8")
     headline = run.report["score_ladder"]["headline_target"]
     overall = headline["overall"]
-    print(f"[{candidate_id}] F1={overall['f1']:.4f} P={overall['precision']:.4f} R={overall['recall']:.4f} TP={overall['tp']} FP={overall['fp']} FN={overall['fn']}")
+    print(
+        f"[{candidate_id}] F1={overall['f1']:.4f} P={overall['precision']:.4f} R={overall['recall']:.4f} TP={overall['tp']} FP={overall['fp']} FN={overall['fn']}"
+    )
     for entity in (DIAGNOSIS.name, SEIZURE_FREQUENCY.name, PRESCRIPTION.name, INVESTIGATIONS.name):
         row = headline["by_indicator"][entity]
-        print(f"  {entity}: F1={row['f1']:.4f} P={row['precision']:.4f} R={row['recall']:.4f} TP={row['tp']} FP={row['fp']} FN={row['fn']}")
+        print(
+            f"  {entity}: F1={row['f1']:.4f} P={row['precision']:.4f} R={row['recall']:.4f} TP={row['tp']} FP={row['fp']} FN={row['fn']}"
+        )
     return headline
 
 
@@ -366,8 +386,12 @@ def _print_delta(label: str, baseline: dict[str, Any], treatment: dict[str, Any]
     for entity in (INVESTIGATIONS.name,):
         ro, rt = baseline["by_indicator"][entity], treatment["by_indicator"][entity]
         print(f"  {entity}: {ro['f1']:.4f} -> {rt['f1']:.4f} ({rt['f1'] - ro['f1']:+.4f})")
-        print(f"    P {ro['precision']:.4f} -> {rt['precision']:.4f} | R {ro['recall']:.4f} -> {rt['recall']:.4f}")
-        print(f"    TP {ro['tp']}->{rt['tp']} | FP {ro['fp']}->{rt['fp']} | FN {ro['fn']}->{rt['fn']}")
+        print(
+            f"    P {ro['precision']:.4f} -> {rt['precision']:.4f} | R {ro['recall']:.4f} -> {rt['recall']:.4f}"
+        )
+        print(
+            f"    TP {ro['tp']}->{rt['tp']} | FP {ro['fp']}->{rt['fp']} | FN {ro['fn']}->{rt['fn']}"
+        )
 
 
 def _full200_base_manifest(letters: list[ExectLetter]):
@@ -377,11 +401,15 @@ def _full200_base_manifest(letters: list[ExectLetter]):
 
     dev_manifest = load_finding_assembly_manifest(DEV_MANIFEST_PATH)
     full200_artifacts = {
-        "target_single_call_v042": EXPERIMENTS / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
-        "diagnosis_reconciler_v01": EXPERIMENTS / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
-        "sf_union_arbitration_v08": EXPERIMENTS / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
+        "target_single_call_v042": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+        "diagnosis_reconciler_v01": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
+        "sf_union_arbitration_v08": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
         "investigations_arbitration_v02": FULL200_INV_BASELINE,
-        "prescription_repair_v03": EXPERIMENTS / "exectv2_v08_full200_currentcode_deterministic_prescription_repair_v03_20260624.jsonl",
+        "prescription_repair_v03": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_deterministic_prescription_repair_v03_20260624.jsonl",
     }
     producers = {
         key: replace(prod, artifact=full200_artifacts[key])
@@ -463,12 +491,20 @@ def main() -> None:
         inv_base = baseline["by_indicator"][INVESTIGATIONS.name]["f1"]
         inv_treat = treatment["by_indicator"][INVESTIGATIONS.name]["f1"]
         delta = inv_treat - inv_base
-        print(f"\n[gate] dev140 Inv delta = {delta:+.4f} (LLM {inv_treat:.4f} vs hybrid {inv_base:.4f})")
-        print(f"[gate] kill-criterion: treatment must be >= {inv_base - 0.02:.4f} (within -0.02 of hybrid)")
+        print(
+            f"\n[gate] dev140 Inv delta = {delta:+.4f} (LLM {inv_treat:.4f} vs hybrid {inv_base:.4f})"
+        )
+        print(
+            f"[gate] kill-criterion: treatment must be >= {inv_base - 0.02:.4f} (within -0.02 of hybrid)"
+        )
         if inv_treat < inv_base - 0.02:
-            print("[gate] KILL: LLM-tuned Inv collapses dev140 below -0.02 threshold; do NOT proceed to full-200.")
+            print(
+                "[gate] KILL: LLM-tuned Inv collapses dev140 below -0.02 threshold; do NOT proceed to full-200."
+            )
             sys.exit(2)
-        print("[gate] PASS: dev140 loss within tolerance; full-200 (gated) may proceed with a predeclaration.")
+        print(
+            "[gate] PASS: dev140 loss within tolerance; full-200 (gated) may proceed with a predeclaration."
+        )
 
 
 if __name__ == "__main__":

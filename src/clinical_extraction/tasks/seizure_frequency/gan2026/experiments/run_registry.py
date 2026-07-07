@@ -6,9 +6,9 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from clinical_extraction.core.registry import (
-    RUN_DECISIONS,
-    REPLAY_STATUSES,
     REGISTRY_ROLES,
+    REPLAY_STATUSES,
+    RUN_DECISIONS,
     ArchitectureFamily,
     ComparisonRole,
     MetricValue,

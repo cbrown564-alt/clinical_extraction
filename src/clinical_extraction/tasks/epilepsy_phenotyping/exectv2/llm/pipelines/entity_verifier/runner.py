@@ -24,11 +24,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
-    MentionRecord,
-    check_evidence,
-    parse_extraction_json,
-    repair_attributes,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+    write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.config import (
     VerifierConfig,
@@ -36,11 +33,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.draft_io import (
     draft_mentions_by_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.dspy_runner import (
     emit_run_checkpoint,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    MentionRecord,
+    check_evidence,
+    parse_extraction_json,
+    repair_attributes,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -78,9 +78,7 @@ def to_predicted_letter(
     note_text: str,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []
@@ -91,13 +89,10 @@ def to_predicted_letter(
             if key in attrs:
                 attrs.pop(key)
                 all_warnings.append(
-                    f"{config.entity_name}: "
-                    f"dropped_model_supplied_projection_attribute: {key!r}"
+                    f"{config.entity_name}: dropped_model_supplied_projection_attribute: {key!r}"
                 )
         repaired_attrs, attr_warnings = repair_attributes(attrs, spec=spec)
-        all_warnings.extend(
-            f"{config.entity_name}: {warning}" for warning in attr_warnings
-        )
+        all_warnings.extend(f"{config.entity_name}: {warning}" for warning in attr_warnings)
         predicted_mentions.append(
             PredictedMention(
                 entity=config.entity_name,
@@ -140,10 +135,7 @@ def reconstruct_gold_letters(
                 ExectAnnotation(
                     entity=entity_name,
                     text=str(m["text"]),
-                    attributes={
-                        str(k): str(v)
-                        for k, v in dict(m.get("attributes") or {}).items()
-                    },
+                    attributes={str(k): str(v) for k, v in dict(m.get("attributes") or {}).items()},
                 )
                 for m in row.get("gold_mentions", [])
             ),
@@ -165,10 +157,7 @@ def reconstruct_pred_letters(
                 PredictedMention(
                     entity=entity_name,
                     text=str(m["text"]),
-                    attributes={
-                        str(k): str(v)
-                        for k, v in dict(m.get("attributes") or {}).items()
-                    },
+                    attributes={str(k): str(v) for k, v in dict(m.get("attributes") or {}).items()},
                     evidence=str(m.get("evidence", "")),
                     confidence=str(m.get("confidence", "medium")),
                     rationale=str(m.get("rationale", "")),
@@ -216,9 +205,7 @@ def run_split(
     existing_rows, completed = read_completed(
         checkpoint_jsonl_path if resume else None, key="letter_id"
     )
-    rows: list[dict[str, Any]] = [
-        r for r in existing_rows if r.get("letter_id") in requested
-    ]
+    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
 
@@ -270,9 +257,7 @@ def run_split(
                 "n_mentions_raw": len(mentions),
                 "n_mentions_scored": len(predicted_letter.mentions),
                 "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
-                "predicted_mentions": [
-                    mention_to_row(m) for m in predicted_letter.mentions
-                ],
+                "predicted_mentions": [mention_to_row(m) for m in predicted_letter.mentions],
                 "gold_mentions": [
                     {"text": a.text, "attributes": dict(a.attributes)}
                     for a in letter.entities(config.entity_name)

@@ -2,12 +2,12 @@
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.decomposer import (
     COMPONENT_OWNER,
-    DspyDiagnosisDecomposer,
-    ExECTv2DiagnosisDecomposerSignature,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
-    PromptProfile,
     DiagnosisSpan,
+    DspyDiagnosisDecomposer,
+    ExECTv2DiagnosisDecomposerSignature,
+    PromptProfile,
     build_prompt_input,
     diagnosis_spans_for_letter,
     draft_mentions_by_letter,

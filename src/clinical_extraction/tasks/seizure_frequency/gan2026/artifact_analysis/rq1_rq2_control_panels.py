@@ -10,9 +10,6 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
-    classify_hidden_families,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -24,6 +21,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+    classify_hidden_families,
 )
 
 DEFAULT_ATLAS_CSV_PATH = Path(
@@ -670,9 +670,7 @@ def _compact_counts(counts: Mapping[str, Any]) -> str:
 
 
 def _first_failure_counts(rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
-    return dict(
-        sorted(Counter(str(row.get("first_failure_owner") or "") for row in rows).items())
-    )
+    return dict(sorted(Counter(str(row.get("first_failure_owner") or "") for row in rows).items()))
 
 
 def _panel_selection_text(row: Mapping[str, Any]) -> str:

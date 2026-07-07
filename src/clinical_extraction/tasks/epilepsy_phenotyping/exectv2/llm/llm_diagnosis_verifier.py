@@ -2,11 +2,10 @@
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification.verifier import (
     COMPONENT_OWNER,
-    CONFIG,
-    DspyDiagnosisVerifier,
-    ExECTv2DiagnosisVerifierSignature,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
+    DspyDiagnosisVerifier,
+    ExECTv2DiagnosisVerifierSignature,
     _attribute_vocabulary,
     _clinical_rules,
     _mention_to_row,

@@ -7,40 +7,37 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    pass
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import TARGET_INDICATORS
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import (
     COMPONENT_OFF_CLAIM_BOUNDARY,
+    COMPONENT_OFF_DEFINITIONS,
     COMPONENT_OFF_READOUT_CLAIM_BOUNDARY,
     COMPONENT_OFF_READOUT_STOP_RULE,
     COMPONENT_OFF_STOP_RULE,
+    DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS,
+    DEFAULT_GENERATED_ON,
     FULL200_COMPONENT_OFF_CLAIM_BOUNDARY,
     FULL200_COMPONENT_OFF_DEFINITIONS,
     FULL200_COMPONENT_OFF_PREDECLARATION,
     FULL200_COMPONENT_OFF_STOP_RULE,
     FULL200_ROW_INSPECTION_BOUNDARY,
     REQUIRED_COMPONENT_OFF_CONFIG_FIELDS,
-    COMPONENT_OFF_DEFINITIONS,
-    DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS,
-    DEFAULT_GENERATED_ON,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.layers import (
     delta,
     has_declared_surface,
     load_summary,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.telemetry import (
-    aggregate_operational_counts,
-    aggregate_validity_rates,
-    deterministic_action_counts,
-    lane_diagnostic_values,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.types import (
     ComponentImpactReplaySpec,
     ComponentOffDefinition,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
+    TARGET_INDICATORS,
+)
+
 
 def build_component_off_replay_configs(
     payload: dict[str, Any] | None = None,
@@ -51,7 +48,9 @@ def build_component_off_replay_configs(
 ) -> list[dict[str, Any]]:
     """Build named one-component-off replay configs from saved dev140 surfaces."""
 
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+        build_component_ablation_payload,
+    )
 
     source_payload = payload or build_component_ablation_payload()
     configs = [
@@ -76,7 +75,9 @@ def build_component_off_readout_payload(
 ) -> dict[str, Any]:
     """Build the aggregate one-component-off readout from saved dev140 surfaces."""
 
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+        build_component_ablation_payload,
+    )
 
     source_payload = payload or build_component_ablation_payload(
         generated_on=generated_on,
@@ -125,7 +126,9 @@ def build_full200_component_off_readout_payload(
         for spec, preflight in zip(specs, preflight_rows, strict=True)
         if preflight["status"] == "pass"
     ]
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import build_component_ablation_payload
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation_replay import (
+        build_component_ablation_payload,
+    )
 
     source_payload = build_component_ablation_payload(
         tuple(eligible_specs),
@@ -230,12 +233,8 @@ def component_off_summary(
         "rows": [
             {
                 "baseline_run_id": row["baseline_run_id"],
-                "overall_component_contribution_delta": row[
-                    "overall_component_contribution_delta"
-                ],
-                "family_component_contribution_deltas": row[
-                    "family_component_contribution_deltas"
-                ],
+                "overall_component_contribution_delta": row["overall_component_contribution_delta"],
+                "family_component_contribution_deltas": row["family_component_contribution_deltas"],
             }
             for row in rows
         ],
@@ -246,9 +245,7 @@ def component_claim_use(
     component_id: str,
     rows: list[dict[str, Any]],
 ) -> str:
-    overall_deltas = [
-        float(row["overall_component_contribution_delta"]) for row in rows
-    ]
+    overall_deltas = [float(row["overall_component_contribution_delta"]) for row in rows]
     if all(delta == 0.0 for delta in overall_deltas):
         if component_id == "evidence_validation":
             return (
@@ -265,9 +262,7 @@ def component_claim_use(
 
     max_delta = max(overall_deltas)
     max_row = next(
-        row
-        for row in rows
-        if float(row["overall_component_contribution_delta"]) == max_delta
+        row for row in rows if float(row["overall_component_contribution_delta"]) == max_delta
     )
     family_deltas = max_row["family_component_contribution_deltas"]
     top_family = max(
@@ -456,7 +451,6 @@ def full200_preflight(
         row["status"] = "preflight_null"
         row["issues"].append("missing_lane_diagnostics")
     return row
-
 
 
 def full200_stop_rule_outcome(ablations: list[dict[str, Any]]) -> str:

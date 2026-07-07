@@ -7,26 +7,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
-    EvidenceSpan,
-    ExtractedCandidate,
-    FrequencyDetails,
-    PriorEncounterContext,
-    ReferenceDateContext,
-    RowContext,
-    SeizureFreeDetails,
-    SourcePhraseOnlyDetails,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
-    ClinicalAssessment,
-    NormalizedBurden,
+from tests.helpers.gan2026_projection_render_fixtures import (
+    row_context as _row_context,
+)
+from tests.helpers.gan2026_projection_render_fixtures import (
+    seizure_free_candidate as _seizure_free_candidate,
 )
 
-from tests.helpers.gan2026_projection_render_fixtures import (
-    candidate_set as _candidate_set,
-    row_context as _row_context,
-    seizure_free_candidate as _seizure_free_candidate,
-    unknown_candidate as _unknown_candidate,
-)
 
 def test_build_projection_render_can_disable_seizure_free_date_instrumentation() -> None:
     row = {
@@ -42,9 +30,7 @@ def test_build_projection_render_can_disable_seizure_free_date_instrumentation()
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "no seizures since March 2025"
-            },
+            "normalized_burden": {"source_normalized_phrase": "no seizures since March 2025"},
         },
     }
 
@@ -65,9 +51,7 @@ def test_build_projection_render_can_disable_seizure_free_date_instrumentation()
                 ],
             )
         },
-        disabled_ablation_switches={
-            "normalize_seizure_free_duration_date_instrumentation"
-        },
+        disabled_ablation_switches={"normalize_seizure_free_duration_date_instrumentation"},
     )
 
     assessment = artifact_row["clinical_assessment"]
@@ -93,9 +77,7 @@ def test_build_projection_render_instruments_seizure_free_since_date_from_row_co
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "no seizures since March 2025"
-            },
+            "normalized_burden": {"source_normalized_phrase": "no seizures since March 2025"},
         },
     }
 
@@ -122,8 +104,7 @@ def test_build_projection_render_instruments_seizure_free_since_date_from_row_co
     assert assessment["normalized_burden"]["seizure_free_duration_low"] == 15
     assert assessment["normalized_burden"]["seizure_free_duration_unit"] == "month"
     assert (
-        "seizure_free_duration_instrumented_from_since_date"
-        in assessment["normalization_issues"]
+        "seizure_free_duration_instrumented_from_since_date" in assessment["normalization_issues"]
     )
     instrumentation = assessment["seizure_free_instrumentation"]
     assert instrumentation["state_kind"] == "since_date"
@@ -135,9 +116,7 @@ def test_build_projection_render_instruments_seizure_free_since_date_from_row_co
         "high": 15.0,
         "unit": "month",
     }
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 15 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 15 month")
 
 
 def test_build_projection_render_instruments_numeric_since_date() -> None:
@@ -154,9 +133,7 @@ def test_build_projection_render_instruments_numeric_since_date() -> None:
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "seizure-free since 29/09/2017"
-            },
+            "normalized_burden": {"source_normalized_phrase": "seizure-free since 29/09/2017"},
         },
     }
 
@@ -180,13 +157,9 @@ def test_build_projection_render_instruments_numeric_since_date() -> None:
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
-        "2017-09-29"
-    )
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == ("2017-09-29")
     assert assessment["normalized_burden"]["seizure_free_duration_low"] == 96
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 96 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 96 month")
 
 
 def test_build_projection_render_instruments_month_without_year_with_trace() -> None:
@@ -239,9 +212,7 @@ def test_build_projection_render_instruments_month_without_year_with_trace() -> 
         "seizure_free_anchor_year_inferred_from_reference_date"
         in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 2 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 2 month")
 
 
 def test_build_projection_render_instruments_last_event_day_month_anchor() -> None:
@@ -288,17 +259,12 @@ def test_build_projection_render_instruments_last_event_day_month_anchor() -> No
     assessment = artifact_row["clinical_assessment"]
     instrumentation = assessment["seizure_free_instrumentation"]
     assert instrumentation["anchor_date"]["date"] == "2025-05-31"
-    assert (
-        "seizure_free_anchor_from_last_event_phrase"
-        in assessment["normalization_issues"]
-    )
+    assert "seizure_free_anchor_from_last_event_phrase" in assessment["normalization_issues"]
     assert (
         "seizure_free_anchor_year_inferred_from_reference_date"
         in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 4 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 4 month")
 
 
 def test_build_projection_render_instruments_approximate_season_anchor() -> None:
@@ -347,12 +313,9 @@ def test_build_projection_render_instruments_approximate_season_anchor() -> None
         "seizure_free_source_phrase_approximate_anchor_policy"
     )
     assert (
-        "seizure_free_anchor_approximate_start_month_policy"
-        in assessment["normalization_issues"]
+        "seizure_free_anchor_approximate_start_month_policy" in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 4 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 4 month")
 
 
 def test_build_projection_render_instruments_approximate_year_anchor() -> None:
@@ -370,9 +333,7 @@ def test_build_projection_render_instruments_approximate_year_anchor() -> None:
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
             "normalized_burden": {
-                "source_normalized_phrase": (
-                    "she cannot recall any episodes since early 2024"
-                )
+                "source_normalized_phrase": ("she cannot recall any episodes since early 2024")
             },
         },
     }
@@ -397,16 +358,11 @@ def test_build_projection_render_instruments_approximate_year_anchor() -> None:
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
-        "2024-01"
-    )
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == ("2024-01")
     assert (
-        "seizure_free_anchor_approximate_start_month_policy"
-        in assessment["normalization_issues"]
+        "seizure_free_anchor_approximate_start_month_policy" in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 21 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 21 month")
 
 
 def test_build_projection_render_instruments_hyphenated_mid_month_anchor() -> None:
@@ -449,16 +405,11 @@ def test_build_projection_render_instruments_hyphenated_mid_month_anchor() -> No
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == (
-        "2025-01"
-    )
+    assert assessment["seizure_free_instrumentation"]["anchor_date"]["date"] == ("2025-01")
     assert (
-        "seizure_free_anchor_approximate_start_month_policy"
-        in assessment["normalization_issues"]
+        "seizure_free_anchor_approximate_start_month_policy" in assessment["normalization_issues"]
     )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 9 month"
-    )
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 9 month")
 
 
 def test_build_projection_render_instruments_event_month_from_primary_candidate() -> None:
@@ -476,9 +427,7 @@ def test_build_projection_render_instruments_event_month_from_primary_candidate(
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
             "normalized_burden": {
-                "source_normalized_phrase": (
-                    "no further seizures since starting current regimen"
-                )
+                "source_normalized_phrase": ("no further seizures since starting current regimen")
             },
         },
     }
@@ -512,13 +461,8 @@ def test_build_projection_render_instruments_event_month_from_primary_candidate(
     assert instrumentation["anchor_date"]["source"] == (
         "seizure_free_event_anchor_month_year_inferred_from_reference_date"
     )
-    assert (
-        "seizure_free_anchor_from_event_phrase"
-        in assessment["normalization_issues"]
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 4 month"
-    )
+    assert "seizure_free_anchor_from_event_phrase" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 4 month")
 
 
 def test_build_projection_render_preserves_event_month_year_from_primary_candidate() -> None:
@@ -535,9 +479,7 @@ def test_build_projection_render_preserves_event_month_year_from_primary_candida
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "complete seizure control"
-            },
+            "normalized_burden": {"source_normalized_phrase": "complete seizure control"},
         },
     }
 
@@ -566,12 +508,8 @@ def test_build_projection_render_preserves_event_month_year_from_primary_candida
     assessment = artifact_row["clinical_assessment"]
     instrumentation = assessment["seizure_free_instrumentation"]
     assert instrumentation["anchor_date"]["date"] == "2023-03"
-    assert instrumentation["anchor_date"]["source"] == (
-        "seizure_free_event_anchor_month_year"
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 31 month"
-    )
+    assert instrumentation["anchor_date"]["source"] == ("seizure_free_event_anchor_month_year")
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 31 month")
 
 
 def test_build_projection_render_preserves_last_event_full_year_from_primary_candidate() -> None:
@@ -588,9 +526,7 @@ def test_build_projection_render_preserves_last_event_full_year_from_primary_can
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "no events over the last year"
-            },
+            "normalized_burden": {"source_normalized_phrase": "no events over the last year"},
         },
     }
 
@@ -619,13 +555,8 @@ def test_build_projection_render_preserves_last_event_full_year_from_primary_can
     assessment = artifact_row["clinical_assessment"]
     instrumentation = assessment["seizure_free_instrumentation"]
     assert instrumentation["anchor_date"]["date"] == "2023-04-12"
-    assert (
-        "seizure_free_anchor_from_last_event_phrase"
-        in assessment["normalization_issues"]
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 29 month"
-    )
+    assert "seizure_free_anchor_from_last_event_phrase" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 29 month")
 
 
 def test_build_projection_render_resolves_since_then_from_single_summary_antecedent() -> None:
@@ -678,16 +609,10 @@ def test_build_projection_render_resolves_since_then_from_single_summary_anteced
     assert instrumentation["antecedent"]["link_type"] == "local_since_then_antecedent"
     assert instrumentation["antecedent"]["anchor_date"]["date"] == "2025-07-10"
     assert instrumentation["antecedent"]["source_phrase"] == (
-        "The patient experienced 2 to 3 seizures shortly after "
-        "discontinuing valproate on 10 Jul"
+        "The patient experienced 2 to 3 seizures shortly after discontinuing valproate on 10 Jul"
     )
-    assert (
-        "seizure_free_anchor_from_same_note_antecedent"
-        in assessment["normalization_issues"]
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 2 month"
-    )
+    assert "seizure_free_anchor_from_same_note_antecedent" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 2 month")
 
 
 def test_build_projection_render_keeps_since_then_with_multiple_antecedents_unresolved() -> None:
@@ -735,9 +660,7 @@ def test_build_projection_render_keeps_since_then_with_multiple_antecedents_unre
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert assessment["seizure_free_instrumentation"]["state_kind"] == (
-        "unresolved_anchor"
-    )
+    assert assessment["seizure_free_instrumentation"]["state_kind"] == ("unresolved_anchor")
     assert assessment["seizure_free_instrumentation"]["antecedent"] is None
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
@@ -756,9 +679,7 @@ def test_build_projection_render_does_not_use_antecedent_for_duration_phrase() -
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "seizure-free for over 4 weeks"
-            },
+            "normalized_burden": {"source_normalized_phrase": "seizure-free for over 4 weeks"},
             "assessment_summary": (
                 "Previous focal seizure occurred on 19 May. The patient is "
                 "now seizure-free for over 4 weeks."
@@ -790,10 +711,7 @@ def test_build_projection_render_does_not_use_antecedent_for_duration_phrase() -
 
     assessment = artifact_row["clinical_assessment"]
     assert assessment["seizure_free_instrumentation"] is None
-    assert (
-        "seizure_free_anchor_from_same_note_antecedent"
-        not in assessment["normalization_issues"]
-    )
+    assert "seizure_free_anchor_from_same_note_antecedent" not in assessment["normalization_issues"]
 
 
 def test_build_projection_render_uses_prior_encounter_context_with_policy_trace() -> None:
@@ -810,9 +728,7 @@ def test_build_projection_render_uses_prior_encounter_context_with_policy_trace(
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "No seizures since last visit"
-            },
+            "normalized_burden": {"source_normalized_phrase": "No seizures since last visit"},
         },
     }
 
@@ -845,13 +761,8 @@ def test_build_projection_render_uses_prior_encounter_context_with_policy_trace(
     assert instrumentation["anchor_date"]["source"] == (
         "candidate_set.row_context.prior_encounter:explicit_relative_interval"
     )
-    assert (
-        "prior_encounter_derived_seizure_free_duration"
-        in assessment["normalization_issues"]
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 6 month"
-    )
+    assert "prior_encounter_derived_seizure_free_duration" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 6 month")
 
 
 def test_build_projection_render_traces_renderable_prior_encounter_interval() -> None:
@@ -870,8 +781,7 @@ def test_build_projection_render_traces_renderable_prior_encounter_interval() ->
             "aggregation_policy": "seizure_free_state",
             "normalized_burden": {
                 "source_normalized_phrase": (
-                    "no events suggestive of seizures since his last review "
-                    "twelve months ago"
+                    "no events suggestive of seizures since his last review twelve months ago"
                 )
             },
         },
@@ -889,10 +799,7 @@ def test_build_projection_render_traces_renderable_prior_encounter_interval() ->
                     _seizure_free_candidate(
                         41,
                         "llm:41:1",
-                        (
-                            "No events suggestive of seizures since last review "
-                            "twelve months ago."
-                        ),
+                        ("No events suggestive of seizures since last review twelve months ago."),
                     )
                 ],
             )
@@ -900,13 +807,8 @@ def test_build_projection_render_traces_renderable_prior_encounter_interval() ->
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert (
-        "prior_encounter_derived_seizure_free_duration"
-        in assessment["normalization_issues"]
-    )
-    assert artifact_row["final_rendered_label"]["rendered_label"] == (
-        "seizure free for 12 month"
-    )
+    assert "prior_encounter_derived_seizure_free_duration" in assessment["normalization_issues"]
+    assert artifact_row["final_rendered_label"]["rendered_label"] == ("seizure free for 12 month")
 
 
 def test_build_projection_render_keeps_relative_since_anchor_unresolved() -> None:
@@ -923,9 +825,7 @@ def test_build_projection_render_keeps_relative_since_anchor_unresolved() -> Non
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "no seizures since last visit"
-            },
+            "normalized_burden": {"source_normalized_phrase": "no seizures since last visit"},
         },
     }
 
@@ -949,13 +849,8 @@ def test_build_projection_render_keeps_relative_since_anchor_unresolved() -> Non
     )
 
     assessment = artifact_row["clinical_assessment"]
-    assert (
-        "seizure_free_since_date_anchor_unparsed"
-        in assessment["normalization_issues"]
-    )
-    assert assessment["seizure_free_instrumentation"]["state_kind"] == (
-        "unresolved_anchor"
-    )
+    assert "seizure_free_since_date_anchor_unparsed" in assessment["normalization_issues"]
+    assert assessment["seizure_free_instrumentation"]["state_kind"] == ("unresolved_anchor")
     assert artifact_row["final_rendered_label"]["rendered_label"] is None
 
 
@@ -973,9 +868,7 @@ def test_build_projection_render_prior_encounter_context_ablation() -> None:
             "supporting_candidate_ids": [],
             "rejected_candidate_ids": [],
             "aggregation_policy": "seizure_free_state",
-            "normalized_burden": {
-                "source_normalized_phrase": "No seizures since last visit"
-            },
+            "normalized_burden": {"source_normalized_phrase": "No seizures since last visit"},
         },
     }
 

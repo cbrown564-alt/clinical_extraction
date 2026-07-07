@@ -14,8 +14,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.genera
     StrategyOutcome,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
-    DEDUP_FACT_FAMILIES,
     DECISION_TABLE_FAMILIES,
+    DEDUP_FACT_FAMILIES,
     DedupFactFamily,
     PromptProfile,
 )
@@ -67,9 +67,7 @@ def run_single_call_dedup_facts_letter(
             call_error = f"{type(exc).__name__}: {exc}"
 
     fact_record, parse_errors = (
-        mono.parse_dedup_clinical_facts_json(raw_output)
-        if raw_output
-        else (None, ["not_run"])
+        mono.parse_dedup_clinical_facts_json(raw_output) if raw_output else (None, ["not_run"])
     )
     fact_record = fact_record or mono.DedupClinicalFactsRecord()
     mentions, provenance, adapter_notes = mono.clinical_facts_to_mentions(
@@ -159,9 +157,7 @@ def run_single_call_dedup_facts_per_family_letter(
             call_error_by_family[family] = call_error
 
         fact_record, family_parse_errors = (
-            mono.parse_dedup_clinical_facts_json(raw_output)
-            if raw_output
-            else (None, ["not_run"])
+            mono.parse_dedup_clinical_facts_json(raw_output) if raw_output else (None, ["not_run"])
         )
         parse_errors.extend(f"{family}:{error}" for error in family_parse_errors)
         for fact in (fact_record or mono.DedupClinicalFactsRecord()).clinical_facts:

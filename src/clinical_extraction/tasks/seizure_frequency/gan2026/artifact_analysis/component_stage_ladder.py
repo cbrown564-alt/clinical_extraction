@@ -58,6 +58,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic_canonical
     normalize_stage,
     select_and_render_stage,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (
+    DETERMINISTIC_COMPONENT_RUN_ID,
+    LIVE_DETERMINISTIC,
+    SURFACED_REPLAY_RUNS,
+    SurfacedRunCuration,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.labels import boundary_band, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     llm_only_canonical_pipeline,
@@ -65,13 +71,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     StructuredRepairConfig,
     parse_structured_json,
-)
-
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (
-    DETERMINISTIC_COMPONENT_RUN_ID,
-    LIVE_DETERMINISTIC,
-    SURFACED_REPLAY_RUNS,
-    SurfacedRunCuration,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[6]
@@ -86,6 +85,7 @@ _FULL_CONFIG = AblationConfig()
 _NO_REPAIR_CONFIG = AblationConfig(
     enabled_groups=frozenset(RuleGroup) - {RuleGroup.BENCHMARK_REPAIR}
 )
+
 
 # ── Per-category (boundary band) breakdown, the Gan analog of ExECTv2 families ──
 @dataclass(frozen=True)
@@ -235,8 +235,7 @@ def _accuracy(predictions: list[float], golds: list[float]) -> float:
     if not golds:
         return 0.0
     correct = sum(
-        map_purist(pred) == map_purist(gold)
-        for pred, gold in zip(predictions, golds, strict=True)
+        map_purist(pred) == map_purist(gold) for pred, gold in zip(predictions, golds, strict=True)
     )
     return correct / len(golds)
 
@@ -250,9 +249,7 @@ def _band_accuracy(predictions: list[float], golds: list[float]) -> dict[str, fl
             if boundary_band(gold) == band
         ]
         out[band] = (
-            sum(map_purist(p) == map_purist(g) for p, g in rows) / len(rows)
-            if rows
-            else None
+            sum(map_purist(p) == map_purist(g) for p, g in rows) / len(rows) if rows else None
         )
     return out
 
@@ -393,7 +390,9 @@ class DeterministicCanonicalProvider:
                 frequency = UNKNOWN_FREQUENCY
                 label = "unknown"
             cells.append(
-                StageCell(label=label, monthly_frequency=frequency, evidence=selected.evidence or "")
+                StageCell(
+                    label=label, monthly_frequency=frequency, evidence=selected.evidence or ""
+                )
             )
         return cells
 
@@ -759,15 +758,9 @@ def cached_component_stage_ladder_json() -> str:
 def write_component_stage_ladder_artifacts(
     specs: tuple[ArchitectureSpec, ...] = DEFAULT_ARCHITECTURE_SPECS,
     *,
-    json_path: Path = Path(
-        "experiments/gan2026_component_stage_ladder_validation_20260624.json"
-    ),
-    md_path: Path = Path(
-        "experiments/gan2026_component_stage_ladder_validation_20260624.md"
-    ),
-    frontend_path: Path | None = Path(
-        "frontend/public/mock-data/gan2026/component-ablation.json"
-    ),
+    json_path: Path = Path("experiments/gan2026_component_stage_ladder_validation_20260624.json"),
+    md_path: Path = Path("experiments/gan2026_component_stage_ladder_validation_20260624.md"),
+    frontend_path: Path | None = Path("frontend/public/mock-data/gan2026/component-ablation.json"),
     generated_on: str = DEFAULT_GENERATED_ON,
 ) -> dict[str, Path]:
     payload = build_component_stage_ladder_payload(specs, generated_on=generated_on)

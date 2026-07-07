@@ -2,29 +2,17 @@
 
 Split from test_exectv2_target_indicators_single_call.py."""
 
-import json
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_all_entities import (
     MentionRecord,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_target_indicators_single_call import (  # noqa: E501
-    COMPONENT_OWNER,
-    _parse_target_extraction_json,
     audit_only_projection_replay_switches,
-    build_prompt_input,
-    summarize_rows,
     to_predicted_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (
-    TARGET_INDICATORS,
-)
+
 
 def test_target_single_call_adapter_repairs_absence_like_frequency_evidence() -> None:
-    note = (
-        "Seizure type and frequency: 2 tonic clonic seizures 2014, "
-        "absence like seizures 2014"
-    )
+    note = "Seizure type and frequency: 2 tonic clonic seizures 2014, absence like seizures 2014"
     mentions = [
         MentionRecord(
             entity="SeizureFrequency",
@@ -63,10 +51,7 @@ def test_target_single_call_adapter_normalizes_absence_like_sf_text_from_evidenc
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions[0].text == "absence like seizures"
-    assert any(
-        "normalized_seizure_frequency_text_from_evidence" in warning
-        for warning in warnings
-    )
+    assert any("normalized_seizure_frequency_text_from_evidence" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_normalizes_dose_units() -> None:
@@ -406,10 +391,7 @@ def test_target_single_call_adapter_drops_generic_and_nonepileptic_seizure_diagn
 
 
 def test_target_single_call_adapter_projects_frequency_header_absence_like_to_sf() -> None:
-    note = (
-        "Seizure type and frequency: 2 tonic clonic seizures 2014, "
-        "absence like seizures 2014"
-    )
+    note = "Seizure type and frequency: 2 tonic clonic seizures 2014, absence like seizures 2014"
     mentions = [
         MentionRecord(
             entity="Diagnosis",
@@ -426,8 +408,7 @@ def test_target_single_call_adapter_projects_frequency_header_absence_like_to_sf
     assert predicted.mentions[0].attributes["NumberOfSeizures"] == "1"
     assert predicted.mentions[0].attributes["YearDate"] == "2014"
     assert any(
-        "projected_frequency_header_diagnosis_to_sf_state" in warning
-        for warning in warnings
+        "projected_frequency_header_diagnosis_to_sf_state" in warning for warning in warnings
     )
 
 
@@ -564,8 +545,7 @@ def test_target_single_call_adapter_repairs_reversed_since_last_clinic_evidence(
                 "PointInTime": "LastClinic",
             },
             evidence=(
-                "she has had four secondary generalised seizures. "
-                "Since her last clinic appointment"
+                "she has had four secondary generalised seizures. Since her last clinic appointment"
             ),
         )
     ]
@@ -650,8 +630,7 @@ def test_target_projection_quarantines_phrase_specific_evidence_repairs_by_defau
                 "PointInTime": "LastClinic",
             },
             evidence=(
-                "she has had four secondary generalised seizures. "
-                "Since her last clinic appointment"
+                "she has had four secondary generalised seizures. Since her last clinic appointment"
             ),
         )
     ]
@@ -688,8 +667,7 @@ def test_target_projection_quarantines_phrase_specific_evidence_repairs_by_defau
     assert since_clinic_predicted.mentions == ()
     assert christmas_predicted.mentions == ()
     assert any(
-        "quarantined_projection_family: repaired_since_last_clinic_count_evidence"
-        in warning
+        "quarantined_projection_family: repaired_since_last_clinic_count_evidence" in warning
         for warning in since_clinic_warnings
     )
     assert any(
@@ -719,8 +697,7 @@ def test_target_projection_quarantines_christmas_point_projection_by_default() -
     assert predicted.mentions[0].attributes.get("YearDate") == "2017"
     assert "MonthDate" not in predicted.mentions[0].attributes
     assert any(
-        "quarantined_projection_family: projected_christmas_point_to_month_date"
-        in warning
+        "quarantined_projection_family: projected_christmas_point_to_month_date" in warning
         for warning in warnings
     )
 
@@ -795,8 +772,7 @@ def test_target_single_call_adapter_projects_every_n_to_m_periods_to_one_event_r
     assert mention.attributes["TimePeriod"] == "Week"
     assert "NumberOfTimePeriods" not in mention.attributes
     assert any(
-        "projected_every_n_to_m_periods_to_one_event_rate" in warning
-        for warning in warnings
+        "projected_every_n_to_m_periods_to_one_event_rate" in warning for warning in warnings
     )
 
 
@@ -818,10 +794,7 @@ def test_target_single_call_adapter_drops_unanchored_current_seizure_free_state(
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions == ()
-    assert any(
-        "dropped_unanchored_current_seizure_free_state" in warning
-        for warning in warnings
-    )
+    assert any("dropped_unanchored_current_seizure_free_state" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_drops_unanchored_current_seizure_free_text() -> None:
@@ -842,10 +815,7 @@ def test_target_single_call_adapter_drops_unanchored_current_seizure_free_text()
     predicted, warnings = to_predicted_letter("EA1", mentions, note_text=note)
 
     assert predicted.mentions == ()
-    assert any(
-        "dropped_unanchored_current_seizure_free_state" in warning
-        for warning in warnings
-    )
+    assert any("dropped_unanchored_current_seizure_free_state" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_drops_best_control_zero_state() -> None:
@@ -907,8 +877,7 @@ def test_target_single_call_adapter_projects_controlled_drug_change_state() -> N
     assert drug_change.attributes["FrequencyChange"] == "Infrequent"
     assert drug_change.attributes["PointInTime"] == "DrugChange"
     assert any(
-        "projected_controlled_drug_change_to_infrequent_state" in warning
-        for warning in warnings
+        "projected_controlled_drug_change_to_infrequent_state" in warning for warning in warnings
     )
 
 
@@ -948,8 +917,7 @@ def test_target_single_call_adapter_drops_unsupported_zero_frequency_states() ->
             text="generalised tonic clonic seizures",
             attributes={"NumberOfSeizures": "0", "TimeSince_or_TimeOfEvent": "Since"},
             evidence=(
-                "generalised tonic clonic seizures, which were well controlled "
-                "on Sodium Valproate"
+                "generalised tonic clonic seizures, which were well controlled on Sodium Valproate"
             ),
         ),
         MentionRecord(
@@ -1042,8 +1010,7 @@ def test_target_single_call_adapter_drops_unsupported_episode_rate_for_typed_anc
 
     assert predicted.mentions == ()
     assert (
-        sum("dropped_unsupported_episode_frequency_anchor" in warning for warning in warnings)
-        == 2
+        sum("dropped_unsupported_episode_frequency_anchor" in warning for warning in warnings) == 2
     )
 
 
@@ -1094,10 +1061,7 @@ def test_target_single_call_adapter_projects_last_event_count_to_zero_since() ->
     assert mention.attributes["TimeSince_or_TimeOfEvent"] == "Since"
     assert mention.attributes["MonthDate"] == "7"
     assert mention.attributes["YearDate"] == "2016"
-    assert any(
-        "projected_last_event_month_year_to_zero_since" in warning
-        for warning in warnings
-    )
+    assert any("projected_last_event_month_year_to_zero_since" in warning for warning in warnings)
 
 
 def test_target_single_call_adapter_projects_dated_absence_like_zero_to_active() -> None:
@@ -1122,8 +1086,7 @@ def test_target_single_call_adapter_projects_dated_absence_like_zero_to_active()
     assert mention.attributes["TimeSince_or_TimeOfEvent"] == "During"
     assert mention.attributes["YearDate"] == "2014"
     assert any(
-        "projected_dated_absence_like_zero_to_active_rate" in warning
-        for warning in warnings
+        "projected_dated_absence_like_zero_to_active_rate" in warning for warning in warnings
     )
 
 
@@ -1362,8 +1325,7 @@ def test_target_single_call_adapter_projects_controlled_focal_state() -> None:
         for mention in predicted.mentions
     )
     assert any(
-        "projected_controlled_context_to_infrequent_state" in warning
-        for warning in warnings
+        "projected_controlled_context_to_infrequent_state" in warning for warning in warnings
     )
 
 
@@ -1435,8 +1397,7 @@ def test_target_single_call_adapter_projects_frequent_myoclonic_jerks() -> None:
         for mention in predicted.mentions
     )
     assert any(
-        "projected_diagnosis_context_to_frequent_myoclonic_jerks" in warning
-        for warning in warnings
+        "projected_diagnosis_context_to_frequent_myoclonic_jerks" in warning for warning in warnings
     )
 
 
@@ -1464,8 +1425,7 @@ def test_target_projection_quarantines_infrequent_context_state_by_default() -> 
         for mention in predicted.mentions
     )
     assert any(
-        "quarantined_projection_family: projected_infrequent_context_state"
-        in warning
+        "quarantined_projection_family: projected_infrequent_context_state" in warning
         for warning in warnings
     )
 
@@ -1589,8 +1549,7 @@ def test_target_single_call_adapter_keeps_active_recent_seizure_with_relative_pr
         for mention in predicted.mentions
     )
     assert not any(
-        "dropped_relative_prior_event_not_seizure_free" in warning
-        for warning in warnings
+        "dropped_relative_prior_event_not_seizure_free" in warning for warning in warnings
     )
 
 
@@ -1698,8 +1657,7 @@ def test_target_single_call_adapter_drops_inconsistent_zero_positive_rate() -> N
 
     assert predicted.mentions == ()
     assert any(
-        "dropped_inconsistent_zero_state_with_active_rate" in warning
-        for warning in warnings
+        "dropped_inconsistent_zero_state_with_active_rate" in warning for warning in warnings
     )
 
 

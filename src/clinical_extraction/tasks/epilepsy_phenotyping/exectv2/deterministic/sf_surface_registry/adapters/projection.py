@@ -12,10 +12,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
     project_context_parent_epilepsy,
     project_controlled_context_to_infrequent_state,
+    project_dated_diagnosis_context_to_sf,
     project_diagnosis_context_to_sf_states,
     project_diagnosis_frequency_header_to_sf,
     project_diagnosis_header_parent_epilepsy,
-    project_dated_diagnosis_context_to_sf,
     project_dropped_sf_to_diagnosis,
     project_empty_sf_candidate_to_diagnosis,
     project_focal_diagnosis_context_to_sf,
@@ -173,9 +173,7 @@ class _ProjectionAdapter:
             )
             if diagnosis_sf_states:
                 expanded_mentions.extend(diagnosis_sf_states)
-            warnings.extend(
-                f"Diagnosis: {warning}" for warning in diagnosis_sf_state_warnings
-            )
+            warnings.extend(f"Diagnosis: {warning}" for warning in diagnosis_sf_state_warnings)
             projected_sf = project_focal_diagnosis_context_to_sf(
                 base_mention,
                 note_text,
@@ -183,8 +181,7 @@ class _ProjectionAdapter:
             if projected_sf is not None:
                 expanded_mentions.append(projected_sf)
                 warnings.append(
-                    "Diagnosis: projected_focal_diagnosis_context_to_sf_state: "
-                    f"{text!r}"
+                    f"Diagnosis: projected_focal_diagnosis_context_to_sf_state: {text!r}"
                 )
             projected_parent = project_diagnosis_header_parent_epilepsy(
                 base_mention,
@@ -208,8 +205,7 @@ class _ProjectionAdapter:
             if projected_diagnosis is not None:
                 expanded_mentions.append(projected_diagnosis)
                 warnings.append(
-                    "SeizureFrequency: projected_sf_context_to_focal_diagnosis: "
-                    f"{text!r}"
+                    f"SeizureFrequency: projected_sf_context_to_focal_diagnosis: {text!r}"
                 )
             controlled_state = project_controlled_context_to_infrequent_state(
                 base_mention,
@@ -234,8 +230,7 @@ class _ProjectionAdapter:
                     warnings.append(f"SeizureFrequency: {family}")
                 else:
                     warnings.append(
-                        "SeizureFrequency: "
-                        + quarantined_projection_family_warning(family)
+                        "SeizureFrequency: " + quarantined_projection_family_warning(family)
                     )
             increased_state = project_returned_context_to_increased_state(
                 base_mention,
@@ -243,9 +238,7 @@ class _ProjectionAdapter:
             )
             if increased_state is not None:
                 expanded_mentions.append(increased_state)
-                warnings.append(
-                    "SeizureFrequency: projected_returned_context_to_increased_state"
-                )
+                warnings.append("SeizureFrequency: projected_returned_context_to_increased_state")
         if entity == "Investigations":
             projected_mri = project_eeg_context_to_mri_normal(
                 base_mention,

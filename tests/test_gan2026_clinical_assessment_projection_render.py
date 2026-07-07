@@ -5,26 +5,25 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     CandidateSet,
-    EvidenceSpan,
-    ExtractedCandidate,
-    FrequencyDetails,
-    PriorEncounterContext,
-    ReferenceDateContext,
     RowContext,
-    SeizureFreeDetails,
-    SourcePhraseOnlyDetails,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     ClinicalAssessment,
     NormalizedBurden,
 )
-
 from tests.helpers.gan2026_projection_render_fixtures import (
     candidate_set as _candidate_set,
+)
+from tests.helpers.gan2026_projection_render_fixtures import (
     row_context as _row_context,
+)
+from tests.helpers.gan2026_projection_render_fixtures import (
     seizure_free_candidate as _seizure_free_candidate,
+)
+from tests.helpers.gan2026_projection_render_fixtures import (
     unknown_candidate as _unknown_candidate,
 )
+
 
 def test_project_and_render_frequency_rate_label() -> None:
     assessment = ClinicalAssessment(
@@ -76,9 +75,7 @@ def test_project_and_render_unknown_preserves_internal_state_then_renders_unknow
         assessment_kind="unknown_frequency",
         primary_candidate_ids=[],
         aggregation_policy="unknown_due_to_ambiguity",
-        normalized_burden=NormalizedBurden(
-            source_normalized_phrase="episodes occur most shifts"
-        ),
+        normalized_burden=NormalizedBurden(source_normalized_phrase="episodes occur most shifts"),
     )
 
     projection, rendered = projection_render.project_and_render(
@@ -224,10 +221,7 @@ def test_project_and_render_cluster_cadence_without_size_as_simple_rate() -> Non
 
     assert projection.projection_basis == "cluster_cadence_without_size"
     assert projection.projection_owner == "cluster_projection_policy"
-    assert (
-        projection.projection_rule_id
-        == "cluster_cadence_default_multiple_per_cluster_v0"
-    )
+    assert projection.projection_rule_id == "cluster_cadence_default_multiple_per_cluster_v0"
     assert projection.projected_label_semantics == "1 cluster per 7 to 9 day, multiple per cluster"
     assert rendered.rendered_label == "1 cluster per 7 to 9 day, multiple per cluster"
 
@@ -274,9 +268,7 @@ def test_project_and_render_unknown_cadence_multiple_per_cluster() -> None:
         primary_candidate_ids=["llm:17:1"],
         aggregation_policy="single_fact",
         normalized_burden=NormalizedBurden(
-            source_normalized_phrase=(
-                "cluster of multiple short seizure episodes over one day"
-            ),
+            source_normalized_phrase=("cluster of multiple short seizure episodes over one day"),
         ),
         normalization_issues=["cluster_frequency_values_unparsed"],
     )
@@ -411,7 +403,7 @@ def test_project_and_render_cyclic_pattern_with_explicit_operands() -> None:
             cluster_period_low=1,
             cluster_period_high=1,
             cluster_period_unit="month",
-            source_normalized_phrase="three clusters per month perimenstrually"
+            source_normalized_phrase="three clusters per month perimenstrually",
         ),
     )
 
@@ -461,10 +453,7 @@ def test_project_and_render_renderable_cluster_beats_unknown_cadence_sentinel() 
     )
 
     assert projection.projection_basis == "cluster_cadence_with_events_per_cluster"
-    assert (
-        projection.projection_rule_id
-        == "cluster_cadence_with_events_per_cluster_v0"
-    )
+    assert projection.projection_rule_id == "cluster_cadence_with_events_per_cluster_v0"
     assert projection.projected_label_semantics == "1 cluster per 2 week, 3 per cluster"
     assert rendered.rendered_label == "1 cluster per 2 week, 3 per cluster"
 
@@ -783,10 +772,7 @@ def test_project_and_render_cluster_cadence_default_multiple_per_cluster() -> No
 
     assert projection.projection_basis == "cluster_cadence_without_size"
     assert projection.projection_owner == "cluster_projection_policy"
-    assert (
-        projection.projection_rule_id
-        == "cluster_cadence_default_multiple_per_cluster_v0"
-    )
+    assert projection.projection_rule_id == "cluster_cadence_default_multiple_per_cluster_v0"
     assert projection.projected_label_semantics == "1 cluster per 7 to 9 day, multiple per cluster"
     assert rendered.rendered_label == "1 cluster per 7 to 9 day, multiple per cluster"
 
@@ -816,9 +802,6 @@ def test_project_and_render_cluster_cadence_default_multiple_per_cluster_ablatio
 
     assert projection.projection_basis == "cluster_cadence_without_size"
     assert projection.projection_owner == "cluster_projection_policy"
-    assert (
-        projection.projection_rule_id
-        == "cluster_cadence_as_event_rate_when_size_absent_v0"
-    )
+    assert projection.projection_rule_id == "cluster_cadence_as_event_rate_when_size_absent_v0"
     assert projection.projected_label_semantics == "1 per 7 to 9 day"
     assert rendered.rendered_label == "1 per 7 to 9 day"

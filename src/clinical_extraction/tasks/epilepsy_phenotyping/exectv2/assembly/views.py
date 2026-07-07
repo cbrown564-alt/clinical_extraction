@@ -20,12 +20,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.reporting import (
-    architecture_report,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
     TARGET_INDICATORS,
     build_target_indicator_report,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.reporting import (
+    architecture_report,
 )
 
 
@@ -170,8 +170,7 @@ def changed_row_accounting(
     candidate_by_id = {letter.letter_id: letter for letter in candidate}
     details: list[dict[str, Any]] = []
     by_indicator = {
-        indicator: {"changed_rows": 0, "categories": Counter()}
-        for indicator in TARGET_INDICATORS
+        indicator: {"changed_rows": 0, "categories": Counter()} for indicator in TARGET_INDICATORS
     }
     for row in rows:
         letter_id = str(row["letter_id"])
@@ -289,9 +288,7 @@ def _target_report(arch: Mapping[str, Any], *, projected: bool) -> dict[str, Any
                 "name": arch["name"],
                 "ownership": arch["ownership"],
                 "routed_primary_recovery": {
-                    "overall": recovery[
-                        "cui_projected_overall" if projected else "overall"
-                    ],
+                    "overall": recovery["cui_projected_overall" if projected else "overall"],
                     "headline_scores": {
                         indicator: recovery[scores_key][indicator]
                         for indicator in TARGET_INDICATORS
@@ -369,10 +366,7 @@ def _change_categories(
         return categories or ["hierarchy_reconciliation"]
     if indicator == SEIZURE_FREQUENCY.name:
         categories = sorted(
-            {
-                _sf_change_category(mention)
-                for mention in [*old_mentions, *new_mentions]
-            }
+            {_sf_change_category(mention) for mention in [*old_mentions, *new_mentions]}
         )
         lane = row.get("lanes", {}).get(indicator, {})
         diagnostics = lane.get("diagnostics", {})

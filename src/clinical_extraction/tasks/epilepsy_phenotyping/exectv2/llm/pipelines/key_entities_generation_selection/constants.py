@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
-    load_dedup_fact_decision_tables,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
     DedupFactFamily,
 )
-
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_dedup_fact_decision_tables,
+)
 
 PROMPT_VERSION = "exectv2_llm_only_key_entities_generation_selection_v0.5"
 PIPELINE_FAMILY = "exectv2_llm_only_key_entities_generation_selection"
@@ -50,6 +49,7 @@ def report_model_label(model: str | None) -> str:
     if "gpt" in model_key or "openai" in model_key:
         return "GPT"
     return "Target-Model"
+
 
 _OUTPUT_SCHEMA = {
     "clinical_events": [
@@ -283,6 +283,7 @@ def _dedup_fact_output_schema(
             if fact.get("family") == target_family
         ]
     }
+
 
 _POOL_ADJUDICATION_OUTPUT_SCHEMA = {
     "final_mention_ids": ["mention_id values selected from model_generated_mentions"],

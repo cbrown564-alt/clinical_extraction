@@ -8,13 +8,6 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
-    PROMPT_VERSION,
-    _extract_raw_model_final_label,
-    _normalized_label_vote,
-    _run_model_call,
-    _trace_attribution_layer,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
     AgenticSplitHooks,
     RegisteredAgenticStage,
@@ -22,6 +15,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver impo
     StructuredEventSplitContext,
     dispatch_registered_split,
     register_agentic_stage,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
+    PROMPT_VERSION,
+    _extract_raw_model_final_label,
+    _normalized_label_vote,
+    _run_model_call,
+    _trace_attribution_layer,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.tool_context_ablation import (
     _boundary_guides_for_parser_result,
@@ -141,12 +141,10 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         purist_correct += int(bool(score.get("purist_correct")))
         pragmatic_correct += int(bool(score.get("pragmatic_correct")))
         wins += int(
-            bool(score.get("purist_correct"))
-            and not bool(reference_score.get("purist_correct"))
+            bool(score.get("purist_correct")) and not bool(reference_score.get("purist_correct"))
         )
         losses += int(
-            bool(reference_score.get("purist_correct"))
-            and not bool(score.get("purist_correct"))
+            bool(reference_score.get("purist_correct")) and not bool(score.get("purist_correct"))
         )
         for result in trace.get("model_call_results") or []:
             call_failures += int(result.get("call_error") is not None)
@@ -173,8 +171,7 @@ def gate_interpretation(summary: Mapping[str, Any]) -> dict[str, Any]:
     if wins >= 5 and losses <= 2:
         status = "promote_to_boundary_safe_prompt"
         interpretation = (
-            "Four-call boundary-guide self-consistency passed the hard50 gate; "
-            "continue to E3."
+            "Four-call boundary-guide self-consistency passed the hard50 gate; continue to E3."
         )
     else:
         status = "reject_tool_self_consistency"
@@ -276,9 +273,7 @@ def _build_row(
     max_tokens: int,
     mode: Literal["live", "prompt-only"],
 ) -> dict[str, Any]:
-    reference_label = (
-        reference_labels.get(record.source_row_index) if reference_labels else None
-    )
+    reference_label = reference_labels.get(record.source_row_index) if reference_labels else None
     parser_result = parse_seizure_frequency_candidates(record.note_text).model_dump(mode="json")
     guide_results = _boundary_guides_for_parser_result(parser_result)
     trace = _condition_trace(
@@ -389,9 +384,7 @@ def _execute_model_call(
         )
     except Exception as exc:  # pragma: no cover - live transport only.
         call_error = f"{type(exc).__name__}: {exc}"
-    decision, parse_errors = (
-        parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
-    )
+    decision, parse_errors = parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
     return {
         "call_index": plan["call_index"],
         "call_role": plan["call_role"],
@@ -400,9 +393,7 @@ def _execute_model_call(
         "prompt_version": PROMPT_VERSION,
         "prompt_input_json": prompt_input_json,
         "raw_output": raw_output,
-        "raw_model_final_label": _extract_raw_model_final_label(raw_output)
-        if raw_output
-        else None,
+        "raw_model_final_label": _extract_raw_model_final_label(raw_output) if raw_output else None,
         "call_error": call_error,
         "parse_errors": parse_errors,
         "decision_record": decision.model_dump() if decision else None,
@@ -512,9 +503,7 @@ def _reference_labels(reference_rows: Sequence[Mapping[str, Any]]) -> dict[int, 
         source_row_index = row.get("source_row_index")
         if source_row_index is None:
             continue
-        trace = dict(
-            dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {}
-        )
+        trace = dict(dict(row.get("condition_traces") or {}).get(REFERENCE_CONDITION) or {})
         label = trace.get("final_label")
         if label is not None:
             labels[int(source_row_index)] = str(label)

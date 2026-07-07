@@ -18,8 +18,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program import 
     OUTPUT_SCHEMA_JSON,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multistage import (
-    FAMILIES,
     EVOLVED_MULTIFAMILY_INSTRUCTION,
+    FAMILIES,
     build_multistage_program,
     combined_instruction,
     load_evolved_s0_seeds,
@@ -46,27 +46,41 @@ _VERIFIED_DX = {
     "negation": "affirmed",
     "evidence": "focal epilepsy",
 }
-_INV = {"family": "investigation", "modality": "MRI", "result": "normal", "evidence": "MRI was normal"}
+_INV = {
+    "family": "investigation",
+    "modality": "MRI",
+    "result": "normal",
+    "evidence": "MRI was normal",
+}
 
 _RESPONSES = [
-    _facts([_DRAFT_DX], "clinical_facts_json"),                     # generate diagnosis
-    _facts([_VERIFIED_DX], "verified_facts_json"),                  # verify diagnosis (corrected)
-    _facts(                                                          # generate seizure_frequency
-        [{"family": "seizure_frequency", "seizure_type": "seizures", "state": "unknown", "evidence": "seizures"}],
+    _facts([_DRAFT_DX], "clinical_facts_json"),  # generate diagnosis
+    _facts([_VERIFIED_DX], "verified_facts_json"),  # verify diagnosis (corrected)
+    _facts(  # generate seizure_frequency
+        [
+            {
+                "family": "seizure_frequency",
+                "seizure_type": "seizures",
+                "state": "unknown",
+                "evidence": "seizures",
+            }
+        ],
         "clinical_facts_json",
     ),
-    _facts([], "verified_facts_json"),                              # verify SF (drops bare-unknown)
-    _facts([], "clinical_facts_json"),                              # generate prescription
-    _facts([], "verified_facts_json"),                              # verify prescription
-    _facts([_INV], "clinical_facts_json"),                          # generate investigation
-    _facts([_INV], "verified_facts_json"),                          # verify investigation (kept)
+    _facts([], "verified_facts_json"),  # verify SF (drops bare-unknown)
+    _facts([], "clinical_facts_json"),  # generate prescription
+    _facts([], "verified_facts_json"),  # verify prescription
+    _facts([_INV], "clinical_facts_json"),  # generate investigation
+    _facts([_INV], "verified_facts_json"),  # verify investigation (kept)
 ]
 
 
 def _run_forward() -> dspy.Prediction:
     program = build_multistage_program()
     with dspy.context(lm=DummyLM(list(_RESPONSES))):
-        return program(letter_text="focal epilepsy. MRI was normal.", output_schema=OUTPUT_SCHEMA_JSON)
+        return program(
+            letter_text="focal epilepsy. MRI was normal.", output_schema=OUTPUT_SCHEMA_JSON
+        )
 
 
 def test_forward_merges_verified_not_draft_facts():

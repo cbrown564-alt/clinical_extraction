@@ -33,8 +33,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_family_route
     DEFAULT_HYBRID_COMPARATOR_ARTIFACT,
     DEFAULT_SF_ROUTE_ARTIFACT,
     DEFAULT_SHARED_PASS_ARTIFACT,
-    combine_family_routed_predictions,
     _routed_primary_recovery,
+    combine_family_routed_predictions,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_evaluation import (  # noqa: E501
     align_predictions_to_gold,
@@ -64,9 +64,7 @@ def _diagnosis_concepts(cell: str) -> list[str]:
     return re.findall(r"\('Diagnosis',\s*'([^']+)'\)", cell)
 
 
-def _candidate_miss_by_slice(
-    gold_letters: Any, pred_letters: Any
-) -> dict[str, int]:
+def _candidate_miss_by_slice(gold_letters: Any, pred_letters: Any) -> dict[str, int]:
     rows = row_level_error_ledger(
         architecture="diagnosis_enumeration_readout",
         ownership="diagnostic",
@@ -159,8 +157,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "# ExECTv2 Diagnosis Enumeration Recall Pass — Routed Readout",
         "",
         f"- Generated: `{report['generated_on']}`",
-        f"- Split/stage: `{report['split']}` / `{report['stage']}` "
-        f"({report['row_count']} letters)",
+        f"- Split/stage: `{report['split']}` / `{report['stage']}` ({report['row_count']} letters)",
         f"- Enumeration artifact: `{report['enum_artifact']}`",
         f"- Aggregate ownership: `{report['aggregate_ownership']}`",
         "- Mode: **no model calls** (enumeration artifact + frozen lanes replayed).",
@@ -219,7 +216,9 @@ def main() -> None:
     md = render_markdown(report)
     if args.out_json:
         args.out_json.parent.mkdir(parents=True, exist_ok=True)
-        args.out_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        args.out_json.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         print(f"Wrote {args.out_json}")
     if args.out_md:
         args.out_md.parent.mkdir(parents=True, exist_ok=True)

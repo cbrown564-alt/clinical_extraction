@@ -34,7 +34,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 import time
 from dataclasses import replace
 from datetime import date
@@ -70,14 +69,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifa
     PrescriptionFactsSignature,
     _facts_of,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+    write_jsonl,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
     parse_dedup_clinical_facts_json,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
     to_predicted_letter_from_dedup_facts,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -85,12 +84,20 @@ RUN_DATE = date.today().isoformat().replace("-", "")
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "experiments"
 REPORT_DIR = ROOT / "docs" / "experiments" / "exectv2" / "prescription"
-DEV_MANIFEST_PATH = ROOT / "configs" / "exectv2" / "finding_assembly" / "exectv2_holistic_finding_assembly_v08_dev140.yaml"
+DEV_MANIFEST_PATH = (
+    ROOT
+    / "configs"
+    / "exectv2"
+    / "finding_assembly"
+    / "exectv2_holistic_finding_assembly_v08_dev140.yaml"
+)
 
 TASK_MODEL = "openai/gpt-4.1-mini"
 TASK_TEMPERATURE = 0.0
 TASK_MAX_TOKENS = 12000
-CANONICAL_INSTRUCTION_FILE = EXPERIMENTS / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+CANONICAL_INSTRUCTION_FILE = (
+    EXPERIMENTS / "exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
+)
 
 # Full-200 baseline producer artifacts (P7 audit's currentcode manifest).
 FULL200_PRESCRIPTION_BASELINE = EXPERIMENTS / (
@@ -175,13 +182,11 @@ def _locate_drug_in_note(drug: str, note: str) -> str:
         cand_norm = cand.lower().replace("-", " ")
         idx = note_low.find(cand_norm)
         if idx != -1:
-            return note[idx: idx + len(cand_norm)]
+            return note[idx : idx + len(cand_norm)]
     return ""
 
 
-def _project_facts_to_mentions(
-    gold_letter: ExectLetter, facts_json: str
-) -> list[dict[str, Any]]:
+def _project_facts_to_mentions(gold_letter: ExectLetter, facts_json: str) -> list[dict[str, Any]]:
     """Project the LLM facts JSON into the saved-jsonl predicted_mentions schema.
 
     The projection path (to_predicted_letter_from_dedup_facts) drops the
@@ -197,7 +202,9 @@ def _project_facts_to_mentions(
     # Recover the raw facts list to access the evidence spans the LLM emitted.
     raw_facts = _facts_of(facts_json) if facts_json else []
 
-    record, _errors = parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    record, _errors = (
+        parse_dedup_clinical_facts_json(facts_json) if facts_json else (None, ["empty"])
+    )
     if record is None:
         predicted = PredictedLetter(letter_id=gold_letter.letter_id, mentions=())
     else:
@@ -210,13 +217,25 @@ def _project_facts_to_mentions(
     # ordering, so we match on the CUIPhrase attribute.
     facts_by_key: dict[str, dict[str, Any]] = {}
     for f in raw_facts:
-        key = (f.get("drug_name", ""), f.get("drug_dose", ""), f.get("dose_unit", ""), f.get("frequency", ""))
+        key = (
+            f.get("drug_name", ""),
+            f.get("drug_dose", ""),
+            f.get("dose_unit", ""),
+            f.get("frequency", ""),
+        )
         facts_by_key[str(key).lower()] = f
 
     mentions = []
     for m in pred_exect.entities("Prescription"):
         attrs = {str(k): str(v) for k, v in m.attributes.items()}
-        key = str((attrs.get("DrugName", ""), attrs.get("DrugDose", ""), attrs.get("DoseUnit", ""), attrs.get("Frequency", ""))).lower()
+        key = str(
+            (
+                attrs.get("DrugName", ""),
+                attrs.get("DrugDose", ""),
+                attrs.get("DoseUnit", ""),
+                attrs.get("Frequency", ""),
+            )
+        ).lower()
         fact = facts_by_key.get(key, {})
         evidence = str(fact.get("evidence", "") or "")
         # The assembly's evidence-grounding invariant requires evidence to be an
@@ -234,17 +253,19 @@ def _project_facts_to_mentions(
                 # Locate any surface form of the drug name in the note.
                 drug = attrs.get("DrugName", "") or attrs.get("CUIPhrase", "")
                 evidence = _locate_drug_in_note(drug, note) or evidence
-        mentions.append({
-            "entity": PRESCRIPTION.name,
-            "text": evidence,
-            "attributes": attrs,
-            "evidence": evidence,
-            "component_owner": "llm:tuned_rx_extractor:canonical_plus_probe23_emitifunsure",
-            "confidence": None,
-            "rationale": None,
-            "evidence_span": None,
-            "uncertainty_flags": [],
-        })
+        mentions.append(
+            {
+                "entity": PRESCRIPTION.name,
+                "text": evidence,
+                "attributes": attrs,
+                "evidence": evidence,
+                "component_owner": "llm:tuned_rx_extractor:canonical_plus_probe23_emitifunsure",
+                "confidence": None,
+                "rationale": None,
+                "evidence_span": None,
+                "uncertainty_flags": [],
+            }
+        )
     return mentions
 
 
@@ -260,42 +281,48 @@ def produce_llm_prescription_artifact(
     dspy.configure(lm=lm)
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
     exec_pairs = [(program, {"letter_text": letter.note_text}) for letter in letters]
-    print(f"[llm-rx] extracting {len(letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...", flush=True)
+    print(
+        f"[llm-rx] extracting {len(letters)} letters ({TASK_MODEL}, temp {TASK_TEMPERATURE})...",
+        flush=True,
+    )
     started = time.time()
     predictions = evaluator(exec_pairs)
     n_calls = 0
     rows = []
     for letter, prediction in zip(letters, predictions, strict=True):
-        raw = (
-            str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
-        )
+        raw = str(getattr(prediction, "clinical_facts_json", "") or "") if prediction else ""
         if raw:
             n_calls += 1
         mentions = _project_facts_to_mentions(letter, raw)
-        rows.append({
-            "letter_id": letter.letter_id,
-            "split": split,
-            "pipeline_family": "exectv2_llm_rx_tuned_extractor",
-            "prompt_version": "canonical_gepa_plus_probe2_probe3_emitifunsure",
-            "model": TASK_MODEL,
-            "mode": "live",
-            "component_owner": "llm_tuned_rx_extractor_canonical_plus_probe23_emitifunsure",
-            "call_error": None,
-            "parse_errors": [],
-            "gate_warnings": [],
-            "n_mentions_raw": len(mentions),
-            "n_mentions_scored": len(mentions),
-            "n_evidence_invalid": 0,
-            "predicted_mentions": mentions,
-            "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
-            "gold_mentions": [
-                {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
-                for a in letter.annotations if a.entity == PRESCRIPTION.name
-            ],
-        })
+        rows.append(
+            {
+                "letter_id": letter.letter_id,
+                "split": split,
+                "pipeline_family": "exectv2_llm_rx_tuned_extractor",
+                "prompt_version": "canonical_gepa_plus_probe2_probe3_emitifunsure",
+                "model": TASK_MODEL,
+                "mode": "live",
+                "component_owner": "llm_tuned_rx_extractor_canonical_plus_probe23_emitifunsure",
+                "call_error": None,
+                "parse_errors": [],
+                "gate_warnings": [],
+                "n_mentions_raw": len(mentions),
+                "n_mentions_scored": len(mentions),
+                "n_evidence_invalid": 0,
+                "predicted_mentions": mentions,
+                "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
+                "gold_mentions": [
+                    {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
+                    for a in letter.annotations
+                    if a.entity == PRESCRIPTION.name
+                ],
+            }
+        )
     write_jsonl(rows, jsonl_path)
     mention_count = sum(len(r["predicted_mentions"]) for r in rows)
-    print(f"[llm-rx] done in {time.time() - started:.1f}s; {n_calls} calls; {mention_count} mentions across {len(rows)} rows -> {jsonl_path.name}")
+    print(
+        f"[llm-rx] done in {time.time() - started:.1f}s; {n_calls} calls; {mention_count} mentions across {len(rows)} rows -> {jsonl_path.name}"
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -341,10 +368,14 @@ def _run_assembly(
     assembly_md.write_text(markdown, encoding="utf-8")
     headline = run.report["score_ladder"]["headline_target"]
     overall = headline["overall"]
-    print(f"[{candidate_id}] F1={overall['f1']:.4f} P={overall['precision']:.4f} R={overall['recall']:.4f} TP={overall['tp']} FP={overall['fp']} FN={overall['fn']}")
+    print(
+        f"[{candidate_id}] F1={overall['f1']:.4f} P={overall['precision']:.4f} R={overall['recall']:.4f} TP={overall['tp']} FP={overall['fp']} FN={overall['fn']}"
+    )
     for entity in (DIAGNOSIS.name, SEIZURE_FREQUENCY.name, PRESCRIPTION.name, INVESTIGATIONS.name):
         row = headline["by_indicator"][entity]
-        print(f"  {entity}: F1={row['f1']:.4f} P={row['precision']:.4f} R={row['recall']:.4f} TP={row['tp']} FP={row['fp']} FN={row['fn']}")
+        print(
+            f"  {entity}: F1={row['f1']:.4f} P={row['precision']:.4f} R={row['recall']:.4f} TP={row['tp']} FP={row['fp']} FN={row['fn']}"
+        )
     return headline
 
 
@@ -355,8 +386,12 @@ def _print_delta(label: str, baseline: dict[str, Any], treatment: dict[str, Any]
     for entity in (PRESCRIPTION.name,):
         ro, rt = baseline["by_indicator"][entity], treatment["by_indicator"][entity]
         print(f"  {entity}: {ro['f1']:.4f} -> {rt['f1']:.4f} ({rt['f1'] - ro['f1']:+.4f})")
-        print(f"    P {ro['precision']:.4f} -> {rt['precision']:.4f} | R {ro['recall']:.4f} -> {rt['recall']:.4f}")
-        print(f"    TP {ro['tp']}->{rt['tp']} | FP {ro['fp']}->{rt['fp']} | FN {ro['fn']}->{rt['fn']}")
+        print(
+            f"    P {ro['precision']:.4f} -> {rt['precision']:.4f} | R {ro['recall']:.4f} -> {rt['recall']:.4f}"
+        )
+        print(
+            f"    TP {ro['tp']}->{rt['tp']} | FP {ro['fp']}->{rt['fp']} | FN {ro['fn']}->{rt['fn']}"
+        )
 
 
 def _full200_base_manifest(letters: list[ExectLetter]):
@@ -366,10 +401,14 @@ def _full200_base_manifest(letters: list[ExectLetter]):
     dev_manifest = load_finding_assembly_manifest(DEV_MANIFEST_PATH)
     # Map each dev producer key -> full200 currentcode artifact.
     full200_artifacts = {
-        "target_single_call_v042": EXPERIMENTS / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
-        "diagnosis_reconciler_v01": EXPERIMENTS / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
-        "sf_union_arbitration_v08": EXPERIMENTS / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
-        "investigations_arbitration_v02": EXPERIMENTS / "exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl",
+        "target_single_call_v042": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+        "diagnosis_reconciler_v01": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
+        "sf_union_arbitration_v08": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
+        "investigations_arbitration_v02": EXPERIMENTS
+        / "exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl",
         "prescription_repair_v03": FULL200_PRESCRIPTION_BASELINE,
     }
     producers = {

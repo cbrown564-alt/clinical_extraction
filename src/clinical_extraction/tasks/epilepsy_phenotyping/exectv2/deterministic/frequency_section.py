@@ -7,18 +7,20 @@ two dated events on the same line. This module handles only explicitly labeled
 ``Seizure type and frequency`` blocks and emits benchmark-format extra mentions
 for those structured list cases.
 """
+
 from __future__ import annotations
 
 import re
+
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
+    SEIZURE_TYPE_ANCHOR_RULE,
+)
 
 from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
-    SEIZURE_TYPE_ANCHOR_RULE,
-)
 
 _SECTION_HEADER = re.compile(r"\bseizure\s+type\s+and\s+frequency\s*:\s*", re.IGNORECASE)
 _STOP_HEADER = re.compile(
@@ -41,7 +43,9 @@ _COUNT_RATE = re.compile(
     rf"\b(?P<count>{_COUNT})\s+(?:per|a|each|every)\s+(?P<unit>{_UNIT})\b",
     re.IGNORECASE,
 )
-_ADVERB_RATE = re.compile(r"\b(?P<adv>daily|weekly|monthly|fortnightly|yearly|annually)\b", re.IGNORECASE)
+_ADVERB_RATE = re.compile(
+    r"\b(?P<adv>daily|weekly|monthly|fortnightly|yearly|annually)\b", re.IGNORECASE
+)
 _EVERY_N_RATE = re.compile(
     rf"\bevery\s+(?P<period_count>{_COUNT})\s+(?P<unit>{_UNIT})\b",
     re.IGNORECASE,
@@ -85,7 +89,8 @@ def _with_cui(text: str, attrs: dict[str, str]) -> dict[str, str]:
 def _first_anchor(line: str) -> tuple[str, tuple[int, int]] | None:
     ctx = ExtractionContext(text=line)
     anchors = [
-        c for c in SEIZURE_TYPE_ANCHOR_RULE.apply(ctx, DEFAULT_ABLATION)
+        c
+        for c in SEIZURE_TYPE_ANCHOR_RULE.apply(ctx, DEFAULT_ABLATION)
         if c.evidence and c.evidence in line
     ]
     if not anchors:
@@ -119,7 +124,7 @@ def _frequency_section_lines(text: str) -> list[tuple[str, int]]:
         header = _SECTION_HEADER.search(line)
         if header:
             in_section = True
-            remainder = line[header.end():].strip(" \t\u00a0")
+            remainder = line[header.end() :].strip(" \t\u00a0")
             if remainder:
                 out.append((remainder, line_start + header.end()))
             continue
@@ -234,7 +239,7 @@ def frequency_section_mentions(text: str) -> list[PredictedMention]:
     prevents double emission.
     """
     mentions: list[PredictedMention] = []
-    for line, line_start in _frequency_section_lines(text):
+    for line, _line_start in _frequency_section_lines(text):
         anchor_info = _first_anchor(line)
         if anchor_info is None:
             continue
@@ -244,11 +249,11 @@ def frequency_section_mentions(text: str) -> list[PredictedMention]:
         if rate_attrs:
             mentions.append(_mention(anchor_text, rate_attrs, evidence))
 
-        last_event_attrs = _last_event_date_attrs(line[anchor_span[1]:])
+        last_event_attrs = _last_event_date_attrs(line[anchor_span[1] :])
         if last_event_attrs:
             mentions.append(_mention(anchor_text, last_event_attrs, evidence))
 
-        date_matches = list(_DATE_LIST.finditer(line[anchor_span[1]:]))
+        date_matches = list(_DATE_LIST.finditer(line[anchor_span[1] :]))
         if len(date_matches) < 2:
             continue
         for match in date_matches:

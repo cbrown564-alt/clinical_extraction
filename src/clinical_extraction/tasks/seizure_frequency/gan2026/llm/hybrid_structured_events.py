@@ -1,4 +1,4 @@
-﻿"""Hybrid structured-events Gan 2026 seizure-frequency extraction.
+"""Hybrid structured-events Gan 2026 seizure-frequency extraction.
 
 Architecture: LLM extracts structured events from raw note text (open-text → schema);
 the same deterministic normalize/project/render/score stages used by the candidate-set
@@ -25,9 +25,6 @@ import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -77,6 +74,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+    load_raw_outputs_by_source_index,
 )
 
 from ..reports.llm_structured_events_report import (
@@ -633,9 +633,7 @@ def parse_structured_json(
             _extract_json_object(raw_output),
             python_literal_dialect_repair=repair_config.json_dialect_repair,
         )
-        payload = _filter_structured_payload(
-            repair_structured_extraction_payload(raw_payload)
-        )
+        payload = _filter_structured_payload(repair_structured_extraction_payload(raw_payload))
     except json.JSONDecodeError as exc:
         return None, [], [f"invalid_json: {exc.msg}"]
 
@@ -796,8 +794,7 @@ def _should_preserve_sustained_selected_seizure_free(
         for value in (event.raw_value, event.time_window, event.evidence, event.notes)
     )
     support_text = (
-        f"{support_text} {extraction.selection.evidence} "
-        f"{extraction.selection.rationale}"
+        f"{support_text} {extraction.selection.evidence} {extraction.selection.rationale}"
     )
     support_text = support_text.lower()
     return bool(

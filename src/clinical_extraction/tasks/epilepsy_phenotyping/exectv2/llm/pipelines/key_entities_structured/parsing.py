@@ -9,18 +9,18 @@ import json
 import re
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
-    extract_json_object,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
-    parse_json_payload_with_schema_repair,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
     ALLOWED_EVENT_FAMILIES,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.records import (
     MentionForEvidence,
     StructuredExtractionRecord,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+    parse_json_payload_with_schema_repair,
 )
 
 
@@ -29,9 +29,7 @@ def parse_structured_events_json(
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
     extracted = extract_json_object(raw_output)
     try:
-        payload, dialect_notes = parse_json_payload_with_schema_repair(
-            extracted
-        )
+        payload, dialect_notes = parse_json_payload_with_schema_repair(extracted)
     except json.JSONDecodeError as exc:
         repaired_raw, rationale_notes = _strip_non_scored_rationale_fields(extracted)
         if not rationale_notes:
@@ -110,9 +108,7 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
                     continue
                 mention = dict(mention)
                 missing = [
-                    key
-                    for key in ("entity", "text")
-                    if not str(mention.get(key) or "").strip()
+                    key for key in ("entity", "text") if not str(mention.get(key) or "").strip()
                 ]
                 if missing:
                     notes.append(

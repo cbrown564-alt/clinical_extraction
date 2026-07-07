@@ -14,12 +14,12 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.core.paths import discover_repo_root
+from clinical_extraction.core.registry import (
+    load_run_registry,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.final_consolidation import (
     cached_gan_reliability_scorecard_json,
     cached_gan_reliability_scorecard_payload,
-)
-from clinical_extraction.core.registry import (
-    load_run_registry,
 )
 
 _MOCK_DATA_DIR = discover_repo_root() / "frontend" / "public" / "mock-data" / "gan2026"

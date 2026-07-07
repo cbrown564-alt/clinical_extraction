@@ -12,10 +12,6 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
-    PredictedLetter,
-    PredictedMention,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -67,12 +63,14 @@ def main() -> None:
             lid = str(row["letter_id"])
             note = note_by_id.get(lid, "")
             gold = [_ann(m) for m in row.get("gold_mentions", []) if m.get("entity") == indicator]
-            pred = [_ann(m) for m in row.get("predicted_mentions", []) if m.get("entity") == indicator]
+            pred = [
+                _ann(m) for m in row.get("predicted_mentions", []) if m.get("entity") == indicator
+            ]
             if not gold and not pred:
                 continue
 
-            gold_l = ExectLetter(letter_id=lid, note_text=note, annotations=tuple(gold))
-            pred_l = ExectLetter(letter_id=lid, note_text=note, annotations=tuple(pred))
+            ExectLetter(letter_id=lid, note_text=note, annotations=tuple(gold))
+            ExectLetter(letter_id=lid, note_text=note, annotations=tuple(pred))
 
             # benchmark keys
             bg = Counter(match_key(a, benchmark_config_for(indicator)) for a in gold)
@@ -98,7 +96,9 @@ def main() -> None:
             if head_tp <= bench_tp and len(gold) == bench_tp:
                 continue
 
-            print(f"\n--- letter {lid}  (bench_tp={bench_tp}/{len(gold)}  head_tp={head_tp}/{sum(hg.values())}) ---")
+            print(
+                f"\n--- letter {lid}  (bench_tp={bench_tp}/{len(gold)}  head_tp={head_tp}/{sum(hg.values())}) ---"
+            )
             for a in gold:
                 attrs = {k: v for k, v in a.attributes.items() if k not in ("CUI", "CUIPhrase")}
                 print(f"  GOLD  {a.text!r:45} {attrs}")

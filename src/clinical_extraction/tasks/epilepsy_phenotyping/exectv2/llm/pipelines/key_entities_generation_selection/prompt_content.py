@@ -7,13 +7,13 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
-    load_dedup_fact_guidance,
-    load_dedup_fact_worked_examples,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
     DedupFactFamily,
     PromptProfile,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_dedup_fact_guidance,
+    load_dedup_fact_worked_examples,
 )
 
 
@@ -132,10 +132,7 @@ def _mention_attribute_contract() -> dict[str, list[str]]:
                 "TimeSince_or_TimeOfEvent, PointInTime, and FrequencyChange "
                 "belong in mention.attributes."
             ),
-            (
-                "Do not put diagnosis attributes such as DiagCategory on "
-                "SeizureFrequency mentions."
-            ),
+            ("Do not put diagnosis attributes such as DiagCategory on SeizureFrequency mentions."),
         ],
         "Investigations": [
             (

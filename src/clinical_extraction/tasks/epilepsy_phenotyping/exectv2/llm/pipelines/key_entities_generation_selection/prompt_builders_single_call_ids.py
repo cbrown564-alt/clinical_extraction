@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, Sequence
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
@@ -11,41 +10,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.generation_selection.types import (
-    DedupFactFamily,
     PromptProfile,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.constants import (
-    PROMPT_VERSION,
     _ARCHITECTURE,
     _CLEAN_RENDER_ID_OUTPUT_SCHEMA,
-    _INVENTORY_OUTPUT_SCHEMA,
     _MENTION_ID_OUTPUT_SCHEMA,
-    _MENTION_OUTPUT_SCHEMA,
-    _MODEL_ORIGIN_CONTRACT,
-    _OUTPUT_SCHEMA,
-    _POOL_ADJUDICATION_OUTPUT_SCHEMA,
-    _POOL_GROUP_ADJUDICATION_OUTPUT_SCHEMA,
     _RENDER_ID_OUTPUT_SCHEMA,
-    _TYPED_MENTION_OUTPUT_SCHEMA,
-    _dedup_fact_decision_tables,
-    _dedup_fact_output_schema,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
-    coerce_mention_list,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
-    _coerce_record,
+    PROMPT_VERSION,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.prompt_content import (
     _clean_render_text_policy,
     _clinical_rules,
-    _dedup_fact_guidance,
-    _dedup_fact_worked_examples,
     _forbidden_attribute_combinations,
     _mention_attribute_contract,
     _render_text_policy,
     _worked_examples,
 )
+
 
 def build_single_call_mention_ids_prompt_payload(
     letter: ExectLetter,
@@ -88,10 +70,7 @@ def build_single_call_mention_ids_prompt_payload(
             "Generate broadly, then select conservatively by mention_id.",
             "Retain supported current facts and completed-result investigations.",
             "Reject planned/future-only facts and unsupported inferences.",
-            (
-                "Keep repeated source-supported mentions by selecting each "
-                "separate mention_id."
-            ),
+            ("Keep repeated source-supported mentions by selecting each separate mention_id."),
             (
                 "Each selected generated mention must carry all needed attributes "
                 "in its own attributes object."
@@ -168,10 +147,7 @@ def build_single_call_render_ids_prompt_payload(
             "Generate broadly, then select conservatively by mention_id.",
             "Retain supported current facts and completed-result investigations.",
             "Reject planned/future-only facts and unsupported inferences.",
-            (
-                "Keep repeated source-supported mentions by selecting each "
-                "separate mention_id."
-            ),
+            ("Keep repeated source-supported mentions by selecting each separate mention_id."),
             (
                 "Each selected generated mention must carry all needed attributes "
                 "in its own attributes object."
@@ -250,10 +226,7 @@ def build_single_call_clean_render_ids_prompt_payload(
             "Generate broadly, then select conservatively by mention_id.",
             "Retain supported current facts and completed-result investigations.",
             "Reject planned/future-only facts and unsupported inferences.",
-            (
-                "Keep repeated source-supported mentions by selecting each "
-                "separate mention_id."
-            ),
+            ("Keep repeated source-supported mentions by selecting each separate mention_id."),
             (
                 "Each selected generated mention must carry all needed attributes "
                 "in its own attributes object."

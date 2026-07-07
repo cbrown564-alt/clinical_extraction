@@ -26,16 +26,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     _has_blocking_parse_issue,
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_evaluation import (  # noqa: E501
-    architecture_report,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
-    TARGET_INDICATORS,
-    build_target_indicator_report,
-    render_target_indicator_markdown,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
-
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.constants import (  # noqa: E501
     COMPONENT_OWNER,
     PIPELINE_FAMILY,
@@ -54,6 +44,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call.signatures import (  # noqa: E501
     DspyTargetIndicatorsExtractor,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first_essential_evaluation import (  # noqa: E501
+    architecture_report,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indicator_report import (  # noqa: E501
+    TARGET_INDICATORS,
+    build_target_indicator_report,
+    render_target_indicator_markdown,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 __all__ = ["run_split", "summarize_rows", "write_jsonl", "write_report"]
 
@@ -194,18 +193,16 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
                 "routed_primary_recovery": {
                     "overall": arch["clinical_recovery"]["cui_projected_overall"],
                     "headline_scores": {
-                        indicator: arch["clinical_recovery"][
-                            "cui_projected_headline_scores"
-                        ][indicator]
+                        indicator: arch["clinical_recovery"]["cui_projected_headline_scores"][
+                            indicator
+                        ]
                         for indicator in TARGET_INDICATORS
                     },
                 },
                 "routed_primary_errors": {
                     "per_entity": arch["error_taxonomy"]["per_entity"],
                 },
-                "fidelity_companions": arch["clinical_recovery"].get(
-                    "fidelity_companions", {}
-                ),
+                "fidelity_companions": arch["clinical_recovery"].get("fidelity_companions", {}),
             }
         ],
     }
@@ -263,10 +260,7 @@ def _letters_from_rows(
     )
 
     split = str(rows[0].get("split", "dev")) if rows else "dev"
-    note_by_id = {
-        letter.letter_id: letter.note_text
-        for letter in load_letters_for_split(split)
-    }
+    note_by_id = {letter.letter_id: letter.note_text for letter in load_letters_for_split(split)}
     gold_letters = []
     pred_letters = []
     for row in rows:
@@ -280,8 +274,7 @@ def _letters_from_rows(
                         entity=str(m["entity"]),
                         text=str(m.get("text", "")),
                         attributes={
-                            str(k): str(v)
-                            for k, v in dict(m.get("attributes", {})).items()
+                            str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
                         },
                     )
                     for m in row.get("gold_mentions", [])
@@ -297,8 +290,7 @@ def _letters_from_rows(
                         entity=str(m["entity"]),
                         text=str(m.get("text", "")),
                         attributes={
-                            str(k): str(v)
-                            for k, v in dict(m.get("attributes", {})).items()
+                            str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
                         },
                         evidence=str(m.get("evidence", "")),
                         confidence=m.get("confidence"),

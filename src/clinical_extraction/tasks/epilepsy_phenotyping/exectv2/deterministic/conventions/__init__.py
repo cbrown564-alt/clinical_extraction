@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
+    is_sf_convention_noise,
+    sf_convention_rewrite,
+    sf_residual_additions,
+)
+
 from .diagnosis import (
     DIAGNOSIS_CONVENTION_ALIAS_REPAIRS,
     DIAGNOSIS_RESIDUAL_CONVENTION_NOISE,
@@ -26,11 +32,6 @@ from .prescription import (
     prescription_convention_attribute_repairs,
     prescription_residual_additions,
     split_daily_dose_regimen,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
-    is_sf_convention_noise,
-    sf_convention_rewrite,
-    sf_residual_additions,
 )
 from .shared import (
     DRUG_SURFACE_ALIASES,
