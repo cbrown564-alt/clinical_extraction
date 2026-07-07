@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import ast
+import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -22,9 +23,7 @@ def _source_segment(source: str, node: ast.AST) -> str:
         segment = None
     if segment is None:
         lines = source.splitlines()
-        segment = "\n".join(
-            lines[node.lineno - 1 : getattr(node, "end_lineno", node.lineno)]
-        )
+        segment = "\n".join(lines[node.lineno - 1 : getattr(node, "end_lineno", node.lineno)])
     return segment or ""
 
 
@@ -41,9 +40,7 @@ def _rule_id_from_if(source: str, node: ast.If) -> str | None:
 def _extract_rewrite_ifs(source: str) -> list[tuple[str, str, str]]:
     tree = ast.parse(source)
     fn = next(
-        n
-        for n in tree.body
-        if isinstance(n, ast.FunctionDef) and n.name == "sf_convention_rewrite"
+        n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "sf_convention_rewrite"
     )
     blocks: list[tuple[str, str, str]] = []
     for node in fn.body:
@@ -102,7 +99,13 @@ def _write_rewrite_builders(source: str, blocks: list[tuple[str, str, str]]) -> 
     for rule_id, cond, body in blocks:
         cond, setup = _fix_condition(cond, rule_id)
         fn_name = f"builder_{rule_id}"
-        lines.extend(["", f"@register_builder({rule_id!r})", f"def {fn_name}(ctx: ConventionContext) -> RewriteResult | None:"])
+        lines.extend(
+            [
+                "",
+                f"@register_builder({rule_id!r})",
+                f"def {fn_name}(ctx: ConventionContext) -> RewriteResult | None:",
+            ]
+        )
         lines.append("    attrs = dict(ctx.attrs)")
         lines.append("    text = ctx.text")
         lines.append("    evidence = ctx.evidence")
@@ -161,11 +164,17 @@ def _write_noise_builders(source: str, blocks: list[tuple[str, str, str]]) -> No
     ]
     for rule_id, cond, body in blocks:
         fn_name = f"builder_{rule_id}"
-        lines.extend(["", f"@register_builder({rule_id!r})", f"def {fn_name}(ctx: ConventionContext) -> bool:"])
+        lines.extend(
+            [
+                "",
+                f"@register_builder({rule_id!r})",
+                f"def {fn_name}(ctx: ConventionContext) -> bool:",
+            ]
+        )
         lines.append("    phrase = ctx.phrase")
         lines.append("    evidence = ctx.evidence")
-        lines.append('    attrs = {str(k): str(v) for k, v in ctx.attrs.items()}')
-        lines.append("    cui = attrs.get(\"CUI\")")
+        lines.append("    attrs = {str(k): str(v) for k, v in ctx.attrs.items()}")
+        lines.append('    cui = attrs.get("CUI")')
         lines.append(f"    if ({cond}):")
         for body_line in body.splitlines():
             lines.append(f"        {body_line}")
@@ -208,7 +217,6 @@ def _write_residual_builders(source: str) -> None:
 
 
 def main() -> None:
-    import re
 
     source = LEGACY.read_text(encoding="utf-8")
     rewrite_blocks = _extract_rewrite_ifs(source)

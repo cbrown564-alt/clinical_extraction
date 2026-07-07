@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Literal
 
 from pydantic import ValidationError
@@ -21,6 +21,7 @@ NORMALIZATION_POLICY_ID = "gan2026_clinical_assessment_normalization_v0"
 
 DISABLED_SWITCH_ISSUE_PREFIX = "ablation_switch_disabled:"
 
+
 def _candidate_lookup(
     candidate_by_id: Mapping[str, ExtractedCandidate],
     candidate_ids: Sequence[str],
@@ -30,6 +31,7 @@ def _candidate_lookup(
         for candidate_id in candidate_ids
         if candidate_id in candidate_by_id
     ]
+
 
 def _dedupe(values: Sequence[str]) -> list[str]:
     seen: set[str] = set()
@@ -41,12 +43,14 @@ def _dedupe(values: Sequence[str]) -> list[str]:
         deduped.append(value)
     return deduped
 
+
 def _candidates_by_ids(
     candidate_set: CandidateSet,
     candidate_ids: Sequence[str],
 ) -> list[ExtractedCandidate]:
     by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
     return [by_id[candidate_id] for candidate_id in candidate_ids if candidate_id in by_id]
+
 
 def _normalization_source_phrase(
     draft: AssessmentDraft,
@@ -60,8 +64,10 @@ def _normalization_source_phrase(
     ]
     return _clean_phrase("; ".join(phrase for phrase in phrases if phrase))
 
+
 def _disabled_switch_issue(switch: str) -> str:
     return f"{DISABLED_SWITCH_ISSUE_PREFIX}{switch}"
+
 
 def _small_number_to_float(value: str) -> float | None:
     if value.isdigit():
@@ -82,11 +88,13 @@ def _small_number_to_float(value: str) -> float | None:
     }.get(value.strip().lower())
     return float(parsed) if parsed is not None else None
 
+
 def _multi_month_bucket_count_to_float(value: str) -> float | None:
     normalized = value.strip().lower()
     if normalized in {"no", "zero"}:
         return 0.0
     return _small_number_to_float(value)
+
 
 def _duration_unit(value: str) -> Literal["day", "week", "month", "year"] | None:
     normalized = value.strip().lower()
@@ -100,6 +108,7 @@ def _duration_unit(value: str) -> Literal["day", "week", "month", "year"] | None
         return "year"
     return None
 
+
 def _candidate_parse_phrases(candidate: ExtractedCandidate) -> list[str]:
     phrases = [
         candidate_source_phrase(candidate) or "",
@@ -107,8 +116,10 @@ def _candidate_parse_phrases(candidate: ExtractedCandidate) -> list[str]:
     ]
     return [phrase for phrase in _dedupe([_clean_phrase(phrase) for phrase in phrases]) if phrase]
 
+
 def _source_ids_from_candidates(candidates: Sequence[ExtractedCandidate]) -> list[str]:
     return sorted({source_id for candidate in candidates for source_id in candidate.source_ids})
+
 
 def _cluster_phrases(candidates: Sequence[ExtractedCandidate]) -> list[str]:
     phrases: list[str] = []
@@ -132,8 +143,10 @@ def _cluster_phrases(candidates: Sequence[ExtractedCandidate]) -> list[str]:
         )
     return phrases
 
+
 def _clean_phrase(value: str) -> str:
     return " ".join(value.strip().split())
+
 
 def _normalize_phrase_for_parse(value: str) -> str:
     text = value.lower()
@@ -142,12 +155,12 @@ def _normalize_phrase_for_parse(value: str) -> str:
         text = re.sub(r"(?<=\d)\s*[-–—]\s*(?=\d)", " to ", text)
     text = re.sub(r"\bper\s+24\s*h(?:ours?)?\b", "per day", text)
     text = re.sub(r"\b24\s*h(?:ours?)?\b", "day", text)
-    
+
     # Normalize fortnight patterns to 2 weeks
     text = re.sub(r"\bfortnightly\b", "every 2 weeks", text)
     text = re.sub(r"\ba\s+fortnight\b", "2 weeks", text)
     text = re.sub(r"\bfortnight\b", "2 weeks", text)
-    
+
     # Normalize range patterns like "once every X to Y weeks" -> "1 per X to Y weeks"
     text = re.sub(
         r"\bonce\s+every\s+(\d+)\s+to\s+(\d+)\s+(day|week|month|year)s?\b",
@@ -165,8 +178,9 @@ def _normalize_phrase_for_parse(value: str) -> str:
         r"1 per 1 \1",
         text,
     )
-    
+
     return " ".join(text.split())
+
 
 def _validate_candidate_references(
     draft: AssessmentDraft,
@@ -183,6 +197,7 @@ def _validate_candidate_references(
             if candidate_id not in known:
                 errors.append(f"{role_name}:unknown_candidate_id:{candidate_id}")
     return errors
+
 
 def _validation_error_messages(exc: ValidationError) -> list[str]:
     return [str(error.get("msg", error)) for error in exc.errors()]

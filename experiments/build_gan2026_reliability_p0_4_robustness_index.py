@@ -55,7 +55,11 @@ def _side_accuracy(records: list[dict[str, Any]], key: str) -> tuple[int, int]:
 def analyse_candidate(name: str, path: Path) -> dict[str, Any]:
     d = rc.load_json(path)
     panels = d["panels"]
-    a, b, c = panels["A_minimal_pairs"], panels["B_source_near_perturbations"], panels["C_kcl_style_ood"]
+    a, b, c = (
+        panels["A_minimal_pairs"],
+        panels["B_source_near_perturbations"],
+        panels["C_kcl_style_ood"],
+    )
     ac, an = _panel_pass(a)
     bc, bn = _panel_pass(b)
     cc, cn = _panel_pass(c)
@@ -70,7 +74,11 @@ def analyse_candidate(name: str, path: Path) -> dict[str, Any]:
     qt_c, qt_n = _side_accuracy(records, "quantify_side_correct")
     unknown_acc = uk_c / uk_n if uk_n else None
     quantify_acc = qt_c / qt_n if qt_n else None
-    overfit_gap = (quantify_acc - unknown_acc) if (unknown_acc is not None and quantify_acc is not None) else None
+    overfit_gap = (
+        (quantify_acc - unknown_acc)
+        if (unknown_acc is not None and quantify_acc is not None)
+        else None
+    )
 
     consistency = both_correct / npairs if npairs else None
     overall_pass = overall_c / overall_n if overall_n else 0.0
@@ -130,30 +138,34 @@ def main() -> None:
     print(f"wrote {OUT_MD}")
     for c in candidates:
         o = c["panels"]["overall"]
-        print(f"  {c['candidate']:<18} overall {o['pass']}/{o['cases']} ({o['rate']:.0%}) "
-              f"consistency {c['minimal_pair_consistency']['rate']} "
-              f"overfit_gap {c['overfit_gap']['gap_quantify_minus_unknown']} "
-              f"index {c['robustness_index']:.3f}")
+        print(
+            f"  {c['candidate']:<18} overall {o['pass']}/{o['cases']} ({o['rate']:.0%}) "
+            f"consistency {c['minimal_pair_consistency']['rate']} "
+            f"overfit_gap {c['overfit_gap']['gap_quantify_minus_unknown']} "
+            f"index {c['robustness_index']:.3f}"
+        )
 
 
 def render_md(result: dict[str, Any]) -> str:
     L: list[str] = []
     L.append("# P0.4 — Robustness Index + Invariance Flip-Rate\n")
     L.append(f"Date: {result['date']}  ·  Model calls: 0\n")
-    L.append(f"Robustness index = `{result['robustness_index_formula']}` (equal weights, predeclared).\n")
+    L.append(
+        f"Robustness index = `{result['robustness_index_formula']}` (equal weights, predeclared).\n"
+    )
     L.append("| Candidate | A | B | C | Overall | Min-pair consistency | Overfit gap | **Index** |")
     L.append("|---|---:|---:|---:|---:|---:|---:|---:|")
     for c in result["candidates"]:
         p = c["panels"]
         mp = c["minimal_pair_consistency"]
         gap = c["overfit_gap"]["gap_quantify_minus_unknown"]
+        mp_rate = f" ({mp['rate']:.0%})" if mp["rate"] is not None else ""
         L.append(
             f"| {c['candidate']} | {p['A_minimal_pairs']['pass']}/{p['A_minimal_pairs']['cases']} | "
             f"{p['B_source_near']['pass']}/{p['B_source_near']['cases']} | "
             f"{p['C_kcl_ood']['pass']}/{p['C_kcl_ood']['cases']} | "
             f"{p['overall']['pass']}/{p['overall']['cases']} ({p['overall']['rate']:.0%}) | "
-            f"{mp['both_correct_pairs']}/{mp['pairs']}"
-            f"{f' ({mp['rate']:.0%})' if mp['rate'] is not None else ''} | "
+            f"{mp['both_correct_pairs']}/{mp['pairs']}{mp_rate} | "
             f"{gap:+.2f} | **{c['robustness_index']:.3f}** |"
         )
     L.append(f"\n_{result['invariance_flip_rate_note']}_\n")

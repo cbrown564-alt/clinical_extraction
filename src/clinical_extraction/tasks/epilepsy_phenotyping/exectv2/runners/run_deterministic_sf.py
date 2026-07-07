@@ -19,16 +19,15 @@ list.  The three configs bound the range: phrase_only shows phrase recall,
 no_ref_attrs shows semantic-attribute accuracy, full_features shows the strict
 score including Certainty and Negation.
 """
-from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
-import sys
-from collections import defaultdict
+from __future__ import annotations
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import to_exect_letter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    to_exect_letter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
@@ -39,12 +38,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     SF_BENCHMARK,
     SF_SEMANTIC,
+    MatchConfig,
     score_entity,
 )
 
 
 def _prf(score_obj: object) -> str:  # type: ignore[return]
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import EntityScore
+
     assert isinstance(score_obj, EntityScore)
     pi = score_obj.per_item
     pl = score_obj.per_letter
@@ -66,15 +67,23 @@ def _row_errors(
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
         _keys,
         _letters_by_id,
-            )
+    )
 
     gold_by_id = _letters_by_id(gold_letters)
     pred_by_id = _letters_by_id(pred_letters)
     errors: list[str] = []
 
     for letter_id in sorted(gold_by_id.keys() | pred_by_id.keys()):
-        gold_anns = gold_by_id[letter_id].entities(SEIZURE_FREQUENCY.name) if letter_id in gold_by_id else ()
-        pred_anns = pred_by_id[letter_id].entities(SEIZURE_FREQUENCY.name) if letter_id in pred_by_id else ()
+        gold_anns = (
+            gold_by_id[letter_id].entities(SEIZURE_FREQUENCY.name)
+            if letter_id in gold_by_id
+            else ()
+        )
+        pred_anns = (
+            pred_by_id[letter_id].entities(SEIZURE_FREQUENCY.name)
+            if letter_id in pred_by_id
+            else ()
+        )
 
         gold_keys = _keys(gold_anns, config)
         pred_keys = list(_keys(pred_anns, config))
@@ -108,7 +117,7 @@ def main() -> None:
     # Convert PredictedLetter → ExectLetter for scoring
     pred_exect = [
         to_exect_letter(p, note_text=g.note_text)
-        for p, g in zip(predicted_pred_letters, gold_letters)
+        for p, g in zip(predicted_pred_letters, gold_letters, strict=False)
     ]
 
     total_pred = sum(len(p.mentions) for p in predicted_pred_letters)
