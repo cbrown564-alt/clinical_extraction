@@ -1,4 +1,5 @@
 """Pydantic models and shared constants for the Observatory API."""
+# ruff: noqa: F401 — re-exports symbols imported by other observatory submodules.
 
 from __future__ import annotations
 
@@ -98,14 +99,17 @@ class GoldAuditDecision(BaseModel):
     source_row_index: int
     split: str
     simple_class: Literal["correct", "ambiguous", "wrong"] = "ambiguous"
-    rq10_class: Literal[
-        "true_extraction_failure",
-        "benchmark_convention_dominated",
-        "underdetermined_note",
-        "clinically_defensible_alternative",
-        "possible_gold_weakness",
-        "instrumentation_gap",
-    ] | None = None
+    rq10_class: (
+        Literal[
+            "true_extraction_failure",
+            "benchmark_convention_dominated",
+            "underdetermined_note",
+            "clinically_defensible_alternative",
+            "possible_gold_weakness",
+            "instrumentation_gap",
+        ]
+        | None
+    ) = None
     notes: str = ""
     corrected_gold_label: str | None = None
     benchmark_convention_flag: bool = False

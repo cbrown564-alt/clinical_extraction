@@ -8,6 +8,7 @@ Contribution thesis: the LLM owns every clinical fact; deterministic code
 validates JSON shape, repairs neutral schema mismatches, checks evidence
 exactness, and scores — it never introduces or chooses a clinical fact.
 """
+# ruff: noqa: F401 — re-exports helpers accessed via this module's namespace.
 
 from __future__ import annotations
 
@@ -40,13 +41,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
-    PHRASE_ONLY,
-    SF_BENCHMARK,
-    SF_SEMANTIC,
-    EntityScore,
-    score_entity,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.dspy_runner import (
     emit_run_checkpoint,
 )
@@ -65,6 +59,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.reporting import (
     ensure_summary,
     format_gate_summary_lines,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    PHRASE_ONLY,
+    SF_BENCHMARK,
+    SF_SEMANTIC,
+    EntityScore,
+    score_entity,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
@@ -89,8 +90,8 @@ class ExECTv2SinglePassSFSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"text\": ..., \"attributes\": {...}, "
-            "\"evidence\": ..., \"confidence\": ..., \"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"text": ..., "attributes": {...}, '
+            '"evidence": ..., "confidence": ..., "rationale": ...}, ...]}'
         )
     )
 
@@ -170,14 +171,11 @@ def build_prompt_input(letter: ExectLetter) -> str:
                     "rationale": "2 to 3 focal seizures per month since medication change.",
                 },
                 "note": (
-                    "text is the SHORT seizure-type phrase 'focal seizures', "
-                    "NOT the full sentence."
+                    "text is the SHORT seizure-type phrase 'focal seizures', NOT the full sentence."
                 ),
             },
             {
-                "note_fragment": (
-                    "He has been seizure-free for 6 months following surgery."
-                ),
+                "note_fragment": ("He has been seizure-free for 6 months following surgery."),
                 "correct": {
                     "text": "seizure-free",
                     "attributes": {
@@ -232,8 +230,7 @@ def build_prompt_input(letter: ExectLetter) -> str:
             "UpperNumberOfTimePeriods": "upper end of period range",
             "TimePeriod": "exactly 'Day', 'Week', 'Month', or 'Year'",
             "FrequencyChange": (
-                "exactly one of 'Decreased', 'Frequent', 'Increased', "
-                "'Infrequent', 'Same'"
+                "exactly one of 'Decreased', 'Frequent', 'Increased', 'Infrequent', 'Same'"
             ),
             "PointInTime": (
                 "exactly one of 'Birthday', 'DrugChange', 'LastClinic', "
@@ -288,10 +285,7 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "Conditional windows: extract frequency as stated even if conditional. "
                 "Do not infer an unconditional overall rate from a conditional window."
             ),
-            (
-                "If the letter has no seizure frequency information, return "
-                "{\"mentions\": []}."
-            ),
+            ('If the letter has no seizure frequency information, return {"mentions": []}.'),
             "Return exactly one JSON object. No markdown code fences.",
         ],
         "letter_id": letter.letter_id,
@@ -320,16 +314,12 @@ def to_predicted_letter(
     contains evidence-valid mentions with repaired attributes.
     """
     all_warnings: list[str] = []
-    evidence_valid, evidence_invalid, ev_warnings = check_evidence(
-        mentions, note_text=note_text
-    )
+    evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
     all_warnings.extend(ev_warnings)
 
     predicted_mentions: list[PredictedMention] = []
     for mention in evidence_valid:
-        repaired_attrs, attr_warnings = repair_attributes(
-            dict(mention.attributes), spec=spec
-        )
+        repaired_attrs, attr_warnings = repair_attributes(dict(mention.attributes), spec=spec)
         all_warnings.extend(attr_warnings)
         predicted_mentions.append(
             PredictedMention(
@@ -404,9 +394,7 @@ def run_split(
     existing_rows, completed = read_completed(
         checkpoint_jsonl_path if resume else None, key="letter_id"
     )
-    rows: list[dict[str, Any]] = [
-        r for r in existing_rows if r.get("letter_id") in requested
-    ]
+    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
 
@@ -463,8 +451,7 @@ def run_split(
                     for m in predicted_letter.mentions
                 ],
                 "gold_mentions": [
-                    {"text": a.text, "attributes": dict(a.attributes)}
-                    for a in gold_sf
+                    {"text": a.text, "attributes": dict(a.attributes)} for a in gold_sf
                 ],
             }
         )
@@ -517,9 +504,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         ("sf_semantic", SF_SEMANTIC),
         ("sf_benchmark", SF_BENCHMARK),
     ]:
-        entity_score: EntityScore = score_entity(
-            gold_letters, pred_letters, ENTITY_NAME, config
-        )
+        entity_score: EntityScore = score_entity(gold_letters, pred_letters, ENTITY_NAME, config)
         scores[config_name] = {
             "per_item": {
                 "precision": round(entity_score.per_item.precision, 4),

@@ -3,6 +3,7 @@
 .. deprecated::
     Extracted from ``_legacy_impl``; behavior-preserving.
 """
+# ruff: noqa: F405 — legacy regex constants are star-imported from ``_legacy_constants``.
 
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 from ._legacy_constants import *  # noqa: F401,F403 (legacy regex constants)
 
 
@@ -56,12 +58,16 @@ def is_sf_convention_noise(
         return True
     if phrase == "previous seizures":
         return True
-    if cui == "C0563606" and "NumberOfSeizures" not in attrs and re.search(
-        r"\b(?:absence\s+like\s+seizures\s+2014|typical\s+absences|"
-        r"at\s+(?:around\s+)?the\s+age\s+of\s+8\b[^.]{0,120}\brelatively\s+infrequent|"
-        r"relatively\s+infrequent\b[^.]{0,120}\bat\s+(?:around\s+)?the\s+age\s+of\s+8)\b",
-        evidence,
-        re.IGNORECASE,
+    if (
+        cui == "C0563606"
+        and "NumberOfSeizures" not in attrs
+        and re.search(
+            r"\b(?:absence\s+like\s+seizures\s+2014|typical\s+absences|"
+            r"at\s+(?:around\s+)?the\s+age\s+of\s+8\b[^.]{0,120}\brelatively\s+infrequent|"
+            r"relatively\s+infrequent\b[^.]{0,120}\bat\s+(?:around\s+)?the\s+age\s+of\s+8)\b",
+            evidence,
+            re.IGNORECASE,
+        )
     ):
         return True
     if cui == "C0036572" and re.search(

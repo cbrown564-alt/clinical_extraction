@@ -7,6 +7,7 @@ additions, assembly, and headline projection. This module materializes that
 aggregate-only ladder from saved finding-assembly summary JSON files. It makes
 no model calls and emits no row-level failures.
 """
+# ruff: noqa: F401 — re-exports submodule symbols accessed via this module's namespace.
 
 from __future__ import annotations
 
@@ -30,19 +31,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ab
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import (
     CLAIM_BOUNDARY,
     COMPONENT_OFF_CLAIM_BOUNDARY,
+    COMPONENT_OFF_DEFINITIONS,
     COMPONENT_OFF_READOUT_CLAIM_BOUNDARY,
     COMPONENT_OFF_READOUT_STOP_RULE,
     COMPONENT_OFF_STOP_RULE,
-    COMPONENT_OFF_DEFINITIONS,
     DEFAULT_COMPONENT_OFF_JSON,
     DEFAULT_COMPONENT_OFF_JSONL,
     DEFAULT_COMPONENT_OFF_MD,
     DEFAULT_FULL200_COMPONENT_OFF_JSON,
     DEFAULT_FULL200_COMPONENT_OFF_JSONL,
     DEFAULT_FULL200_COMPONENT_OFF_MD,
+    DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS,
     DEFAULT_GENERATED_ON,
     DEFAULT_REPLAY_SPECS,
-    DEFAULT_FULL200_COMPONENT_OFF_REPLAY_SPECS,
     FULL200_COMPONENT_OFF_CLAIM_BOUNDARY,
     FULL200_COMPONENT_OFF_DEFINITIONS,
     FULL200_COMPONENT_OFF_PREDECLARATION,

@@ -5,8 +5,10 @@ format-preserving projection into ExECTv2 attribute names, exact evidence
 validation, finite CUI lookup from the model-emitted concept phrase, and
 scoring. It does not select candidates or derive clinical facts from the note.
 """
+# ruff: noqa: F401 — re-exports pipeline symbols accessed via this module's namespace.
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings import (
+    ENTITY_NAME,
     PIPELINE_FAMILY,
     PLAN11_EVENT_STATE_LAYER_LADDER,
     PLAN11_EVENT_STATE_ROUTE_VERSION,
@@ -16,7 +18,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinic
     DspyClinicalFindingsSFExtractor,
     DspyClinicalFindingsSFFinalizer,
     DspyClinicalFindingsSFVerifier,
-    ENTITY_NAME,
     EventFrameRecord,
     ExECTv2ClinicalFindingsFinalizerSignature,
     ExECTv2ClinicalFindingsSFSignature,
@@ -24,6 +25,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinic
     FindingFamilyChecklist,
     VerificationDecisionList,
     VerificationDecisionRecord,
+    __all__,
     apply_verification_decisions,
     build_finalization_prompt_input,
     build_plan11_event_state_route,
@@ -37,9 +39,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinic
     to_predicted_letters,
     write_jsonl,
     write_report,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.clinical_findings import (
-    __all__,
 )
 
 __all__ = list(__all__)

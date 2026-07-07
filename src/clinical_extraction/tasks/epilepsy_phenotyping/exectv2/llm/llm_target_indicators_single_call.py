@@ -4,15 +4,9 @@ Thin facade over the ``pipelines/target_indicators_single_call/`` package.
 Every public symbol (and the private helpers other modules/tests access as
 attributes) is re-exported so existing importers keep working.
 """
+# ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call import (
-    COMPONENT_OWNER,
-    DspyTargetIndicatorsExtractor,
-    ExECTv2TargetIndicatorsSignature,
-    ExtractionRecord,
-    Mode,
-    PIPELINE_FAMILY,
-    PROMPT_VERSION,
     _CLUSTER_OF_SEIZURES,
     _DIAGNOSIS_ALLOWED_CORE,
     _DIAGNOSIS_PROHIBITED_CORES,
@@ -25,6 +19,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target
     _SF_TEXT_ALIASES,
     _SPECIFIC_SEIZURE_EVIDENCE,
     _UNKNOWN_LIKE_NUMBER,
+    COMPONENT_OWNER,
+    PIPELINE_FAMILY,
+    PROMPT_VERSION,
+    DspyTargetIndicatorsExtractor,
+    ExECTv2TargetIndicatorsSignature,
+    ExtractionRecord,
+    Mode,
+    __all__,
     _convert_day_period_to_week,
     _count_evidence_invalid_warnings,
     _dedupe_key,
@@ -72,9 +74,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target
     to_predicted_letter,
     write_jsonl,
     write_report,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.target_indicators_single_call import (
-    __all__,
 )
 
 __all__ = list(__all__)
