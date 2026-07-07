@@ -10,17 +10,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.core.registry import (
+    RunRegistryEntry,
+    load_run_registry,
+    write_run_registry,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     load_jsonl_rows,
     write_jsonl_rows,
-)
-from clinical_extraction.core.registry import (
-    RunRegistryEntry,
-    load_run_registry,
-    write_run_registry,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
     write_run_registry_markdown,

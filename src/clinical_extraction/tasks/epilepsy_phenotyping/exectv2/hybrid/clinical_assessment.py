@@ -50,6 +50,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     SF_BENCHMARK,
     SF_SEMANTIC,
     EntityScore,
+    frequency_state_faithful,
     score_entity,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -58,13 +59,20 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
 from ..contract.prediction import to_exect_letter
-from ..deterministic.normalizer import normalize_count, normalize_month, normalize_unit
 from ..contract.repair import repair_attributes
+from ..deterministic.normalizer import normalize_count, normalize_month, normalize_unit
 from ..llm.shared.json_parse import extract_json_object
 from .candidate_set import (
     SFCandidate,
     build_candidate_set,
     candidate_set_as_payload,
+)
+from .closed_option_direction import (
+    ClosedOptionDirectionSelector,
+    DirectionSelectorMode,
+    assemble_direction,
+    build_direction_menu,
+    parse_selection,
 )
 from .verify_route import RoutedMention, routed_taxonomy, verify_and_route
 
@@ -426,21 +434,67 @@ def _filter_flags(flags: Sequence[str]) -> tuple[tuple[str, ...], list[str]]:
     return kept, dropped
 
 
+def _letter_qualifies_for_direction_selector(
+    candidates: Sequence[SFCandidate], record: AssessmentRecord
+) -> bool:
+    """Does this letter have a direction-bearing *kept* SF fact worth a selector call?
+
+    A letter qualifies if at least one KEPT assessment is direction-bearing:
+    either its own attributes, or its candidate's deterministic
+    ``suggested_attributes``, carry a ``FrequencyChange`` suggestion OR resolve
+    to a ``changed`` state under ``frequency_state_faithful`` (the same
+    disagreement definition the standalone direction probe uses). The kept-
+    assessment requirement bounds the cost: if the LLM dropped every candidate,
+    there is nothing to stamp the override on, so the selector does not fire.
+    """
+
+    by_id = {c.candidate_id: c for c in candidates}
+    for a in record.assessments:
+        if not a.keep:
+            continue
+        # Prefer the LLM's own attributes; fall back to the candidate's
+        # deterministic suggestion (the v08 path: direction from rules/change.py).
+        attrs = dict(a.attributes)
+        if not attrs:
+            cand = by_id.get(a.candidate_id)
+            attrs = dict(cand.suggested_attributes or {}) if cand is not None else {}
+        if "FrequencyChange" in attrs:
+            return True
+        if attrs and frequency_state_faithful(attrs) == "changed":
+            return True
+    return False
+
+
 def render_mentions(
     letter: ExectLetter,
     candidates: Sequence[SFCandidate],
     record: AssessmentRecord,
     *,
     spec: EntitySpec,
+    direction_override: tuple[str, str] | None = None,
 ) -> tuple[list[PredictedMention], list[str]]:
     """Build PredictedMentions from kept assessments + additional mentions.
 
     Deterministic normalize + CUI render; attribute repair (neutral). Returns
     (mentions, warnings) before the verify/route gate.
+
+    ``direction_override`` -- optional ``(FrequencyChange label, provenance)``
+    from a closed-option direction selector. When set, the selected label is
+    stamped onto every built SF mention's ``attributes["FrequencyChange"]``
+    *after* assessment (the LLM still owns keep/drop and the other attributes;
+    the selector owns only the direction), and the provenance is recorded as a
+    warning breadcrumb so the source stays visible (research-protocol
+    attribution rule). ``None`` (default) leaves direction to the deterministic
+    ``rules/change.py`` suggestion / LLM attribute -- the v08 production path.
     """
     note_text = letter.note_text
     by_id = {c.candidate_id: c for c in candidates}
     warnings: list[str] = []
+    if direction_override is not None:
+        warnings.append(
+            f"direction_override_applied: FrequencyChange={direction_override[0]!r} "
+            f"source={direction_override[1]!r}"
+        )
     mentions: list[PredictedMention] = []
 
     for a in record.assessments:
@@ -455,6 +509,8 @@ def render_mentions(
         raw_attrs = dict(a.attributes) or (dict(cand.suggested_attributes) if cand else {})
         attrs = normalize_attributes(raw_attrs)
         repaired, attr_warn = repair_attributes(attrs, spec=spec)
+        if direction_override is not None:
+            repaired["FrequencyChange"] = direction_override[0]
         warnings.extend(attr_warn)
         flags, flag_warn = _filter_flags(a.uncertainty_flags)
         warnings.extend(flag_warn)
@@ -477,6 +533,8 @@ def render_mentions(
             continue
         attrs = normalize_attributes(dict(m.attributes))
         repaired, attr_warn = repair_attributes(attrs, spec=spec)
+        if direction_override is not None:
+            repaired["FrequencyChange"] = direction_override[0]
         warnings.extend(attr_warn)
         flags, flag_warn = _filter_flags(m.uncertainty_flags)
         warnings.extend(flag_warn)
@@ -502,9 +560,12 @@ def assess_letter(
     record: AssessmentRecord,
     *,
     spec: EntitySpec,
+    direction_override: tuple[str, str] | None = None,
 ) -> tuple[PredictedLetter, list[RoutedMention], list[str]]:
     """Full render + verify/route for one letter's assessment."""
-    rendered, warnings = render_mentions(letter, candidates, record, spec=spec)
+    rendered, warnings = render_mentions(
+        letter, candidates, record, spec=spec, direction_override=direction_override
+    )
     kept, routed = verify_and_route(rendered, note_text=letter.note_text)
     predicted = project_cuis(
         PredictedLetter(
@@ -540,15 +601,33 @@ def run_split(
     checkpoint_jsonl_path: Path | None = None,
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
+    direction_selector: DirectionSelectorMode = "off",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Run the hybrid assessor over a split.
 
     When ``resume`` is set and ``checkpoint_jsonl_path`` already holds a partial
     run, letters already present are skipped and only the remainder is processed;
     old and new rows are merged back into split order (see ``core.run_resume``).
+
+    ``direction_selector`` -- opt-in source for the ``FrequencyChange``
+    attribute on kept SF mentions. ``"off"`` (default) is the v08 production
+    path: direction is sourced from the deterministic ``rules/change.py``
+    suggestion / LLM attribute (the 0.8897 reference surface). ``"llm_closed_option"``
+    fires a closed-option direction selector (one call per qualifying letter)
+    that picks a ``FrequencyChange`` label verbatim from a deterministic menu or
+    abstains; the pick overrides direction on kept mentions with provenance
+    stamped (research-protocol attribution rule). Qualifying = letters with at
+    least one candidate carrying a ``FrequencyChange`` suggestion OR a
+    ``frequency_state_faithful == "changed"`` state (the same disagreement
+    definition the standalone direction probe uses).
     """
     spec = ENTITY_REGISTRY[ENTITY_NAME]
     program = DspyHybridAssessor()
+    direction_program = (
+        ClosedOptionDirectionSelector()
+        if direction_selector == "llm_closed_option"
+        else None
+    )
     if mode == "live":
         dspy.configure(
             lm=build_dspy_lm(
@@ -588,9 +667,41 @@ def run_split(
             parse_assessment_json(raw_output) if raw_output else (None, ["not_run"])
         )
 
+        # Optional closed-option direction selector (opt-in via direction_selector).
+        # Fires once per qualifying letter; the pick overrides FrequencyChange on
+        # kept mentions with provenance stamped. "off" (default) leaves direction
+        # to the deterministic suggestion / LLM attribute (the v08 production path).
+        direction_override: tuple[str, str] | None = None
+        direction_selection: dict[str, Any] | None = None
+        if direction_program is not None and record is not None:
+            qualifying = _letter_qualifies_for_direction_selector(candidates, record)
+            if qualifying:
+                menu = build_direction_menu(letter.note_text)
+                sel_raw = ""
+                sel_call_error: str | None = None
+                if mode == "live":
+                    try:
+                        prediction = direction_program(
+                            letter_text=letter.note_text,
+                            candidate_menu=json.dumps(menu, ensure_ascii=False),
+                        )
+                        sel_raw = str(getattr(prediction, "selection_json", "") or "")
+                    except Exception as exc:  # pragma: no cover
+                        sel_call_error = f"{type(exc).__name__}: {exc}"
+                cid, sel_mode = parse_selection(sel_raw) if sel_raw else (None, "not_run")
+                label, provenance = assemble_direction(cid, menu)
+                direction_override = (label, provenance)
+                direction_selection = {
+                    "selected_candidate_id": cid,
+                    "selection_mode": sel_mode,
+                    "assembled_label": label,
+                    "menu_labels": [e["label"] for e in menu],
+                    "call_error": sel_call_error,
+                }
+
         if record is not None:
             predicted_letter, routed, _warn = assess_letter(
-                letter, candidates, record, spec=spec
+                letter, candidates, record, spec=spec, direction_override=direction_override
             )
         else:
             predicted_letter = PredictedLetter(letter_id=letter.letter_id, mentions=())
@@ -615,6 +726,8 @@ def run_split(
                 "call_error": call_error,
                 "parse_errors": parse_errors,
                 "aggregation_policy": record.aggregation_policy if record else "",
+                "direction_selector": direction_selector,
+                "direction_selection": direction_selection,
                 "n_candidates": len(candidates),
                 "n_mentions_raw": n_raw,
                 "n_mentions_scored": len(predicted_letter.mentions),

@@ -1337,11 +1337,11 @@
             "recall_tp": 272
           },
           "SeizureFrequency": {
-            "precision": 0.9,
+            "precision": 0.9053,
             "recall": 0.9107,
-            "f1": 0.9053,
+            "f1": 0.908,
             "tp": 153,
-            "fp": 17,
+            "fp": 16,
             "fn": 15,
             "pred_count": 170,
             "gold_count": 168
@@ -1733,11 +1733,11 @@
                 "recall_tp": 272
               },
               "SeizureFrequency": {
-                "precision": 0.9,
+                "precision": 0.9053,
                 "recall": 0.9107,
-                "f1": 0.9053,
+                "f1": 0.908,
                 "tp": 153,
-                "fp": 17,
+                "fp": 16,
                 "fn": 15,
                 "pred_count": 170,
                 "gold_count": 168
@@ -2403,7 +2403,7 @@
           "overall_delta_from_previous": 0.0283,
           "family_deltas": {
             "Diagnosis": 0.0,
-            "SeizureFrequency": 0.1239,
+            "SeizureFrequency": 0.1266,
             "Prescription": 0.0,
             "Investigations": 0.0
           },
@@ -2434,11 +2434,11 @@
                 "recall_tp": 272
               },
               "SeizureFrequency": {
-                "precision": 0.9,
+                "precision": 0.9053,
                 "recall": 0.9107,
-                "f1": 0.9053,
+                "f1": 0.908,
                 "tp": 153,
-                "fp": 17,
+                "fp": 16,
                 "fn": 15,
                 "pred_count": 170,
                 "gold_count": 168
@@ -6401,7 +6401,7 @@
       "overall_delta_from_previous": 0.0283,
       "family_deltas": {
         "Diagnosis": 0.0,
-        "SeizureFrequency": 0.1239,
+        "SeizureFrequency": 0.1266,
         "Prescription": 0.0,
         "Investigations": 0.0
       },
@@ -6432,11 +6432,11 @@
             "recall_tp": 272
           },
           "SeizureFrequency": {
-            "precision": 0.9,
+            "precision": 0.9053,
             "recall": 0.9107,
-            "f1": 0.9053,
+            "f1": 0.908,
             "tp": 153,
-            "fp": 17,
+            "fp": 16,
             "fn": 15,
             "pred_count": 170,
             "gold_count": 168

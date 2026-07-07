@@ -42,14 +42,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
-    CHANGE_EXTRACT_IMPLS,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.closed_option_direction import (
+    ClosedOptionDirectionSelector,
+    build_direction_menu,
+    parse_selection,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.closed_option_direction import (
+    assemble_direction as _assemble_direction_with_provenance,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
-    extract_json_object,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     frequency_state_faithful,
@@ -68,144 +70,32 @@ TASK_TEMPERATURE = 0.0
 TASK_MAX_TOKENS = 8000
 
 SF_ENTITY = "SeizureFrequency"
-DIRECTION_VOCAB = ("Increased", "Decreased", "Frequent", "Infrequent", "Same")
-# rule_id suffix -> the FrequencyChange label it generates (from change.py builders).
-_RULE_TO_LABEL = {
-    "change.increased": "Increased",
-    "change.decreased": "Decreased",
-    "change.frequent": "Frequent",
-    "change.infrequent": "Infrequent",
-    "change.same": "Same",
-}
-ABSTAIN = "ABSTAIN"
-DEFER_MODES = ("no_reliable_candidate", "ambiguous")
+ABSTAIN = "ABSTAIN"  # re-exported alias for the ledger/report logic below
 
 
 # --------------------------------------------------------------------------------------
-# Deterministic candidate menu (the closed-option contract substrate).
+# Closed-option selector primitives (imported from the shared library module).
 # --------------------------------------------------------------------------------------
-def build_direction_menu(letter_text: str) -> list[dict[str, str]]:
-    """Emit the closed-option direction menu for one letter.
-
-    The menu is the **full closed 5-label gold vocab + ABSTAIN, always** — this
-    is the dspy G32 pattern: the LLM picks a label from a fixed deterministic
-    menu, never free-writes. The deterministic layer's contribution is the
-    *evidence anchor* attached to each label (the rules/change.py regex span if
-    one matches, otherwise an explicit no-cue marker). The option set is never
-    gated by whether a regex matched: that would make the menu empty for letters
-    whose direction is expressed implicitly or via medication-titration language,
-    collapsing the experiment into a trivial no-op.
-    """
-
-    menu: list[dict[str, str]] = []
-    # First pass: collect the first regex evidence span per label (if any).
-    evidence_by_label: dict[str, str] = {}
-    for rule_id, impl in CHANGE_EXTRACT_IMPLS.items():
-        label = _RULE_TO_LABEL.get(rule_id)
-        if label is None or label in evidence_by_label:
-            continue
-        m = impl.pattern.search(letter_text)
-        if m:
-            evidence_by_label[label] = m.group(0).strip()[:160]
-    # Emit every label in the closed vocab, with its evidence or a no-cue marker.
-    for label in DIRECTION_VOCAB:
-        ev = evidence_by_label.get(label, "(no explicit cue in text)")
-        menu.append(
-            {"candidate_id": f"C{len(menu)}", "label": label, "evidence_span": ev}
-        )
-    menu.append({"candidate_id": ABSTAIN, "label": ABSTAIN, "evidence_span": ""})
-    return menu
-
-
-# --------------------------------------------------------------------------------------
-# Abstention-validated selector contract (the cross-family architectural difference).
-# --------------------------------------------------------------------------------------
-class ClosedOptionDirectionSelectorSignature(dspy.Signature):
-    """You read a clinical letter and a candidate menu of seizure-frequency
-    change-direction labels.
-
-    Select ONE candidate_id from the menu that best describes the direction of
-    the patient's seizure-frequency change, or select ABSTAIN if the letter does
-    not state a clear direction.
-
-    HARD CONSTRAINTS:
-    - Return a candidate_id that appears in the menu exactly. Never invent,
-      renumber, or free-write a direction label.
-    - If you are not confident, select ABSTAIN.
-    - Return a JSON object matching the output schema exactly. No markdown.
-    """
-
-    letter_text: str = dspy.InputField(desc="One clinical letter.")
-    candidate_menu: str = dspy.InputField(
-        desc="JSON list of {candidate_id, label, evidence_span}. Pick one candidate_id."
-    )
-    output_schema: str = dspy.InputField(desc="Required JSON schema. Match it exactly.")
-    selection_json: str = dspy.OutputField(
-        desc='One JSON object {"selected_candidate_id": "...", "selection_mode": '
-        '"single_candidate|no_reliable_candidate|ambiguous"}. No markdown.'
-    )
-
-
-SELECTION_SCHEMA_JSON = json.dumps(
-    {
-        "selected_candidate_id": "a candidate_id from the menu, or ABSTAIN",
-        "selection_mode": "single_candidate | no_reliable_candidate | ambiguous",
-    },
-    ensure_ascii=False,
-    sort_keys=True,
-)
-
-
-class ClosedOptionDirectionSelector(dspy.Module):
-    def __init__(self) -> None:
-        super().__init__()
-        self.select = dspy.Predict(ClosedOptionDirectionSelectorSignature)
-
-    def forward(self, letter_text: str, candidate_menu: str) -> dspy.Prediction:
-        out = self.select(
-            letter_text=letter_text,
-            candidate_menu=candidate_menu,
-            output_schema=SELECTION_SCHEMA_JSON,
-        )
-        return dspy.Prediction(selection_json=str(getattr(out, "selection_json", "") or ""))
-
-
+# The contract primitives -- build_direction_menu, ClosedOptionDirectionSelector,
+# SELECTION_SCHEMA_JSON, parse_selection, assemble_direction -- now live in
+# ``clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.closed_option_direction``
+# so the standalone probe and the hybrid-integration follow-up share a single
+# source of the closed-option contract. The two helpers below are thin wrappers
+# preserving this probe's original (label-only) return shape for its ledger logic.
 def _parse_selection(raw: str) -> tuple[str | None, str]:
-    """Parse the selector output; enforce the abstention validator.
-
-    Mirrors gan2026 selected_fact.py:32-49: a defer mode MUST NOT select an id.
-    Returns (candidate_id | None, selection_mode).
-    """
-
-    try:
-        payload = json.loads(extract_json_object(raw))
-    except Exception:
-        return None, "parse_error"
-    cid = str(payload.get("selected_candidate_id", "")).strip() or None
-    mode = str(payload.get("selection_mode", "")).strip() or "single_candidate"
-    if mode in DEFER_MODES and cid and cid != ABSTAIN:
-        # Validator: defer modes forbid a selection. Force abstention.
-        return None, mode
-    if cid == ABSTAIN:
-        return None, mode
-    return cid, mode
+    """Thin wrapper over the library ``parse_selection`` (abstention validator)."""
+    return parse_selection(raw)
 
 
 def assemble_direction(cid: str | None, menu: list[dict[str, str]]) -> str:
-    """Deterministic assembly: candidate_id -> FrequencyChange label, or Same.
+    """Deterministic assembly returning the label only (provenance discarded here).
 
-    Mirrors gan2026 assemble_clinical_assessment: the model only picks an id;
-    deterministic code renders the final attribute. An invalid id (not in the
-    menu) also resolves to Same with provenance abstain — the menu-membership
-    check (_validate_candidate_references analogue) is implicit here.
+    The library ``assemble_direction`` returns (label, provenance); this probe's
+    ledger does not need the provenance string (it records the selected id + mode
+    directly), so we discard it. The hybrid-integration driver keeps it.
     """
-
-    if cid is None:
-        return "Same"
-    for entry in menu:
-        if entry["candidate_id"] == cid:
-            return entry["label"]
-    return "Same"
+    label, _provenance = _assemble_direction_with_provenance(cid, menu)
+    return label
 
 
 # --------------------------------------------------------------------------------------
