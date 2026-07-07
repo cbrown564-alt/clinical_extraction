@@ -126,8 +126,7 @@ def _evaluate_program(
     ]
     evaluator = dspy.Parallel(num_threads=num_threads, provide_traceback=True)
     exec_pairs = [
-        (program, {"note_text": ex.note_text, "output_schema": ex.output_schema})
-        for ex in examples
+        (program, {"note_text": ex.note_text, "output_schema": ex.output_schema}) for ex in examples
     ]
     predictions = evaluator(exec_pairs)
 
@@ -353,9 +352,7 @@ def run_experiment(config: GepaExperimentConfig, *, register: bool = True) -> di
     final_instruction = _final_instruction(optimized)
     final_instruction_tokens = approx_tokens(final_instruction)
 
-    eval_records = [
-        r for r in gan_data.load_records_for_split(config.final_eval_split) if r.row_ok
-    ]
+    eval_records = [r for r in gan_data.load_records_for_split(config.final_eval_split) if r.row_ok]
     if config.final_eval_limit is not None:
         eval_records = eval_records[: config.final_eval_limit]
     eval_rows, eval_summary = _evaluate_program(

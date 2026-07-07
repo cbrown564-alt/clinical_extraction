@@ -26,10 +26,7 @@ def test_temporal_sentinel_specialist_is_registered_on_shared_cli_surface() -> N
 def test_specialist_prompt_uses_hints_without_forbidden_labels() -> None:
     record = _record(
         960,
-        (
-            "Clinic Date: 12 June 2026\n"
-            "She reports a very infrequent, short event a fortnight ago."
-        ),
+        ("Clinic Date: 12 June 2026\nShe reports a very infrequent, short event a fortnight ago."),
         gold_label="unknown",
         gold_monthly_frequency=1000.0,
     )
@@ -50,15 +47,16 @@ def test_specialist_prompt_uses_hints_without_forbidden_labels() -> None:
         "keep_original_structured_event_final",
         "replace_with_existing_event",
     ]
-    assert "replace_with_recomputed_fact_from_selected_evidence" in (
-        payload["disabled_actions_for_this_run"]
+    assert (
+        "replace_with_recomputed_fact_from_selected_evidence"
+        in (payload["disabled_actions_for_this_run"])
     )
     assert payload["specialist_hints"]["possible_profiles"][0]["profile"] == (
         "last_event_only_boundary"
     )
     selected_review = payload["specialist_hints"]["selected_event_review"][0]
-    assert "selected_event_candidate_differs_from_original_final" in (
-        selected_review["review_flags"]
+    assert (
+        "selected_event_candidate_differs_from_original_final" in (selected_review["review_flags"])
     )
     assert "last_event_only_or_latest_event" in selected_review["review_flags"]
 
@@ -86,8 +84,7 @@ def test_disabled_recompute_action_is_rejected() -> None:
 
     assert parsed.final_decision is None
     assert (
-        "action_render_error: disabled_action:"
-        "replace_with_recomputed_fact_from_selected_evidence"
+        "action_render_error: disabled_action:replace_with_recomputed_fact_from_selected_evidence"
     ) in parsed.parse_errors
 
 
@@ -146,9 +143,7 @@ def test_seizure_free_replacement_allows_seizure_free_label_with_mismatched_kind
 
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "seizure free for multiple year"
-    assert "action_render_error: seizure_free_replacement_disallowed" not in (
-        parsed.parse_errors
-    )
+    assert "action_render_error: seizure_free_replacement_disallowed" not in (parsed.parse_errors)
 
 
 def test_live_specialist_scores_selected_boundary_event(monkeypatch) -> None:
@@ -220,9 +215,7 @@ def test_live_specialist_scores_selected_boundary_event(monkeypatch) -> None:
     assert metadata["summary"]["temporal_sentinel_profiles"] == {
         "temporal_sentinel:last_event_only_boundary": 1
     }
-    assert row["score_layers"]["final"]["final_label"] == (
-        "no seizure frequency reference"
-    )
+    assert row["score_layers"]["final"]["final_label"] == ("no seizure frequency reference")
     assert row["transition_vs_v0"]["purist_transition"] == "wrong_to_correct"
     assert row["decision_record"]["selected_event_ids"] == ["e1"]
     assert row["evidence_valid"] is True
@@ -312,9 +305,7 @@ def test_duration_only_boundary_replacement_is_safety_gated() -> None:
                         "seizures, each lasting a few minutes"
                     )
                 ],
-                "contradiction_profile": [
-                    "temporal_sentinel:duration_or_episode_length_boundary"
-                ],
+                "contradiction_profile": ["temporal_sentinel:duration_or_episode_length_boundary"],
                 "calculation_trace": "duration text is not a cadence",
                 "clinical_rationale": "Unsafe duration-only demotion.",
                 "uncertainty": "low",
@@ -412,8 +403,7 @@ def _cadence_structured_event_row(source_row_index: int) -> dict:
                     "assertion_status": "asserted",
                     "applies_to": "focal seizures",
                     "evidence": (
-                        "only seven focal impaired-awareness seizures reported so "
-                        "far this year"
+                        "only seven focal impaired-awareness seizures reported so far this year"
                     ),
                     "time_window": "so far this year",
                 },
@@ -433,8 +423,7 @@ def _cadence_structured_event_row(source_row_index: int) -> dict:
                 "final_kind": "frequency",
                 "final_label": "7 per 10 month",
                 "evidence": (
-                    "only seven focal impaired-awareness seizures reported so far "
-                    "this year"
+                    "only seven focal impaired-awareness seizures reported so far this year"
                 ),
                 "confidence": "high",
                 "rationale": "Original structured-event selection.",

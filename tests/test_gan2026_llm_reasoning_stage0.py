@@ -95,9 +95,9 @@ def test_family_slice_manifest_prioritizes_v0_misses() -> None:
 
     assert unknown_manifest["source_row_indices"] == [2]
     assert unknown_manifest["records"][0]["v0_purist_miss_artifacts"] == ["gpt"]
-    assert "v0_disagrees_with_boundary_gold_kind" in unknown_manifest["records"][0][
-        "trigger_reasons"
-    ]
+    assert (
+        "v0_disagrees_with_boundary_gold_kind" in unknown_manifest["records"][0]["trigger_reasons"]
+    )
 
 
 def test_frequency_slice_excludes_duration_only_seizure_free_rows() -> None:

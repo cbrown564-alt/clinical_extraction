@@ -30,16 +30,13 @@ class ProjectionScoringAnalyzer:
     ) -> dict[str, Any]:
         """Perform combined analysis of pipeline stage metrics and routing efficiency."""
         purist_correct = sum(
-            bool(row.get("comparison", {}).get("purist_correct", False))
-            for row in score_rows
+            bool(row.get("comparison", {}).get("purist_correct", False)) for row in score_rows
         )
         routed_rows = sum(
-            bool(row.get("verification_route", {}).get("routed", False))
-            for row in route_rows
+            bool(row.get("verification_route", {}).get("routed", False)) for row in route_rows
         )
         actions = [
-            row.get("verification_decision", {}).get("action", "abstain")
-            for row in decision_rows
+            row.get("verification_decision", {}).get("action", "abstain") for row in decision_rows
         ]
         action_counts = {}
         for action in actions:
@@ -61,7 +58,7 @@ class ProjectionScoringAnalyzer:
                 "routed_rows": routed_rows,
                 "routing_rate": round(routed_rows / len(route_rows), 4) if route_rows else 0.0,
                 "action_counts": action_counts,
-            }
+            },
         }
 
     def write_summary_report(

@@ -87,22 +87,18 @@ DEFAULT_REGISTRY_PATH = Path("experiments/registry.jsonl")
 
 _LLM_RUNNER_MODULES = {
     "single_pass": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_single_pass"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass"
     ),
     "per_entity": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_per_entity"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity"
     ),
     "clinical_findings": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_clinical_findings"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinical_findings"
     ),
 }
 
 _HYBRID_RUNNER_MODULE = (
-    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid."
-    "clinical_assessment"
+    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.clinical_assessment"
 )
 
 
@@ -194,9 +190,13 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=2400)
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument("--git-head", default=None, help="Override the recorded locked-code commit.")
+    parser.add_argument(
+        "--git-head", default=None, help="Override the recorded locked-code commit."
+    )
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY_PATH)
-    parser.add_argument("--no-register", action="store_true", help="Skip the registry append (dry run).")
+    parser.add_argument(
+        "--no-register", action="store_true", help="Skip the registry append (dry run)."
+    )
     args = parser.parse_args()
 
     generated_on = date.today().isoformat()

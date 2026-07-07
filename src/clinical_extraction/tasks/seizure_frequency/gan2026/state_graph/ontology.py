@@ -98,12 +98,8 @@ _DENOMINATOR_RE = re.compile(
     r"|last\s+(?:week|month|year)|in\s+the\s+(?:past|last)\s+(?:week|month|year))\b",
     re.IGNORECASE,
 )
-_LAST_EVENT_RE = re.compile(
-    r"\blast\s+(?:seizure|event|episode|fit|attack)\b", re.IGNORECASE
-)
-_OPEN_ENDED_SINCE_RE = re.compile(
-    r"\bsince\b(?![^.]*\b\d+\b[^.]*\b(?:per|/|a)\b)", re.IGNORECASE
-)
+_LAST_EVENT_RE = re.compile(r"\blast\s+(?:seizure|event|episode|fit|attack)\b", re.IGNORECASE)
+_OPEN_ENDED_SINCE_RE = re.compile(r"\bsince\b(?![^.]*\b\d+\b[^.]*\b(?:per|/|a)\b)", re.IGNORECASE)
 _VAGUE_COUNT_RE = re.compile(
     r"\b(?:occasional|occasionally|a\s+few|few|several|handful|some|multiple|"
     r"rare|rarely|infrequent|sporadic|intermittent)\b",

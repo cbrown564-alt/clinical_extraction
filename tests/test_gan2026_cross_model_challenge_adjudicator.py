@@ -132,7 +132,7 @@ def test_challenge_parse_allows_peer_selection_outside_v10_gate() -> None:
 def test_challenge_parser_repairs_escaped_list_item_quotes() -> None:
     note_text = "He reports a current seizure frequency of 17 per month."
     raw_output = (
-        '{\n'
+        "{\n"
         '  "selected_agent_id": "deepseek",\n'
         '  "selected_event_ids": ["e1"],\n'
         '  "final_label": "17 per month",\n'
@@ -141,12 +141,12 @@ def test_challenge_parser_repairs_escaped_list_item_quotes() -> None:
         '  "clinical_rationale": "DeepSeek cites the exact current frequency.",\n'
         '  "evidence": [\n'
         '    \\"He reports a current seizure frequency of 17 per month\\"\n'
-        '  ],\n'
+        "  ],\n"
         '  "comparison_profile": [],\n'
         '  "rejected_agent_ids": "gpt,qwen",\n'
         '  "attribution": "llm_selected_tool_rendered",\n'
         '  "calculation_trace": null\n'
-        '}'
+        "}"
     )
 
     parsed = cross_model_structured_event_adjudicator.parse_cross_model_decision_json(
@@ -441,9 +441,7 @@ def _agent_row(
                 "event_id": "e1",
                 "normalized_label": label,
                 "semantic_kind": kind,
-                "monthly_frequency": 1.0138888888888888
-                if label == "1 per month"
-                else 1000.0,
+                "monthly_frequency": 1.0138888888888888 if label == "1 per month" else 1000.0,
                 "validation_errors": [],
             }
         ],

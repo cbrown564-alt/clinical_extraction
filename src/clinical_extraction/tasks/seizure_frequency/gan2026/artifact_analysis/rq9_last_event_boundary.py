@@ -17,15 +17,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 DEFAULT_ROUTER_JSONL_PATH = Path(
     "experiments/gan2026_rq9_selective_action_router_v3_2026-06-04.jsonl"
 )
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.md"
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq9_last_event_boundary_decision_2026-06-04.md")
 ANALYSIS_VERSION = "gan2026_rq9_last_event_boundary_decision_v0"
 
 
@@ -71,9 +65,7 @@ def summarize_last_event_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, An
     mode_counts = Counter(str(row["failure_mode"]) for row in rows)
     metrics = {
         "rows": len(rows),
-        "keep_human_review_rows": sum(
-            row["decision"] == "keep_human_review" for row in rows
-        ),
+        "keep_human_review_rows": sum(row["decision"] == "keep_human_review" for row in rows),
         "date_policy_ready_rows": sum(row["date_policy_ready"] for row in rows),
         "development_safe_if_predicted_rows": sum(
             row["development_safe_if_predicted"] for row in rows

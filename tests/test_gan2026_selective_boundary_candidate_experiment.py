@@ -40,9 +40,7 @@ def _candidate_payload(**overrides: object) -> dict:
 
 
 def test_cluster_candidate_renders_multiple_burden_and_cadence_range() -> None:
-    parsed, errors = experiment._parse_output(
-        json.dumps({"candidates": [_candidate_payload()]})
-    )
+    parsed, errors = experiment._parse_output(json.dumps({"candidates": [_candidate_payload()]}))
 
     assert errors == []
     assert parsed is not None

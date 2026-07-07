@@ -119,7 +119,9 @@ def main() -> None:
     full_prescription_jsonl = OUT_DIR / (
         f"exectv2_deterministic_prescription_repair_v03_full200_p7fix_{RUN_DATE}.jsonl"
     )
-    _run_prescription_deterministic(full_letters, full_prescription_jsonl, split="full_200_authorized")
+    _run_prescription_deterministic(
+        full_letters, full_prescription_jsonl, split="full_200_authorized"
+    )
 
     full_base_manifest = _full200_base_manifest(full_letters)
     print("\n-- full-200 baseline (unmodified 20260624 currentcode manifest) --")
@@ -204,7 +206,9 @@ def _run_prescription_deterministic(
         )
     write_jsonl(rows, jsonl_path)
     mention_count = sum(len(row["predicted_mentions"]) for row in rows)
-    print(f"[prescription deterministic, P7-fixed, {split}] rows={len(rows)} mentions={mention_count}")
+    print(
+        f"[prescription deterministic, P7-fixed, {split}] rows={len(rows)} mentions={mention_count}"
+    )
 
 
 def _full200_base_manifest(letters: list[ExectLetter]):
@@ -213,18 +217,21 @@ def _full200_base_manifest(letters: list[ExectLetter]):
         "key_entities_structured_current": ProducerManifest(
             producer_id="key_entities_structured_current",
             kind="saved_jsonl",
-            artifact=OUT_DIR / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+            artifact=OUT_DIR
+            / "exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
             ownership_label="single_gpt_key_family_event_ledger_current_code",
             source_lane="single_gpt_structured_current_code",
             label="current-code GPT-4.1-mini structured key-family event ledger",
         ),
         "diagnosis_reconciler_v01": replace(
             dev_manifest.producers["diagnosis_reconciler_v01"],
-            artifact=OUT_DIR / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
+            artifact=OUT_DIR
+            / "exectv2_v08_full200_currentcode_diagnosis_reconciler_gpt41mini_20260624.jsonl",
         ),
         "sf_union_arbitration_v08": replace(
             dev_manifest.producers["sf_union_arbitration_v08"],
-            artifact=OUT_DIR / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
+            artifact=OUT_DIR
+            / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl",
         ),
         "prescription_repair_v03": replace(
             dev_manifest.producers["prescription_repair_v03"],
@@ -232,7 +239,8 @@ def _full200_base_manifest(letters: list[ExectLetter]):
         ),
         "investigations_arbitration_v02": replace(
             dev_manifest.producers["investigations_arbitration_v02"],
-            artifact=OUT_DIR / "exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl",
+            artifact=OUT_DIR
+            / "exectv2_v08_full200_currentcode_investigations_arbitration_20260624.jsonl",
         ),
     }
     lenses = {

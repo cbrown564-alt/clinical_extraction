@@ -51,8 +51,9 @@ def test_prompt_is_one_schema_conditioned_by_target_family() -> None:
         assert payload["prompt_version"] == ledger.PROMPT_VERSION
         assert payload["target_family"] == entity
         assert set(payload["attribute_vocabulary"]) == {entity}
-        assert payload["output_schema"]["clinical_events"][0]["family"] == (
-            ledger.ENTITY_TO_EVENT_FAMILY[entity]
+        assert (
+            payload["output_schema"]["clinical_events"][0]["family"]
+            == (ledger.ENTITY_TO_EVENT_FAMILY[entity])
         )
         assert payload["output_schema"]["clinical_events"][0]["mentions"][0]["entity"] == entity
         assert set(payload["event_lane_guide"]) == {ledger.ENTITY_TO_EVENT_FAMILY[entity]}
@@ -61,8 +62,7 @@ def test_prompt_is_one_schema_conditioned_by_target_family() -> None:
             for row in payload["candidate_evidence_ledger"]
         )
         assert any(
-            rule.startswith(f"Return only {entity} mentions")
-            for rule in payload["clinical_rules"]
+            rule.startswith(f"Return only {entity} mentions") for rule in payload["clinical_rules"]
         )
 
     assert "DrugName" in payloads[PRESCRIPTION.name]["attribute_vocabulary"][PRESCRIPTION.name]

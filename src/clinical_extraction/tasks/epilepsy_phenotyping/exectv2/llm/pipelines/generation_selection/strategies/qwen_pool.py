@@ -94,9 +94,7 @@ def run_qwen_pool_adjudication_letter(
             "inventory_parse_errors": all_selection_notes,
             "inventory_selection_summary": selection_record.selection_summary,
             "structured_mentions_generation": pool_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": list(selection_record.final_mention_ids),
             "n_mentions_generation": len(pool_mentions),
             "pool_size": len(pool_mentions),
@@ -168,9 +166,7 @@ def run_qwen_pool_entity_adjudication_letter(
                 entity_prediction = program(prompt_input_json)
                 raw_entity_output = str(entity_prediction.extraction_json)
             except Exception as exc:  # pragma: no cover
-                selection_call_errors.append(
-                    f"{target_entity}:{type(exc).__name__}: {exc}"
-                )
+                selection_call_errors.append(f"{target_entity}:{type(exc).__name__}: {exc}")
         raw_outputs_by_entity[target_entity] = raw_entity_output
 
         entity_record, entity_errors = (
@@ -180,12 +176,8 @@ def run_qwen_pool_entity_adjudication_letter(
         )
         entity_record = entity_record or mono.StructuredPoolAdjudicationRecord()
         final_ids_by_entity[target_entity] = list(entity_record.final_mention_ids)
-        selection_summary_by_entity[target_entity] = list(
-            entity_record.selection_summary
-        )
-        selection_parse_errors.extend(
-            f"{target_entity}:{error}" for error in entity_errors
-        )
+        selection_summary_by_entity[target_entity] = list(entity_record.selection_summary)
+        selection_parse_errors.extend(f"{target_entity}:{error}" for error in entity_errors)
 
     final_ids = [
         mention_id
@@ -231,9 +223,7 @@ def run_qwen_pool_entity_adjudication_letter(
             "inventory_parse_errors": all_selection_notes,
             "inventory_selection_summary": selection_summary_by_entity,
             "structured_mentions_generation": pool_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": final_ids,
             "final_mention_ids_by_entity": final_ids_by_entity,
             "entity_pool_sizes": entity_pool_sizes,
@@ -318,9 +308,7 @@ def run_qwen_pool_group_adjudication_letter(
             "inventory_parse_errors": all_parse_errors,
             "inventory_selection_summary": group_record.selection_summary,
             "structured_mentions_generation": pool_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": list(group_record.final_mention_ids),
             "fact_groups": list(group_record.fact_groups),
             "n_fact_groups": len(group_record.fact_groups),

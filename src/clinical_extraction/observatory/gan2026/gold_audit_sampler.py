@@ -315,11 +315,7 @@ def _wilson_interval(successes: int, total: int, z: float = 1.96) -> dict[str, f
     p = successes / total
     denom = 1.0 + z * z / total
     centre = (p + z * z / (2.0 * total)) / denom
-    margin = (
-        z
-        * math.sqrt((p * (1.0 - p) / total) + (z * z / (4.0 * total * total)))
-        / denom
-    )
+    margin = z * math.sqrt((p * (1.0 - p) / total) + (z * z / (4.0 * total * total))) / denom
     return {
         "count": successes,
         "n": total,

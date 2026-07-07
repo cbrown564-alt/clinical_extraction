@@ -62,7 +62,9 @@ _GUARD_RULES: tuple[tuple[str, str], ...] = (
 # replay/re-score. Both signals required so a bare "dev140" mention in prose is
 # not enough.
 _DEV140_TOKEN_RE = re.compile(r"\bdev[\s_-]?140\b", re.IGNORECASE)
-_REPLAY_TOKEN_RE = re.compile(r"\b(re-?play(?:ed|s)?|re-?scor(?:e|ed|ing)|re-?run)\b", re.IGNORECASE)
+_REPLAY_TOKEN_RE = re.compile(
+    r"\b(re-?play(?:ed|s)?|re-?scor(?:e|ed|ing)|re-?run)\b", re.IGNORECASE
+)
 
 
 def _normalize(path: str) -> str:
@@ -151,9 +153,7 @@ def evaluate(
 
     problems: list[str] = []
     if not message.strip():
-        problems.append(
-            "no commit/PR message provided (pass --message or --message-file)"
-        )
+        problems.append("no commit/PR message provided (pass --message or --message-file)")
     if not referenced:
         problems.append(
             "message references no hypothesis_id present in "

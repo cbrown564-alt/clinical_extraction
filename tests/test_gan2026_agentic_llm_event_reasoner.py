@@ -60,24 +60,17 @@ def test_prompt_input_uses_structured_events_without_forbidden_labels() -> None:
         for instruction in payload["instructions"]
     )
     assert any(
-        "Counts over vague intervals" in instruction
-        for instruction in payload["instructions"]
+        "Counts over vague intervals" in instruction for instruction in payload["instructions"]
     )
     assert any(
-        "Keep original_final.final_label" in instruction
-        for instruction in payload["instructions"]
+        "Keep original_final.final_label" in instruction for instruction in payload["instructions"]
     )
-    assert any(
-        "Preserve cluster labels" in instruction
-        for instruction in payload["instructions"]
-    )
+    assert any("Preserve cluster labels" in instruction for instruction in payload["instructions"])
     assert any(
         "Absence-since evidence is renderable as seizure_free" in instruction
         for instruction in payload["instructions"]
     )
-    assert "one string: low | medium | high" == payload["required_output_schema"][
-        "uncertainty"
-    ]
+    assert "one string: low | medium | high" == payload["required_output_schema"]["uncertainty"]
     assert "one string:" in payload["required_output_schema"]["attribution"]
     assert payload["raw_evidence_contexts"][0]["event_id"] == "e1"
     assert "one seizure per month" in payload["raw_evidence_contexts"][0]["context"]

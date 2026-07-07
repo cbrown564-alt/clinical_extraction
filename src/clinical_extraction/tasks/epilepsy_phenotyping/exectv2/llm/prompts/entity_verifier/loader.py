@@ -13,9 +13,7 @@ def _read_yaml(path: Path) -> Any:
     try:
         import yaml  # type: ignore[import-untyped]
     except ImportError as exc:
-        raise ImportError(
-            "PyYAML is required to load entity-verifier prompt corpora"
-        ) from exc
+        raise ImportError("PyYAML is required to load entity-verifier prompt corpora") from exc
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     if payload is None:
         raise ValueError(f"{path} must not be empty")

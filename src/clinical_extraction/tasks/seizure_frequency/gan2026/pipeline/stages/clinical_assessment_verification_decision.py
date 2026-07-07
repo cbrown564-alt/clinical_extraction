@@ -179,9 +179,7 @@ def summarize_rows(
             "action_counts": dict(sorted(action_counts.items())),
             "action_basis_counts": dict(sorted(basis_counts.items())),
             "route_family_counts": dict(sorted(family_counts.items())),
-            "decision_source_row_indices": [
-                int(row["source_row_index"]) for row in rows
-            ][:50],
+            "decision_source_row_indices": [int(row["source_row_index"]) for row in rows][:50],
         },
     }
 

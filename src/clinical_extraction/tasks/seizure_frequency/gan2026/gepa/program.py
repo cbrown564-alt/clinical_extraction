@@ -28,6 +28,7 @@ def approx_tokens(text: str | None) -> int:
         return 0
     return (len(text) + 3) // 4
 
+
 # Constant format scaffolding. This is NOT optimized by GEPA (it is input data,
 # not the instruction), so the evolved prompt cannot bloat the schema and the
 # model never has to invent the output shape. Mirrors the event/selection schema
@@ -120,9 +121,7 @@ class GepaStructuredExtractor(dspy.Module):
         super().__init__()
         self.extract = dspy.Predict(GepaSeizureFrequencySignature)
         if seed_instruction is not None:
-            self.extract.signature = self.extract.signature.with_instructions(
-                seed_instruction
-            )
+            self.extract.signature = self.extract.signature.with_instructions(seed_instruction)
 
     def forward(self, note_text: str, output_schema: str = OUTPUT_SCHEMA_JSON) -> dspy.Prediction:
         prediction = self.extract(note_text=note_text, output_schema=output_schema)

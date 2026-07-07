@@ -38,8 +38,7 @@ def main() -> None:
         f"experiments/exectv2_adr0030_target_indicator_report_dev140_{today}.json"
     )
     out_md = args.out_md or Path(
-        "docs/experiments/exectv2/key_entities/"
-        f"exectv2_adr0030_target_indicator_report_{today}.md"
+        f"docs/experiments/exectv2/key_entities/exectv2_adr0030_target_indicator_report_{today}.md"
     )
     source_report = json.loads(args.source_json.read_text(encoding="utf-8"))
     report = build_target_indicator_report(source_report, threshold=args.target_f1)
@@ -54,4 +53,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

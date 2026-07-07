@@ -60,4 +60,3 @@ def test_projection_consistency_summary_counts_inconsistent_rows() -> None:
     assert summary["projection_source_id_consistent_rows"] == 1
     assert summary["projection_source_id_inconsistent_rows"] == 1
     assert summary["projection_source_id_inconsistent_source_row_indices"] == [2]
-

@@ -54,15 +54,11 @@ def _score_investigations_component(
     return sum_prf1(
         multiset_prf1(
             _investigation_component_keys(
-                gold_by_id[letter_id].entities("Investigations")
-                if letter_id in gold_by_id
-                else (),
+                gold_by_id[letter_id].entities("Investigations") if letter_id in gold_by_id else (),
                 component,
             ),
             _investigation_component_keys(
-                pred_by_id[letter_id].entities("Investigations")
-                if letter_id in pred_by_id
-                else (),
+                pred_by_id[letter_id].entities("Investigations") if letter_id in pred_by_id else (),
                 component,
             ),
         )

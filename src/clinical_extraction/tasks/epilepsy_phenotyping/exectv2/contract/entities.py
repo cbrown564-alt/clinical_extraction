@@ -5,6 +5,7 @@ See docs/research/exectv2_gold_schema_profile_2026-06-09.md for the full
 observed distribution.  Noise attributes are documented here rather than
 silently inherited into validation.
 """
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -46,19 +47,23 @@ _TIME_PERIOD_VOCAB: frozenset[str] = frozenset({"Day", "Week", "Month", "Year"})
 
 BIRTH_HISTORY = EntitySpec(
     name="BirthHistory",
-    legal_attributes=frozenset({
-        "PrematureBirth",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "PrematureBirth",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
-        "PrematureBirth": frozenset({
-            "32to<37_ModerateToLatePreterm",
-            "34to<37_LatePreterm",
-            "34to<37_LatePretermBirth",
-            "37+_TermBirth",
-        }),
+        "PrematureBirth": frozenset(
+            {
+                "32to<37_ModerateToLatePreterm",
+                "34to<37_LatePreterm",
+                "34to<37_LatePretermBirth",
+                "37+_TermBirth",
+            }
+        ),
         "Certainty": _CERTAINTY_VOCAB,
         "Negation": _NEGATION_VOCAB,
     },
@@ -66,12 +71,14 @@ BIRTH_HISTORY = EntitySpec(
 
 DIAGNOSIS = EntitySpec(
     name="Diagnosis",
-    legal_attributes=frozenset({
-        "DiagCategory",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "DiagCategory",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         # EA0138 uses lowercase 'epilepsy' — annotation inconsistency, both accepted.
         "DiagCategory": frozenset({"Epilepsy", "epilepsy", "MultipleSeizures", "SingleSeizure"}),
@@ -82,11 +89,13 @@ DIAGNOSIS = EntitySpec(
 
 EPILEPSY_CAUSE = EntitySpec(
     name="EpilepsyCause",
-    legal_attributes=frozenset({
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         "Certainty": _CERTAINTY_VOCAB,
         "Negation": _NEGATION_VOCAB,
@@ -95,12 +104,18 @@ EPILEPSY_CAUSE = EntitySpec(
 
 INVESTIGATIONS = EntitySpec(
     name="Investigations",
-    legal_attributes=frozenset({
-        "MRI_Performed", "MRI_Results",
-        "CT_Performed", "CT_Results",
-        "EEG_Performed", "EEG_Results", "EEG_Type",
-        *_SHARED_CUI_ATTRS,
-    }),
+    legal_attributes=frozenset(
+        {
+            "MRI_Performed",
+            "MRI_Results",
+            "CT_Performed",
+            "CT_Results",
+            "EEG_Performed",
+            "EEG_Results",
+            "EEG_Type",
+            *_SHARED_CUI_ATTRS,
+        }
+    ),
     closed_vocab={
         "MRI_Performed": _PERFORMED_VOCAB,
         "MRI_Results": _RESULTS_VOCAB,
@@ -114,14 +129,20 @@ INVESTIGATIONS = EntitySpec(
 
 ONSET = EntitySpec(
     name="Onset",
-    legal_attributes=frozenset({
-        "Age", "AgeLower", "AgeUpper", "AgeUnit",
-        "NumberOfTimePeriods", "TimePeriod",
-        "PointInTime",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "Age",
+            "AgeLower",
+            "AgeUpper",
+            "AgeUnit",
+            "NumberOfTimePeriods",
+            "TimePeriod",
+            "PointInTime",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         "AgeUnit": _AGE_UNIT_VOCAB,
         "TimePeriod": _TIME_PERIOD_VOCAB,
@@ -133,15 +154,23 @@ ONSET = EntitySpec(
 
 PATIENT_HISTORY = EntitySpec(
     name="PatientHistory",
-    legal_attributes=frozenset({
-        "Age", "AgeLower", "AgeUpper", "AgeUnit",
-        "DayDate", "MonthDate", "YearDate",
-        "NumberOfTimePeriods", "TimePeriod",
-        "PointInTime",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "Age",
+            "AgeLower",
+            "AgeUpper",
+            "AgeUnit",
+            "DayDate",
+            "MonthDate",
+            "YearDate",
+            "NumberOfTimePeriods",
+            "TimePeriod",
+            "PointInTime",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         "AgeUnit": _AGE_UNIT_VOCAB,
         "TimePeriod": _TIME_PERIOD_VOCAB,
@@ -156,10 +185,15 @@ PATIENT_HISTORY = EntitySpec(
 
 PRESCRIPTION = EntitySpec(
     name="Prescription",
-    legal_attributes=frozenset({
-        "DrugName", "DrugDose", "DoseUnit", "Frequency",
-        *_SHARED_CUI_ATTRS,
-    }),
+    legal_attributes=frozenset(
+        {
+            "DrugName",
+            "DrugDose",
+            "DoseUnit",
+            "Frequency",
+            *_SHARED_CUI_ATTRS,
+        }
+    ),
     closed_vocab={
         "DoseUnit": frozenset({"mg", "g"}),
         "Frequency": frozenset({"1", "2", "3", "As_Required"}),
@@ -168,31 +202,46 @@ PRESCRIPTION = EntitySpec(
 
 SEIZURE_FREQUENCY = EntitySpec(
     name="SeizureFrequency",
-    legal_attributes=frozenset({
-        "NumberOfSeizures",
-        "LowerNumberOfSeizures", "UpperNumberOfSeizures",
-        "NumberOfTimePeriods",
-        "LowerNumberOfTimePeriods", "UpperNumberOfTimePeriods",
-        "TimePeriod",
-        "TimeSince_or_TimeOfEvent",
-        "FrequencyChange",
-        "PointInTime",
-        "DayDate", "MonthDate", "YearDate",
-        "AgeLower", "AgeUpper", "AgeUnit",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "NumberOfSeizures",
+            "LowerNumberOfSeizures",
+            "UpperNumberOfSeizures",
+            "NumberOfTimePeriods",
+            "LowerNumberOfTimePeriods",
+            "UpperNumberOfTimePeriods",
+            "TimePeriod",
+            "TimeSince_or_TimeOfEvent",
+            "FrequencyChange",
+            "PointInTime",
+            "DayDate",
+            "MonthDate",
+            "YearDate",
+            "AgeLower",
+            "AgeUpper",
+            "AgeUnit",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         "TimeSince_or_TimeOfEvent": frozenset({"During", "Since"}),
         "FrequencyChange": frozenset({"Decreased", "Frequent", "Increased", "Infrequent", "Same"}),
         # "days" appears once — annotation noise (plural form of "Day"); kept as a
         # legal value so gold validates clean (see noise summary in the profile).
         "TimePeriod": _TIME_PERIOD_VOCAB | frozenset({"days"}),
-        "PointInTime": frozenset({
-            "Birthday", "DrugChange", "LastClinic",
-            "Last_Month", "Last_Week", "Last_Year", "Surgery",
-        }),
+        "PointInTime": frozenset(
+            {
+                "Birthday",
+                "DrugChange",
+                "LastClinic",
+                "Last_Month",
+                "Last_Week",
+                "Last_Year",
+                "Surgery",
+            }
+        ),
         "AgeUnit": _AGE_UNIT_VOCAB,
         "Certainty": _CERTAINTY_VOCAB,
         "Negation": _NEGATION_VOCAB,
@@ -204,14 +253,19 @@ SEIZURE_FREQUENCY = EntitySpec(
 
 WHEN_DIAGNOSED = EntitySpec(
     name="WhenDiagnosed",
-    legal_attributes=frozenset({
-        "Age", "AgeUnit",
-        "MonthDate", "YearDate",
-        "NumberOfTimePeriods", "TimePeriod",
-        *_SHARED_CUI_ATTRS,
-        *_SHARED_CERTAINTY,
-        *_SHARED_NEGATION,
-    }),
+    legal_attributes=frozenset(
+        {
+            "Age",
+            "AgeUnit",
+            "MonthDate",
+            "YearDate",
+            "NumberOfTimePeriods",
+            "TimePeriod",
+            *_SHARED_CUI_ATTRS,
+            *_SHARED_CERTAINTY,
+            *_SHARED_NEGATION,
+        }
+    ),
     closed_vocab={
         "AgeUnit": _AGE_UNIT_VOCAB,
         "TimePeriod": _TIME_PERIOD_VOCAB,

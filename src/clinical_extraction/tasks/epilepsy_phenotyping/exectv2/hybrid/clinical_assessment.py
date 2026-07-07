@@ -81,20 +81,24 @@ ENTITY_NAME = SEIZURE_FREQUENCY.name
 COMPONENT_OWNER = "hybrid_candidate_assessment"
 
 # Closed vocabularies the assessment LLM may draw from (satellite 04 §3 / 07).
-UNCERTAINTY_FLAGS: frozenset[str] = frozenset({
-    "current_vs_historical_ambiguous",
-    "vague_count",
-    "conditional_window",
-    "competing_current_claims",
-    "cluster_vs_intracluster",
-    "seizure_free_duration_unclear",
-    "range_window_ambiguous",
-})
-AGGREGATION_POLICIES: frozenset[str] = frozenset({
-    "one_mention_per_seizure_type",
-    "merge_co_located_statements",
-    "split_per_statement",
-})
+UNCERTAINTY_FLAGS: frozenset[str] = frozenset(
+    {
+        "current_vs_historical_ambiguous",
+        "vague_count",
+        "conditional_window",
+        "competing_current_claims",
+        "cluster_vs_intracluster",
+        "seizure_free_duration_unclear",
+        "range_window_ambiguous",
+    }
+)
+AGGREGATION_POLICIES: frozenset[str] = frozenset(
+    {
+        "one_mention_per_seizure_type",
+        "merge_co_located_statements",
+        "split_per_statement",
+    }
+)
 _DEFAULT_AGGREGATION = "one_mention_per_seizure_type"
 
 
@@ -159,10 +163,10 @@ class ExECTv2HybridAssessmentSignature(dspy.Signature):
     )
     assessment_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"assessments\": [{\"candidate_id\": ..., "
-            "\"keep\": true/false, \"text\": ..., \"attributes\": {...}, "
-            "\"confidence\": ..., \"uncertainty_flags\": [...], \"rationale\": ...}], "
-            "\"additional_mentions\": [...], \"aggregation_policy\": ...}"
+            'One strict JSON object: {"assessments": [{"candidate_id": ..., '
+            '"keep": true/false, "text": ..., "attributes": {...}, '
+            '"confidence": ..., "uncertainty_flags": [...], "rationale": ...}], '
+            '"additional_mentions": [...], "aggregation_policy": ...}'
         )
     )
 
@@ -247,8 +251,7 @@ def build_prompt_input(letter: ExectLetter, candidates: Sequence[SFCandidate]) -
             ),
             "rationale": "One sentence: the deciding evidence and coded result.",
             "aggregation_policy": (
-                "How you grouped statements into findings — one value from the "
-                "allowed list."
+                "How you grouped statements into findings — one value from the allowed list."
             ),
         },
         "attribute_vocabulary": {
@@ -262,8 +265,7 @@ def build_prompt_input(letter: ExectLetter, candidates: Sequence[SFCandidate]) -
             "UpperNumberOfTimePeriods": "upper end of a period range",
             "TimePeriod": "exactly 'Day', 'Week', 'Month', or 'Year'",
             "FrequencyChange": (
-                "exactly one of 'Decreased', 'Frequent', 'Increased', "
-                "'Infrequent', 'Same'"
+                "exactly one of 'Decreased', 'Frequent', 'Increased', 'Infrequent', 'Same'"
             ),
             "PointInTime": (
                 "exactly one of 'Birthday', 'DrugChange', 'LastClinic', "
@@ -396,8 +398,7 @@ def _coerce_assessment_payload(payload: Any) -> tuple[Any, list[str]]:
         ]
     if isinstance(out.get("additional_mentions"), list):
         out["additional_mentions"] = [
-            _coerce_attrs(m, f"additional[{i}]")
-            for i, m in enumerate(out["additional_mentions"])
+            _coerce_attrs(m, f"additional[{i}]") for i, m in enumerate(out["additional_mentions"])
         ]
     return out, notes
 
@@ -405,8 +406,12 @@ def _coerce_assessment_payload(payload: Any) -> tuple[Any, list[str]]:
 # ── Deterministic normalize / render ──────────────────────────────────────────
 
 _COUNT_KEYS = (
-    "NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures",
-    "NumberOfTimePeriods", "LowerNumberOfTimePeriods", "UpperNumberOfTimePeriods",
+    "NumberOfSeizures",
+    "LowerNumberOfSeizures",
+    "UpperNumberOfSeizures",
+    "NumberOfTimePeriods",
+    "LowerNumberOfTimePeriods",
+    "UpperNumberOfTimePeriods",
 )
 
 
@@ -624,9 +629,7 @@ def run_split(
     spec = ENTITY_REGISTRY[ENTITY_NAME]
     program = DspyHybridAssessor()
     direction_program = (
-        ClosedOptionDirectionSelector()
-        if direction_selector == "llm_closed_option"
-        else None
+        ClosedOptionDirectionSelector() if direction_selector == "llm_closed_option" else None
     )
     if mode == "live":
         dspy.configure(
@@ -644,9 +647,7 @@ def run_split(
     existing_rows, completed = read_completed(
         checkpoint_jsonl_path if resume else None, key="letter_id"
     )
-    rows: list[dict[str, Any]] = [
-        r for r in existing_rows if r.get("letter_id") in requested
-    ]
+    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
 
@@ -707,9 +708,7 @@ def run_split(
             predicted_letter = PredictedLetter(letter_id=letter.letter_id, mentions=())
             routed = []
 
-        n_kept_candidates = sum(
-            1 for a in (record.assessments if record else []) if a.keep
-        )
+        n_kept_candidates = sum(1 for a in (record.assessments if record else []) if a.keep)
         n_additional = len(record.additional_mentions) if record else 0
         n_raw = n_kept_candidates + n_additional
 
@@ -744,9 +743,7 @@ def run_split(
                     }
                     for m in predicted_letter.mentions
                 ],
-                "routed_mentions": [
-                    {"text": r.mention.text, "reason": r.reason} for r in routed
-                ],
+                "routed_mentions": [{"text": r.mention.text, "reason": r.reason} for r in routed],
                 "gold_mentions": [
                     {"text": a.text, "attributes": dict(a.attributes)} for a in gold_sf
                 ],
@@ -807,9 +804,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         ("sf_semantic", SF_SEMANTIC),
         ("sf_benchmark", SF_BENCHMARK),
     ]:
-        entity_score: EntityScore = score_entity(
-            gold_letters, pred_letters, ENTITY_NAME, config
-        )
+        entity_score: EntityScore = score_entity(gold_letters, pred_letters, ENTITY_NAME, config)
         scores[config_name] = {
             "per_item": _score_dict(entity_score.per_item),
             "per_letter": _score_dict(entity_score.per_letter),
@@ -843,9 +838,7 @@ def _reconstruct_letters(rows: Sequence[dict[str, Any]], key: str) -> list[Exect
     letters: list[ExectLetter] = []
     for row in rows:
         annotations = tuple(
-            ExectAnnotation(
-                entity=ENTITY_NAME, text=m["text"], attributes=m.get("attributes", {})
-            )
+            ExectAnnotation(entity=ENTITY_NAME, text=m["text"], attributes=m.get("attributes", {}))
             for m in (row.get(key) or [])
         )
         if key == "predicted_mentions":

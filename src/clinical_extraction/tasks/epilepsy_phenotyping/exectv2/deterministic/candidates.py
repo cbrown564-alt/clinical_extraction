@@ -18,6 +18,7 @@ Two kinds of candidate are produced by rules:
 Both carry ``span`` (character offsets into the letter text) so the
 association stage can compute proximity without re-searching the text.
 """
+
 from __future__ import annotations
 
 from collections.abc import Mapping

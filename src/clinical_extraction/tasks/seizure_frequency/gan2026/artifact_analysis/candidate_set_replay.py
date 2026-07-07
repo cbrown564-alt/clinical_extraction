@@ -46,8 +46,7 @@ def build_validation250_candidate_set_rows(
 
     surface = list(records[:limit])
     rows = [
-        _candidate_set_row(record, split=split, split_manifest=split_manifest)
-        for record in surface
+        _candidate_set_row(record, split=split, split_manifest=split_manifest) for record in surface
     ]
     for row in rows:
         row["artifact_name"] = artifact_name
@@ -66,11 +65,7 @@ def summarize_candidate_set_rows(
     split_manifest: str = "gan2026_split_v1",
     artifact_name: str = ARTIFACT_NAME,
 ) -> dict[str, Any]:
-    candidates = [
-        candidate
-        for row in rows
-        for candidate in row["candidate_set"]["candidates"]
-    ]
+    candidates = [candidate for row in rows for candidate in row["candidate_set"]["candidates"]]
     kind_counts = Counter(str(candidate["candidate_kind"]) for candidate in candidates)
     source_type_counts = Counter(str(candidate["source_type"]) for candidate in candidates)
     per_row_counts = [len(row["candidate_set"]["candidates"]) for row in rows]

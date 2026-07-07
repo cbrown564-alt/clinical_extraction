@@ -48,9 +48,13 @@ def main() -> None:
         jsonl_path=jsonl_path,
         report_path=report_path,
     )
-    clinical = metadata.get("summary", {}).get("clinical_recovery", {}).get(
-        "seizure_frequency",
-        {},
+    clinical = (
+        metadata.get("summary", {})
+        .get("clinical_recovery", {})
+        .get(
+            "seizure_frequency",
+            {},
+        )
     )
     print(f"Done. JSONL: {jsonl_path}  Report: {report_path}", flush=True)
     print(

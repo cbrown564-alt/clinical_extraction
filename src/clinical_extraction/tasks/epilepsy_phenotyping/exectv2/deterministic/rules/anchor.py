@@ -14,6 +14,7 @@ of awareness" suffix), plus "seizure-free" as its own anchor (gold sometimes
 annotates the bare seizure-free phrase as the SeizureFrequency text, with
 duration/count folded into attributes).
 """
+
 from __future__ import annotations
 
 import re
@@ -73,11 +74,10 @@ def _build_seizure_type_anchor(match: re.Match[str], _ctx: ExtractionContext) ->
     )
 
 
-
-
 # ---------------------------------------------------------------------------
 # "Seizure-free" as its own anchor phrase.
 # ---------------------------------------------------------------------------
+
 
 def _build_seizure_free_anchor(match: re.Match[str], _ctx: ExtractionContext) -> AnchorCandidate:
     evidence = clean_span(match.group(0))
@@ -89,12 +89,22 @@ def _build_seizure_free_anchor(match: re.Match[str], _ctx: ExtractionContext) ->
         rule_group=RuleGroup.ANCHOR_PHRASE,
         portability=Portability.CLINICAL_EPILEPSY,
     )
+
+
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
 
 from .extract_impl_types import ExtractRuleImpl
 
 ANCHOR_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
-    'anchor.seizure_type_phrase': ExtractRuleImpl(re.compile('\\b(?:cluster\\s+of\\s+)?(?:(?:secondary\\s+generalised|secondary\\s+generalized|generalised\\s+tonic[\\s-]clonic|generalized\\s+tonic[\\s-]clonic|focal\\s+to\\s+bilateral|focal\\s+motor|partial\\s+motor|frontal\\s+lobe|dyscognitive|focal|generalised|generalized|tonic[\\s-]clonic|tonic|clonic|myoclonic|atonic|absence(?:[\\s-]like)?|non[\\s-]?convulsive|convulsive|complex\\s+partial|simple\\s+partial|partial|bilateral|nocturnal|drop)[\\s-]+){0,3}(?:seizures?|absences?|jerks?|convulsions?)(?:\\s+with\\s+(?:loss|altered|impaired)\\s+(?:of\\s+)?awareness)?', re.IGNORECASE), _build_seizure_type_anchor),
-    'anchor.seizure_free_phrase': ExtractRuleImpl(re.compile('\\bseizure(?:[-‐-―\\s])free\\b', re.IGNORECASE), _build_seizure_free_anchor),
+    "anchor.seizure_type_phrase": ExtractRuleImpl(
+        re.compile(
+            "\\b(?:cluster\\s+of\\s+)?(?:(?:secondary\\s+generalised|secondary\\s+generalized|generalised\\s+tonic[\\s-]clonic|generalized\\s+tonic[\\s-]clonic|focal\\s+to\\s+bilateral|focal\\s+motor|partial\\s+motor|frontal\\s+lobe|dyscognitive|focal|generalised|generalized|tonic[\\s-]clonic|tonic|clonic|myoclonic|atonic|absence(?:[\\s-]like)?|non[\\s-]?convulsive|convulsive|complex\\s+partial|simple\\s+partial|partial|bilateral|nocturnal|drop)[\\s-]+){0,3}(?:seizures?|absences?|jerks?|convulsions?)(?:\\s+with\\s+(?:loss|altered|impaired)\\s+(?:of\\s+)?awareness)?",
+            re.IGNORECASE,
+        ),
+        _build_seizure_type_anchor,
+    ),
+    "anchor.seizure_free_phrase": ExtractRuleImpl(
+        re.compile("\\bseizure(?:[-‐-―\\s])free\\b", re.IGNORECASE), _build_seizure_free_anchor
+    ),
 }

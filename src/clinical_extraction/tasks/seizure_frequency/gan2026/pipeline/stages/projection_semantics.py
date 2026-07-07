@@ -56,9 +56,7 @@ def project_label_semantics(
                 [],
             )
 
-        by_id = {
-            candidate.candidate_id: candidate for candidate in candidate_set.candidates
-        }
+        by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
         primary_candidates = [
             by_id[cid] for cid in assessment.primary_candidate_ids if cid in by_id
         ]
@@ -77,9 +75,7 @@ def project_label_semantics(
                 ytd_candidate = candidate
                 break
 
-        is_ytd = ytd_candidate is not None or is_ytd_phrase(
-            burden.source_normalized_phrase
-        )
+        is_ytd = ytd_candidate is not None or is_ytd_phrase(burden.source_normalized_phrase)
         explicit_period_blocks_ytd = has_explicit_rate_period(
             burden
         ) and not has_overrideable_ytd_annual_period(burden)
@@ -381,8 +377,4 @@ def has_explicit_rate_period(burden: NormalizedBurden) -> bool:
 
 
 def has_overrideable_ytd_annual_period(burden: NormalizedBurden) -> bool:
-    return (
-        burden.period_low == 1
-        and burden.period_high == 1
-        and burden.period_unit == "year"
-    )
+    return burden.period_low == 1 and burden.period_high == 1 and burden.period_unit == "year"

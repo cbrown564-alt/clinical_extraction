@@ -170,9 +170,7 @@ class GepaMultiStageExtractor(dspy.Module):
                     s0_seed_instructions[family]
                 )
             if s1_seed_instructions and s1_seed_instructions.get(family):
-                verify.signature = verify.signature.with_instructions(
-                    s1_seed_instructions[family]
-                )
+                verify.signature = verify.signature.with_instructions(s1_seed_instructions[family])
             setattr(self, _gen_attr(family), generate)
             setattr(self, _verify_attr(family), verify)
 
@@ -213,9 +211,7 @@ class GepaMultiStageExtractor(dspy.Module):
             approx_tokens(p.signature.instructions) for p in self._predictors()
         )
         prediction.demo_tokens = sum(
-            approx_tokens(str(dict(demo)))
-            for p in self._predictors()
-            for demo in (p.demos or [])
+            approx_tokens(str(dict(demo))) for p in self._predictors() for demo in (p.demos or [])
         )
         return prediction
 

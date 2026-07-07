@@ -32,8 +32,8 @@ class ExECTv2KeyEntitiesInventorySelectionSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"generated_events\": [...], "
-            "\"final_events\": [...], \"selection_summary\": [...]}. Each event "
+            'One strict JSON object: {"generated_events": [...], '
+            '"final_events": [...], "selection_summary": [...]}. Each event '
             "uses family, anchor_text, evidence, event_state, mentions, confidence, "
             "and rationale. Do not include analysis or first-person reasoning."
         )
@@ -64,8 +64,8 @@ class ExECTv2KeyEntitiesMentionSelectionSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"generated_mentions\": [...], "
-            "\"final_mentions\": [...], \"selection_summary\": [...]}. Each mention "
+            'One strict JSON object: {"generated_mentions": [...], '
+            '"final_mentions": [...], "selection_summary": [...]}. Each mention '
             "uses entity, text, attributes, evidence, confidence, and rationale. "
             "Do not include analysis or first-person reasoning."
         )
@@ -96,8 +96,8 @@ class ExECTv2KeyEntitiesMentionIdSelectionSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"generated_mentions\": [...], "
-            "\"final_mention_ids\": [...], \"selection_summary\": [...]}. Each "
+            'One strict JSON object: {"generated_mentions": [...], '
+            '"final_mention_ids": [...], "selection_summary": [...]}. Each '
             "generated mention uses mention_id, entity, text, attributes, evidence, "
             "confidence, and rationale. Do not include analysis or first-person "
             "reasoning."
@@ -128,7 +128,7 @@ class ExECTv2DedupClinicalFactsSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"clinical_facts\": [...]}. Each fact uses "
+            'One strict JSON object: {"clinical_facts": [...]}. Each fact uses '
             "family-specific simplified fields plus exact evidence. Do not include "
             "analysis or first-person reasoning."
         )
@@ -158,8 +158,8 @@ class ExECTv2KeyEntitiesPoolAdjudicationSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"final_mention_ids\": [...], "
-            "\"selection_summary\": [...]}. Select only mention_id values that "
+            'One strict JSON object: {"final_mention_ids": [...], '
+            '"selection_summary": [...]}. Select only mention_id values that '
             "appear in model_generated_mentions. Do not include analysis or "
             "first-person reasoning."
         )

@@ -109,9 +109,7 @@ def test_unknown_cadence_cluster_projection_routes_as_unresolved_cluster_burden(
     )
 
     assert route.routed is True
-    assert route.route_families == [
-        "unresolved_cluster_cadence_with_per_cluster_burden"
-    ]
+    assert route.route_families == ["unresolved_cluster_cadence_with_per_cluster_burden"]
 
 
 def test_cyclic_window_without_event_count_routes_as_specific_family() -> None:
@@ -333,10 +331,7 @@ def test_prior_encounter_derived_seizure_free_duration_routes_as_policy_sensitiv
 
     assert route.routed is True
     assert route.route_families == ["rendered_label_supported_but_policy_sensitive"]
-    assert (
-        "seizure-free duration was derived from prior-encounter context"
-        in route.route_reasons
-    )
+    assert "seizure-free duration was derived from prior-encounter context" in route.route_reasons
 
 
 def test_build_verification_route_artifact_summarizes_routes() -> None:
@@ -344,9 +339,12 @@ def test_build_verification_route_artifact_summarizes_routes() -> None:
         [
             _score_row(
                 20,
-                _projection("cluster_frequency", "cluster_axis", ["llm:20:1"], [
-                    "cluster_cadence_values_incomplete"
-                ]),
+                _projection(
+                    "cluster_frequency",
+                    "cluster_axis",
+                    ["llm:20:1"],
+                    ["cluster_cadence_values_incomplete"],
+                ),
                 _rendered(None, ["projection_semantics_missing"]),
                 _score(score_status="not_scored_null_rendered_label"),
             ),
@@ -381,11 +379,8 @@ def _projection(
     return {
         "source_row_index": 1,
         "projection_kind": projection_kind,
-        "projection_basis": projection_basis or (
-            "cluster_frequency"
-            if projection_kind == "cluster_frequency"
-            else "frequency_rate"
-        ),
+        "projection_basis": projection_basis
+        or ("cluster_frequency" if projection_kind == "cluster_frequency" else "frequency_rate"),
         "source_aggregation_policy": aggregation_policy,
         "source_normalized_phrase": source_normalized_phrase,
         "source_candidate_ids": source_candidate_ids or ["llm:1:1"],

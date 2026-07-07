@@ -33,6 +33,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _normalization_source_phrase,
 )
 
+
 def _repair_candidate_role_ids(draft: AssessmentDraft) -> tuple[AssessmentDraft, list[str]]:
     """Remove recoverable duplicate and overlapping role ids from a model draft."""
 
@@ -91,6 +92,7 @@ def _repair_candidate_role_ids(draft: AssessmentDraft) -> tuple[AssessmentDraft,
         repairs,
     )
 
+
 def _dedupe_role_ids(
     candidate_ids: Sequence[str],
     *,
@@ -107,6 +109,7 @@ def _dedupe_role_ids(
         deduped.append(candidate_id)
     return deduped, repairs
 
+
 def _apply_deterministic_assessment_repairs(
     draft: AssessmentDraft,
     *,
@@ -117,9 +120,7 @@ def _apply_deterministic_assessment_repairs(
 
     repairs: list[str] = []
     repaired = draft
-    candidate_by_id = {
-        candidate.candidate_id: candidate for candidate in candidate_set.candidates
-    }
+    candidate_by_id = {candidate.candidate_id: candidate for candidate in candidate_set.candidates}
     if repaired.aggregation_policy is None:
         inferred = _infer_missing_aggregation_policy(repaired, candidate_by_id)
         repaired = repaired.model_copy(update={"aggregation_policy": inferred})
@@ -151,6 +152,7 @@ def _apply_deterministic_assessment_repairs(
     repairs.extend(historical_repairs)
     return repaired, repairs
 
+
 def _infer_missing_aggregation_policy(
     draft: AssessmentDraft,
     candidate_by_id: Mapping[str, ExtractedCandidate],
@@ -170,6 +172,7 @@ def _infer_missing_aggregation_policy(
     if _all_candidate_kind(primary_candidates, "cluster_frequency"):
         return "cluster_axis"
     return "primary_with_context"
+
 
 def _repair_single_primary_policy(
     draft: AssessmentDraft,
@@ -199,6 +202,7 @@ def _repair_single_primary_policy(
         [f"single_primary_cluster_axis_to_{repaired_policy}"],
     )
 
+
 def _repair_cluster_axis_without_cluster_primary(
     draft: AssessmentDraft,
     *,
@@ -209,9 +213,7 @@ def _repair_cluster_axis_without_cluster_primary(
     primary_candidates = _candidate_lookup(candidate_by_id, draft.primary_candidate_ids)
     if any(candidate.candidate_kind == "cluster_frequency" for candidate in primary_candidates):
         return draft, []
-    supporting_candidates = _candidate_lookup(
-        candidate_by_id, draft.supporting_candidate_ids
-    )
+    supporting_candidates = _candidate_lookup(candidate_by_id, draft.supporting_candidate_ids)
     promotable = [
         candidate
         for candidate in supporting_candidates
@@ -239,6 +241,7 @@ def _repair_cluster_axis_without_cluster_primary(
         draft.model_copy(update={"aggregation_policy": "primary_with_context"}),
         ["cluster_axis_without_cluster_primary_to_primary_with_context"],
     )
+
 
 def _repair_multi_primary_nonadditive_policy(
     draft: AssessmentDraft,
@@ -285,15 +288,11 @@ def _repair_multi_primary_nonadditive_policy(
         if selected_primary is not None
         else draft.normalized_burden.source_normalized_phrase
     )
-    if selected_primary is not None and _is_major_recent_relapse_candidate(
-        selected_primary
-    ):
+    if selected_primary is not None and _is_major_recent_relapse_candidate(selected_primary):
         repair_issues = ["major_recent_relapse_over_background_frequency"]
     elif "project_major_recent_relapse_over_background_frequency" in disabled_ablation_switches:
         repair_issues = [
-            _disabled_switch_issue(
-                "project_major_recent_relapse_over_background_frequency"
-            )
+            _disabled_switch_issue("project_major_recent_relapse_over_background_frequency")
         ]
     else:
         repair_issues = ["multi_primary_nonadditive_demoted_to_supporting"]
@@ -309,6 +308,7 @@ def _repair_multi_primary_nonadditive_policy(
         ),
         repair_issues,
     )
+
 
 def _repair_historical_primary(
     draft: AssessmentDraft,
@@ -364,6 +364,7 @@ def _repair_historical_primary(
         [f"historical_primary_replaced_with_current:{replacement.candidate_id}"],
     )
 
+
 def _all_candidate_kind(
     candidates: Sequence[ExtractedCandidate],
     candidate_kind: str,
@@ -371,6 +372,7 @@ def _all_candidate_kind(
     return bool(candidates) and all(
         candidate.candidate_kind == candidate_kind for candidate in candidates
     )
+
 
 def _same_frequency_window(candidates: Sequence[ExtractedCandidate]) -> bool:
     parsed = [
@@ -388,6 +390,7 @@ def _same_frequency_window(candidates: Sequence[ExtractedCandidate]) -> bool:
         for burden in burdens
     )
 
+
 def _best_single_primary_candidate_id(
     candidates: Sequence[ExtractedCandidate],
     *,
@@ -403,6 +406,7 @@ def _best_single_primary_candidate_id(
         ),
     ).candidate_id
 
+
 def _single_primary_priority(
     candidate: ExtractedCandidate,
     *,
@@ -410,8 +414,7 @@ def _single_primary_priority(
 ) -> tuple[int, int, int, int]:
     phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
     major_relapse_enabled = (
-        "project_major_recent_relapse_over_background_frequency"
-        not in disabled_ablation_switches
+        "project_major_recent_relapse_over_background_frequency" not in disabled_ablation_switches
     )
     return (
         1 if major_relapse_enabled and _is_major_recent_relapse_candidate(candidate) else 0,
@@ -421,6 +424,7 @@ def _single_primary_priority(
         len(phrase),
     )
 
+
 def _current_candidate_priority(candidate: ExtractedCandidate) -> tuple[int, int, int]:
     phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
     return (
@@ -428,6 +432,7 @@ def _current_candidate_priority(candidate: ExtractedCandidate) -> tuple[int, int
         1 if candidate.candidate_kind == "frequency_rate" else 0,
         len(phrase),
     )
+
 
 def _is_major_recent_relapse_candidate(candidate: ExtractedCandidate) -> bool:
     phrase = " ".join(
@@ -449,6 +454,7 @@ def _is_major_recent_relapse_candidate(candidate: ExtractedCandidate) -> bool:
         and has_major_semiology
     )
 
+
 def _phrase_mentions_cluster_burden(candidate: ExtractedCandidate) -> bool:
     phrase = " ".join(
         value.lower()
@@ -459,6 +465,7 @@ def _phrase_mentions_cluster_burden(candidate: ExtractedCandidate) -> bool:
         if value
     )
     return any(marker in phrase for marker in ("cluster", "clusters", "run", "runs"))
+
 
 def _apply_deterministic_assessment_overrides(
     draft: AssessmentDraft,
@@ -499,6 +506,7 @@ def _apply_deterministic_assessment_overrides(
     )
     return adjusted, ["cluster_assessment_promoted_to_frequency_rate"]
 
+
 def _best_frequency_override_candidate(
     draft: AssessmentDraft,
     *,
@@ -514,8 +522,7 @@ def _best_frequency_override_candidate(
         if _is_medication_cadence_candidate(candidate):
             continue
         parsed_burdens = [
-            _frequency_burden(phrase)
-            for phrase in _frequency_override_phrases(candidate)
+            _frequency_burden(phrase) for phrase in _frequency_override_phrases(candidate)
         ]
         renderable = [
             burden
@@ -546,11 +553,13 @@ def _best_frequency_override_candidate(
     _, candidate_id, burden = max(parsed, key=lambda item: item[0])
     return candidate_id, burden
 
+
 def _frequency_override_phrases(candidate: ExtractedCandidate) -> list[str]:
     phrases = _cluster_phrases([candidate]) if candidate.cluster_details else []
     phrases.append(candidate_source_phrase(candidate) or candidate.evidence_span.text)
     phrases.append(candidate.evidence_span.text)
     return [phrase for phrase in _dedupe(phrases) if phrase]
+
 
 def _frequency_override_score(
     candidate: ExtractedCandidate,
@@ -562,6 +571,7 @@ def _frequency_override_score(
         1 if burden.count_low is not None and burden.count_high is not None else 0,
         -position,
     )
+
 
 def _is_medication_cadence_candidate(candidate: ExtractedCandidate) -> bool:
     text = " ".join(

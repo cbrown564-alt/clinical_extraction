@@ -167,9 +167,7 @@ def _refines_edges(nodes: Sequence[StateGraphNode]) -> list[GraphEdge]:
                     source_node_id=refiner.node_id,
                     target_node_id=base.node_id,
                     rule_id=rule,
-                    rationale=(
-                        f"Node {refiner.node_id} refines vaguer node {base.node_id}."
-                    ),
+                    rationale=(f"Node {refiner.node_id} refines vaguer node {base.node_id}."),
                 )
             )
     return edges
@@ -187,8 +185,7 @@ def _contradicts_edges(nodes: Sequence[StateGraphNode]) -> list[GraphEdge]:
     seizure_free = [
         node
         for node in nodes
-        if _is_current_assertion(node)
-        and node.semantic_kind is FrequencyLabelKind.SEIZURE_FREE
+        if _is_current_assertion(node) and node.semantic_kind is FrequencyLabelKind.SEIZURE_FREE
     ]
     for positive in positives:
         for free in seizure_free:

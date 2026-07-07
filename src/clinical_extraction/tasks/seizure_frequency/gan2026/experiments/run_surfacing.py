@@ -143,11 +143,13 @@ def build_surfaced_run_payload(
 ) -> dict[str, Any]:
     """Build one Observatory dropdown entry."""
 
-    has_jsonl = curation.executable or (
-        registry_entry is not None
-        and any(path.endswith(".jsonl") for path in registry_entry.artifact_paths)
-    ) or (
-        curation.source_jsonl is not None
+    has_jsonl = (
+        curation.executable
+        or (
+            registry_entry is not None
+            and any(path.endswith(".jsonl") for path in registry_entry.artifact_paths)
+        )
+        or (curation.source_jsonl is not None)
     )
     return {
         "value": curation.run_id,
@@ -175,9 +177,7 @@ def build_surfaced_runs(
     for curation in sorted(CURATED_RUNS, key=lambda item: item.sort_order):
         entry = by_run_id.get(curation.run_id)
         if curation.executable or entry is not None or curation.source_jsonl:
-            surfaced.append(
-                build_surfaced_run_payload(curation, registry_entry=entry)
-            )
+            surfaced.append(build_surfaced_run_payload(curation, registry_entry=entry))
     return surfaced
 
 

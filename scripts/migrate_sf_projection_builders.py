@@ -7,7 +7,10 @@ import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-TP = REPO / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/target_projection"
+TP = (
+    REPO
+    / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/target_projection"
+)
 BUILDERS = (
     REPO
     / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders"
@@ -71,16 +74,17 @@ def main() -> None:
         src = TP / src_name
         dst = BUILDERS / dst_name
         body = _rewrite_imports(src.read_text(encoding="utf-8"))
-        header = (
-            f'"""SF projection builders migrated from ``target_projection/{src_name}``."""\n'
-        )
+        header = f'"""SF projection builders migrated from ``target_projection/{src_name}``."""\n'
         if not body.lstrip().startswith('"""'):
             body = header + body
         else:
             body = re.sub(r'^"""[\s\S]*?"""', header.rstrip(), body, count=1)
         dst.write_text(body, encoding="utf-8")
         names = _public_names(src)
-        (TP / src_name).write_text(_facade(src_name.replace(".py", ""), dst_name.replace(".py", ""), names), encoding="utf-8")
+        (TP / src_name).write_text(
+            _facade(src_name.replace(".py", ""), dst_name.replace(".py", ""), names),
+            encoding="utf-8",
+        )
         print(f"migrated {src_name} -> builders/{dst_name} ({len(names)} exports)")
 
 

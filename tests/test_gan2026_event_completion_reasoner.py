@@ -55,8 +55,7 @@ def test_event_completion_prompt_has_raw_excerpt_without_forbidden_labels() -> N
     assert "create_completed_event_final" in payload["required_output_schema"]["action"]
     assert "Patient has clusters about four times per month" in payload["raw_note_excerpt"]
     assert any(
-        "Only create a completed event" in instruction
-        for instruction in payload["instructions"]
+        "Only create a completed event" in instruction for instruction in payload["instructions"]
     )
 
 
@@ -101,12 +100,8 @@ def test_keep_action_renders_original_structured_event_final() -> None:
     assert parsed.final_decision.final_label == "unknown"
     assert parsed.final_decision.selected_event_ids == ("e1",)
     assert parsed.final_decision.attribution == "llm_original_structured_event_kept"
-    assert "decision_field_shape_repaired:completed_event_ignored_for_keep" in (
-        parsed.parse_errors
-    )
-    assert "decision_field_shape_repaired:clinical_rationale_alias" in (
-        parsed.parse_errors
-    )
+    assert "decision_field_shape_repaired:completed_event_ignored_for_keep" in (parsed.parse_errors)
+    assert "decision_field_shape_repaired:clinical_rationale_alias" in (parsed.parse_errors)
     assert "completion_action_rendered:keep_original_structured_event_final" in (
         parsed.action_render_events
     )
@@ -154,10 +149,7 @@ def test_live_completion_scores_created_event_final(monkeypatch) -> None:
         [
             _record(
                 932,
-                (
-                    "Clinic Date: 12 June 2026\n"
-                    "Patient has clusters about four times per month."
-                ),
+                ("Clinic Date: 12 June 2026\nPatient has clusters about four times per month."),
                 gold_label="multiple per month",
                 gold_monthly_frequency=1000.0,
             )

@@ -15,18 +15,17 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
     build_state_graph,
-    extract_stage as state_graph_extract_stage,
     project_graph_to_gan,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.state_graph import (
+    extract_stage as state_graph_extract_stage,
 )
 
 _SAMPLE_SOURCE_ROW_INDICES = {11118, 12383, 5555}
 
 
 def test_extract_stage_default_matches_pipeline_v1_extraction() -> None:
-    note = (
-        "Clinic Date: 10 January 2024. "
-        "Current frequency: two focal seizures per week."
-    )
+    note = "Clinic Date: 10 January 2024. Current frequency: two focal seizures per week."
     baseline = canonical_stages.extract_stage(
         note,
         source_row_index=7,
@@ -39,8 +38,7 @@ def test_extract_stage_default_matches_pipeline_v1_extraction() -> None:
 
     assert implicit_default == baseline
     assert all(
-        candidate.source_type == "deterministic_candidate"
-        for candidate in baseline[1].candidates
+        candidate.source_type == "deterministic_candidate" for candidate in baseline[1].candidates
     )
 
 
@@ -61,12 +59,15 @@ def test_extract_stage_state_graph_materializes_state_graph_node_candidates() ->
     assert len(candidate_events) == len(raw_candidates)
     assert candidate_set.component_owner == "state_graph_extraction"
     assert all(
-        candidate.source_type == "state_graph_node"
-        for candidate in candidate_set.candidates
+        candidate.source_type == "state_graph_node" for candidate in candidate_set.candidates
     )
-    assert all(candidate.candidate_id.startswith("sg:42:") for candidate in candidate_set.candidates)
+    assert all(
+        candidate.candidate_id.startswith("sg:42:") for candidate in candidate_set.candidates
+    )
     frequency_candidates = [
-        candidate for candidate in candidate_set.candidates if candidate.candidate_kind == "frequency_rate"
+        candidate
+        for candidate in candidate_set.candidates
+        if candidate.candidate_kind == "frequency_rate"
     ]
     assert frequency_candidates
     assert frequency_candidates[0].evidence_span.text == (

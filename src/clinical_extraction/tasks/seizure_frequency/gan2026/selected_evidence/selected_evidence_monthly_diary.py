@@ -37,8 +37,7 @@ def _date_list_diary_label_from_selected_evidence(text: str) -> str | None:
     )
     if numeric_match:
         month_values = [
-            int(value)
-            for value in re.findall(r"(\d{2})-\d{2}", numeric_match.group("dates"))
+            int(value) for value in re.findall(r"(\d{2})-\d{2}", numeric_match.group("dates"))
         ]
         if month_values:
             denominator = max(max(month_values) - min(month_values), 1)

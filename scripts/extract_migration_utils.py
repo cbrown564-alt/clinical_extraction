@@ -34,8 +34,7 @@ def impl_registry_lines(*, dict_name: str, specs) -> list[str]:
         exclude_part = f", exclude=({exclude},)" if exclude else ""
         pat = pattern_source(spec.pattern)
         lines.append(
-            f"    {spec.rule_id!r}: ExtractRuleImpl("
-            f"{pat}, {spec.build.__name__}{exclude_part}),"
+            f"    {spec.rule_id!r}: ExtractRuleImpl({pat}, {spec.build.__name__}{exclude_part}),"
         )
     lines.append("}")
     lines.append("")

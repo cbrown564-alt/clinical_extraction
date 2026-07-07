@@ -44,9 +44,7 @@ _SMALL_COUNT = (
     r"(?:\d+(?:\s*(?:to|-|–|—|or)\s*\d+)?|once|twice|thrice|one|two|three|four|"
     r"five|six|seven|eight|nine|ten|eleven|twelve)"
 )
-_EVENT_NOUN = (
-    r"seizures?|events?|episodes?|spells?|absences?|attacks?|auras?|jerks?|convulsions?"
-)
+_EVENT_NOUN = r"seizures?|events?|episodes?|spells?|absences?|attacks?|auras?|jerks?|convulsions?"
 
 
 def early_rate_label_from_selected_evidence(text: str) -> str | None:

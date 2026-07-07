@@ -88,9 +88,7 @@ def build_direction_menu(letter_text: str) -> list[dict[str, str]]:
     # Emit every label in the closed vocab, with its evidence or a no-cue marker.
     for label in DIRECTION_VOCAB:
         ev = evidence_by_label.get(label, "(no explicit cue in text)")
-        menu.append(
-            {"candidate_id": f"C{len(menu)}", "label": label, "evidence_span": ev}
-        )
+        menu.append({"candidate_id": f"C{len(menu)}", "label": label, "evidence_span": ev})
     menu.append({"candidate_id": ABSTAIN, "label": ABSTAIN, "evidence_span": ""})
     return menu
 
@@ -169,9 +167,7 @@ def parse_selection(raw: str) -> tuple[str | None, str]:
     return cid, mode
 
 
-def assemble_direction(
-    cid: str | None, menu: list[dict[str, str]]
-) -> tuple[str, str]:
+def assemble_direction(cid: str | None, menu: list[dict[str, str]]) -> tuple[str, str]:
     """Deterministic assembly: candidate_id -> (FrequencyChange label, provenance).
 
     Mirrors gan2026 assemble_clinical_assessment: the model only picks an id;

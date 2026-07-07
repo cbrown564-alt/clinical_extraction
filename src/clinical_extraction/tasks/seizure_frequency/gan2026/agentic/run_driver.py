@@ -18,6 +18,8 @@ from typing import Any, Literal
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     cross_model_structured_event_adjudicator as cross_model_base,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.stage_protocol import (
@@ -185,9 +187,7 @@ def dispatch_registered_split(
         return run_standard_split(
             **split_kwargs,
             finalize_metadata=hooks.finalize_metadata,
-            row_kwargs=(
-                structured_event_context.row_kwargs if structured_event_context else None
-            ),
+            row_kwargs=(structured_event_context.row_kwargs if structured_event_context else None),
         )
     if stage.dispatch_kind == "structured_event":
         if structured_event_context is None:

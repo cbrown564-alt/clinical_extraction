@@ -86,15 +86,9 @@ def _cluster_burden_from_label(
             "cluster_label_values_unparsed"
         ]
     count_low, count_high, count_issue = _parse_label_range(match.group("count"))
-    period_low, period_high, period_issue = _parse_label_range(
-        match.group("period_count") or "1"
-    )
+    period_low, period_high, period_issue = _parse_label_range(match.group("period_count") or "1")
     events_low, events_high, events_issue = _parse_label_range(match.group("events"))
-    issues = [
-        issue
-        for issue in (count_issue, period_issue, events_issue)
-        if issue is not None
-    ]
+    issues = [issue for issue in (count_issue, period_issue, events_issue) if issue is not None]
     return (
         NormalizedBurden(
             cluster_count_low=count_low,

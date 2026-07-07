@@ -191,10 +191,13 @@ def test_v04_capped_direct_risk_policy_never_exceeds_burden_ceiling() -> None:
 
     assert routed == 2
     assert routed / len(direct_rows) <= ablation.SELECTIVE_REVIEW_BURDEN_CEILING
-    assert sum(
-        row["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "Yes"
-        for row in selective
-    ) == 2
+    assert (
+        sum(
+            row["predicted_mentions"][0]["attributes"]["MRI_Performed"] == "Yes"
+            for row in selective
+        )
+        == 2
+    )
 
 
 def _row(letter_id: str, mentions: list[dict[str, object]]) -> dict[str, object]:

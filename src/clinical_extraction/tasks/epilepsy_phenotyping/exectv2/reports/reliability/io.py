@@ -6,7 +6,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import ReliabilityRun
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
+    ReliabilityRun,
+)
+
 
 def find_repo_root() -> Path:
     here = Path(__file__).resolve()
@@ -27,9 +30,7 @@ def load_json(path: Path | None) -> dict[str, Any]:
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 

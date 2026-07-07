@@ -33,6 +33,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_state_projection as sf_projection,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_unknown_suppression as sf_suppression,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     run_all9_on_letters,
 )
@@ -57,14 +63,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_sf_state_adjudicator as sf_adjudicator,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    sf_state_projection as sf_projection,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_sf_union_arbitration as sf_union,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    sf_unknown_suppression as sf_suppression,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
@@ -373,8 +373,7 @@ def _run_prescription_deterministic(letters: list[ExectLetter], jsonl_path: Path
         ]
         for mention in mentions:
             mention["component_owner"] = (
-                mention.get("component_owner")
-                or "deterministic:prescription_regimen:current_code"
+                mention.get("component_owner") or "deterministic:prescription_regimen:current_code"
             )
         rows.append(
             {

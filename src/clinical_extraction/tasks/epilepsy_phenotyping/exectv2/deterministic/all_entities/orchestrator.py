@@ -15,7 +15,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
     WHEN_DIAGNOSED,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedLetter,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 
 from ..mention_identity import dedupe_mentions
@@ -41,6 +43,7 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
     PATIENT_HISTORY.name,
     SEIZURE_FREQUENCY.name,
 )
+
 
 def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
     """Extract the active deterministic baseline entities from one letter."""

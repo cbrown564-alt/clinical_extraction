@@ -14,9 +14,7 @@ def test_hourly_frequency_renders_as_multiple_per_day() -> None:
 def test_vague_frequency_mentions_preserve_frequency_semantics() -> None:
     assert repair_prediction_label("rare") == "multiple per year"
     assert repair_prediction_label("occasional per month") == "multiple per month"
-    assert repair_prediction_label("occasional per unspecified time") == (
-        "multiple per month"
-    )
+    assert repair_prediction_label("occasional per unspecified time") == ("multiple per month")
     assert repair_prediction_label("frequent per 6 week") == "multiple per 6 week"
 
 
@@ -42,9 +40,12 @@ def test_cluster_context_does_not_demote_frequency_to_unknown() -> None:
 
 
 def test_unparseable_seizure_frequency_phrase_is_unknown_not_no_reference() -> None:
-    assert repair_prediction_label(
-        "brief generalised tonic-clonic seizures after nights of curtailed sleep"
-    ) == "unknown"
+    assert (
+        repair_prediction_label(
+            "brief generalised tonic-clonic seizures after nights of curtailed sleep"
+        )
+        == "unknown"
+    )
 
 
 def test_explicit_no_reference_sentinel_is_preserved() -> None:

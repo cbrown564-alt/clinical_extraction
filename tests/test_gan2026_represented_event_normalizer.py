@@ -26,10 +26,7 @@ def test_represented_event_normalizer_is_registered_on_shared_cli_surface() -> N
 def test_normalizer_prompt_allows_recompute_without_forbidden_labels() -> None:
     record = _record(
         940,
-        (
-            "Clinic Date: 12 June 2026\n"
-            "Patient reports two seizures per week, not one per month."
-        ),
+        ("Clinic Date: 12 June 2026\nPatient reports two seizures per week, not one per month."),
         gold_label="2 per week",
         gold_monthly_frequency=8.69047619047619,
     )
@@ -57,10 +54,7 @@ def test_normalizer_prompt_allows_recompute_without_forbidden_labels() -> None:
         in payload["required_output_schema"]["action"]
     )
     assert "replace_with_existing_event" not in payload["required_output_schema"]["action"]
-    assert any(
-        "selected existing event" in instruction
-        for instruction in payload["instructions"]
-    )
+    assert any("selected existing event" in instruction for instruction in payload["instructions"])
 
 
 def test_recomputed_action_renders_model_label_from_existing_selected_event() -> None:

@@ -21,8 +21,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "ExECTv2 Diagnosis heading/narrative decomposer over a structured "
-            "key-entity draft"
+            "ExECTv2 Diagnosis heading/narrative decomposer over a structured key-entity draft"
         ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )

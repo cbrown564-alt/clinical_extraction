@@ -319,10 +319,7 @@ def test_action_agent_mismatch_falls_back_to_gpt_final() -> None:
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "unknown"
     assert "action_render_error:action_agent_mismatch" in parsed.parse_errors
-    assert (
-        "action_render_fallback_kept_gpt:action_agent_mismatch"
-        in parsed.action_render_events
-    )
+    assert "action_render_fallback_kept_gpt:action_agent_mismatch" in parsed.action_render_events
 
 
 def test_live_cross_model_adjudicator_scores_qwen_rescue(monkeypatch) -> None:
@@ -489,9 +486,7 @@ def _agent_row(
                 "event_id": "e1",
                 "normalized_label": label,
                 "semantic_kind": kind,
-                "monthly_frequency": 1.0138888888888888
-                if label == "1 per month"
-                else 1000.0,
+                "monthly_frequency": 1.0138888888888888 if label == "1 per month" else 1000.0,
                 "validation_errors": [],
             }
         ],

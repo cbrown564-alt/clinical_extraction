@@ -185,9 +185,7 @@ def test_parse_and_adapter_map_facts_one_to_one_without_deduplication() -> None:
 
     assert record is not None
     assert errors == []
-    mentions, provenance, adapter_notes = route.clinical_facts_to_mentions(
-        record.clinical_facts
-    )
+    mentions, provenance, adapter_notes = route.clinical_facts_to_mentions(record.clinical_facts)
 
     assert adapter_notes == []
     assert len(mentions) == 6
@@ -251,9 +249,7 @@ def test_prompt_only_run_split_records_dedup_facts_prompt(tmp_path: Path) -> Non
     assert row["clinical_facts_final"] == []
     assert row["dedup_adapter_added_facts"] == 0
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_dedup_facts`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_dedup_facts`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_run_split_records_per_family_dedup_prompts(tmp_path: Path) -> None:

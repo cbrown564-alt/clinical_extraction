@@ -6,9 +6,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
     cross_model_reliability_analysis as reliability_analysis,
 )
 
-QWEN_PHASE6_ROWS = (
-    "phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl"
-)
+QWEN_PHASE6_ROWS = "phase6_seq_decision_table_sf_inv_dev140_qwen36_side11435_20260624.jsonl"
 QWEN_RICH_SCHEMA_CANDIDATE = (
     "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140"
 )
@@ -18,8 +16,7 @@ def test_cross_model_reliability_analysis_uses_latest_runs_by_surface() -> None:
     analysis = reliability_analysis.build_cross_model_reliability_analysis()
 
     by_surface = {
-        surface["surface_id"]: surface
-        for surface in analysis["latest_run_check"]["surfaces"]
+        surface["surface_id"]: surface for surface in analysis["latest_run_check"]["surfaces"]
     }
 
     rich_schema = by_surface["rich_schema_reliability"]
@@ -48,18 +45,13 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
     qwen_dx = next(
         row
         for row in analysis["family_error_table"]
-        if (
-            row["candidate"] == QWEN_RICH_SCHEMA_CANDIDATE
-            and row["family"] == "Diagnosis"
-        )
+        if (row["candidate"] == QWEN_RICH_SCHEMA_CANDIDATE and row["family"] == "Diagnosis")
     )
     assert qwen_dx["miss_rate"] > 0.1
     assert qwen_dx["over_emission_rate"] > 0.1
 
     calibration = analysis["calibration_proxy"]
-    assert calibration["model_type"] == (
-        "grouped_cross_validated_logistic_scoring_rule"
-    )
+    assert calibration["model_type"] == ("grouped_cross_validated_logistic_scoring_rule")
     assert calibration["leakage_audit"]["group_key"] == "letter_id"
     assert calibration["leakage_audit"]["fold_count"] == 5
     assert calibration["leakage_audit"]["shared_letter_between_train_and_test"] is False
@@ -73,26 +65,20 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
         "source_final_delta",
         "deterministic_action_count",
     }
-    assert {
-        row["family"]
-        for row in calibration["per_family"]
-    } == {"Diagnosis", "SeizureFrequency", "Prescription", "Investigations"}
+    assert {row["family"] for row in calibration["per_family"]} == {
+        "Diagnosis",
+        "SeizureFrequency",
+        "Prescription",
+        "Investigations",
+    }
     assert analysis["review_routing"]["reviewed_cells"] > 0
     assert analysis["review_routing"]["caught_error_cells"] > 0
-    operating_points = {
-        row["id"]: row
-        for row in analysis["review_routing"]["operating_points"]
-    }
+    operating_points = {row["id"]: row for row in analysis["review_routing"]["operating_points"]}
     assert operating_points["high_recall_predeclared"]["review_burden"] == 0.9366
     assert operating_points["high_recall_predeclared"]["catch_rate"] == 0.8712
     assert operating_points["balanced_dev_candidate"]["review_burden"] == 0.7522
     assert operating_points["balanced_dev_candidate"]["catch_rate"] == 0.8033
-    assert (
-        operating_points["balanced_dev_candidate"][
-            "review_burden_delta_vs_high_recall"
-        ]
-        < -0.18
-    )
+    assert operating_points["balanced_dev_candidate"]["review_burden_delta_vs_high_recall"] < -0.18
     assert analysis["cross_model_agreement"]["overall"]["mean_pairwise_jaccard"] > 0.5
     robustness = analysis["robustness_panel_preflight"]
     assert robustness["panel_coverage"]["minimum_coverage_met"] is True
@@ -103,19 +89,15 @@ def test_cross_model_reliability_analysis_populates_scorecard_upgrade_tables() -
 def test_cross_model_reliability_analysis_scores_active_llm_only_latest_rows() -> None:
     analysis = reliability_analysis.build_cross_model_reliability_analysis()
 
-    active = {
-        row["model_label"]: row
-        for row in analysis["active_llm_only_readout"]
-    }
+    active = {row["model_label"]: row for row in analysis["active_llm_only_readout"]}
 
-    assert active["DeepSeek chat"]["clinical_headline_f1"] > active["Qwen 3.6 35B"][
-        "clinical_headline_f1"
-    ]
+    assert (
+        active["DeepSeek chat"]["clinical_headline_f1"]
+        > active["Qwen 3.6 35B"]["clinical_headline_f1"]
+    )
     assert active["DeepSeek chat"]["rows"] == 140
     assert active["Qwen 3.6 35B"]["rows"] == 140
-    assert active["Qwen 3.6 35B"]["rows_path"].endswith(
-        QWEN_PHASE6_ROWS
-    )
+    assert active["Qwen 3.6 35B"]["rows_path"].endswith(QWEN_PHASE6_ROWS)
 
 
 def test_same_prompt_consistency_panel_keeps_live_resampling_separate_from_replay(
@@ -164,10 +146,7 @@ def test_same_prompt_consistency_panel_keeps_live_resampling_separate_from_repla
         "SeizureFrequency",
         "Prescription",
         "Investigations",
-    } == {
-        row["family"]
-        for row in panel["per_family_disagreement_rates"]
-    }
+    } == {row["family"] for row in panel["per_family_disagreement_rates"]}
 
     replay = reliability_analysis._deterministic_replay_stability(
         {"saved_replay": [{"letter_id": "EA1", "call_error": None, "parse_errors": []}]}
@@ -239,7 +218,6 @@ def test_same_prompt_consistency_panel_computes_saved_repeat_agreement(
     assert panel["family_cell_agreement"]["cell_count"] == 4
     assert panel["family_cell_agreement"]["exact_family_cell_agreement_rate"] == 0.75
     diagnosis = next(
-        row for row in panel["per_family_disagreement_rates"]
-        if row["family"] == "Diagnosis"
+        row for row in panel["per_family_disagreement_rates"] if row["family"] == "Diagnosis"
     )
     assert diagnosis["disagreement_rate"] == 1.0

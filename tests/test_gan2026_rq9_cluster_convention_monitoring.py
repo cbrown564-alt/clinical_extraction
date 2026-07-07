@@ -24,8 +24,7 @@ def _row(
         "development_accounting": {
             "gold_label_kind": "frequency",
             "human_simple_class": None,
-            "codex_ambiguity_reasons": reasons
-            or ["cluster_or_per_cluster_convention"],
+            "codex_ambiguity_reasons": reasons or ["cluster_or_per_cluster_convention"],
         },
     }
 

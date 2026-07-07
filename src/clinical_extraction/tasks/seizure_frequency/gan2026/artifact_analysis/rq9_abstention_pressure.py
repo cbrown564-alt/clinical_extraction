@@ -17,15 +17,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 DEFAULT_ROUTER_JSONL_PATH = Path(
     "experiments/gan2026_rq9_selective_action_router_v2_2026-06-04.jsonl"
 )
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.md"
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq9_abstention_pressure_v0_2026-06-04.md")
 ANALYSIS_VERSION = "gan2026_rq9_abstention_pressure_v0"
 PREDICT = "predict"
 SENTINEL_LABELS = {"unknown", "no seizure frequency reference", ""}
@@ -49,9 +43,7 @@ def interpret_abstention_row(row: Mapping[str, Any]) -> dict[str, Any]:
     source_candidate = row.get("source_candidate", {})
     final_label = _text(source_candidate.get("final_label"))
     purist_correct = source_candidate.get("purist_correct")
-    policy_interpretation, pressure_class = _classify_policy_pressure(
-        reason, final_label
-    )
+    policy_interpretation, pressure_class = _classify_policy_pressure(reason, final_label)
     development_safe = bool(
         pressure_class == "candidate_prediction_bearing" and purist_correct is True
     )
@@ -75,9 +67,7 @@ def interpret_abstention_row(row: Mapping[str, Any]) -> dict[str, Any]:
             "purist_correct": purist_correct,
             "human_simple_class": accounting.get("human_simple_class"),
             "gold_label_kind": accounting.get("gold_label_kind"),
-            "codex_ambiguity_reasons": list(
-                accounting.get("codex_ambiguity_reasons") or []
-            ),
+            "codex_ambiguity_reasons": list(accounting.get("codex_ambiguity_reasons") or []),
         },
     }
 
@@ -88,21 +78,15 @@ def summarize_abstention_pressure(rows: Sequence[Mapping[str, Any]]) -> dict[str
     metrics = {
         "rows": len(rows),
         "abstain_rows": sum(row["selective_action"] == "abstain" for row in rows),
-        "human_review_rows": sum(
-            row["selective_action"] == "human_review" for row in rows
-        ),
-        "candidate_prediction_bearing_rows": class_counts[
-            "candidate_prediction_bearing"
-        ],
+        "human_review_rows": sum(row["selective_action"] == "human_review" for row in rows),
+        "candidate_prediction_bearing_rows": class_counts["candidate_prediction_bearing"],
         "development_safe_candidate_rows": sum(
             row["development_safe_if_predicted"] for row in rows
         ),
         "development_unsafe_candidate_rows": sum(
             row["development_unsafe_if_predicted"] for row in rows
         ),
-        "policy_supported_nonprediction_rows": class_counts[
-            "policy_supported_nonprediction"
-        ],
+        "policy_supported_nonprediction_rows": class_counts["policy_supported_nonprediction"],
         "needs_frozen_policy_before_prediction_rows": class_counts[
             "needs_frozen_policy_before_prediction"
         ],
@@ -244,8 +228,7 @@ def _by_reason(rows: Sequence[Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
     for row in rows:
         grouped[str(row["primary_reason"])].append(row)
     return {
-        reason: _summarize_reason(reason_rows)
-        for reason, reason_rows in sorted(grouped.items())
+        reason: _summarize_reason(reason_rows) for reason, reason_rows in sorted(grouped.items())
     }
 
 
@@ -253,18 +236,14 @@ def _summarize_reason(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     class_counts = Counter(str(row["pressure_class"]) for row in rows)
     return {
         "rows": len(rows),
-        "candidate_prediction_bearing_rows": class_counts[
-            "candidate_prediction_bearing"
-        ],
+        "candidate_prediction_bearing_rows": class_counts["candidate_prediction_bearing"],
         "development_safe_candidate_rows": sum(
             row["development_safe_if_predicted"] for row in rows
         ),
         "development_unsafe_candidate_rows": sum(
             row["development_unsafe_if_predicted"] for row in rows
         ),
-        "policy_supported_nonprediction_rows": class_counts[
-            "policy_supported_nonprediction"
-        ],
+        "policy_supported_nonprediction_rows": class_counts["policy_supported_nonprediction"],
         "needs_frozen_policy_before_prediction_rows": class_counts[
             "needs_frozen_policy_before_prediction"
         ],

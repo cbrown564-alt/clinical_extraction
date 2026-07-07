@@ -195,9 +195,13 @@ def write_report(
             "",
             "## Inspection Examples",
             "",
-            _example_section("No Candidate Rows", metadata["inspection_examples"]["no_candidate_rows"]),
+            _example_section(
+                "No Candidate Rows", metadata["inspection_examples"]["no_candidate_rows"]
+            ),
             "",
-            _example_section("High-Burden Rows", metadata["inspection_examples"]["high_burden_rows"]),
+            _example_section(
+                "High-Burden Rows", metadata["inspection_examples"]["high_burden_rows"]
+            ),
             "",
             _example_section(
                 "Incompatible Or Empty Rows",
@@ -261,7 +265,10 @@ def _gold_candidate_kind(record: GanFrequencyRecord) -> CandidateKind:
         return "frequency_rate"
     if record.gold_label_kind is FrequencyLabelKind.SEIZURE_FREE:
         return "seizure_free"
-    if record.gold_label_kind in {FrequencyLabelKind.UNKNOWN, FrequencyLabelKind.UNRESOLVED_MULTIPLE}:
+    if record.gold_label_kind in {
+        FrequencyLabelKind.UNKNOWN,
+        FrequencyLabelKind.UNRESOLVED_MULTIPLE,
+    }:
         return "unknown_frequency"
     return "no_reference"
 
@@ -316,7 +323,9 @@ def _rate(numerator: int, denominator: int) -> float:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--candidate-set-jsonl", type=Path, default=DEFAULT_CANDIDATE_SET_JSONL_PATH)
+    parser.add_argument(
+        "--candidate-set-jsonl", type=Path, default=DEFAULT_CANDIDATE_SET_JSONL_PATH
+    )
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)

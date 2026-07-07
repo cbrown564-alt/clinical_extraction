@@ -119,9 +119,7 @@ def self_consistency_entropy_table(
     table: dict[tuple[str, str], float] = {}
     for letter_id, letter_runs in by_letter.items():
         for family in FAMILIES:
-            fingerprints = [
-                _headline_keyset_fingerprint(row, family) for row in letter_runs
-            ]
+            fingerprints = [_headline_keyset_fingerprint(row, family) for row in letter_runs]
             fingerprints = [fp for fp in fingerprints if fp is not None]
             table[(letter_id, family)] = round(_normalized_entropy(fingerprints), 4)
     return table
@@ -180,9 +178,7 @@ def auroc(scores: Sequence[float], labels: Sequence[bool]) -> float:
         for k in range(i, j + 1):
             ranks[k] = avg_rank
         i = j + 1
-    sum_ranks_pos = sum(
-        r for r, (_, y) in zip(ranks, ranked, strict=True) if y
-    )
+    sum_ranks_pos = sum(r for r, (_, y) in zip(ranks, ranked, strict=True) if y)
     n_pos, n_neg = len(pos), len(neg)
     u = sum_ranks_pos - n_pos * (n_pos + 1) / 2
     return u / (n_pos * n_neg)
@@ -196,9 +192,7 @@ def _headline_keyset(row: Mapping[str, Any], family: str) -> frozenset[Any]:
     return frozenset(keys)
 
 
-def _headline_keyset_fingerprint(
-    row: Mapping[str, Any], family: str
-) -> frozenset[Any] | None:
+def _headline_keyset_fingerprint(row: Mapping[str, Any], family: str) -> frozenset[Any] | None:
     """Same as ``_headline_keyset`` but returns ``None`` when the family is absent.
 
     Used by self-consistency entropy so that a run emitting no mentions for a family

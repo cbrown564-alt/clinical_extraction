@@ -9,6 +9,7 @@ chooses `next_tool_name`/`next_tool_args` each turn and stops on its own
 `docs/experiments/gan2026/agentic/` for the predeclaration this condition
 answers to.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable

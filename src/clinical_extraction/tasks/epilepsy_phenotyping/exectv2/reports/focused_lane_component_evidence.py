@@ -38,8 +38,7 @@ DEFAULT_SF_ARTIFACT = Path(
     "experiments/exectv2_hybrid_sf_unknown_suppression_v07_dev140_20260618.jsonl"
 )
 DEFAULT_FOCUSED_COMPARATOR_ARTIFACT = Path(
-    "experiments/"
-    "exectv2_family_routed_with_focused_diagnosis_route_dev140_gpt41mini_20260618.jsonl"
+    "experiments/exectv2_family_routed_with_focused_diagnosis_route_dev140_gpt41mini_20260618.jsonl"
 )
 DEFAULT_OUT_JSONL = Path(
     "experiments/exectv2_focused_lane_component_evidence_v01_dev140_20260620.jsonl"

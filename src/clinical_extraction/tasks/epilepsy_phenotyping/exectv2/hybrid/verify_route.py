@@ -4,6 +4,7 @@ Thin SF-facing wrapper around ``all_entity_gate.gate_mentions``. The canonical
 gate implementation lives in ``all_entity_gate``; this module preserves the
 historical ``verify_and_route`` import path used by ``clinical_assessment``.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence

@@ -66,4 +66,3 @@ def round_rate(numerator: int, denominator: int) -> float:
     if denominator <= 0:
         return 1.0
     return round(float(numerator) / float(denominator), 4)
-

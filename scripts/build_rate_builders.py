@@ -3,13 +3,9 @@
 
 from __future__ import annotations
 
-import ast
-import inspect
 import re
 import textwrap
 from pathlib import Path
-
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules import rate as rate_mod
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RATE_PATH = (

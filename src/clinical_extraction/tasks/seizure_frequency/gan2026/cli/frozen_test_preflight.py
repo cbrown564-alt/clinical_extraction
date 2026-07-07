@@ -31,9 +31,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     load_jsonl_rows,
 )
 
-DEFAULT_PROTOCOL_PATH = Path(
-    ""
-)
+DEFAULT_PROTOCOL_PATH = Path("")
 DEFAULT_TEST_JSONL_PATH = Path(
     "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
 )
@@ -217,9 +215,7 @@ def _check_authorized_command(
     for option in singleton_command_options:
         count = _count_cli_option(normalized_command, option)
         if count != 1:
-            failures.append(
-                f"authorized command must include {option} exactly once; found {count}"
-            )
+            failures.append(f"authorized command must include {option} exactly once; found {count}")
         else:
             checks.append(f"authorized command includes {option} exactly once")
     forbidden_command_options = (
@@ -386,27 +382,19 @@ def _check_v12_test_source_artifacts(
     )
     if source_paths.get("gpt") != fresh_evidence_reasoner.TEST_GPT_STRUCTURED_EVENT_JSONL_PATH:
         failures.append(
-            "V12 test GPT structured-event source drifted: "
-            f"got {source_paths.get('gpt')}"
+            f"V12 test GPT structured-event source drifted: got {source_paths.get('gpt')}"
         )
     else:
         checks.append("V12 test GPT source uses frozen test450 artifact")
-    if (
-        source_paths.get("qwen")
-        != fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH
-    ):
+    if source_paths.get("qwen") != fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH:
         failures.append(
-            "V12 test Qwen structured-event source drifted: "
-            f"got {source_paths.get('qwen')}"
+            f"V12 test Qwen structured-event source drifted: got {source_paths.get('qwen')}"
         )
     else:
         checks.append("V12 test Qwen source uses frozen test450 artifact")
     deepseek_path = source_paths.get("deepseek")
     if deepseek_path != fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH:
-        failures.append(
-            "V12 test DeepSeek structured-event source drifted: "
-            f"got {deepseek_path}"
-        )
+        failures.append(f"V12 test DeepSeek structured-event source drifted: got {deepseek_path}")
     else:
         checks.append("V12 test DeepSeek source uses frozen test450 artifact")
 
@@ -437,9 +425,7 @@ def _check_test_source_artifact_coverage(
         failures.append(f"{agent_id} test source artifact is not valid JSONL: {exc}")
         return
     rows_with_id = [
-        row
-        for row in rows
-        if isinstance(row, Mapping) and row.get("source_row_index") is not None
+        row for row in rows if isinstance(row, Mapping) and row.get("source_row_index") is not None
     ]
     source_indices = {int(row["source_row_index"]) for row in rows_with_id}
     if len(source_indices) != len(rows_with_id):
@@ -496,9 +482,7 @@ def _check_v12_aggregate_only_output_contract(
         checks.append("V12 test summary records omitted aggregate-only fields")
 
     validation_summary = fresh_evidence_reasoner.summarize_rows([row], split="validation")
-    if SYNTHETIC_HOLDOUT_PROFILE not in validation_summary.get(
-        "fresh_evidence_profiles", {}
-    ):
+    if SYNTHETIC_HOLDOUT_PROFILE not in validation_summary.get("fresh_evidence_profiles", {}):
         failures.append("V12 validation summary no longer preserves profile diagnostics")
     else:
         checks.append("V12 validation summary preserves profile diagnostics")
@@ -507,9 +491,7 @@ def _check_v12_aggregate_only_output_contract(
         report_path = Path(tmp_dir) / "synthetic_test_report.md"
         fresh_evidence_reasoner.write_report(
             [row],
-            _synthetic_output_contract_metadata(
-                _synthetic_readout_summary(test_summary)
-            ),
+            _synthetic_output_contract_metadata(_synthetic_readout_summary(test_summary)),
             report_path,
             jsonl_path=DEFAULT_TEST_JSONL_PATH,
         )

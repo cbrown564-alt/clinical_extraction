@@ -68,9 +68,7 @@ def test_boundary_audit_prompt_uses_fixed_guides_without_parser_context(monkeypa
         "boundary_guides",
         "tool_attribution_boundary",
     }
-    guide_ids = {
-        guide["guide_id"] for guide in prompt["tool_context"]["boundary_guides"]
-    }
+    guide_ids = {guide["guide_id"] for guide in prompt["tool_context"]["boundary_guides"]}
     assert guide_ids == set(boundary_audit_prompt_v2.FIXED_BOUNDARY_GUIDE_IDS)
 
 
@@ -126,12 +124,8 @@ def test_boundary_audit_gate_rejects_sentinel_regression(monkeypatch) -> None:
 def test_audit_shape_repair_accepts_object_audit_items() -> None:
     raw_output = json.dumps(
         {
-            "current_frequency_evidence": [
-                {"text": "She reports 2 seizures per week"}
-            ],
-            "active_semiologies_and_burdens": [
-                {"semiology": "seizures", "burden": "2 per week"}
-            ],
+            "current_frequency_evidence": [{"text": "She reports 2 seizures per week"}],
+            "active_semiologies_and_burdens": [{"semiology": "seizures", "burden": "2 per week"}],
             "cluster_cadence_and_burden": {"cadence": None, "burden": None},
             "boundary_hazards": [{"hazard": "none"}],
             "rejected_lower_burden_or_historical_alternatives": [],
@@ -171,10 +165,7 @@ def test_hard50_gate_uses_wins_losses_and_changed_precision() -> None:
 def _record(source_row_index: int = 401) -> GanFrequencyRecord:
     return GanFrequencyRecord(
         source_row_index=source_row_index,
-        note_text=(
-            "Clinic Date: 12 June 2026\n"
-            "She reports 2 seizures per week and keeps a diary."
-        ),
+        note_text=("Clinic Date: 12 June 2026\nShe reports 2 seizures per week and keeps a diary."),
         gold_label="2 per week",
         gold_reference="2 seizures per week",
         labels_match_all_categories=True,

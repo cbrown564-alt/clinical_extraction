@@ -75,12 +75,8 @@ def write_surface_map_report(surface_map: Mapping[str, Any], path: Path) -> None
                     validation_final_purist_proxy=_format_metric(
                         gap.get("validation_final_purist_proxy")
                     ),
-                    test_final_purist_proxy=_format_metric(
-                        gap.get("test_final_purist_proxy")
-                    ),
-                    validation_minus_test_gap=_format_metric(
-                        gap.get("validation_minus_test_gap")
-                    ),
+                    test_final_purist_proxy=_format_metric(gap.get("test_final_purist_proxy")),
+                    validation_minus_test_gap=_format_metric(gap.get("validation_minus_test_gap")),
                     validation_rows=_md(gap.get("validation_rows")),
                     test_rows=_md(gap.get("test_rows")),
                 )
@@ -258,9 +254,7 @@ def _candidate_gap_summary(summaries: Sequence[Mapping[str, Any]]) -> list[dict[
             continue
         validation_proxy = validation.get("final_purist_proxy")
         test_proxy = test.get("final_purist_proxy")
-        if not isinstance(validation_proxy, int | float) or not isinstance(
-            test_proxy, int | float
-        ):
+        if not isinstance(validation_proxy, int | float) or not isinstance(test_proxy, int | float):
             continue
         gaps.append(
             {

@@ -40,8 +40,7 @@ def build_selected_candidate_decision_diagnostics(
     high_burden_threshold: int = HIGH_BURDEN_THRESHOLD,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     diagnostics = [
-        _diagnostic_row(row, high_burden_threshold=high_burden_threshold)
-        for row in selection_rows
+        _diagnostic_row(row, high_burden_threshold=high_burden_threshold) for row in selection_rows
     ]
     return diagnostics, summarize_diagnostics(
         diagnostics,
@@ -58,40 +57,28 @@ def summarize_diagnostics(
 ) -> dict[str, Any]:
     mode_counts = Counter(str(row["selection_mode"]) for row in diagnostics)
     selected_kind_counts = Counter(
-        kind
-        for row in diagnostics
-        for kind in row["selected_candidate_kinds"]
+        kind for row in diagnostics for kind in row["selected_candidate_kinds"]
     )
     selected_source_type_counts = Counter(
-        source_type
-        for row in diagnostics
-        for source_type in row["selected_source_types"]
+        source_type for row in diagnostics for source_type in row["selected_source_types"]
     )
     source_composition_counts = Counter(
         str(row["selected_source_composition"]) for row in diagnostics
     )
-    selected_count_counts = Counter(
-        str(row["selected_candidate_count"]) for row in diagnostics
-    )
+    selected_count_counts = Counter(str(row["selected_candidate_count"]) for row in diagnostics)
     related_group_policy_counts = Counter(
         str(row["related_group_policy_action"])
         for row in diagnostics
         if row["selection_mode"] == "related_candidate_group"
     )
-    invalid_reference_rows = [
-        row for row in diagnostics if row["unknown_selected_candidate_ids"]
-    ]
+    invalid_reference_rows = [row for row in diagnostics if row["unknown_selected_candidate_ids"]]
     related_group_rows = [
         row for row in diagnostics if row["selection_mode"] == "related_candidate_group"
     ]
     high_burden_rows = [
         row for row in diagnostics if row["candidate_count"] >= high_burden_threshold
     ]
-    group_issue_rows = [
-        row
-        for row in related_group_rows
-        if row["related_group_coherence_flags"]
-    ]
+    group_issue_rows = [row for row in related_group_rows if row["related_group_coherence_flags"]]
     return {
         "artifact_name": "gan2026_validation250_selected_candidate_decision_v2_diagnostics",
         "source_artifact": source_artifact,
@@ -133,9 +120,7 @@ def summarize_diagnostics(
                 "no_cluster_or_shared_kind_signal" in row["related_group_coherence_flags"]
                 for row in related_group_rows
             ),
-            "related_group_policy_action_counts": dict(
-                sorted(related_group_policy_counts.items())
-            ),
+            "related_group_policy_action_counts": dict(sorted(related_group_policy_counts.items())),
             "invalid_reference_source_row_indices": [
                 int(row["source_row_index"]) for row in invalid_reference_rows
             ],
@@ -190,10 +175,7 @@ def write_report(
         f"- Invalid selected-reference rows: {summary['invalid_selected_reference_rows']}",
         f"- High-burden rows: {summary['high_burden_rows']}",
         f"- Related-candidate-group rows: {summary['related_group_rows']}",
-        (
-            "- Related groups with coherence flags: "
-            f"{summary['related_group_with_coherence_flags']}"
-        ),
+        (f"- Related groups with coherence flags: {summary['related_group_with_coherence_flags']}"),
         "",
         "## Selection Modes",
         "",
@@ -240,9 +222,7 @@ def _diagnostic_row(
 ) -> dict[str, Any]:
     candidates = _candidate_payloads_from_row(row)
     decision = _decision_from_row(row)
-    candidate_by_id = {
-        str(candidate.get("candidate_id")): candidate for candidate in candidates
-    }
+    candidate_by_id = {str(candidate.get("candidate_id")): candidate for candidate in candidates}
     selected_ids = list(decision.selected_candidate_ids) if decision is not None else []
     selected_candidates = [
         candidate_by_id[candidate_id]
@@ -252,18 +232,10 @@ def _diagnostic_row(
     unknown_selected_ids = [
         candidate_id for candidate_id in selected_ids if candidate_id not in candidate_by_id
     ]
-    selected_kinds = [
-        str(candidate.get("candidate_kind")) for candidate in selected_candidates
-    ]
-    selected_source_types = [
-        str(candidate.get("source_type")) for candidate in selected_candidates
-    ]
-    temporality_values = [
-        str(candidate.get("temporality")) for candidate in selected_candidates
-    ]
-    certainty_values = [
-        str(candidate.get("certainty")) for candidate in selected_candidates
-    ]
+    selected_kinds = [str(candidate.get("candidate_kind")) for candidate in selected_candidates]
+    selected_source_types = [str(candidate.get("source_type")) for candidate in selected_candidates]
+    temporality_values = [str(candidate.get("temporality")) for candidate in selected_candidates]
+    certainty_values = [str(candidate.get("certainty")) for candidate in selected_candidates]
     selection_mode = decision.selection_mode if decision is not None else "missing"
     related_group_coherence_flags = _related_group_coherence_flags(
         selection_mode=str(selection_mode),

@@ -8,7 +8,6 @@ prediction artifacts, not for changing scoring policy.
 """
 
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import json
 from collections import Counter, defaultdict
@@ -29,6 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
     to_exect_letter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -39,7 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     concept_keys,
     frequency_state_keys,
     investigation_component_keys,
-        prescription_component_key,
+    prescription_component_key,
     score_concept_identity,
     score_frequency_state,
     score_investigations_components,
@@ -111,9 +111,7 @@ def build_combined_predictions_from_rows(
                     "structured_source": str(structured.get("pipeline_family", "")),
                     "diagnosis_source": str(diagnosis.get("pipeline_family", "")),
                     "sf_source": str(sf.get("pipeline_family", "")),
-                    "investigations_source": str(
-                        investigations.get("pipeline_family", "")
-                    ),
+                    "investigations_source": str(investigations.get("pipeline_family", "")),
                 },
             )
         )
@@ -173,9 +171,7 @@ def write_error_ledger_artifacts(
         structured_rows,
         diagnosis_rows=read_jsonl(diagnosis_jsonl) if diagnosis_jsonl else None,
         sf_rows=read_jsonl(sf_jsonl) if sf_jsonl else None,
-        investigations_rows=(
-            read_jsonl(investigations_jsonl) if investigations_jsonl else None
-        ),
+        investigations_rows=(read_jsonl(investigations_jsonl) if investigations_jsonl else None),
     )
     ledger = build_error_ledger(gold_letters, predictions)
     ledger.update(
@@ -185,9 +181,7 @@ def write_error_ledger_artifacts(
             "structured_jsonl": str(structured_jsonl),
             "diagnosis_jsonl": str(diagnosis_jsonl) if diagnosis_jsonl else None,
             "sf_jsonl": str(sf_jsonl) if sf_jsonl else None,
-            "investigations_jsonl": (
-                str(investigations_jsonl) if investigations_jsonl else None
-            ),
+            "investigations_jsonl": (str(investigations_jsonl) if investigations_jsonl else None),
         }
     )
 

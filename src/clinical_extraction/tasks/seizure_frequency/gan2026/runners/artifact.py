@@ -58,11 +58,9 @@ def build_unified_pipeline_artifact(
         score_rows,
         score_artifact_path=score_artifact_path or "in_memory",
     )
-    decision_rows, decision_metadata = (
-        verification_decision.build_verification_decision_artifact(
-            route_rows,
-            route_artifact_path=route_artifact_path or "in_memory",
-        )
+    decision_rows, decision_metadata = verification_decision.build_verification_decision_artifact(
+        route_rows,
+        route_artifact_path=route_artifact_path or "in_memory",
     )
 
     projection_summary = dict(projection_render_metadata.get("summary") or {})
@@ -93,9 +91,7 @@ def build_unified_pipeline_artifact(
             "input_assessment_rows": len(assessment_rows),
             "projection_rows": int(projection_summary.get("projection_rows", 0)),
             "rendered_label_rows": int(projection_summary.get("rendered_label_rows", 0)),
-            "null_rendered_label_rows": int(
-                projection_summary.get("null_rendered_label_rows", 0)
-            ),
+            "null_rendered_label_rows": int(projection_summary.get("null_rendered_label_rows", 0)),
             "scored_rows": int(score_summary.get("scored_rows", 0)),
             "purist_correct": int(score_summary.get("purist_correct", 0)),
             "routed_rows": int(route_summary.get("routed_rows", 0)),

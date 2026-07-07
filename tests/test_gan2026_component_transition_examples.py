@@ -54,9 +54,7 @@ def test_payload_is_illustrative_only_and_makes_no_model_calls() -> None:
     assert payload["row_inspection_policy"] == "illustrative_examples_only"
     # The six boundary bands ship with the payload so the sidebar can resolve a
     # tone + short label for each rung without a second request.
-    assert {c["id"] for c in payload["categories"]} == {
-        band.id for band in csl.BAND_CATEGORIES
-    }
+    assert {c["id"] for c in payload["categories"]} == {band.id for band in csl.BAND_CATEGORIES}
 
 
 def test_each_note_trajectory_matches_its_architecture_stage_order() -> None:
@@ -88,16 +86,12 @@ def test_examples_are_chosen_deterministically_by_most_change() -> None:
         rows_b = [ex["row_id"] for ex in arch_b["examples"]]
         assert rows_a == rows_b  # stable across builds
         # Chosen notes are ranked by band changes (descending) then label changes.
-        keys = [
-            (ex["band_change_count"], ex["change_count"]) for ex in arch_a["examples"]
-        ]
+        keys = [(ex["band_change_count"], ex["change_count"]) for ex in arch_a["examples"]]
         assert keys == sorted(keys, reverse=True)
 
 
 def test_llm_only_floor_to_repair_moves_a_real_label() -> None:
-    payload = cte.build_component_transitions_payload(
-        specs=(_spec(GPT41_LLM_RUN),)
-    )
+    payload = cte.build_component_transitions_payload(specs=(_spec(GPT41_LLM_RUN),))
     arch = payload["architectures"][0]
     # The most-illustrative LLM-only notes are exactly the ones label repair rescues
     # from an unscorable raw label into the correct band.

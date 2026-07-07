@@ -65,9 +65,7 @@ def test_recovery_audit_keeps_broad_release_visible_as_unsafe() -> None:
     summary = nonprediction_recovery_audit.summarize_recovery_audit_rows(rows)
 
     broad = next(
-        item
-        for item in summary["variant_summaries"]
-        if item["variant"] == "all_nonpredictions"
+        item for item in summary["variant_summaries"] if item["variant"] == "all_nonpredictions"
     )
     assert broad["release_rows"] == 2
     assert broad["would_release_wrong_baseline"] == 1

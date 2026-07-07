@@ -188,9 +188,7 @@ def test_parse_candidate_events_json_repairs_trailing_brackets() -> None:
 
     assert record is not None
     assert record.clinical_events[0].mentions[0].text == "focal epilepsy"
-    assert errors == [] or any(
-        "ignored_trailing_json_brackets" in error for error in errors
-    )
+    assert errors == [] or any("ignored_trailing_json_brackets" in error for error in errors)
 
 
 def test_action_prompt_requests_candidate_id_actions_only() -> None:

@@ -1,7 +1,6 @@
 """Certainty projection audit (plan report #2)."""
 
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 import re
 from collections import Counter
@@ -12,6 +11,7 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     to_exect_letter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -38,7 +38,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     MatchConfig,
     benchmark_config_for,
     benchmark_ignore_for,
-        score_overall,
+    score_overall,
 )
 
 
@@ -119,10 +119,7 @@ def _certainty_recovery_on_overlap(
     entity: str,
 ) -> dict[str, Any]:
     pred_by_id = {letter.letter_id: letter for letter in pred_letters}
-    stats = {
-        attr: {"pairs_gold_has": 0, "agree": 0}
-        for attr in (CERTAINTY, NEGATION)
-    }
+    stats = {attr: {"pairs_gold_has": 0, "agree": 0} for attr in (CERTAINTY, NEGATION)}
     empty = ExectLetter("", "")
     for gold in gold_letters:
         preds = list(pred_by_id.get(gold.letter_id, empty).entities(entity))
@@ -268,9 +265,7 @@ def certainty_projection_audit(
 ) -> dict[str, Any]:
     """Quantify how mechanical certainty is and the certainty-only benchmark loss."""
 
-    pred_exect = [
-        to_exect_letter(p) for p in strip_and_project(as_predicted(pred_letters))
-    ]
+    pred_exect = [to_exect_letter(p) for p in strip_and_project(as_predicted(pred_letters))]
     benchmark = score_overall(gold_letters, pred_exect, entities, benchmark_config_for)
     certainty_dropped = score_overall(
         gold_letters, pred_exect, entities, certainty_dropped_config_for

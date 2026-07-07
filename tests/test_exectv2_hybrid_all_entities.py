@@ -141,8 +141,13 @@ def _gold_letter() -> ExectLetter:
             ExectAnnotation(
                 entity="Prescription",
                 text="lamotrigine",
-                attributes={"DrugName": "Lamotrigine", "DrugDose": "200", "DoseUnit": "mg",
-                            "Frequency": "2", "CUI": "C0064636"},
+                attributes={
+                    "DrugName": "Lamotrigine",
+                    "DrugDose": "200",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                    "CUI": "C0064636",
+                },
             ),
         ),
     )
@@ -175,8 +180,13 @@ def test_load_candidates_from_per_entity(tmp_path: Path) -> None:
     row = {
         "letter_id": "EA0001",
         "predicted_mentions": [
-            {"text": "focal epilepsy", "attributes": {"DiagCategory": "Epilepsy"},
-             "evidence": "focal epilepsy", "confidence": "high", "rationale": "stated"}
+            {
+                "text": "focal epilepsy",
+                "attributes": {"DiagCategory": "Epilepsy"},
+                "evidence": "focal epilepsy",
+                "confidence": "high",
+                "rationale": "stated",
+            }
         ],
     }
     path.write_text(json.dumps(row) + "\n", encoding="utf-8")

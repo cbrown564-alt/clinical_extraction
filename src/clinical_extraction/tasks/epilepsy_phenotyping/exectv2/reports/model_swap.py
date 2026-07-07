@@ -46,8 +46,7 @@ DEFAULT_CONFIG_DIR = Path("configs/exectv2/model_swap")
 DEFAULT_SUMMARY_JSON = Path("experiments/exectv2_same_core_model_swap_dev140_20260625.json")
 DEFAULT_SUMMARY_JSONL = Path("experiments/exectv2_same_core_model_swap_dev140_20260625.jsonl")
 DEFAULT_SUMMARY_MD = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_same_core_model_swap_dev140_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_dev140_2026-06-25.md"
 )
 DEFAULT_FULL200_SUMMARY_JSON = Path(
     "experiments/exectv2_same_core_model_swap_full200_20260625.json"
@@ -56,18 +55,14 @@ DEFAULT_FULL200_SUMMARY_JSONL = Path(
     "experiments/exectv2_same_core_model_swap_full200_20260625.jsonl"
 )
 DEFAULT_FULL200_SUMMARY_MD = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_same_core_model_swap_full200_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md"
 )
 PRIMARY_SURFACE = "clinical_headline"
 ROW_INSPECTION_POLICY = "dev140_only_no_full200_or_holdout_row_level_inspection"
-FULL200_ROW_INSPECTION_POLICY = (
-    "aggregate_only_no_full200_or_holdout_row_level_inspection"
-)
+FULL200_ROW_INSPECTION_POLICY = "aggregate_only_no_full200_or_holdout_row_level_inspection"
 FULL200_ALLOWED_PARSE_SCHEMA_FAILURES = 1
 FULL200_PREDECLARATION = (
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_same_core_full200_predeclaration_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md"
 )
 
 
@@ -140,9 +135,7 @@ def validate_same_core_configs(
         raise ValueError("at least one model-swap config is required")
     reference = _component_signature(configs[0])
     mismatched = [
-        config.candidate_id
-        for config in configs
-        if _component_signature(config) != reference
+        config.candidate_id for config in configs if _component_signature(config) != reference
     ]
     core_ids = sorted({config.architecture_core_id for config in configs})
     return {
@@ -353,14 +346,14 @@ def render_model_swap_markdown(payload: Mapping[str, Any]) -> str:
         lines.append(f"- Predeclaration: `{payload['predeclaration']}`")
     lines.extend(
         [
-        "",
-        "## Model Rows",
-        "",
-        (
-            "| Candidate | Model | Status | Overall | Dx | SF | Presc | Inv | "
-            "Call failures | Parse/schema failures | Min evidence rate |"
-        ),
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "",
+            "## Model Rows",
+            "",
+            (
+                "| Candidate | Model | Status | Overall | Dx | SF | Presc | Inv | "
+                "Call failures | Parse/schema failures | Min evidence rate |"
+            ),
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
     for row in payload["model_rows"]:
@@ -462,12 +455,9 @@ def _completed_model_row(
         "metrics": {
             "overall": dict(headline["overall"]),
             "by_indicator": {
-                entity: dict(headline["by_indicator"][entity])
-                for entity in TARGET_INDICATORS
+                entity: dict(headline["by_indicator"][entity]) for entity in TARGET_INDICATORS
             },
-            "strict_benchmark_cui_f1": report["score_ladder"]["benchmark"][
-                "after_cui_projection"
-            ],
+            "strict_benchmark_cui_f1": report["score_ladder"]["benchmark"]["after_cui_projection"],
         },
         "diagnostics": _aggregate_diagnostics(report),
         "producer_ownership": _producer_ownership(report),
@@ -515,23 +505,17 @@ def _readiness_gates(
 ) -> dict[str, dict[str, str]]:
     pending = [row for row in model_rows if row["status"] != "complete"]
     completed = [row for row in model_rows if row["status"] == "complete"]
-    scope = (
-        "full200"
-        if any(int(row.get("row_count", 0)) > 140 for row in model_rows)
-        else "dev140"
-    )
+    scope = "full200" if any(int(row.get("row_count", 0)) > 140 for row in model_rows) else "dev140"
     all_complete = not pending and bool(completed)
     parity_ok = bool(parity["component_graph_identical"])
     completed_diagnostics = [
         row["diagnostics"] for row in completed if isinstance(row.get("diagnostics"), Mapping)
     ]
     call_failures = sum(
-        int(diagnostics.get("call_failures", 0))
-        for diagnostics in completed_diagnostics
+        int(diagnostics.get("call_failures", 0)) for diagnostics in completed_diagnostics
     )
     parse_failures = sum(
-        int(diagnostics.get("parse_schema_failures", 0))
-        for diagnostics in completed_diagnostics
+        int(diagnostics.get("parse_schema_failures", 0)) for diagnostics in completed_diagnostics
     )
     operational_status = _operational_stability_status(
         scope=scope,
@@ -755,9 +739,7 @@ def _aggregate_diagnostics(report: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "call_failures": sum(int(v.get("call_failures", 0)) for v in values),
         "parse_schema_failures": sum(int(v.get("parse_schema_failures", 0)) for v in values),
-        "evidence_invalid_dropped": sum(
-            int(v.get("evidence_invalid_dropped", 0)) for v in values
-        ),
+        "evidence_invalid_dropped": sum(int(v.get("evidence_invalid_dropped", 0)) for v in values),
         "minimum_exact_evidence_rate": min(
             [float(v.get("exact_evidence_rate", 0.0)) for v in values] or [1.0]
         ),
@@ -782,15 +764,12 @@ def _deterministic_action_counts(report: Mapping[str, Any]) -> dict[str, int]:
             final = prescription.get("residual_benchmark_added", {})
             if isinstance(final, Mapping):
                 counts["prescription_deterministic_mentions"] = int(
-                    final.get("deterministic_projection", 0)
-                    + final.get("deterministic_repair", 0)
+                    final.get("deterministic_projection", 0) + final.get("deterministic_repair", 0)
                 )
     lane_diagnostics = report.get("lane_diagnostics", {})
     sf_stats = lane_diagnostics.get(SEIZURE_FREQUENCY.name, {})
     if isinstance(sf_stats, Mapping):
-        counts["sf_evidence_invalid_dropped"] = int(
-            sf_stats.get("evidence_invalid_dropped", 0)
-        )
+        counts["sf_evidence_invalid_dropped"] = int(sf_stats.get("evidence_invalid_dropped", 0))
     return dict(counts)
 
 
@@ -829,11 +808,7 @@ def _operational_stability_status(
 
 
 def _scope(configs: Sequence[ModelSwapConfig]) -> str:
-    return (
-        "full200"
-        if any(config.assembly.row_count > 140 for config in configs)
-        else "dev140"
-    )
+    return "full200" if any(config.assembly.row_count > 140 for config in configs) else "dev140"
 
 
 def _row_inspection_policy_for_config(config: ModelSwapConfig) -> str:

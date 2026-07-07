@@ -66,8 +66,7 @@ def _validate_registry() -> None:
         missing = sorted(expected - registered)
         extra = sorted(registered - expected)
         raise RuntimeError(
-            "generation_selection STRATEGY_REGISTRY mismatch: "
-            f"missing={missing!r} extra={extra!r}"
+            f"generation_selection STRATEGY_REGISTRY mismatch: missing={missing!r} extra={extra!r}"
         )
 
 

@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -201,9 +200,7 @@ def _letter_stages(row: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
         transition = _stage_transition(layer, previous, current)
         if current is not None and not transition["is_baseline"]:
             change_count += (
-                len(transition["added"])
-                + len(transition["dropped"])
-                + len(transition["changed"])
+                len(transition["added"]) + len(transition["dropped"]) + len(transition["changed"])
             )
         stages.append(transition)
         if current is not None:
@@ -273,8 +270,7 @@ def build_component_transitions_payload(
     examples_per_arch: int = DEFAULT_EXAMPLES_PER_ARCH,
 ) -> dict[str, Any]:
     architectures = [
-        build_architecture_examples(spec, examples_per_arch=examples_per_arch)
-        for spec in specs
+        build_architecture_examples(spec, examples_per_arch=examples_per_arch) for spec in specs
     ]
     return {
         "artifact_kind": "exectv2_component_transition_examples",
@@ -304,9 +300,7 @@ def cached_component_transitions_payload() -> dict[str, Any]:
 def cached_component_transitions_json() -> str:
     global _CACHED_JSON
     if _CACHED_JSON is None:
-        _CACHED_JSON = json.dumps(
-            cached_component_transitions_payload(), ensure_ascii=False
-        )
+        _CACHED_JSON = json.dumps(cached_component_transitions_payload(), ensure_ascii=False)
     return _CACHED_JSON
 
 

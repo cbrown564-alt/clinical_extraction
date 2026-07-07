@@ -345,9 +345,7 @@ def test_live_runner_votes_over_parser_repaired_decision_labels(monkeypatch) -> 
     assert trace["normalized_label_vote"]["raw_labels"] == ["1 per month"] * 4
     assert trace["normalized_label_vote"]["vote_input_labels"] == ["1 per 3 to 4 week"] * 4
     assert trace["model_call_results"][0]["raw_model_final_label"] == "1 per month"
-    assert trace["model_call_results"][0]["decision_record"]["final_label"] == (
-        "1 per 3 to 4 week"
-    )
+    assert trace["model_call_results"][0]["decision_record"]["final_label"] == ("1 per 3 to 4 week")
 
 
 def test_live_runner_keeps_failed_calls_non_prediction(monkeypatch) -> None:

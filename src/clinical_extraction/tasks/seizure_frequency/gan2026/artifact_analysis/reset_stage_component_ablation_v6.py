@@ -28,9 +28,7 @@ DEFAULT_ROUTE_CANDIDATE_TRACE_JSONL_PATH = Path(
 DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_first_component_ablation_table_v6_2026-06-06.json"
 )
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_REPORT_PATH = Path("")
 DEFAULT_ONE_FAMILY_OFF_SPECS = {
     "seizure_free_duration_date_instrumentation": {
         "switch": "normalize_seizure_free_duration_date_instrumentation",
@@ -116,13 +114,9 @@ def build_reset_stage_component_ablation_v6(
     route_v6_artifact_path: str = str(DEFAULT_ROUTE_V6_JSONL_PATH),
     route_candidate_trace_artifact_path: str = str(DEFAULT_ROUTE_CANDIDATE_TRACE_JSONL_PATH),
 ) -> dict[str, Any]:
-    inventory_artifact = (
-        reset_stage_component_inventory.build_reset_stage_component_inventory()
-    )
+    inventory_artifact = reset_stage_component_inventory.build_reset_stage_component_inventory()
     inventory = [
-        entry
-        for entry in inventory_artifact.get("inventory", [])
-        if isinstance(entry, Mapping)
+        entry for entry in inventory_artifact.get("inventory", []) if isinstance(entry, Mapping)
     ]
 
     route_v5_by_row = _rows_by_source_index(route_v5_rows)
@@ -159,9 +153,7 @@ def build_reset_stage_component_ablation_v6(
     family_counts_v5 = _route_family_counts(route_v5_rows)
     family_counts_v6 = _route_family_counts(route_v6_rows)
     family_counts_candidate_trace = _route_family_counts(route_candidate_trace_rows)
-    replay_by_family = {
-        str(replay["family"]): replay for replay in one_family_off_replays or []
-    }
+    replay_by_family = {str(replay["family"]): replay for replay in one_family_off_replays or []}
 
     sections = {
         "recovery_families": [],
@@ -242,15 +234,12 @@ def build_reset_stage_component_ablation_v6(
             "recovered_projection_issue_counts": dict(
                 sorted(recovered_projection_issue_counts.items())
             ),
-            "recovered_projection_rule_ids": dict(
-                sorted(recovered_projection_rule_ids.items())
-            ),
+            "recovered_projection_rule_ids": dict(sorted(recovered_projection_rule_ids.items())),
             "recovered_frequency_family_counts": dict(
                 sorted(recovered_frequency_family_counts.items())
             ),
             "recovered_frequency_family_rows": {
-                family: rows
-                for family, rows in sorted(recovered_frequency_family_rows.items())
+                family: rows for family, rows in sorted(recovered_frequency_family_rows.items())
             },
             "route_bucket_counts_v6": bucket_counts_v6,
             "candidate_trace_operational_counts": candidate_trace_counts,
@@ -259,9 +248,7 @@ def build_reset_stage_component_ablation_v6(
             "main_verifier_ambiguity_rows_v6": sum(
                 family_counts_v6.get(family, 0) for family in MAIN_AMBIGUITY_FAMILIES
             ),
-            "abstain_rows_v6": sum(
-                family_counts_v6.get(family, 0) for family in ABSTAIN_FAMILIES
-            ),
+            "abstain_rows_v6": sum(family_counts_v6.get(family, 0) for family in ABSTAIN_FAMILIES),
             "upstream_policy_rows_v6": sum(
                 family_counts_v6.get(family, 0) for family in UPSTREAM_POLICY_FAMILIES
             ),
@@ -284,9 +271,7 @@ def build_reset_stage_component_ablation_v6(
     }
 
 
-def write_reset_stage_component_ablation_v6_json(
-    artifact: Mapping[str, Any], path: Path
-) -> None:
+def write_reset_stage_component_ablation_v6_json(artifact: Mapping[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(artifact, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -294,9 +279,7 @@ def write_reset_stage_component_ablation_v6_json(
     )
 
 
-def write_reset_stage_component_ablation_v6_report(
-    artifact: Mapping[str, Any], path: Path
-) -> None:
+def write_reset_stage_component_ablation_v6_report(artifact: Mapping[str, Any], path: Path) -> None:
     summary = artifact["surface_summary"]
     route_bucket_counts = summary["route_bucket_counts_v6"]
     candidate_trace_counts = summary["candidate_trace_operational_counts"]
@@ -438,9 +421,19 @@ def write_reset_stage_component_ablation_v6_report(
             "| --- | ---: | ---: | ---: |",
         ]
     )
-    all_transitions = sorted(set(transition_counts.get("totals", {}).keys()) | {
-        "W_to_C", "C_to_W", "null_to_C", "null_to_null", "C_to_C", "W_to_W", "C_to_null", "W_to_null"
-    })
+    all_transitions = sorted(
+        set(transition_counts.get("totals", {}).keys())
+        | {
+            "W_to_C",
+            "C_to_W",
+            "null_to_C",
+            "null_to_null",
+            "C_to_C",
+            "W_to_W",
+            "C_to_null",
+            "W_to_null",
+        }
+    )
     for trans in all_transitions:
         global_count = transition_counts.get("totals", {}).get(trans, 0)
         routed_count = sum(
@@ -454,12 +447,10 @@ def write_reset_stage_component_ablation_v6_report(
             )
     lines.extend(
         [
-        "",
+            "",
         ]
     )
-    lines.extend(
-        _section_lines("Recovery Families", artifact["sections"]["recovery_families"])
-    )
+    lines.extend(_section_lines("Recovery Families", artifact["sections"]["recovery_families"]))
     lines.extend(
         _section_lines(
             "Clinical/Policy Route Families",
@@ -540,31 +531,29 @@ def _recovery_family_row(
             "V5->V6 recovered rows include nightly/per-hour frequency repairs inside "
             "the aggregate +7 rendered gain."
         )
-        recovered_count = sum(
-            _recovered_frequency_family(row) == family for row in recovered_rows
-        )
+        recovered_count = sum(_recovered_frequency_family(row) == family for row in recovered_rows)
         pending = None
     elif family == "vague_period_frequency_value_recovery":
         observed_now = (
             "V5->V6 recovered rows include vague-with-explicit-period phrases inside "
             "the aggregate +7 rendered gain."
         )
-        recovered_count = sum(
-            _recovered_frequency_family(row) == family for row in recovered_rows
-        )
+        recovered_count = sum(_recovered_frequency_family(row) == family for row in recovered_rows)
         pending = None
     elif family == "diary_date_list_frequency_recovery":
         observed_now = "No dedicated changed-row count is isolated in the saved V5/V6 read."
         recovered_count = 0
         pending = None
     elif family == "seizure_free_duration_date_instrumentation":
-        observed_now = (
-            "This remains the largest residual null family owner in the saved V6 read."
-        )
+        observed_now = "This remains the largest residual null family owner in the saved V6 read."
         remaining_null_rows = 121
-        pending = None if one_family_off_replay else (
-            "isolate recovered and residual rows owned by this family versus other "
-            "seizure-free issues"
+        pending = (
+            None
+            if one_family_off_replay
+            else (
+                "isolate recovered and residual rows owned by this family versus other "
+                "seizure-free issues"
+            )
         )
     elif family == "current_summary_rate_priority":
         observed_now = "Active projection policy family; no isolated V5->V6 delta is yet published."
@@ -573,11 +562,11 @@ def _recovery_family_row(
         observed_now = "Active projection policy family; no isolated V5->V6 delta is yet published."
         pending = None if one_family_off_replay else pending
     elif family == "major_recent_relapse_over_background_frequency":
-        observed_now = (
-            "Current docs frame this as ownership cleanup more than a saved count delta."
-        )
-        pending = None if one_family_off_replay else (
-            "requires dedicated off-state rerun and ownership-delta audit"
+        observed_now = "Current docs frame this as ownership cleanup more than a saved count delta."
+        pending = (
+            None
+            if one_family_off_replay
+            else ("requires dedicated off-state rerun and ownership-delta audit")
         )
     if one_family_off_replay:
         observed_now = (
@@ -597,9 +586,7 @@ def _recovery_family_row(
         "provenance_validity": None,
         "audit_only_w_to_c": None,
         "audit_only_c_to_w": None,
-        "one_family_off_replay": dict(one_family_off_replay)
-        if one_family_off_replay
-        else None,
+        "one_family_off_replay": dict(one_family_off_replay) if one_family_off_replay else None,
         "pending_isolated_ablation": pending,
         "aggregate_context": {
             "recovered_row_ids_v5_to_v6": [int(row["source_row_index"]) for row in recovered_rows],
@@ -1048,14 +1035,10 @@ def build_one_family_off_replay_summaries(
                 "replay_routed_rows": replay_routed,
                 "routed_rows_delta_vs_baseline": replay_routed - baseline_routed,
                 "disabled_switch_issue_rows": (
-                    projection_summary.get("summary", {})
-                    .get("issue_counts", {})
-                    .get(issue_key, 0)
+                    projection_summary.get("summary", {}).get("issue_counts", {}).get(issue_key, 0)
                 ),
                 "replay_scored_rows": score_summary.get("summary", {}).get("scored_rows"),
-                "replay_purist_correct": (
-                    score_summary.get("summary", {}).get("purist_correct")
-                ),
+                "replay_purist_correct": (score_summary.get("summary", {}).get("purist_correct")),
                 "replay_route_family_counts": (
                     route_summary.get("summary", {}).get("route_family_counts", {})
                 ),

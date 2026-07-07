@@ -178,9 +178,10 @@ def test_component_control_matrix_expands_isolated_and_overload_conditions() -> 
     assert rows[-1]["overload_condition"] is True
     assert metadata["condition_count"] == 8
     assert metadata["by_condition"]["projection_only"]["component_task"] == "projection"
-    assert metadata["by_condition"]["projection_only_instruction_heavy"][
-        "component_task"
-    ] == "projection"
+    assert (
+        metadata["by_condition"]["projection_only_instruction_heavy"]["component_task"]
+        == "projection"
+    )
 
 
 def test_instruction_heavy_projection_prompt_adds_policy_without_row_examples() -> None:

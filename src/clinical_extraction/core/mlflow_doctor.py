@@ -67,9 +67,7 @@ def build_doctor_report(
         registry_path=resolved_registry,
     )
     ready = (
-        mlflow_available()
-        and os.getenv(MLFLOW_DISABLED_ENV) != "1"
-        and resolved_registry.exists()
+        mlflow_available() and os.getenv(MLFLOW_DISABLED_ENV) != "1" and resolved_registry.exists()
     )
     return MlflowDoctorReport(
         repo_root=str(root),
@@ -130,9 +128,7 @@ def render_doctor_report(report: MlflowDoctorReport) -> str:
     lines.append(
         "- `experiments/registry.jsonl`, reports, and predeclarations remain the claim-of-record."
     )
-    lines.append(
-        "- MLflow is optional observability only; missing MLflow must not break runners."
-    )
+    lines.append("- MLflow is optional observability only; missing MLflow must not break runners.")
     lines.append(
         "- Restricted surfaces (Gan test450, ExECTv2 full-200/holdout) stay aggregate-only."
     )
@@ -154,7 +150,7 @@ def render_doctor_report(report: MlflowDoctorReport) -> str:
             "  clinical-extraction-mlflow-sync --same-core-dev140-group --sync",
             "Start the local UI (PowerShell):",
             '  $env:MLFLOW_TRACKING_URI = "file:C:/path/to/repo/mlruns"',
-            '  mlflow server --backend-store-uri $env:MLFLOW_TRACKING_URI --port 5000',
+            "  mlflow server --backend-store-uri $env:MLFLOW_TRACKING_URI --port 5000",
             "",
             "See docs/runbooks/mlflow_local_tracking.md for the full local runbook.",
         ]
@@ -195,9 +191,7 @@ def _build_warnings(
 ) -> tuple[str, ...]:
     warnings: list[str] = []
     if not mlflow_available():
-        warnings.append(
-            'MLflow is not installed. Install with `uv pip install -e ".[dev,mlops]"`.'
-        )
+        warnings.append('MLflow is not installed. Install with `uv pip install -e ".[dev,mlops]"`.')
     if os.getenv(MLFLOW_DISABLED_ENV) == "1":
         warnings.append(f"{MLFLOW_DISABLED_ENV}=1 disables all mirroring.")
     if os.getenv(MLFLOW_STRICT_ENV) == "1":

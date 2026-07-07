@@ -18,6 +18,7 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     run_all9_on_letters,
 )
@@ -27,7 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+
 ARBITRATION_VERSION = "exectv2_hybrid_sf_union_arbitration_v08"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_union_arbitration"
 COMPONENT_OWNER = "deterministic_sf_union_arbitration"
@@ -101,9 +102,7 @@ _REWRITE_UP_TO_RANGE_RE = re.compile(
 
 def read_rows(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -153,17 +152,12 @@ def arbitrate_rows(
     deterministic_rows: Sequence[Mapping[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     deterministic_by_id = {str(row["letter_id"]): row for row in deterministic_rows}
-    rows = [
-        arbitrate_row(row, deterministic_by_id[str(row["letter_id"])])
-        for row in current_rows
-    ]
+    rows = [arbitrate_row(row, deterministic_by_id[str(row["letter_id"])]) for row in current_rows]
     metadata = {
         "arbitration_version": ARBITRATION_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
         "source_current_pipeline_family": _first_value(current_rows, "pipeline_family"),
-        "source_deterministic_pipeline_family": _first_value(
-            deterministic_rows, "pipeline_family"
-        ),
+        "source_deterministic_pipeline_family": _first_value(deterministic_rows, "pipeline_family"),
         "split": _first_value(current_rows, "split") or "dev",
         "n_letters": len(rows),
         "summary": adjudicator_base.summarize_rows(rows),
@@ -180,14 +174,12 @@ def arbitrate_row(
         current_mentions=[
             mention
             for mention in current_row.get("predicted_mentions", [])
-            if str(mention.get("entity", SEIZURE_FREQUENCY.name))
-            == SEIZURE_FREQUENCY.name
+            if str(mention.get("entity", SEIZURE_FREQUENCY.name)) == SEIZURE_FREQUENCY.name
         ],
         deterministic_mentions=[
             mention
             for mention in deterministic_row.get("predicted_mentions", [])
-            if str(mention.get("entity", SEIZURE_FREQUENCY.name))
-            == SEIZURE_FREQUENCY.name
+            if str(mention.get("entity", SEIZURE_FREQUENCY.name)) == SEIZURE_FREQUENCY.name
         ],
     )
     out = dict(current_row)
@@ -232,9 +224,7 @@ def arbitrate_sf_mentions(
                 continue
             transformed, rewrite_rule = _rewrite(copied)
             if rewrite_rule:
-                actions.append(
-                    _action(rewrite_rule, "rewrite", transformed, "benchmark_format")
-                )
+                actions.append(_action(rewrite_rule, "rewrite", transformed, "benchmark_format"))
             kept.append(transformed)
     return _dedupe_mentions(kept), actions
 
@@ -460,8 +450,7 @@ def _mention_to_row(mention: Mapping[str, Any]) -> dict[str, Any]:
         "entity": SEIZURE_FREQUENCY.name,
         "text": str(mention.get("text", "")),
         "attributes": {
-            str(key): str(value)
-            for key, value in dict(mention.get("attributes") or {}).items()
+            str(key): str(value) for key, value in dict(mention.get("attributes") or {}).items()
         },
         "evidence": str(mention.get("evidence", "")),
         "confidence": confidence if confidence in {"low", "medium", "high"} else "medium",

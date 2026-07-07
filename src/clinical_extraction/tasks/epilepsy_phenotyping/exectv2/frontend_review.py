@@ -179,7 +179,9 @@ def _fields_to_spec(heading: str, fields: dict[str, str]) -> dict[str, Any] | No
         return None
 
     split = _split_from_cell(fields.get("Split and row count", ""))
-    source_jsonl = _first_backtick(fields.get("Source JSONL", "")) if "Source JSONL" in fields else None
+    source_jsonl = (
+        _first_backtick(fields.get("Source JSONL", "")) if "Source JSONL" in fields else None
+    )
     text_sources: list[str] = []
     if source_jsonl:
         text_sources.append(source_jsonl)
@@ -257,7 +259,9 @@ def validate_specs(specs: list[dict[str, Any]]) -> None:
             elif not (REPO_ROOT / value).exists():
                 errors.append(f"{spec['run_id']}: {key} not found on disk: {value}")
     if errors:
-        raise SystemExit("Index references missing ExECTv2 artifacts:\n  - " + "\n  - ".join(errors))
+        raise SystemExit(
+            "Index references missing ExECTv2 artifacts:\n  - " + "\n  - ".join(errors)
+        )
 
 
 # ── Rendering ─────────────────────────────────────────────────────────
@@ -382,8 +386,7 @@ def _annotation_from_mention(mention: dict[str, Any]) -> ExectAnnotation:
         entity=str(mention.get("entity") or "Unknown"),
         text=str(mention.get("text") or ""),
         attributes={
-            str(key): str(value)
-            for key, value in dict(mention.get("attributes") or {}).items()
+            str(key): str(value) for key, value in dict(mention.get("attributes") or {}).items()
         },
     )
 
@@ -399,7 +402,7 @@ def apply_headline_status(mentions: list[dict[str, Any]], note_text: str) -> Non
     """
     annotations = [_annotation_from_mention(mention) for mention in mentions]
     tags = headline_duplicate_tags(annotations, note_text)
-    for mention, tag in zip(mentions, tags):
+    for mention, tag in zip(mentions, tags, strict=False):
         mention["headline_status"] = tag or ""
 
 
@@ -434,7 +437,11 @@ def operational_from_summary(summary: dict[str, Any]) -> dict[str, Any]:
     ]
     return {
         "call_failures": max(
-            [int(value.get("call_failures", 0)) for value in diagnostics.values() if isinstance(value, dict)]
+            [
+                int(value.get("call_failures", 0))
+                for value in diagnostics.values()
+                if isinstance(value, dict)
+            ]
             or [0]
         ),
         "parse_schema_failures": max(
@@ -472,9 +479,7 @@ def build_run(spec: dict[str, Any]) -> dict[str, Any]:
             for index, mention in enumerate(row.get("predicted_mentions") or [])
         ]
         letter_text = letter_texts.get(letter_id) or "\n\n".join(
-            mention["evidence"]
-            for mention in predicted_mentions
-            if mention.get("evidence")
+            mention["evidence"] for mention in predicted_mentions if mention.get("evidence")
         )
         apply_headline_status(gold_mentions, letter_text)
         apply_headline_status(predicted_mentions, letter_text)

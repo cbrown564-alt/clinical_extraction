@@ -62,7 +62,11 @@ def main() -> None:
     p.add_argument("--out-dir", type=Path, default=Path("experiments"))
     args = p.parse_args()
 
-    in_rows = [json.loads(line) for line in args.in_jsonl.read_text(encoding="utf-8").splitlines() if line.strip()]
+    in_rows = [
+        json.loads(line)
+        for line in args.in_jsonl.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     out_rows: list[dict[str, Any]] = []
     for row in in_rows:
         mentions = [_mention_from_row(m) for m in (row.get("predicted_mentions") or [])]
@@ -85,15 +89,26 @@ def main() -> None:
     jsonl_path = args.out_dir / f"{out_prefix}.jsonl"
     report_path = args.out_dir / f"{out_prefix}.md"
     hybrid.write_jsonl(out_rows, jsonl_path)
-    hybrid.write_report(out_rows, {"summary": summary, "split": in_rows[0].get("split"),
-                                   "model": "altitude_projection", "prompt_version": "benchmark_altitude_v0.1"},
-                        report_path, jsonl_path=jsonl_path)
+    hybrid.write_report(
+        out_rows,
+        {
+            "summary": summary,
+            "split": in_rows[0].get("split"),
+            "model": "altitude_projection",
+            "prompt_version": "benchmark_altitude_v0.1",
+        },
+        report_path,
+        jsonl_path=jsonl_path,
+    )
 
     # Pre vs post comparison.
     pre = hybrid.summarize_rows(
-        [{**r, "predicted_mentions": orig.get("predicted_mentions", [])}
-         for r, orig in zip(out_rows, in_rows, strict=True)]
+        [
+            {**r, "predicted_mentions": orig.get("predicted_mentions", [])}
+            for r, orig in zip(out_rows, in_rows, strict=True)
+        ]
     )
+
     def f1(s: dict, layer: str) -> tuple[float, float, float]:
         pi = s.get("scores", {}).get(layer, {}).get("per_item", {})
         return pi.get("precision", 0.0), pi.get("recall", 0.0), pi.get("f1", 0.0)
@@ -102,7 +117,9 @@ def main() -> None:
     for layer in ("semantic", "benchmark"):
         pp, pr, pf = f1(pre, layer)
         qp, qr, qf = f1(summary, layer)
-        print(f"{layer:<10} pre  F1={pf:.3f} (P={pp:.3f} R={pr:.3f})  ->  post F1={qf:.3f} (P={qp:.3f} R={qr:.3f})")
+        print(
+            f"{layer:<10} pre  F1={pf:.3f} (P={pp:.3f} R={pr:.3f})  ->  post F1={qf:.3f} (P={qp:.3f} R={qr:.3f})"
+        )
     print("\nper-entity semantic item F1 (pre -> post):")
     pre_e = pre.get("scores", {}).get("semantic", {}).get("per_entity", {})
     post_e = summary.get("scores", {}).get("semantic", {}).get("per_entity", {})

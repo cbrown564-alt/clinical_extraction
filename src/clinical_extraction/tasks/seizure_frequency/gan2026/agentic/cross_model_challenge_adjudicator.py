@@ -39,15 +39,9 @@ PROMPT_VERSION = "gan2026_cross_model_challenge_adjudicator_v0_1"
 PIPELINE_FAMILY = "cross_model_challenge_adjudicator"
 DEFAULT_STRUCTURED_EVENT_JSONL_PATH = base.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
 DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = base.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
-DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH = (
-    base.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
-)
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_cross_model_challenge_adjudicator_validation.jsonl"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_cross_model_challenge_adjudicator_validation.md"
-)
+DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH = base.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_cross_model_challenge_adjudicator_validation.jsonl")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_cross_model_challenge_adjudicator_validation.md")
 DEFAULT_GATED_JSONL_PATH = Path(
     "experiments/gan2026_cross_model_challenge_gated_adjudicator_validation.jsonl"
 )
@@ -251,11 +245,7 @@ def build_prompt_input(
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     summary = base.summarize_rows(rows)
     policies = sorted(
-        {
-            str(row.get("safety_policy"))
-            for row in rows
-            if row.get("safety_policy") is not None
-        }
+        {str(row.get("safety_policy")) for row in rows if row.get("safety_policy") is not None}
     )
     summary["safety_policy"] = policies[0] if len(policies) == 1 else policies
     return summary
@@ -308,10 +298,7 @@ def write_report(
         ),
         f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}",
         f"- Net Purist gain vs GPT V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs GPT V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs GPT V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Selected agents: `{summary.get('selected_agent_counts', {})}`",
         "",
         "## Gate",
@@ -443,8 +430,7 @@ def _build_row(
             agent_id: agent_rows.get(agent_id) is not None for agent_id in base.AGENT_IDS
         },
         "agent_references": {
-            agent_id: base._agent_reference(agent_rows.get(agent_id))
-            for agent_id in base.AGENT_IDS
+            agent_id: base._agent_reference(agent_rows.get(agent_id)) for agent_id in base.AGENT_IDS
         },
         "v0_reference": gpt_reference,
         "model_call_attempted": model_call_attempted,
@@ -479,9 +465,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + [
             f"missing_{agent_id}_structured_event_row"
             for agent_id in base.AGENT_IDS

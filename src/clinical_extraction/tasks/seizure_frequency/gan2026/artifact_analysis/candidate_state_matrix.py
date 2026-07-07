@@ -40,11 +40,13 @@ class CandidateStateMatrixAnalyzer:
             if labels_a == labels_b:
                 matches += 1
             else:
-                discrepancies.append({
-                    "source_row_index": idx,
-                    "set_a": labels_a,
-                    "set_b": labels_b,
-                })
+                discrepancies.append(
+                    {
+                        "source_row_index": idx,
+                        "set_a": labels_a,
+                        "set_b": labels_b,
+                    }
+                )
 
         return {
             "phase_f_consolidated": True,

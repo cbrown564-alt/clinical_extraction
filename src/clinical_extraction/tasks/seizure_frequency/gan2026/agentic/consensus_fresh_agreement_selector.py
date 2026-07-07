@@ -67,9 +67,7 @@ def build_selector_rows(
     deterministic_by_id = _rows_by_source_index(deterministic_rows)
     consensus_by_id = _rows_by_source_index(consensus_rows)
     fresh_by_id = _rows_by_source_index(fresh_evidence_rows)
-    common_ids = sorted(
-        set(deterministic_by_id) & set(consensus_by_id) & set(fresh_by_id)
-    )
+    common_ids = sorted(set(deterministic_by_id) & set(consensus_by_id) & set(fresh_by_id))
     return [
         _build_selector_row(
             source_row_index=source_row_index,
@@ -85,12 +83,9 @@ def build_selector_rows(
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize selector performance and changed-label precision."""
 
-    transitions = Counter(_dig(row, ("transition_vs_deterministic", "purist"))
-                          for row in rows)
+    transitions = Counter(_dig(row, ("transition_vs_deterministic", "purist")) for row in rows)
     changed_rows = sum(
-        1
-        for row in rows
-        if _dig(row, ("transition_vs_deterministic", "label_changed")) is True
+        1 for row in rows if _dig(row, ("transition_vs_deterministic", "label_changed")) is True
     )
     wrong_to_correct = transitions["wrong_to_correct"]
     correct_to_wrong = transitions["correct_to_wrong"]
@@ -98,23 +93,19 @@ def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "selector": _selector_version(rows),
         "rows": len(rows),
         "deterministic_purist_correct": sum(
-            _dig(row, ("score_layers", "deterministic", "comparison", "purist_correct"))
-            is True
+            _dig(row, ("score_layers", "deterministic", "comparison", "purist_correct")) is True
             for row in rows
         ),
         "consensus_purist_correct": sum(
-            _dig(row, ("score_layers", "consensus", "comparison", "purist_correct"))
-            is True
+            _dig(row, ("score_layers", "consensus", "comparison", "purist_correct")) is True
             for row in rows
         ),
         "fresh_evidence_purist_correct": sum(
-            _dig(row, ("score_layers", "fresh_evidence", "comparison", "purist_correct"))
-            is True
+            _dig(row, ("score_layers", "fresh_evidence", "comparison", "purist_correct")) is True
             for row in rows
         ),
         "selected_purist_correct": sum(
-            _dig(row, ("score_layers", "selected", "comparison", "purist_correct"))
-            is True
+            _dig(row, ("score_layers", "selected", "comparison", "purist_correct")) is True
             for row in rows
         ),
         "changed_labels": changed_rows,
@@ -144,10 +135,7 @@ def summarize_by_band(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         band_rows = [
             row
             for row in rows
-            if boundary_band(
-                _dig(row, ("reference", "gold_monthly_frequency"))
-            )
-            == band
+            if boundary_band(_dig(row, ("reference", "gold_monthly_frequency"))) == band
         ]
         changed = [
             row
@@ -155,25 +143,21 @@ def summarize_by_band(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             if _dig(row, ("transition_vs_deterministic", "label_changed")) is True
         ]
         wrong_to_correct = sum(
-            _dig(row, ("transition_vs_deterministic", "purist"))
-            == "wrong_to_correct"
+            _dig(row, ("transition_vs_deterministic", "purist")) == "wrong_to_correct"
             for row in changed
         )
         correct_to_wrong = sum(
-            _dig(row, ("transition_vs_deterministic", "purist"))
-            == "correct_to_wrong"
+            _dig(row, ("transition_vs_deterministic", "purist")) == "correct_to_wrong"
             for row in changed
         )
         bands[band] = {
             "rows": len(band_rows),
             "deterministic_purist_correct": sum(
-                _dig(row, ("score_layers", "deterministic", "comparison", "purist_correct"))
-                is True
+                _dig(row, ("score_layers", "deterministic", "comparison", "purist_correct")) is True
                 for row in band_rows
             ),
             "selected_purist_correct": sum(
-                _dig(row, ("score_layers", "selected", "comparison", "purist_correct"))
-                is True
+                _dig(row, ("score_layers", "selected", "comparison", "purist_correct")) is True
                 for row in band_rows
             ),
             "changed_labels": len(changed),
@@ -231,29 +215,17 @@ def write_report(
                 f"- Deterministic Purist: "
                 f"{summary['deterministic_purist_correct']}/{summary['rows']}"
             ),
-            (
-                f"- Consensus Purist: "
-                f"{summary['consensus_purist_correct']}/{summary['rows']}"
-            ),
+            (f"- Consensus Purist: {summary['consensus_purist_correct']}/{summary['rows']}"),
             (
                 f"- V12 fresh-evidence Purist: "
                 f"{summary['fresh_evidence_purist_correct']}/{summary['rows']}"
             ),
-            (
-                f"- Selected Purist: "
-                f"{summary['selected_purist_correct']}/{summary['rows']}"
-            ),
-            (
-                f"- Net Purist gain vs deterministic: "
-                f"{summary['net_purist_gain_vs_deterministic']}"
-            ),
+            (f"- Selected Purist: {summary['selected_purist_correct']}/{summary['rows']}"),
+            (f"- Net Purist gain vs deterministic: {summary['net_purist_gain_vs_deterministic']}"),
             f"- Changed labels: {summary['changed_labels']}",
             f"- Wrong->correct: {summary['wrong_to_correct']}",
             f"- Correct->wrong: {summary['correct_to_wrong']}",
-            (
-                f"- Changed-label precision: "
-                f"{summary['changed_label_precision']}"
-            ),
+            (f"- Changed-label precision: {summary['changed_label_precision']}"),
             f"- Actions: `{summary['actions']}`",
             f"- JSONL artifact: `{jsonl_path}`",
             "",
@@ -397,13 +369,11 @@ def _accept_specific_label_precision_v0_3(
     consensus_unit = _label_unit(consensus_label)
     if deterministic_unit in {"no_reference", "unknown"}:
         return False, (
-            "specific_label_precision_v0_3:"
-            f"deterministic_boundary_origin:{deterministic_unit}"
+            f"specific_label_precision_v0_3:deterministic_boundary_origin:{deterministic_unit}"
         )
     if consensus_unit in {"unknown", "seizure_free", "other"}:
         return False, (
-            "specific_label_precision_v0_3:"
-            f"uncertain_or_ambiguous_replacement:{consensus_unit}"
+            f"specific_label_precision_v0_3:uncertain_or_ambiguous_replacement:{consensus_unit}"
         )
     return True, "specific_label_precision_v0_3"
 
@@ -453,8 +423,7 @@ def _accept_base_consensus_v0_8(
         _parseable_frequency_label(consensus_label)
     ):
         return False, (
-            "parseable_denominator_window_refinement_v0_8:"
-            "replacement_not_parseable_specific_rate"
+            "parseable_denominator_window_refinement_v0_8:replacement_not_parseable_specific_rate"
         )
     return True, "parseable_denominator_window_refinement_v0_8:base_consensus"
 
@@ -488,9 +457,7 @@ def _build_selector_row(
 ) -> dict[str, Any]:
     deterministic_label = str(deterministic_row.get("final_label") or "")
     consensus_label = str(consensus_row.get("consensus_final_label") or "")
-    fresh_label = str(
-        _dig(fresh_evidence_row, ("decision_record", "final_label")) or ""
-    )
+    fresh_label = str(_dig(fresh_evidence_row, ("decision_record", "final_label")) or "")
     consensus_policy = _consensus_policy_for(policy)
     accept_consensus, selector_gate = _accept_consensus_switch(
         policy=consensus_policy,
@@ -528,7 +495,8 @@ def _build_selector_row(
     if (
         not accept_consensus
         and not accept_fresh_rescue
-        and policy in {
+        and policy
+        in {
             "unknown_count_window_rescue_v0_7",
             "parseable_denominator_window_refinement_v0_8",
             "semantic_equiv_unknown_uncertainty_v0_9",
@@ -545,19 +513,18 @@ def _build_selector_row(
     if (
         not accept_consensus
         and not accept_fresh_rescue
-        and policy in {
+        and policy
+        in {
             "parseable_denominator_window_refinement_v0_8",
             "semantic_equiv_unknown_uncertainty_v0_9",
         }
     ):
-        accept_fresh_rescue, selector_gate = (
-            _accept_parseable_denominator_window_refinement_v0_8(
-                deterministic_label=deterministic_label,
-                consensus_label=consensus_label,
-                fresh_label=fresh_label,
-                fresh_boundary_profile=fresh_boundary_profile,
-                prior_gate=selector_gate,
-            )
+        accept_fresh_rescue, selector_gate = _accept_parseable_denominator_window_refinement_v0_8(
+            deterministic_label=deterministic_label,
+            consensus_label=consensus_label,
+            fresh_label=fresh_label,
+            fresh_boundary_profile=fresh_boundary_profile,
+            prior_gate=selector_gate,
         )
         rescue_action = "accept_parseable_denominator_window_refinement"
     if (
@@ -596,9 +563,7 @@ def _build_selector_row(
             deterministic_row.get("comparison"),
         )
         selector_action = "keep_deterministic_baseline"
-    deterministic_correct = _dig(
-        deterministic_row, ("comparison", "purist_correct")
-    ) is True
+    deterministic_correct = _dig(deterministic_row, ("comparison", "purist_correct")) is True
     selected_correct = _dig(selected_layer, ("comparison", "purist_correct")) is True
     label_changed = selected_label != deterministic_label
     return {
@@ -645,12 +610,8 @@ def _build_selector_row(
             "row_ok": _dig(deterministic_row, ("reference", "row_ok")),
         },
         "decision_features": {
-            "consensus_reason": _dig(
-                consensus_row, ("consensus_decision", "reason")
-            ),
-            "fresh_action": _dig(
-                fresh_evidence_row, ("fresh_evidence_decision_record", "action")
-            ),
+            "consensus_reason": _dig(consensus_row, ("consensus_decision", "reason")),
+            "fresh_action": _dig(fresh_evidence_row, ("fresh_evidence_decision_record", "action")),
             "fresh_uncertainty": _dig(
                 fresh_evidence_row,
                 ("fresh_evidence_decision_record", "uncertainty"),
@@ -738,10 +699,7 @@ def _accept_fresh_boundary_rescue_v0_5(
     }:
         return (
             True,
-            (
-                "fresh_boundary_rescue_v0_5:"
-                "deterministic_seizure_free_to_fresh_uncertain_boundary"
-            ),
+            ("fresh_boundary_rescue_v0_5:deterministic_seizure_free_to_fresh_uncertain_boundary"),
         )
     if deterministic_unit == "no_reference" and fresh_unit == "seizure_free":
         return (
@@ -786,10 +744,7 @@ def _accept_fresh_boundary_rescue_v0_6(
         if _profile_supports_seizure_free_overreach(profile_text):
             return (
                 True,
-                (
-                    "profile_guard_boundary_rescue_v0_6:"
-                    "seizure_free_to_uncertain_supported"
-                ),
+                ("profile_guard_boundary_rescue_v0_6:seizure_free_to_uncertain_supported"),
             )
         return (
             False,
@@ -804,10 +759,7 @@ def _accept_fresh_boundary_rescue_v0_6(
         if _profile_supports_no_reference_to_seizure_free(profile_text):
             return (
                 True,
-                (
-                    "profile_guard_boundary_rescue_v0_6:"
-                    "no_reference_to_seizure_free_supported"
-                ),
+                ("profile_guard_boundary_rescue_v0_6:no_reference_to_seizure_free_supported"),
             )
         return (
             False,
@@ -841,8 +793,7 @@ def _accept_unknown_count_window_rescue_v0_7(
         return False, "unknown_count_window_rescue_v0_7:fresh_consensus_disagree"
     if fresh_unit in {"unknown", "no_reference", "seizure_free", "other"}:
         return False, (
-            "unknown_count_window_rescue_v0_7:"
-            f"unsupported_replacement_unit:{fresh_unit}"
+            f"unknown_count_window_rescue_v0_7:unsupported_replacement_unit:{fresh_unit}"
         )
     if consensus_unit != fresh_unit:
         return False, "unknown_count_window_rescue_v0_7:unit_mismatch"
@@ -878,41 +829,29 @@ def _accept_parseable_denominator_window_refinement_v0_8(
             1,
         )
     if not consensus_label or consensus_label != fresh_label:
-        return False, (
-            "parseable_denominator_window_refinement_v0_8:"
-            "fresh_consensus_disagree"
-        )
+        return False, ("parseable_denominator_window_refinement_v0_8:fresh_consensus_disagree")
     if _label_unit(deterministic_label) in {
         "unknown",
         "no_reference",
         "seizure_free",
     }:
-        return False, (
-            "parseable_denominator_window_refinement_v0_8:"
-            "boundary_origin_not_relaxed"
-        )
+        return False, ("parseable_denominator_window_refinement_v0_8:boundary_origin_not_relaxed")
     if not _parseable_specific_rate(fresh_label):
         return False, (
-            "parseable_denominator_window_refinement_v0_8:"
-            "replacement_not_parseable_specific_rate"
+            "parseable_denominator_window_refinement_v0_8:replacement_not_parseable_specific_rate"
         )
     profile_text = _profile_text(fresh_boundary_profile)
     if _profile_blocks_parseable_refinement_v0_8(profile_text):
         return False, (
-            "parseable_denominator_window_refinement_v0_8:"
-            "unsafe_parseable_refinement_profile"
+            "parseable_denominator_window_refinement_v0_8:unsafe_parseable_refinement_profile"
         )
     if _profile_supports_parseable_refinement_v0_8(profile_text):
         return (
             True,
-            (
-                "parseable_denominator_window_refinement_v0_8:"
-                "profile_supported_parseable_refinement"
-            ),
+            ("parseable_denominator_window_refinement_v0_8:profile_supported_parseable_refinement"),
         )
     return False, (
-        "parseable_denominator_window_refinement_v0_8:"
-        "missing_parseable_refinement_profile"
+        "parseable_denominator_window_refinement_v0_8:missing_parseable_refinement_profile"
     )
 
 
@@ -964,10 +903,7 @@ def _accept_normalized_equivalent_agreement_v0_9(
         return False, prior_gate
     return (
         True,
-        (
-            "semantic_equiv_unknown_uncertainty_v0_9:"
-            "normalized_equivalent_consensus_fresh"
-        ),
+        ("semantic_equiv_unknown_uncertainty_v0_9:normalized_equivalent_consensus_fresh"),
     )
 
 
@@ -984,18 +920,13 @@ def _accept_unknown_uncertainty_rescue_v0_9(
     deterministic_unit = _label_unit(deterministic_label)
     if deterministic_unit in {"unknown", "no_reference", "seizure_free"}:
         return False, prior_gate
-    if deterministic_unit == "other" and not _parseable_specific_rate(
-        deterministic_label
-    ):
+    if deterministic_unit == "other" and not _parseable_specific_rate(deterministic_label):
         return False, prior_gate
     profile_text = _profile_text(fresh_boundary_profile)
     if _profile_blocks_unknown_uncertainty_v0_9(profile_text):
         return (
             False,
-            (
-                "semantic_equiv_unknown_uncertainty_v0_9:"
-                "unknown_uncertainty_profile_blocked"
-            ),
+            ("semantic_equiv_unknown_uncertainty_v0_9:unknown_uncertainty_profile_blocked"),
         )
     if _profile_supports_unknown_uncertainty_v0_9(profile_text):
         return (
@@ -1007,10 +938,7 @@ def _accept_unknown_uncertainty_rescue_v0_9(
         )
     return (
         False,
-        (
-            "semantic_equiv_unknown_uncertainty_v0_9:"
-            "missing_unknown_uncertainty_profile"
-        ),
+        ("semantic_equiv_unknown_uncertainty_v0_9:missing_unknown_uncertainty_profile"),
     )
 
 
@@ -1161,12 +1089,8 @@ def _profile_supports_parseable_refinement_v0_8(profile_text: str) -> bool:
     if "explicit current frequency" in profile_text and "clearly stated" in profile_text:
         return True
     count_marker = "explicit count" in profile_text
-    window_marker = any(
-        marker in profile_text for marker in (" over ", "window", "period", "~")
-    )
-    boundary_negated = (
-        "no evidence for seizure-free, unknown, or no_reference" in profile_text
-    )
+    window_marker = any(marker in profile_text for marker in (" over ", "window", "period", "~"))
+    boundary_negated = "no evidence for seizure-free, unknown, or no_reference" in profile_text
     return count_marker and window_marker and boundary_negated
 
 
@@ -1204,9 +1128,7 @@ def _profile_blocks_unknown_uncertainty_v0_9(profile_text: str) -> bool:
 
 
 def _profile_supports_unknown_uncertainty_v0_9(profile_text: str) -> bool:
-    uncertainty_marker = (
-        "unknown_frequency" in profile_text or "unknown frequency" in profile_text
-    )
+    uncertainty_marker = "unknown_frequency" in profile_text or "unknown frequency" in profile_text
     missing_count_marker = any(
         marker in profile_text
         for marker in (
@@ -1289,9 +1211,7 @@ def _consensus_policy_for(policy: SelectorPolicy) -> SelectorPolicy:
 
 def _selector_version(rows: Sequence[Mapping[str, Any]]) -> str:
     versions = {
-        str(row.get("selector_version") or "")
-        for row in rows
-        if row.get("selector_version")
+        str(row.get("selector_version") or "") for row in rows if row.get("selector_version")
     }
     if len(versions) == 1:
         return next(iter(versions))
@@ -1333,9 +1253,7 @@ def _rows_by_source_index(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[int, Mapping[str, Any]]:
     return {
-        int(row["source_row_index"]): row
-        for row in rows
-        if row.get("source_row_index") is not None
+        int(row["source_row_index"]): row for row in rows if row.get("source_row_index") is not None
     }
 
 

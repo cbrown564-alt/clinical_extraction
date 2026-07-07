@@ -14,15 +14,10 @@ DEFAULT_POLICY_JSON_PATH = Path(
     "experiments/gan2026_h5_repair_policy_v1_reparse_validation250_2026-06-05.json"
 )
 DEFAULT_TRANSITIONS_CSV_PATH = Path(
-    "experiments/"
-    "gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.csv"
+    "experiments/gan2026_h5_semantic_kind_transformations_policy_v1_validation250_2026-06-05.csv"
 )
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.md"
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_h5_repair_policy_v1_manifest_2026-06-05.md")
 
 REPAIR_POLICY_ID = "h5_repair_policy_v1"
 
@@ -40,9 +35,7 @@ def build_h5_repair_policy_manifest(
     }
     benchmark = _condition_summary(conditions.get("benchmark_aligned_adapter"))
     format_only = _condition_summary(conditions.get("format_only_repair"))
-    selected_evidence = _condition_summary(
-        conditions.get("selected_evidence_arithmetic_only")
-    )
+    selected_evidence = _condition_summary(conditions.get("selected_evidence_arithmetic_only"))
     transitions = Counter(
         str(row.get("semantic_kind_transition") or "") for row in semantic_kind_rows
     )
@@ -127,9 +120,7 @@ def build_h5_repair_policy_manifest(
             "by_transition": dict(sorted(transitions.items())),
             "by_condition": dict(sorted(by_condition.items())),
             "invalid_selected_evidence_rows": invalid_evidence_rows,
-            "frequency_to_no_reference_rows": transitions.get(
-                "frequency->no_reference", 0
-            ),
+            "frequency_to_no_reference_rows": transitions.get("frequency->no_reference", 0),
         },
         "next_diagnostic_contract": {
             "use_as_current_repair_policy": True,
@@ -159,9 +150,7 @@ def write_h5_repair_policy_manifest_report(
     path: Path,
 ) -> None:
     transitions = artifact.get("semantic_kind_transformations", {})
-    benchmark = artifact.get("condition_summaries", {}).get(
-        "benchmark_aligned_adapter", {}
-    )
+    benchmark = artifact.get("condition_summaries", {}).get("benchmark_aligned_adapter", {})
     lines = [
         "# Gan 2026 H5 Repair Policy v1 Manifest",
         "",
@@ -222,8 +211,7 @@ def write_h5_repair_policy_manifest_report(
             f"`{transitions.get('frequency_to_no_reference_rows')}`",
             "- Invalid selected-evidence rows: "
             f"`{transitions.get('invalid_selected_evidence_rows')}`",
-            "- Benchmark adapter Purist replay: "
-            f"`{_metric(benchmark.get('purist_accuracy'))}`",
+            f"- Benchmark adapter Purist replay: `{_metric(benchmark.get('purist_accuracy'))}`",
             "",
             "## Interpretation",
             "",

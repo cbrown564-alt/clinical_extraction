@@ -53,7 +53,9 @@ def test_supersedes_edge_links_current_over_historical() -> None:
     graph = build_state_graph_from_atomic_claims(
         note,
         [
-            _claim("5 per week", "up to 5 per week", kind="frequency_rate", temporality="historical"),
+            _claim(
+                "5 per week", "up to 5 per week", kind="frequency_rate", temporality="historical"
+            ),
             _claim("1 per month", "1 seizure per month", kind="frequency_rate"),
         ],
     )
@@ -144,16 +146,12 @@ def test_ontology_guard_is_graph_path_only_not_deterministic() -> None:
         normalized_label="seizure free for 6 month",
         semantic_kind=FrequencyLabelKind.SEIZURE_FREE,
         monthly_frequency=0.0,
-        evidence=EvidenceSpan(
-            text="Seizure-free since 27 March 2024", start_char=0, end_char=32
-        ),
+        evidence=EvidenceSpan(text="Seizure-free since 27 March 2024", start_char=0, end_char=32),
         rule_id="seizure_free.since_date",
     )
     assert ontology.is_admissible_assignment(curated).admissible is True
 
-    uncurated = curated.model_copy(
-        update={"node_id": "llm-sg-001", "rule_id": "llm.atomic_claim"}
-    )
+    uncurated = curated.model_copy(update={"node_id": "llm-sg-001", "rule_id": "llm.atomic_claim"})
     rejected = ontology.is_admissible_assignment(uncurated)
     assert rejected.admissible is False
     assert rejected.reason.startswith("over_inference_out_of_unknown")
@@ -168,9 +166,7 @@ def test_vague_cluster_count_is_unknown_only_shape() -> None:
         normalized_label="unknown",
         semantic_kind=FrequencyLabelKind.FREQUENCY,
         monthly_frequency=1.0,
-        evidence=EvidenceSpan(
-            text="several clusters per month", start_char=0, end_char=26
-        ),
+        evidence=EvidenceSpan(text="several clusters per month", start_char=0, end_char=26),
         rule_id="llm.atomic_claim",
     )
     assert classify_evidence_shape(node) is EvidenceShape.VAGUE_COUNT
@@ -179,7 +175,7 @@ def test_vague_cluster_count_is_unknown_only_shape() -> None:
 
 
 def test_ontology_blocks_cluster_cadence_change_under_refine() -> None:
-    ontology = AdmissibleStateOntology()
+    AdmissibleStateOntology()
     # Refiner cadence is weekly, base cadence monthly: refining must not move it.
     graph = build_state_graph_from_atomic_claims(
         "clusters monthly; separately 3 per cluster per week",
@@ -264,7 +260,9 @@ def test_resolve_label_drops_superseded_historical_rate() -> None:
     graph = build_state_graph_from_atomic_claims(
         "Historically up to 5 per week. Now he reports 1 seizure per month.",
         [
-            _claim("5 per week", "up to 5 per week", kind="frequency_rate", temporality="historical"),
+            _claim(
+                "5 per week", "up to 5 per week", kind="frequency_rate", temporality="historical"
+            ),
             _claim("1 per month", "1 seizure per month", kind="frequency_rate"),
         ],
     )

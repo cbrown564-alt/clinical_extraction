@@ -76,7 +76,9 @@ def update_registry(runs: list[dict[str, Any]]) -> None:
             }
         )
     registry["runs"] = existing_runs + exectv2_entries
-    registry_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    registry_path.write_text(
+        json.dumps(registry, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
 
 def main() -> None:
@@ -113,8 +115,7 @@ def main() -> None:
     update_registry(runs)
 
     print(
-        f"Wrote {len(runs)} ExECTv2 frontend runs from "
-        f"{index_path.relative_to(ROOT).as_posix()}:"
+        f"Wrote {len(runs)} ExECTv2 frontend runs from {index_path.relative_to(ROOT).as_posix()}:"
     )
     for run in runs:
         print(f"  [{run['decision']:>14}] {run['split']:>6}  {run['run_id']}")

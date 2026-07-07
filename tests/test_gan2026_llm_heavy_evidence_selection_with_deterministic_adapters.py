@@ -125,16 +125,15 @@ def test_build_typed_inputs_exposes_clinical_selection_contract() -> None:
     assert "occurrences_high" in instructions
     assert "full upper-bound statement exactly" in instructions
     assert "no prefixes, underscores, plural units" in instructions
-    assert contract["raw_label_grammar"]["frequency"] == (
-        "N per D unit or N to M per D to E unit"
-    )
+    assert contract["raw_label_grammar"]["frequency"] == ("N per D unit or N to M per D to E unit")
     assert "multiple per unit" in contract["raw_label_grammar"]["vague_frequency"]
     assert contract["evidence_copy_contract"]["preserve_unicode"] is True
     assert contract["upper_bound_contract"]["evidence_required"] is True
     assert "≤" in contract["upper_bound_contract"]["allowed_cues"]
-    assert "occurrences_high without occurrences_low" in contract["upper_bound_contract"][
-        "operand_rule"
-    ]
+    assert (
+        "occurrences_high without occurrences_low"
+        in contract["upper_bound_contract"]["operand_rule"]
+    )
     assert contract["clinical_kind_operand_consistency"]["frequency"] == (
         "total seizure burden, even when the note mentions clustering"
     )

@@ -57,8 +57,7 @@ def _gold_case_row(
 def _write_gold_case_ledger(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        "\n".join(json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows)
-        + "\n",
+        "\n".join(json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows) + "\n",
         encoding="utf-8",
     )
 

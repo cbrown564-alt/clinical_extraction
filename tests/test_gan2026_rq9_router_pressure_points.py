@@ -66,8 +66,8 @@ def test_label_buckets_distinguish_cluster_projection_from_plain_frequency() -> 
     ]
 
     assert cluster_summary["by_source_label_bucket"]["label_contains_cluster"]["rows"] == 1
-    assert cluster_summary["by_source_label_bucket"]["label_plain_frequency"][
-        "source_wrong_rows"
-    ] == 1
+    assert (
+        cluster_summary["by_source_label_bucket"]["label_plain_frequency"]["source_wrong_rows"] == 1
+    )
     assert cluster_summary["by_source_label_bucket"]["label_seizure_free"]["rows"] == 1
     assert cluster_summary["by_source_label_bucket"]["label_no_reference"]["rows"] == 1

@@ -42,12 +42,8 @@ DEFAULT_RELEASE_ABLATION_JSON_PATH = Path(
 DEFAULT_RELEASE_ABLATION_REPORT_PATH = Path(
     "experiments/gan2026_h9_release_lane_ablation_v1_2026-06-05.md"
 )
-DEFAULT_H6_REPLAY_JSON_PATH = Path(
-    "experiments/gan2026_h6_control_replay_v1_2026-06-05.json"
-)
-DEFAULT_H6_REPLAY_REPORT_PATH = Path(
-    "experiments/gan2026_h6_control_replay_v1_2026-06-05.md"
-)
+DEFAULT_H6_REPLAY_JSON_PATH = Path("experiments/gan2026_h6_control_replay_v1_2026-06-05.json")
+DEFAULT_H6_REPLAY_REPORT_PATH = Path("experiments/gan2026_h6_control_replay_v1_2026-06-05.md")
 
 NONPREDICTION_ACTIONS = {"abstain", "human_review"}
 
@@ -65,9 +61,7 @@ def build_action_summary_sidecar(
         "artifact_kind": "gan2026_h9_action_summary_sidecar_v1",
         "date": "2026-06-05",
         "hypothesis_ids": ["H9"],
-        "split_manifest": _first_nonempty(
-            candidate["split_manifest"] for candidate in candidates
-        ),
+        "split_manifest": _first_nonempty(candidate["split_manifest"] for candidate in candidates),
         "inspection_policy": "validation_artifact_sidecar_no_prediction_change",
         "candidate_count": len(candidates),
         "candidates": candidates,
@@ -98,8 +92,7 @@ def build_release_lane_ablation(
         release_rows = [
             row
             for row in assembled_rows
-            if row.get("release_eligible") is True
-            and row.get("original_staged_action") == lane
+            if row.get("release_eligible") is True and row.get("original_staged_action") == lane
         ]
         lanes.append(_release_lane_summary(lane, release_rows))
 
@@ -111,12 +104,8 @@ def build_release_lane_ablation(
         "artifact_kind": "gan2026_h9_release_lane_ablation_v1",
         "date": "2026-06-05",
         "hypothesis_ids": ["H6", "H9"],
-        "split_manifest": _first_nonempty(
-            row.get("split_manifest") for row in assembled_rows
-        ),
-        "source_candidate": _first_nonempty(
-            row.get("candidate_version") for row in assembled_rows
-        ),
+        "split_manifest": _first_nonempty(row.get("split_manifest") for row in assembled_rows),
+        "source_candidate": _first_nonempty(row.get("candidate_version") for row in assembled_rows),
         "surface": "validation_hard_control_rows_from_current_assembled_control",
         "one_change": "release_one_existing_nonprediction_lane_at_a_time",
         "lanes": lanes,
@@ -159,8 +148,7 @@ def build_h6_control_replay(
                 "candidate": name,
                 "h6_control_rows": _int(summary.get("h6_control_rows")),
                 "h6_regression_rows": _int(
-                    summary.get("h6_control_regression_rows")
-                    or summary.get("h6_regression_rows")
+                    summary.get("h6_control_regression_rows") or summary.get("h6_regression_rows")
                 ),
                 "changed_correct_rows": correct,
                 "changed_wrong_rows": wrong,
@@ -169,9 +157,7 @@ def build_h6_control_replay(
             }
         )
 
-    failed = [
-        row for row in candidates if row["h6_regression_rows"] > 0
-    ]
+    failed = [row for row in candidates if row["h6_regression_rows"] > 0]
     return {
         "artifact_kind": "gan2026_h6_control_replay_v1",
         "date": "2026-06-05",
@@ -180,9 +166,7 @@ def build_h6_control_replay(
         "inspection_policy": "validation_sidecar_no_candidate_change",
         "candidate_count": len(candidates),
         "candidates": candidates,
-        "h6_regression_candidates": [
-            row["candidate"] for row in failed
-        ],
+        "h6_regression_candidates": [row["candidate"] for row in failed],
         "locked_test_row_level_artifacts_used": 0,
         "model_calls": 0,
         "prediction_changes": 0,
@@ -216,11 +200,7 @@ def materialize_stage4_sidecars(
     boundary_revision_summary = _load_json(boundary_revision_json_path)
 
     action_summary = build_action_summary_sidecar(
-        {
-            "untagged_nonprediction_release_candidate_v0_assembled_candidate": (
-                assembled_rows
-            )
-        }
+        {"untagged_nonprediction_release_candidate_v0_assembled_candidate": (assembled_rows)}
     )
     action_summary = {
         **action_summary,
@@ -239,9 +219,7 @@ def materialize_stage4_sidecars(
 
     h6_replay = build_h6_control_replay(
         {
-            "untagged_nonprediction_release_candidate_v0_assembled_candidate": (
-                assembled_summary
-            ),
+            "untagged_nonprediction_release_candidate_v0_assembled_candidate": (assembled_summary),
             "boundary_selector_precision_revision_v1": boundary_revision_summary,
             "h9_release_lane_ablation_v1": release_ablation,
         }
@@ -250,9 +228,7 @@ def materialize_stage4_sidecars(
         **h6_replay,
         "source_artifacts": {
             "assembled_candidate_summary": str(assembled_json_path),
-            "boundary_selector_precision_revision_summary": str(
-                boundary_revision_json_path
-            ),
+            "boundary_selector_precision_revision_summary": str(boundary_revision_json_path),
             "release_lane_ablation_summary": str(release_ablation_json_path),
         },
         "json_artifact": str(h6_replay_json_path),
@@ -280,9 +256,7 @@ def _candidate_action_summary(
     total = len(rows)
     prediction_rows = [row for row in rows if row.get("candidate_action") == "predict"]
     abstain_rows = [row for row in rows if row.get("candidate_action") == "abstain"]
-    review_rows = [
-        row for row in rows if row.get("candidate_action") == "human_review"
-    ]
+    review_rows = [row for row in rows if row.get("candidate_action") == "human_review"]
     release_rows = [row for row in rows if row.get("release_applied") is True]
     return {
         "candidate": name,
@@ -336,21 +310,15 @@ def _action_rate_row(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
     total = len(rows)
-    nonprediction = [
-        row for row in rows if row.get("candidate_action") in NONPREDICTION_ACTIONS
-    ]
+    nonprediction = [row for row in rows if row.get("candidate_action") in NONPREDICTION_ACTIONS]
     return {
         key: value,
         "rows": total,
-        "prediction_bearing_rows": sum(
-            row.get("candidate_action") == "predict" for row in rows
-        ),
+        "prediction_bearing_rows": sum(row.get("candidate_action") == "predict" for row in rows),
         "nonprediction_rows": len(nonprediction),
         "nonprediction_rate": _rate(len(nonprediction), total),
         "abstain_rows": sum(row.get("candidate_action") == "abstain" for row in rows),
-        "review_rows": sum(
-            row.get("candidate_action") == "human_review" for row in rows
-        ),
+        "review_rows": sum(row.get("candidate_action") == "human_review" for row in rows),
     }
 
 

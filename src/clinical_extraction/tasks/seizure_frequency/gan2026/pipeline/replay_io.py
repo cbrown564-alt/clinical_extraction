@@ -21,4 +21,3 @@ def load_raw_outputs_by_source_index(path: Path) -> dict[int, str]:
         if isinstance(source_row_index, int) and isinstance(raw_output, str) and raw_output:
             reusable[source_row_index] = raw_output
     return reusable
-

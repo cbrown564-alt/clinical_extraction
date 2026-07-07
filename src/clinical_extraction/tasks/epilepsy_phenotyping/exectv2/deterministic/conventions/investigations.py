@@ -59,11 +59,16 @@ def investigation_convention_attribute_repairs(
             _remove_investigation_modality_attrs(repaired, modality)
     surface = " ".join(part for part in (text, evidence) if part)
     for modality, (performed_key, result_key) in _INVESTIGATION_MODALITY_ATTRS.items():
-        if result_key is not None and repaired.get(result_key) in {
-            "Normal",
-            "Abnormal",
-            "Unknown",
-        } and repaired.get(performed_key) is None:
+        if (
+            result_key is not None
+            and repaired.get(result_key)
+            in {
+                "Normal",
+                "Abnormal",
+                "Unknown",
+            }
+            and repaired.get(performed_key) is None
+        ):
             repaired[performed_key] = "Yes"
         if repaired.get(performed_key) != "No":
             continue
@@ -105,9 +110,7 @@ def is_investigation_convention_noise(
         return True
 
     performed_yes = [
-        key
-        for key, value in scoring_attrs.items()
-        if key.endswith("_Performed") and value == "Yes"
+        key for key, value in scoring_attrs.items() if key.endswith("_Performed") and value == "Yes"
     ]
     result_attrs = [
         key
@@ -129,10 +132,7 @@ def is_investigation_convention_noise(
     return False
 
 
-_INVESTIGATION_RESIDUAL_PATTERNS: tuple[
-    tuple[re.Pattern[str], str, str, str],
-    ...
-] = (
+_INVESTIGATION_RESIDUAL_PATTERNS: tuple[tuple[re.Pattern[str], str, str, str], ...] = (
     (
         re.compile(
             r"\b(?:EEGs?\s+(?:has|have)\s+shown\s+(?:evidence\s+of\s+epilepsy|"

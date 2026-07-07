@@ -6,6 +6,7 @@ contract. See `docs/plans/proud-bubbling-ocean.md` (Phase 0) for context.
 Task-specific condition-name vocabularies stay in each task's own module;
 this module only enforces that two conditions' resource ceilings match.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator

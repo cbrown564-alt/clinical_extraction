@@ -4,6 +4,7 @@ Follows the same structural pattern as
 ``tasks/seizure_frequency/gan2026/deterministic/rule_metadata.py`` but uses
 ExECTv2-specific enums (exectv2_specific portability, SF-centric rule groups).
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
@@ -45,9 +46,7 @@ class AblationConfig:
     enabled_portability: frozenset[Portability] = frozenset(Portability)
     disabled_rule_ids: frozenset[str] = frozenset()
 
-    def rule_is_enabled(
-        self, *, rule_id: str, group: RuleGroup, portability: Portability
-    ) -> bool:
+    def rule_is_enabled(self, *, rule_id: str, group: RuleGroup, portability: Portability) -> bool:
         return (
             group in self.enabled_groups
             and portability in self.enabled_portability
@@ -85,9 +84,7 @@ class RuleSpec:
     examples: tuple[RuleExample, ...] = ()
     provenance: str | None = None
 
-    def apply(
-        self, context: ExtractionContext, ablation: AblationConfig
-    ) -> list[RuleBuildResult]:
+    def apply(self, context: ExtractionContext, ablation: AblationConfig) -> list[RuleBuildResult]:
         if not ablation.rule_is_enabled(
             rule_id=self.rule_id, group=self.group, portability=self.portability
         ):

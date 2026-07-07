@@ -210,4 +210,3 @@ def _lower_join(*values: Any) -> str:
         elif value is not None:
             flattened.append(str(value))
     return " ".join(flattened).lower()
-

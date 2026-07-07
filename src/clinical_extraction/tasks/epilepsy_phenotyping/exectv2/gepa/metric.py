@@ -164,8 +164,12 @@ def _label(family: str, ann: Any) -> str:
         if state == "active-rate":
             rate = ", ".join(
                 f"{k}={attrs[k]}"
-                for k in ("NumberOfSeizures", "LowerNumberOfSeizures",
-                          "UpperNumberOfSeizures", "TimePeriod")
+                for k in (
+                    "NumberOfSeizures",
+                    "LowerNumberOfSeizures",
+                    "UpperNumberOfSeizures",
+                    "TimePeriod",
+                )
                 if attrs.get(k)
             )
             detail = f" ({rate})" if rate else ""
@@ -298,9 +302,7 @@ def _verify_stage_feedback(family: str, pred_trace: Any, gold_letter: ExectLette
     if correct_add:
         parts.append(f"Correctly ADDED {len(correct_add)} facts the draft missed (good).")
     if wrong_add:
-        shown = "; ".join(
-            _labels_for_keys(title, verified_anns, wrong_add, note)[:_MAX_DIFF_ITEMS]
-        )
+        shown = "; ".join(_labels_for_keys(title, verified_anns, wrong_add, note)[:_MAX_DIFF_ITEMS])
         parts.append(f"WRONGLY ADDED {len(wrong_add)} facts not in gold: [{shown}].")
     parts.append(
         "Goal: be a precise FILTER (plus occasional recall-additive rescue of a "
@@ -310,7 +312,9 @@ def _verify_stage_feedback(family: str, pred_trace: Any, gold_letter: ExectLette
     return " ".join(parts)
 
 
-def _family_diffs(gold_letter: ExectLetter, pred_letter: ExectLetter) -> dict[str, dict[str, list[str]]]:
+def _family_diffs(
+    gold_letter: ExectLetter, pred_letter: ExectLetter
+) -> dict[str, dict[str, list[str]]]:
     """Per-family missed-gold and spurious-predicted headline units, as readable labels.
 
     This is the actionable signal GEPA's reflective mutation needs: it shows the
@@ -445,7 +449,9 @@ def _diff_lines(graded: dict[str, Any]) -> str:
         parts = [f"{family}:"]
         if missed:
             shown = "; ".join(missed[:_MAX_DIFF_ITEMS])
-            extra = f" (+{len(missed) - _MAX_DIFF_ITEMS} more)" if len(missed) > _MAX_DIFF_ITEMS else ""
+            extra = (
+                f" (+{len(missed) - _MAX_DIFF_ITEMS} more)" if len(missed) > _MAX_DIFF_ITEMS else ""
+            )
             parts.append(f"MISSED gold you should emit [{shown}{extra}]")
         if spurious:
             shown = "; ".join(spurious[:_MAX_DIFF_ITEMS])

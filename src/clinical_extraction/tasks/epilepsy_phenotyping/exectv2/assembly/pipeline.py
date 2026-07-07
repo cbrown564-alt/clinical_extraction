@@ -98,8 +98,7 @@ def build_finding_assembly(
         for producer_id, producer_manifest in manifest.producers.items()
     }
     source_rows = {
-        producer_id: producer.rows_by_id()
-        for producer_id, producer in producers.items()
+        producer_id: producer.rows_by_id() for producer_id, producer in producers.items()
     }
     _validate_source_rows(gold_letters, source_rows, producers)
     comparator_rows = (
@@ -274,12 +273,7 @@ def render_finding_assembly_markdown(
     origin_counts = report.get("fact_origin_accounting", {}).get("by_surface", {})
     if origin_counts:
         all_origins = sorted(
-            {
-                origin
-                for counts in origin_counts.values()
-                for origin in counts
-                if origin
-            }
+            {origin for counts in origin_counts.values() for origin in counts if origin}
         )
         lines += [
             "",
@@ -349,9 +343,10 @@ def render_finding_assembly_markdown(
     ]
     for comparison, payload in report["changed_row_accounting"].items():
         for indicator, summary in payload["by_indicator"].items():
-            categories = ", ".join(
-                f"{name}={count}" for name, count in summary["categories"].items()
-            ) or "none"
+            categories = (
+                ", ".join(f"{name}={count}" for name, count in summary["categories"].items())
+                or "none"
+            )
             lines.append(
                 f"| {comparison} | {indicator} | {summary['changed_rows']} | {categories} |"
             )
@@ -502,9 +497,7 @@ def _lane_prediction_surfaces(
     producer_id: str,
     final_findings: Sequence[Any],
 ) -> dict[str, list[Any]]:
-    source_scored = list(
-        store.findings(entity=entity, producer_id=producer_id, raw_surface=False)
-    )
+    source_scored = list(store.findings(entity=entity, producer_id=producer_id, raw_surface=False))
     evidence_valid = [finding for finding in source_scored if finding.evidence_valid]
     protocol_model_preserving_canonical = [
         finding
@@ -586,8 +579,7 @@ def _build_report(
             "producer_count": len(manifest.producers),
             "lens_count": len(manifest.lenses),
             "source_row_counts": {
-                producer_id: len(rows_by_id)
-                for producer_id, rows_by_id in source_rows.items()
+                producer_id: len(rows_by_id) for producer_id, rows_by_id in source_rows.items()
             },
         },
     }
@@ -705,9 +697,7 @@ def _lane_diagnostics(
 
 
 def _fact_origin_accounting(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    by_surface: dict[str, Counter[str]] = {
-        surface: Counter() for surface in MATERIALIZED_SURFACES
-    }
+    by_surface: dict[str, Counter[str]] = {surface: Counter() for surface in MATERIALIZED_SURFACES}
     by_lane: dict[str, dict[str, Counter[str]]] = {}
     for row in rows:
         for indicator, lane in row.get("lanes", {}).items():
@@ -742,8 +732,7 @@ def _evidence_invalid_for_lane(lane: Mapping[str, Any], indicator: str) -> int:
     prefixed = [
         warning
         for warning in warnings
-        if warning.startswith(f"{indicator}: ")
-        and "dropped_evidence_not_substring" in warning
+        if warning.startswith(f"{indicator}: ") and "dropped_evidence_not_substring" in warning
     ]
     if prefixed:
         return len(prefixed)

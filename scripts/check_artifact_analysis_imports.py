@@ -50,7 +50,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-
 SRC_PACKAGE = "src/clinical_extraction"
 
 # The quarantined package name (also the directory name we skip when scanning).

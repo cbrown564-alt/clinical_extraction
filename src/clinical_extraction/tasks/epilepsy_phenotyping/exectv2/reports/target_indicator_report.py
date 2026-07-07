@@ -30,8 +30,7 @@ HEADLINE_SCORE_POLICIES: dict[str, str] = {
         "frequency-state normalization/projection"
     ),
     PRESCRIPTION.name: (
-        "clinical_headline regimen score after deterministic medication "
-        "normalization/projection"
+        "clinical_headline regimen score after deterministic medication normalization/projection"
     ),
     INVESTIGATIONS.name: (
         "clinical_headline modality/performed/result score after deterministic "
@@ -93,16 +92,16 @@ def render_target_indicator_markdown(report: Mapping[str, Any]) -> str:
         "| --- | --- |",
     ]
     for indicator in report["target_indicators"]:
-        lines.append(
-            f"| {indicator} | {report['headline_score_policies'][indicator]} |"
-        )
-    lines.extend([
-        "",
-        "## Candidate Readout",
-        "",
-        "| Candidate | Ownership | Overall target F1 | Clears all four? | Blocking indicators |",
-        "| --- | --- | ---: | --- | --- |",
-    ])
+        lines.append(f"| {indicator} | {report['headline_score_policies'][indicator]} |")
+    lines.extend(
+        [
+            "",
+            "## Candidate Readout",
+            "",
+            "| Candidate | Ownership | Overall target F1 | Clears all four? | Blocking indicators |",
+            "| --- | --- | ---: | --- | --- |",
+        ]
+    )
     for candidate in report["candidates"]:
         blocking = ", ".join(candidate["blocking_indicators"]) or "none"
         clears = "yes" if candidate["meets_all_targets"] else "no"
@@ -208,9 +207,7 @@ def _candidate_target_report(
         for indicator in TARGET_INDICATORS
     }
     blocking = [
-        indicator
-        for indicator, score in scores.items()
-        if float(score.get("f1", 0.0)) <= threshold
+        indicator for indicator, score in scores.items() if float(score.get("f1", 0.0)) <= threshold
     ]
     return {
         "name": candidate.get("name", ""),
@@ -236,15 +233,9 @@ def _score_with_shortfall(
 
 
 def _target_only_errors(candidate: Mapping[str, Any]) -> dict[str, dict[str, int]]:
-    per_entity = (
-        candidate.get("routed_primary_errors", {})
-        .get("per_entity", {})
-    )
+    per_entity = candidate.get("routed_primary_errors", {}).get("per_entity", {})
     return {
-        indicator: {
-            key: int(value)
-            for key, value in dict(per_entity.get(indicator, {})).items()
-        }
+        indicator: {key: int(value) for key, value in dict(per_entity.get(indicator, {})).items()}
         for indicator in TARGET_INDICATORS
     }
 

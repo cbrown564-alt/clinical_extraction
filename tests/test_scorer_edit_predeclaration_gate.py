@@ -23,9 +23,7 @@ load_hypothesis_ids = _gate.load_hypothesis_ids
 mentions_dev140_replay = _gate.mentions_dev140_replay
 referenced_hypothesis_ids = _gate.referenced_hypothesis_ids
 
-_SCORING = (
-    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/prescription.py"
-)
+_SCORING = "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/prescription.py"
 _CONVENTION = (
     "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/"
     "deterministic/conventions/prescription.py"
@@ -34,12 +32,13 @@ _SF_PROJECTION = (
     "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/"
     "deterministic/sf_state_projection.py"
 )
-_LEXICON = (
-    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/drug_lexicon.py"
-)
+_LEXICON = "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/drug_lexicon.py"
 _UNGUARDED = "docs/research/some_note.md"
 
-_KNOWN_IDS = {"rx_future_medication_regex_scope_bug_2026-07-02", "sf_zero_count_precedence_2026-07-02"}
+_KNOWN_IDS = {
+    "rx_future_medication_regex_scope_bug_2026-07-02",
+    "sf_zero_count_precedence_2026-07-02",
+}
 
 
 @pytest.mark.parametrize(

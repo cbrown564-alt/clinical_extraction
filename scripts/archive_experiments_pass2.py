@@ -160,7 +160,9 @@ def append_archive_index(bucket_counts: Counter[str], moved: list[tuple[str, str
     for rel_old, rel_new, reason in sorted(moved, key=lambda x: x[1]):
         section.append(f"- `{rel_new}` (from `{Path(rel_old).name}`; {reason})")
     section.append("</details>")
-    ARCHIVE_INDEX_PATH.write_text(existing.rstrip() + "\n" + "\n".join(section) + "\n", encoding="utf-8")
+    ARCHIVE_INDEX_PATH.write_text(
+        existing.rstrip() + "\n" + "\n".join(section) + "\n", encoding="utf-8"
+    )
 
 
 def main() -> None:

@@ -9,16 +9,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     birth_history_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import BIRTH_HISTORY
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _overlaps, _owner
 
-_BIRTH_HISTORY_RULES: tuple[
-    tuple[re.Pattern[str], str, str, dict[str, str]],
-    ...
-] = (
+_BIRTH_HISTORY_RULES: tuple[tuple[re.Pattern[str], str, str, dict[str, str]], ...] = (
     (re.compile(r"\bborn\s+normally\b", re.IGNORECASE), "born-normally", "born normally", {}),
     (
         re.compile(r"\bbirth\s+was\s+normal\b", re.IGNORECASE),
@@ -90,6 +89,8 @@ _BIRTH_HISTORY_RULES: tuple[
         {},
     ),
 )
+
+
 def _extract_birth_history(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []

@@ -96,37 +96,89 @@ def __dir__() -> list[str]:
 if TYPE_CHECKING:  # eager re-exports for type checkers / IDEs only (no runtime cycle)
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         controlled_focal_seizures_evidence as controlled_focal_seizures_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         frequent_myoclonic_jerks_evidence as frequent_myoclonic_jerks_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_context_parent_epilepsy as project_context_parent_epilepsy,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_controlled_context_to_infrequent_state as project_controlled_context_to_infrequent_state,
-        project_diagnosis_context_to_sf_states as project_diagnosis_context_to_sf_states,
-        project_diagnosis_frequency_header_to_sf as project_diagnosis_frequency_header_to_sf,
-        project_diagnosis_header_parent_epilepsy as project_diagnosis_header_parent_epilepsy,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_dated_diagnosis_context_to_sf as project_dated_diagnosis_context_to_sf,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
+        project_diagnosis_context_to_sf_states as project_diagnosis_context_to_sf_states,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
+        project_diagnosis_frequency_header_to_sf as project_diagnosis_frequency_header_to_sf,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
+        project_diagnosis_header_parent_epilepsy as project_diagnosis_header_parent_epilepsy,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_dropped_sf_to_diagnosis as project_dropped_sf_to_diagnosis,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_empty_sf_candidate_to_diagnosis as project_empty_sf_candidate_to_diagnosis,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_focal_diagnosis_context_to_sf as project_focal_diagnosis_context_to_sf,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_infrequent_context_state as project_infrequent_context_state,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_returned_context_to_increased_state as project_returned_context_to_increased_state,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         project_sf_context_to_focal_diagnosis as project_sf_context_to_focal_diagnosis,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_cross_entity import (
         remote_last_seizures_evidence as remote_last_seizures_evidence,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         extend_asymmetric_prescription_evidence as extend_asymmetric_prescription_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         extend_probable_temporal_diagnosis_evidence as extend_probable_temporal_diagnosis_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         frequency_from_prescription_source as frequency_from_prescription_source,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         is_daily_total_dose as is_daily_total_dose,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_absence_like_frequency_evidence as repair_absence_like_frequency_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_case_only_evidence as repair_case_only_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_ellipsis_evidence as repair_ellipsis_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_no_further_since_evidence as repair_no_further_since_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_prescription_attrs_from_text as repair_prescription_attrs_from_text,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_prescription_frequency_synonym_evidence as repair_prescription_frequency_synonym_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_since_last_clinic_count_evidence as repair_since_last_clinic_count_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_evidence_repair import (
         repair_whitespace_equivalent_evidence as repair_whitespace_equivalent_evidence,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_sf_state import (
         project_diagnosis_text_from_evidence as project_diagnosis_text_from_evidence,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.builders.projection_sf_state import (
         project_sf_state_from_evidence as project_sf_state_from_evidence,
     )
 

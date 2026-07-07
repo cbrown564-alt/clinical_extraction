@@ -61,8 +61,7 @@ def _dropped_projection_field_notes(payload: Any) -> list[str]:
                 continue
             for key in sorted(_DISALLOWED_MODEL_PROJECTION_FIELDS & record.keys()):
                 notes.append(
-                    "dropped_model_supplied_projection_field: "
-                    f"{collection_name}[{index}] {key!r}"
+                    f"dropped_model_supplied_projection_field: {collection_name}[{index}] {key!r}"
                 )
     return notes
 
@@ -123,8 +122,7 @@ def _coerce_record_list(
             new_record.setdefault("frequency_statement_type", clinical_kind)
             new_record["clinical_kind"] = _STATEMENT_TYPE_TO_KIND[clinical_kind]
             notes.append(
-                f"coerced_statement_type_from_clinical_kind: {record_name}[{i}] "
-                f"{clinical_kind!r}"
+                f"coerced_statement_type_from_clinical_kind: {record_name}[{i}] {clinical_kind!r}"
             )
         for key, value in record.items():
             if key not in scalar_fields or value is None:

@@ -743,8 +743,7 @@ def test_prescription_splits_current_am_pm_before_titration_tail() -> None:
     prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
 
     regimen_keys = [
-        (m.text, m.attributes["DrugDose"], m.attributes["Frequency"])
-        for m in prescriptions
+        (m.text, m.attributes["DrugDose"], m.attributes["Frequency"]) for m in prescriptions
     ]
 
     assert regimen_keys == [

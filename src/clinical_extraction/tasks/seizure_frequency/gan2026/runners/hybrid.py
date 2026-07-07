@@ -53,9 +53,7 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
     draft = prediction.assessment_draft
 
     disabled_switches = {
-        group.value
-        for group in RuleGroup
-        if group not in config.ablation_config.enabled_groups
+        group.value for group in RuleGroup if group not in config.ablation_config.enabled_groups
     } | set(config.ablation_config.disabled_rule_ids)
 
     clinical_assessment, errors = assessment_probe.assemble_clinical_assessment(
@@ -85,9 +83,7 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
     diagnostics = {
         "candidate_set": candidate_set.model_dump(),
         "assessment_draft": draft.model_dump() if draft else None,
-        "clinical_assessment": (
-            clinical_assessment.model_dump() if clinical_assessment else None
-        ),
+        "clinical_assessment": (clinical_assessment.model_dump() if clinical_assessment else None),
         "projection_decision": proj_decision.model_dump() if proj_decision else None,
         "final_rendered_label": (
             final_rendered_label.model_dump() if final_rendered_label else None

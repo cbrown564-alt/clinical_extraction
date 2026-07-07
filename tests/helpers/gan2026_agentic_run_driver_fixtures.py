@@ -111,8 +111,7 @@ def router_structured_event_row(
                     "assertion_status": "asserted",
                     "applies_to": "seizures",
                     "evidence": (
-                        "brief collapses have occurred on two recent occasions "
-                        "(July and September)"
+                        "brief collapses have occurred on two recent occasions (July and September)"
                     ),
                     "time_window": "recent",
                 },
@@ -132,8 +131,7 @@ def router_structured_event_row(
                 "final_kind": final_kind,
                 "final_label": final_label,
                 "evidence": (
-                    "brief collapses have occurred on two recent occasions "
-                    "(July and September)"
+                    "brief collapses have occurred on two recent occasions (July and September)"
                 ),
                 "confidence": "high",
                 "rationale": "Original structured-event selection.",
@@ -359,9 +357,7 @@ def agent_row(
                 "event_id": "e1",
                 "normalized_label": label,
                 "semantic_kind": kind,
-                "monthly_frequency": 1.0138888888888888
-                if label == "1 per month"
-                else 1000.0,
+                "monthly_frequency": 1.0138888888888888 if label == "1 per month" else 1000.0,
                 "validation_errors": [],
             }
         ],

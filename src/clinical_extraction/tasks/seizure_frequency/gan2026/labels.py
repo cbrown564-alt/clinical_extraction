@@ -70,8 +70,12 @@ def classify_hidden_families(
 
     if gold_label == "unknown" or predicted_label == "unknown":
         families.append("unknown_boundary")
-    if "seizure free" in gold_label or "seizure free" in predicted_label or _has_any(
-        text, "seizure-free", "seizure free", "no seizures", "no further events", "last seizure"
+    if (
+        "seizure free" in gold_label
+        or "seizure free" in predicted_label
+        or _has_any(
+            text, "seizure-free", "seizure free", "no seizures", "no further events", "last seizure"
+        )
     ):
         families.append("seizure_free_duration")
     if _has_any(text, "cluster", "clusters", "per cluster"):
@@ -181,4 +185,3 @@ def classify_boundary_families(
     if _SEIZURE_FREE_DURATION_RE.search(note_text):
         families.append("seizure_free_duration")
     return tuple(dict.fromkeys(families))
-

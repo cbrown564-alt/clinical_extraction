@@ -45,9 +45,12 @@ def test_certainty_distribution_and_default_ceiling() -> None:
     gold = [
         _gold("EA1", [ExectAnnotation("Diagnosis", "epilepsy", dict(affirmed5))]),
         _gold("EA2", [ExectAnnotation("Diagnosis", "focal epilepsy", dict(affirmed5))]),
-        _gold("EA3", [
-            ExectAnnotation("Diagnosis", "jme", {"Certainty": "4", "Negation": "Affirmed"}),
-        ]),
+        _gold(
+            "EA3",
+            [
+                ExectAnnotation("Diagnosis", "jme", {"Certainty": "4", "Negation": "Affirmed"}),
+            ],
+        ),
     ]
     pred = [_pred(g.letter_id, []) for g in gold]
     audit = certainty_projection_audit(gold, pred, ["Diagnosis"])
@@ -76,38 +79,58 @@ def test_guideline_certainty_projection_rules_cover_triggers_and_febrile_negatio
         "febrile seizures",
         "There is no history of febrile seizures, head injury or meningitis.",
     ) == {"Certainty": "1", "Negation": "Negated"}
-    assert project_guideline_certainty_negation(
-        "Investigations",
-        "EEG",
-        "The EEG was normal.",
-    ) == {}
+    assert (
+        project_guideline_certainty_negation(
+            "Investigations",
+            "EEG",
+            "The EEG was normal.",
+        )
+        == {}
+    )
 
 
 def test_cui_buckets_split_consistent_inconsistent_and_result_conditioned() -> None:
     gold = [
-        _gold("EA1", [
-            # one_to_one: single CUI for the concept
-            ExectAnnotation("Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}),
-            # result_conditioned: Investigations concept with >1 CUI
-            ExectAnnotation(
-                "Investigations",
-                "eeg",
-                {"CUIPhrase": "EEG", "CUI": "C0151611", "EEG_Results": "Abnormal"},
-            ),
-        ]),
-        _gold("EA2", [
-            ExectAnnotation("Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}),
-            ExectAnnotation(
-                "Investigations",
-                "eeg",
-                {"CUIPhrase": "EEG", "CUI": "C0744602", "EEG_Results": "Normal"},
-            ),
-            # gold_inconsistent: same non-investigation concept, two CUIs
-            ExectAnnotation("EpilepsyCause", "stroke", {"CUIPhrase": "stroke", "CUI": "C0038454"}),
-        ]),
-        _gold("EA3", [
-            ExectAnnotation("EpilepsyCause", "stroke", {"CUIPhrase": "stroke", "CUI": "C0999999"}),
-        ]),
+        _gold(
+            "EA1",
+            [
+                # one_to_one: single CUI for the concept
+                ExectAnnotation(
+                    "Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}
+                ),
+                # result_conditioned: Investigations concept with >1 CUI
+                ExectAnnotation(
+                    "Investigations",
+                    "eeg",
+                    {"CUIPhrase": "EEG", "CUI": "C0151611", "EEG_Results": "Abnormal"},
+                ),
+            ],
+        ),
+        _gold(
+            "EA2",
+            [
+                ExectAnnotation(
+                    "Diagnosis", "epilepsy", {"CUIPhrase": "epilepsy", "CUI": "C0014544"}
+                ),
+                ExectAnnotation(
+                    "Investigations",
+                    "eeg",
+                    {"CUIPhrase": "EEG", "CUI": "C0744602", "EEG_Results": "Normal"},
+                ),
+                # gold_inconsistent: same non-investigation concept, two CUIs
+                ExectAnnotation(
+                    "EpilepsyCause", "stroke", {"CUIPhrase": "stroke", "CUI": "C0038454"}
+                ),
+            ],
+        ),
+        _gold(
+            "EA3",
+            [
+                ExectAnnotation(
+                    "EpilepsyCause", "stroke", {"CUIPhrase": "stroke", "CUI": "C0999999"}
+                ),
+            ],
+        ),
     ]
     buckets = cui_concept_buckets(gold, ["Diagnosis", "Investigations", "EpilepsyCause"])
     assert buckets["bucket_concepts"]["one_to_one"] == 1
@@ -128,12 +151,19 @@ def test_align_predictions_emits_empty_for_missing() -> None:
 def test_architecture_report_carries_ownership_and_layers() -> None:
     gold_attrs = {"DiagCategory": "Epilepsy", "CUIPhrase": "epilepsy", "CUI": "C0014544"}
     gold = [_gold("EA1", [ExectAnnotation("Diagnosis", "epilepsy", gold_attrs)])]
-    pred = [_pred("EA1", [
-        PredictedMention(
-            entity="Diagnosis", text="epilepsy",
-            attributes={"DiagCategory": "Epilepsy"}, evidence="",
+    pred = [
+        _pred(
+            "EA1",
+            [
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="epilepsy",
+                    attributes={"DiagCategory": "Epilepsy"},
+                    evidence="",
+                )
+            ],
         )
-    ])]
+    ]
     report = architecture_report(
         name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
     )
@@ -145,20 +175,28 @@ def test_architecture_report_carries_ownership_and_layers() -> None:
 
 def test_architecture_report_primary_headline_is_essential_only() -> None:
     gold = [
-        _gold("EA1", [
-            ExectAnnotation("Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}),
-            ExectAnnotation("Onset", "childhood", {"Certainty": "5", "Negation": "Affirmed"}),
-        ])
+        _gold(
+            "EA1",
+            [
+                ExectAnnotation(
+                    "Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}
+                ),
+                ExectAnnotation("Onset", "childhood", {"Certainty": "5", "Negation": "Affirmed"}),
+            ],
+        )
     ]
     pred = [
-        _pred("EA1", [
-            PredictedMention(
-                entity="Diagnosis",
-                text="epilepsy",
-                attributes={"Certainty": "5", "Negation": "Affirmed"},
-                evidence="epilepsy",
-            )
-        ])
+        _pred(
+            "EA1",
+            [
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="epilepsy",
+                    attributes={"Certainty": "5", "Negation": "Affirmed"},
+                    evidence="epilepsy",
+                )
+            ],
+        )
     ]
     report = architecture_report(
         name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
@@ -171,23 +209,29 @@ def test_architecture_report_primary_headline_is_essential_only() -> None:
 
 def test_architecture_report_separates_cui_free_and_projected_sf_recovery() -> None:
     gold = [
-        _gold("EA1", [
-            ExectAnnotation(
-                "SeizureFrequency",
-                "seizures",
-                {"CUI": "C0036572", "NumberOfSeizures": "2"},
-            )
-        ])
+        _gold(
+            "EA1",
+            [
+                ExectAnnotation(
+                    "SeizureFrequency",
+                    "seizures",
+                    {"CUI": "C0036572", "NumberOfSeizures": "2"},
+                )
+            ],
+        )
     ]
     pred = [
-        _pred("EA1", [
-            PredictedMention(
-                entity="SeizureFrequency",
-                text="seizures",
-                attributes={"NumberOfSeizures": "2"},
-                evidence="seizures twice a month",
-            )
-        ])
+        _pred(
+            "EA1",
+            [
+                PredictedMention(
+                    entity="SeizureFrequency",
+                    text="seizures",
+                    attributes={"NumberOfSeizures": "2"},
+                    evidence="seizures twice a month",
+                )
+            ],
+        )
     ]
     report = architecture_report(
         name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
@@ -199,26 +243,37 @@ def test_architecture_report_separates_cui_free_and_projected_sf_recovery() -> N
 
 def test_architecture_report_includes_evidence_and_error_summary() -> None:
     gold = [
-        _gold("EA1", [
-            ExectAnnotation("Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}),
-            ExectAnnotation("EpilepsyCause", "stroke", {"Certainty": "5", "Negation": "Affirmed"}),
-        ], note_text="The patient has epilepsy after a stroke.")
+        _gold(
+            "EA1",
+            [
+                ExectAnnotation(
+                    "Diagnosis", "epilepsy", {"Certainty": "5", "Negation": "Affirmed"}
+                ),
+                ExectAnnotation(
+                    "EpilepsyCause", "stroke", {"Certainty": "5", "Negation": "Affirmed"}
+                ),
+            ],
+            note_text="The patient has epilepsy after a stroke.",
+        )
     ]
     pred = [
-        _pred("EA1", [
-            PredictedMention(
-                entity="Diagnosis",
-                text="epilepsy",
-                attributes={"Certainty": "5", "Negation": "Affirmed"},
-                evidence="epilepsy",
-            ),
-            PredictedMention(
-                entity="Diagnosis",
-                text="migraine",
-                attributes={"Certainty": "5", "Negation": "Affirmed"},
-                evidence="not in note text",
-            ),
-        ])
+        _pred(
+            "EA1",
+            [
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="epilepsy",
+                    attributes={"Certainty": "5", "Negation": "Affirmed"},
+                    evidence="epilepsy",
+                ),
+                PredictedMention(
+                    entity="Diagnosis",
+                    text="migraine",
+                    attributes={"Certainty": "5", "Negation": "Affirmed"},
+                    evidence="not in note text",
+                ),
+            ],
+        )
     ]
     report = architecture_report(
         name="t", ownership="llm_first", gold_letters=gold, pred_letters=pred
@@ -280,10 +335,7 @@ def test_row_level_error_ledger_splits_essential_family_failures() -> None:
         gold_letters=gold,
         pred_letters=pred,
     )
-    by_type_family = {
-        (row["error_type"], row["family"]): row
-        for row in rows
-    }
+    by_type_family = {(row["error_type"], row["family"]): row for row in rows}
     assert by_type_family[("candidate_miss", "EpilepsyCause")]["count"] == 1
     assert by_type_family[("wrong_detail_selection", "Diagnosis")]["count"] == 1
     assert by_type_family[("projection_gap", "Diagnosis")]["count"] == 1

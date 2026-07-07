@@ -156,9 +156,7 @@ def test_single_call_per_entity_mentions_prompt_is_entity_scoped() -> None:
     payload = json.loads(payload_str)
 
     assert payload["stage"] == "single_call_per_entity_mention_selection"
-    assert payload["architecture"]["name"] == (
-        "llm_only_single_call_per_entity_mention_selection"
-    )
+    assert payload["architecture"]["name"] == ("llm_only_single_call_per_entity_mention_selection")
     assert payload["target_entity"] == DIAGNOSIS.name
     assert payload["target_entities"] == [DIAGNOSIS.name]
     assert "generated_mentions" in payload["output_schema"]
@@ -246,9 +244,7 @@ def test_single_call_clean_render_ids_prompt_has_source_and_clean_text() -> None
     payload = json.loads(payload_str)
 
     assert payload["stage"] == "single_call_clean_render_id_selection"
-    assert payload["architecture"]["name"] == (
-        "llm_only_single_call_clean_render_id_selection"
-    )
+    assert payload["architecture"]["name"] == ("llm_only_single_call_clean_render_id_selection")
     assert "generated_mentions" in payload["output_schema"]
     assert "final_mention_ids" in payload["output_schema"]
     generated_schema = payload["output_schema"]["generated_mentions"][0]
@@ -363,9 +359,7 @@ def test_qwen_pool_entity_adjudication_prompt_is_entity_scoped() -> None:
     payload = json.loads(payload_str)
 
     assert payload["stage"] == "qwen_pool_entity_adjudication"
-    assert payload["architecture"]["name"] == (
-        "llm_only_qwen_pool_entity_self_adjudication"
-    )
+    assert payload["architecture"]["name"] == ("llm_only_qwen_pool_entity_self_adjudication")
     assert payload["target_entity"] == DIAGNOSIS.name
     assert payload["target_entities"] == [DIAGNOSIS.name]
     assert payload["model_generated_mentions"][0]["entity"] == DIAGNOSIS.name
@@ -502,8 +496,7 @@ def test_parse_single_call_mentions_preserves_generated_and_final_mentions() -> 
 
     assert record is not None
     assert errors == [
-        "coerced_attribute_value: "
-        "generated_mentions.mention[0].attributes.Certainty 5 -> '5'"
+        "coerced_attribute_value: generated_mentions.mention[0].attributes.Certainty 5 -> '5'"
     ]
     assert record.generated_mentions[0].attributes["Certainty"] == "5"
     assert route.final_mentions_from_generation_selection(record) == []
@@ -591,9 +584,7 @@ def test_parse_single_call_mention_ids_preserves_generated_mentions_and_ids() ->
                 },
             ],
             "final_mention_ids": ["m2", "m1"],
-            "selection_summary": [
-                {"mention_id": "m1", "decision": "keep", "reason": "supported"}
-            ],
+            "selection_summary": [{"mention_id": "m1", "decision": "keep", "reason": "supported"}],
         }
     )
 
@@ -601,8 +592,7 @@ def test_parse_single_call_mention_ids_preserves_generated_mentions_and_ids() ->
 
     assert record is not None
     assert errors == [
-        "coerced_attribute_value: "
-        "generated_mentions.mention[0].attributes.Certainty 5 -> '5'"
+        "coerced_attribute_value: generated_mentions.mention[0].attributes.Certainty 5 -> '5'"
     ]
     assert record.generated_mentions[0]["mention_id"] == "m1"
     assert record.generated_mentions[0]["source_text"] == "focal epilepsy"
@@ -729,14 +719,8 @@ def test_parse_qwen_pool_group_adjudication_uses_included_representatives() -> N
     assert record.final_mention_ids == ["pool_m2"]
     assert record.fact_groups[1]["equivalent_mention_ids"] == ["pool_m3"]
     assert record.selection_summary[0]["mention_id"] == "pool_m2"
-    assert (
-        "fact_groups.group[1].equivalent_mention_ids:coerced_string_to_list"
-        in errors
-    )
-    assert (
-        "fact_groups:included_group_missing_representative_id: group[2]"
-        in errors
-    )
+    assert "fact_groups.group[1].equivalent_mention_ids:coerced_string_to_list" in errors
+    assert "fact_groups:included_group_missing_representative_id: group[2]" in errors
 
 
 def test_parse_qwen_pool_group_adjudication_accepts_model_final_id_alias() -> None:
@@ -842,8 +826,7 @@ def test_model_generated_mentions_from_row_uses_raw_qwen_surfaces() -> None:
     )
     assert len(mention_only_pool) == 2
     assert all(
-        mention["source_surface"] != "structured_events_final"
-        for mention in mention_only_pool
+        mention["source_surface"] != "structured_events_final" for mention in mention_only_pool
     )
 
 
@@ -1001,9 +984,7 @@ def test_prompt_only_single_call_inventory_records_inventory_prompt(
     assert row["structured_events_final"] == []
     assert metadata["call_strategy"] == "single_call_inventory"
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_inventory`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_inventory`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_single_call_mentions_records_mention_prompt(
@@ -1036,9 +1017,7 @@ def test_prompt_only_single_call_mentions_records_mention_prompt(
     assert row["structured_mentions_final"] == []
     assert metadata["call_strategy"] == "single_call_mentions"
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_mentions`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_mentions`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_single_call_per_entity_mentions_records_entity_prompts(
@@ -1109,9 +1088,7 @@ def test_prompt_only_single_call_typed_mentions_records_typed_prompt(
     assert row["structured_mentions_final"] == []
     assert metadata["call_strategy"] == "single_call_typed_mentions"
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_typed_mentions`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_typed_mentions`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_single_call_mention_ids_records_id_prompt(
@@ -1145,9 +1122,7 @@ def test_prompt_only_single_call_mention_ids_records_id_prompt(
     assert row["final_mention_ids"] == []
     assert metadata["call_strategy"] == "single_call_mention_ids"
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_mention_ids`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_mention_ids`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_single_call_render_ids_records_render_prompt(
@@ -1182,9 +1157,7 @@ def test_prompt_only_single_call_render_ids_records_render_prompt(
     assert row["final_mention_ids"] == []
     assert metadata["call_strategy"] == "single_call_render_ids"
     assert metadata["summary"]["inventory_parse_failures"] == 0
-    assert "Call strategy: `single_call_render_ids`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `single_call_render_ids`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_single_call_clean_render_ids_records_clean_prompt(
@@ -1317,9 +1290,7 @@ def test_prompt_only_qwen_pool_adjudication_records_pool_prompt(
     assert metadata["pool_letters"] == 1
     assert metadata["pool_mentions_total"] == 1
     assert metadata["summary"]["selection_parse_failures"] == 0
-    assert "Call strategy: `qwen_pool_adjudication`" in report_path.read_text(
-        encoding="utf-8"
-    )
+    assert "Call strategy: `qwen_pool_adjudication`" in report_path.read_text(encoding="utf-8")
 
 
 def test_prompt_only_qwen_pool_entity_adjudication_records_entity_prompts(
@@ -1384,12 +1355,13 @@ def test_prompt_only_qwen_pool_entity_adjudication_records_entity_prompts(
     entity_prompts = prompt_bundle["entity_prompt_inputs"]
     assert entity_prompts[DIAGNOSIS.name]["target_entity"] == DIAGNOSIS.name
     assert entity_prompts[PRESCRIPTION.name]["target_entity"] == PRESCRIPTION.name
-    assert entity_prompts[DIAGNOSIS.name]["model_generated_mentions"][0][
-        "mention_id"
-    ] == "pool_dx_1"
-    assert entity_prompts[PRESCRIPTION.name]["model_generated_mentions"][0][
-        "mention_id"
-    ] == "pool_rx_1"
+    assert (
+        entity_prompts[DIAGNOSIS.name]["model_generated_mentions"][0]["mention_id"] == "pool_dx_1"
+    )
+    assert (
+        entity_prompts[PRESCRIPTION.name]["model_generated_mentions"][0]["mention_id"]
+        == "pool_rx_1"
+    )
     assert row["call_strategy"] == "qwen_pool_entity_adjudication"
     assert row["structured_mentions_generation"][0]["mention_id"] == "pool_dx_1"
     assert row["structured_mentions_final"] == []

@@ -138,8 +138,7 @@ class FrozenCandidateOnlyCandidate(BaseModel):
     )
     assertion_status: AssertionStatus = Field(
         description=(
-            "Whether the note asserts, negates, hypothesizes, or is uncertain about "
-            "the fact."
+            "Whether the note asserts, negates, hypothesizes, or is uncertain about the fact."
         )
     )
     applies_to: str | None = Field(
@@ -155,8 +154,7 @@ class FrozenCandidateOnlyCandidate(BaseModel):
     normalization_note: str | None = Field(
         default=None,
         description=(
-            "Brief note about count, timeframe, or duration wording; do not infer "
-            "beyond the text."
+            "Brief note about count, timeframe, or duration wording; do not infer beyond the text."
         ),
     )
     confidence: Literal["low", "medium", "high"] = Field(
@@ -199,8 +197,7 @@ class FrozenEvidenceOnlySpan(BaseModel):
     )
     extracted_components: FrequencyComponents = Field(
         description=(
-            "Count, timeframe, unit, and related components explicitly present in "
-            "the evidence."
+            "Count, timeframe, unit, and related components explicitly present in the evidence."
         )
     )
     missing_components: tuple[FrequencyComponentName, ...] = Field(
@@ -356,10 +353,7 @@ def build_candidate_only_prompt_input(
                     "interpretation, such as rescue-medication use, medication changes, "
                     "injuries, or safety advice."
                 ),
-                (
-                    "Use 'no_reference' only when the note has no usable seizure-frequency "
-                    "evidence."
-                ),
+                ("Use 'no_reference' only when the note has no usable seizure-frequency evidence."),
                 "Every evidence value must be an exact substring from the note.",
                 (
                     "Use normalization_note only for count, duration, or timeframe wording "
@@ -387,8 +381,7 @@ def build_gold_query_evidence_only_prompt_input(
         {
             "task": "Select evidence relevant to the current seizure-frequency question.",
             "query": (
-                "What evidence in this note is decisive or relevant for current seizure "
-                "frequency?"
+                "What evidence in this note is decisive or relevant for current seizure frequency?"
             ),
             "instructions": [
                 (
@@ -433,10 +426,7 @@ def build_candidate_conditioned_evidence_only_prompt_input(
                     "Select exact evidence spans that support, contradict, incompletely "
                     "support, or contextualize the candidate."
                 ),
-                (
-                    "Classify role, support status, missing components, conflicts, and "
-                    "ambiguity."
-                ),
+                ("Classify role, support status, missing components, conflicts, and ambiguity."),
                 "Every evidence value must be an exact substring from the note.",
                 NO_FREQUENCY_LABEL_INSTRUCTION,
                 "Return exactly one JSON object matching evidence_only_schema.",
@@ -482,10 +472,7 @@ def build_projection_only_prompt_input(
                     "When a supplied candidate clearly states a frequency in ordinary "
                     "language, express it as a concise seizure-frequency label."
                 ),
-                (
-                    "Return seizure_frequency_label only when the supplied information "
-                    "supports one."
-                ),
+                ("Return seizure_frequency_label only when the supplied information supports one."),
                 "Return exactly one JSON object matching projection_only_schema.",
             ],
             "input_source": input_source,

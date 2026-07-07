@@ -128,15 +128,11 @@ def test_selected_evidence_derives_vague_daily_burden() -> None:
 
 def test_selected_evidence_derives_hourly_rate() -> None:
     assert (
-        selected_evidence_derivation.prediction_label_from_selected_evidence(
-            "9 per hour"
-        )
+        selected_evidence_derivation.prediction_label_from_selected_evidence("9 per hour")
         == "multiple per day"
     )
     assert (
-        selected_evidence_derivation.prediction_label_from_selected_evidence(
-            "4/h"
-        )
+        selected_evidence_derivation.prediction_label_from_selected_evidence("4/h")
         == "multiple per day"
     )
     assert (

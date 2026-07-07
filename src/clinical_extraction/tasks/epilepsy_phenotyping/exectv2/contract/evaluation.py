@@ -4,6 +4,7 @@ The ExECTv2 gold has entity-specific representation and scoring quirks. Keeping
 them here prevents loader, scorer, and extractor de-duplication from growing
 separate one-off policy constants.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -26,11 +27,13 @@ PhraseTarget = Literal["raw_text", "cuiphrase"]
 ClinicalRecoveryClass = Literal["decomposable", "atomic_concept", "coverage_diagnostic"]
 
 DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUIPhrase"})
-SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({
-    "CUIPhrase",
-    "Certainty",
-    "Negation",
-})
+SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES: frozenset[str] = frozenset(
+    {
+        "CUIPhrase",
+        "Certainty",
+        "Negation",
+    }
+)
 SEMANTIC_EXTRA_IGNORE_ATTRIBUTES: frozenset[str] = frozenset({"CUI"})
 
 
@@ -40,9 +43,7 @@ class EntityEvaluationPolicy:
 
     entity: str
     phrase_target: PhraseTarget = "raw_text"
-    benchmark_ignore_attributes: frozenset[str] = field(
-        default=DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES
-    )
+    benchmark_ignore_attributes: frozenset[str] = field(default=DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES)
     preserve_distinct_occurrences: bool = False
 
     @property

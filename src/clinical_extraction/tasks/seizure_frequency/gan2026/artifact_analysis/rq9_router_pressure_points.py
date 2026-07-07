@@ -111,9 +111,7 @@ def write_pressure_report(summary: Mapping[str, Any], path: Path) -> None:
             "reviewed_noncorrect_rows",
             "reviewed_correct_rate",
         ):
-            lines.append(
-                f"| {key.replace('_', ' ')} | {_format_metric(reason_summary.get(key))} |"
-            )
+            lines.append(f"| {key.replace('_', ' ')} | {_format_metric(reason_summary.get(key))} |")
         lines.extend(["", "| Source label bucket | Rows | Source wrong | Reviewed correct |"])
         lines.append("| --- | ---: | ---: | ---: |")
         for bucket, bucket_summary in reason_summary["by_source_label_bucket"].items():
@@ -157,8 +155,7 @@ def _by_source_label_bucket(
     for row in rows:
         grouped[_source_label_bucket(row)].append(row)
     return {
-        bucket: _summarize_group(bucket_rows)
-        for bucket, bucket_rows in sorted(grouped.items())
+        bucket: _summarize_group(bucket_rows) for bucket, bucket_rows in sorted(grouped.items())
     }
 
 
@@ -180,8 +177,7 @@ def _summarize_group(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     reviewed_noncorrect_rows = [
         row
         for row in reviewed_rows
-        if row.get("development_accounting", {}).get("human_simple_class")
-        in {"ambiguous", "wrong"}
+        if row.get("development_accounting", {}).get("human_simple_class") in {"ambiguous", "wrong"}
     ]
     return {
         "nonprediction_rows": len(rows),
@@ -196,9 +192,7 @@ def _summarize_group(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "reviewed_correct_rows": len(reviewed_correct_rows),
         "reviewed_noncorrect_rows": len(reviewed_noncorrect_rows),
         "reviewed_correct_rate": _safe_rate(len(reviewed_correct_rows), len(reviewed_rows)),
-        "reviewed_noncorrect_rate": _safe_rate(
-            len(reviewed_noncorrect_rows), len(reviewed_rows)
-        ),
+        "reviewed_noncorrect_rate": _safe_rate(len(reviewed_noncorrect_rows), len(reviewed_rows)),
     }
 
 

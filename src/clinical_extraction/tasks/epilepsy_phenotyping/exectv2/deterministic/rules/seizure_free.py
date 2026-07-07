@@ -8,6 +8,7 @@ synthetic ExECTv2 letter format.  The Gan 2026 rules carry portability tags
 SEIZURE_FREQUENCY; these carry CLINICAL_EPILEPSY since the patterns are not
 dataset-specific.
 """
+
 from __future__ import annotations
 
 import re
@@ -31,7 +32,9 @@ _COUNT = NUMBER_TOKEN
 # Approximation qualifiers that precede a duration count ("seizure free for more
 # than five years", "for almost 2 years") — gold keeps the count, dropping the
 # qualifier, so they must not block the duration match.
-_DUR_QUALIFIER = r"(?:over|more\s+than|at\s+least|nearly|almost|around|about|approximately|the\s+past)"
+_DUR_QUALIFIER = (
+    r"(?:over|more\s+than|at\s+least|nearly|almost|around|about|approximately|the\s+past)"
+)
 
 # A "no <seizure>" / control phrase is NOT a current seizure-frequency statement
 # when it sits in a history / family-history / risk / investigation-marker frame:
@@ -58,16 +61,20 @@ def _is_nonclinical_zero_context(match: re.Match[str], context: ExtractionContex
     return bool(_NONCLINICAL_CONTEXT.search(context.text[lo:hi]))
 
 
-def _is_seizure_free_distractor_context(
-    match: re.Match[str], context: ExtractionContext
-) -> bool:
+def _is_seizure_free_distractor_context(match: re.Match[str], context: ExtractionContext) -> bool:
     lo = max(0, match.start() - 80)
     hi = min(len(context.text), match.end() + 90)
     window = context.text[lo:hi]
     if _SEIZURE_FREE_DISTRACTOR_CONTEXT.search(window):
         return True
-    following = context.text[match.end(): match.end() + 90]
-    return bool(re.search(r"\b(?:however|but)\b.{0,50}\b(?:had|another)\s+(?:a\s+)?seizure\b", following, re.IGNORECASE))
+    following = context.text[match.end() : match.end() + 90]
+    return bool(
+        re.search(
+            r"\b(?:however|but)\b.{0,50}\b(?:had|another)\s+(?:a\s+)?seizure\b",
+            following,
+            re.IGNORECASE,
+        )
+    )
 
 
 def _sf_attrs(
@@ -106,9 +113,8 @@ def _sf_candidate(
 #          "seizure free for 3 months", "seizure-free for 2 years"
 # ---------------------------------------------------------------------------
 
-def _build_sf_with_duration(
-    match: re.Match[str], _ctx: ExtractionContext
-) -> AttributeExtraction:
+
+def _build_sf_with_duration(match: re.Match[str], _ctx: ExtractionContext) -> AttributeExtraction:
     count = match.group("count")
     unit = match.group("unit")
     return _sf_candidate(
@@ -120,15 +126,12 @@ def _build_sf_with_duration(
     )
 
 
-
-
 # ---------------------------------------------------------------------------
 # Rule 2: bare "seizure free" / "seizure-free" (no duration)
 # ---------------------------------------------------------------------------
 
-def _build_sf_bare(
-    match: re.Match[str], _ctx: ExtractionContext
-) -> AttributeExtraction:
+
+def _build_sf_bare(match: re.Match[str], _ctx: ExtractionContext) -> AttributeExtraction:
     return _sf_candidate(
         match,
         rule_id="sf.bare",
@@ -137,7 +140,7 @@ def _build_sf_bare(
 
 
 def _is_sf_bare_distractor(match: re.Match[str], context: ExtractionContext) -> bool:
-    following = context.text[match.end(): match.end() + 120].lower()
+    following = context.text[match.end() : match.end() + 120].lower()
     # "seizure-free interval" used administratively (e.g. driving law references)
     if re.search(r"\binterval\b", following[:40]):
         # Still valid if the interval is described as extending/achieved
@@ -145,17 +148,16 @@ def _is_sf_bare_distractor(match: re.Match[str], context: ExtractionContext) -> 
             return False
         return True
     # "required seizure-free period" — administrative
-    if re.search(r"\brequired\b", context.text[max(0, match.start() - 30): match.start()].lower()):
+    if re.search(r"\brequired\b", context.text[max(0, match.start() - 30) : match.start()].lower()):
         return True
     return False
-
-
 
 
 # ---------------------------------------------------------------------------
 # Rule 3: "no seizures" with optional duration
 #          "no seizures for 6 months", "no further seizures"
 # ---------------------------------------------------------------------------
+
 
 def _build_no_seizures_duration(
     match: re.Match[str], _ctx: ExtractionContext
@@ -171,15 +173,12 @@ def _build_no_seizures_duration(
     )
 
 
-
-
 # ---------------------------------------------------------------------------
 # Rule 3a: "has not had <specific seizure type> for N years"
 # ---------------------------------------------------------------------------
 
-def _build_no_had_duration(
-    match: re.Match[str], _ctx: ExtractionContext
-) -> AttributeExtraction:
+
+def _build_no_had_duration(match: re.Match[str], _ctx: ExtractionContext) -> AttributeExtraction:
     return _sf_candidate(
         match,
         rule_id="sf.no_had_duration",
@@ -187,8 +186,6 @@ def _build_no_had_duration(
         period_count=match.group("count"),
         unit=match.group("unit"),
     )
-
-
 
 
 # ---------------------------------------------------------------------------
@@ -214,9 +211,7 @@ _CONTROL_PHRASES = re.compile(
 )
 
 
-def _build_control_phrase(
-    match: re.Match[str], _ctx: ExtractionContext
-) -> AttributeExtraction:
+def _build_control_phrase(match: re.Match[str], _ctx: ExtractionContext) -> AttributeExtraction:
     return _sf_candidate(
         match,
         rule_id="sf.control_phrase",
@@ -224,32 +219,69 @@ def _build_control_phrase(
     )
 
 
-
-
 # ---------------------------------------------------------------------------
 # Rule 5: "0 seizures" / "zero seizures" — explicit zero count
 # ---------------------------------------------------------------------------
 
-def _build_zero_count(
-    match: re.Match[str], _ctx: ExtractionContext
-) -> AttributeExtraction:
+
+def _build_zero_count(match: re.Match[str], _ctx: ExtractionContext) -> AttributeExtraction:
     return _sf_candidate(
         match,
         rule_id="sf.zero_count",
         portability=Portability.CLINICAL_EPILEPSY,
     )
+
+
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
 
 from .extract_impl_types import ExtractRuleImpl
 
 SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
-    'sf.duration': ExtractRuleImpl(re.compile('\\bseizure(?:[-‐-―\\s])free\\s+(?:for\\s+)?(?:(?:over|more\\s+than|at\\s+least|nearly|almost|around|about|approximately|the\\s+past)\\s+)*(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b', re.IGNORECASE), _build_sf_with_duration, exclude=(_is_seizure_free_distractor_context,)),
-    'sf.zero_count': ExtractRuleImpl(re.compile('\\b(?:0|zero)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\b', re.IGNORECASE), _build_zero_count),
-    'sf.no_seizures_duration': ExtractRuleImpl(re.compile('\\bno\\s+(?:further\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))(?:\\s+for\\s+(?:over\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years))?\\b', re.IGNORECASE), _build_no_seizures_duration, exclude=(_is_nonclinical_zero_context,)),
-    'sf.no_had_duration': ExtractRuleImpl(re.compile("\\b(?:(?:has|have|had)\\s+not\\s+had\\s+(?:any\\s+|any\\s+more\\s+|one\\s+of\\s+(?:his|her|their)\\s+(?:bigger|larger|major)\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:hasn't|haven't|hadn't)\\s+(?:had\\s+)?(?:any\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:they|these)\\s+(?:have\\s+|has\\s+)?(?:not\\s+happen(?:ed)?|haven't\\s+happened|hasn't\\s+happened))\\s+(?:now\\s+)?for\\s+(?:around\\s+|about\\s+|at\\s+least\\s+|over\\s+|more\\s+than\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b", re.IGNORECASE), _build_no_had_duration),
-    'sf.control_phrase': ExtractRuleImpl(re.compile('\\b(?:complete\\s+seizure\\s+control|seizure\\s+freedom(?:\\s+(?:continues|maintained|achieved))?|free\\s+of\\s+(?:his|her|their|all)?\\s*(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+clinical\\s+seizures|no\\s+recorded\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+events\\s+of\\s+concern|no\\s+breakthrough\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|interval\\s+history\\s+negative\\s+for\\s+seizures|has\\s+not\\s+(?:experienced|reported|had)\\s+any\\s+(?:further\\s+)?(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?:are|is|seem|seems|remain|remains)\\s+(?:completely\\s+)?(?:well\\s+)?under\\s+control)\\b', re.IGNORECASE), _build_control_phrase, exclude=(_is_nonclinical_zero_context,)),
-    'sf.bare': ExtractRuleImpl(re.compile('\\bseizure(?:[-‐-―\\s])free\\b', re.IGNORECASE), _build_sf_bare, exclude=(_is_sf_bare_distractor, _is_seizure_free_distractor_context,)),
+    "sf.duration": ExtractRuleImpl(
+        re.compile(
+            "\\bseizure(?:[-‐-―\\s])free\\s+(?:for\\s+)?(?:(?:over|more\\s+than|at\\s+least|nearly|almost|around|about|approximately|the\\s+past)\\s+)*(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            re.IGNORECASE,
+        ),
+        _build_sf_with_duration,
+        exclude=(_is_seizure_free_distractor_context,),
+    ),
+    "sf.zero_count": ExtractRuleImpl(
+        re.compile(
+            "\\b(?:0|zero)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\b",
+            re.IGNORECASE,
+        ),
+        _build_zero_count,
+    ),
+    "sf.no_seizures_duration": ExtractRuleImpl(
+        re.compile(
+            "\\bno\\s+(?:further\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))(?:\\s+for\\s+(?:over\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years))?\\b",
+            re.IGNORECASE,
+        ),
+        _build_no_seizures_duration,
+        exclude=(_is_nonclinical_zero_context,),
+    ),
+    "sf.no_had_duration": ExtractRuleImpl(
+        re.compile(
+            "\\b(?:(?:has|have|had)\\s+not\\s+had\\s+(?:any\\s+|any\\s+more\\s+|one\\s+of\\s+(?:his|her|their)\\s+(?:bigger|larger|major)\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:hasn't|haven't|hadn't)\\s+(?:had\\s+)?(?:any\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:they|these)\\s+(?:have\\s+|has\\s+)?(?:not\\s+happen(?:ed)?|haven't\\s+happened|hasn't\\s+happened))\\s+(?:now\\s+)?for\\s+(?:around\\s+|about\\s+|at\\s+least\\s+|over\\s+|more\\s+than\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            re.IGNORECASE,
+        ),
+        _build_no_had_duration,
+    ),
+    "sf.control_phrase": ExtractRuleImpl(
+        re.compile(
+            "\\b(?:complete\\s+seizure\\s+control|seizure\\s+freedom(?:\\s+(?:continues|maintained|achieved))?|free\\s+of\\s+(?:his|her|their|all)?\\s*(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+clinical\\s+seizures|no\\s+recorded\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+events\\s+of\\s+concern|no\\s+breakthrough\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|interval\\s+history\\s+negative\\s+for\\s+seizures|has\\s+not\\s+(?:experienced|reported|had)\\s+any\\s+(?:further\\s+)?(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?:are|is|seem|seems|remain|remains)\\s+(?:completely\\s+)?(?:well\\s+)?under\\s+control)\\b",
+            re.IGNORECASE,
+        ),
+        _build_control_phrase,
+        exclude=(_is_nonclinical_zero_context,),
+    ),
+    "sf.bare": ExtractRuleImpl(
+        re.compile("\\bseizure(?:[-‐-―\\s])free\\b", re.IGNORECASE),
+        _build_sf_bare,
+        exclude=(
+            _is_sf_bare_distractor,
+            _is_seizure_free_distractor_context,
+        ),
+    ),
 }
-
-

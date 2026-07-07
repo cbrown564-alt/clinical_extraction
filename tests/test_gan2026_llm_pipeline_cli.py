@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
@@ -1058,9 +1058,7 @@ def test_general_llm_pipeline_cli_rejects_existing_outputs_without_resume_or_ove
     monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: ["row"])
 
     with pytest.raises(SystemExit) as exc_info:
-        llm_pipeline_cli.run_cli(
-            ["--pipeline", "dummy", "--mode", "prompt-only", "--limit", "1"]
-        )
+        llm_pipeline_cli.run_cli(["--pipeline", "dummy", "--mode", "prompt-only", "--limit", "1"])
 
     assert exc_info.value.code == 2
     assert calls == {}
@@ -1069,9 +1067,7 @@ def test_general_llm_pipeline_cli_rejects_existing_outputs_without_resume_or_ove
     assert "--resume-existing" in stderr
 
 
-def test_general_llm_pipeline_cli_allows_deliberate_overwrite(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_general_llm_pipeline_cli_allows_deliberate_overwrite(tmp_path: Path, monkeypatch) -> None:
     calls: dict[str, Any] = {}
     spec = _dummy_spec(tmp_path, calls)
     spec.default_jsonl_path.write_text('{"source_row_index": 101}\n')

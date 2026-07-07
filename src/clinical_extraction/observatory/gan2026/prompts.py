@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib
 import inspect
-import json
 from collections.abc import Iterable, Mapping
 from typing import Any
 

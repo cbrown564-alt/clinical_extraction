@@ -19,6 +19,7 @@ the over-threshold files and written into the audit note.
 Also measures the un-evolved baselines (the ``FROM_SCRATCH_SEED_INSTRUCTION``
 and sibling seed constants) for comparison.
 """
+
 from __future__ import annotations
 
 import json
@@ -56,10 +57,38 @@ def _approx_tokens(text: str) -> int:
 # not a parse.
 _NUMBERED = re.compile(r"^\s*(?:\d+[.)]|\(?[a-z][.)]|[A-Z][.)]|[-*•]\s)", re.MULTILINE)
 _IMPERATIVE_VERBS = {
-    "use", "return", "do", "never", "always", "if", "when", "ensure", "match",
-    "extract", "select", "include", "exclude", "prefer", "avoid", "combine",
-    "read", "write", "list", "provide", "check", "treat", "map", "assign",
-    "state", "describe", "report", "keep", "skip", "fire", "only", "for",
+    "use",
+    "return",
+    "do",
+    "never",
+    "always",
+    "if",
+    "when",
+    "ensure",
+    "match",
+    "extract",
+    "select",
+    "include",
+    "exclude",
+    "prefer",
+    "avoid",
+    "combine",
+    "read",
+    "write",
+    "list",
+    "provide",
+    "check",
+    "treat",
+    "map",
+    "assign",
+    "state",
+    "describe",
+    "report",
+    "keep",
+    "skip",
+    "fire",
+    "only",
+    "for",
 }
 _SENTENCE = re.compile(r"[^.!?\n]+[.!?]")
 

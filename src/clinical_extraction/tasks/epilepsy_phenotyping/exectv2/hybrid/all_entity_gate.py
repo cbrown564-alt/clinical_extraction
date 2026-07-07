@@ -19,8 +19,8 @@ a clinical fact, never rewrites a phrase, and never prunes a well-formed mention
 on semantic grounds — that is the LLM's job (the candidate already came from the
 LLM). Routed mentions are surfaced in a first-class taxonomy, never hidden.
 """
+
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from collections import Counter
 from collections.abc import Hashable, Sequence
@@ -33,6 +33,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedMention,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     canonicalize_attribute_value,
 )
@@ -40,14 +41,30 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 _CUI_KEYS: frozenset[str] = frozenset({"CUI", "CUIPhrase"})
 
 # Frequency-bearing attributes (mirrors hybrid.verify_route for SF parity).
-_SF_FREQUENCY_ATTRS: frozenset[str] = frozenset({
-    "NumberOfTimePeriods", "LowerNumberOfTimePeriods", "UpperNumberOfTimePeriods",
-    "TimePeriod", "TimeSince_or_TimeOfEvent", "FrequencyChange", "PointInTime",
-    "DayDate", "MonthDate", "YearDate", "AgeLower", "AgeUpper", "AgeUnit",
-})
-_SF_COUNT_ATTRS: frozenset[str] = frozenset({
-    "NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures",
-})
+_SF_FREQUENCY_ATTRS: frozenset[str] = frozenset(
+    {
+        "NumberOfTimePeriods",
+        "LowerNumberOfTimePeriods",
+        "UpperNumberOfTimePeriods",
+        "TimePeriod",
+        "TimeSince_or_TimeOfEvent",
+        "FrequencyChange",
+        "PointInTime",
+        "DayDate",
+        "MonthDate",
+        "YearDate",
+        "AgeLower",
+        "AgeUpper",
+        "AgeUnit",
+    }
+)
+_SF_COUNT_ATTRS: frozenset[str] = frozenset(
+    {
+        "NumberOfSeizures",
+        "LowerNumberOfSeizures",
+        "UpperNumberOfSeizures",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -70,10 +87,7 @@ def _sf_is_frequency_bearing(attrs: dict[str, str]) -> bool:
 
 def _duplicate_key(mention: PredictedMention) -> Hashable:
     scored = tuple(
-        sorted(
-            (k, canonicalize_attribute_value(k, v))
-            for k, v in _scored_attrs(mention).items()
-        )
+        sorted((k, canonicalize_attribute_value(k, v)) for k, v in _scored_attrs(mention).items())
     )
     return (mention.entity, normalize_phrase(mention.text), scored)
 

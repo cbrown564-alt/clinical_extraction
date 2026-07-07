@@ -9,16 +9,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     epilepsy_cause_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import EPILEPSY_CAUSE
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _overlaps, _owner, _sentence_window
 
-_EPILEPSY_CAUSE_RULES: tuple[
-    tuple[re.Pattern[str], str, str],
-    ...
-] = (
+_EPILEPSY_CAUSE_RULES: tuple[tuple[re.Pattern[str], str, str], ...] = (
     (re.compile(r"\bperinatal\s+insult\b", re.IGNORECASE), "perinatal-insult", "perinatal insult"),
     (re.compile(r"\bstroke\b", re.IGNORECASE), "stroke", "stroke"),
     (
@@ -64,6 +63,7 @@ _EPILEPSY_CAUSE_RULES: tuple[
     ),
 )
 
+
 def _extract_epilepsy_causes(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -98,6 +98,7 @@ def _extract_epilepsy_causes(text: str) -> tuple[PredictedMention, ...]:
             occupied.append(match.span())
     mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
     return tuple(mentions)
+
 
 def _is_cause_context(text: str, match: re.Match[str]) -> bool:
     window = _sentence_window(text, match.start(), match.end())

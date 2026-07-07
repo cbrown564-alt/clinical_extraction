@@ -9,7 +9,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     onset_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import ONSET
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
@@ -43,6 +45,8 @@ _ONSET_DURATION_PATTERN = re.compile(
     r"(?P<unit>years?|months?)\s+ago\b",
     re.IGNORECASE,
 )
+
+
 def _extract_onsets(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -79,6 +83,8 @@ def _extract_onsets(text: str) -> tuple[PredictedMention, ...]:
             occupied.append(match.span())
     mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
     return tuple(mentions)
+
+
 def _onset_age_attrs(match: re.Match[str]) -> dict[str, str]:
     return {"Age": _number_value(match.group("age")), "AgeUnit": "Year"}
 

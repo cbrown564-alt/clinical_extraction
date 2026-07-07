@@ -18,9 +18,7 @@ DEFAULT_SCORE_JSONL_PATH = Path(
 DEFAULT_ROUTE_JSONL_PATH = Path(
     "experiments/gan2026_reset_clinical_assessment_pipeline_validation750_gpt41mini_v0.route.jsonl"
 )
-DEFAULT_OUTPUT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_OUTPUT_REPORT_PATH = Path("")
 DEFAULT_OUTPUT_JSON_PATH = Path(
     "experiments/gan2026_validation750_null_reduction_slices_baseline_2026-06-07.json"
 )
@@ -28,7 +26,10 @@ DEFAULT_OUTPUT_JSON_PATH = Path(
 SLICE_DEFINITIONS = {
     "frequency_rate_values_unparsed": {
         "description": "Frequency rate facts extracted but count/range/period operands remained unparsed.",
-        "match_fn": lambda issues: "frequency_rate_values_unparsed" in issues or "frequency_label_values_unparsed" in issues,
+        "match_fn": lambda issues: (
+            "frequency_rate_values_unparsed" in issues
+            or "frequency_label_values_unparsed" in issues
+        ),
     },
     "frequency_rate_values_incomplete": {
         "description": "Frequency rate facts extracted but required count/period operands were incomplete.",
@@ -44,11 +45,17 @@ SLICE_DEFINITIONS = {
     },
     "seizure_free_duration_unparsed": {
         "description": "Seizure free state extracted but durational values could not be parsed.",
-        "match_fn": lambda issues: "seizure_free_duration_unparsed" in issues or "seizure_free_label_values_unparsed" in issues,
+        "match_fn": lambda issues: (
+            "seizure_free_duration_unparsed" in issues
+            or "seizure_free_label_values_unparsed" in issues
+        ),
     },
     "cluster_frequency_values_unparsed": {
         "description": "Cluster frequency state extracted but cluster cadence/size operands remained unparsed.",
-        "match_fn": lambda issues: "cluster_frequency_values_unparsed" in issues or "cluster_label_values_unparsed" in issues,
+        "match_fn": lambda issues: (
+            "cluster_frequency_values_unparsed" in issues
+            or "cluster_label_values_unparsed" in issues
+        ),
     },
     "cluster_cadence_values_incomplete": {
         "description": "Cluster frequency state extracted but required cadence or size operands were incomplete.",
@@ -95,9 +102,7 @@ def _row_state(
     route_families: list[str] = []
     if route_row is not None:
         verification_route = route_row.get("verification_route")
-        verification_route = (
-            verification_route if isinstance(verification_route, Mapping) else {}
-        )
+        verification_route = verification_route if isinstance(verification_route, Mapping) else {}
         routed = bool(verification_route.get("routed"))
         route_families = sorted(
             str(family) for family in (verification_route.get("route_families") or [])
@@ -239,9 +244,7 @@ def build_validation_slices(
                 baseline_rows=baseline_rows,
             )
             changed_rows: list[dict[str, Any]] = []
-            baseline_by_index = {
-                int(row["source_row_index"]): row for row in baseline_rows
-            }
+            baseline_by_index = {int(row["source_row_index"]): row for row in baseline_rows}
             for row in matching_rows:
                 baseline = baseline_by_index.get(int(row["source_row_index"]))
                 if baseline is None:
@@ -305,48 +308,54 @@ def write_report(summary: Mapping[str, Any], path: Path) -> None:
     lines.append("")
 
     for slice_name, data in sorted(summary["slices"].items()):
-        lines.extend([
-            f"## Slice Details: `{slice_name}`",
-            "",
-            f"- **Description**: {data['description']}",
-            f"- **Row count**: {data['row_count']}",
-            f"- **Null count**: {data['null_count']}",
-            f"- **Rendered count**: {data['rendered_count']}",
-            f"- **Routed count**: {data['routed_count']}",
-            f"- **Purist-correct count**: {data['purist_correct_count']}",
-            f"- **Pragmatic-correct count**: {data['pragmatic_correct_count']}",
-            f"- **Exact-trace rows**: {data['trace_valid_count']}",
-            f"- **Valid source-id rows**: {data['source_id_valid_count']}",
-            f"- **Trace or source-id gap rows**: {data['trace_or_source_gap_count']}",
-            "",
-        ])
+        lines.extend(
+            [
+                f"## Slice Details: `{slice_name}`",
+                "",
+                f"- **Description**: {data['description']}",
+                f"- **Row count**: {data['row_count']}",
+                f"- **Null count**: {data['null_count']}",
+                f"- **Rendered count**: {data['rendered_count']}",
+                f"- **Routed count**: {data['routed_count']}",
+                f"- **Purist-correct count**: {data['purist_correct_count']}",
+                f"- **Pragmatic-correct count**: {data['pragmatic_correct_count']}",
+                f"- **Exact-trace rows**: {data['trace_valid_count']}",
+                f"- **Valid source-id rows**: {data['source_id_valid_count']}",
+                f"- **Trace or source-id gap rows**: {data['trace_or_source_gap_count']}",
+                "",
+            ]
+        )
 
         if "baseline" in data and "transitions" in data:
             baseline = data["baseline"]
             transitions = data["transitions"]
-            lines.extend([
-                "### Baseline Comparison",
-                "",
-                f"- **Baseline row count**: {baseline['row_count']}",
-                f"- **Baseline rendered/null/routed**: {baseline['rendered_count']} / {baseline['null_count']} / {baseline['routed_count']}",
-                f"- **Shared rows**: {transitions['shared_row_count']}",
-                f"- **Current-only rows**: {transitions['current_only_row_count']}",
-                f"- **Baseline-only rows**: {transitions['baseline_only_row_count']}",
-                f"- **Wrong-to-correct**: {transitions['wrong_to_correct_count']}",
-                f"- **Correct-to-wrong**: {transitions['correct_to_wrong_count']}",
-                f"- **Newly rendered**: {transitions['newly_rendered_count']}",
-                f"- **Newly null**: {transitions['newly_null_count']}",
-                f"- **Newly routed**: {transitions['newly_routed_count']}",
-                f"- **Newly unrouted**: {transitions['newly_unrouted_count']}",
-                "",
-            ])
-            if data["changed_rows"]:
-                lines.extend([
-                    "### Changed rows (first 15 shared rows)",
+            lines.extend(
+                [
+                    "### Baseline Comparison",
                     "",
-                    "| Row Index | Source Phrase | Gold Label | Baseline Rendered | Current Rendered | Baseline Purist | Current Purist | Baseline Routed | Current Routed |",
-                    "| ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
-                ])
+                    f"- **Baseline row count**: {baseline['row_count']}",
+                    f"- **Baseline rendered/null/routed**: {baseline['rendered_count']} / {baseline['null_count']} / {baseline['routed_count']}",
+                    f"- **Shared rows**: {transitions['shared_row_count']}",
+                    f"- **Current-only rows**: {transitions['current_only_row_count']}",
+                    f"- **Baseline-only rows**: {transitions['baseline_only_row_count']}",
+                    f"- **Wrong-to-correct**: {transitions['wrong_to_correct_count']}",
+                    f"- **Correct-to-wrong**: {transitions['correct_to_wrong_count']}",
+                    f"- **Newly rendered**: {transitions['newly_rendered_count']}",
+                    f"- **Newly null**: {transitions['newly_null_count']}",
+                    f"- **Newly routed**: {transitions['newly_routed_count']}",
+                    f"- **Newly unrouted**: {transitions['newly_unrouted_count']}",
+                    "",
+                ]
+            )
+            if data["changed_rows"]:
+                lines.extend(
+                    [
+                        "### Changed rows (first 15 shared rows)",
+                        "",
+                        "| Row Index | Source Phrase | Gold Label | Baseline Rendered | Current Rendered | Baseline Purist | Current Purist | Baseline Routed | Current Routed |",
+                        "| ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
+                    ]
+                )
                 for row in data["changed_rows"][:15]:
                     lines.append(
                         f"| {row['source_row_index']} | `{row['source_normalized_phrase']}` | "
@@ -357,12 +366,14 @@ def write_report(summary: Mapping[str, Any], path: Path) -> None:
                     )
                 lines.append("")
 
-        lines.extend([
-            "### First 15 matching rows:",
-            "",
-            "| Row Index | Source Phrase | Gold Label | Rendered | Routed | Purist Correct | Pragmatic Correct | Exact Trace | Source ID Status | Issues | Route Families |",
-            "| ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-        ])
+        lines.extend(
+            [
+                "### First 15 matching rows:",
+                "",
+                "| Row Index | Source Phrase | Gold Label | Rendered | Routed | Purist Correct | Pragmatic Correct | Exact Trace | Source ID Status | Issues | Route Families |",
+                "| ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
         for r in data["rows"][:15]:
             issues_str = ", ".join(f"`{i}`" for i in r["issues"]) or "-"
             route_families_str = ", ".join(f"`{i}`" for i in r["route_families"]) or "-"
@@ -380,7 +391,9 @@ def write_report(summary: Mapping[str, Any], path: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate validation proxy slices for null reduction.")
+    parser = argparse.ArgumentParser(
+        description="Generate validation proxy slices for null reduction."
+    )
     parser.add_argument("--score-jsonl-path", type=Path, default=DEFAULT_SCORE_JSONL_PATH)
     parser.add_argument("--route-jsonl-path", type=Path, default=DEFAULT_ROUTE_JSONL_PATH)
     parser.add_argument("--baseline-score-jsonl-path", type=Path, default=None)
@@ -392,14 +405,10 @@ def main() -> None:
     score_rows = load_jsonl_rows(args.score_jsonl_path)
     route_rows = load_jsonl_rows(args.route_jsonl_path)
     baseline_score_rows = (
-        load_jsonl_rows(args.baseline_score_jsonl_path)
-        if args.baseline_score_jsonl_path
-        else None
+        load_jsonl_rows(args.baseline_score_jsonl_path) if args.baseline_score_jsonl_path else None
     )
     baseline_route_rows = (
-        load_jsonl_rows(args.baseline_route_jsonl_path)
-        if args.baseline_route_jsonl_path
-        else None
+        load_jsonl_rows(args.baseline_route_jsonl_path) if args.baseline_route_jsonl_path else None
     )
     summary = build_validation_slices(
         score_rows,
@@ -413,7 +422,7 @@ def main() -> None:
         json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    
+
     write_report(summary, args.output_report_path)
     print(f"Slice summary report written to {args.output_report_path}")
 

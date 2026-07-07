@@ -26,9 +26,7 @@ def test_candidate_spans_cover_residual_state_patterns() -> None:
     candidates = adjudicator.candidate_spans_for_letter(_LETTER)
     payloads = [candidate.as_payload() for candidate in candidates]
 
-    returned = next(
-        item for item in payloads if item["evidence"] == "the seizures have returned"
-    )
+    returned = next(item for item in payloads if item["evidence"] == "the seizures have returned")
     assert returned["state_hint"] == "unknown"
     assert returned["text_hint"] == "seizures"
     assert returned["candidate_type"] == "generic_qualitative_change"
@@ -56,8 +54,7 @@ def test_candidate_spans_type_named_rates_and_prior_event_references() -> None:
     letter = ExectLetter(letter_id="TEST002", note_text=note)
 
     payloads = [
-        candidate.as_payload()
-        for candidate in adjudicator.candidate_spans_for_letter(letter)
+        candidate.as_payload() for candidate in adjudicator.candidate_spans_for_letter(letter)
     ]
 
     named_rate = next(
@@ -121,8 +118,7 @@ def test_build_prompt_input_includes_candidate_span_guide_and_rules() -> None:
     assert any("seizures have been worse" in e["note_fragment"] for e in examples)
     assert any("seizures remain well controlled" in e["note_fragment"] for e in examples)
     assert any(
-        "generalised tonic clonic seizure in his sleep" in e["note_fragment"]
-        for e in examples
+        "generalised tonic clonic seizure in his sleep" in e["note_fragment"] for e in examples
     )
     assert any("history of staring episodes" in e["note_fragment"] for e in examples)
     assert any("last seizure was on the 15th April" in e["note_fragment"] for e in examples)

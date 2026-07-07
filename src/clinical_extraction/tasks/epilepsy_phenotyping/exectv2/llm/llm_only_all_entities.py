@@ -114,9 +114,9 @@ class ExECTv2AllEntitiesSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"entity\": ..., \"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": ...}, ...]}"
+            'One strict JSON object: {"mentions": [{"entity": ..., "text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ...}, ...]}'
         )
     )
 
@@ -191,7 +191,7 @@ def build_prompt_input(letter: ExectLetter) -> str:
                 "as EEG, MRI, or CT, and put normal/abnormal/performed information in "
                 "attributes."
             ),
-            "If no requested findings are present, return {\"mentions\": []}.",
+            'If no requested findings are present, return {"mentions": []}.',
             "Return exactly one JSON object. No markdown code fences.",
         ],
         "letter_id": letter.letter_id,
@@ -208,13 +208,11 @@ def _entity_definitions() -> dict[str, str]:
         "Investigations": "EEG, MRI, CT, telemetry, or similar investigation statements.",
         "Onset": "Age, date, or time period when seizures or epilepsy began.",
         "PatientHistory": (
-            "Clinical history events such as seizure types, attacks, surgery, "
-            "or past episodes."
+            "Clinical history events such as seizure types, attacks, surgery, or past episodes."
         ),
         "Prescription": "Anti-seizure medication name, dose, or dosing frequency.",
         "SeizureFrequency": (
-            "How often a seizure type occurs, including seizure-free duration "
-            "or frequency change."
+            "How often a seizure type occurs, including seizure-free duration or frequency change."
         ),
         "WhenDiagnosed": "Age, date, or time period when epilepsy or the condition was diagnosed.",
     }
@@ -653,26 +651,28 @@ def write_report(
                 "",
             ]
         )
-    lines.extend([
-        f"- JSONL: `{jsonl_path}`",
-        f"- Prompt version: `{metadata.get('prompt_version', PROMPT_VERSION)}`",
-        f"- Split: `{metadata.get('split')}`",
-        f"- Model: `{metadata.get('model')}`",
-        f"- Mode: `{metadata.get('mode')}`",
-        f"- Letters: {summary.get('examples', 0)}",
-        "",
-        "## Gate Summary",
-        "",
-        f"- Call failures: {summary.get('call_failures', 0)}",
-        f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
-        f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
-        f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
-        f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
-        f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",
-        "",
-        "## Overall Scores",
-        "",
-    ])
+    lines.extend(
+        [
+            f"- JSONL: `{jsonl_path}`",
+            f"- Prompt version: `{metadata.get('prompt_version', PROMPT_VERSION)}`",
+            f"- Split: `{metadata.get('split')}`",
+            f"- Model: `{metadata.get('model')}`",
+            f"- Mode: `{metadata.get('mode')}`",
+            f"- Letters: {summary.get('examples', 0)}",
+            "",
+            "## Gate Summary",
+            "",
+            f"- Call failures: {summary.get('call_failures', 0)}",
+            f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
+            f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
+            f"- Mentions scored (evidence-valid): {summary.get('n_mentions_scored', 0)}",
+            f"- Evidence-invalid dropped: {summary.get('n_evidence_invalid', 0)}",
+            f"- Evidence validity rate: {summary.get('evidence_validity_rate', 0.0):.4f}",
+            "",
+            "## Overall Scores",
+            "",
+        ]
+    )
     for config_name in ("semantic", "benchmark", "phrase_only"):
         scores = summary.get("scores", {}).get(config_name, {})
         lines.extend(_score_lines(config_name, scores))
@@ -686,9 +686,7 @@ def write_report(
         pi = entry.get("per_item", {})
         pl = entry.get("per_letter", {})
         target = entry.get("published_per_item_target")
-        lines.append(
-            f"| {entity} | {target:.2f} | {pi.get('f1', 0):.3f} | {pl.get('f1', 0):.3f} |"
-        )
+        lines.append(f"| {entity} | {target:.2f} | {pi.get('f1', 0):.3f} | {pl.get('f1', 0):.3f} |")
     path.write_text("\n".join(lines), encoding="utf-8")
 
 

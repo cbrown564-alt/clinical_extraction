@@ -276,7 +276,7 @@ ABS_COUNT_RATE_RULE = RuleSpec(
         "(e.g., 'abs 8 monthly', 'absence 3 weekly'). No special separator prefix."
     ),
     pattern=re.compile(
-        rf"\b(?P<evidence>(?:abs|absence)\s+(?P<count>\d+)\s+"
+        r"\b(?P<evidence>(?:abs|absence)\s+(?P<count>\d+)\s+"
         r"(?P<period>daily|weekly|monthly|yearly|bimonthly))\b",
         re.IGNORECASE,
     ),

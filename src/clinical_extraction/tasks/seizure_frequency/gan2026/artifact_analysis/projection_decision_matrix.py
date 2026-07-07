@@ -26,12 +26,8 @@ DEFAULT_DURATION_PATH = Path(
     "gan2026_state_graph_projection_ablation_month_bucket_duration_selection_graph_gated_v2_"
     "2026-06-02.jsonl"
 )
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.jsonl"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md"
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.jsonl")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.md")
 
 PROJECTION_COMPONENTS = {
     "deterministic_top_candidate",
@@ -152,10 +148,7 @@ def write_matrix_report(
     )
     for surface, summary in metadata["by_surface"].items():
         lines.append(
-            (
-                "| {surface} | {rows} | {projection:.3f} | {changed} | {wtc} | "
-                "{ctw} |"
-            ).format(
+            ("| {surface} | {rows} | {projection:.3f} | {changed} | {wtc} | {ctw} |").format(
                 surface=surface,
                 rows=summary["rows"],
                 projection=summary["projection_correct_rate"],
@@ -303,9 +296,7 @@ def _rows_from_duration_ablation(path: Path) -> list[dict[str, Any]]:
                     "exact" if row.get("selected_evidence_valid") is True else "not_judged"
                 ),
                 "source_id_status": (
-                    "valid"
-                    if (projection.get("selected_node_ids") or [])
-                    else "not_instrumented"
+                    "valid" if (projection.get("selected_node_ids") or []) else "not_instrumented"
                 ),
                 "hidden_families": row.get("regression_tags") or [],
                 "failure_family": "seizure_free_duration",

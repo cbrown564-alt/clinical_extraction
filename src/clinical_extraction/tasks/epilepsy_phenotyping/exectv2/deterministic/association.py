@@ -8,6 +8,7 @@ SeizureFrequency mention carries frequency-related attributes, so a bare
 seizure-type mention with no nearby frequency information is not a
 SeizureFrequency mention (it is more likely a Diagnosis mention).
 """
+
 from __future__ import annotations
 
 import re
@@ -79,7 +80,10 @@ def associate_attributes_to_anchors(
             continue
         nearest_idx = min(
             same_sentence,
-            key=lambda i: (_gap(anchors[i].span, attr.span), abs(anchors[i].span[0] - attr.span[0])),
+            key=lambda i: (
+                _gap(anchors[i].span, attr.span),
+                abs(anchors[i].span[0] - attr.span[0]),
+            ),
         )
         if _gap(anchors[nearest_idx].span, attr.span) > _MAX_ASSOCIATION_GAP:
             continue

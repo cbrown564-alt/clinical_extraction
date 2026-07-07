@@ -64,8 +64,7 @@ def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> l
 
     return [
         "new experiments/*.md outside allowlist (move narrative to docs/experiments/ "
-        "or append to scripts/doc_hygiene_experiments_root_allowlist.txt): "
-        + ", ".join(unexpected)
+        "or append to scripts/doc_hygiene_experiments_root_allowlist.txt): " + ", ".join(unexpected)
     ]
 
 

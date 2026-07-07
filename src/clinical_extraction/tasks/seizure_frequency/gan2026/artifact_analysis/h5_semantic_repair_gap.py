@@ -9,22 +9,16 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_REPLACEMENT_JSON_PATH = Path(
-    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_"
-    "2026-06-02.json"
+    "experiments/gan2026_llm_replacement_postprocessing_ablation_validation250_v0_2026-06-02.json"
 )
 DEFAULT_FEWSHOT_VALIDATION_JSON_PATH = Path(
     "experiments/gan2026_fewshot_train_exemplar_full_validation750_gpt41_2026-06-05.json"
 )
 DEFAULT_FEWSHOT_TEST_JSON_PATH = Path(
-    "experiments/gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit_"
-    "2026-06-05.json"
+    "experiments/gan2026_fewshot_train_exemplar_contract_test450_aggregate_audit_2026-06-05.json"
 )
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.md"
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_h5_semantic_repair_gap_test_v0_2026-06-05.md")
 
 
 def build_h5_semantic_repair_gap(
@@ -42,9 +36,7 @@ def build_h5_semantic_repair_gap(
     }
     raw = _condition_summary(conditions.get("raw_model_selected_label"))
     format_only = _condition_summary(conditions.get("format_only_repair"))
-    selected_evidence = _condition_summary(
-        conditions.get("selected_evidence_arithmetic_only")
-    )
+    selected_evidence = _condition_summary(conditions.get("selected_evidence_arithmetic_only"))
     benchmark_aligned = _condition_summary(conditions.get("benchmark_aligned_adapter"))
 
     validation_metrics = _metrics(validation_summary)
@@ -78,9 +70,7 @@ def build_h5_semantic_repair_gap(
         "date": "2026-06-05",
         "hypothesis_id": "H5",
         "hypothesis": "Deterministic semantic repair masks LLM weakness on validation.",
-        "split_manifest": str(
-            replacement_ablation.get("split_manifest") or "gan2026_split_v1"
-        ),
+        "split_manifest": str(replacement_ablation.get("split_manifest") or "gan2026_split_v1"),
         "inspection_policy": {
             "validation": "row_level_allowed",
             "locked_test": "aggregate_only",
@@ -262,12 +252,8 @@ def _condition_summary(condition: Mapping[str, Any] | None) -> dict[str, Any]:
         "purist_correct": _int(score.get("purist_correct")),
         "purist_accuracy": _number(score.get("purist_accuracy")),
         "changed_from_raw": _int(repair.get("changed_from_raw")),
-        "raw_wrong_to_condition_correct": _int(
-            repair.get("raw_wrong_to_condition_correct")
-        ),
-        "raw_correct_to_condition_wrong": _int(
-            repair.get("raw_correct_to_condition_wrong")
-        ),
+        "raw_wrong_to_condition_correct": _int(repair.get("raw_wrong_to_condition_correct")),
+        "raw_correct_to_condition_wrong": _int(repair.get("raw_correct_to_condition_wrong")),
     }
 
 
@@ -283,13 +269,10 @@ def _classify_outcome(
     if validation_gain is None or test_gain is None:
         return "inconclusive_instrumentation_gap"
     repair_masks_validation = validation_gain >= 0.10 and validation_gain > test_gain
-    full_gap_exceeds_raw_gap = (
-        raw_gap is not None and full_gap is not None and full_gap > raw_gap
-    )
+    full_gap_exceeds_raw_gap = raw_gap is not None and full_gap is not None and full_gap > raw_gap
     ladder_has_semantic_gain = (
-        (benchmark_aligned_gain is not None and benchmark_aligned_gain > 0.03)
-        or (selected_evidence_gain is not None and selected_evidence_gain > 0.03)
-    )
+        benchmark_aligned_gain is not None and benchmark_aligned_gain > 0.03
+    ) or (selected_evidence_gain is not None and selected_evidence_gain > 0.03)
     if repair_masks_validation and full_gap_exceeds_raw_gap and ladder_has_semantic_gain:
         return "partially_supported_revise"
     if repair_masks_validation and ladder_has_semantic_gain:
@@ -319,10 +302,7 @@ def _interpretation(outcome: str) -> str:
             "H5 is not supported by these aggregate-safe artifacts; repair layers do "
             "not materially explain the validation-test behavior."
         )
-    return (
-        "H5 remains inconclusive because required ladder or aggregate metrics were "
-        "missing."
-    )
+    return "H5 remains inconclusive because required ladder or aggregate metrics were missing."
 
 
 def _metrics(payload: Mapping[str, Any]) -> Mapping[str, Any]:

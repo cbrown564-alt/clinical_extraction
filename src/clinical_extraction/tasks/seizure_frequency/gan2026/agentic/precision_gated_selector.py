@@ -92,8 +92,7 @@ def _band_allowed(
         and changed_label_precision < min_changed_label_precision
     ):
         failures.append(
-            f"changed_label_precision {changed_label_precision} "
-            f"< {min_changed_label_precision}"
+            f"changed_label_precision {changed_label_precision} < {min_changed_label_precision}"
         )
     if failures:
         return False, "; ".join(failures)
@@ -241,9 +240,7 @@ def summarize_precision_gated_selector(
     return {
         "selector": "precision_gated_band_selector_v0",
         "min_changed_label_precision": min_changed_label_precision,
-        "fold_families_present": [
-            name for name in fold_families if name in bands
-        ],
+        "fold_families_present": [name for name in fold_families if name in bands],
         "rows": len(parsed_rows),
         "baseline_purist_correct": baseline_correct_total,
         "raw_candidate_purist_correct": candidate_correct_total,
@@ -266,9 +263,7 @@ def summarize_precision_gated_selector(
             "gated_net_purist_gain": gated_net_loo,
             "switches_kept": switches_kept_loo,
             "switches_suppressed": switches_total - switches_kept_loo,
-            "net_gain_sign_matches_band_policy": (
-                (gated_net > 0) == (gated_net_loo > 0)
-            ),
+            "net_gain_sign_matches_band_policy": ((gated_net > 0) == (gated_net_loo > 0)),
             "note": (
                 "Unbiased estimate: each row's band gate is recomputed with that "
                 "row excluded, so no band is credited for a switch whose own "

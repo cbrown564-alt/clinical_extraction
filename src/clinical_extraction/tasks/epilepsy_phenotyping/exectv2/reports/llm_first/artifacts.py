@@ -61,9 +61,7 @@ def letters_from_artifact(
         pred_letters.append(
             PredictedLetter(
                 letter_id=letter_id,
-                mentions=tuple(
-                    _predicted_mention(m) for m in row.get("predicted_mentions", [])
-                ),
+                mentions=tuple(_predicted_mention(m) for m in row.get("predicted_mentions", [])),
             )
         )
     return gold_letters, pred_letters

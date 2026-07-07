@@ -45,7 +45,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
     apply_affirmed_defaults,
     diagnosis_copy,
     is_epilepsy_seizure_type,
-        split_compound_phrase,
+    split_compound_phrase,
     with_text,
 )
 

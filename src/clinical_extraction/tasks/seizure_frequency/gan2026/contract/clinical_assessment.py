@@ -133,11 +133,15 @@ class ClinicalAssessment(BaseModel):
             raise ValueError("primary_candidate_ids and rejected_candidate_ids overlap")
         if supporting & rejected:
             raise ValueError("supporting_candidate_ids and rejected_candidate_ids overlap")
-        if self.assessment_kind in {
-            "frequency_rate",
-            "cluster_frequency",
-            "seizure_free",
-        } and not self.primary_candidate_ids:
+        if (
+            self.assessment_kind
+            in {
+                "frequency_rate",
+                "cluster_frequency",
+                "seizure_free",
+            }
+            and not self.primary_candidate_ids
+        ):
             raise ValueError(f"{self.assessment_kind} requires primary_candidate_ids")
         return self
 

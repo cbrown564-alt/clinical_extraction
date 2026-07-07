@@ -347,9 +347,7 @@ def _render_combined_md(combined: dict[str, Any], *, json_path: Path) -> str:
             "Probe sem letter | Base SN recall | Probe SN recall | Δ SN recall | "
             "Over-emit (probe/base) | Verdict |"
         ),
-        (
-            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |"
-        ),
+        ("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |"),
     ]
     for r in combined["per_entity"]:
         lines.append(
@@ -359,22 +357,24 @@ def _render_combined_md(combined: dict[str, Any], *, json_path: Path) -> str:
             f"| {_f(r['probe_source_near_recall'])} | {_signed(r['delta_source_near_recall'])} "
             f"| {_i(r['over_emission'])}/{_i(r['baseline_over_emission'])} | {r['verdict']} |"
         )
-    lines.extend([
-        "",
-        "## Reading",
-        "",
-        (
-            "The LLM generates candidates for every entity. A positive Δ source-near "
-            "recall means the focused frame recovers more real candidates than the "
-            "attention-diluted all-9 pass; flat/negative Δ means the focused frame did "
-            "not help recall there. High LLM source-near recall on a representation-bound "
-            "entity (e.g. Prescription) is expected — its low semantic F1 is a projection "
-            "gap, not a recall gap, and is closed by deterministic projection (Phase D), "
-            "not by routing candidate generation away from the LLM. Read the over-emission "
-            "columns for the first hybrid target."
-        ),
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Reading",
+            "",
+            (
+                "The LLM generates candidates for every entity. A positive Δ source-near "
+                "recall means the focused frame recovers more real candidates than the "
+                "attention-diluted all-9 pass; flat/negative Δ means the focused frame did "
+                "not help recall there. High LLM source-near recall on a representation-bound "
+                "entity (e.g. Prescription) is expected — its low semantic F1 is a projection "
+                "gap, not a recall gap, and is closed by deterministic projection (Phase D), "
+                "not by routing candidate generation away from the LLM. Read the over-emission "
+                "columns for the first hybrid target."
+            ),
+            "",
+        ]
+    )
     return "\n".join(lines)
 
 

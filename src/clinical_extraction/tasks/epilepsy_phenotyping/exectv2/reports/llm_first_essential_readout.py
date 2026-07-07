@@ -19,9 +19,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first im
 _LLM_FIRST_ARTIFACT = Path(
     "experiments/exectv2_audit_llm_only_all_entities_full200_gpt41mini_20260612.jsonl"
 )
-_HYBRID_ARTIFACT = Path(
-    "experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl"
-)
+_HYBRID_ARTIFACT = Path("experiments/exectv2_hybrid_all_entities_dev140_gpt41mini_20260617.jsonl")
 
 
 def build_evaluation(
@@ -40,12 +38,8 @@ def build_evaluation(
     gold = load_letters_for_split(split)
 
     rules_pred = run_all9_on_letters(gold)
-    llm_pred = align_predictions_to_gold(
-        gold, predicted_by_id_from_artifact(llm_first_artifact)
-    )
-    hybrid_pred = align_predictions_to_gold(
-        gold, predicted_by_id_from_artifact(hybrid_artifact)
-    )
+    llm_pred = align_predictions_to_gold(gold, predicted_by_id_from_artifact(llm_first_artifact))
+    hybrid_pred = align_predictions_to_gold(gold, predicted_by_id_from_artifact(hybrid_artifact))
 
     architectures = [
         architecture_report(
@@ -138,8 +132,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     for a in archs:
         co = a["clinical_recovery"]["cui_projected_overall"]
         lines.append(
-            f"| {a['name']} | {_f(co['f1'])} | {_f(co['precision'])} "
-            f"| {_f(co['recall'])} |"
+            f"| {a['name']} | {_f(co['f1'])} | {_f(co['precision'])} | {_f(co['recall'])} |"
         )
 
     lines += [
@@ -174,9 +167,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         ]
         for entity in headline_entities:
             h = llm["clinical_recovery"]["headline_scores"][entity]
-            lines.append(
-                f"| {entity} | {_f(h['f1'])} | {_f(h['precision'])} | {_f(h['recall'])} |"
-            )
+            lines.append(f"| {entity} | {_f(h['f1'])} | {_f(h['precision'])} | {_f(h['recall'])} |")
 
         evidence = llm["evidence_validation"]["overall"]
         errors = llm["error_taxonomy"]["overall"]
@@ -292,16 +283,13 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"| {buckets['bucket_mentions'].get(bucket, 0)} |"
         )
     missing = cui["deterministic_projection"]["__missing_mapping__"]
-    lines.append(
-        f"| missing_mapping | {missing['concept_count']} | {missing['mention_count']} |"
-    )
+    lines.append(f"| missing_mapping | {missing['concept_count']} | {missing['mention_count']} |")
     lines += [
         "",
         "Deterministic projection over gold (CUI stripped first, then re-attached — "
         "an in-sample lexicon lookup):",
         "",
-        f"- coverage **{proj['coverage']:.3f}** "
-        f"({proj['projected']}/{proj['gold_with_cui']})",
+        f"- coverage **{proj['coverage']:.3f}** ({proj['projected']}/{proj['gold_with_cui']})",
         f"- correctness **{proj['correctness']:.3f}** "
         f"({proj['projected_correct']}/{proj['projected']})",
         f"- missing_mapping mentions: **{proj['missing_mapping']}**",
@@ -376,10 +364,7 @@ def llm_first_error_ledger_rows(report: dict[str, Any]) -> list[dict[str, Any]]:
     if report["split"] != "dev":
         raise ValueError("Plan 11 row-level error ledgers are dev-only by split protocol")
     llm = next(a for a in report["architectures"] if a["ownership"] == OWNERSHIP_LLM_FIRST)
-    return [
-        {"split": report["split"], **row}
-        for row in llm.get("row_error_ledger", [])
-    ]
+    return [{"split": report["split"], **row} for row in llm.get("row_error_ledger", [])]
 
 
 def write_error_ledger_csv(rows: list[dict[str, Any]], out_csv: Path) -> Path:

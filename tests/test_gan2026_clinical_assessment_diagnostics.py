@@ -121,9 +121,7 @@ def test_clinical_assessment_diagnostics_flags_seizure_free_leak_in_cluster_burd
 
     diagnostic_rows, metadata = diagnostics.build_clinical_assessment_diagnostics(rows)
 
-    assert diagnostic_rows[0]["diagnostic_flags"] == [
-        "seizure_free_context_leak_in_cluster_burden"
-    ]
+    assert diagnostic_rows[0]["diagnostic_flags"] == ["seizure_free_context_leak_in_cluster_burden"]
     assert metadata["summary"]["rows_with_diagnostic_flags"] == 1
 
 
@@ -296,9 +294,7 @@ def _frequency_candidate(
     temporality: str = "current",
 ) -> ExtractedCandidate:
     source_row_index = int(candidate_id.split(":")[1])
-    source_type = (
-        "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
-    )
+    source_type = "deterministic_candidate" if candidate_id.startswith("det:") else "llm_candidate"
     return ExtractedCandidate(
         candidate_id=candidate_id,
         component_owner="test",

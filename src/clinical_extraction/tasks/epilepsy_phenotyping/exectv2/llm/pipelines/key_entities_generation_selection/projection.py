@@ -73,9 +73,7 @@ def to_predicted_letter_from_dedup_facts(
         if isinstance(record, DedupClinicalFactsRecord)
         else DedupClinicalFactsRecord.model_validate(record)
     )
-    mentions, provenance, adapter_notes = clinical_facts_to_mentions(
-        fact_record.clinical_facts
-    )
+    mentions, provenance, adapter_notes = clinical_facts_to_mentions(fact_record.clinical_facts)
     predicted, gate_warnings = to_predicted_letter_from_mentions(
         letter,
         mentions,
@@ -124,9 +122,7 @@ def row_from_final_record(
         "n_mentions_raw": len(mentions_raw),
         "n_mentions_scored": len(predicted_letter.mentions),
         "n_evidence_invalid": len(mentions_raw) - len(predicted_letter.mentions),
-        "structured_events_final": [
-            event.model_dump() for event in record.clinical_events
-        ],
+        "structured_events_final": [event.model_dump() for event in record.clinical_events],
         "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
         "gold_mentions": [
             {"entity": a.entity, "text": a.text, "attributes": dict(a.attributes)}
@@ -153,9 +149,7 @@ def row_from_final_dedup_facts(
         if isinstance(record, DedupClinicalFactsRecord)
         else DedupClinicalFactsRecord.model_validate(record)
     )
-    mentions, provenance, adapter_notes = clinical_facts_to_mentions(
-        fact_record.clinical_facts
-    )
+    mentions, provenance, adapter_notes = clinical_facts_to_mentions(fact_record.clinical_facts)
     component_owner = component_owner_for_model(model)
     predicted_letter, gate_warnings = to_predicted_letter_from_mentions(
         letter,

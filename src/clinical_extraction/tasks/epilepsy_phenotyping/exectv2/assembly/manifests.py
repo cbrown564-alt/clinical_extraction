@@ -81,9 +81,7 @@ def manifest_from_mapping(payload: Mapping[str, Any]) -> FindingAssemblyManifest
                 )
             ),
             portability=(
-                str(config["portability"])
-                if config.get("portability") is not None
-                else None
+                str(config["portability"]) if config.get("portability") is not None else None
             ),
         )
         for entity, config in _required_mapping(payload, "lenses").items()
@@ -91,12 +89,8 @@ def manifest_from_mapping(payload: Mapping[str, Any]) -> FindingAssemblyManifest
     comparator = payload.get("focused_comparator_artifact")
     return FindingAssemblyManifest(
         candidate_id=str(payload["candidate_id"]),
-        pipeline_family=str(
-            payload.get("pipeline_family", "exectv2_holistic_finding_assembly")
-        ),
-        ownership=str(
-            payload.get("ownership", "component_attributed_holistic_finding_replay")
-        ),
+        pipeline_family=str(payload.get("pipeline_family", "exectv2_holistic_finding_assembly")),
+        ownership=str(payload.get("ownership", "component_attributed_holistic_finding_replay")),
         split=str(payload.get("split", "dev")),
         row_count=int(payload["row_count"]),
         claim_boundary=str(payload.get("claim_boundary", "")),

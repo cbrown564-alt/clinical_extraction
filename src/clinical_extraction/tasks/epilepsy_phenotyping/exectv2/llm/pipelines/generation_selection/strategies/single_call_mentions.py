@@ -81,9 +81,7 @@ def run_single_call_mentions_letter(
             "structured_mentions_generation": [
                 mention.model_dump() for mention in mention_record.generated_mentions
             ],
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "n_mentions_generation": len(mention_record.generated_mentions),
         },
     )
@@ -145,12 +143,8 @@ def run_single_call_per_entity_mentions_letter(
         generated_mentions.extend(
             mention.model_dump() for mention in mention_record.generated_mentions
         )
-        final_mentions.extend(
-            mention.model_dump() for mention in mention_record.final_mentions
-        )
-        selection_summary_by_entity[target_entity] = list(
-            mention_record.selection_summary
-        )
+        final_mentions.extend(mention.model_dump() for mention in mention_record.final_mentions)
+        selection_summary_by_entity[target_entity] = list(mention_record.selection_summary)
         parse_errors.extend(f"{target_entity}:{error}" for error in entity_parse_errors)
 
     prompt_bundle = {

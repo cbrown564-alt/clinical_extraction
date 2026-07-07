@@ -213,8 +213,7 @@ def build_prompt_input(
     """Build a split-neutral coordinator payload over three LLM agents."""
 
     agent_inputs = [
-        _agent_prompt_summary(agent_id, agent_rows.get(agent_id))
-        for agent_id in AGENT_IDS
+        _agent_prompt_summary(agent_id, agent_rows.get(agent_id)) for agent_id in AGENT_IDS
     ]
     payload = {
         "prompt_version": PROMPT_VERSION,
@@ -331,9 +330,7 @@ def parse_cross_model_decision_json(
     parse_errors: list[str] = []
     extracted = llm_event_reasoner._extract_json_object(raw_output)
     try:
-        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
-            extracted
-        )
+        raw_payload, dialect_notes = parse_json_payload_with_schema_repair(extracted)
     except json.JSONDecodeError as exc:
         repaired_extracted = extracted.replace('\\"', '"')
         if repaired_extracted != extracted:
@@ -373,12 +370,9 @@ def parse_cross_model_decision_json(
 
     raw_common = _common_decision_from_adjudicator(raw_decision)
     format_common = raw_common
-    repair_trace = repair_prediction_label_format_preserving_with_trace(
-        raw_decision.final_label
-    )
+    repair_trace = repair_prediction_label_format_preserving_with_trace(raw_decision.final_label)
     repair_events = [
-        llm_event_reasoner._repair_event_to_dict(event)
-        for event in repair_trace.events
+        llm_event_reasoner._repair_event_to_dict(event) for event in repair_trace.events
     ]
     if repair_trace.final_label != raw_decision.final_label:
         parse_errors.append(
@@ -558,10 +552,7 @@ def write_report(
         ),
         f"- Final Purist: {summary.get('final_purist_correct', 0)}/{summary.get('rows', 0)}",
         f"- Net Purist gain vs GPT V0: {summary.get('net_purist_gain_vs_v0', 0)}",
-        (
-            "- Changed-label precision vs GPT V0: "
-            f"{summary.get('changed_label_precision_vs_v0')}"
-        ),
+        (f"- Changed-label precision vs GPT V0: {summary.get('changed_label_precision_vs_v0')}"),
         f"- Selected agents: `{summary.get('selected_agent_counts', {})}`",
         "",
         "## Gate",
@@ -690,8 +681,7 @@ def _build_row(
             agent_id: agent_rows.get(agent_id) is not None for agent_id in AGENT_IDS
         },
         "agent_references": {
-            agent_id: _agent_reference(agent_rows.get(agent_id))
-            for agent_id in AGENT_IDS
+            agent_id: _agent_reference(agent_rows.get(agent_id)) for agent_id in AGENT_IDS
         },
         "v0_reference": gpt_reference,
         "model_call_attempted": model_call_attempted,
@@ -726,9 +716,7 @@ def _build_row(
             "gold_monthly_frequency": record.gold_monthly_frequency,
             "row_ok": record.row_ok,
         },
-        "trace_warnings": (
-            ["prompt_only_no_prediction"] if mode == "prompt-only" else []
-        )
+        "trace_warnings": (["prompt_only_no_prediction"] if mode == "prompt-only" else [])
         + [
             f"missing_{agent_id}_structured_event_row"
             for agent_id in AGENT_IDS
@@ -745,9 +733,7 @@ def _run_model_call(
     max_tokens: int,
 ) -> str:
     del model, temperature, max_tokens
-    prediction = DspyCrossModelAdjudicatorCaller()(
-        prompt_input_json=prompt_input_json
-    )
+    prediction = DspyCrossModelAdjudicatorCaller()(prompt_input_json=prompt_input_json)
     return str(prediction.decision_json)
 
 
@@ -1005,9 +991,7 @@ def _agent_id_tuple(value: Any) -> tuple[AgentId, ...]:
     raw_items: Sequence[Any]
     if isinstance(value, str):
         raw_items = tuple(
-            part.strip()
-            for part in value.replace(";", ",").split(",")
-            if part.strip()
+            part.strip() for part in value.replace(";", ",").split(",") if part.strip()
         )
     elif isinstance(value, Sequence) and not isinstance(value, (bytes, bytearray)):
         expanded: list[Any] = []
@@ -1031,8 +1015,7 @@ def _common_decision_from_adjudicator(
     decision: CrossModelAdjudicatorDecision,
 ) -> llm_event_reasoner.ReasonedFrequencyDecision:
     selected_event_ids = tuple(
-        f"{decision.selected_agent_id}:{event_id}"
-        for event_id in decision.selected_event_ids
+        f"{decision.selected_agent_id}:{event_id}" for event_id in decision.selected_event_ids
     )
     return llm_event_reasoner.ReasonedFrequencyDecision(
         final_label=decision.final_label,
@@ -1094,8 +1077,7 @@ def _is_high_precision_recurring_cadence_peer_rescue(
     gpt_flags = _selected_event_flags(gpt_row)
     selected_flags = _selected_event_flags(selected_row)
     return (
-        "broad_elapsed_window_total" in gpt_flags
-        and "explicit_recurring_cadence" in selected_flags
+        "broad_elapsed_window_total" in gpt_flags and "explicit_recurring_cadence" in selected_flags
     )
 
 
@@ -1117,10 +1099,7 @@ def _is_high_precision_boundary_peer_rescue(
         return False
     gpt_flags = _selected_event_flags(gpt_row)
     selected_flags = _selected_event_flags(selected_row)
-    return bool(
-        (gpt_flags | selected_flags)
-        & {"last_or_anchored", "vague_or_uncertain_frequency"}
-    )
+    return bool((gpt_flags | selected_flags) & {"last_or_anchored", "vague_or_uncertain_frequency"})
 
 
 def _other_peer_agrees(
@@ -1149,9 +1128,7 @@ def _selection_kind(row: Mapping[str, Any] | None) -> str:
 
 def _selected_event_flags(row: Mapping[str, Any]) -> set[str]:
     selection = _structured_selection(row)
-    selected_ids = {
-        str(event_id) for event_id in selection.get("selected_event_ids") or ()
-    }
+    selected_ids = {str(event_id) for event_id in selection.get("selected_event_ids") or ()}
     texts: list[str] = [
         str(selection.get("final_label") or ""),
         str(selection.get("evidence") or ""),
@@ -1322,14 +1299,11 @@ def _render_agent_final(
                 f"!={rendered_label!r}"
             )
     selected_event_ids = tuple(
-        f"{agent_id}:{event_id}"
-        for event_id in selection.get("selected_event_ids") or ()
+        f"{agent_id}:{event_id}" for event_id in selection.get("selected_event_ids") or ()
     )
     evidence = _best_evidence(note_text, row, raw_decision)
     attribution = (
-        "llm_original_structured_event_kept"
-        if agent_id == "gpt"
-        else "llm_selected_tool_rendered"
+        "llm_original_structured_event_kept" if agent_id == "gpt" else "llm_selected_tool_rendered"
     )
     if rendered_label != final_label:
         attribution = "llm_selected_format_repaired"
@@ -1338,9 +1312,7 @@ def _render_agent_final(
             final_label=rendered_label,
             final_kind=final_kind,
             selected_event_ids=selected_event_ids,
-            rejected_event_ids=tuple(raw_decision.rejected_agent_ids)
-            if raw_decision
-            else (),
+            rejected_event_ids=tuple(raw_decision.rejected_agent_ids) if raw_decision else (),
             evidence=evidence,
             boundary_profile=raw_decision.comparison_profile if raw_decision else (),
             calculation_trace=raw_decision.calculation_trace if raw_decision else None,
@@ -1384,9 +1356,7 @@ def _best_evidence(
     candidates: list[str] = []
     selection = _structured_selection(row)
     _append_evidence(candidates, selection.get("evidence"))
-    selected_ids = {
-        str(event_id) for event_id in selection.get("selected_event_ids") or ()
-    }
+    selected_ids = {str(event_id) for event_id in selection.get("selected_event_ids") or ()}
     structured_record = dict(row.get("structured_record") or {})
     for event in structured_record.get("events") or []:
         if not isinstance(event, Mapping):

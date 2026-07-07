@@ -20,9 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=(
-            "ExECTv2 Diagnosis reconciler over verifier and decomposer candidates"
-        ),
+        description=("ExECTv2 Diagnosis reconciler over verifier and decomposer candidates"),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--split", default="dev", help="Data split; test is locked.")

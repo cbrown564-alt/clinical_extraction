@@ -35,13 +35,15 @@ DEFAULT_JSONL_PATH = Path(
 DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_forced_choice_verifier_live_clean29_context_repair_v6_2026-06-06.json"
 )
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_REPORT_PATH = Path("")
+
 
 def write_summary_json(metadata: Mapping[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
 
 SYSTEM_PROMPT = (
     "You are a clinical seizure-frequency verifier. Review the routed case and select exactly "
@@ -62,6 +64,7 @@ class ForcedChoiceVerifierOutput(BaseModel):
 
 def _extract_json_object(text: str) -> str:
     import re
+
     stripped = text.strip()
     if stripped.startswith("{") and stripped.endswith("}"):
         return stripped
@@ -75,13 +78,15 @@ def _extract_json_object(text: str) -> str:
     raise ValueError("no JSON object found")
 
 
-def parse_output(raw_output: str, allowed_choices: set[str]) -> tuple[ForcedChoiceVerifierOutput | None, list[str]]:
+def parse_output(
+    raw_output: str, allowed_choices: set[str]
+) -> tuple[ForcedChoiceVerifierOutput | None, list[str]]:
     try:
         payload = json.loads(_extract_json_object(raw_output))
         parsed = ForcedChoiceVerifierOutput.model_validate(payload)
     except (json.JSONDecodeError, ValidationError, ValueError) as exc:
         return None, [f"{type(exc).__name__}: {exc}"]
-    
+
     errors = []
     if parsed.selected_choice not in allowed_choices:
         errors.append(f"unsupported_choice:{parsed.selected_choice}")
@@ -122,7 +127,7 @@ def _run_row(
             "selected_choice": "One value copied from allowed_choices.",
             "rationale": "Brief evidence-grounded rationale.",
             "cited_source_ids": ["Source ids or spans cited from the provided row-local evidence."],
-        }
+        },
     }
 
     call_errors: list[str] = []
@@ -142,11 +147,7 @@ def _run_row(
         call_status = "error"
         call_errors.append(f"{type(exc).__name__}: {exc}")
 
-    parsed, parse_errors = (
-        parse_output(raw_output, allowed_choices)
-        if raw_output
-        else (None, [])
-    )
+    parsed, parse_errors = parse_output(raw_output, allowed_choices) if raw_output else (None, [])
     if parsed is None and not call_errors and not parse_errors:
         parse_errors = ["empty_output"]
 
@@ -201,7 +202,7 @@ def compare_and_summarize(
     action_only_rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
     action_by_row = {r["source_row_index"]: r for r in action_only_rows}
-    
+
     comparisons = []
     agree_count = 0
     disagree_count = 0
@@ -211,26 +212,28 @@ def compare_and_summarize(
         a_row = action_by_row.get(source_row_index)
         if a_row is None:
             continue
-        
+
         f_action = f_row["verifier_decision"]["action"]
         a_action = a_row["verifier_decision"]["action"]
-        
+
         agree = f_action == a_action
         if agree:
             agree_count += 1
         else:
             disagree_count += 1
-            
-        comparisons.append({
-            "source_row_index": source_row_index,
-            "route_bucket": f_row["route_bucket"],
-            "report_section": f_row["report_section"],
-            "action_only_action": a_action,
-            "forced_choice_choice": f_row["verifier_decision"]["selected_choice"],
-            "forced_choice_equivalent_action": f_action,
-            "agree": agree,
-            "rationale": f_row["verifier_decision"]["rationale"]
-        })
+
+        comparisons.append(
+            {
+                "source_row_index": source_row_index,
+                "route_bucket": f_row["route_bucket"],
+                "report_section": f_row["report_section"],
+                "action_only_action": a_action,
+                "forced_choice_choice": f_row["verifier_decision"]["selected_choice"],
+                "forced_choice_equivalent_action": f_action,
+                "agree": agree,
+                "rationale": f_row["verifier_decision"]["rationale"],
+            }
+        )
 
     action_counts = Counter(r["verifier_decision"]["action"] for r in forced_rows)
     choice_counts = Counter(r["verifier_decision"]["selected_choice"] for r in forced_rows)
@@ -286,24 +289,28 @@ def write_report(
     ]
     for action, count in summary["action_counts"].items():
         lines.append(f"| `{action}` | {count} |")
-    
-    lines.extend([
-        "",
-        "## Choice Counts",
-        "",
-        "| Choice | Count |",
-        "| --- | ---: |",
-    ])
+
+    lines.extend(
+        [
+            "",
+            "## Choice Counts",
+            "",
+            "| Choice | Count |",
+            "| --- | ---: |",
+        ]
+    )
     for choice, count in summary["choice_counts"].items():
         lines.append(f"| `{choice}` | {count} |")
 
-    lines.extend([
-        "",
-        "## Comparison Table",
-        "",
-        "| Row | Route Bucket | Action-Only Action | Forced Choice | Equivalent Action | Agree? | Rationale |",
-        "| ---: | --- | --- | --- | --- | --- | --- |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Comparison Table",
+            "",
+            "| Row | Route Bucket | Action-Only Action | Forced Choice | Equivalent Action | Agree? | Rationale |",
+            "| ---: | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
     for comp in summary["comparisons"]:
         if comp["report_section"] == "main_ambiguity_score_table":
             lines.append(
@@ -320,7 +327,9 @@ def write_report(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-jsonl-path", type=Path, default=DEFAULT_INPUT_JSONL_PATH)
-    parser.add_argument("--action-only-jsonl-path", type=Path, default=DEFAULT_ACTION_ONLY_JSONL_PATH)
+    parser.add_argument(
+        "--action-only-jsonl-path", type=Path, default=DEFAULT_ACTION_ONLY_JSONL_PATH
+    )
     parser.add_argument("--jsonl-path", type=Path, default=DEFAULT_JSONL_PATH)
     parser.add_argument("--json-path", type=Path, default=DEFAULT_JSON_PATH)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)

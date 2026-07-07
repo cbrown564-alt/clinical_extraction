@@ -273,9 +273,9 @@ def _evaluate_selection_patch(
         return False, "evidence_not_exact_substring", baseline_label, baseline_ids
 
     baseline_kind = _baseline_kind(row)
-    candidate_kind = _as_optional_str(
-        normalized.get("semantic_kind")
-    ) or _event_selection_kind(event)
+    candidate_kind = _as_optional_str(normalized.get("semantic_kind")) or _event_selection_kind(
+        event
+    )
     if baseline_kind in _FREQUENCY_KINDS and candidate_kind in _BOUNDARY_KINDS:
         return False, "unsupported_boundary_demotion", baseline_label, baseline_ids
     if candidate_label == baseline_label and tuple(patch.selected_event_ids) == baseline_ids:

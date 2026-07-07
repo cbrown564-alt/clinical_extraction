@@ -46,10 +46,7 @@ def main() -> None:
         print(f"Validated {len(reconciled)} registry rows at {args.registry}")
         return
     write_run_registry(reconciled, args.registry)
-    print(
-        f"Wrote {len(reconciled)} registry rows "
-        f"({len(surfaced)} surfaced) to {args.registry}"
-    )
+    print(f"Wrote {len(reconciled)} registry rows ({len(surfaced)} surfaced) to {args.registry}")
 
 
 if __name__ == "__main__":

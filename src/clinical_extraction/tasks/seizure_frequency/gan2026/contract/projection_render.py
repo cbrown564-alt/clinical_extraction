@@ -87,9 +87,7 @@ class RenderedLabelScore(BaseModel):
 
     source_row_index: int
     component_owner: Literal["rendered_label_scorer"]
-    scoring_policy_id: Literal["gan2026_rendered_label_scoring_policy_v0"] = (
-        SCORING_POLICY_ID
-    )
+    scoring_policy_id: Literal["gan2026_rendered_label_scoring_policy_v0"] = SCORING_POLICY_ID
     score_status: ScoreStatus
     rendered_label: str | None
     gold_label: str | None

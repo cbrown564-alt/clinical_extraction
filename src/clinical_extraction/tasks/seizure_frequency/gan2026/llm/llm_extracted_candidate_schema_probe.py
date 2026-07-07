@@ -77,13 +77,16 @@ class CandidateDraft(BaseModel):
     no_reference: SourcePhraseOnlyDetails | None = None
     temporality: Literal["current", "recent", "historical", "unclear"]
     certainty: Literal["certain", "uncertain"]
-    certainty_reason: Literal[
-        "vague_count",
-        "unclear_time_period",
-        "approximate_wording",
-        "conditional_statement",
-        "other",
-    ] | None = None
+    certainty_reason: (
+        Literal[
+            "vague_count",
+            "unclear_time_period",
+            "approximate_wording",
+            "conditional_statement",
+            "other",
+        ]
+        | None
+    ) = None
     assertion_status: Literal["asserted", "negated", "uncertain", "conditional"]
     evidence_text: str
 
@@ -468,9 +471,7 @@ def assemble_candidate_set(
     assembly_issues: list[str] = []
     for index, draft in enumerate(draft_set.candidates, start=1):
         if _is_trigger_only_cluster_draft(draft):
-            assembly_issues.append(
-                f"candidate_draft:{index}: skipped_trigger_only_cluster_context"
-            )
+            assembly_issues.append(f"candidate_draft:{index}: skipped_trigger_only_cluster_context")
             continue
         candidates.append(_candidate_from_draft(index, draft, record=record))
     return CandidateSet(
@@ -752,8 +753,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     ]
     kind_counts = Counter(str(candidate.get("candidate_kind")) for candidate in candidates)
     detail_failures = sum(
-        int(not (row.get("schema_probe") or {}).get("kind_detail_fit"))
-        for row in candidate_sets
+        int(not (row.get("schema_probe") or {}).get("kind_detail_fit")) for row in candidate_sets
     )
     evidence_error_rows = sum(
         any("evidence_not_exact" in str(error) for error in row.get("parse_errors") or [])
@@ -767,9 +767,7 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "examples": len(rows),
         "candidate_sets": len(candidate_sets),
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
-        "parse_or_validation_failures": sum(
-            bool(row.get("parse_errors")) for row in rows
-        ),
+        "parse_or_validation_failures": sum(bool(row.get("parse_errors")) for row in rows),
         "total_candidates": len(candidates),
         "candidate_kind_counts": dict(sorted(kind_counts.items())),
         "detail_failure_rows": detail_failures,

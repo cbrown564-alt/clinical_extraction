@@ -85,6 +85,7 @@ DEFAULT_REPORT_PATH = Path(
     "experiments/gan2026_three_way_comparison_phase1_report_gpt41mini_validation750_2026-06-08.md"
 )
 
+
 def _claim_boundary(model: str) -> str:
     return (
         f"Phase 1 three-way architecture comparison, {model} pass, validation750 only. "
@@ -94,6 +95,7 @@ def _claim_boundary(model: str) -> str:
         "evidence-trace validity, final-answer distribution); hybrid additionally carries "
         "a routing-taxonomy appendix that no other architecture has an analogous surface for."
     )
+
 
 EVIDENCE_TRACE_FOOTNOTE = (
     "Evidence-trace metrics are NOT uniform across architectures: deterministic, "
@@ -120,6 +122,7 @@ SE_ARCHITECTURE_FOOTNOTE = (
     "makes the performance gap between them a direct measure of how much the LLM task "
     "and the verification/routing layer matter."
 )
+
 
 def _hybrid_data_source_footnote(fallback_used: bool) -> str:
     if fallback_used:
@@ -214,9 +217,13 @@ def _final_label_distribution(architecture: str, rows: Sequence[Mapping[str, Any
     raise ValueError(f"_final_label_distribution does not support architecture {architecture!r}")
 
 
-def _single_shot_summary_row(architecture: str, rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+def _single_shot_summary_row(
+    architecture: str, rows: Sequence[Mapping[str, Any]]
+) -> dict[str, Any]:
     rendered, null_rows = _rendered_split(architecture, rows)
-    purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rendered)
+    purist_correct = sum(
+        bool((row.get("comparison") or {}).get("purist_correct")) for row in rendered
+    )
     pragmatic_correct = sum(
         bool((row.get("comparison") or {}).get("pragmatic_correct")) for row in rendered
     )
@@ -260,7 +267,9 @@ def _hybrid_candidate_sets(
         raw_candidate_set = row.get("candidate_set")
         if raw_candidate_set is None:
             continue
-        candidate_sets[int(row["source_row_index"])] = CandidateSet.model_validate(raw_candidate_set)
+        candidate_sets[int(row["source_row_index"])] = CandidateSet.model_validate(
+            raw_candidate_set
+        )
     if fallback_candidate_set_path is not None:
         for index, cs in load_candidate_sets(fallback_candidate_set_path).items():
             candidate_sets.setdefault(index, cs)

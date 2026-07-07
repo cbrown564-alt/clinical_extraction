@@ -71,9 +71,7 @@ def test_focused_lane_replay_reconstructs_raw_lane_mentions(
     )
 
     raw_dx = [
-        mention
-        for mention in rows[0]["raw_lane_mentions"]
-        if mention["entity"] == "Diagnosis"
+        mention for mention in rows[0]["raw_lane_mentions"] if mention["entity"] == "Diagnosis"
     ]
     assert raw_dx[0]["text"] == "raw focal epilepsy"
     assert raw_dx[0]["raw_surface"] is True
@@ -98,14 +96,10 @@ def test_focused_lane_replay_uses_source_predictions_when_raw_schema_has_no_ment
     )
 
     raw_dx = [
-        mention
-        for mention in rows[0]["raw_lane_mentions"]
-        if mention["entity"] == "Diagnosis"
+        mention for mention in rows[0]["raw_lane_mentions"] if mention["entity"] == "Diagnosis"
     ]
     scored_dx = [
-        mention
-        for mention in rows[0]["predicted_mentions"]
-        if mention["entity"] == "Diagnosis"
+        mention for mention in rows[0]["predicted_mentions"] if mention["entity"] == "Diagnosis"
     ]
     assert raw_dx[0]["text"] == "focal epilepsy"
     assert raw_dx[0]["raw_surface"] is True

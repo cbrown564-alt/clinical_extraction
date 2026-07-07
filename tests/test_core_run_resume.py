@@ -13,9 +13,7 @@ from clinical_extraction.core.run_resume import (
 
 
 def _write(path: Path, rows: list[dict]) -> None:
-    path.write_text(
-        "\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8"
-    )
+    path.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
 
 
 def test_read_completed_missing_file_is_empty() -> None:

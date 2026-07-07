@@ -53,7 +53,12 @@ def test_events_to_sf_facts_maps_kinds_to_states() -> None:
             "events": [
                 {"applies_to": "focal seizures", "kind": "frequency_rate", "evidence": "x"},
                 {"applies_to": "gtc", "kind": "seizure_free", "evidence": "y"},
-                {"applies_to": "absence", "kind": "changed", "change_direction": "decreased", "evidence": "z"},
+                {
+                    "applies_to": "absence",
+                    "kind": "changed",
+                    "change_direction": "decreased",
+                    "evidence": "z",
+                },
             ]
         }
     )
@@ -78,8 +83,18 @@ def test_metric_perfect_sf_scores_high_on_state_profile() -> None:
         _gold(),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "focal seizures", "state": "active_rate", "evidence": "focal seizures"},
-                {"family": "seizure_frequency", "seizure_type": "tonic-clonic seizures", "state": "seizure_free", "evidence": "tonic-clonic seizures"},
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "focal seizures",
+                    "state": "active_rate",
+                    "evidence": "focal seizures",
+                },
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "tonic-clonic seizures",
+                    "state": "seizure_free",
+                    "evidence": "tonic-clonic seizures",
+                },
             ]
         ),
     )
@@ -94,7 +109,12 @@ def test_metric_missing_state_feedback_tells_reflection_to_add() -> None:
         _gold(),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "focal seizures", "state": "active_rate", "evidence": "focal seizures"}
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "focal seizures",
+                    "state": "active_rate",
+                    "evidence": "focal seizures",
+                }
             ]
         ),
     )
@@ -129,7 +149,12 @@ def test_metric_feedback_flags_per_type_multiplicity() -> None:
         dspy.Example(letter=gold_letter),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "focal seizures", "state": "active_rate", "evidence": "focal seizures 2 per month"}
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "focal seizures",
+                    "state": "active_rate",
+                    "evidence": "focal seizures 2 per month",
+                }
             ]
         ),
     )
@@ -155,7 +180,12 @@ def test_metric_feedback_flags_non_epileptic_over_emission() -> None:
         dspy.Example(letter=gold_letter),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "episodes", "state": "active_rate", "evidence": "episodes around twice a week"}
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "episodes",
+                    "state": "active_rate",
+                    "evidence": "episodes around twice a week",
+                }
             ]
         ),
     )
@@ -182,7 +212,12 @@ def test_metric_feedback_flags_uncertain_diagnosis_over_emission() -> None:
         dspy.Example(letter=gold_letter),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "events", "state": "active_rate", "evidence": "events most weeks"}
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "events",
+                    "state": "active_rate",
+                    "evidence": "events most weeks",
+                }
             ]
         ),
     )

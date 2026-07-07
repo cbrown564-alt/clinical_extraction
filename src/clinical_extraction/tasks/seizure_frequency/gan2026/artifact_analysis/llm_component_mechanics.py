@@ -16,18 +16,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 DEFAULT_RQ1_MATRIX_PATH = Path(
     "experiments/gan2026_rq1_candidate_discovery_matrix_2026-06-03.jsonl"
 )
-DEFAULT_RQ2_MATRIX_PATH = Path(
-    "experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.jsonl"
-)
+DEFAULT_RQ2_MATRIX_PATH = Path("experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.jsonl")
 DEFAULT_RQ4_MATRIX_PATH = Path(
     "experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.jsonl"
 )
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_llm_component_mechanics_rows_2026-06-03.jsonl"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_llm_component_mechanics_rows_2026-06-03.md"
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_llm_component_mechanics_rows_2026-06-03.jsonl")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_llm_component_mechanics_rows_2026-06-03.md")
 
 RECALL_MATCH_STATUSES = {"exact_label", "purist_category", "semantic_state"}
 LLM_RQ2_COMPONENTS = {

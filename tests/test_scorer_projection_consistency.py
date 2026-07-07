@@ -146,8 +146,7 @@ def test_scorer_and_projection_agree_on_current_vs_future(case: _ScopeCase) -> N
         f"{case.name}: scorer keep={scorer} but clause-scope expects {case.keep_expected}"
     )
     assert projection == case.keep_expected, (
-        f"{case.name}: projection keep={projection} but clause-scope expects "
-        f"{case.keep_expected}"
+        f"{case.name}: projection keep={projection} but clause-scope expects {case.keep_expected}"
     )
     assert scorer == projection, (
         f"{case.name}: scorer and projection classify current-vs-future differently "

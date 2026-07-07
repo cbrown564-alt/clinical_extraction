@@ -66,9 +66,7 @@ def build_verification_route_row(score_row: Mapping[str, Any]) -> dict[str, Any]
             "projection_policy_id": (score_row.get("source_artifacts") or {}).get(
                 "projection_policy_id"
             ),
-            "render_policy_id": (score_row.get("source_artifacts") or {}).get(
-                "render_policy_id"
-            ),
+            "render_policy_id": (score_row.get("source_artifacts") or {}).get("render_policy_id"),
         },
         "projection_decision": projection or None,
         "final_rendered_label": rendered or None,
@@ -117,32 +115,24 @@ def route_decision_for_row(
 
     if "seizure_free_proxy_evidence_overreach" in issue_set:
         families.append("seizure_free_proxy_evidence_overreach")
-        reasons.append(
-            "seizure-free projection is based on proxy or conditional evidence"
-        )
+        reasons.append("seizure-free projection is based on proxy or conditional evidence")
 
     if "medication_cadence_ambiguity" in issue_set:
         families.append("medication_cadence_ambiguity")
-        reasons.append(
-            "cadence evidence may describe medication or rescue use rather than events"
-        )
+        reasons.append("cadence evidence may describe medication or rescue use rather than events")
     elif "cyclic_window_without_event_count" in issue_set:
         families.append("cyclic_window_without_event_count")
-        reasons.append(
-            "cyclic vulnerability window is present without event count or burden"
-        )
+        reasons.append("cyclic vulnerability window is present without event count or burden")
     elif "cluster_cadence_unknown_with_per_cluster_burden" in issue_set:
         families.append("unresolved_cluster_cadence_with_per_cluster_burden")
-        reasons.append(
-            "cluster burden is rendered but cadence or cluster axis remains unresolved"
-        )
+        reasons.append("cluster burden is rendered but cadence or cluster axis remains unresolved")
     elif (
         projection_kind == "cluster_frequency"
         and rendered_label is None
         and projection_basis == "cluster_frequency"
         and (
-        "cluster_frequency_values_unparsed" in issue_set
-        or "cluster_cadence_values_incomplete" in issue_set
+            "cluster_frequency_values_unparsed" in issue_set
+            or "cluster_cadence_values_incomplete" in issue_set
         )
     ):
         families.append("cluster_axis_ambiguity")
@@ -174,9 +164,9 @@ def route_decision_for_row(
         rendered_label is None
         and aggregation_policy == "additive_same_window"
         and (
-        "additive_frequency_period_mismatch" in issue_set
-        or "vague_count" in issue_set
-        or "frequency_rate_values_incomplete" in issue_set
+            "additive_frequency_period_mismatch" in issue_set
+            or "vague_count" in issue_set
+            or "frequency_rate_values_incomplete" in issue_set
         )
     ):
         families.append("mixed_window_or_vague_addition")
@@ -185,15 +175,15 @@ def route_decision_for_row(
     if (
         "seizure_free_proxy_evidence_overreach" not in issue_set
         and len(source_candidate_ids) > 1
-        and aggregation_policy not in {
+        and aggregation_policy
+        not in {
             "additive_same_window",
             "cluster_axis",
         }
     ):
         families.append("multiple_current_primary_facts")
         reasons.append(
-            "multiple primary candidate ids are present outside an additive "
-            "or cluster-axis policy"
+            "multiple primary candidate ids are present outside an additive or cluster-axis policy"
         )
 
     if (
@@ -204,14 +194,9 @@ def route_decision_for_row(
         families.append("rendered_label_supported_but_policy_sensitive")
         reasons.append("unknown label rendered from explicit ambiguity rather than absence")
 
-    if (
-        rendered_label is not None
-        and "prior_encounter_derived_seizure_free_duration" in issue_set
-    ):
+    if rendered_label is not None and "prior_encounter_derived_seizure_free_duration" in issue_set:
         families.append("rendered_label_supported_but_policy_sensitive")
-        reasons.append(
-            "seizure-free duration was derived from prior-encounter context"
-        )
+        reasons.append("seizure-free duration was derived from prior-encounter context")
 
     families = _dedupe(families)
     reasons = _dedupe(reasons)
@@ -284,9 +269,7 @@ def summarize_rows(
             "route_family_counts": dict(sorted(family_counts.items())),
             "score_status_counts": dict(sorted(status_counts.items())),
             "routed_score_status_counts": dict(sorted(routed_status_counts.items())),
-            "routed_source_row_indices": [
-                int(route["source_row_index"]) for route in routed
-            ][:50],
+            "routed_source_row_indices": [int(route["source_row_index"]) for route in routed][:50],
         },
     }
 
@@ -338,9 +321,7 @@ def write_report(
     for status, count in summary["routed_score_status_counts"].items():
         lines.append(f"- `{status}`: {count}")
     lines.extend(["", "## Routed Rows", ""])
-    routed_rows = [
-        row for row in rows if (row.get("verification_route") or {}).get("routed")
-    ][:25]
+    routed_rows = [row for row in rows if (row.get("verification_route") or {}).get("routed")][:25]
     if not routed_rows:
         lines.append("- None.")
     for row in routed_rows:

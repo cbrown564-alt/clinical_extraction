@@ -41,9 +41,7 @@ class ParserCandidate(BaseModel):
 class ParserToolResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    tool_name: Literal["parse_seizure_frequency_candidates"] = (
-        "parse_seizure_frequency_candidates"
-    )
+    tool_name: Literal["parse_seizure_frequency_candidates"] = "parse_seizure_frequency_candidates"
     schema_version: Literal["gan2026_agent_parser_tool_v0"] = "gan2026_agent_parser_tool_v0"
     candidates: list[ParserCandidate]
     parse_warnings: list[str] = Field(default_factory=list)
@@ -215,9 +213,7 @@ _GUIDES: dict[str, _BoundaryGuide] = {
             "A last event can support seizure-free duration only when absence since then is clear.",
         ),
         examples=("Last seizure in March without a rate remains last-event-only.",),
-        cautions=(
-            "Do not divide one event by time since it unless policy explicitly allows it.",
-        ),
+        cautions=("Do not divide one event by time since it unless policy explicitly allows it.",),
     ),
     "unknown_frequency_vs_no_reference": _BoundaryGuide(
         guide_id="unknown_frequency_vs_no_reference",
@@ -257,7 +253,6 @@ _GUIDES: dict[str, _BoundaryGuide] = {
     ),
 }
 
-_GUIDE_ALIASES = {
-    _normalize_key(guide_id): guide_id
-    for guide_id in _GUIDES
-} | {alias: guide_id for guide_id, guide in _GUIDES.items() for alias in guide.aliases}
+_GUIDE_ALIASES = {_normalize_key(guide_id): guide_id for guide_id in _GUIDES} | {
+    alias: guide_id for guide_id, guide in _GUIDES.items() for alias in guide.aliases
+}

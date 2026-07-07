@@ -183,8 +183,7 @@ def write_replay_report(
         f"{projection['purist_f1']:.4f}",
         f"- Pragmatic accuracy/F1: {projection['pragmatic_accuracy']:.4f} / "
         f"{projection['pragmatic_f1']:.4f}",
-        f"- Projection changed after accepted-node merge: "
-        f"{projection['changed_from_baseline']}",
+        f"- Projection changed after accepted-node merge: {projection['changed_from_baseline']}",
         "",
         "## Rows",
         "",
@@ -340,8 +339,7 @@ def _append_nodes(
         update={
             "nodes": all_nodes,
             "graph_builder": (
-                "deterministic_oracle_span_harvester_v0+"
-                "accepted_boundary_state_nodes_v0"
+                "deterministic_oracle_span_harvester_v0+accepted_boundary_state_nodes_v0"
             ),
             "missing_variable_flags": _missing_variable_flags(all_nodes),
             "metadata": {
@@ -364,23 +362,18 @@ def _missing_variable_flags(nodes: Sequence[StateGraphNode]) -> tuple[str, ...]:
 
 def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     y_true = [float(row["gold_monthly_frequency"]) for row in rows]
-    y_pred = [
-        float(row["replayed_projection"]["monthly_frequency"]) for row in rows
-    ]
+    y_pred = [float(row["replayed_projection"]["monthly_frequency"]) for row in rows]
     purist = evaluate_predictions(y_true, y_pred, method="purist")
     pragmatic = evaluate_predictions(y_true, y_pred, method="pragmatic")
     gained_rows = [
         row
         for row in rows
-        if not row["baseline_oracle_representable"]
-        and row["replayed_oracle_representable"]
+        if not row["baseline_oracle_representable"] and row["replayed_oracle_representable"]
     ]
     return {
         "coverage": {
             "accepted_boundary_rows": len(rows),
-            "accepted_hosted_nodes": sum(
-                int(row["accepted_hosted_node_count"]) for row in rows
-            ),
+            "accepted_hosted_nodes": sum(int(row["accepted_hosted_node_count"]) for row in rows),
             "baseline_representable_rows": sum(
                 bool(row["baseline_oracle_representable"]) for row in rows
             ),
@@ -400,9 +393,7 @@ def _summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "purist_f1": purist["micro"]["f1"],
             "pragmatic_accuracy": pragmatic["micro"]["accuracy"],
             "pragmatic_f1": pragmatic["micro"]["f1"],
-            "exact_label_matches": sum(
-                bool(row["projection_exact_label_match"]) for row in rows
-            ),
+            "exact_label_matches": sum(bool(row["projection_exact_label_match"]) for row in rows),
             "changed_from_baseline": sum(
                 bool(row["projection_changed_from_baseline"]) for row in rows
             ),
@@ -461,8 +452,10 @@ def _load_records(
 
     records = load_records_for_split("validation")
     manifest = load_split_manifest()
-    return records, "validation_hard_slices", str(
-        manifest.get("manifest_version", "gan2026_split_v1")
+    return (
+        records,
+        "validation_hard_slices",
+        str(manifest.get("manifest_version", "gan2026_split_v1")),
     )
 
 

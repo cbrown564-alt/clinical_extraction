@@ -60,9 +60,7 @@ def run_single_call_mention_ids_letter(
         else (None, ["not_run"])
     )
     mention_record = mention_record or mono.StructuredMentionIdSelectionRecord()
-    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(
-        mention_record
-    )
+    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(mention_record)
     all_parse_errors = [*mention_parse_errors, *selection_notes]
     return (
         mention_prompt_input_json,
@@ -82,9 +80,7 @@ def run_single_call_mention_ids_letter(
             "inventory_parse_errors": all_parse_errors,
             "inventory_selection_summary": mention_record.selection_summary,
             "structured_mentions_generation": mention_record.generated_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": list(mention_record.final_mention_ids),
             "n_mentions_generation": len(mention_record.generated_mentions),
         },
@@ -133,9 +129,7 @@ def run_single_call_render_ids_letter(
         else (None, ["not_run"])
     )
     mention_record = mention_record or mono.StructuredMentionIdSelectionRecord()
-    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(
-        mention_record
-    )
+    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(mention_record)
     all_parse_errors = [*mention_parse_errors, *selection_notes]
     return (
         mention_prompt_input_json,
@@ -155,9 +149,7 @@ def run_single_call_render_ids_letter(
             "inventory_parse_errors": all_parse_errors,
             "inventory_selection_summary": mention_record.selection_summary,
             "structured_mentions_generation": mention_record.generated_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": list(mention_record.final_mention_ids),
             "n_mentions_generation": len(mention_record.generated_mentions),
         },
@@ -206,9 +198,7 @@ def run_single_call_clean_render_ids_letter(
         else (None, ["not_run"])
     )
     mention_record = mention_record or mono.StructuredMentionIdSelectionRecord()
-    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(
-        mention_record
-    )
+    final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(mention_record)
     all_parse_errors = [*mention_parse_errors, *selection_notes]
     return (
         mention_prompt_input_json,
@@ -228,9 +218,7 @@ def run_single_call_clean_render_ids_letter(
             "inventory_parse_errors": all_parse_errors,
             "inventory_selection_summary": mention_record.selection_summary,
             "structured_mentions_generation": mention_record.generated_mentions,
-            "structured_mentions_final": [
-                mention.model_dump() for mention in final_mentions
-            ],
+            "structured_mentions_final": [mention.model_dump() for mention in final_mentions],
             "final_mention_ids": list(mention_record.final_mention_ids),
             "n_mentions_generation": len(mention_record.generated_mentions),
         },
@@ -294,14 +282,10 @@ def run_single_call_per_entity_clean_render_ids_letter(
         entity_final_mentions, selection_notes = mono.final_mentions_from_mention_id_selection(
             mention_record
         )
-        generated_mentions.extend(
-            dict(mention) for mention in mention_record.generated_mentions
-        )
+        generated_mentions.extend(dict(mention) for mention in mention_record.generated_mentions)
         final_mentions.extend(mention.model_dump() for mention in entity_final_mentions)
         final_ids_by_entity[target_entity] = list(mention_record.final_mention_ids)
-        selection_summary_by_entity[target_entity] = list(
-            mention_record.selection_summary
-        )
+        selection_summary_by_entity[target_entity] = list(mention_record.selection_summary)
         parse_errors.extend(f"{target_entity}:{error}" for error in entity_parse_errors)
         parse_errors.extend(f"{target_entity}:{error}" for error in selection_notes)
 

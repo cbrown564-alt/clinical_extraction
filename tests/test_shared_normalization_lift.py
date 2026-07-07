@@ -1,4 +1,5 @@
 """Guard: shared normalization is byte-identical to original label_parser exports."""
+
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract import (
     label_parser as shim,
 )

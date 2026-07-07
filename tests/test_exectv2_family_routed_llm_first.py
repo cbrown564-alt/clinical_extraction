@@ -140,9 +140,7 @@ def test_optional_focused_diagnosis_route_replaces_shared_diagnosis_only() -> No
         "Prescription",
     ]
     assert routed[0].diagnostics["diagnosis_route_entities"] == ["Diagnosis"]
-    assert routed[0].diagnostics["aggregate_ownership"] == (
-        FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP
-    )
+    assert routed[0].diagnostics["aggregate_ownership"] == (FOCUSED_DIAGNOSIS_AGGREGATE_OWNERSHIP)
 
 
 def test_clean_llm_first_diagnosis_route_keeps_clean_ownership() -> None:
@@ -187,9 +185,7 @@ def test_clean_llm_first_diagnosis_route_keeps_clean_ownership() -> None:
     ]
     # Diagnosis lane carries clean llm_first ownership, not the hybrid reconciler.
     assert routed[0].mentions[2].component_owner == "llm_first"
-    assert routed[0].diagnostics["aggregate_ownership"] == (
-        "llm_first_with_hybrid_sf_route"
-    )
+    assert routed[0].diagnostics["aggregate_ownership"] == ("llm_first_with_hybrid_sf_route")
 
 
 def test_build_comparison_with_focused_diagnosis_adds_no_call_replay_candidate(
@@ -256,8 +252,7 @@ def test_build_comparison_with_focused_diagnosis_adds_no_call_replay_candidate(
         routed_module,
         "run_all9_on_letters",
         lambda letters: [
-            PredictedLetter(letter_id=letter.letter_id, mentions=())
-            for letter in letters
+            PredictedLetter(letter_id=letter.letter_id, mentions=()) for letter in letters
         ],
     )
     monkeypatch.setattr(routed_module, "_candidate_report", fake_candidate_report)

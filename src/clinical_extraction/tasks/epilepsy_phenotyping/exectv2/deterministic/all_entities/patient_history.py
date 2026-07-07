@@ -9,17 +9,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection
     patient_history_concept,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import PATIENT_HISTORY
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import PredictedMention
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
+    PredictedMention,
+)
 
 from ..mention_identity import match_span
 from ..rule_metadata import Portability, RuleGroup
 from .common import _overlaps, _owner, _sentence_start, _sentence_window
 from .text import _temporal_unit
 
-_PATIENT_HISTORY_RULES: tuple[
-    tuple[re.Pattern[str], str, str],
-    ...
-] = (
+_PATIENT_HISTORY_RULES: tuple[tuple[re.Pattern[str], str, str], ...] = (
     (
         re.compile(r"\bfebrile\s+convulsions?\b", re.IGNORECASE),
         "febrile-convulsions",
@@ -135,6 +134,8 @@ _HISTORY_CONTEXT = re.compile(
     r"with|includes?)\b",
     re.IGNORECASE,
 )
+
+
 def _extract_patient_history(text: str) -> tuple[PredictedMention, ...]:
     mentions: list[PredictedMention] = []
     occupied: list[tuple[int, int]] = []
@@ -168,6 +169,8 @@ def _extract_patient_history(text: str) -> tuple[PredictedMention, ...]:
             occupied.append(match.span())
     mentions.sort(key=lambda mention: text.lower().find(mention.evidence.lower()))
     return tuple(mentions)
+
+
 def _patient_history_attrs(
     text: str,
     match: re.Match[str],

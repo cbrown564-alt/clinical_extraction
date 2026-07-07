@@ -113,9 +113,7 @@ def test_hypothesis_selection_summarizes_owner_family_and_evidence_rows() -> Non
 
     selection = validation_test_gap_hypothesis_selection.build_hypothesis_selection(rows)
 
-    owner_summary = {
-        item["name"]: item for item in selection["component_owner_summary"]
-    }
+    owner_summary = {item["name"]: item for item in selection["component_owner_summary"]}
     assert owner_summary["deterministic_adapter"]["incorrect_rows"] == 1
     assert owner_summary["safety_floor"]["nonprediction_rows"] == 1
     family_summary = {item["name"]: item for item in selection["hidden_family_summary"]}

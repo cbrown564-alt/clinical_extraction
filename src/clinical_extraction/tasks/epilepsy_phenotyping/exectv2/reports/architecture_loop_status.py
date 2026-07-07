@@ -323,9 +323,8 @@ def freeze_readiness(statuses: Sequence[TrackStatus]) -> tuple[bool, list[str]]:
 
 def _record_matches_context(record: Mapping[str, Any], *, model: str, split: str) -> bool:
     record_model = str(record.get("model", ""))
-    return (
-        str(record.get("split", "")) == split
-        and (record_model == model or record_model == "(model-independent)")
+    return str(record.get("split", "")) == split and (
+        record_model == model or record_model == "(model-independent)"
     )
 
 

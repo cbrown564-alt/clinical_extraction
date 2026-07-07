@@ -409,8 +409,7 @@ def test_diagnosis_dictionary_lens_repairs_intractable_and_drops_noise() -> None
                     "Negation": "Affirmed",
                 },
                 "evidence": (
-                    "Despite this she continues to get general and complex partial "
-                    "seizures."
+                    "Despite this she continues to get general and complex partial seizures."
                 ),
             },
             {
@@ -422,8 +421,7 @@ def test_diagnosis_dictionary_lens_repairs_intractable_and_drops_noise() -> None
                     "Negation": "Affirmed",
                 },
                 "evidence": (
-                    "Despite this she continues to get general and complex partial "
-                    "seizures."
+                    "Despite this she continues to get general and complex partial seizures."
                 ),
             },
             {
@@ -452,10 +450,7 @@ def test_diagnosis_dictionary_lens_repairs_intractable_and_drops_noise() -> None
 
 
 def test_diagnosis_dictionary_lens_does_not_add_generic_epilepsy_companion_for_subtypes() -> None:
-    note = (
-        "Diagnosis: juvenile myoclonic epilepsy. "
-        "Impression: juvenile myoclonic epilepsy."
-    )
+    note = "Diagnosis: juvenile myoclonic epilepsy. Impression: juvenile myoclonic epilepsy."
     store = _store(
         note,
         [
@@ -766,8 +761,7 @@ def test_investigations_dictionary_lens_prunes_qwen_cross_modality_defaults() ->
                     "MRI_Performed": "No",
                 },
                 "evidence": (
-                    "There was a previous CT scan from 2017 showing a left hemisphere "
-                    "infarct."
+                    "There was a previous CT scan from 2017 showing a left hemisphere infarct."
                 ),
             },
             {
@@ -946,8 +940,7 @@ def test_sf_dictionary_lens_repairs_qwen_state_and_noise_residuals() -> None:
                     "FrequencyChange": "Decreased",
                 },
                 "evidence": (
-                    "I think that the focal seizures are completely under control "
-                    "on the dose."
+                    "I think that the focal seizures are completely under control on the dose."
                 ),
             },
             {
@@ -980,8 +973,7 @@ def test_sf_dictionary_lens_repairs_qwen_state_and_noise_residuals() -> None:
                 "text": "episodes around twice a week",
                 "attributes": {"NumberOfSeizures": "2", "TimePeriod": "Week"},
                 "evidence": (
-                    "She has been getting episodes around twice a week of an unusual "
-                    "thought."
+                    "She has been getting episodes around twice a week of an unusual thought."
                 ),
             },
             {
@@ -989,8 +981,7 @@ def test_sf_dictionary_lens_repairs_qwen_state_and_noise_residuals() -> None:
                 "text": "one seizure",
                 "attributes": {"NumberOfSeizures": "1"},
                 "evidence": (
-                    "Even though he has only had one seizure he is at risk of further "
-                    "seizures."
+                    "Even though he has only had one seizure he is at risk of further seizures."
                 ),
             },
         ],
@@ -1039,9 +1030,7 @@ def test_sf_dictionary_lens_adds_bounded_residual_frequency_patterns() -> None:
 
     assert by_text["generalised tonic clonic seizures"].attributes["YearDate"] == "2014"
     assert by_text["absence like seizures"].attributes["NumberOfSeizures"] == "1"
-    assert by_text["focal seizures with altered awareness"].attributes["TimePeriod"] == (
-        "Week"
-    )
+    assert by_text["focal seizures with altered awareness"].attributes["TimePeriod"] == ("Week")
     assert by_text["seizure"].attributes["FrequencyChange"] == "Increased"
     assert by_text["cluster of seizures"].attributes["CUI"] == "C3203523"
     assert result.diagnostics["added_dictionary_findings"] == 5
@@ -1072,9 +1061,7 @@ def test_sf_dictionary_lens_adds_v0916_source_residuals() -> None:
     }
     by_cui = {finding.attributes.get("CUI"): finding for finding in result.findings}
     typical = next(
-        finding
-        for finding in result.findings
-        if finding.attributes.get("CUI") == "C4316903"
+        finding for finding in result.findings if finding.attributes.get("CUI") == "C4316903"
     )
 
     assert by_cui["C0494475"].attributes["PointInTime"] == "Last_Week"
@@ -1110,8 +1097,7 @@ def test_sf_dictionary_lens_repairs_v0914_state_residuals() -> None:
                     "NumberOfSeizures": "2",
                 },
                 "evidence": (
-                    "focal to bilateral seizures 2 events in total, last event "
-                    "10 years ago"
+                    "focal to bilateral seizures 2 events in total, last event 10 years ago"
                 ),
             },
             {
@@ -1191,28 +1177,32 @@ def test_sf_dictionary_lens_repairs_v0914_state_residuals() -> None:
     ).reconcile(store, policy=_policy())
     by_evidence = {finding.evidence: finding for finding in result.findings}
 
-    ftb = by_evidence[
-        "focal to bilateral seizures 2 events in total, last event 10 years ago"
-    ]
+    ftb = by_evidence["focal to bilateral seizures 2 events in total, last event 10 years ago"]
     assert ftb.text == "focal to bilateral convulsive seizures"
     assert ftb.attributes["NumberOfSeizures"] == "0"
-    assert "NumberOfSeizures" not in by_evidence[
-        "She has had four in the last three weeks but has had up to five weeks "
-        "seizure free."
-    ].attributes
-    assert by_evidence[
-        "On Sunday and Monday, he was having generalised tonic clonic seizures "
-        "in the night."
-    ].attributes["NumberOfSeizures"] == "1"
-    assert by_evidence["Her seizure was about 2 months ago."].attributes[
+    assert (
         "NumberOfSeizures"
-    ] == "0"
-    assert by_evidence[
-        "Last week she had around 10-15 of these seizures over 2 days."
-    ].attributes["CUI"] == "C0036572"
-    assert by_evidence["The absences continue to happen maybe every week."].attributes[
-        "CUI"
-    ] == "C0563606"
+        not in by_evidence[
+            "She has had four in the last three weeks but has had up to five weeks seizure free."
+        ].attributes
+    )
+    assert (
+        by_evidence[
+            "On Sunday and Monday, he was having generalised tonic clonic seizures in the night."
+        ].attributes["NumberOfSeizures"]
+        == "1"
+    )
+    assert by_evidence["Her seizure was about 2 months ago."].attributes["NumberOfSeizures"] == "0"
+    assert (
+        by_evidence["Last week she had around 10-15 of these seizures over 2 days."].attributes[
+            "CUI"
+        ]
+        == "C0036572"
+    )
+    assert (
+        by_evidence["The absences continue to happen maybe every week."].attributes["CUI"]
+        == "C0563606"
+    )
     assert result.diagnostics["rewritten_dictionary_findings"] == 6
     assert result.diagnostics["dropped_dictionary_findings"] == 2
 
@@ -1623,9 +1613,9 @@ def test_prescription_dictionary_lens_repairs_rescue_and_drops_future_schedule()
     ).reconcile(store, policy=_policy())
     by_text = {finding.text: finding for finding in result.findings}
 
-    assert by_text["Clobazam 10-20mg bd for seizure clusters"].attributes[
-        "Frequency"
-    ] == "As_Required"
+    assert (
+        by_text["Clobazam 10-20mg bd for seizure clusters"].attributes["Frequency"] == "As_Required"
+    )
     assert by_text["Buccal midazolam"].attributes["DrugName"] == "midazolam"
     assert "Carbamazepine 200md bd" not in by_text
     assert "Lamotrigine 125mg AM" not in by_text

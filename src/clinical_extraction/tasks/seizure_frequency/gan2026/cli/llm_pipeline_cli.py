@@ -289,9 +289,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     if pipeline_args.pipeline == "agentic_matched_budget" and args.conditions:
         run_kwargs["conditions"] = _parse_agentic_conditions(args.conditions, parser)
     rows, metadata = (
-        spec.run_split(records_to_run, **run_kwargs)
-        if records_to_run
-        else ([], {"summary": {}})
+        spec.run_split(records_to_run, **run_kwargs) if records_to_run else ([], {"summary": {}})
     )
     if args.resume_existing:
         rows = _combine_resume_rows(
@@ -394,9 +392,7 @@ def _filter_records_by_source_indices(
     requested_source_indices: Sequence[int],
     parser: argparse.ArgumentParser,
 ) -> list[GanFrequencyRecord]:
-    records_by_index = {
-        _source_index_from_record(record, parser): record for record in records
-    }
+    records_by_index = {_source_index_from_record(record, parser): record for record in records}
     missing = [index for index in requested_source_indices if index not in records_by_index]
     if missing:
         parser.error(
@@ -440,8 +436,7 @@ def _summarize_rows_for_split(
     signature = inspect.signature(summarize_rows)
     parameters = signature.parameters
     accepts_split = "split" in parameters or any(
-        parameter.kind == inspect.Parameter.VAR_KEYWORD
-        for parameter in parameters.values()
+        parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()
     )
     if accepts_split:
         return summarize_rows(rows, split=split)  # type: ignore[call-arg]
@@ -469,9 +464,7 @@ def _validate_test_audit_policy(
     if args.limit is not None:
         parser.error("test split runs must cover the full locked split; do not use --limit")
     if args.source_row_indices or args.source_row_index_file:
-        parser.error(
-            "test split runs must not use --source-row-indices or --source-row-index-file"
-        )
+        parser.error("test split runs must not use --source-row-indices or --source-row-index-file")
     if explicit_source_override_options:
         parser.error(
             "test split runs must not use source-artifact override option(s): "
@@ -508,8 +501,7 @@ def _validate_test_audit_policy(
     if frozen_launch_spec is not None:
         if args.model != frozen_launch_spec.model:
             parser.error(
-                f"{args.pipeline} test split runs must use --model "
-                f"{frozen_launch_spec.model}"
+                f"{args.pipeline} test split runs must use --model {frozen_launch_spec.model}"
             )
         if args.max_tokens != frozen_launch_spec.max_tokens:
             parser.error(
@@ -518,8 +510,7 @@ def _validate_test_audit_policy(
             )
         if not _same_cli_path(args.jsonl, frozen_launch_spec.jsonl_path):
             parser.error(
-                f"{args.pipeline} test split runs must use --jsonl "
-                f"{frozen_launch_spec.jsonl_path}"
+                f"{args.pipeline} test split runs must use --jsonl {frozen_launch_spec.jsonl_path}"
             )
         if not _same_cli_path(args.markdown, frozen_launch_spec.report_path):
             parser.error(
@@ -551,14 +542,11 @@ def _validate_output_overwrite_policy(
         parser.error("use either --resume-existing or --overwrite-existing, not both")
     if args.resume_existing or args.overwrite_existing:
         return
-    existing_paths = [
-        path for path in (args.jsonl, args.markdown) if Path(path).exists()
-    ]
+    existing_paths = [path for path in (args.jsonl, args.markdown) if Path(path).exists()]
     if existing_paths:
         parser.error(
             "output artifact already exists; use --resume-existing to continue "
-            "or --overwrite-existing to replace: "
-            + ", ".join(str(path) for path in existing_paths)
+            "or --overwrite-existing to replace: " + ", ".join(str(path) for path in existing_paths)
         )
 
 
@@ -623,9 +611,7 @@ def _combine_resume_rows(
             "--resume-existing found duplicate source_row_index rows: "
             + ", ".join(str(index) for index in duplicate_indices[:10])
         )
-    requested_indices = [
-        _source_index_from_record(record, parser) for record in requested_records
-    ]
+    requested_indices = [_source_index_from_record(record, parser) for record in requested_records]
     missing_indices = [index for index in requested_indices if index not in rows_by_index]
     if missing_indices:
         parser.error(

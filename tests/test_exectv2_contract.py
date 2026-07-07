@@ -1,4 +1,5 @@
 """Tests for the ExECTv2 extraction contract (prediction schema, adapter, validation)."""
+
 from __future__ import annotations
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
@@ -45,8 +46,15 @@ def test_registry_has_nine_entities():
 
 def test_all_nine_entity_names_present():
     expected = {
-        "BirthHistory", "Diagnosis", "EpilepsyCause", "Investigations",
-        "Onset", "PatientHistory", "Prescription", "SeizureFrequency", "WhenDiagnosed",
+        "BirthHistory",
+        "Diagnosis",
+        "EpilepsyCause",
+        "Investigations",
+        "Onset",
+        "PatientHistory",
+        "Prescription",
+        "SeizureFrequency",
+        "WhenDiagnosed",
     }
     assert set(ENTITY_REGISTRY.keys()) == expected
 
@@ -78,11 +86,13 @@ def test_gold_phrase_target_policy_is_entity_specific():
 
 
 def test_scoring_ignore_policy_keeps_sf_guideline_exception_centralized():
-    assert benchmark_ignore_attributes_for(SEIZURE_FREQUENCY.name) == frozenset({
-        "CUIPhrase",
-        "Certainty",
-        "Negation",
-    })
+    assert benchmark_ignore_attributes_for(SEIZURE_FREQUENCY.name) == frozenset(
+        {
+            "CUIPhrase",
+            "Certainty",
+            "Negation",
+        }
+    )
     assert semantic_ignore_attributes_for(DIAGNOSIS.name) == frozenset({"CUIPhrase", "CUI"})
 
 
@@ -222,9 +232,7 @@ def test_gold_as_predictions_validates_clean():
         pred = _gold_to_predicted_letter(letter)
         result = validate_letter(pred, source_text=letter.note_text)
         errors.extend(
-            (letter.letter_id, i.code, i.message)
-            for i in result.issues
-            if i.severity == "error"
+            (letter.letter_id, i.code, i.message) for i in result.issues if i.severity == "error"
         )
     assert errors == [], f"Unexpected validation errors: {errors[:5]}"
 

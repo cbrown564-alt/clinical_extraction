@@ -115,7 +115,10 @@ def compute_rules_row(split: str = "dev") -> ComparisonRow:
 
     def f1(config: object) -> tuple[float, float]:
         score = score_entity(
-            gold_letters, pred_letters, SEIZURE_FREQUENCY.name, config  # type: ignore[arg-type]
+            gold_letters,
+            pred_letters,
+            SEIZURE_FREQUENCY.name,
+            config,  # type: ignore[arg-type]
         )
         return round(score.per_item.f1, 3), round(score.per_letter.f1, 3)
 
@@ -184,9 +187,7 @@ def build_comparison_rows(
             continue  # rules is the live row, never the registry
         metrics_src = record.get("primary_metrics", {})
         metrics = {
-            key: float(metrics_src[key])
-            for key in _METRIC_KEYS
-            if metrics_src.get(key) is not None
+            key: float(metrics_src[key]) for key in _METRIC_KEYS if metrics_src.get(key) is not None
         }
         n_letters = int(record.get("row_count", 0))
         rows.append(
@@ -234,8 +235,7 @@ def render_comparison_markdown(
     missing = [f for f in FAMILY_ORDER if f not in families_present]
 
     lines: list[str] = [
-        f"# ExECTv2 Three-Way Architecture Comparison — SeizureFrequency "
-        f"({model}, {split})",
+        f"# ExECTv2 Three-Way Architecture Comparison — SeizureFrequency ({model}, {split})",
         "",
         f"- Generated: `{generated_on}`",
         f"- Model: `{model}` (rules family is model-independent)",
@@ -318,9 +318,7 @@ def write_comparison_report(
     """Build and write the three-way comparison report for ``model``."""
 
     rows = build_comparison_rows(model, registry_path, split)
-    markdown = render_comparison_markdown(
-        model, rows, split, generated_on=generated_on
-    )
+    markdown = render_comparison_markdown(model, rows, split, generated_on=generated_on)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(markdown, encoding="utf-8")
     return out_path

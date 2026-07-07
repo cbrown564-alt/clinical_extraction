@@ -66,9 +66,7 @@ def test_repair_decision_payload_coerces_stringified_numeric_confidence() -> Non
     assert repair_decision_payload({"confidence": "0.8"}) == {"confidence": "high"}
     assert repair_decision_payload({"confidence": "0.6"}) == {"confidence": "medium"}
     assert repair_decision_payload({"confidence": "0.2"}) == {"confidence": "low"}
-    assert repair_decision_payload({"confidence": "not-a-number"}) == {
-        "confidence": "not-a-number"
-    }
+    assert repair_decision_payload({"confidence": "not-a-number"}) == {"confidence": "not-a-number"}
 
 
 def test_repair_decision_payload_handles_llm_answer_kind_variants() -> None:

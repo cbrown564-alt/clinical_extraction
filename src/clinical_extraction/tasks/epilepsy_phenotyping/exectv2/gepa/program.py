@@ -111,13 +111,9 @@ class GepaDedupFactsExtractor(dspy.Module):
         super().__init__()
         self.extract = dspy.Predict(GepaDedupFactsSignature)
         if seed_instruction is not None:
-            self.extract.signature = self.extract.signature.with_instructions(
-                seed_instruction
-            )
+            self.extract.signature = self.extract.signature.with_instructions(seed_instruction)
 
-    def forward(
-        self, letter_text: str, output_schema: str = OUTPUT_SCHEMA_JSON
-    ) -> dspy.Prediction:
+    def forward(self, letter_text: str, output_schema: str = OUTPUT_SCHEMA_JSON) -> dspy.Prediction:
         prediction = self.extract(letter_text=letter_text, output_schema=output_schema)
         # Stamp the candidate's own prompt size onto the prediction. GEPA scores
         # candidates with a plain metric(example, pred) call (no trace, no program),

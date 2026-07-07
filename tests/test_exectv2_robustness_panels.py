@@ -9,9 +9,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
 
 
 def test_robustness_panel_covers_predeclared_minimum_and_scores_controls() -> None:
-    payload = robustness_panels.build_robustness_panel_payload(
-        generated_on="2026-06-25"
-    )
+    payload = robustness_panels.build_robustness_panel_payload(generated_on="2026-06-25")
 
     counts = payload["panel_coverage"]["by_perturbation_family"]
     assert counts["sf_current_vs_historical"] >= 1
@@ -31,9 +29,7 @@ def test_robustness_panel_covers_predeclared_minimum_and_scores_controls() -> No
     assert arms["targeted_failure_control"]["evidence_validity_rate"] < 1.0
 
     diagnosis_failure = next(
-        row
-        for row in arms["targeted_failure_control"]["by_family"]
-        if row["family"] == "Diagnosis"
+        row for row in arms["targeted_failure_control"]["by_family"] if row["family"] == "Diagnosis"
     )
     assert diagnosis_failure["companion_metrics"]["assertion_f1"] < 1.0
 

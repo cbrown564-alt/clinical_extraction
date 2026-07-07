@@ -44,8 +44,7 @@ def get_cli_specs() -> dict[str, Any]:
     return {
         "agentic_matched_budget": GanLlmPipelineCliSpec(
             description=(
-                "Run the Gan 2026 agentic matched-budget prompt-only/no-call "
-                "trace surface."
+                "Run the Gan 2026 agentic matched-budget prompt-only/no-call trace surface."
             ),
             default_jsonl_path=agentic_runner.DEFAULT_JSONL_PATH,
             default_report_path=agentic_runner.DEFAULT_REPORT_PATH,
@@ -156,12 +155,8 @@ def get_cli_specs() -> dict[str, Any]:
                 "Run the Gan 2026 V10 cross-model structured-event adjudicator "
                 "over saved GPT, Qwen, and DeepSeek structured-event artifacts."
             ),
-            default_jsonl_path=(
-                cross_model_structured_event_adjudicator.DEFAULT_JSONL_PATH
-            ),
-            default_report_path=(
-                cross_model_structured_event_adjudicator.DEFAULT_REPORT_PATH
-            ),
+            default_jsonl_path=(cross_model_structured_event_adjudicator.DEFAULT_JSONL_PATH),
+            default_report_path=(cross_model_structured_event_adjudicator.DEFAULT_REPORT_PATH),
             run_split=cross_model_structured_event_adjudicator.run_split,
             write_jsonl=cross_model_structured_event_adjudicator.write_jsonl,
             write_report=cross_model_structured_event_adjudicator.write_report,

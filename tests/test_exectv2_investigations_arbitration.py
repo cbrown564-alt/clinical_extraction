@@ -88,9 +88,7 @@ def test_investigations_arbitration_drops_requested_unknown_mentions() -> None:
     kept, actions = arbitration.arbitrate_investigations_mentions(mentions)
 
     assert [mention["text"] for mention in kept] == ["MRI"]
-    assert [action["rule_id"] for action in actions] == [
-        "drop_requested_unknown_investigation"
-    ]
+    assert [action["rule_id"] for action in actions] == ["drop_requested_unknown_investigation"]
 
 
 def _mention(

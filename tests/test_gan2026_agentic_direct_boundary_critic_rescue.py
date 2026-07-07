@@ -69,9 +69,7 @@ def test_direct_boundary_critic_uses_guides_without_parser_context(monkeypatch) 
         "direct_answer",
         "tool_attribution_boundary",
     }
-    guide_ids = {
-        guide["guide_id"] for guide in critic_prompt["tool_context"]["boundary_guides"]
-    }
+    guide_ids = {guide["guide_id"] for guide in critic_prompt["tool_context"]["boundary_guides"]}
     assert guide_ids == set(direct_boundary_critic_rescue.FIXED_BOUNDARY_GUIDE_IDS)
 
 
@@ -140,9 +138,7 @@ def test_restore_cluster_burden_requires_cluster_cadence_and_burden_evidence() -
 
     policy = direct_boundary_critic_rescue.apply_action_policy(
         _record(
-            note_text=(
-                "She reports cluster days roughly once per month, usually five spells."
-            )
+            note_text=("She reports cluster days roughly once per month, usually five spells.")
         ),
         direct,
         critic,
@@ -167,9 +163,7 @@ def test_critic_shape_repair_accepts_boolean_and_numeric_audit_fields() -> None:
         }
     )
 
-    decision, errors = direct_boundary_critic_rescue.parse_critic_decision_json(
-        raw_output
-    )
+    decision, errors = direct_boundary_critic_rescue.parse_critic_decision_json(raw_output)
 
     assert decision is not None
     assert decision.action == "keep"
@@ -204,8 +198,7 @@ def test_gate_interpretation_enforces_panel_and_hard50_rules() -> None:
 def _record(
     source_row_index: int = 401,
     note_text: str = (
-        "Clinic Date: 12 June 2026\n"
-        "She reports 2 seizures per week and keeps a diary."
+        "Clinic Date: 12 June 2026\nShe reports 2 seizures per week and keeps a diary."
     ),
 ) -> GanFrequencyRecord:
     return GanFrequencyRecord(

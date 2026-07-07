@@ -8,7 +8,10 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-MANIFEST = REPO / "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml"
+MANIFEST = (
+    REPO
+    / "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml"
+)
 FROZEN_SUMMARY = (
     REPO
     / "experiments/_archive/exectv2_richschema_iterations"
@@ -31,22 +34,24 @@ def _load_frozen() -> dict[str, float]:
     summary = json.loads(FROZEN_SUMMARY.read_text(encoding="utf-8"))
     ladder = summary["score_ladder"]
     return {
-        "seizure_frequency_headline_f1": ladder["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"],
-        "seizure_frequency_active_rate_fidelity_f1": ladder["fidelity_companions"]["SeizureFrequency"][
-            "active_rate_fidelity"
+        "seizure_frequency_headline_f1": ladder["headline_target"]["by_indicator"][
+            "SeizureFrequency"
         ]["f1"],
+        "seizure_frequency_active_rate_fidelity_f1": ladder["fidelity_companions"][
+            "SeizureFrequency"
+        ]["active_rate_fidelity"]["f1"],
     }
 
 
 def _replay_current() -> dict[str, float]:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-        all_entities as _all_entities,  # noqa: F401 — prime imports
-    )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.manifests import (
         load_finding_assembly_manifest,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline import (
         build_finding_assembly,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+        all_entities as _all_entities,  # noqa: F401 — prime imports
     )
 
     manifest = load_finding_assembly_manifest(MANIFEST)
@@ -67,10 +72,12 @@ def _replay_current() -> dict[str, float]:
     run = build_finding_assembly(manifest, generated_on="2026-06-26")
     ladder = run.report["score_ladder"]
     return {
-        "seizure_frequency_headline_f1": ladder["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"],
-        "seizure_frequency_active_rate_fidelity_f1": ladder["fidelity_companions"]["SeizureFrequency"][
-            "active_rate_fidelity"
+        "seizure_frequency_headline_f1": ladder["headline_target"]["by_indicator"][
+            "SeizureFrequency"
         ]["f1"],
+        "seizure_frequency_active_rate_fidelity_f1": ladder["fidelity_companions"][
+            "SeizureFrequency"
+        ]["active_rate_fidelity"]["f1"],
     }
 
 

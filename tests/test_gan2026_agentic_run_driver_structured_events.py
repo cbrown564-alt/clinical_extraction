@@ -335,10 +335,7 @@ def test_dispatch_event_completion_matches_direct_run_split(monkeypatch) -> None
 
     record = _record(
         932,
-        (
-            "Clinic Date: 12 June 2026\n"
-            "Patient has clusters about four times per month."
-        ),
+        ("Clinic Date: 12 June 2026\nPatient has clusters about four times per month."),
         gold_label="multiple per month",
         gold_monthly_frequency=1000.0,
     )
@@ -419,5 +416,3 @@ def test_dispatch_event_completion_matches_direct_run_split(monkeypatch) -> None
     assert _metadata_without_timestamps(direct_metadata) == _metadata_without_timestamps(
         dispatched_metadata
     )
-
-

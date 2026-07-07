@@ -8,7 +8,9 @@ from typing import Any
 
 from fastapi import APIRouter, Query, Request
 
-from clinical_extraction.observatory.gan2026.gold_audit_sampler import enrich_rows_for_active_sampling
+from clinical_extraction.observatory.gan2026.gold_audit_sampler import (
+    enrich_rows_for_active_sampling,
+)
 from clinical_extraction.observatory.gan2026.gold_audit_store import (
     load_gold_audit_decisions,
     load_gold_audit_rows,

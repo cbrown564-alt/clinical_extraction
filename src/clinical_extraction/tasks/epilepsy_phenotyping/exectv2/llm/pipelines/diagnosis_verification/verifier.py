@@ -37,6 +37,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.runner import (
     make_dspy_module,
     mention_to_row,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.runner import (
     to_predicted_letter as _runner_to_predicted_letter,
 )
 

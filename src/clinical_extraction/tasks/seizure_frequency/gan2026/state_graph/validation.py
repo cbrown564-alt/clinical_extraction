@@ -98,9 +98,7 @@ def validate_node(
         structural_valid=structural_valid,
         semantic_valid=semantic_valid,
         admitted=structural_valid and semantic_valid,
-        evidence_shape=(
-            assignment.evidence_shape.value if assignment.evidence_shape else None
-        ),
+        evidence_shape=(assignment.evidence_shape.value if assignment.evidence_shape else None),
         failures=tuple(failures),
     )
 
@@ -114,9 +112,7 @@ def dual_validate_graph(
 
     ontology = ontology or AdmissibleStateOntology()
     nodes_by_id = {node.node_id: node for node in graph.nodes}
-    node_validations = tuple(
-        validate_node(node, ontology=ontology) for node in graph.nodes
-    )
+    node_validations = tuple(validate_node(node, ontology=ontology) for node in graph.nodes)
     admitted_node_ids = {v.node_id for v in node_validations if v.admitted}
 
     edge_validations: list[EdgeValidation] = []

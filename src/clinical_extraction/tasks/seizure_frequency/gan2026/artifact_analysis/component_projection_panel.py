@@ -15,9 +15,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
     write_jsonl_rows,
 )
 
-DEFAULT_RQ2_MATRIX_PATH = Path(
-    "experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.jsonl"
-)
+DEFAULT_RQ2_MATRIX_PATH = Path("experiments/gan2026_rq2_evidence_selection_matrix_2026-06-03.jsonl")
 DEFAULT_RQ4_MATRIX_PATH = Path(
     "experiments/gan2026_rq4_projection_decision_matrix_2026-06-03.jsonl"
 )
@@ -30,12 +28,8 @@ DEFAULT_HARD_SLICE_MANIFEST_PATH = Path(
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_component_projection_followup_panel_2026-06-04.jsonl"
 )
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_component_projection_followup_panel_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    "experiments/gan2026_component_projection_followup_panel_2026-06-04.md"
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_component_projection_followup_panel_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("experiments/gan2026_component_projection_followup_panel_2026-06-04.md")
 
 PANEL_RQ2_COMPONENTS = {
     "hybrid_adjudicator_raw",

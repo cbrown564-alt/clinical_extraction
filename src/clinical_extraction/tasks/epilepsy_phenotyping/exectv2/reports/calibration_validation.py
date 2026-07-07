@@ -16,8 +16,7 @@ from . import validation_audit_scaffold as scaffold
 
 REPO_ROOT = scaffold.REPO_ROOT
 REPORT_PATH = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_calibration_validation_audit_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md"
 )
 
 _PROTOCOL_DEV_ECE_BASELINE = 0.1456
@@ -45,9 +44,7 @@ def build_calibration_validation_audit(
     dev_proxy = reliability._calibration_proxy(dev_cells)
     artifact = scaffold.artifact_inventory_single(repo_root, _FULL200_ARTIFACT)[0]
     validation = (
-        _validation_readout(repo_root, dev_cells, artifact)
-        if artifact["eligible"]
-        else None
+        _validation_readout(repo_root, dev_cells, artifact) if artifact["eligible"] else None
     )
     promotion_gates = _promotion_gates(validation)
     promotion_decision = scaffold.promotion_decision_from_gates(promotion_gates)
@@ -64,9 +61,7 @@ def build_calibration_validation_audit(
         ),
         "candidate_definition": {
             "model_type": "grouped_logistic_scoring_rule",
-            "training_surface": (
-                "dev140 rich-schema holistic assembly reliability scorecard"
-            ),
+            "training_surface": ("dev140 rich-schema holistic assembly reliability scorecard"),
             "feature_set": list(reliability._CALIBRATION_FEATURES),
             "dev_cells": len(dev_cells),
             "dev_cross_validated_ece": dev_proxy["expected_calibration_error"],
@@ -106,9 +101,7 @@ def render_markdown(audit: dict[str, Any]) -> str:
     lines = scaffold.render_preflight_section(
         audit,
         title="# ExECTv2 Calibration Validation Audit",
-        status_line=(
-            "Status: aggregate-only calibration validation and stop-rule readout."
-        ),
+        status_line=("Status: aggregate-only calibration validation and stop-rule readout."),
     )
     lines.extend(
         [
@@ -143,18 +136,12 @@ def render_markdown(audit: dict[str, Any]) -> str:
                 f"- Mean calibrated confidence: {validation['mean_calibrated_confidence']:.4f}",
                 f"- ECE: {validation['expected_calibration_error']:.4f}",
                 f"- Brier: {validation['brier_score']:.4f}",
-                (
-                    "- Constant base-rate Brier: "
-                    f"{validation['constant_base_rate_brier_score']:.4f}"
-                ),
+                (f"- Constant base-rate Brier: {validation['constant_base_rate_brier_score']:.4f}"),
                 (
                     "- Brier improvement vs constant base rate: "
                     f"{validation['brier_improvement_vs_base_rate']:.4f}"
                 ),
-                (
-                    "- Maximum adjacent-bin reversal: "
-                    f"{validation['max_adjacent_bin_reversal']:.4f}"
-                ),
+                (f"- Maximum adjacent-bin reversal: {validation['max_adjacent_bin_reversal']:.4f}"),
                 "",
                 "### Reliability Bins",
                 "",
@@ -166,10 +153,7 @@ def render_markdown(audit: dict[str, Any]) -> str:
             ]
         )
         for row in validation["bins"]:
-            conf_range = (
-                f"{row['confidence_range'][0]:.4f}-"
-                f"{row['confidence_range'][1]:.4f}"
-            )
+            conf_range = f"{row['confidence_range'][0]:.4f}-{row['confidence_range'][1]:.4f}"
             lines.append(
                 f"| {row['bin']} | {row['cells']} | {conf_range} | "
                 f"{row['avg_calibrated_confidence']:.4f} | "
@@ -224,20 +208,12 @@ def _validation_readout(
 ) -> dict[str, Any]:
     weights = reliability._fit_logistic_scoring_rule(dev_cells)
     dev_base_rate = (
-        sum(1 for cell in dev_cells if bool(cell["correct"])) / len(dev_cells)
-        if dev_cells
-        else 0.5
+        sum(1 for cell in dev_cells if bool(cell["correct"])) / len(dev_cells) if dev_cells else 0.5
     )
     rows = reliability._load_jsonl(repo_root / artifact["path"])
     scored = _validation_cells(rows, weights, dev_base_rate)
-    pairs = [
-        (float(row["calibrated_confidence"]), bool(row["correct"]))
-        for row in scored
-    ]
-    baseline_pairs = [
-        (float(row["training_base_rate"]), bool(row["correct"]))
-        for row in scored
-    ]
+    pairs = [(float(row["calibrated_confidence"]), bool(row["correct"])) for row in scored]
+    baseline_pairs = [(float(row["training_base_rate"]), bool(row["correct"])) for row in scored]
     bins = reliability._reliability_bins(scored, bin_count=5)
     ece = reliability._expected_calibration_error(pairs, bins)
     brier = reliability._brier_score(pairs)
@@ -251,8 +227,7 @@ def _validation_readout(
             len(scored),
         ),
         "mean_calibrated_confidence": round(
-            sum(float(row["calibrated_confidence"]) for row in scored)
-            / len(scored),
+            sum(float(row["calibrated_confidence"]) for row in scored) / len(scored),
             4,
         )
         if scored
@@ -346,8 +321,7 @@ def _promotion_gates(validation: dict[str, Any] | None) -> list[dict[str, str]]:
         scaffold.gate(
             "ECE improves over protocol dev-only proxy baseline",
             "pass"
-            if float(validation["expected_calibration_error"])
-            < _PROTOCOL_DEV_ECE_BASELINE
+            if float(validation["expected_calibration_error"]) < _PROTOCOL_DEV_ECE_BASELINE
             else "fail",
             (
                 f"Validation ECE {validation['expected_calibration_error']:.4f}; "
@@ -372,13 +346,8 @@ def _promotion_gates(validation: dict[str, Any] | None) -> list[dict[str, str]]:
         ),
         scaffold.gate(
             "No adjacent-bin reversal larger than 0.10",
-            "pass"
-            if float(validation["max_adjacent_bin_reversal"]) <= 0.10
-            else "fail",
-            (
-                "Maximum adjacent-bin reversal is "
-                f"{validation['max_adjacent_bin_reversal']:.4f}."
-            ),
+            "pass" if float(validation["max_adjacent_bin_reversal"]) <= 0.10 else "fail",
+            (f"Maximum adjacent-bin reversal is {validation['max_adjacent_bin_reversal']:.4f}."),
         ),
         scaffold.gate(
             "Per-family ECE reported for all four families",

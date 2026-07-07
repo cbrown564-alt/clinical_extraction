@@ -5,8 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import CLAIM_BOUNDARY
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.component_off import yaml_lines
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.component_off import (
+    yaml_lines,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.component_ablation.definitions import (
+    CLAIM_BOUNDARY,
+)
+
 
 def render_component_ablation_markdown(
     payload: dict[str, Any],

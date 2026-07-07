@@ -3,6 +3,7 @@
 agent construction only; forward()/live calls are exercised by the smoke
 stage, not here.
 """
+
 from __future__ import annotations
 
 import dspy

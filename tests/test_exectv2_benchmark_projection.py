@@ -426,8 +426,5 @@ def test_project_cuis_is_precision_first_and_leaves_unknown_mentions_without_gue
     assert projected.mentions[6].attributes["CUI"] == "C0041341"
     assert projected.mentions[7].attributes["CUI"] == "C0011570"
     assert projected.mentions[8].attributes["CUI"] == "C0270834"
-    assert (
-        projected.mentions[8].attributes["CUIPhrase"]
-        == "focal seizures with impaired awareness"
-    )
+    assert projected.mentions[8].attributes["CUIPhrase"] == "focal seizures with impaired awareness"
     assert projected.diagnostics["cui_projected_mentions"] == 8

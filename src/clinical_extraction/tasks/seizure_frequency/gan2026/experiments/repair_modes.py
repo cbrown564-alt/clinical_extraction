@@ -98,9 +98,7 @@ REPAIR_MODE_METADATA: Mapping[str, Mapping[str, Any]] = {
         "repair_mode": "typed_operation_graph_projection",
         "attribution_source": "llm_typed_operations_plus_deterministic_graph_projection",
         "repair_family": "typed_operation_graph_projection",
-        "semantic_selection_owner": (
-            "llm_operation_selection_then_deterministic_graph_projection"
-        ),
+        "semantic_selection_owner": ("llm_operation_selection_then_deterministic_graph_projection"),
         "deterministic_semantic_repair": True,
         "scorer_facing": True,
     },

@@ -21,10 +21,12 @@ def test_coverage_and_agreement() -> None:
         _letter(
             "EA0001",
             [
-                ExectAnnotation("Diagnosis", "focal epilepsy",
-                                {"DiagCategory": "Epilepsy", "CUI": "C0014547"}),
-                ExectAnnotation("Diagnosis", "jme",
-                                {"DiagCategory": "Epilepsy", "CUI": "C0270853"}),
+                ExectAnnotation(
+                    "Diagnosis", "focal epilepsy", {"DiagCategory": "Epilepsy", "CUI": "C0014547"}
+                ),
+                ExectAnnotation(
+                    "Diagnosis", "jme", {"DiagCategory": "Epilepsy", "CUI": "C0270853"}
+                ),
             ],
         )
     ]
@@ -33,8 +35,9 @@ def test_coverage_and_agreement() -> None:
             "EA0001",
             [
                 # overlap, correct CUI
-                ExectAnnotation("Diagnosis", "focal epilepsy",
-                                {"DiagCategory": "Epilepsy", "CUI": "C0014547"}),
+                ExectAnnotation(
+                    "Diagnosis", "focal epilepsy", {"DiagCategory": "Epilepsy", "CUI": "C0014547"}
+                ),
                 # overlap, no CUI -> coverage miss
                 ExectAnnotation("Diagnosis", "jme", {"DiagCategory": "Epilepsy"}),
             ],

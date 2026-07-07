@@ -69,11 +69,10 @@ def test_structured_direct_sf_derivative_filters_non_sf_mentions(tmp_path: Path)
 
     rows = _read_jsonl(sf_direct)
     assert len(rows) == 2
-    assert [
-        mention["entity"]
-        for row in rows
-        for mention in row["predicted_mentions"]
-    ] == ["SeizureFrequency", "SeizureFrequency"]
+    assert [mention["entity"] for row in rows for mention in row["predicted_mentions"]] == [
+        "SeizureFrequency",
+        "SeizureFrequency",
+    ]
     assert rows[0]["predicted_mentions"][0]["component_owner"] == (
         "single_gpt_structured_no_sf_adjudicator"
     )
@@ -161,8 +160,7 @@ def test_frontier_accepts_selected_2call_no_sf_cost_profile() -> None:
     selected = next(
         candidate
         for candidate in payload["candidates"]
-        if candidate["candidate_id"]
-        == "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator"
+        if candidate["candidate_id"] == "exectv2_gpt41mini_simplification_2call_no_sf_adjudicator"
     )
     sf_check = next(
         check
@@ -427,7 +425,5 @@ def _write_jsonl(path: Path, rows: list[dict[str, object]]) -> Path:
 
 def _read_jsonl(path: Path) -> list[dict[str, object]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]

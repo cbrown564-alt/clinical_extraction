@@ -38,9 +38,7 @@ def test_trigger_abstention_with_non_sentinel_correct_label_is_dev_safe_candidat
 
 
 def test_trigger_abstention_with_unknown_label_remains_policy_supported_abstention() -> None:
-    row = pressure.interpret_abstention_row(
-        _row(source_row_index=3371, final_label="unknown")
-    )
+    row = pressure.interpret_abstention_row(_row(source_row_index=3371, final_label="unknown"))
 
     assert row["pressure_class"] == "policy_supported_nonprediction"
     assert row["development_safe_if_predicted"] is False

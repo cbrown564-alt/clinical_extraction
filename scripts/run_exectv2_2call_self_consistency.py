@@ -21,20 +21,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline im
     render_finding_assembly_markdown,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter, load_letters
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_state_projection as sf_projection,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    sf_unknown_suppression as sf_suppression,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_diagnosis_decomposer as dx_decomposer,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    sf_state_projection as sf_projection,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_sf_union_arbitration as sf_union,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-    sf_unknown_suppression as sf_suppression,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,

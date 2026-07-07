@@ -67,7 +67,9 @@ def main() -> None:
                     ExectAnnotation(
                         entity=str(m["entity"]),
                         text=str(m.get("text", "")),
-                        attributes={str(k): str(v) for k, v in dict(m.get("attributes", {})).items()},
+                        attributes={
+                            str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
+                        },
                     )
                     for m in row.get("gold_mentions", [])
                     if str(m.get("entity")) in TARGET_INDICATORS
@@ -81,7 +83,9 @@ def main() -> None:
                     PredictedMention(
                         entity=str(m["entity"]),
                         text=str(m.get("text", "")),
-                        attributes={str(k): str(v) for k, v in dict(m.get("attributes", {})).items()},
+                        attributes={
+                            str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
+                        },
                         evidence=str(m.get("evidence", "")),
                     )
                     for m in row.get("predicted_mentions", [])
@@ -100,8 +104,8 @@ def main() -> None:
 
     cr = report["clinical_recovery"]
     headline = cr["cui_projected_headline_scores"]  # A: claimed headline
-    cui_free = cr["headline_scores"]                # B: cui-free concept/clinical headline
-    cui_audit = report["cui_audit"]["per_entity"]   # C benchmark / E semantic
+    cui_free = cr["headline_scores"]  # B: cui-free concept/clinical headline
+    cui_audit = report["cui_audit"]["per_entity"]  # C benchmark / E semantic
 
     print(f"Artifact: {ARTIFACT.name}")
     print(f"Letters: {len(rows)}  Split: {split}")
@@ -113,7 +117,7 @@ def main() -> None:
         b = float(cui_free[ind]["f1"])
         c = float(cui_audit[ind]["benchmark_f1"])
         e = float(cui_audit[ind]["semantic_f1"])
-        print(f"{ind:<18}{a:>12.4f}{b:>12.4f}{c:>12.4f}{e:>12.4f}{a-c:>10.4f}")
+        print(f"{ind:<18}{a:>12.4f}{b:>12.4f}{c:>12.4f}{e:>12.4f}{a - c:>10.4f}")
 
     ov = report["cui_audit"]["overall"]
     print()

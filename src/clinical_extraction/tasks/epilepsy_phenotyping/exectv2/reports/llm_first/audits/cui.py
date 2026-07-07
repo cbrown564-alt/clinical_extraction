@@ -1,7 +1,6 @@
 """CUI projection audit (plan report #3)."""
 
 from __future__ import annotations
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 
 from collections import Counter, defaultdict
 from collections.abc import Sequence
@@ -18,6 +17,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
     to_exect_letter,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
@@ -39,7 +39,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.pr
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
-        score_overall,
+    score_overall,
     semantic_config_for,
 )
 
@@ -119,9 +119,7 @@ def cui_projection_coverage(
     entity_set = set(entities)
     for letter in gold_letters:
         gold_cuis = [
-            ann.attributes.get(CUI)
-            for ann in letter.annotations
-            if ann.entity in entity_set
+            ann.attributes.get(CUI) for ann in letter.annotations if ann.entity in entity_set
         ]
         stripped = PredictedLetter(
             letter_id=letter.letter_id,
@@ -130,9 +128,7 @@ def cui_projection_coverage(
                     entity=ann.entity,
                     text=ann.text,
                     attributes={
-                        k: v
-                        for k, v in ann.attributes.items()
-                        if k not in (CUI, CUI_PHRASE)
+                        k: v for k, v in ann.attributes.items() if k not in (CUI, CUI_PHRASE)
                     },
                     evidence="",
                 )
@@ -198,9 +194,7 @@ def cui_projection_coverage(
     out["__missing_mapping__"] = {
         "concept_count": len(missing_concepts),
         "mention_count": sum(missing_concepts.values()),
-        "examples": {
-            entity: examples for entity, examples in sorted(missing_examples.items())
-        },
+        "examples": {entity: examples for entity, examples in sorted(missing_examples.items())},
     }
     return out
 

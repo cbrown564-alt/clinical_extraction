@@ -6,6 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+
 class ClinicalFindingRecord(BaseModel):
     """One source-near seizure frequency finding emitted by the model."""
 
@@ -167,4 +168,3 @@ class VerificationDecisionList(BaseModel):
 
     decisions: list[VerificationDecisionRecord] = Field(default_factory=list)
     findings_to_add: list[ClinicalFindingRecord] = Field(default_factory=list)
-

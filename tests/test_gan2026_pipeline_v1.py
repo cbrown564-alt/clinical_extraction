@@ -29,6 +29,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     _select_final_event,
 )
 
+
 def _record(note_text: str, gold_label: str = "unknown") -> GanRecord:
     return GanRecord(
         source_row_index=1,

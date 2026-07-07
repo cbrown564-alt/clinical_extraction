@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 
 def local_evidence_context(
     note_text: str,
@@ -22,6 +21,7 @@ def local_evidence_context(
     end = min(len(note_text), index + len(evidence) + after)
     return note_text[start:end]
 
+
 def period_to_canonical(period: str) -> str:
     normalized = period.strip().lower()
     if normalized.startswith("day"):
@@ -33,6 +33,7 @@ def period_to_canonical(period: str) -> str:
     if normalized.startswith("year"):
         return "Year"
     return period
+
 
 def clean_number(value: str) -> str:
     return value[:-2] if value.endswith(".0") else value

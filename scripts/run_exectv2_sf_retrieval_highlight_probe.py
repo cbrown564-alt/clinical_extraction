@@ -37,6 +37,7 @@ Predeclaration: docs/experiments/exectv2/seizure_frequency/
 Usage:
   python scripts/run_exectv2_sf_retrieval_highlight_probe.py --cache
 """
+
 from __future__ import annotations
 
 import argparse
@@ -232,9 +233,7 @@ class HighlightDirectionAdjudicator(dspy.Module):
         super().__init__()
         self.adjudicate = dspy.Predict(HighlightDirectionAdjudicatorSignature)
 
-    def forward(
-        self, letter_text: str, change_mentions: str, instruction: str
-    ) -> dspy.Prediction:
+    def forward(self, letter_text: str, change_mentions: str, instruction: str) -> dspy.Prediction:
         out = self.adjudicate(
             letter_text=letter_text,
             change_mentions=change_mentions,
@@ -318,9 +317,7 @@ def _pred_letters_from_raw(
             ExectAnnotation(
                 entity=SF_ENTITY,
                 text=str(m.get("text", "")),
-                attributes={
-                    str(k): str(v) for k, v in dict(m.get("attributes", {})).items()
-                },
+                attributes={str(k): str(v) for k, v in dict(m.get("attributes", {})).items()},
             )
             for m in sf
         )
@@ -438,8 +435,7 @@ def _run_arm(
     scores = score_frequency_state(dev_gold, adj_pred)
     d = scores.state_profile_directional
     print(
-        f"[probe][{arm}] state_profile_directional F1: {d.f1:.4f} "
-        f"(tp={d.tp} fp={d.fp} fn={d.fn})"
+        f"[probe][{arm}] state_profile_directional F1: {d.f1:.4f} (tp={d.tp} fp={d.fp} fn={d.fn})"
     )
     print(
         f"[probe][{arm}] state_profile F1:             {scores.state_profile.f1:.4f} "
@@ -578,8 +574,7 @@ def run(num_threads: int, cache: bool) -> None:
         verdict = "INPUT-SCAFFOLDING DEPLOYS CAPACITY (Arm B - Arm A >= +0.05)"
     elif b_minus_a < 0.02:
         verdict = (
-            "HIGHLIGHT IS NOT THE LEVER (Arm B - Arm A < +0.02; "
-            "Gan finding does not transfer)"
+            "HIGHLIGHT IS NOT THE LEVER (Arm B - Arm A < +0.02; Gan finding does not transfer)"
         )
     else:
         verdict = "INCONCLUSIVE (+0.02 to +0.05)"

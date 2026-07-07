@@ -19,19 +19,17 @@ DEFAULT_INPUT_JSONL_PATH = Path(
 DEFAULT_JSON_PATH = Path(
     "experiments/gan2026_validation750_first_verifier_accounting_v6_2026-06-06.json"
 )
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_REPORT_PATH = Path("")
 
 
 def compute_accounting(
     rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
     """Perform post-run comparison/accounting of verifier actions vs baseline V0 actions."""
-    
+
     by_bucket: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
     by_section: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
-    
+
     for row in rows:
         bucket = str(row.get("route_bucket", "unknown"))
         section = str(row.get("report_section", "unknown"))
@@ -46,7 +44,7 @@ def compute_accounting(
             action = str(decision.get("action", "unknown"))
             baseline = str(decision.get("baseline_action", "unknown"))
             cross_tab[(baseline, action)] += 1
-        
+
         bucket_summaries[bucket] = [
             {
                 "baseline_action": b,
@@ -64,7 +62,7 @@ def compute_accounting(
             action = str(decision.get("action", "unknown"))
             baseline = str(decision.get("baseline_action", "unknown"))
             cross_tab[(baseline, action)] += 1
-            
+
         section_summaries[section] = [
             {
                 "baseline_action": b,
@@ -86,7 +84,9 @@ def compute_accounting(
 
 def write_summary_json(metadata: Mapping[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def write_report(
@@ -110,29 +110,35 @@ def write_report(
         "",
     ]
     for bucket, entries in sorted(metadata["by_bucket"].items()):
-        lines.extend([
-            f"### Bucket: `{bucket}`",
-            "",
-            "| V0 Baseline Action | Verifier Action | Count |",
-            "| --- | --- | ---: |",
-        ])
+        lines.extend(
+            [
+                f"### Bucket: `{bucket}`",
+                "",
+                "| V0 Baseline Action | Verifier Action | Count |",
+                "| --- | --- | ---: |",
+            ]
+        )
         for entry in entries:
             lines.append(
                 f"| `{entry['baseline_action']}` | `{entry['verifier_action']}` | {entry['count']} |"
             )
         lines.append("")
 
-    lines.extend([
-        "## Accounting By Report Section",
-        "",
-    ])
-    for section, entries in sorted(metadata["by_section"].items()):
-        lines.extend([
-            f"### Section: `{section}`",
+    lines.extend(
+        [
+            "## Accounting By Report Section",
             "",
-            "| V0 Baseline Action | Verifier Action | Count |",
-            "| --- | --- | ---: |",
-        ])
+        ]
+    )
+    for section, entries in sorted(metadata["by_section"].items()):
+        lines.extend(
+            [
+                f"### Section: `{section}`",
+                "",
+                "| V0 Baseline Action | Verifier Action | Count |",
+                "| --- | --- | ---: |",
+            ]
+        )
         for entry in entries:
             lines.append(
                 f"| `{entry['baseline_action']}` | `{entry['verifier_action']}` | {entry['count']} |"
@@ -153,14 +159,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     rows = load_jsonl_rows(args.input_jsonl_path)
     metadata = compute_accounting(rows)
     metadata["source_artifact"] = str(args.input_jsonl_path)
-    
+
     write_summary_json(metadata, args.json_path)
     write_report(metadata, args.report_path, json_path=args.json_path)
-    
+
     print(f"Processed {len(rows)} rows. Written accounting report to {args.report_path}")
     return 0
 
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

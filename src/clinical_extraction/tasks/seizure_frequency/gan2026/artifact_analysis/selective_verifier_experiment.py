@@ -27,15 +27,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragm
 
 from . import selective_verifier_predeclaration as predecl
 
-DEFAULT_JSONL_PATH = Path(
-    "experiments/gan2026_selective_verifier_live_gpt41mini_2026-06-04.jsonl"
-)
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_selective_verifier_live_gpt41mini_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_JSONL_PATH = Path("experiments/gan2026_selective_verifier_live_gpt41mini_2026-06-04.jsonl")
+DEFAULT_JSON_PATH = Path("experiments/gan2026_selective_verifier_live_gpt41mini_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("")
 PROMPT_VERSION = "gan2026_selective_verifier_v0"
 ALLOWED_RECOMMENDATIONS = predecl.ALLOWED_RECOMMENDATIONS
 DEFAULT_PREDECLARATION_JSONL_PATH = predecl.DEFAULT_JSONL_PATH
@@ -72,9 +66,7 @@ def summarize_results(rows: Sequence[Mapping[str, Any]], *, model: str) -> dict[
         row for row in changed_rows if row["verifier_decision"]["scorable"] is True
     ]
     changed_correct_rows = [
-        row
-        for row in changed_scorable_rows
-        if row["verifier_decision"]["purist_correct"] is True
+        row for row in changed_scorable_rows if row["verifier_decision"]["purist_correct"] is True
     ]
     evidence_exact_rows = [
         row
@@ -474,10 +466,9 @@ def _delta(
     verifier_decision: Mapping[str, Any],
     routing_decision: Mapping[str, Any],
 ) -> dict[str, Any]:
-    changed = (
-        verifier_decision["action"] != routing_decision["action"]
-        or verifier_decision.get("label") != routing_decision.get("label")
-    )
+    changed = verifier_decision["action"] != routing_decision["action"] or verifier_decision.get(
+        "label"
+    ) != routing_decision.get("label")
     routing_correct = routing_decision.get("purist_correct")
     verifier_correct = verifier_decision.get("purist_correct")
     if not changed:

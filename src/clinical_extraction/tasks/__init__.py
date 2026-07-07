@@ -1,2 +1,1 @@
 """Clinical extraction task implementations."""
-

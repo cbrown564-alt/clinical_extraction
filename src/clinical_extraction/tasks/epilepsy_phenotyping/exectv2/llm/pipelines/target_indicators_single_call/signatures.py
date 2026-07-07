@@ -16,9 +16,9 @@ class ExECTv2TargetIndicatorsSignature(dspy.Signature):
     )
     extraction_json: str = dspy.OutputField(
         desc=(
-            "One strict JSON object: {\"mentions\": [{\"entity\": ..., \"text\": ..., "
-            "\"attributes\": {...}, \"evidence\": ..., \"confidence\": ..., "
-            "\"rationale\": \"\"}, ...]}. Do not include prose outside JSON."
+            'One strict JSON object: {"mentions": [{"entity": ..., "text": ..., '
+            '"attributes": {...}, "evidence": ..., "confidence": ..., '
+            '"rationale": ""}, ...]}. Do not include prose outside JSON.'
         )
     )
 

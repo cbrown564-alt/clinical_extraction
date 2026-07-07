@@ -24,8 +24,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+
 _CUI = "CUI"
 _CUI_PHRASE = "CUIPhrase"
 
@@ -102,11 +103,13 @@ def _entity_diagnostic(
     pred_n = pred_cui = gold_n = gold_cui = 0
     ov = cui_both = cui_agree = phrase_both = phrase_agree = 0
     for letter_id in all_ids:
-        gold = (
-            list(gold_by_id[letter_id].entities(entity)) if letter_id in gold_by_id else []
-        )
+        gold = list(gold_by_id[letter_id].entities(entity)) if letter_id in gold_by_id else []
         pred = [
-            {"text": a.text, "CUI": a.attributes.get(_CUI), "CUIPhrase": a.attributes.get(_CUI_PHRASE)}
+            {
+                "text": a.text,
+                "CUI": a.attributes.get(_CUI),
+                "CUIPhrase": a.attributes.get(_CUI_PHRASE),
+            }
             for a in (pred_by_id[letter_id].entities(entity) if letter_id in pred_by_id else [])
         ]
         gold_n += len(gold)
@@ -179,23 +182,21 @@ def render_markdown(
     lines = [f"# {title}", ""]
     if source:
         lines.append(f"- Source: `{source}`")
-    lines.extend([
-        "",
-        "CUI projection is a deterministic post-step; the benchmark (with-CUI) "
-        "headline minus the semantic (CUI-dropped) headline is its credit, never "
-        "LLM clinical reasoning. Closing a coverage gap is in-sample CUI lookup, a "
-        "documented projection artifact.",
-        "",
-        "| Entity | Pred | CUI coverage | Gold CUI density | Overlaps | "
-        "CUI agreement | CUIPhrase agreement |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            "",
+            "CUI projection is a deterministic post-step; the benchmark (with-CUI) "
+            "headline minus the semantic (CUI-dropped) headline is its credit, never "
+            "LLM clinical reasoning. Closing a coverage gap is in-sample CUI lookup, a "
+            "documented projection artifact.",
+            "",
+            "| Entity | Pred | CUI coverage | Gold CUI density | Overlaps | "
+            "CUI agreement | CUIPhrase agreement |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     for entity in list(entities) + ["__overall__"]:
-        d = (
-            diagnostic.overall
-            if entity == "__overall__"
-            else diagnostic.per_entity.get(entity)
-        )
+        d = diagnostic.overall if entity == "__overall__" else diagnostic.per_entity.get(entity)
         if d is None:
             continue
         label = "overall" if entity == "__overall__" else entity

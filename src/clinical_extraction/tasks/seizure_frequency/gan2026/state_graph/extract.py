@@ -5,7 +5,6 @@ from __future__ import annotations
 from clinical_extraction.core.evidence import locate_evidence
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
     AssertionStatus,
-    CandidateKind as ContractCandidateKind,
     CandidateSet,
     Certainty,
     CertaintyReason,
@@ -18,6 +17,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     SourcePhraseOnlyDetails,
     Temporality,
     extract_row_context,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set import (
+    CandidateKind as ContractCandidateKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,

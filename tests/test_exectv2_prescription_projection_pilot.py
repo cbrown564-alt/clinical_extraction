@@ -70,12 +70,8 @@ def test_prescription_projection_pilot_counts_projection_without_rescue() -> Non
         {
             "letter_id": "RX2",
             "gold_mentions": [],
-            "structured_mentions_final": [
-                _rx("planned lamotrigine", DrugName="lamotrigine")
-            ],
-            "predicted_mentions": [
-                _rx("planned lamotrigine", DrugName="lamotrigine")
-            ],
+            "structured_mentions_final": [_rx("planned lamotrigine", DrugName="lamotrigine")],
+            "predicted_mentions": [_rx("planned lamotrigine", DrugName="lamotrigine")],
         },
     ]
 

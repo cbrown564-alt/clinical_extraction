@@ -4,6 +4,7 @@ below are drawn from real ExECTv2 corpus letters
 (data/ExECTv2 (2025)/Gold1-200_corrected_spelling/EA0001.txt, EA0030.txt,
 EA0075.txt) with content preserved verbatim for the fields under test.
 """
+
 from __future__ import annotations
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.section_timeline import (

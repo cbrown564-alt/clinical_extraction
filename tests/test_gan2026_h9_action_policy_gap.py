@@ -79,13 +79,8 @@ def test_h9_action_policy_gap_summarizes_family_and_owner_rates() -> None:
 
     summary = h9_action_policy_gap.build_h9_action_policy_gap(rows)
 
-    families = {
-        row["family"]: row for row in summary["validation"]["by_hidden_family"]
-    }
-    owners = {
-        row["component_owner"]: row
-        for row in summary["validation"]["by_component_owner"]
-    }
+    families = {row["family"]: row for row in summary["validation"]["by_hidden_family"]}
+    owners = {row["component_owner"]: row for row in summary["validation"]["by_component_owner"]}
     assert families["family_a"]["rows"] == 2
     assert families["family_a"]["nonprediction_rows"] == 1
     assert families["family_b"]["nonprediction_rows"] == 0

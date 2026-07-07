@@ -93,10 +93,18 @@ def test_build_validation_slices_reports_baseline_transitions_and_validity() -> 
 
 def test_write_report_includes_transition_section(tmp_path: Path) -> None:
     summary = null_reduction_validation_slices.build_validation_slices(
-        [_score_row(source_row_index=201, issues=["vague_count"], rendered_label="multiple per week")],
+        [
+            _score_row(
+                source_row_index=201, issues=["vague_count"], rendered_label="multiple per week"
+            )
+        ],
         route_rows=[_route_row(source_row_index=201, routed=False)],
-        baseline_score_rows=[_score_row(source_row_index=201, issues=["vague_count"], rendered_label=None)],
-        baseline_route_rows=[_route_row(source_row_index=201, routed=True, route_families=["baseline"])],
+        baseline_score_rows=[
+            _score_row(source_row_index=201, issues=["vague_count"], rendered_label=None)
+        ],
+        baseline_route_rows=[
+            _route_row(source_row_index=201, routed=True, route_families=["baseline"])
+        ],
     )
     report_path = tmp_path / "report.md"
 

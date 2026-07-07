@@ -181,9 +181,7 @@ def _seizure_state_attributes(
         return {"FrequencyChange": change}
     if normalized in {"unknown", ""}:
         return {}
-    notes.append(
-        f"clinical_facts.fact[{index}]:unknown_seizure_state={state!r}_mapped_unknown"
-    )
+    notes.append(f"clinical_facts.fact[{index}]:unknown_seizure_state={state!r}_mapped_unknown")
     return {}
 
 

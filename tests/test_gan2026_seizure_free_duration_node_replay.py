@@ -48,9 +48,7 @@ def test_duration_node_replay_adds_exact_evidence_month_nodes() -> None:
 
     row = rows[0]
     assert row["new_duration_node_count"] == 1
-    assert row["new_duration_nodes"][0]["normalized_label"] == (
-        "seizure free for multiple month"
-    )
+    assert row["new_duration_nodes"][0]["normalized_label"] == ("seizure free for multiple month")
     assert row["new_duration_nodes"][0]["graph_errors"] == []
     assert row["replayed_exact_gold_duration_node_present"] is True
     assert row["month_scale_representability_gain"] is True
@@ -94,14 +92,9 @@ def test_duration_node_replay_emits_numeric_and_broad_month_equivalents() -> Non
         source_artifact="projection.jsonl",
     )
 
-    new_labels = {
-        node["normalized_label"]
-        for node in rows[0]["new_duration_nodes"]
-    }
+    new_labels = {node["normalized_label"] for node in rows[0]["new_duration_nodes"]}
     replayed_labels = {
-        item["label"]
-        for item in rows[0]["replayed_graph_labels"]
-        if item["kind"] == "seizure_free"
+        item["label"] for item in rows[0]["replayed_graph_labels"] if item["kind"] == "seizure_free"
     }
     assert new_labels == {"seizure free for multiple month"}
     assert replayed_labels == {

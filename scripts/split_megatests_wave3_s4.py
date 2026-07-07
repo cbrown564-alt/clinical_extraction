@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import ast
-import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,9 +26,7 @@ def extract_blocks(source: str) -> tuple[str, list[tuple[str, str]]]:
     lines = source.splitlines(keepends=True)
     module = ast.parse(source)
     function_nodes = [
-        node
-        for node in module.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        node for node in module.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     ]
     if not function_nodes:
         raise ValueError("No function definitions found")
@@ -43,17 +40,11 @@ def extract_blocks(source: str) -> tuple[str, list[tuple[str, str]]]:
     blocks: list[tuple[str, str]] = []
 
     for index, node in enumerate(function_nodes):
-        start_line = (
-            node.decorator_list[0].lineno
-            if node.decorator_list
-            else node.lineno
-        )
+        start_line = node.decorator_list[0].lineno if node.decorator_list else node.lineno
         if index + 1 < len(function_nodes):
             next_node = function_nodes[index + 1]
             end_line = (
-                next_node.decorator_list[0].lineno
-                if next_node.decorator_list
-                else next_node.lineno
+                next_node.decorator_list[0].lineno if next_node.decorator_list else next_node.lineno
             )
         else:
             end_line = len(lines) + 1
@@ -286,7 +277,9 @@ def split_pipeline_v1() -> dict[str, list[str]]:
     preamble, blocks = extract_blocks(source)
 
     extraction_start = "test_pipeline_extracts_simple_current_frequency_rates"
-    extraction_end = "test_pipeline_prefers_convulsive_event_count_over_nonprogressive_myoclonic_jerks"
+    extraction_end = (
+        "test_pipeline_prefers_convulsive_event_count_over_nonprogressive_myoclonic_jerks"
+    )
 
     core_blocks: list[str] = []
     extraction_blocks: list[str] = []

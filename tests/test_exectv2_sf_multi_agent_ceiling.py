@@ -1,4 +1,5 @@
 """Zero-LLM-cost tests for the ExECTv2 SF Angle 2 architectures (Phase 3)."""
+
 from __future__ import annotations
 
 import dspy

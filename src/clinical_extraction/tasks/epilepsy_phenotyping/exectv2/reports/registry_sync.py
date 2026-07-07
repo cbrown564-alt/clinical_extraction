@@ -43,9 +43,7 @@ def register_run(
 
     validate_run_registry_artifacts([entry], repo_root=repo_root)
     entries = [
-        existing
-        for existing in load_run_registry(registry_path)
-        if existing.run_id != entry.run_id
+        existing for existing in load_run_registry(registry_path) if existing.run_id != entry.run_id
     ]
     entries.append(entry)
     write_run_registry(entries, registry_path)

@@ -22,8 +22,7 @@ class CandidateProducer(Protocol):
     artifact_path: Path
     ownership_label: str
 
-    def rows_by_id(self) -> dict[str, dict[str, Any]]:
-        ...
+    def rows_by_id(self) -> dict[str, dict[str, Any]]: ...
 
 
 @dataclass(frozen=True)

@@ -36,9 +36,7 @@ def test_component_stress_panel_selects_hard_rows_and_matched_controls() -> None
     ]
 
     panel_rows = validation_component_stress_panel.build_component_stress_panel_rows(rows)
-    summary = validation_component_stress_panel.summarize_component_stress_panel_rows(
-        panel_rows
-    )
+    summary = validation_component_stress_panel.summarize_component_stress_panel_rows(panel_rows)
 
     assert summary["decision"] == "ready_for_component_stress_ablation"
     assert summary["hard_rows"] == 1
@@ -100,9 +98,7 @@ def test_component_stress_panel_refuses_locked_test_rows() -> None:
     ]
 
     panel_rows = validation_component_stress_panel.build_component_stress_panel_rows(rows)
-    summary = validation_component_stress_panel.summarize_component_stress_panel_rows(
-        panel_rows
-    )
+    summary = validation_component_stress_panel.summarize_component_stress_panel_rows(panel_rows)
 
     assert panel_rows == []
     assert summary["locked_test_row_level_artifacts_used"] == 0

@@ -136,9 +136,7 @@ def build_report(rows: Sequence[Mapping[str, Any]]) -> str:
 def candidate_section(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     condition_rows = rows_for(rows, "candidate_only")
     counts = [len(candidates(row)) for row in condition_rows]
-    candidate_values = [
-        candidate for row in condition_rows for candidate in candidates(row)
-    ]
+    candidate_values = [candidate for row in condition_rows for candidate in candidates(row)]
     kinds = Counter(candidate.get("candidate_kind") for candidate in candidate_values)
     temporality = Counter(candidate.get("temporality") for candidate in candidate_values)
     confidence = Counter(candidate.get("confidence") for candidate in candidate_values)

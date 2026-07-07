@@ -50,6 +50,7 @@ def run_split(
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
             llm_candidate_set_clinical_assessment_probe,
         )
+
         return llm_candidate_set_clinical_assessment_probe.run_split(
             records,
             split=split,
@@ -69,6 +70,7 @@ def run_split(
 
     if architecture == "llm_only_direct_labeler":
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_direct_labeler
+
         return llm_only_direct_labeler.run_split(
             records,
             split=split,
@@ -89,6 +91,7 @@ def run_split(
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
             hybrid_structured_events,
         )
+
         return hybrid_structured_events.run_split(
             records,
             split=split,
@@ -109,6 +112,7 @@ def run_split(
         from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
             llm_only_canonical_pipeline,
         )
+
         return llm_only_canonical_pipeline.run_split(
             records,
             split=split,

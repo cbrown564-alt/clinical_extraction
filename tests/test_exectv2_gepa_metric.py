@@ -61,7 +61,12 @@ def _pred(facts: list[dict] | str) -> dspy.Prediction:
 def _correct_pred() -> dspy.Prediction:
     return _pred(
         [
-            {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"},
+            {
+                "family": "diagnosis",
+                "concept": "epilepsy",
+                "negation": "affirmed",
+                "evidence": "epilepsy",
+            },
             {
                 "family": "seizure_frequency",
                 "seizure_type": "seizures",
@@ -93,7 +98,12 @@ def test_quality_ordered_correct_partial_unscorable():
         gold,
         _pred(
             [
-                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+                {
+                    "family": "diagnosis",
+                    "concept": "epilepsy",
+                    "negation": "affirmed",
+                    "evidence": "epilepsy",
+                }
             ]
         ),
     ).score
@@ -130,7 +140,9 @@ def test_length_penalty_lowers_score_monotonically():
 
 def test_disabled_penalty_ignores_instruction_length():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
-    out = metric(_gold(), _correct_pred(), None, "extract", _pred_trace_with_instruction("word " * 4000))
+    out = metric(
+        _gold(), _correct_pred(), None, "extract", _pred_trace_with_instruction("word " * 4000)
+    )
     assert out.score == pytest.approx(1.0)
 
 
@@ -141,7 +153,12 @@ def test_feedback_diff_shows_missed_gold():
         _gold(),
         _pred(
             [
-                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+                {
+                    "family": "diagnosis",
+                    "concept": "epilepsy",
+                    "negation": "affirmed",
+                    "evidence": "epilepsy",
+                }
             ]
         ),
     )
@@ -157,8 +174,18 @@ def test_feedback_diff_shows_spurious_pred():
         _gold(),
         _pred(
             [
-                {"family": "seizure_frequency", "seizure_type": "seizures", "state": "active_rate", "evidence": "seizures"},
-                {"family": "diagnosis", "concept": "migraine", "negation": "affirmed", "evidence": "epilepsy"},
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "seizures",
+                    "state": "active_rate",
+                    "evidence": "seizures",
+                },
+                {
+                    "family": "diagnosis",
+                    "concept": "migraine",
+                    "negation": "affirmed",
+                    "evidence": "epilepsy",
+                },
             ]
         ),
     )
@@ -176,8 +203,18 @@ def test_feedback_warns_on_bare_unknown_seizure_frequency_drop():
         _gold(),
         _pred(
             [
-                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"},
-                {"family": "seizure_frequency", "seizure_type": "seizures", "state": "unknown", "evidence": "seizures"},
+                {
+                    "family": "diagnosis",
+                    "concept": "epilepsy",
+                    "negation": "affirmed",
+                    "evidence": "epilepsy",
+                },
+                {
+                    "family": "seizure_frequency",
+                    "seizure_type": "seizures",
+                    "state": "unknown",
+                    "evidence": "seizures",
+                },
             ]
         ),
     )
@@ -194,7 +231,12 @@ def test_seizure_frequency_feedback_names_state_class_and_guides():
         _gold(),
         _pred(
             [
-                {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+                {
+                    "family": "diagnosis",
+                    "concept": "epilepsy",
+                    "negation": "affirmed",
+                    "evidence": "epilepsy",
+                }
             ]
         ),
     )
@@ -213,8 +255,18 @@ def test_correct_prediction_has_no_diff():
 # --- Phase 2 (docs/plans/exectv2_exploratory_directions_implementation_plan_2026-07-01.md):
 # stage-local verify feedback, independent of the shared end-to-end score. ---
 
-_MIGRAINE = {"family": "diagnosis", "concept": "migraine", "negation": "affirmed", "evidence": "epilepsy"}
-_EPILEPSY = {"family": "diagnosis", "concept": "epilepsy", "negation": "affirmed", "evidence": "epilepsy"}
+_MIGRAINE = {
+    "family": "diagnosis",
+    "concept": "migraine",
+    "negation": "affirmed",
+    "evidence": "epilepsy",
+}
+_EPILEPSY = {
+    "family": "diagnosis",
+    "concept": "epilepsy",
+    "negation": "affirmed",
+    "evidence": "epilepsy",
+}
 
 
 def _verify_pred_trace(draft_facts: list[dict], verified_facts: list[dict]):
@@ -253,7 +305,9 @@ def test_verify_stage_feedback_credits_correct_keep_and_reject():
 def test_verify_stage_feedback_flags_wrong_reject():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
     # Verify drops BOTH drafts, including the one gold actually wants kept.
-    out = metric(_gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([_EPILEPSY], []))
+    out = metric(
+        _gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([_EPILEPSY], [])
+    )
     assert "WRONGLY DROPPED 1" in out.feedback
     assert "epilepsy" in out.feedback
 
@@ -262,7 +316,10 @@ def test_verify_stage_feedback_flags_wrong_keep():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
     # Verify keeps the spurious draft fact instead of rejecting it.
     out = metric(
-        _gold(), _correct_pred(), None, "verify_diagnosis",
+        _gold(),
+        _correct_pred(),
+        None,
+        "verify_diagnosis",
         _verify_pred_trace([_EPILEPSY, _MIGRAINE], [_EPILEPSY, _MIGRAINE]),
     )
     assert "WRONGLY KEPT 1" in out.feedback
@@ -272,7 +329,9 @@ def test_verify_stage_feedback_flags_wrong_keep():
 def test_verify_stage_feedback_credits_correct_add():
     metric = build_metric(LengthPenaltyConfig(enabled=False))
     # Draft missed the gold fact entirely; verify adds it (recall-additive rescue).
-    out = metric(_gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([], [_EPILEPSY]))
+    out = metric(
+        _gold(), _correct_pred(), None, "verify_diagnosis", _verify_pred_trace([], [_EPILEPSY])
+    )
     assert "Correctly ADDED 1" in out.feedback
 
 

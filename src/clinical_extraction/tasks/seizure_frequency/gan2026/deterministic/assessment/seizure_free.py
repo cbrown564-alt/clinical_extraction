@@ -37,6 +37,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _whole_months_between,
 )
 
+
 def _instrument_seizure_free_duration(
     draft: AssessmentDraft,
     *,
@@ -81,10 +82,7 @@ def _instrument_seizure_free_duration(
                 anchor = DateReference(
                     date=prior_encounter.date,
                     date_precision=prior_encounter.date_precision,
-                    source=(
-                        "candidate_set.row_context.prior_encounter:"
-                        f"{prior_encounter.source}"
-                    ),
+                    source=(f"candidate_set.row_context.prior_encounter:{prior_encounter.source}"),
                     source_phrase=prior_encounter.source_phrase,
                 )
                 anchor_issues = [
@@ -174,6 +172,7 @@ def _instrument_seizure_free_duration(
         ["seizure_free_duration_instrumented_from_since_date", *anchor_issues],
     )
 
+
 def _seizure_free_instrumentation_phrases(
     draft: AssessmentDraft,
     primary_candidates: Sequence[ExtractedCandidate],
@@ -182,11 +181,8 @@ def _seizure_free_instrumentation_phrases(
     phrases = [source_phrase]
     for candidate in primary_candidates:
         phrases.extend(_candidate_parse_phrases(candidate))
-    return [
-        phrase
-        for phrase in _dedupe([_clean_phrase(phrase) for phrase in phrases])
-        if phrase
-    ]
+    return [phrase for phrase in _dedupe([_clean_phrase(phrase) for phrase in phrases]) if phrase]
+
 
 def _extract_same_note_since_then_antecedent(
     draft: AssessmentDraft,
@@ -243,12 +239,13 @@ def _extract_same_note_since_then_antecedent(
         ],
     )
 
+
 def _mentions_since_then_anchor(source_phrase: str) -> bool:
     normalized = source_phrase.strip().lower()
     return bool(
-        re.search(r"\bsince\s+then\b", normalized)
-        or re.search(r"\bsince\s*\.?$", normalized)
+        re.search(r"\bsince\s+then\b", normalized) or re.search(r"\bsince\s*\.?$", normalized)
     )
+
 
 def _mentions_prior_encounter_anchor(source_phrase: str) -> bool:
     return bool(
@@ -260,6 +257,7 @@ def _mentions_prior_encounter_anchor(source_phrase: str) -> bool:
         )
     )
 
+
 def _same_note_antecedent_contexts(
     draft: AssessmentDraft,
     primary_candidates: Sequence[ExtractedCandidate],
@@ -268,10 +266,9 @@ def _same_note_antecedent_contexts(
     for candidate in primary_candidates:
         contexts.extend(_candidate_parse_phrases(candidate))
     return [
-        context
-        for context in _dedupe([_clean_phrase(context) for context in contexts])
-        if context
+        context for context in _dedupe([_clean_phrase(context) for context in contexts]) if context
     ]
+
 
 def _antecedent_date_phrases(context: str) -> list[str]:
     phrases: list[str] = []
@@ -292,6 +289,7 @@ def _antecedent_date_phrases(context: str) -> list[str]:
             phrases.append(match.group(0))
     return _dedupe(phrases)
 
+
 def _antecedent_source_phrase(context: str, phrase: str) -> str:
     lower_context = context.lower()
     lower_phrase = phrase.lower()
@@ -299,8 +297,7 @@ def _antecedent_source_phrase(context: str, phrase: str) -> str:
     if position < 0:
         return phrase
     punctuation_before = [
-        lower_context.rfind(separator, 0, position)
-        for separator in (".", ";", ":")
+        lower_context.rfind(separator, 0, position) for separator in (".", ";", ":")
     ]
     start = max(punctuation_before) + 1
     punctuation_after = [

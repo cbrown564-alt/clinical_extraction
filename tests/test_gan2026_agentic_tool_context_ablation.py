@@ -60,9 +60,7 @@ def test_tool_context_ablation_varies_only_prompt_context(monkeypatch) -> None:
         "boundary_guides",
         "tool_attribution_boundary",
     }
-    assert set(
-        prompts_by_condition["direct_parser_plus_boundary_guide"]["tool_context"]
-    ) == {
+    assert set(prompts_by_condition["direct_parser_plus_boundary_guide"]["tool_context"]) == {
         "parser_result",
         "boundary_guides",
         "tool_attribution_boundary",

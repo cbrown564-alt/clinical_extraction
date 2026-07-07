@@ -23,8 +23,7 @@ def test_note_text_prefers_attached_field() -> None:
 def test_note_text_parsed_from_prompt_input_json_string() -> None:
     payload = json.dumps({"note_text": "seizures in clusters nightly"})
     assert (
-        note_text_from_rules_row({"prompt_input_json": payload})
-        == "seizures in clusters nightly"
+        note_text_from_rules_row({"prompt_input_json": payload}) == "seizures in clusters nightly"
     )
 
 
@@ -46,7 +45,9 @@ def test_tag_hidden_families_emits_band_and_qualitative_families() -> None:
 
 
 def test_tag_hidden_families_band_only_when_no_keywords() -> None:
-    families = tag_hidden_families(note_text="routine review, no relevant terms", gold_per_month=0.0)
+    families = tag_hidden_families(
+        note_text="routine review, no relevant terms", gold_per_month=0.0
+    )
     assert families == ("band_zero",)
 
 

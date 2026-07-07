@@ -7,8 +7,13 @@ import math
 from collections import defaultdict
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import FAMILIES, _CALIBRATION_FEATURES
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import confidence_bin
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
+    _CALIBRATION_FEATURES,
+    FAMILIES,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
+    confidence_bin,
+)
 
 # Logistic-regression fit hyperparameters for the grouped calibration scoring rule.
 # ``LOGISTIC_L2_STRENGTH`` was raised from 0.015 to 0.03 after the four-family
@@ -24,15 +29,12 @@ _LOGISTIC_LEARNING_RATE = 0.18
 _LOGISTIC_EPOCHS = 700
 LOGISTIC_L2_STRENGTH = 0.03
 
+
 def calibration_proxy(cells: list[dict[str, Any]]) -> dict[str, Any]:
     scored = cross_validated_calibration_scores(cells, fold_count=5)
-    pairs = [
-        (float(row["calibrated_confidence"]), bool(row["correct"]))
-        for row in scored
-    ]
+    pairs = [(float(row["calibrated_confidence"]), bool(row["correct"])) for row in scored]
     baseline_pairs = [
-        (float(row["training_fold_base_rate"]), bool(row["correct"]))
-        for row in scored
+        (float(row["training_fold_base_rate"]), bool(row["correct"])) for row in scored
     ]
     heuristic = heuristic_calibration_baseline(cells)
     bins = reliability_bins(scored, bin_count=5)
@@ -71,9 +73,7 @@ def calibration_proxy(cells: list[dict[str, Any]]) -> dict[str, Any]:
         "brier_score": round(brier, 4),
         "constant_base_rate_brier_score": round(baseline_brier, 4),
         "brier_improvement_vs_base_rate": round(baseline_brier - brier, 4),
-        "overall_accuracy": round(
-            sum(1 for row in scored if row["correct"]) / len(scored), 4
-        )
+        "overall_accuracy": round(sum(1 for row in scored if row["correct"]) / len(scored), 4)
         if scored
         else 0.0,
         "mean_calibrated_confidence": round(
@@ -124,10 +124,7 @@ def heuristic_calibration_baseline(cells: list[dict[str, Any]]) -> dict[str, Any
         "expected_calibration_error": round(ece, 4),
         "brier_score": round(
             brier_score(
-                [
-                    (float(cell["confidence_proxy"]), bool(cell["correct"]))
-                    for cell in cells
-                ]
+                [(float(cell["confidence_proxy"]), bool(cell["correct"])) for cell in cells]
             ),
             4,
         ),
@@ -149,9 +146,7 @@ def cross_validated_calibration_scores(
         test = [cell for cell in cells if str(cell["letter_id"]) in test_letters]
         weights = fit_logistic_scoring_rule(train)
         train_base_rate = (
-            sum(1 for cell in train if bool(cell["correct"])) / len(train)
-            if train
-            else 0.5
+            sum(1 for cell in train if bool(cell["correct"])) / len(train) if train else 0.5
         )
         for cell in test:
             probability = predict_logistic_probability(weights, cell)
@@ -195,10 +190,7 @@ def fit_logistic_scoring_rule(cells: list[dict[str, Any]]) -> list[float]:
         for cell in cells:
             features = calibration_vector(cell)
             probability = sigmoid(
-                sum(
-                    weight * value
-                    for weight, value in zip(weights, features, strict=True)
-                )
+                sum(weight * value for weight, value in zip(weights, features, strict=True))
             )
             target = 1.0 if cell["correct"] else 0.0
             error = probability - target
@@ -213,8 +205,7 @@ def fit_logistic_scoring_rule(cells: list[dict[str, Any]]) -> list[float]:
 
 def predict_logistic_probability(weights: list[float], cell: dict[str, Any]) -> float:
     raw = sum(
-        weight * value
-        for weight, value in zip(weights, calibration_vector(cell), strict=True)
+        weight * value for weight, value in zip(weights, calibration_vector(cell), strict=True)
     )
     return min(max(sigmoid(raw), 0.001), 0.999)
 
@@ -281,9 +272,7 @@ def reliability_bins(
                     (len(bucket) / total) * abs(accuracy - avg_confidence),
                     4,
                 ),
-                "mean_cell_f1": round(
-                    sum(float(row["f1"]) for row in bucket) / len(bucket), 4
-                ),
+                "mean_cell_f1": round(sum(float(row["f1"]) for row in bucket) / len(bucket), 4),
             }
         )
     return rows
@@ -295,17 +284,12 @@ def calibration_summary_for_family(
     *,
     baseline_pairs: list[tuple[float, bool]],
 ) -> dict[str, Any]:
-    pairs = [
-        (float(row["calibrated_confidence"]), bool(row["correct"]))
-        for row in rows
-    ]
+    pairs = [(float(row["calibrated_confidence"]), bool(row["correct"])) for row in rows]
     bins = reliability_bins(rows, bin_count=min(4, len(rows))) if rows else []
     return {
         "family": family,
         "cells": len(rows),
-        "accuracy": round(sum(1 for row in rows if row["correct"]) / len(rows), 4)
-        if rows
-        else 0.0,
+        "accuracy": round(sum(1 for row in rows if row["correct"]) / len(rows), 4) if rows else 0.0,
         "mean_calibrated_confidence": round(
             sum(float(row["calibrated_confidence"]) for row in rows) / len(rows), 4
         )
@@ -331,10 +315,9 @@ def expected_calibration_error(
 def brier_score(pairs: list[tuple[float, bool]]) -> float:
     if not pairs:
         return 0.0
-    return sum(
-        (float(score) - (1.0 if outcome else 0.0)) ** 2
-        for score, outcome in pairs
-    ) / len(pairs)
+    return sum((float(score) - (1.0 if outcome else 0.0)) ** 2 for score, outcome in pairs) / len(
+        pairs
+    )
 
 
 def max_adjacent_bin_reversal(bins: list[dict[str, Any]]) -> float:

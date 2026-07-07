@@ -38,6 +38,7 @@ _TYPED_ATTRIBUTE_FIELDS = {
     "CT_Results",
 }
 
+
 def _coerce_typed_mention_list(
     mentions: Any,
     *,
@@ -145,10 +146,7 @@ def _coerce_clean_render_mention_list(
             notes.append(f"{prefix}:dropped_malformed_mention: mention[{mention_index}]")
             continue
         clean_text = (
-            mention.get("clean_text")
-            or mention.get("rendered_text")
-            or mention.get("text")
-            or ""
+            mention.get("clean_text") or mention.get("rendered_text") or mention.get("text") or ""
         )
         source_text = mention.get("source_text") or ""
         evidence = mention.get("evidence") or source_text
@@ -196,8 +194,7 @@ def _coerce_dedup_clinical_facts(
             notes.append(f"{prefix}:dropped_malformed_fact: fact[{fact_index}]")
             continue
         normalized = {
-            str(key): "" if value is None else str(value).strip()
-            for key, value in fact.items()
+            str(key): "" if value is None else str(value).strip() for key, value in fact.items()
         }
         family = _normalize_fact_family(normalized.get("family", ""))
         if family not in _DEDUP_FACT_FAMILIES:
@@ -208,9 +205,7 @@ def _coerce_dedup_clinical_facts(
             continue
         normalized["family"] = family
         if not normalized.get("evidence"):
-            notes.append(
-                f"{prefix}:dropped_malformed_fact: fact[{fact_index}] missing=evidence"
-            )
+            notes.append(f"{prefix}:dropped_malformed_fact: fact[{fact_index}] missing=evidence")
             continue
         coerced.append(normalized)
     return coerced, notes

@@ -23,15 +23,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.jsonl"
 )
-DEFAULT_JSON_PATH = Path(
-    "experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.json"
-)
-DEFAULT_REPORT_PATH = Path(
-    ""
-)
-DEFAULT_RQ10_REPORT_PATH = Path(
-    ""
-)
+DEFAULT_JSON_PATH = Path("experiments/gan2026_rq9_abstention_review_predeclaration_2026-06-04.json")
+DEFAULT_REPORT_PATH = Path("")
+DEFAULT_RQ10_REPORT_PATH = Path("")
 
 ROUTING_POLICY_VERSION = "gan2026_rq9_abstention_review_policy_v0"
 ACTION_BY_BUCKET = {
@@ -109,9 +103,7 @@ def summarize_rq9_predeclaration(
                 sum(row["evidence_contract"]["selected_evidence_exact"] for row in rows),
                 len(rows),
             ),
-            "rq10_hard_row_ambiguity_rate": _rq10_metric(
-                rq10_summary, "hard_row_ambiguity_rate"
-            ),
+            "rq10_hard_row_ambiguity_rate": _rq10_metric(rq10_summary, "hard_row_ambiguity_rate"),
         },
         "review_bucket_counts": dict(sorted(bucket_counts.items())),
         "primary_class_counts": dict(sorted(primary_class_counts.items())),
@@ -227,8 +219,7 @@ def _predeclaration_row(row: Mapping[str, Any]) -> dict[str, Any]:
         "rq10_primary_class": row.get("rq10_primary_class"),
         "review_bucket": bucket,
         "routing_action": action,
-        "prediction_blocked_pending_review_or_abstention": action
-        in PREDICTION_BLOCKING_ACTIONS,
+        "prediction_blocked_pending_review_or_abstention": action in PREDICTION_BLOCKING_ACTIONS,
         "hidden_families": list(row.get("hidden_families") or []),
         "evidence_contract": {
             "selected_evidence": row.get("selected_evidence"),
@@ -251,9 +242,7 @@ def _predeclaration_row(row: Mapping[str, Any]) -> dict[str, Any]:
             "primary_predicted_label": predicted_label,
             "primary_purist_correct": bool(row.get("primary_purist_correct")),
             "primary_pragmatic_correct": bool(row.get("primary_pragmatic_correct")),
-            "clinically_defensible_alternative": bool(
-                row.get("clinically_defensible_alternative")
-            ),
+            "clinically_defensible_alternative": bool(row.get("clinically_defensible_alternative")),
             "benchmark_convention_flag": bool(row.get("benchmark_convention_flag")),
             "possible_gold_weakness": bool(row.get("possible_gold_weakness")),
             "likely_gold_defect": bool(row.get("likely_gold_defect")),

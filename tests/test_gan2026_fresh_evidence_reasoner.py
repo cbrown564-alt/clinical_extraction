@@ -47,12 +47,8 @@ def test_test_split_uses_frozen_test_structured_event_sources() -> None:
     assert validation_sources["deepseek"] == (
         fresh_evidence_reasoner.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
     )
-    assert test_sources["gpt"] == (
-        fresh_evidence_reasoner.TEST_GPT_STRUCTURED_EVENT_JSONL_PATH
-    )
-    assert test_sources["qwen"] == (
-        fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH
-    )
+    assert test_sources["gpt"] == (fresh_evidence_reasoner.TEST_GPT_STRUCTURED_EVENT_JSONL_PATH)
+    assert test_sources["qwen"] == (fresh_evidence_reasoner.TEST_QWEN_STRUCTURED_EVENT_JSONL_PATH)
     assert test_sources["deepseek"] == (
         fresh_evidence_reasoner.TEST_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
     )
@@ -95,8 +91,7 @@ def test_fresh_evidence_prompt_excludes_forbidden_context() -> None:
     assert "replace_with_fresh_evidence_final" in payload["required_output_schema"]["action"]
     assert "twice per week" in payload["raw_note_excerpt"]
     assert any(
-        "Replacement is for represented-evidence" in item
-        for item in payload["instructions"]
+        "Replacement is for represented-evidence" in item for item in payload["instructions"]
     )
 
 
@@ -140,10 +135,7 @@ def test_fresh_evidence_prompt_pins_unknown_frequency_boundary_policy() -> None:
 def test_fresh_evidence_prompt_requires_ambiguity_classification() -> None:
     record = _record(
         952,
-        (
-            "Clinic Date: 12 June 2026\n"
-            "Last seizure was on 20 Dec with no seizures since."
-        ),
+        ("Clinic Date: 12 June 2026\nLast seizure was on 20 Dec with no seizures since."),
     )
 
     prompt_input_json = fresh_evidence_reasoner.build_prompt_input(
@@ -257,9 +249,7 @@ def test_unknown_count_or_window_classification_permits_selective_unknown() -> N
     )
 
     assert parsed.raw_fresh_decision is not None
-    assert parsed.raw_fresh_decision.ambiguity_classification == (
-        "unknown_count_or_window"
-    )
+    assert parsed.raw_fresh_decision.ambiguity_classification == ("unknown_count_or_window")
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "unknown"
     assert "fresh_evidence_gate_fallback: unknown_replacement_not_selective" not in (
@@ -362,8 +352,8 @@ def test_live_fresh_evidence_replacement_scores_against_v0(monkeypatch) -> None:
         "fresh_evidence_action_rendered:replace_with_fresh_evidence_final"
         in row["action_render_events"]
     )
-    assert "fresh_evidence_shape_repaired:filtered_non_exact_evidence" in (
-        row["action_render_events"]
+    assert (
+        "fresh_evidence_shape_repaired:filtered_non_exact_evidence" in (row["action_render_events"])
     )
     assert row["decision_record"]["evidence"] == ["twice per week"]
 
@@ -518,9 +508,7 @@ def test_safety_gate_blocks_seizure_free_demotions_and_bare_replacements() -> No
 
     assert bare.final_decision is not None
     assert bare.final_decision.final_label == "1 per month"
-    assert "fresh_evidence_gate_fallback: bare_seizure_free_replacement" in (
-        bare.parse_errors
-    )
+    assert "fresh_evidence_gate_fallback: bare_seizure_free_replacement" in (bare.parse_errors)
 
     short = fresh_evidence_reasoner.parse_fresh_evidence_decision_json(
         json.dumps(
@@ -621,10 +609,7 @@ def test_safety_gate_blocks_unknown_replacements_as_nonselective() -> None:
 
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "1 per month"
-    assert (
-        "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
-        in parsed.parse_errors
-    )
+    assert "fresh_evidence_gate_fallback: unknown_replacement_not_selective" in parsed.parse_errors
 
 
 def test_no_reference_replacement_with_unclear_seizure_evidence_repairs_to_unknown() -> None:
@@ -670,10 +655,7 @@ def test_no_reference_replacement_with_unclear_seizure_evidence_repairs_to_unkno
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "unknown"
     assert parsed.final_decision.final_kind == "unknown"
-    assert (
-        "fresh_evidence_semantic_repaired:no_reference_to_unknown"
-        in parsed.action_render_events
-    )
+    assert "fresh_evidence_semantic_repaired:no_reference_to_unknown" in parsed.action_render_events
 
 
 def test_no_reference_replacement_stays_no_reference_without_seizure_frequency_evidence() -> None:
@@ -796,8 +778,7 @@ def test_safety_gate_allows_selective_unknown_from_last_event_only_seizure_free(
             }
         ),
         note_text=(
-            "The patient had her last seizure on 20/Dec. "
-            "There have been no seizures since then."
+            "The patient had her last seizure on 20/Dec. There have been no seizures since then."
         ),
         structured_event_row=_structured_event_row(
             959,
@@ -896,10 +877,7 @@ def test_safety_gate_blocks_unknown_from_frequency_original_recent_event_boundar
 
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "6 per 7 month"
-    assert (
-        "fresh_evidence_gate_fallback: unknown_replacement_not_selective"
-        in parsed.parse_errors
-    )
+    assert "fresh_evidence_gate_fallback: unknown_replacement_not_selective" in parsed.parse_errors
 
 
 def test_safety_gate_blocks_open_ended_treatment_start_denominator() -> None:
@@ -921,8 +899,7 @@ def test_safety_gate_blocks_open_ended_treatment_start_denominator() -> None:
                 ],
                 "calculation_trace": "3-4 seizures since beginning Clobazam 3 months ago.",
                 "clinical_rationale": (
-                    "The note gives a count since beginning Clobazam and a "
-                    "medication start date."
+                    "The note gives a count since beginning Clobazam and a medication start date."
                 ),
                 "uncertainty": "low",
                 "tool_calls": [],
@@ -1052,10 +1029,7 @@ def test_safety_gate_blocks_vague_multiple_exactification() -> None:
 
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "multiple per month"
-    assert (
-        "fresh_evidence_gate_fallback: vague_multiple_exactification"
-        in parsed.parse_errors
-    )
+    assert "fresh_evidence_gate_fallback: vague_multiple_exactification" in parsed.parse_errors
 
 
 def test_safety_gate_blocks_same_day_cluster_downgrade() -> None:
@@ -1105,10 +1079,7 @@ def test_safety_gate_blocks_same_day_cluster_downgrade() -> None:
 
     assert parsed.final_decision is not None
     assert parsed.final_decision.final_label == "3 per day"
-    assert (
-        "fresh_evidence_gate_fallback: same_day_cluster_downgrade"
-        in parsed.parse_errors
-    )
+    assert "fresh_evidence_gate_fallback: same_day_cluster_downgrade" in parsed.parse_errors
 
 
 def test_write_report_keeps_validation_row_table(tmp_path: Path) -> None:

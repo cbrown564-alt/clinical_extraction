@@ -11,7 +11,10 @@ from clinical_extraction.observatory.models import ObservatorySettings, RunNoteR
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord, load_records_for_split
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    GanRecord,
+    load_records_for_split,
+)
 
 
 def request_record(request: RunNoteRequest) -> GanRecord:

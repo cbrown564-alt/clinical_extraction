@@ -127,9 +127,7 @@ class GepaRecallLanesExtractor(dspy.Module):
             approx_tokens(p.signature.instructions) for p in self._predictors()
         )
         prediction.demo_tokens = sum(
-            approx_tokens(str(dict(demo)))
-            for p in self._predictors()
-            for demo in (p.demos or [])
+            approx_tokens(str(dict(demo))) for p in self._predictors() for demo in (p.demos or [])
         )
         return prediction
 

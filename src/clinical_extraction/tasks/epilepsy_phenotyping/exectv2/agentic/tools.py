@@ -8,6 +8,7 @@ gold annotations (a leaky dev-only stub per its own docstring), and
 UmlsConceptNormalizer is unimplemented (raises NotImplementedError). Both
 tools here are confirmed gold-free.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -65,9 +66,7 @@ def read_sf_boundary_guide(query: str) -> dict[str, Any]:
     normalized = _normalize_key(query)
     guide_id = normalized if normalized in _GUIDES else _GUIDE_ALIASES.get(normalized)
     if guide_id is None:
-        guide_id = next(
-            (gid for gid in _GUIDES if normalized in gid.replace("_", " ")), None
-        )
+        guide_id = next((gid for gid in _GUIDES if normalized in gid.replace("_", " ")), None)
     if guide_id is None:
         available = ", ".join(sorted(_GUIDES))
         raise KeyError(f"Unknown SF boundary guide: {query!r}. Available guides: {available}")

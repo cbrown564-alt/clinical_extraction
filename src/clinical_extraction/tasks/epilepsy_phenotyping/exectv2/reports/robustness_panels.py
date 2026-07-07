@@ -42,8 +42,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 DEFAULT_GENERATED_ON = "2026-06-25"
 DEFAULT_JSON = Path("experiments/exectv2_robustness_panels_preflight_20260625.json")
 DEFAULT_MARKDOWN = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_robustness_panels_preflight_2026-06-25.md"
+    "docs/experiments/exectv2/reliability/exectv2_robustness_panels_preflight_2026-06-25.md"
 )
 FAMILIES: tuple[str, ...] = (
     "Diagnosis",
@@ -60,9 +59,7 @@ MINIMUM_PERTURBATION_FAMILIES: tuple[str, ...] = (
     "evidence_paraphrase",
     "evidence_deletion",
 )
-EVIDENCE_ISSUE_CODES: frozenset[str] = frozenset(
-    {"missing_evidence", "evidence_not_substring"}
-)
+EVIDENCE_ISSUE_CODES: frozenset[str] = frozenset({"missing_evidence", "evidence_not_substring"})
 
 
 @dataclass(frozen=True)
@@ -109,22 +106,18 @@ def build_robustness_panel_payload(
                 4,
             ),
             "schema_validity_rate": round(
-                float(arm["schema_validity_rate"])
-                - float(oracle["schema_validity_rate"]),
+                float(arm["schema_validity_rate"]) - float(oracle["schema_validity_rate"]),
                 4,
             ),
             "evidence_validity_rate": round(
-                float(arm["evidence_validity_rate"])
-                - float(oracle["evidence_validity_rate"]),
+                float(arm["evidence_validity_rate"]) - float(oracle["evidence_validity_rate"]),
                 4,
             ),
         }
 
     coverage_counts = Counter(case.perturbation_family for case in panel_cases)
     missing = [
-        family
-        for family in MINIMUM_PERTURBATION_FAMILIES
-        if coverage_counts.get(family, 0) == 0
+        family for family in MINIMUM_PERTURBATION_FAMILIES if coverage_counts.get(family, 0) == 0
     ]
     return {
         "artifact_kind": "exectv2_robustness_panel_preflight",
@@ -164,10 +157,7 @@ def build_robustness_panel_payload(
             ),
         },
         "prediction_arms": arms,
-        "cases": [
-            _case_payload(case, include_case_text=include_case_text)
-            for case in panel_cases
-        ],
+        "cases": [_case_payload(case, include_case_text=include_case_text) for case in panel_cases],
         "holdout_guardrail": {
             "full_200_or_holdout_rows_loaded": False,
             "blocked_surfaces": ["full-200", "holdout", "test"],
@@ -188,9 +178,7 @@ def write_robustness_panel_artifacts(
     """Write the robustness preflight JSON and Markdown artifacts."""
 
     json_path = json_path if json_path.is_absolute() else REPO_ROOT / json_path
-    markdown_path = (
-        markdown_path if markdown_path.is_absolute() else REPO_ROOT / markdown_path
-    )
+    markdown_path = markdown_path if markdown_path.is_absolute() else REPO_ROOT / markdown_path
     payload = build_robustness_panel_payload(generated_on=generated_on)
     json_path.parent.mkdir(parents=True, exist_ok=True)
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
@@ -231,9 +219,7 @@ def render_robustness_panel_markdown(
         "| --- | ---: |",
     ]
     for family in MINIMUM_PERTURBATION_FAMILIES:
-        lines.append(
-            f"| `{family}` | {coverage['by_perturbation_family'].get(family, 0)} |"
-        )
+        lines.append(f"| `{family}` | {coverage['by_perturbation_family'].get(family, 0)} |")
     lines.extend(
         [
             "",
@@ -273,8 +259,7 @@ def render_robustness_panel_markdown(
     for arm in payload["prediction_arms"]:
         for row in arm["by_family"]:
             companion = ", ".join(
-                f"{key}={value:.4f}"
-                for key, value in row["companion_metrics"].items()
+                f"{key}={value:.4f}" for key, value in row["companion_metrics"].items()
             )
             lines.append(
                 f"| {arm['label']} | {row['family']} | {row['f1']:.4f} | "
@@ -308,12 +293,10 @@ def default_robustness_cases() -> tuple[RobustnessCase, ...]:
             family="SeizureFrequency",
             perturbation_family="sf_current_vs_historical",
             baseline_note=(
-                "Previously he had focal seizures every week. He is currently "
-                "seizure free."
+                "Previously he had focal seizures every week. He is currently seizure free."
             ),
             perturbed_note=(
-                "Previously he had focal seizures every week. He is currently "
-                "seizure free."
+                "Previously he had focal seizures every week. He is currently seizure free."
             ),
             expected_mentions=(
                 _mention(
@@ -418,12 +401,8 @@ def default_robustness_cases() -> tuple[RobustnessCase, ...]:
             case_id="inv_pending_vs_result",
             family="Investigations",
             perturbation_family="investigations_result_state",
-            baseline_note=(
-                "An MRI has been requested and is pending. The EEG was abnormal."
-            ),
-            perturbed_note=(
-                "An MRI has been requested and is pending. The EEG was abnormal."
-            ),
+            baseline_note=("An MRI has been requested and is pending. The EEG was abnormal."),
+            perturbed_note=("An MRI has been requested and is pending. The EEG was abnormal."),
             expected_mentions=(
                 _mention(
                     "Investigations",
@@ -460,12 +439,10 @@ def default_robustness_cases() -> tuple[RobustnessCase, ...]:
             family="Diagnosis",
             perturbation_family="diagnosis_assertion_hierarchy",
             baseline_note=(
-                "She has focal epilepsy. Generalised epilepsy was considered "
-                "but is not supported."
+                "She has focal epilepsy. Generalised epilepsy was considered but is not supported."
             ),
             perturbed_note=(
-                "She has focal epilepsy. Generalised epilepsy was considered "
-                "but is not supported."
+                "She has focal epilepsy. Generalised epilepsy was considered but is not supported."
             ),
             expected_mentions=(
                 _mention(
@@ -526,8 +503,7 @@ def default_robustness_cases() -> tuple[RobustnessCase, ...]:
                 ),
             ),
             rationale=(
-                "Concept-only recovery can hide assertion errors; companion "
-                "scoring exposes them."
+                "Concept-only recovery can hide assertion errors; companion scoring exposes them."
             ),
         ),
         RobustnessCase(
@@ -589,8 +565,7 @@ def default_robustness_cases() -> tuple[RobustnessCase, ...]:
                 ),
             ),
             rationale=(
-                "Evidence deletion should reduce evidence validity even when "
-                "scoring stays correct."
+                "Evidence deletion should reduce evidence validity even when scoring stays correct."
             ),
         ),
     )
@@ -722,8 +697,7 @@ def _validity_summary(
     issue_counts: Counter[str] = Counter()
     for case in cases:
         mentions = tuple(
-            _predicted_mention(mention)
-            for mention in predictions_by_case.get(case.case_id, ())
+            _predicted_mention(mention) for mention in predictions_by_case.get(case.case_id, ())
         )
         predicted = PredictedLetter(letter_id=case.case_id, mentions=mentions)
         for mention in mentions:
@@ -778,8 +752,7 @@ def _predicted_mention(mention: Mapping[str, Any]) -> PredictedMention:
         entity=str(mention["entity"]),
         text=str(mention["text"]),
         attributes={
-            str(key): str(value)
-            for key, value in dict(mention.get("attributes") or {}).items()
+            str(key): str(value) for key, value in dict(mention.get("attributes") or {}).items()
         },
         evidence=str(mention.get("evidence", "")),
         rationale=str(mention.get("rationale", "")),

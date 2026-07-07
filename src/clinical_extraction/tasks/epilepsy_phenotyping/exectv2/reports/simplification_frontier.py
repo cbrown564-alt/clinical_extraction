@@ -33,15 +33,15 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectLetter,
     load_letters,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_state_projection as sf_projection,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_union_arbitration as sf_union,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_unknown_suppression as sf_suppression,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review import REPO_ROOT
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
+    llm_sf_union_arbitration as sf_union,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
@@ -54,8 +54,7 @@ DEFAULT_GENERATED_ON = "2026-06-24"
 DEFAULT_CONFIG_DIR = Path("configs/exectv2/simplification_frontier")
 DEFAULT_FRONTIER_JSON = Path("experiments/exectv2_gpt41mini_simplification_frontier_20260624.json")
 DEFAULT_FRONTIER_MD = Path(
-    "docs/experiments/exectv2/reliability/"
-    "exectv2_gpt41mini_simplification_frontier_2026-06-24.md"
+    "docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md"
 )
 
 # Current frontier policy accepts the 2-call no-SF-adjudicator package as the
@@ -360,8 +359,7 @@ def render_simplification_candidate_markdown(
     for check in checks:
         status = "pass" if check["passed"] else "fail"
         lines.append(
-            f"| {check['name']} | {check['value']:.4f} | "
-            f"{check['floor']:.4f} | {status} |"
+            f"| {check['name']} | {check['value']:.4f} | {check['floor']:.4f} | {status} |"
         )
     return base + "\n" + "\n".join(lines) + "\n"
 
@@ -446,9 +444,7 @@ def evaluate_acceptability(report: Mapping[str, Any]) -> dict[str, Any]:
     """Apply the predeclared simplification floors to one report."""
 
     headline = report["score_ladder"]["headline_target"]
-    checks = [
-        _check("overall", headline["overall"]["f1"], ACCEPTABILITY_FLOORS["overall"])
-    ]
+    checks = [_check("overall", headline["overall"]["f1"], ACCEPTABILITY_FLOORS["overall"])]
     checks.extend(
         _check(entity, headline["by_indicator"][entity]["f1"], ACCEPTABILITY_FLOORS[entity])
         for entity in TARGET_INDICATORS
@@ -498,8 +494,7 @@ def _candidate_summary(report: Mapping[str, Any]) -> dict[str, Any]:
         "metrics": {
             "overall": dict(headline["overall"]),
             "by_indicator": {
-                entity: dict(headline["by_indicator"][entity])
-                for entity in TARGET_INDICATORS
+                entity: dict(headline["by_indicator"][entity]) for entity in TARGET_INDICATORS
             },
         },
         "diagnostics": {
@@ -538,9 +533,7 @@ def _candidate_summary(report: Mapping[str, Any]) -> dict[str, Any]:
 
 def _recommended_candidate(candidates: Sequence[Mapping[str, Any]]) -> dict[str, Any] | None:
     passing = [
-        candidate
-        for candidate in candidates
-        if candidate["acceptability"]["decision"] == "pass"
+        candidate for candidate in candidates if candidate["acceptability"]["decision"] == "pass"
     ]
     if not passing:
         return None

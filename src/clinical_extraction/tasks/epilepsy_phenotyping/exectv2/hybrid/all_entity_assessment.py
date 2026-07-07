@@ -33,7 +33,7 @@ import json
 import sys
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.benchmark_projection import (
     project_cuis,
@@ -227,9 +227,7 @@ def run_replay(
     rows: list[dict[str, Any]] = []
     for letter in letters:
         candidates = candidates_by_letter.get(letter.letter_id, [])
-        predicted, routed = assemble_letter(
-            letter, candidates, augment_rules=augment_rules
-        )
+        predicted, routed = assemble_letter(letter, candidates, augment_rules=augment_rules)
         rows.append(
             {
                 "letter_id": letter.letter_id,
@@ -237,9 +235,8 @@ def run_replay(
                 "prompt_version": PROMPT_VERSION,
                 "model": model,
                 "augment_rules": augment_rules,
-                "n_candidates": len(candidates) + (
-                    len(_rule_augmentation(letter)) if augment_rules else 0
-                ),
+                "n_candidates": len(candidates)
+                + (len(_rule_augmentation(letter)) if augment_rules else 0),
                 "n_mentions_scored": len(predicted.mentions),
                 "n_routed": len(routed),
                 "routed_taxonomy": routed_taxonomy(routed),
@@ -475,22 +472,22 @@ def write_report(
             f"| {pi.get('f1', 0):.3f} | {pl.get('precision', 0):.3f} "
             f"| {pl.get('recall', 0):.3f} | {pl.get('f1', 0):.3f} |"
         )
-    lines.extend([
-        "",
-        f"Published targets: overall per-item {PUBLISHED_OVERALL['per_item']:.2f} / "
-        f"per-letter {PUBLISHED_OVERALL['per_letter']:.2f}.",
-        "",
-        "## Per-entity (semantic, CUI-dropped) + projection ablation",
-        "",
-        "| Entity | Pub item F1 | Semantic item F1 | Benchmark item F1 | "
-        "Δ (CUI projection) | SN recall | Routed |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ])
+    lines.extend(
+        [
+            "",
+            f"Published targets: overall per-item {PUBLISHED_OVERALL['per_item']:.2f} / "
+            f"per-letter {PUBLISHED_OVERALL['per_letter']:.2f}.",
+            "",
+            "## Per-entity (semantic, CUI-dropped) + projection ablation",
+            "",
+            "| Entity | Pub item F1 | Semantic item F1 | Benchmark item F1 | "
+            "Δ (CUI projection) | SN recall | Routed |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ]
+    )
     semantic_entities = scores.get("semantic", {}).get("per_entity", {})
     ablation = summary.get("projection_ablation", {}).get("per_entity", {})
-    sn_entities = (
-        summary.get("diagnostic_ladder", {}).get("source_near", {}).get("per_entity", {})
-    )
+    sn_entities = summary.get("diagnostic_ladder", {}).get("source_near", {}).get("per_entity", {})
     routed_by_entity = summary.get("routed_taxonomy_by_entity", {})
     for entity in ENTITY_NAMES:
         sem = semantic_entities.get(entity, {}).get("per_item", {})

@@ -28,9 +28,7 @@ def build_selected_source_id_trace(
         status = "invalid"
     elif selected_source_ids:
         status = (
-            "valid"
-            if not missing_expected_source_ids and not unexpected_source_ids
-            else "invalid"
+            "valid" if not missing_expected_source_ids and not unexpected_source_ids else "invalid"
         )
     else:
         status = "not_instrumented"
@@ -93,4 +91,3 @@ def summarize_projection_source_id_consistency(
         "projection_source_id_inconsistent_rows": len(inconsistent),
         "projection_source_id_inconsistent_source_row_indices": inconsistent,
     }
-

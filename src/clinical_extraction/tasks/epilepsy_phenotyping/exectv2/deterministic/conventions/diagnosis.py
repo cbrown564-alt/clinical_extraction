@@ -10,7 +10,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     canonicalize_diagnosis_concept,
     diagnosis_category_for_concept,
-    )
+)
 
 DIAGNOSIS_STANDALONE_NOISE: frozenset[str] = frozenset(
     {
@@ -519,9 +519,7 @@ def is_diagnosis_convention_noise(
         return True
     if concept == "epilepsy" and _RESIDUAL_GENERIC_EPILEPSY_NOISE.search(evidence):
         return True
-    if concept == "general seizures" and _GENERAL_AND_COMPLEX_PARTIAL_EVIDENCE.search(
-        evidence
-    ):
+    if concept == "general seizures" and _GENERAL_AND_COMPLEX_PARTIAL_EVIDENCE.search(evidence):
         return True
     if concept == "minor seizures" and _MINOR_SEIZURES_CONTEXTUAL_NOISE.search(evidence):
         return True
@@ -626,4 +624,3 @@ def is_redundant_diagnosis_residual_addition(
     if concept == "focal seizures with altered awareness" and "dyscognitive seizures" in selected:
         return True
     return False
-

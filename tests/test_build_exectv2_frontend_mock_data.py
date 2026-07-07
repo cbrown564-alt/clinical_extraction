@@ -123,14 +123,23 @@ def test_diagnostic_spec_uses_index_source_then_fallback():
 
 
 def test_helper_units():
-    assert mod._decision_from_heading("ExECTv2 v09 Partial Hybrid Simplification") == "simplification"
+    assert (
+        mod._decision_from_heading("ExECTv2 v09 Partial Hybrid Simplification") == "simplification"
+    )
     assert mod._decision_from_heading("ExECTv2 Foo Diagnostic") == "diagnostic"
     assert mod._decision_from_heading("ExECTv2 Bar Control") == "control"
     # Precedence: simplicity beats performance when both appear.
-    assert mod._promotion_slug("Simplicity control, not performance control") == "simplicity-control"
-    assert mod._architecture_family("exectv2_holistic_finding_assembly_v08_dev140", "dev140") == "holistic_finding_assembly"
     assert (
-        mod._architecture_family("exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140", "dev140")
+        mod._promotion_slug("Simplicity control, not performance control") == "simplicity-control"
+    )
+    assert (
+        mod._architecture_family("exectv2_holistic_finding_assembly_v08_dev140", "dev140")
+        == "holistic_finding_assembly"
+    )
+    assert (
+        mod._architecture_family(
+            "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140", "dev140"
+        )
         == "qwencompact_residualrepair"
     )
 
@@ -149,7 +158,13 @@ def test_real_index_parses_to_known_runs():
 
 
 def test_validate_specs_flags_missing_artifacts():
-    bad = [{"run_id": "x", "summary_path": "experiments/does_not_exist.json", "assembly_jsonl_path": None}]
+    bad = [
+        {
+            "run_id": "x",
+            "summary_path": "experiments/does_not_exist.json",
+            "assembly_jsonl_path": None,
+        }
+    ]
     with pytest.raises(SystemExit) as exc:
         mod.validate_specs(bad)
     assert "does_not_exist" in str(exc.value)

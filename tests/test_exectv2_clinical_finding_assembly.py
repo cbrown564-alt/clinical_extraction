@@ -63,9 +63,10 @@ def test_manifest_driven_assembly_preserves_sources_and_views(tmp_path: Path) ->
         "dictionary_normalized",
         "residual_benchmark_added",
     }
-    assert run.report["score_ladder"]["materialized_surfaces"]["source_scored"][
-        "overall"
-    ]["f1"] == run.report["score_ladder"]["raw_lane_score"]["overall"]["f1"]
+    assert (
+        run.report["score_ladder"]["materialized_surfaces"]["source_scored"]["overall"]["f1"]
+        == run.report["score_ladder"]["raw_lane_score"]["overall"]["f1"]
+    )
 
 
 def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
@@ -112,9 +113,7 @@ def test_assembly_materializes_dictionary_and_residual_intermediate_surfaces(
     assert rx_surfaces["protocol_model_preserving_canonical"] == []
     assert rx_surfaces["dictionary_normalized"] == []
     assert [m["text"] for m in rx_surfaces["residual_benchmark_added"]] == ["lamotrigine"]
-    assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0][
-        "evidence"
-    ]
+    assert "lamotrigine 100 mg bd" in rx_surfaces["residual_benchmark_added"][0]["evidence"]
     materialized = run.report["score_ladder"]["materialized_surfaces"]
     assert materialized["protocol_model_preserving_canonical"]["overall"]["pred_count"] == 3
     assert materialized["dictionary_normalized"]["overall"]["pred_count"] == 3
@@ -153,12 +152,15 @@ def test_protocol_clean_surface_excludes_candidate_backed_passthrough(
     assert len(dx_surfaces["residual_benchmark_added"]) == 1
     accounting = run.report["fact_origin_accounting"]["by_surface"]
     assert accounting["source_scored"]["upstream_candidate_copied"] == 1
-    assert accounting["protocol_model_preserving_canonical"].get(
-        "upstream_candidate_copied", 0
-    ) == 0
-    assert run.report["score_ladder"]["materialized_surfaces"][
-        "protocol_model_preserving_canonical"
-    ]["overall"]["pred_count"] == 3
+    assert (
+        accounting["protocol_model_preserving_canonical"].get("upstream_candidate_copied", 0) == 0
+    )
+    assert (
+        run.report["score_ladder"]["materialized_surfaces"]["protocol_model_preserving_canonical"][
+            "overall"
+        ]["pred_count"]
+        == 3
+    )
 
 
 def test_assembly_retains_evidence_invalid_raw_findings_but_fails_final_invalid(

@@ -23,12 +23,9 @@ def test_h5_inventory_classifies_format_and_semantic_layers() -> None:
     assert by_id["format_only_prediction_surface"]["semantic_effect"] == "format_only"
     assert by_id["format_only_prediction_surface"]["default_policy"] == "allowed"
     assert (
-        by_id["selected_evidence_arithmetic"]["semantic_effect"]
-        == "denominator_or_window_policy"
+        by_id["selected_evidence_arithmetic"]["semantic_effect"] == "denominator_or_window_policy"
     )
-    assert by_id["benchmark_convention_renderer"]["portability_category"] == (
-        "benchmark_format"
-    )
+    assert by_id["benchmark_convention_renderer"]["portability_category"] == ("benchmark_format")
     assert by_id["benchmark_convention_renderer"]["default_policy"] == "review_required"
 
     condition = artifact["condition_ladder"]["selected_evidence_arithmetic_only"]
@@ -64,9 +61,7 @@ def test_h5_family_ablation_interprets_saved_ladder_without_new_policy() -> None
         _replacement_ablation()
     )
 
-    artifact = h5_semantic_repair_inventory.build_h5_repair_family_ablation(
-        inventory
-    )
+    artifact = h5_semantic_repair_inventory.build_h5_repair_family_ablation(inventory)
 
     assert artifact["artifact_kind"] == "gan2026_h5_repair_family_ablation_v0"
     assert artifact["locked_test_row_level_artifacts_used"] == 0

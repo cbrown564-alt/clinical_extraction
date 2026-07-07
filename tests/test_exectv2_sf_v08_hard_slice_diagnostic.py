@@ -92,9 +92,9 @@ def test_panel_includes_all_sf_residual_units_and_required_tables() -> None:
         "repair_benchmark_format": 3,
         "repair_state": 2,
     }
-    assert {
-        item["pattern"] for item in result["top_letter_pair_patterns"]
-    } >= {"gold:active-rate -> predicted:unknown"}
+    assert {item["pattern"] for item in result["top_letter_pair_patterns"]} >= {
+        "gold:active-rate -> predicted:unknown"
+    }
 
 
 def test_panel_distinguishes_context_span_and_true_candidate_gap() -> None:

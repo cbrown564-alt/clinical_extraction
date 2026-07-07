@@ -39,16 +39,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 
 _RUNNER_MODULES = {
     "single_pass": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_single_pass"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass"
     ),
     "per_entity": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_per_entity"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_per_entity"
     ),
     "clinical_findings": (
-        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm."
-        "llm_only_clinical_findings"
+        "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_clinical_findings"
     ),
 }
 
@@ -155,8 +152,7 @@ def main() -> None:
     write_report = runner_module.write_report
 
     print(
-        f"Running {args.config} / mode={args.mode} / model={args.model} "
-        f"over {n} letters ...",
+        f"Running {args.config} / mode={args.mode} / model={args.model} over {n} letters ...",
         flush=True,
     )
 

@@ -1,4 +1,4 @@
-﻿"""Unified parameterized runner framework for Gan 2026 pipelines.
+"""Unified parameterized runner framework for Gan 2026 pipelines.
 
 Thin facade over the ``runners/`` package. Every public symbol is re-exported
 so existing importers keep working.
@@ -71,8 +71,7 @@ class Gan2026PipelineRunner:
         run_item = _ITEM_RUNNERS.get(self.config.architecture)
         if run_item is None:
             raise ValueError(
-                "Unsupported architecture for single-item run: "
-                f"{self.config.architecture}"
+                f"Unsupported architecture for single-item run: {self.config.architecture}"
             )
         return run_item(item, self.config)
 

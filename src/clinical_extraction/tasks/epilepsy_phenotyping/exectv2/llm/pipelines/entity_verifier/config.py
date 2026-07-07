@@ -64,7 +64,9 @@ class VerifierConfig:
 
         return read_draft_rows(path)
 
-    def run_split(self, letters: Sequence[ExectLetter], **kwargs: Any) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    def run_split(
+        self, letters: Sequence[ExectLetter], **kwargs: Any
+    ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.entity_verifier.runner import (
             run_split,
         )

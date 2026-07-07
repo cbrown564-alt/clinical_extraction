@@ -103,8 +103,7 @@ def test_split_daily_dose_regimen_does_not_split_single_twice_daily_dose() -> No
         sd.split_daily_dose_regimen(
             "Sodium Valproate 800mg bd",
             evidence=(
-                "I suggest that the dose should be increased so he is on "
-                "Sodium Valproate 800mg bd."
+                "I suggest that the dose should be increased so he is on Sodium Valproate 800mg bd."
             ),
             attributes={"DrugName": "sodium-valproate", "DrugDose": "800", "Frequency": "2"},
         )
@@ -151,9 +150,7 @@ def test_diagnosis_residual_benchmark_target_uses_evidence() -> None:
     )
     # No matching convention -> unchanged.
     assert (
-        sd.diagnosis_convention_target(
-            "temporal lobe epilepsy", evidence="temporal lobe epilepsy"
-        )
+        sd.diagnosis_convention_target("temporal lobe epilepsy", evidence="temporal lobe epilepsy")
         is None
     )
 

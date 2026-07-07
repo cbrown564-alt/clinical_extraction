@@ -33,9 +33,10 @@ def test_unanimous_frequency_or_cluster_override_can_promote() -> None:
         manifest_records=[],
     )
 
-    assert replay_rows[0]["policies"]["unanimous_frequency_or_cluster_override"][
-        "transition"
-    ] == "wrong_to_correct"
+    assert (
+        replay_rows[0]["policies"]["unanimous_frequency_or_cluster_override"]["transition"]
+        == "wrong_to_correct"
+    )
     summary = metadata["policy_summaries"]["unanimous_frequency_or_cluster_override"]
     assert summary["gate_status"] == "promote"
     assert summary["wrong_to_correct"] == 3
@@ -44,9 +45,7 @@ def test_unanimous_frequency_or_cluster_override_can_promote() -> None:
 
 
 def test_guide_and_vote_agree_blocks_boundary_labels() -> None:
-    e1_rows = [
-        _e1_row(10, gold_monthly=8.0, no_tool="2 per week", boundary="unknown")
-    ]
+    e1_rows = [_e1_row(10, gold_monthly=8.0, no_tool="2 per week", boundary="unknown")]
     e2_rows = [
         _e2_row(
             10,
@@ -133,9 +132,9 @@ def test_cluster_restore_and_hidden_family_diagnostic_summary() -> None:
     decision = replay_rows[0]["policies"]["cluster_restore_only"]
     assert decision["selected_label"] == "1 cluster per month, 8 per cluster"
     assert decision["changed_label"] is True
-    family_summary = metadata["diagnostic_hidden_family_summaries"][
-        "cluster_restore_only"
-    ]["cluster_burden"]
+    family_summary = metadata["diagnostic_hidden_family_summaries"]["cluster_restore_only"][
+        "cluster_burden"
+    ]
     assert family_summary["changed_labels"] == 1
 
 
@@ -229,8 +228,6 @@ def _trace(
 def _comparison(label: str, gold_monthly: float) -> dict:
     return {
         "gold_monthly_frequency": gold_monthly,
-        "purist_correct": label == "2 per week"
-        or label == "1 cluster per month, 8 per cluster",
-        "pragmatic_correct": label == "2 per week"
-        or label == "1 cluster per month, 8 per cluster",
+        "purist_correct": label == "2 per week" or label == "1 cluster per month, 8 per cluster",
+        "pragmatic_correct": label == "2 per week" or label == "1 cluster per month, 8 per cluster",
     }

@@ -1473,9 +1473,7 @@ def test_parse_structured_json_preserves_sustained_selected_seizure_free_interva
                     "time_window": "18 May 2025 to 02 October 2025",
                     "temporality": "current",
                     "assertion_status": "asserted",
-                    "evidence": (
-                        "they have maintained an absence of events for over four months"
-                    ),
+                    "evidence": ("they have maintained an absence of events for over four months"),
                     "notes": None,
                 },
             ],
@@ -1498,8 +1496,7 @@ def test_parse_structured_json_preserves_sustained_selected_seizure_free_interva
     assert extraction is not None
     assert extraction.selection.final_label == "seizure free for multiple year"
     assert errors == [
-        "final_label_repaired: 'seizure free for 4+ months' -> "
-        "'seizure free for multiple year'"
+        "final_label_repaired: 'seizure free for 4+ months' -> 'seizure free for multiple year'"
     ]
 
 

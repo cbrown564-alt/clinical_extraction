@@ -30,6 +30,7 @@ Usage:
   python scripts/run_exectv2_sf_closed_option_hybrid_integration.py --cache --mode replay
   python scripts/run_exectv2_sf_closed_option_hybrid_integration.py --cache --mode live
 """
+
 from __future__ import annotations
 
 import argparse
@@ -69,9 +70,7 @@ EXPERIMENTS = ROOT / "experiments"
 REPORT_DIR = ROOT / "docs" / "experiments" / "exectv2" / "seizure_frequency"
 # The saved v08 hybrid SF output -- carries FrequencyChange in predicted_mentions,
 # sourced from deterministic rules/change.py. This is the 0.8897-reference surface.
-HYBRID_SF_ARTIFACT = (
-    EXPERIMENTS / "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
-)
+HYBRID_SF_ARTIFACT = EXPERIMENTS / "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
 
 TASK_MODEL = "openai/gpt-4.1-mini"
 TASK_TEMPERATURE = 0.0
@@ -113,9 +112,7 @@ def _letters_with_direction_in_play(jsonl_path: Path) -> dict[str, list[dict[str
                 continue
             attrs = m.get("attributes") or {}
             if "FrequencyChange" in attrs or frequency_state_faithful(attrs) == "changed":
-                changed.append(
-                    {"index": idx, "text": m.get("text", "seizures"), "_attrs": attrs}
-                )
+                changed.append({"index": idx, "text": m.get("text", "seizures"), "_attrs": attrs})
         if changed:
             out[lid] = changed
     return out
@@ -155,9 +152,7 @@ def _pred_letters_from_hybrid(
                 )
             )
         out.append(
-            ExectLetter(
-                letter_id=lid, note_text=gold.note_text, annotations=tuple(anns_list)
-            )
+            ExectLetter(letter_id=lid, note_text=gold.note_text, annotations=tuple(anns_list))
         )
     return out
 
@@ -185,9 +180,7 @@ def run_replay(num_threads: int, cache: bool) -> None:
     baseline_scores = score_frequency_state(dev_gold, baseline_pred)
     b_d = baseline_scores.state_profile_directional
     print("[integration] v08 hybrid SF baseline (unchanged):")
-    print(
-        f"  state_profile_directional F1: {b_d.f1:.4f} (tp={b_d.tp} fp={b_d.fp} fn={b_d.fn})"
-    )
+    print(f"  state_profile_directional F1: {b_d.f1:.4f} (tp={b_d.tp} fp={b_d.fp} fn={b_d.fn})")
     print(f"  state_profile F1:             {baseline_scores.state_profile.f1:.4f}")
 
     in_play = _letters_with_direction_in_play(HYBRID_SF_ARTIFACT)
@@ -246,9 +239,7 @@ def run_replay(num_threads: int, cache: bool) -> None:
         mentions = in_play[lid]
         for c in mentions:
             idx = c["index"]
-            old_dir = row["predicted_mentions"][idx]["attributes"].get(
-                "FrequencyChange", "(none)"
-            )
+            old_dir = row["predicted_mentions"][idx]["attributes"].get("FrequencyChange", "(none)")
             ledger_rows.append(
                 {
                     "letter_id": lid,
@@ -273,9 +264,7 @@ def run_replay(num_threads: int, cache: bool) -> None:
     adj_scores = score_frequency_state(dev_gold, adj_pred)
     a_d = adj_scores.state_profile_directional
     print("[integration] HYBRID + LLM CLOSED-OPTION DIRECTION:")
-    print(
-        f"  state_profile_directional F1: {a_d.f1:.4f} (tp={a_d.tp} fp={a_d.fp} fn={a_d.fn})"
-    )
+    print(f"  state_profile_directional F1: {a_d.f1:.4f} (tp={a_d.tp} fp={a_d.fp} fn={a_d.fn})")
     print(f"  state_profile F1:             {adj_scores.state_profile.f1:.4f} (regression check)")
 
     delta = a_d.f1 - baseline_scores.state_profile_directional.f1
@@ -335,10 +324,7 @@ def run_replay(num_threads: int, cache: bool) -> None:
                 if m.get("entity") == SF_ENTITY:
                     (m.setdefault("attributes", {}))["FrequencyChange"] = override[lid]
         override_rows.append(row)
-    adj_jsonl = (
-        EXPERIMENTS
-        / f"exectv2_sf_closed_option_hybrid_integration_dev140_{RUN_DATE}.jsonl"
-    )
+    adj_jsonl = EXPERIMENTS / f"exectv2_sf_closed_option_hybrid_integration_dev140_{RUN_DATE}.jsonl"
     write_jsonl(override_rows, adj_jsonl)
     print(f"[integration] summary -> {summary_path.relative_to(ROOT)}")
     print(f"[integration] ledger  -> {ledger_path.relative_to(ROOT)}")
@@ -367,9 +353,7 @@ def run_live(cache: bool, checkpoint: Path | None) -> None:
         checkpoint_jsonl_path=checkpoint,
         progress_every=20,
     )
-    out_jsonl = (
-        EXPERIMENTS / f"exectv2_sf_closed_option_hybrid_integration_live_{RUN_DATE}.jsonl"
-    )
+    out_jsonl = EXPERIMENTS / f"exectv2_sf_closed_option_hybrid_integration_live_{RUN_DATE}.jsonl"
     write_jsonl(rows, out_jsonl)
     n_sel = sum(1 for r in rows if r.get("direction_selection"))
     print(f"[integration-live] {n_sel}/{len(rows)} letters fired the selector")

@@ -87,8 +87,6 @@ def test_self_consistency_report_computes_family_cell_agreement_and_entropy(
     assert report["pairwise_agreement"]["exact_family_cell_agreement_rate"] == 0.75
     assert report["semantic_entropy"]["nonzero_entropy_cells"] == 1
     diagnosis = next(
-        row
-        for row in report["semantic_entropy"]["by_family"]
-        if row["family"] == "Diagnosis"
+        row for row in report["semantic_entropy"]["by_family"] if row["family"] == "Diagnosis"
     )
     assert diagnosis["nonzero_entropy_cells"] == 1

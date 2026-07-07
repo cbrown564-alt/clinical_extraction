@@ -32,8 +32,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "experiments" / "hypothesis_registry.jsonl"
-SF_DEV_JSONL = ROOT / "experiments" / "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
-SF_FULL200_JSONL = ROOT / "experiments" / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl"
+SF_DEV_JSONL = (
+    ROOT / "experiments" / "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
+)
+SF_FULL200_JSONL = (
+    ROOT / "experiments" / "exectv2_v08_full200_currentcode_sf_union_arbitration_20260624.jsonl"
+)
 
 SF_ENTITY = "SeizureFrequency"
 TODAY = "2026-07-03"
@@ -135,7 +139,7 @@ def register_hypotheses() -> None:
                 continue
     new = [h for h in HYPOTHESES if h["hypothesis_id"] not in existing_ids]
     if not new:
-        print(f"[hypotheses] both already registered; skipping")
+        print("[hypotheses] both already registered; skipping")
         return
     with REGISTRY.open("a", encoding="utf-8") as fh:
         for h in new:
@@ -146,7 +150,9 @@ def register_hypotheses() -> None:
 # --------------------------------------------------------------------------------------
 # 2. SF state_profile_directional baseline (free scorer replay).
 # --------------------------------------------------------------------------------------
-def _pred_letters_from_jsonl(jsonl_path: Path, gold_by_id: dict[str, ExectLetter]) -> list[ExectLetter]:
+def _pred_letters_from_jsonl(
+    jsonl_path: Path, gold_by_id: dict[str, ExectLetter]
+) -> list[ExectLetter]:
     """Build predicted ExectLetters from a saved-jsonl's SF predicted_mentions.
 
     Each mention's attributes are already post-adapter (the v08 union arbitration
@@ -165,9 +171,7 @@ def _pred_letters_from_jsonl(jsonl_path: Path, gold_by_id: dict[str, ExectLetter
         gold = gold_by_id.get(lid)
         if gold is None:
             continue
-        sf_mentions = [
-            m for m in row.get("predicted_mentions", []) if m.get("entity") == SF_ENTITY
-        ]
+        sf_mentions = [m for m in row.get("predicted_mentions", []) if m.get("entity") == SF_ENTITY]
         annotations = tuple(
             ExectAnnotation(
                 entity=SF_ENTITY,
@@ -180,7 +184,9 @@ def _pred_letters_from_jsonl(jsonl_path: Path, gold_by_id: dict[str, ExectLetter
     return out
 
 
-def score_sf_baseline(label: str, jsonl_path: Path, gold_letters: list[ExectLetter]) -> dict[str, float]:
+def score_sf_baseline(
+    label: str, jsonl_path: Path, gold_letters: list[ExectLetter]
+) -> dict[str, float]:
     gold_by_id = {le.letter_id: le for le in gold_letters}
     pred_letters = _pred_letters_from_jsonl(jsonl_path, gold_by_id)
     scores = score_frequency_state(gold_letters, pred_letters)
@@ -223,8 +229,13 @@ def main() -> None:
             "deterministic-blind baselines the SF direction probe must beat."
         ),
     }
-    out_path = ROOT / "docs" / "experiments" / "exectv2" / "seizure_frequency" / (
-        "_sf_directional_baseline_replay_2026-07-03.json"
+    out_path = (
+        ROOT
+        / "docs"
+        / "experiments"
+        / "exectv2"
+        / "seizure_frequency"
+        / ("_sf_directional_baseline_replay_2026-07-03.json")
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

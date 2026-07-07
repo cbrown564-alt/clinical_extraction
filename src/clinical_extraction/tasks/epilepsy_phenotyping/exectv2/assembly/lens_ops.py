@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from clinical_extraction.core.evidence import grade_evidence, is_grounded
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
     FindingSource,
@@ -14,12 +15,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_fi
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store import (
     ClinicalFindingStore,
 )
-from clinical_extraction.core.evidence import grade_evidence, is_grounded
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import DIAGNOSIS
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normalization import (
     diagnosis_category_for_concept,
 )
@@ -264,9 +264,7 @@ def has_diagnosis_text_with_evidence(
     target_text = normalize_phrase(text)
     target_evidence = normalize_phrase(evidence)
     target_attrs = {
-        key: value
-        for key, value in dict(attributes).items()
-        if key in {"Certainty", "Negation"}
+        key: value for key, value in dict(attributes).items() if key in {"Certainty", "Negation"}
     }
     for finding in findings:
         if normalize_phrase(finding.text) != target_text:
