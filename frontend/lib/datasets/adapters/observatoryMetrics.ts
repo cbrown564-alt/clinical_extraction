@@ -6,6 +6,7 @@
  */
 
 import type { CategoryMetrics, RegistryEntry, RowScore, RunSummary } from "@/lib/types";
+import { laneForRun } from "@/lib/observatoryLanes";
 import { extractRowScore, PURIST_CATEGORIES } from "./observatoryRowScore";
 
 export function computeMetrics(entry: RegistryEntry, rows: unknown[]): RunSummary {
@@ -61,6 +62,7 @@ export function computeMetrics(entry: RegistryEntry, rows: unknown[]): RunSummar
     pragmaticF1: microF1,
     confusionMatrix,
     perCategoryMetrics,
+    lane: laneForRun(entry) ?? undefined,
   };
 
   if (validationRows.length > 0) {

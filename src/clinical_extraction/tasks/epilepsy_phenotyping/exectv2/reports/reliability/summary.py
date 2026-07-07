@@ -19,22 +19,24 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.scoring import (
     jaccard as pairwise_jaccard,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
+    ReliabilityRun,
+)
 
 
 def latest_run_check() -> dict[str, Any]:
-    rich_deepseek = run_ref(next(run for run in RICH_SCHEMA_RUNS if "deepseek" in run.candidate))
-    rich_qwen = run_ref(next(run for run in RICH_SCHEMA_RUNS if "qwen" in run.candidate))
-    active_deepseek = run_ref(
-        next(run for run in ACTIVE_LLM_ONLY_RUNS if "deepseek" in run.candidate)
-    )
-    active_qwen = run_ref(next(run for run in ACTIVE_LLM_ONLY_RUNS if "qwen" in run.candidate))
+    # Emit one RunRef per non-control run in each surface. The catalog
+    # (catalog.yaml) is the single source of run identity and model_label;
+    # the frontend renders a column per distinct model_label, so adding a
+    # new model to the catalog automatically appears here without code
+    # changes. Control runs (performance/simplicity controls) are excluded
+    # because they are not "latest model" diagnostics.
     return {
         "surfaces": [
             {
                 "surface_id": "rich_schema_reliability",
                 "surface_label": "Rich-schema holistic finding assembly reliability scorecard",
-                "latest_deepseek": rich_deepseek,
-                "latest_qwen": rich_qwen,
+                "latest_runs": [run_ref(run) for run in RICH_SCHEMA_RUNS if not _is_control(run)],
                 "replacement_policy": "same-surface comparators retained",
                 "rationale": (
                     "These are the final dev140 non-GPT diagnostics for the "
@@ -44,8 +46,7 @@ def latest_run_check() -> dict[str, Any]:
             {
                 "surface_id": "active_llm_only",
                 "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
-                "latest_deepseek": active_deepseek,
-                "latest_qwen": active_qwen,
+                "latest_runs": [run_ref(run) for run in ACTIVE_LLM_ONLY_RUNS if not _is_control(run)],
                 "replacement_policy": "reported separately; different claim surface",
                 "rationale": (
                     "Phase 6 uses model-emitted de-duplicated clinical facts, "
@@ -55,6 +56,12 @@ def latest_run_check() -> dict[str, Any]:
             },
         ]
     }
+
+
+def _is_control(run: ReliabilityRun) -> bool:
+    """A control run (performance/simplicity control) is not a latest-model diagnostic."""
+
+    return "control" in run.role.lower()
 
 
 def family_error_table(summaries: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:

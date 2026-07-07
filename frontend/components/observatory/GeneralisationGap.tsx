@@ -2,6 +2,7 @@
 
 import { Mountain, AlertTriangle } from "lucide-react";
 import type { RunSummary } from "@/lib/types";
+import { familyLabel } from "@/lib/plainLanguageLabels";
 
 interface GeneralisationGapProps {
   summaries: RunSummary[];
@@ -10,20 +11,6 @@ interface GeneralisationGapProps {
 function fmt(n: number): string {
   return `${(n * 100).toFixed(1)}%`;
 }
-
-const FAMILY_LABELS: Record<string, string> = {
-  rules_only: "Rules",
-  llm_only_direct_labeler: "LLM Direct",
-  hybrid_structured_events: "LLM Events",
-  llm_structured_events: "LLM Events",
-  llm_first_direct_extractor: "LLM Direct",
-  llm_heavy_clinical_frequency_reasoner: "LLM Heavy",
-  llm_heavy_evidence_selection_with_deterministic_adapters: "LLM Heavy+Det",
-  llm_replacement_postprocessing_ablation: "LLM Repl",
-  reset_clinical_assessment_pipeline: "Reset Hybrid",
-  hybrid_clinical_frequency_state_graph: "Hybrid Graph",
-  dspy_final_selection_adjudicator: "DSPY Adjudicator",
-};
 
 const TICKS = [0, 0.25, 0.5, 0.75, 1.0];
 
@@ -87,7 +74,7 @@ export default function GeneralisationGap({ summaries }: GeneralisationGapProps)
             const test = summary.testMetrics!;
             const puristGap = val.puristAccuracy - test.puristAccuracy;
             const pragmaticGap = val.pragmaticAccuracy - test.pragmaticAccuracy;
-            const familyLabel = FAMILY_LABELS[summary.pipelineFamily] ?? summary.pipelineFamily;
+            const archFamily = familyLabel(summary.pipelineFamily);
             const variant = summary.runId
               .replace(/^gan2026_/, "")
               .replace(/_2026-.*$/, "");
@@ -101,12 +88,12 @@ export default function GeneralisationGap({ summaries }: GeneralisationGapProps)
                     style={{ width: maxLabelWidth }}
                     title={variant}
                   >
-                    {familyLabel}
+                    {archFamily}
                   </span>
                   <span className="text-[10px] text-muted truncate">{variant}</span>
                   <span className="ml-auto text-[10px] font-mono text-error">
                     Δ {fmt(puristGap)}
-                    <span className="text-muted ml-1">({fmt(pragmaticGap)} pragm.)</span>
+                    <span className="text-muted ml-1">({fmt(pragmaticGap)} lenient)</span>
                   </span>
                 </div>
 
@@ -173,7 +160,7 @@ export default function GeneralisationGap({ summaries }: GeneralisationGapProps)
 
         {/* Axis label */}
         <div className="flex justify-center mt-1" style={{ marginLeft: maxLabelWidth }}>
-          <span className="text-[9px] uppercase tracking-widest text-muted">Purist Accuracy</span>
+          <span className="text-[9px] uppercase tracking-widest text-muted">Strict label match</span>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
   "dataset": "gan2026",
   "generated_on": "2026-06-26",
   "metric": "purist_accuracy",
-  "metric_label": "Purist accuracy",
+  "metric_label": "Strict label match",
   "method": "Cumulative stage ladder",
   "method_note": "validation · replay only · no model calls · 2026-06-26",
   "split": "validation",

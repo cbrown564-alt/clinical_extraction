@@ -216,6 +216,13 @@ export interface PipelineTrace {
 
 export type ClinicalTask = "gan2026" | "exectv2";
 
+/**
+ * Observatory lane for a registry entry, derived from `registry_roles`.
+ * Production = promoted architecture; ceiling/floor = comparators shown for
+ * context. See `frontend/lib/observatoryLanes.ts`.
+ */
+export type LaneId = "production" | "ceiling" | "floor";
+
 export interface RegistryEntry {
   task?: ClinicalTask;
   run_id: string;
@@ -231,6 +238,19 @@ export interface RegistryEntry {
   model_role?: string;
   split?: string;
   decision?: string;
+  // Conditionally-emitted by the backend (see to_json_record): present only when
+  // non-empty / non-null / non-false. Admit them so the registry-driven UI can
+  // read roles, roles, comparison_role, etc. without casting.
+  registry_roles?: string[];
+  comparison_role?: string;
+  display_label?: string | null;
+  surface_as_architecture?: boolean;
+  primary_metrics?: Record<string, unknown>;
+  replay_status?: string;
+  repair_mode?: string | null;
+  evidence_validity?: string | null;
+  supersedes?: string[];
+  superseded_by?: string | null;
 }
 
 export interface RegistryResponse {

@@ -120,9 +120,32 @@ function ComputedReliabilityPanel({
   const calibration = computed.calibration_proxy;
   const routing = computed.review_routing;
   const operatingPoints = routing.operating_points;
-  const activeRows = computed.active_llm_only_readout.filter((row) =>
-    row.model_label.includes("DeepSeek") || row.model_label.includes("Qwen")
+
+  // Derive the set of non-GPT comparison models from the registry/catalog-driven
+  // latest_run_check surfaces rather than hardcoding model names. The active
+  // LLM-only transfer rows are filtered to exactly those surfaced models.
+  const surfacedModels = new Set(
+    computed.latest_run_check.surfaces.flatMap((surface) =>
+      surface.latest_runs.map((run) => run.model_label)
+    )
   );
+  const activeRows = computed.active_llm_only_readout.filter((row) =>
+    surfacedModels.has(row.model_label)
+  );
+
+  // Stable column order: distinct model_labels in order of first appearance
+  // across all surfaces.
+  const modelColumns = computed.latest_run_check.surfaces.flatMap((surface) =>
+    surface.latest_runs.map((run) => run.model_label)
+  );
+  const seenModels = new Set<string>();
+  const orderedModels: string[] = [];
+  for (const label of modelColumns) {
+    if (!seenModels.has(label)) {
+      seenModels.add(label);
+      orderedModels.push(label);
+    }
+  }
 
   return (
     <section className="space-y-3">
@@ -325,15 +348,18 @@ function ComputedReliabilityPanel({
       <div className="overflow-hidden rounded-md border border-border bg-surface">
         <div className="border-b border-border px-4 py-3">
           <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-            Latest DeepSeek / Qwen Check
+            Latest Model Check
           </h2>
         </div>
         <table className="w-full border-collapse text-[11px]">
           <thead>
             <tr className="border-b border-border bg-surface-raised/60 text-[10px] uppercase tracking-wider text-muted">
               <th className="px-3 py-2 text-left font-semibold">Surface</th>
-              <th className="px-3 py-2 text-left font-semibold">DeepSeek</th>
-              <th className="px-3 py-2 text-left font-semibold">Qwen</th>
+              {orderedModels.map((label) => (
+                <th key={label} className="px-3 py-2 text-left font-semibold">
+                  {label}
+                </th>
+              ))}
               <th className="px-3 py-2 text-left font-semibold">Policy</th>
             </tr>
           </thead>
@@ -343,12 +369,14 @@ function ComputedReliabilityPanel({
                 <td className="px-3 py-2 font-medium text-foreground">
                   {surface.surface_label}
                 </td>
-                <td className="px-3 py-2 font-mono text-muted">
-                  {surface.latest_deepseek.candidate}
-                </td>
-                <td className="px-3 py-2 font-mono text-muted">
-                  {surface.latest_qwen.candidate}
-                </td>
+                {orderedModels.map((label) => {
+                  const run = surface.latest_runs.find((r) => r.model_label === label);
+                  return (
+                    <td key={label} className="px-3 py-2 font-mono text-muted">
+                      {run ? run.candidate : "—"}
+                    </td>
+                  );
+                })}
                 <td className="px-3 py-2 text-muted">{surface.replacement_policy}</td>
               </tr>
             ))}

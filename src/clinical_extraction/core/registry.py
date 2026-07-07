@@ -47,6 +47,9 @@ RegistryRole = Literal[
     "reliability_scorecard",
     "negative_attribution",
     "historical_lineage",
+    "production_winner",
+    "ceiling_comparator",
+    "floor_comparator",
 ]
 
 MetricValue = int | float | str | None | list[int | float | str | None]
@@ -91,6 +94,9 @@ REGISTRY_ROLES: frozenset[RegistryRole] = frozenset(
         "reliability_scorecard",
         "negative_attribution",
         "historical_lineage",
+        "production_winner",
+        "ceiling_comparator",
+        "floor_comparator",
     )
 )
 
