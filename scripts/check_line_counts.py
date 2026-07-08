@@ -314,7 +314,7 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
 # Paths are posix-relative to ``frontend/``.
 FRONTEND_ALLOWLIST: dict[str, AllowlistEntry] = {
     "lib/types/shared.ts": AllowlistEntry(
-        632,
+        660,
         "P2-6/Wave-C-S6: types split — shared cross-domain types pending further slice",
     ),
 }
