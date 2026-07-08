@@ -38,6 +38,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.hybrid.closed_option
     PROV_LLM_CLOSED_OPTION,
     assemble_direction,
     build_direction_menu,
+    build_magnitude_menu,
+    has_magnitude_regex_match,
     parse_selection,
 )
 
@@ -124,6 +126,87 @@ class TestAssembleDirection:
         # Menu-membership check: an id not in the menu resolves to Same.
         menu = build_direction_menu("no info")
         label, _prov = assemble_direction("C99-not-real", menu)
+        assert label == "Same"
+
+
+# --------------------------------------------------------------------------------------
+# 1b. Magnitude-complement library contract tests (no LLM).
+#     The magnitude menu / trigger / selector for the 07-08 complement probe.
+# --------------------------------------------------------------------------------------
+
+
+class TestBuildMagnitudeMenu:
+    def test_menu_carries_magnitude_vocab_plus_abstain_only(self):
+        # The magnitude menu is the strict subset {Frequent, Infrequent, Same} +
+        # ABSTAIN. Direction labels (Increased/Decreased) are NEVER on this menu --
+        # that is the complement's whole point (it asks a magnitude-only question).
+        menu = build_magnitude_menu("No seizure information here at all.")
+        labels = [entry["label"] for entry in menu]
+        assert labels[:-1] == ["Frequent", "Infrequent", "Same"]
+        assert labels[-1] == ABSTAIN
+        # Direction labels must not appear.
+        assert "Increased" not in labels
+        assert "Decreased" not in labels
+
+    def test_menu_candidate_ids_are_unique_and_abstain_is_last(self):
+        menu = build_magnitude_menu("anything")
+        ids = [entry["candidate_id"] for entry in menu]
+        assert len(ids) == len(set(ids))
+        assert ids[-1] == ABSTAIN
+        # magnitude menu is exactly 4 entries (3 labels + ABSTAIN).
+        assert len(menu) == 4
+
+    def test_menu_anchors_evidence_when_a_magnitude_cue_matches(self):
+        # The "frequent" regex should match and anchor that label's evidence span.
+        text = "She has frequent seizures during the day."
+        menu = build_magnitude_menu(text)
+        freq = next(e for e in menu if e["label"] == "Frequent")
+        assert "frequent" in freq["evidence_span"].lower()
+        # Direction labels are not present so they carry no evidence here.
+        assert "Increased" not in [e["label"] for e in menu]
+
+    def test_menu_no_cue_marker_when_no_magnitude_matches(self):
+        # With no magnitude cue, magnitude labels carry the no-cue marker (non-empty).
+        text = "Seizure frequency has increased."  # a direction cue, not magnitude
+        menu = build_magnitude_menu(text)
+        for entry in menu[:-1]:
+            assert entry["evidence_span"]  # non-empty (no-cue marker fills it)
+        assert menu[-1]["evidence_span"] == ""  # ABSTAIN carries no evidence
+
+
+class TestHasMagnitudeRegexMatch:
+    def test_true_when_frequent_matches(self):
+        assert has_magnitude_regex_match("He has frequent seizures weekly.") is True
+
+    def test_true_when_infrequent_matches(self):
+        assert has_magnitude_regex_match("Her seizures are infrequent now.") is True
+
+    def test_false_when_only_a_direction_cue_matches(self):
+        # "increased" is a direction cue, not a magnitude cue -> trigger is False.
+        # This is the core design choice: the complement fires only on letters where
+        # the *magnitude* regexes were silent, even if a direction regex matched.
+        assert has_magnitude_regex_match("Seizure frequency has increased.") is False
+
+    def test_false_when_no_change_cue_matches(self):
+        assert has_magnitude_regex_match("No seizure information here at all.") is False
+
+
+class TestMagnitudeAssembleReuse:
+    # parse_selection + assemble_direction are reused unchanged on the magnitude
+    # menu -- they work generically on any candidate_id menu. Pin that contract.
+
+    def test_assemble_maps_magnitude_id_to_its_label(self):
+        menu = build_magnitude_menu("frequent seizures")
+        freq_id = next(e["candidate_id"] for e in menu if e["label"] == "Frequent")
+        label, prov = assemble_direction(freq_id, menu)
+        assert label == "Frequent"
+        assert prov == PROV_LLM_CLOSED_OPTION
+
+    def test_assemble_none_id_still_resolves_to_same(self):
+        # Abstention on the magnitude menu resolves to Same (the neutral bucket),
+        # the same convention as the direction menu.
+        menu = build_magnitude_menu("no info")
+        label, _prov = assemble_direction(None, menu)
         assert label == "Same"
 
 

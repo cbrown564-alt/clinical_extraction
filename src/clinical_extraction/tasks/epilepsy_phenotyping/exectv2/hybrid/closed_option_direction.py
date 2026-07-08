@@ -184,3 +184,135 @@ def assemble_direction(cid: str | None, menu: list[dict[str, str]]) -> tuple[str
         if entry["candidate_id"] == cid:
             return entry["label"], PROV_LLM_CLOSED_OPTION
     return "Same", PROV_LLM_CLOSED_OPTION
+
+
+# --------------------------------------------------------------------------------------
+# Magnitude-complement contract (2026-07-08).
+#
+# The direction selector (above) picks one of the conflated 5-value vocab; the
+# deconflation probe (``sf_direction_vocab_deconflation_2026-07-08``) measured that
+# the selector systematically abandons the magnitude labels (Frequent/Infrequent),
+# losing ~13 magnitude facts the deterministic rules catch -- but its magnitude
+# *precision* (0.9515) exceeds the rules' (0.9328). The complement below restricts a
+# magnitude-only selector to letters where the deterministic magnitude regexes had
+# no match, so the LLM is asked a magnitude-only question on a magnitude-only menu
+# (3 labels + ABSTAIN) only where the rules are silent. ``parse_selection`` and
+# ``assemble_direction`` are reused unchanged: they already work generically on any
+# candidate_id menu, and ``Same`` is the neutral / abstain outcome on both menus.
+# --------------------------------------------------------------------------------------
+
+# The magnitude-only closed vocab: a strict subset of DIRECTION_VOCAB. Direction
+# labels (Increased/Decreased) are deliberately absent -- the complement asks a
+# magnitude question, never a direction question.
+MAGNITUDE_VOCAB: tuple[str, ...] = ("Frequent", "Infrequent", "Same")
+
+# The rule_ids whose builders emit the magnitude labels (from change.py). Used by
+# ``has_magnitude_regex_match`` (the complement trigger) and ``build_magnitude_menu``
+# (the evidence anchors). Same CHANGE_EXTRACT_IMPLS dict build_direction_menu
+# already iterates.
+MAGNITUDE_RULE_IDS: frozenset[str] = frozenset({"change.frequent", "change.infrequent"})
+
+
+def has_magnitude_regex_match(letter_text: str) -> bool:
+    """Whether any deterministic magnitude regex fired on this letter.
+
+    The complement trigger: the magnitude selector fires only on letters where
+    this is **False** -- where the deterministic ``change.frequent`` /
+    ``change.infrequent`` regexes were silent. A direction-only cue (e.g.
+    "seizure frequency has increased") does **not** count: the complement
+    isolates the magnitude axis, so only magnitude regexes gate it.
+    """
+
+    for rule_id in MAGNITUDE_RULE_IDS:
+        impl = CHANGE_EXTRACT_IMPLS.get(rule_id)
+        if impl is not None and impl.pattern.search(letter_text):
+            return True
+    return False
+
+
+def build_magnitude_menu(letter_text: str) -> list[dict[str, str]]:
+    """Emit the magnitude-only closed-option menu for one letter.
+
+    Strict analogue of :func:`build_direction_menu`, but the menu is the 3-label
+    magnitude vocab (``Frequent``/``Infrequent``/``Same``) + ``ABSTAIN``, never the
+    direction labels. The LLM picks a magnitude label verbatim or abstains; it
+    cannot emit ``Increased``/``Decreased`` because they are not on the menu. The
+    evidence anchor attached to each magnitude label is the rules/change.py
+    magnitude-regex span if one matched, otherwise the explicit no-cue marker.
+    ``Same`` is the neutral / abstain outcome (no magnitude stated), matching the
+    direction menu's convention.
+    """
+
+    menu: list[dict[str, str]] = []
+    # First pass: collect the first magnitude-regex evidence span per label (if any).
+    evidence_by_label: dict[str, str] = {}
+    for rule_id in MAGNITUDE_RULE_IDS:
+        label = _RULE_TO_LABEL.get(rule_id)
+        if label is None or label in evidence_by_label:
+            continue
+        impl = CHANGE_EXTRACT_IMPLS.get(rule_id)
+        if impl is None:
+            continue
+        m = impl.pattern.search(letter_text)
+        if m:
+            evidence_by_label[label] = m.group(0).strip()[:160]
+    # Emit every magnitude label, with its evidence or a no-cue marker.
+    for label in MAGNITUDE_VOCAB:
+        ev = evidence_by_label.get(label, "(no explicit cue in text)")
+        menu.append({"candidate_id": f"C{len(menu)}", "label": label, "evidence_span": ev})
+    menu.append({"candidate_id": ABSTAIN, "label": ABSTAIN, "evidence_span": ""})
+    return menu
+
+
+class ClosedOptionMagnitudeSelectorSignature(dspy.Signature):
+    """You read a clinical letter and a candidate menu of seizure-frequency
+    *magnitude* labels.
+
+    Select ONE candidate_id from the menu that best describes the
+    frequency-MAGNITUDE of the patient's seizures (how frequent they are in
+    absolute terms, NOT whether they have changed), or select ABSTAIN if the
+    letter does not state a clear magnitude.
+
+    You are NOT being asked about change-direction. "Increased"/"Decreased" are
+    NOT on the menu because they are direction labels, not magnitudes. If the
+    letter only says the frequency changed direction but states no magnitude,
+    select "Same" (no magnitude stated) or ABSTAIN.
+
+    HARD CONSTRAINTS:
+    - Return a candidate_id that appears in the menu exactly. Never invent,
+      renumber, or free-write a label.
+    - If you are not confident, select ABSTAIN.
+    - Return a JSON object matching the output schema exactly. No markdown.
+    """
+
+    letter_text: str = dspy.InputField(desc="One clinical letter.")
+    candidate_menu: str = dspy.InputField(
+        desc="JSON list of {candidate_id, label, evidence_span}. Pick one candidate_id."
+    )
+    output_schema: str = dspy.InputField(desc="Required JSON schema. Match it exactly.")
+    selection_json: str = dspy.OutputField(
+        desc='One JSON object {"selected_candidate_id": "...", "selection_mode": '
+        '"single_candidate|no_reliable_candidate|ambiguous"}. No markdown.'
+    )
+
+
+class ClosedOptionMagnitudeSelector(dspy.Module):
+    """Magnitude-only counterpart of :class:`ClosedOptionDirectionSelector`.
+
+    Same dspy G32 pick-from-menu-or-abstain contract, but the menu is the
+    magnitude-only 3-label vocab. Output is parsed by the shared
+    :func:`parse_selection` and assembled by :func:`assemble_direction` -- both
+    menu-agnostic.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.select = dspy.Predict(ClosedOptionMagnitudeSelectorSignature)
+
+    def forward(self, letter_text: str, candidate_menu: str) -> dspy.Prediction:
+        out = self.select(
+            letter_text=letter_text,
+            candidate_menu=candidate_menu,
+            output_schema=SELECTION_SCHEMA_JSON,
+        )
+        return dspy.Prediction(selection_json=str(getattr(out, "selection_json", "") or ""))

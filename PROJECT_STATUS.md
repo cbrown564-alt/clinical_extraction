@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-07-06
+Last updated: 2026-07-08
 
 ## Plain-language snapshot (5 bullets)
 
@@ -102,6 +102,65 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-08: **SF magnitude-complement probe landed — TRAILS RULES, closes
+  pathway #1 (13 gpt-4.1-mini calls, dev140, replay).** The highest-leverage
+  production pathway from the 07-08 queue. The deconflation probe (just below)
+  measured the selector's magnitude precision edge (0.9515 vs rules 0.9328)
+  and flagged the complement design as "precisely motivated." This probe tests
+  it directly: fire a **magnitude-only** closed-option selector (3-label
+  Frequent/Infrequent/Same + ABSTAIN menu; the LLM picks a magnitude verbatim
+  or abstains, never answers the direction question) **only** on the 13/25
+  direction-in-play letters where the deterministic `change.frequent`/
+  `change.infrequent` regexes had no match. **Verdict: COMPLEMENT TRAILS RULES**
+  — magnitude F1 **0.9244** vs rules **0.9447** (−0.0203); `state_profile`
+  byte-identical (0.9338); all three anchors reproduced to ≤0.0001 drift.
+  **The precision edge did NOT transfer:** the complement's magnitude precision
+  dropped to **0.9016** — below both the rules (0.9328) and the standalone
+  selector (0.9515) — and it introduced 4 new false positives. The 0.9515
+  figure was a selection effect on the easy letters the rules already cover;
+  the no-match subset is the hard cases where the LLM's magnitude judgment is
+  weakest. Recall nearly matched (110/116 vs 111/116) but the precision loss
+  dominates. **No contract design** (5-label direction, 3-label magnitude, full
+  replacement, complement-on-no-match) recovers the magnitude recall gap
+  without paying a larger precision cost. The deterministic `rules/change.py`
+  magnitude regexes remain the magnitude source of record; 0.9447 is the
+  ceiling on this surface. The "deterministic-LLM complementarity" framing is
+  not available for SF magnitude (the Rx split-dependent inversion remains the
+  one complementarity case). Driver `scripts/run_exectv2_sf_magnitude_complement.py`;
+  new library `build_magnitude_menu`/`has_magnitude_regex_match`/
+  `ClosedOptionMagnitudeSelector` in `hybrid/closed_option_direction.py`
+  (additive; `parse_selection`/`assemble_direction` reused); 10 new tests (file
+  now 28). Results:
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_complement_results_2026-07-08.md`;
+  hypothesis `sf_magnitude_complement_2026-07-08` (entry 39).
+- 2026-07-08: **SF `FrequencyChange` vocab deconflation probe landed (zero LLM
+  calls).** Synthesis probe for the two 07-06 SF findings. Projects the gold
+  `FrequencyChange` vocab (a conflated change-direction + frequency-magnitude
+  axis per Appendix L987) onto two orthogonal scoring axes — direction
+  (Increased/Decreased/Same; magnitude labels project to `same`) and magnitude
+  (Frequent/Infrequent; everything else `none`) — and re-scores the rules arm
+  (v08 hybrid) vs the selector arm (closed-option hybrid integration output).
+  **Verdict: MAGNITUDE IS PART OF THE GAP, NOT ALL OF IT.** The conflated gap
+  (+0.0564: rules 0.8897 / selector 0.8333) shrinks 60% on the direction-only
+  axis (to +0.0226: 0.8953 / 0.8727) but does not collapse; the magnitude gap is
+  +0.0497 (0.9447 / 0.8950). The selector drops 13 magnitude facts the rules
+  catch (recall 0.845 vs 0.957) — the integration ledger's "selector abandons
+  Frequent/Infrequent" signature, measured cleanly — while its magnitude
+  *precision* is higher (0.9515 vs 0.9328). Roughly two-thirds of the rules'
+  advantage is the magnitude axis; one-third is a genuine direction residual the
+  conflation does not explain. **Partially confirms** the integration doc's
+  vocab-conflation mechanism reading (most of the gap) **without fully
+  confirming** it (a real direction residual remains). Partially reconciles the
+  standalone refute (item 2: +0.0552) with the integration negative (−0.0563):
+  both stand; this attributes most of the integration gap to the vocab and
+  isolates a real direction residual. Anchors reproduced exactly (drift 0.0000);
+  `state_profile` byte-identical across arms (0.9338). New companion metrics
+  `state_profile_direction_deconf` / `state_profile_magnitude` added alongside
+  the unchanged `state_profile_directional` (scoring rekey; gold untouched).
+  Driver
+  `scripts/run_exectv2_sf_direction_vocab_deconflation.py`; results
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_direction_vocab_deconflation_results_2026-07-08.md`;
+  hypothesis `sf_direction_vocab_deconflation_2026-07-08` (entry 38).
 - 2026-07-06: **Predecessor-synthesis follow-up item 5 — raw-vs-projected
   decomposition landed (zero LLM calls).** Plan:
   `docs/plans/predecessor_synthesis_followups_2026-07-06.md` item 5 — **the last
@@ -561,6 +620,83 @@ Current evidence stack:
 
 ### Next
 
+- **NEW 2026-07-08:** four follow-up pathways from the predecessor-synthesis
+  follow-ups (07-06) and the SF vocab-deconflation probe (07-08). Pathway #1
+  (the deconflation synthesis) is **done**; pathway #1 below (the magnitude
+  complement — the highest-leverage production pathway) is also **done
+  (TRAILS RULES, closed as a negative — see the Now entry)**; the remaining
+  three are ordered by how directly they exploit the 48-hour surprises. The
+  complement's negative sharpens them: the selector's magnitude precision edge
+  (0.9515) does *not* transfer to the no-match letters (drops to 0.9016), so
+  any further selector-based magnitude work is unlikely to help — pathways #2
+  and #4 (gold-level audit + manuscript attribution) are now the higher-value
+  routes.
+  1. ~~**Test the closed-option selector as a magnitude *complement* to the
+     rules, not a replacement.**~~ **DONE 2026-07-08 — COMPLEMENT TRAILS RULES**
+     (magnitude F1 0.9244 vs rules 0.9447, −0.0203). The selector's precision
+     edge is a selection effect that does not transfer to the no-match (hard)
+     letters; the magnitude recall gap is a genuine capacity gap no contract
+     design closes. See the Now entry + results
+     `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_complement_results_2026-07-08.md`.
+  2. **Attack the vocab conflation at the *gold* level — is the `FrequencyChange`
+     magnitude/direction conflation itself a gold-annotation defect? Free (dev140
+     gold audit, no LLM calls).** The deconflation probe showed the conflation
+     explains ~60% of the integration gap but left a residual direction gap
+     (+0.0226). The next question is whether the magnitude labels
+     (Frequent/Infrequent) *belong* in `FrequencyChange` at all, or whether the
+     guideline's Appendix L987 mapping (marked "Aligned") is itself a
+     representational error — "under control"/"well controlled" ⇒ Infrequent
+     puts a magnitude reading into a change-direction field. Audit the dev140
+     gold annotations: for each Frequent/Infrequent label, classify whether the
+     source text expresses a change-direction (in which case the magnitude
+     label is a mislabeling) or a pure magnitude (in which case it belongs but
+     on a different axis). Outcome: **(a) the magnitude labels are predominantly
+     mislabeled direction** — the gold schema has a representational defect
+     worth a manuscript caveat and a candidate guideline-correction ticket
+     (frozen corpus, so documented not fixed); **(b) they are genuinely
+     magnitude** — the conflation is by design (the field mixes two clinical
+     notions deliberately), and the residual direction gap is a pure model gap.
+     Either resolves the ambiguity the deconflation probe surfaced. Uses the
+     `/gold-noise` inspection tab (item 1 of the predecessor synthesis) and the
+     dev140 row-inspection allowance; zero LLM calls.
+  3. **Pin down why dspy's near-ceiling did not transfer to our deterministic
+     extractor on Investigations. Free design work + small costed validation.**
+     The Inv no-model oracle (07-06) found our deterministic-only extractor
+     scores 0.5116 dev140 vs the hybrid's 0.9132 — a −0.40 gap, the
+     contribution-bearing family — and noted dspy reports 90.4–96.7% near-
+     ceiling, which does *not* transfer to our deterministic extractor. The
+     open question: is dspy's number annotation-derived (like their Rx oracle,
+     which reproduces 100% by construction from gold), or does their
+     adjudication layer do what our verifier + pending-test suppression +
+     completed-neuro lens does? If the former, the Inv comparison is
+     apples-to-oranges and our −0.40 is the honest "LLM contributes here"
+     number. If the latter, the Inv finding is the single place our
+     architecture's LLM lane is doing irreplaceable work, and the manuscript
+     should foreground it. Resolve by building the same two-surface oracle
+     dspy reports (annotation-derived `gold_as_prediction` + extractor-derived
+     `deterministic_only`) on the Inv family and checking which surface dspy's
+     90.4% corresponds to — reuses the existing Inv oracle driver
+     (`experiments/exectv2_investigations_no_model_oracle_2026-07-06.py`);
+     ~0 additional LLM calls (deterministic replay) plus a small
+     cross-codebase read of the sibling-repo's Inv scorer.
+  4. **Lock in the manuscript attribution-discipline deliverables — several are
+     drop-in ready. Free (documentation).** Multiple pieces are built and
+     waiting to be assembled into the §4 attribution narrative, explicitly
+     designed to preempt dspy's bridge-inflation critique by disclosure rather
+     than defense: (a) the raw-emission column (raw / post-lens / headline per
+     family, item 5); (b) the per-family lens-vs-bridge attribution; (c) the
+     `multiple`-sentinel disclosure paragraph (item 6 — the unknown-vs-counted
+     distinction moves ~5pp, the 2-vs-3 axis is negligible); (d) the GEPA
+     scope-correction note (item 7 — evolved seeds don't feed the v08 hybrid,
+     so the 0.9189 headline is policy-wall-free); (e) the new deconflated
+     2-axis attribution table (07-08: direction 0.8953/0.8727, magnitude
+     0.9447/0.8950) plus the complement column now in hand (magnitude 0.9244,
+     confirming the rules' 0.9447 is the ceiling). The remaining "uncomfortable
+     number" to surface is SF
+     full-200 raw (0.6592) — the item-5 docs already argue for stating it. This
+     is a writing task, but it is the one that converts the 48-hour probe
+     program into paper-ready tables and the one most at risk of being left
+     half-done if not tracked as an explicit deliverable.
 - **NEW 2026-07-03:** three follow-up pathways from the Rx split-dependent
   inversion, now sharpened by the 07-03 inversion-generalization probe (which
   REFUTED the inversion on Inv and SF — see the Now entry and the synthesis at
@@ -820,6 +956,18 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-08: **SF magnitude-complement probe complete — TRAILS RULES, closes
+  pathway #1** (see Now for the full entry). 13 gpt-4.1-mini calls dev140
+  replay. Magnitude-only closed-option selector (3-label Frequent/Infrequent/
+  Same + ABSTAIN) fired only on the 13/25 direction-in-play letters with no
+  magnitude regex match. Magnitude F1 0.9244 vs rules 0.9447 (−0.0203); the
+  selector's precision edge (0.9515) did NOT transfer to the no-match (hard)
+  letters (dropped to 0.9016, 4 new fp). The magnitude recall gap is a genuine
+  capacity gap no contract design recovers; `rules/change.py` remains the
+  magnitude source of record; 0.9447 is the ceiling. `state_profile` byte-
+  identical (0.9338); anchors exact. Hypothesis `sf_magnitude_complement_2026-07-08`
+  registered (entry 39). Results:
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_complement_results_2026-07-08.md`.
 - 2026-07-06: **Predecessor-synthesis follow-up item 5 — raw-vs-projected
   decomposition complete** (see Now for the full entry). Zero LLM calls; the
   cited 0.9189 dev / 0.8680 full decomposes per family into raw (0.8475 /
