@@ -205,3 +205,22 @@ class HardSliceMembershipRow(BaseModel):
 
 class HardSliceMembershipResponse(BaseModel):
     rows: list[HardSliceMembershipRow]
+
+
+# ── SeizureFrequency inspection ──
+#
+# Read-only gold-vs-prediction inspection for the SF entity. Like the
+# gold-noise block, inner payloads are permissive (``dict[str, Any]``) so the API
+# does not couple to the scorer-internal key/attribute shapes, which live in the
+# ``exectv2.scoring`` and ``exectv2.sf_inspection`` modules.
+
+
+class SfInspectionResponse(BaseModel):
+    generated_on: str
+    split: str
+    artifact: str
+    n_letters: int
+    n_with_errors: int
+    scorecard: dict[str, Any]
+    components: list[dict[str, Any]]
+    letters: list[dict[str, Any]]

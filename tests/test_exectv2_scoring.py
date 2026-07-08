@@ -24,8 +24,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     canonicalize_medication_name,
     clinical_headline_unit_keys,
+    frequency_state_direction_deconf,
     frequency_state_directional,
     frequency_state_faithful,
+    frequency_state_magnitude,
     headline_duplicate_tags,
     match_key,
     score_concept_identity,
@@ -441,6 +443,176 @@ def test_state_profile_directional_matches_state_profile_when_direction_agrees()
 
     assert score.state_profile.f1 == 1.0
     assert score.state_profile_directional.f1 == 1.0
+
+
+# ---------------------------------------------------------------------------
+# SF-3 (2026-07-08): deconflated direction/magnitude projection.
+#
+# The gold ``FrequencyChange`` vocab mixes change-direction
+# (Increased/Decreased/Same) and frequency-magnitude (Frequent/Infrequent) on a
+# single axis. The deconflated key builders project each annotation onto two
+# orthogonal axes so the contribution of each can be attributed separately. See
+# the SF-3 predeclaration under ``docs/experiments/exectv2/seizure_frequency/``.
+# ---------------------------------------------------------------------------
+
+
+def test_frequency_state_direction_deconf_projects_magnitude_labels_to_same() -> None:
+    # Count-bearing states pass through unchanged on the direction axis, exactly
+    # like frequency_state_directional.
+    assert frequency_state_direction_deconf({"NumberOfSeizures": "0"}) == "seizure-free"
+    assert frequency_state_direction_deconf({"NumberOfSeizures": "3"}) == "active-rate"
+    assert frequency_state_direction_deconf({}) == "unknown"
+    # A concrete count still takes precedence over a qualitative descriptor.
+    assert (
+        frequency_state_direction_deconf({"NumberOfSeizures": "0", "FrequencyChange": "Decreased"})
+        == "seizure-free"
+    )
+    # Change-direction labels carry their own direction.
+    assert frequency_state_direction_deconf({"FrequencyChange": "Increased"}) == "increased"
+    assert frequency_state_direction_deconf({"FrequencyChange": "Decreased"}) == "decreased"
+    assert frequency_state_direction_deconf({"FrequencyChange": "Same"}) == "same"
+    # The deconflation: magnitude labels carry NO direction signal, so they
+    # project to the direction-neutral `same` bucket, not their own value.
+    assert frequency_state_direction_deconf({"FrequencyChange": "Frequent"}) == "same"
+    assert frequency_state_direction_deconf({"FrequencyChange": "Infrequent"}) == "same"
+
+
+def test_frequency_state_magnitude_isolates_the_magnitude_axis() -> None:
+    # Count-bearing states and the absent case project to magnitude `none`.
+    assert frequency_state_magnitude({"NumberOfSeizures": "0"}) == "none"
+    assert frequency_state_magnitude({"NumberOfSeizures": "3"}) == "none"
+    assert frequency_state_magnitude({}) == "none"
+    # Change-direction labels carry no magnitude.
+    assert frequency_state_magnitude({"FrequencyChange": "Increased"}) == "none"
+    assert frequency_state_magnitude({"FrequencyChange": "Decreased"}) == "none"
+    assert frequency_state_magnitude({"FrequencyChange": "Same"}) == "none"
+    # The magnitude labels are the only values that populate the magnitude axis.
+    assert frequency_state_magnitude({"FrequencyChange": "Frequent"}) == "frequent"
+    assert frequency_state_magnitude({"FrequencyChange": "Infrequent"}) == "infrequent"
+
+
+def test_direction_deconf_still_scores_a_direction_disagreement_as_a_miss() -> None:
+    # The motivating case for the probe. Gold is a magnitude statement
+    # (Infrequent); the model answers the plain-English "direction" question
+    # (Decreased). The conflated state_profile_directional scores this a total
+    # miss (infrequent != decreased). The deconflated direction axis scores it a
+    # match: gold projects to direction `same` (magnitude carries no direction),
+    # and Decreased is... still `decreased`. So the *direction* miss the
+    # conflated metric registers is spurious for this pair.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Infrequent", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Decreased", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    # Conflated metric: a hard miss (different FrequencyChange values).
+    assert score.state_profile_directional.f1 == 0.0
+    # Deconflated direction axis: gold is `same` (magnitude), pred is `decreased`
+    # -> still a miss. (The model claimed a direction the gold did not; that is a
+    # real direction disagreement, NOT forgiven. What WOULD be forgiven is the
+    # reverse: gold Decreased, model Infrequent -- the model making no direction
+    # claim where gold did. See the next test.)
+    assert score.state_profile_direction_deconf.f1 == 0.0
+
+
+def test_direction_deconf_penalizes_direction_drop_where_conflated_saw_a_value_swap() -> None:
+    # The reconciliation case. Gold asserts a direction (Decreased); the model,
+    # reading the same sentence as a magnitude, emits Infrequent. Under the
+    # conflated metric this is a miss (decreased != infrequent). Under the
+    # deconflated *direction* axis the model made no direction claim (magnitude
+    # -> `same`), so the direction miss is genuine -- BUT the disagreement is now
+    # attributable to the vocab axis rather than counted as a flat direction
+    # error. The magnitude axis records the model's Infrequent as correct-on-
+    # magnitude only if gold also carried magnitude, which it did not here.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Decreased", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Infrequent", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    # Conflated metric: miss.
+    assert score.state_profile_directional.f1 == 0.0
+    # Direction axis: gold `decreased`, pred `same` -> miss (model dropped the
+    # direction). This is the "selector abandons magnitude labels" signature
+    # from the integration ledger, measured cleanly.
+    assert score.state_profile_direction_deconf.f1 == 0.0
+    # Magnitude axis: gold `none`, pred `infrequent` -> pred over-emits a
+    # magnitude gold did not assert -> precision-side miss (fp). f1 = 0.
+    assert score.state_profile_magnitude.f1 == 0.0
+
+
+def test_direction_deconf_matches_when_both_sides_make_the_same_magnitude_claim() -> None:
+    # Two magnitude labels agree -> direction axis matches (both `same`),
+    # magnitude axis matches (both the same magnitude value). The conflated
+    # metric also matches here; the deconflated metrics decompose the match.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Frequent", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Frequent", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.state_profile_directional.f1 == 1.0
+    assert score.state_profile_direction_deconf.f1 == 1.0
+    assert score.state_profile_magnitude.f1 == 1.0
+
+
+def test_direction_deconf_leaves_state_profile_unchanged() -> None:
+    # Guardrail: adding the projected metrics must not perturb the existing
+    # direction- and magnitude-blind state_profile, which keys only on the
+    # change-aware 4-way state. A direction disagreement both metrics see as a
+    # change must still score as a state_profile match.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Increased", CUI="C0494475"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "gtc", FrequencyChange="Decreased", CUI="C0494475"),),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.state_profile.f1 == 1.0
+    assert score.state_profile_direction_deconf.f1 == 0.0
 
 
 def test_concept_identity_recall_is_entity_agnostic_precision_home_tagged() -> None:

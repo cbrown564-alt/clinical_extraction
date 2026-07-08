@@ -91,6 +91,10 @@ export function fetchExectv2ComponentTransitions() {
   );
 }
 
+export function fetchExectv2SfInspection() {
+  return request<import("../types").SfInspectionResponse>("/exectv2/sf-inspection");
+}
+
 export function fetchGan2026ComponentAblation() {
   return request<import("../types").Gan2026ComponentAblationResponse>(
     "/gan2026/component-ablation"

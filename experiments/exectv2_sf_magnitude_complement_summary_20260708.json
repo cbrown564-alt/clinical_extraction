@@ -1,0 +1,71 @@
+{
+  "anchor_check": {
+    "anchors_reproduced": true,
+    "directional_drift": 2.0284697508921035e-05,
+    "expected_directional_f1": 0.8897,
+    "expected_magnitude_f1": 0.9447,
+    "expected_state_profile_f1": 0.9338,
+    "magnitude_drift": 1.9148936170165776e-05,
+    "state_profile_drift": 2.3529411764755537e-05
+  },
+  "baseline": {
+    "state_profile_directional_f1": 0.8897,
+    "state_profile_directional_fn": 15,
+    "state_profile_directional_fp": 16,
+    "state_profile_directional_precision": 0.8865,
+    "state_profile_directional_recall": 0.8929,
+    "state_profile_directional_tp": 125,
+    "state_profile_f1": 0.9338,
+    "state_profile_fn": 9,
+    "state_profile_fp": 9,
+    "state_profile_magnitude_f1": 0.9447,
+    "state_profile_magnitude_fn": 5,
+    "state_profile_magnitude_fp": 8,
+    "state_profile_magnitude_precision": 0.9328,
+    "state_profile_magnitude_recall": 0.9569,
+    "state_profile_magnitude_tp": 111,
+    "state_profile_precision": 0.9338,
+    "state_profile_recall": 0.9338,
+    "state_profile_tp": 127
+  },
+  "complement": {
+    "state_profile_directional_f1": 0.8602,
+    "state_profile_directional_fn": 20,
+    "state_profile_directional_fp": 19,
+    "state_profile_directional_precision": 0.8633,
+    "state_profile_directional_recall": 0.8571,
+    "state_profile_directional_tp": 120,
+    "state_profile_f1": 0.9338,
+    "state_profile_fn": 9,
+    "state_profile_fp": 9,
+    "state_profile_magnitude_f1": 0.9244,
+    "state_profile_magnitude_fn": 6,
+    "state_profile_magnitude_fp": 12,
+    "state_profile_magnitude_precision": 0.9016,
+    "state_profile_magnitude_recall": 0.9483,
+    "state_profile_magnitude_tp": 110,
+    "state_profile_precision": 0.9338,
+    "state_profile_recall": 0.9338,
+    "state_profile_tp": 127
+  },
+  "date": "2026-07-08",
+  "input_artifact": "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl",
+  "magnitude_counts_non_same": {
+    "Frequent": 1,
+    "Infrequent": 8
+  },
+  "magnitude_delta_vs_rules": -0.0203,
+  "mode": "replay",
+  "model": "openai/gpt-4.1-mini",
+  "n_complement_letters": 13,
+  "n_direction_in_play_letters": 25,
+  "n_magnitude_covered_letters": 12,
+  "n_selector_calls": 13,
+  "selection_mode_counts": {
+    "single_candidate": 13
+  },
+  "split": "dev140",
+  "state_profile_byte_identical": true,
+  "temperature": 0.0,
+  "verdict": "COMPLEMENT TRAILS RULES (magnitude F1 < 0.9447 - 0.005)"
+}

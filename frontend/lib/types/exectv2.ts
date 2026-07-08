@@ -474,4 +474,124 @@ export interface Exectv2ReliabilityScorecardResponse {
   computed_reliability?: Exectv2ComputedReliability;
 }
 
-export type ReliabilityScorecardResponse = Exectv2ReliabilityScorecardResponse;
+export type ReliabilityScorecardResponse = Exectv2ReliabilityScorecardResponse;
+
+// ── SeizureFrequency gold-vs-prediction inspection ──
+//
+// Served by GET /exectv2/sf-inspection. The payload is scorer-faithful: the
+// backend re-scores dev140 with the real score_frequency_state and aborts unless
+// the scorecard reproduces the published F1s, so these numbers can be trusted.
+
+export interface SfInspectionMetric {
+  f1: number;
+  precision: number;
+  recall: number;
+  tp: number;
+  fp: number;
+  fn: number;
+}
+
+/** component_name -> per-component metrics for the 11 FrequencyStateScores. */
+export type SfInspectionScorecard = Record<string, SfInspectionMetric>;
+
+export interface SfComponentMeta {
+  name: string;
+  info: string;
+}
+
+/** Per-mention row in one Layer B scoring component. */
+export interface SfMentionRow {
+  side: "gold" | "pred";
+  phrase: string;
+  counts: string;
+  frequency_change: string;
+  count_state: string;
+  projected_state: string;
+  key: string;
+  status: "tp" | "fp" | "fn" | "skip";
+}
+
+export interface SfLayerBComponent {
+  name: string;
+  info: string;
+  has_error: boolean;
+  verdict: "clean" | "err";
+  tp: number;
+  fp: number;
+  fn: number;
+  rows: SfMentionRow[];
+}
+
+/** One attribute comparison row in a Layer A pair. */
+export interface SfAttributeRow {
+  key: string;
+  gold: string;
+  pred: string;
+  validity: "ok" | "absent" | "illegal_value" | "illegal_attr" | "noise";
+  canonical: string;
+  match: "ok" | "bad" | "absent";
+}
+
+export interface SfLayerAPair {
+  label: string;
+  side: "pair" | "fn" | "fp";
+  gold_phrase: string;
+  gold_normalized: string;
+  pred_phrase: string;
+  pred_normalized: string;
+  phrase_match: "ok" | "bad" | "absent";
+  attributes: SfAttributeRow[];
+}
+
+export interface SfLineageOverrideItem {
+  applies_to: string;
+  prior_frequency_change: string;
+  assembled_magnitude: string;
+  selection_mode: string;
+  selected_candidate_id: string;
+}
+
+export interface SfLineageOverride {
+  applied: boolean;
+  /** Present when the LLM magnitude complement fired (applied === true). */
+  items?: SfLineageOverrideItem[];
+  /** Present when FrequencyChange differs from baseline but no ledger row exists. */
+  baseline?: string[];
+  complement?: string[];
+}
+
+export interface SfCandidateSpan {
+  text_hint: string;
+  candidate_type: string;
+  source: string;
+  evidence: string;
+}
+
+export interface SfLineage {
+  candidate_spans: SfCandidateSpan[];
+  override: SfLineageOverride | null;
+}
+
+export interface SfInspectionLetter {
+  letter_id: string;
+  has_activity: boolean;
+  gold_count: number;
+  pred_count: number;
+  total_errors: number;
+  direction_errors: { fp: number; fn: number };
+  magnitude_errors: { fp: number; fn: number };
+  layer_a: { pairs: SfLayerAPair[] };
+  layer_b: { components: SfLayerBComponent[] };
+  lineage: SfLineage;
+}
+
+export interface SfInspectionResponse {
+  generated_on: string;
+  split: string;
+  artifact: string;
+  n_letters: number;
+  n_with_errors: number;
+  scorecard: SfInspectionScorecard;
+  components: SfComponentMeta[];
+  letters: SfInspectionLetter[];
+}

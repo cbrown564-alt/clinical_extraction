@@ -189,6 +189,8 @@ export async function fetchMockData<T>(path: string, init?: RequestInit): Promis
     mockPath = "/mock-data/gan2026/component-transitions.json";
   } else if (path === "/exectv2/reliability-scorecard") {
     mockPath = "/mock-data/exectv2/reliability-scorecard.json";
+  } else if (path.startsWith("/exectv2/sf-inspection")) {
+    mockPath = "/mock-data/exectv2/sf-inspection.json";
   } else if (path === "/gan2026/reliability-scorecard") {
     mockPath = "/mock-data/gan2026/reliability-scorecard.json";
   } else if (path.startsWith("/artifacts/")) {

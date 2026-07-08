@@ -977,6 +977,19 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-08: **ExECTv2 SF inspection promoted to a first-class frontend route**
+  (`/exectv2-sf-inspection`, top-level nav tab). Replaced the standalone 3.2 MB
+  `exectv2_sf_inspection_dev140_20260708.html` with a live route that renders the
+  same Layer A (schema attributes) / Layer B (11 scoring components) / lineage
+  depth through the existing design system, using the `GoldNoisePanel` master-
+  detail pattern. Architectural seam: all scorer computation and the
+  faithfulness gate (re-scores dev140, aborts unless F1 reproduces
+  0.9338 / 0.8602 / 0.9244 within 1e-4) stay in a new Python module
+  (`exectv2/sf_inspection.py`) — only presentation moved to React. New backend
+  endpoint `GET /exectv2/sf-inspection` serves the process-cached payload; the
+  offline HTML renderer was refactored to delegate to the same module (single
+  source of truth, ~600 lines of duplicated computation removed). 13 new tests
+  pin the gate + payload shape. Lint/typecheck/tests all green.
 - 2026-07-08: **SF magnitude gold-annotation audit complete — MAGNITUDE LABELS
   ARE GENUINE, closes pathway #2** (see Now for the full entry). Zero LLM calls,
   zero scorer calls; read-only inspection of all 19 dev140 `Frequent`/
