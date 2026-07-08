@@ -2,14 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FileSearch,
-  Gauge,
-  Info,
-  Maximize2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, FileSearch, Gauge, Info } from "lucide-react";
 import { fetchExectv2SfInspection } from "@/lib/api";
 import type { SfInspectionLetter } from "@/lib/types";
 import {
@@ -33,13 +26,11 @@ import {
   ScorecardTable,
   VerdictBanner,
 } from "./SfInspectionViews";
-
-type DetailDepth = "preview" | "deep";
+import type { SfInspectionScorecard } from "@/lib/types";
 
 export default function SfInspectionPanel() {
   const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null);
   const [triageFilter, setTriageFilter] = useState<LetterTriageFilter>("actionable");
-  const [detailDepth, setDetailDepth] = useState<DetailDepth>("preview");
   const [scorecardOpen, setScorecardOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -76,22 +67,6 @@ export default function SfInspectionPanel() {
     [visibleLetters, resolvedSelectedId]
   );
 
-  const inspectableIds = useMemo(() => new Set(letters.map((l) => l.letter_id)), [letters]);
-
-  useEffect(() => {
-    if (resolvedSelectedId !== selectedLetterId) {
-      setSelectedLetterId(resolvedSelectedId);
-      setDetailDepth("preview");
-    }
-  }, [resolvedSelectedId, selectedLetterId]);
-
-  const selectLetter = (id: string, depth: DetailDepth = "preview") => {
-    setSelectedLetterId(id);
-    setDetailDepth(depth);
-  };
-
-  const openDeep = (id: string) => selectLetter(id, "deep");
-
   const goNeighbor = (dir: -1 | 1) => {
     const id = dir < 0 ? neighbors.prevId : neighbors.nextId;
     if (id) setSelectedLetterId(id);
@@ -113,17 +88,11 @@ export default function SfInspectionPanel() {
           e.preventDefault();
           setSelectedLetterId(neighbors.prevId);
         }
-      } else if (e.key === "Enter" && resolvedSelectedId && detailDepth === "preview") {
-        e.preventDefault();
-        setDetailDepth("deep");
-      } else if (e.key === "Escape" && detailDepth === "deep") {
-        e.preventDefault();
-        setDetailDepth("preview");
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [neighbors.prevId, neighbors.nextId, resolvedSelectedId, detailDepth]);
+  }, [neighbors.prevId, neighbors.nextId]);
 
   if (isLoading) {
     return (
@@ -178,9 +147,7 @@ export default function SfInspectionPanel() {
             <LetterMatrix
               letters={visibleLetters}
               selectedLetterId={resolvedSelectedId}
-              onSelect={(id) => selectLetter(id, "preview")}
-              onInspect={openDeep}
-              inspectableIds={inspectableIds}
+              onSelect={setSelectedLetterId}
               compact
             />
             {visibleLetters.length === 0 && (
@@ -200,22 +167,15 @@ export default function SfInspectionPanel() {
                 total={visibleLetters.length}
                 prevId={neighbors.prevId}
                 nextId={neighbors.nextId}
-                detailDepth={detailDepth}
                 onPrev={() => goNeighbor(-1)}
                 onNext={() => goNeighbor(1)}
-                onPreview={() => setDetailDepth("preview")}
-                onDeep={() => setDetailDepth("deep")}
               />
               <div className="min-h-0 flex-1 overflow-y-auto p-4">
-                {detailDepth === "preview" ? (
-                  <PreviewPane letter={selectedLetter} onDeep={() => setDetailDepth("deep")} />
-                ) : (
-                  <InspectorScreen
-                    key={selectedLetter.letter_id}
-                    letter={selectedLetter}
-                    scorecard={data.scorecard}
-                  />
-                )}
+                <LetterInspector
+                  key={selectedLetter.letter_id}
+                  letter={selectedLetter}
+                  scorecard={data.scorecard}
+                />
               </div>
             </>
           ) : (
@@ -324,7 +284,7 @@ function TriageFilterBar({
           );
         })}
       </div>
-      <p className="mt-1.5 text-[9px] text-muted">j/k · Enter · Esc</p>
+      <p className="mt-1.5 text-[9px] text-muted">j/k navigate</p>
     </div>
   );
 }
@@ -337,22 +297,16 @@ function LetterNavBar({
   total,
   prevId,
   nextId,
-  detailDepth,
   onPrev,
   onNext,
-  onPreview,
-  onDeep,
 }: {
   letter: SfInspectionLetter;
   index: number;
   total: number;
   prevId: string | null;
   nextId: string | null;
-  detailDepth: DetailDepth;
   onPrev: () => void;
   onNext: () => void;
-  onPreview: () => void;
-  onDeep: () => void;
 }) {
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface px-4 py-2">
@@ -395,98 +349,49 @@ function LetterNavBar({
           </span>
         );
       })}
-      <div className="ml-auto flex gap-1">
-        <button
-          onClick={onPreview}
-          className={`rounded-md px-2.5 py-1 text-[10px] font-semibold ${
-            detailDepth === "preview"
-              ? "bg-foreground text-background"
-              : "text-muted hover:bg-surface-raised hover:text-foreground"
-          }`}
-        >
-          Preview
-        </button>
-        <button
-          onClick={onDeep}
-          className={`rounded-md px-2.5 py-1 text-[10px] font-semibold ${
-            detailDepth === "deep"
-              ? "bg-foreground text-background"
-              : "text-muted hover:bg-surface-raised hover:text-foreground"
-          }`}
-        >
-          Deep dive
-        </button>
-      </div>
     </div>
   );
 }
 
-// ── Right-pane preview (verdict + primary evidence) ──
+// ── Single scrollable inspector (schema + scorer + pipeline) ──
 
-function PreviewPane({
-  letter,
-  onDeep,
-}: {
-  letter: SfInspectionLetter;
-  onDeep: () => void;
-}) {
-  const spans = letter.lineage.candidate_spans;
-  const hasOverride = !!letter.lineage.override?.applied;
-
-  return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-5">
-      {spans.length > 0 && <CandidateSpansContext spans={spans} />}
-
-      <VerdictBanner letter={letter} />
-
-      {hasOverride && <LineagePanel letter={letter} hideSpans />}
-
-      <section>
-        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Evidence</h3>
-        <LayerA letter={letter} hideClean />
-      </section>
-
-      <button
-        onClick={onDeep}
-        className="inline-flex items-center gap-1.5 self-start text-[11px] font-semibold text-hybrid hover:underline"
-      >
-        <Maximize2 className="h-3.5 w-3.5" />
-        Deep dive — lenses & all pairs
-      </button>
-    </div>
-  );
-}
-
-// ── Full inspector ──
-
-function InspectorScreen({
+function LetterInspector({
   letter,
   scorecard,
 }: {
   letter: SfInspectionLetter;
-  scorecard: import("@/lib/types").SfInspectionScorecard;
+  scorecard: SfInspectionScorecard;
 }) {
-  const hasOverride = !!letter.lineage.override?.applied;
-  const hasSpans = letter.lineage.candidate_spans.length > 0;
+  const spans = letter.lineage.candidate_spans;
+  const override = letter.lineage.override;
+  const showPipeline = !!override?.applied || (override && !override.applied);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 pb-8">
+      {spans.length > 0 && <CandidateSpansContext spans={spans} />}
+
       <VerdictBanner letter={letter} />
 
-      {(hasOverride || hasSpans) && (
+      {showPipeline && (
         <section>
-          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Cause</h3>
-          <LineagePanel letter={letter} />
+          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">
+            Pipeline
+          </h3>
+          <LineagePanel letter={letter} hideSpans />
         </section>
       )}
 
       <section>
-        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Evidence</h3>
+        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">
+          Schema mismatch
+        </h3>
         <LayerA letter={letter} hideClean />
       </section>
 
-      <section>
-        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Lenses</h3>
+      <section id="sf-scorer-breakdown">
+        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">
+          Scorer breakdown
+        </h3>
         <LayerB letter={letter} scorecard={scorecard} />
       </section>
     </div>

@@ -60,3 +60,65 @@ export function phraseSurfaceKind(gold: string, pred: string): PhraseSurfaceKind
   if (displayPhraseNorm(gold) === displayPhraseNorm(pred)) return "surface";
   return "substantive";
 }
+
+/** Short human label for a FrequencyStateScores component name. */
+export const COMPONENT_SHORT_LABEL: Record<string, string> = {
+  clinical_headline: "Headline (3-way state)",
+  state_profile: "Change profile (4-way)",
+  state_profile_directional: "Directional change",
+  state_profile_direction_deconf: "Direction deconflicted",
+  state_profile_magnitude: "Magnitude axis",
+  active_rate: "Active-rate filter",
+  active_rate_fidelity: "Active-rate fidelity",
+  seizure_free: "Seizure-free filter",
+  unknown: "Unknown filter",
+  exact_semantic: "Exact semantic match",
+  benchmark_with_cui: "Benchmark with CUI",
+};
+
+export function componentShortLabel(name: string): string {
+  return COMPONENT_SHORT_LABEL[name] ?? name.replace(/_/g, " ");
+}
+
+/** Plain-English component stats for the scorer breakdown header. */
+export function componentStatsLabel(tp: number, fp: number, fn: number): string {
+  if (fp === 0 && fn === 0) {
+    return tp === 1 ? "1 match" : `${tp} matches`;
+  }
+  const parts: string[] = [];
+  if (fp > 0) parts.push(`${fp} extra pred${fp === 1 ? "" : "s"}`);
+  if (fn > 0) parts.push(`${fn} missed gold${fn === 1 ? "" : "s"}`);
+  if (tp > 0) parts.push(`${tp} match${tp === 1 ? "" : "es"}`);
+  return parts.join(" · ");
+}
+
+/**
+ * Turn scorer-internal count keys (NS=/L=/U=) into readable text.
+ * NS = point count, L/U = range bounds used in the fidelity lens.
+ */
+export function formatScorerCounts(raw: string): string {
+  if (!raw || raw === "(no counts)") return "no count attributes";
+  const m = raw.match(/^NS=([^/]*)\/L=([^/]*)\/U=(.*)$/);
+  if (!m) return raw;
+  const [, ns, lower, upper] = m;
+  const parts: string[] = [];
+  if (ns) parts.push(`exact count ${ns}`);
+  if (lower || upper) {
+    const lo = lower || "?";
+    const hi = upper || "?";
+    parts.push(lo === hi ? `range ${lo} (lower=upper)` : `range ${lo}–${hi}`);
+  }
+  return parts.length > 0 ? parts.join(" · ") : "no count attributes";
+}
+
+export function formatScorerFreqChg(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return null;
+  return `change: ${v}`;
+}
+
+export function formatScorerState(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return null;
+  return `projected state: ${v}`;
+}
