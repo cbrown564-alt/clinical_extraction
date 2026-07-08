@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Microscope, FileCheck, AlertTriangle } from "lucide-react";
+import { Microscope, FileCheck, AlertTriangle, Gauge } from "lucide-react";
 import { DATASET_PARAM, useActiveDataset, DEFAULT_DATASET } from "@/lib/datasets";
 import DatasetSwitcher from "@/components/shell/DatasetSwitcher";
 import { SURFACE_META, SURFACE_ORDER, SURFACE_TONE_ACTIVE } from "@/components/surface";
@@ -75,6 +75,18 @@ export default function Navbar() {
           >
             <AlertTriangle className="h-3 w-3" />
             Gold noise
+          </Link>
+
+          <Link
+            href="/exectv2-sf-inspection"
+            className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
+              pathname === "/exectv2-sf-inspection"
+                ? "text-deterministic bg-deterministic/10 border border-deterministic/20"
+                : "text-muted border-transparent hover:text-foreground hover:bg-surface-raised"
+            }`}
+          >
+            <Gauge className="h-3 w-3" />
+            SF inspection
           </Link>
 
           {/* Sticky dataset context selector */}

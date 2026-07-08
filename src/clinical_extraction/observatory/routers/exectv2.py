@@ -11,6 +11,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.frontend_review impo
     cached_exectv2_runs_json,
     cached_reliability_scorecard_json,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.sf_inspection import (
+    cached_sf_inspection_json,
+)
 
 router = APIRouter(tags=["exectv2"])
 
@@ -48,4 +51,19 @@ def get_exectv2_component_transitions():
     return cached_json_route(
         cached_component_transitions_json,
         error_detail="Failed to build ExECTv2 component transition examples",
+    )()
+
+
+@router.get("/exectv2/sf-inspection")
+def get_exectv2_sf_inspection():
+    """SeizureFrequency gold-vs-prediction inspection payload.
+
+    Serves the scorer-faithful, per-letter Layer A (schema attributes) / Layer B
+    (11 scoring components) detail the frontend ``/exectv2-sf-inspection`` route
+    renders. The payload is built once per process and the faithfulness gate runs
+    inside the builder, so drift surfaces as a 500 rather than a bad payload.
+    """
+    return cached_json_route(
+        cached_sf_inspection_json,
+        error_detail="Failed to build ExECTv2 SF inspection payload",
     )()
