@@ -1,21 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileSearch, Gauge, ListFilter, X } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileSearch,
+  Gauge,
+  Info,
+  Maximize2,
+} from "lucide-react";
 import { fetchExectv2SfInspection } from "@/lib/api";
 import type { SfInspectionLetter } from "@/lib/types";
 import {
+  countLettersByTriage,
+  familyTriageStatus,
+  letterMatchesTriageFilter,
+  LETTER_TRIAGE_FILTERS,
+  neighborLetterIds,
+  SF_FAMILIES,
+  sortLettersForTriage,
+  type LetterTriageFilter,
+} from "@/lib/sfFamilies";
+import {
+  CandidateSpansContext,
+  FamilyCards,
+  FamilyLegend,
   LayerA,
   LayerB,
-  LetterRow,
+  LetterMatrix,
   LineagePanel,
   ScorecardTable,
+  VerdictBanner,
 } from "./SfInspectionViews";
+
+type DetailDepth = "preview" | "deep";
 
 export default function SfInspectionPanel() {
   const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null);
-  const [errorsOnly, setErrorsOnly] = useState(false);
+  const [triageFilter, setTriageFilter] = useState<LetterTriageFilter>("actionable");
+  const [detailDepth, setDetailDepth] = useState<DetailDepth>("preview");
+  const [scorecardOpen, setScorecardOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["exectv2-sf-inspection"],
@@ -24,15 +49,81 @@ export default function SfInspectionPanel() {
 
   const letters = useMemo(() => data?.letters ?? [], [data]);
 
-  const visibleLetters = useMemo(
-    () => (errorsOnly ? letters.filter((l) => l.total_errors > 0) : letters),
-    [letters, errorsOnly]
-  );
+  const triageCounts = useMemo(() => countLettersByTriage(letters), [letters]);
+
+  const visibleLetters = useMemo(() => {
+    const filtered = letters.filter((l) => letterMatchesTriageFilter(l, triageFilter));
+    return triageFilter === "all" ? filtered : sortLettersForTriage(filtered);
+  }, [letters, triageFilter]);
+
+  // Clamp selection to the visible list synchronously so filter changes never
+  // leave the detail pane on a letter that is no longer in the sidebar.
+  const resolvedSelectedId = useMemo(() => {
+    if (!visibleLetters.length) return null;
+    if (selectedLetterId && visibleLetters.some((l) => l.letter_id === selectedLetterId)) {
+      return selectedLetterId;
+    }
+    return visibleLetters[0].letter_id;
+  }, [visibleLetters, selectedLetterId]);
 
   const selectedLetter = useMemo(() => {
-    if (!selectedLetterId) return null;
-    return letters.find((l) => l.letter_id === selectedLetterId) ?? null;
-  }, [letters, selectedLetterId]);
+    if (!resolvedSelectedId) return null;
+    return letters.find((l) => l.letter_id === resolvedSelectedId) ?? null;
+  }, [letters, resolvedSelectedId]);
+
+  const neighbors = useMemo(
+    () => neighborLetterIds(visibleLetters, resolvedSelectedId),
+    [visibleLetters, resolvedSelectedId]
+  );
+
+  const inspectableIds = useMemo(() => new Set(letters.map((l) => l.letter_id)), [letters]);
+
+  useEffect(() => {
+    if (resolvedSelectedId !== selectedLetterId) {
+      setSelectedLetterId(resolvedSelectedId);
+      setDetailDepth("preview");
+    }
+  }, [resolvedSelectedId, selectedLetterId]);
+
+  const selectLetter = (id: string, depth: DetailDepth = "preview") => {
+    setSelectedLetterId(id);
+    setDetailDepth(depth);
+  };
+
+  const openDeep = (id: string) => selectLetter(id, "deep");
+
+  const goNeighbor = (dir: -1 | 1) => {
+    const id = dir < 0 ? neighbors.prevId : neighbors.nextId;
+    if (id) setSelectedLetterId(id);
+  };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el?.tagName === "INPUT" || el?.tagName === "TEXTAREA" || el?.isContentEditable) {
+        return;
+      }
+      if (e.key === "j" || e.key === "ArrowDown") {
+        if (neighbors.nextId) {
+          e.preventDefault();
+          setSelectedLetterId(neighbors.nextId);
+        }
+      } else if (e.key === "k" || e.key === "ArrowUp") {
+        if (neighbors.prevId) {
+          e.preventDefault();
+          setSelectedLetterId(neighbors.prevId);
+        }
+      } else if (e.key === "Enter" && resolvedSelectedId && detailDepth === "preview") {
+        e.preventDefault();
+        setDetailDepth("deep");
+      } else if (e.key === "Escape" && detailDepth === "deep") {
+        e.preventDefault();
+        setDetailDepth("preview");
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [neighbors.prevId, neighbors.nextId, resolvedSelectedId, detailDepth]);
 
   if (isLoading) {
     return (
@@ -52,204 +143,352 @@ export default function SfInspectionPanel() {
 
   return (
     <div className="flex h-full flex-col bg-background">
-      <SummaryHeader
+      <TopBar
         nLetters={data.n_letters}
         nWithErrors={data.n_with_errors}
         artifact={data.artifact}
         split={data.split}
-        scorecard={data.scorecard}
+        scorecardOpen={scorecardOpen}
+        onToggleScorecard={() => setScorecardOpen((v) => !v)}
       />
 
-      <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-        <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Controls */}
-          <div className="flex shrink-0 items-center gap-2 border-b border-border bg-surface px-3 py-1.5">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
-              {visibleLetters.length} / {data.n_letters} letters
-            </span>
-            <button
-              onClick={() => setErrorsOnly((v) => !v)}
-              className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                errorsOnly
-                  ? "bg-error/10 text-error border border-error/20"
-                  : "text-muted border border-transparent hover:text-foreground hover:bg-surface-raised"
-              }`}
-            >
-              <ListFilter className="h-3 w-3" />
-              {errorsOnly ? "Errors only (on)" : "Errors only"}
-            </button>
-            <span className="ml-auto text-[9px] text-muted">
-              click a letter to inspect
-            </span>
-          </div>
-
-          {/* Master letter list */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-4xl p-2">
-              <div className="overflow-hidden rounded-lg border border-border bg-surface">
-                {visibleLetters.map((letter) => (
-                  <LetterRow
-                    key={letter.letter_id}
-                    letter={letter}
-                    active={selectedLetterId === letter.letter_id}
-                    onClick={() => setSelectedLetterId(letter.letter_id)}
-                  />
-                ))}
-              </div>
+      {scorecardOpen && (
+        <div className="shrink-0 border-b border-border bg-surface px-4 py-3">
+          <FamilyCards scorecard={data.scorecard} />
+          <details className="mt-2">
+            <summary className="cursor-pointer list-none text-[10px] text-muted before:mr-1 before:content-['▸']">
+              show raw scorecard (all 11 lenses)
+            </summary>
+            <div className="mt-1.5">
+              <ScorecardTable scorecard={data.scorecard} />
             </div>
-          </div>
+          </details>
         </div>
+      )}
 
-        {selectedLetter && (
-          <LetterInspector
-            letter={selectedLetter}
-            componentsMeta={data.components}
-            onClose={() => setSelectedLetterId(null)}
+      <div className="flex min-h-0 flex-1">
+        <aside className="flex w-[min(42%,28rem)] shrink-0 flex-col border-r border-border bg-surface">
+          <TriageFilterBar
+            filter={triageFilter}
+            counts={triageCounts}
+            visibleCount={visibleLetters.length}
+            onChange={setTriageFilter}
           />
-        )}
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <LetterMatrix
+              letters={visibleLetters}
+              selectedLetterId={resolvedSelectedId}
+              onSelect={(id) => selectLetter(id, "preview")}
+              onInspect={openDeep}
+              inspectableIds={inspectableIds}
+              compact
+            />
+            {visibleLetters.length === 0 && (
+              <p className="px-3 py-8 text-center text-[11px] text-muted">
+                No letters match this filter.
+              </p>
+            )}
+          </div>
+        </aside>
+
+        <main className="flex min-w-0 flex-1 flex-col">
+          {selectedLetter ? (
+            <>
+              <LetterNavBar
+                letter={selectedLetter}
+                index={neighbors.index}
+                total={visibleLetters.length}
+                prevId={neighbors.prevId}
+                nextId={neighbors.nextId}
+                detailDepth={detailDepth}
+                onPrev={() => goNeighbor(-1)}
+                onNext={() => goNeighbor(1)}
+                onPreview={() => setDetailDepth("preview")}
+                onDeep={() => setDetailDepth("deep")}
+              />
+              <div className="min-h-0 flex-1 overflow-y-auto p-4">
+                {detailDepth === "preview" ? (
+                  <PreviewPane letter={selectedLetter} onDeep={() => setDetailDepth("deep")} />
+                ) : (
+                  <InspectorScreen
+                    key={selectedLetter.letter_id}
+                    letter={selectedLetter}
+                    scorecard={data.scorecard}
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 text-muted">
+              <FileSearch className="h-5 w-5" />
+              <p className="text-[11px]">Select a letter from the list to inspect.</p>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
 }
 
-// ── Summary header (sticky, carries the 11-component scorecard) ──
+// ── Top bar ──
 
-function SummaryHeader({
+function TopBar({
   nLetters,
   nWithErrors,
   artifact,
   split,
-  scorecard,
+  scorecardOpen,
+  onToggleScorecard,
 }: {
   nLetters: number;
   nWithErrors: number;
   artifact: string;
   split: string;
-  scorecard: import("@/lib/types").SfInspectionScorecard;
+  scorecardOpen: boolean;
+  onToggleScorecard: () => void;
 }) {
   return (
-    <div className="shrink-0 border-b border-border bg-surface px-5 py-3">
-      <div className="flex items-center gap-2">
+    <div className="shrink-0 border-b border-border bg-surface px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
         <Gauge className="h-4 w-4 text-deterministic" />
         <h1 className="text-sm font-semibold text-foreground">
-          SeizureFrequency · gold vs. prediction inspection
+          SeizureFrequency · gold vs. prediction
         </h1>
         <span className="text-[10px] text-muted">
           {split} · {nLetters} letters · {nWithErrors} with ≥1 component error
         </span>
-      </div>
-      <p className="mt-1 max-w-4xl text-[10px] text-muted">
-        Predictions: <span className="font-mono">{artifact}</span>. The scorecard below is
-        scorer-faithful — the backend re-scores with the real{" "}
-        <span className="font-mono">score_frequency_state</span> and aborts unless F1
-        reproduces the published 0.9338 / 0.8602 / 0.9244 within 1e-4.
-      </p>
-
-      <div className="mt-2.5">
-        <ScorecardTable scorecard={scorecard} />
-      </div>
-
-      <div className="mt-2 flex flex-wrap gap-3 text-[9px] text-muted">
-        <span>
-          <span className="font-semibold text-foreground">Layer A</span> per schema
-          attribute: raw → validity → canonicalized vs gold
-        </span>
-        <span>
-          <span className="font-semibold text-foreground">Layer B</span> per scoring
-          component: attributes → count-state → projected state → key
-        </span>
-        <span>
-          <span className="text-gold">gold</span> /{" "}
-          <span className="text-llm">pred</span> ·{" "}
-          <span className="text-success">TP</span> match ·{" "}
-          <span className="text-error">FP</span> pred-only ·{" "}
-          <span className="text-error">FN</span> gold-only
-        </span>
+        <div className="ml-auto flex items-center gap-2">
+          <FamilyLegend />
+          <button
+            onClick={onToggleScorecard}
+            className={`rounded-md border px-2.5 py-1 text-[10px] font-semibold transition-colors ${
+              scorecardOpen
+                ? "border-foreground bg-foreground text-background"
+                : "border-border text-muted hover:border-muted hover:text-foreground"
+            }`}
+          >
+            {scorecardOpen ? "Hide families" : "Family F1"}
+          </button>
+          <span
+            title={`Predictions: ${artifact}. Scorer-faithful — backend re-scores with score_frequency_state and aborts unless published F1 reproduces within 1e-4.`}
+            className="inline-flex h-6 w-6 cursor-help items-center justify-center rounded-full border border-border text-muted hover:text-foreground"
+          >
+            <Info className="h-3 w-3" />
+          </span>
+        </div>
       </div>
     </div>
   );
 }
 
-// ── Letter inspector (right rail) ──
+// ── Triage filter chips ──
 
-function LetterInspector({
-  letter,
-  componentsMeta,
-  onClose,
+function TriageFilterBar({
+  filter,
+  counts,
+  visibleCount,
+  onChange,
 }: {
-  letter: SfInspectionLetter;
-  componentsMeta: import("@/lib/types").SfComponentMeta[];
-  onClose: () => void;
+  filter: LetterTriageFilter;
+  counts: Record<LetterTriageFilter, number>;
+  visibleCount: number;
+  onChange: (f: LetterTriageFilter) => void;
 }) {
   return (
-    <div className="flex w-full shrink-0 flex-col border-t border-border bg-surface lg:w-[560px] lg:border-l lg:border-t-0">
-      <div className="flex items-center justify-between border-b border-border px-4 py-2">
-        <h3 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-          <FileSearch className="h-3 w-3" />
-          {letter.letter_id}
-        </h3>
+    <div className="shrink-0 border-b border-border px-3 py-2">
+      <div className="mb-1.5 flex items-baseline justify-between gap-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+          Letters
+        </span>
+        <span className="font-mono text-[10px] text-muted">{visibleCount}</span>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {LETTER_TRIAGE_FILTERS.map((f) => {
+          const active = filter === f.id;
+          return (
+            <button
+              key={f.id}
+              title={f.hint}
+              onClick={() => onChange(f.id)}
+              className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition-colors ${
+                active
+                  ? f.id === "actionable" || f.id === "headline" || f.id === "change"
+                    ? "bg-error/15 text-error"
+                    : "bg-foreground text-background"
+                  : "bg-surface-raised text-muted hover:text-foreground"
+              }`}
+            >
+              {f.label}
+              <span className="ml-1 font-mono font-normal opacity-70">{counts[f.id]}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="mt-1.5 text-[9px] text-muted">j/k · Enter · Esc</p>
+    </div>
+  );
+}
+
+// ── Letter nav in detail pane ──
+
+function LetterNavBar({
+  letter,
+  index,
+  total,
+  prevId,
+  nextId,
+  detailDepth,
+  onPrev,
+  onNext,
+  onPreview,
+  onDeep,
+}: {
+  letter: SfInspectionLetter;
+  index: number;
+  total: number;
+  prevId: string | null;
+  nextId: string | null;
+  detailDepth: DetailDepth;
+  onPrev: () => void;
+  onNext: () => void;
+  onPreview: () => void;
+  onDeep: () => void;
+}) {
+  return (
+    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface px-4 py-2">
+      <div className="flex items-center gap-1">
         <button
-          onClick={onClose}
-          className="rounded p-1 text-muted hover:bg-surface-raised hover:text-foreground"
+          onClick={onPrev}
+          disabled={!prevId}
+          className="rounded border border-border p-1 text-muted hover:text-foreground disabled:opacity-30"
+          title="Previous letter (k)"
         >
-          <X className="h-3.5 w-3.5" />
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={onNext}
+          disabled={!nextId}
+          className="rounded border border-border p-1 text-muted hover:text-foreground disabled:opacity-30"
+          title="Next letter (j)"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-3 p-4">
-          {/* Letter summary chips */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="rounded border border-border bg-surface-raised px-1.5 py-0 text-[9px] text-muted">
-              gold SF {letter.gold_count}
-            </span>
-            <span className="rounded border border-border bg-surface-raised px-1.5 py-0 text-[9px] text-muted">
-              pred SF {letter.pred_count}
-            </span>
-            {letter.total_errors === 0 ? (
-              <span className="rounded border border-success/30 bg-success/10 px-1.5 py-0 text-[9px] font-medium text-success">
-                clean across all components
-              </span>
-            ) : (
-              <>
-                <span className="rounded border border-error/30 bg-error/10 px-1.5 py-0 text-[9px] font-medium text-error">
-                  dir fp={letter.direction_errors.fp}/fn={letter.direction_errors.fn}
-                </span>
-                <span className="rounded border border-error/30 bg-error/10 px-1.5 py-0 text-[9px] font-medium text-error">
-                  mag fp={letter.magnitude_errors.fp}/fn={letter.magnitude_errors.fn}
-                </span>
-                <span className="rounded border border-llm/30 bg-llm/10 px-1.5 py-0 text-[9px] font-semibold text-llm">
-                  {letter.total_errors} FP/FN total
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Layer A */}
-          <div>
-            <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-              Layer A · Schema attributes
-            </h4>
-            <LayerA pairs={letter.layer_a.pairs} />
-          </div>
-
-          {/* Layer B */}
-          <div>
-            <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-              Layer B · Scoring components
-            </h4>
-            <LayerB components={letter.layer_b.components} componentsMeta={componentsMeta} />
-          </div>
-
-          {/* Lineage */}
-          <div>
-            <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
-              Lineage
-            </h4>
-            <LineagePanel lineage={letter.lineage} />
-          </div>
-        </div>
+      <h2 className="font-mono text-base font-bold text-foreground">{letter.letter_id}</h2>
+      <span className="font-mono text-[10px] text-muted">
+        {index >= 0 ? index + 1 : "—"} / {total}
+      </span>
+      <span className="rounded border border-border px-1.5 py-0 font-mono text-[9px] text-muted">
+        g{letter.gold_count} / p{letter.pred_count}
+      </span>
+      {SF_FAMILIES.map((f) => {
+        const s = familyTriageStatus(letter, f);
+        const clean = s.fp + s.fn === 0;
+        return (
+          <span
+            key={f.id}
+            className={`font-mono text-[10px] font-semibold ${
+              clean ? "text-success" : "text-error"
+            }`}
+          >
+            {f.label.split(" ")[0]} {clean ? "✓" : `fp${s.fp}/fn${s.fn}`}
+          </span>
+        );
+      })}
+      <div className="ml-auto flex gap-1">
+        <button
+          onClick={onPreview}
+          className={`rounded-md px-2.5 py-1 text-[10px] font-semibold ${
+            detailDepth === "preview"
+              ? "bg-foreground text-background"
+              : "text-muted hover:bg-surface-raised hover:text-foreground"
+          }`}
+        >
+          Preview
+        </button>
+        <button
+          onClick={onDeep}
+          className={`rounded-md px-2.5 py-1 text-[10px] font-semibold ${
+            detailDepth === "deep"
+              ? "bg-foreground text-background"
+              : "text-muted hover:bg-surface-raised hover:text-foreground"
+          }`}
+        >
+          Deep dive
+        </button>
       </div>
+    </div>
+  );
+}
+
+// ── Right-pane preview (verdict + primary evidence) ──
+
+function PreviewPane({
+  letter,
+  onDeep,
+}: {
+  letter: SfInspectionLetter;
+  onDeep: () => void;
+}) {
+  const spans = letter.lineage.candidate_spans;
+  const hasOverride = !!letter.lineage.override?.applied;
+
+  return (
+    <div className="mx-auto flex max-w-3xl flex-col gap-5">
+      {spans.length > 0 && <CandidateSpansContext spans={spans} />}
+
+      <VerdictBanner letter={letter} />
+
+      {hasOverride && <LineagePanel letter={letter} hideSpans />}
+
+      <section>
+        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Evidence</h3>
+        <LayerA letter={letter} hideClean />
+      </section>
+
+      <button
+        onClick={onDeep}
+        className="inline-flex items-center gap-1.5 self-start text-[11px] font-semibold text-hybrid hover:underline"
+      >
+        <Maximize2 className="h-3.5 w-3.5" />
+        Deep dive — lenses & all pairs
+      </button>
+    </div>
+  );
+}
+
+// ── Full inspector ──
+
+function InspectorScreen({
+  letter,
+  scorecard,
+}: {
+  letter: SfInspectionLetter;
+  scorecard: import("@/lib/types").SfInspectionScorecard;
+}) {
+  const hasOverride = !!letter.lineage.override?.applied;
+  const hasSpans = letter.lineage.candidate_spans.length > 0;
+
+  return (
+    <div className="mx-auto flex max-w-4xl flex-col gap-6 pb-8">
+      <VerdictBanner letter={letter} />
+
+      {(hasOverride || hasSpans) && (
+        <section>
+          <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Cause</h3>
+          <LineagePanel letter={letter} />
+        </section>
+      )}
+
+      <section>
+        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Evidence</h3>
+        <LayerA letter={letter} hideClean />
+      </section>
+
+      <section>
+        <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted">Lenses</h3>
+        <LayerB letter={letter} scorecard={scorecard} />
+      </section>
     </div>
   );
 }

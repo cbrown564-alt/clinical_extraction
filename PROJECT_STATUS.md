@@ -102,6 +102,46 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-08: **Investigations dspy surface-attribution probe landed — DSPY's
+  90.4% IS EXTRACTOR-DERIVED (closes pathway #3, zero LLM calls).** The
+  cross-codebase read the 07-06 Inv oracle deferred. That doc found our
+  deterministic-only Inv extractor scores 0.5116 dev140 / 0.4858 full-200 vs the
+  cited hybrid 0.9132 / 0.9213 (a −0.40 / −0.44 gap, the contribution-bearing
+  family) and speculated dspy's near-ceiling 90.4–96.7% *"likely includes their
+  adjudication/lens layer"* — flagged as unverified. This probe reads the sibling
+  repo (`dspy-extraction`) to settle which surface dspy's number corresponds to.
+  **Verdict: EXTRACTOR-DERIVED LIGHT BRIDGE (the fourth and sharpest band).**
+  All three frozen criteria verified: (1) **NO gold-as-prediction / oracle /
+  copy-gold construction exists for Inv** anywhere in `dspy-extraction/src`
+  (oracle machinery is confined to SF and medication); the stored GPT-4.1-mini
+  test holdout carries genuine FP/FN (`field_f1.investigation = 0.9041`, TP 33 /
+  FP 4 / FN 3) — a gold oracle cannot produce mismatches. (2) The prediction
+  path is a real DSPy `OutputField` (`exect_s2.py` L276/315/350; the LM is
+  actually called) scored by standard micro set-F1 against annotation-derived
+  gold. (3) Two bridge functions sit between extractor and score
+  (`_recover_s2_investigation_raw_values` L1016;
+  `recover_exect_s4_investigation_benchmark_values` L20) but **both read only
+  `record.text` (the note), never `gold.investigations`** — conservative
+  precision guards that only *remove* unsupported "unknown"/ECG labels, never
+  inject gold. No CUI projection, learned verifier, gold de-dup, or lens on the
+  Inv path. **REFUTES** the 07-06 doc's "likely adjudication layer" speculation;
+  **CONFIRMS and sharpens** its "our analogue is the hybrid lane, not the
+  deterministic extractor" clause — for a cleaner reason: dspy front-loads
+  clinical reasoning into a single LLM call; our architecture decomposes it
+  across deterministic extractor + lens + verifier + LLM arbitration. Both reach
+  ~0.90–0.92 on Inv by different routes. `dissertation-recursive` independently
+  corroborates near-ceiling Inv (EEG 0.90–0.975, MRI 0.825–0.90) via a different
+  metric and extractor path with only a keyword normalizer. **Manuscript
+  implication (feeds pathway #4):** the Inv cross-family comparison is valid
+  (both extractor-derived set-F1 on the same corpus; caveat: dspy's split
+  differs); Inv is the contribution-bearing family where our LLM lane does
+  irreplaceable work; the manuscript must state the architectural difference
+  (single-call vs decomposed), not claim our hybrid "beats" single-call by the
+  raw gap (the single-call is already near-ceiling). Predeclaration
+  `docs/experiments/exectv2/investigations/exectv2_inv_dspy_surface_attribution_predeclaration_2026-07-08.md`;
+  results
+  `docs/experiments/exectv2/investigations/exectv2_inv_dspy_surface_attribution_results_2026-07-08.md`;
+  hypothesis `inv_dspy_surface_attribution_2026-07-08` (entry 41, CONFIRMED).
 - 2026-07-08: **SF magnitude gold-annotation audit landed — MAGNITUDE LABELS ARE
   GENUINE (closes pathway #2, zero LLM calls).** The gold-side complement to the
   vocab-deconflation probe (entry 38), which deferred this question by treating
@@ -651,17 +691,16 @@ Current evidence stack:
 ### Next
 
 - **NEW 2026-07-08:** four follow-up pathways from the predecessor-synthesis
-  follow-ups (07-06) and the SF vocab-deconflation probe (07-08). Pathway #1
-  (the deconflation synthesis) is **done**; pathway #1 below (the magnitude
-  complement — the highest-leverage production pathway) is also **done
-  (TRAILS RULES, closed as a negative — see the Now entry)**; pathway #2 (the
-  gold-level audit) is **done (MAGNITUDE LABELS ARE GENUINE — see the Now
-  entry)**; the remaining two are ordered by how directly they exploit the
-  48-hour surprises. Pathway #2's result bounds them: the magnitude labels are
-  genuinely magnitude (conflation is by design), so the deconflation probe's
-  residual direction gap (+0.0226) is a pure model gap — pathway #4 (manuscript
-  attribution) is now the highest-value route, with pathway #3 (the Inv dspy
-  near-ceiling question) independent of the SF work.
+  follow-ups (07-06) and the SF vocab-deconflation probe (07-08). Pathways #1
+  (magnitude complement), #2 (gold-level audit), and #3 (Inv dspy surface
+  attribution) are all **done** (see the Now entries). Pathway #2's result
+  bounds the SF work: the magnitude labels are genuinely magnitude (conflation
+  is by design), so the deconflation probe's residual direction gap (+0.0226) is
+  a pure model gap. Pathway #3's result bounds the Inv work: dspy's 90.4% is
+  extractor-derived (single-call LLM + note-text bridge, no gold adjudication),
+  so the Inv comparison is valid and Inv is the contribution-bearing family.
+  **Only pathway #4 (manuscript attribution) remains** — now the highest-value
+  route, with all the probe results in hand to convert into paper-ready tables.
   1. ~~**Test the closed-option selector as a magnitude *complement* to the
      rules, not a replacement.**~~ **DONE 2026-07-08 — COMPLEMENT TRAILS RULES**
      (magnitude F1 0.9244 vs rules 0.9447, −0.0203). The selector's precision
@@ -680,26 +719,17 @@ Current evidence stack:
      `Frequent`); the two ambiguous rows use "well controlled" ⇒ `Infrequent`.
      See the Now entry + results
      `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_gold_audit_results_2026-07-08.md`.
-  3. **Pin down why dspy's near-ceiling did not transfer to our deterministic
-     extractor on Investigations. Free design work + small costed validation.**
-     The Inv no-model oracle (07-06) found our deterministic-only extractor
-     scores 0.5116 dev140 vs the hybrid's 0.9132 — a −0.40 gap, the
-     contribution-bearing family — and noted dspy reports 90.4–96.7% near-
-     ceiling, which does *not* transfer to our deterministic extractor. The
-     open question: is dspy's number annotation-derived (like their Rx oracle,
-     which reproduces 100% by construction from gold), or does their
-     adjudication layer do what our verifier + pending-test suppression +
-     completed-neuro lens does? If the former, the Inv comparison is
-     apples-to-oranges and our −0.40 is the honest "LLM contributes here"
-     number. If the latter, the Inv finding is the single place our
-     architecture's LLM lane is doing irreplaceable work, and the manuscript
-     should foreground it. Resolve by building the same two-surface oracle
-     dspy reports (annotation-derived `gold_as_prediction` + extractor-derived
-     `deterministic_only`) on the Inv family and checking which surface dspy's
-     90.4% corresponds to — reuses the existing Inv oracle driver
-     (`experiments/exectv2_investigations_no_model_oracle_2026-07-06.py`);
-     ~0 additional LLM calls (deterministic replay) plus a small
-     cross-codebase read of the sibling-repo's Inv scorer.
+  3. ~~**Pin down why dspy's near-ceiling did not transfer to our deterministic
+     extractor on Investigations. Free design work + small costed validation.**~~
+     **DONE 2026-07-08 — DSPY's 90.4% IS EXTRACTOR-DERIVED** (single-call LLM +
+     note-text-only bridge; no gold adjudication). REFUTES the 07-06 oracle doc's
+     "likely includes their adjudication/lens layer" speculation; CONFIRMS the
+     Inv comparison is valid and Inv is the contribution-bearing family. The
+     cleaner reason: dspy front-loads reasoning into one LLM call; our
+     architecture decomposes it across deterministic + lens + verifier + LLM.
+     Both reach ~0.90–0.92 on Inv by different routes; our deterministic
+     extractor alone is 0.51 (re-confirmed). See the Now entry + results
+     `docs/experiments/exectv2/investigations/exectv2_inv_dspy_surface_attribution_results_2026-07-08.md`.
   4. **Lock in the manuscript attribution-discipline deliverables — several are
      drop-in ready. Free (documentation).** Multiple pieces are built and
      waiting to be assembled into the §4 attribution narrative, explicitly
@@ -977,6 +1007,19 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-08: **Investigations dspy surface-attribution probe complete —
+  EXTRACTOR-DERIVED, closes pathway #3** (see Now for the full entry). Zero LLM
+  calls; cross-codebase read of `dspy-extraction` (corroborated by
+  `dissertation-recursive`) + re-confirmed 07-06 Inv oracle numbers. dspy's
+  90.4% is a single-call LLM extractor + a note-text-only precision guard — no
+  gold-as-prediction oracle, no gold-reading adjudication layer (the two bridge
+  functions read `record.text` only, never `gold.investigations`). Refutes the
+  07-06 doc's "likely includes their adjudication/lens layer" speculation; the
+  Inv cross-family comparison is valid. Inv is the contribution-bearing family
+  (our deterministic 0.51 ≪ hybrid 0.91 ≈ dspy single-call ~0.90). Hypothesis
+  `inv_dspy_surface_attribution_2026-07-08` registered (entry 41, CONFIRMED).
+  Results:
+  `docs/experiments/exectv2/investigations/exectv2_inv_dspy_surface_attribution_results_2026-07-08.md`.
 - 2026-07-08: **ExECTv2 SF inspection promoted to a first-class frontend route**
   (`/exectv2-sf-inspection`, top-level nav tab). Replaced the standalone 3.2 MB
   `exectv2_sf_inspection_dev140_20260708.html` with a live route that renders the
