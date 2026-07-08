@@ -102,6 +102,36 @@ Current evidence stack:
 
 ### Now
 
+- 2026-07-08: **SF magnitude gold-annotation audit landed — MAGNITUDE LABELS ARE
+  GENUINE (closes pathway #2, zero LLM calls).** The gold-side complement to the
+  vocab-deconflation probe (entry 38), which deferred this question by treating
+  the magnitude/direction conflation as "by guideline design" by assertion. This
+  audit tests that assertion row by row: reads every dev140 `FrequencyChange`
+  magnitude annotation (`Frequent`/`Infrequent`; 19 rows across 16 letters) plus
+  its ±220-char source-text context and classifies each as `MISLABELED_DIRECTION`
+  (text expresses a change; a direction label would be more faithful),
+  `GENUINE_MAGNITUDE` (absolute-rate descriptor, no change framing), or
+  `AMBIGUOUS`, per a frozen three-category taxonomy (ties toward genuine).
+  **Verdict: MAGNITUDE LABELS ARE GENUINE (Band 3)** — 16 genuine, 1 mislabeled,
+  2 ambiguous; headline mislabeled share **1/17 = 5.9%** (far below the 30%
+  threshold), **robust to ambiguous handling** (adversarial upper bound 3/19 =
+  15.8% still < 30%). The single mislabel is **EA0049 GTCS** labeled `Frequent`
+  despite the text *"were infrequent at first they are now happening
+  frequently"* (an explicit before/after change → should be `Increased`). The
+  two ambiguous rows (EA0022, EA0059) both use *"well controlled"* ⇒ `Infrequent`
+  (guideline List 11 L877–L879), which sits at the boundary of magnitude (low
+  rate) and direction (has come under control). Co-annotation cross-tab
+  corroborates: the 4 letters carrying *both* a magnitude and a direction label
+  (EA0050, EA0123, EA0161, EA0049) classify their magnitude labels genuine — the
+  annotator distinguished the two axes deliberately. **Manuscript implication:**
+  no gold-defect caveat is warranted; the conflation is by annotation-guideline
+  design (Appendix L987, "Aligned"), and the deconflation probe's residual
+  direction gap (**+0.0226**) is reaffirmed as a **pure model gap**, not a gold
+  artifact. The deconflation's `same` projection for magnitude labels stands as
+  the faithful direction-axis encoding. Driver
+  `scripts/run_exectv2_sf_magnitude_gold_audit.py`; results
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_gold_audit_results_2026-07-08.md`;
+  hypothesis `sf_magnitude_gold_audit_2026-07-08` (entry 40).
 - 2026-07-08: **SF magnitude-complement probe landed — TRAILS RULES, closes
   pathway #1 (13 gpt-4.1-mini calls, dev140, replay).** The highest-leverage
   production pathway from the 07-08 queue. The deconflation probe (just below)
@@ -624,13 +654,14 @@ Current evidence stack:
   follow-ups (07-06) and the SF vocab-deconflation probe (07-08). Pathway #1
   (the deconflation synthesis) is **done**; pathway #1 below (the magnitude
   complement — the highest-leverage production pathway) is also **done
-  (TRAILS RULES, closed as a negative — see the Now entry)**; the remaining
-  three are ordered by how directly they exploit the 48-hour surprises. The
-  complement's negative sharpens them: the selector's magnitude precision edge
-  (0.9515) does *not* transfer to the no-match letters (drops to 0.9016), so
-  any further selector-based magnitude work is unlikely to help — pathways #2
-  and #4 (gold-level audit + manuscript attribution) are now the higher-value
-  routes.
+  (TRAILS RULES, closed as a negative — see the Now entry)**; pathway #2 (the
+  gold-level audit) is **done (MAGNITUDE LABELS ARE GENUINE — see the Now
+  entry)**; the remaining two are ordered by how directly they exploit the
+  48-hour surprises. Pathway #2's result bounds them: the magnitude labels are
+  genuinely magnitude (conflation is by design), so the deconflation probe's
+  residual direction gap (+0.0226) is a pure model gap — pathway #4 (manuscript
+  attribution) is now the highest-value route, with pathway #3 (the Inv dspy
+  near-ceiling question) independent of the SF work.
   1. ~~**Test the closed-option selector as a magnitude *complement* to the
      rules, not a replacement.**~~ **DONE 2026-07-08 — COMPLEMENT TRAILS RULES**
      (magnitude F1 0.9244 vs rules 0.9447, −0.0203). The selector's precision
@@ -638,27 +669,17 @@ Current evidence stack:
      letters; the magnitude recall gap is a genuine capacity gap no contract
      design closes. See the Now entry + results
      `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_complement_results_2026-07-08.md`.
-  2. **Attack the vocab conflation at the *gold* level — is the `FrequencyChange`
+  2. ~~**Attack the vocab conflation at the *gold* level — is the `FrequencyChange`
      magnitude/direction conflation itself a gold-annotation defect? Free (dev140
-     gold audit, no LLM calls).** The deconflation probe showed the conflation
-     explains ~60% of the integration gap but left a residual direction gap
-     (+0.0226). The next question is whether the magnitude labels
-     (Frequent/Infrequent) *belong* in `FrequencyChange` at all, or whether the
-     guideline's Appendix L987 mapping (marked "Aligned") is itself a
-     representational error — "under control"/"well controlled" ⇒ Infrequent
-     puts a magnitude reading into a change-direction field. Audit the dev140
-     gold annotations: for each Frequent/Infrequent label, classify whether the
-     source text expresses a change-direction (in which case the magnitude
-     label is a mislabeling) or a pure magnitude (in which case it belongs but
-     on a different axis). Outcome: **(a) the magnitude labels are predominantly
-     mislabeled direction** — the gold schema has a representational defect
-     worth a manuscript caveat and a candidate guideline-correction ticket
-     (frozen corpus, so documented not fixed); **(b) they are genuinely
-     magnitude** — the conflation is by design (the field mixes two clinical
-     notions deliberately), and the residual direction gap is a pure model gap.
-     Either resolves the ambiguity the deconflation probe surfaced. Uses the
-     `/gold-noise` inspection tab (item 1 of the predecessor synthesis) and the
-     dev140 row-inspection allowance; zero LLM calls.
+     gold audit, no LLM calls).**~~ **DONE 2026-07-08 — MAGNITUDE LABELS ARE
+     GENUINE** (16 genuine / 1 mislabeled / 2 ambiguous; headline mislabeled
+     share 1/17 = 5.9%, robust to ambiguous handling at 15.8% upper bound). The
+     conflation is by annotation-guideline design, not a gold defect; the
+     deconflation probe's residual direction gap (+0.0226) is a pure model gap.
+     The single mislabel is EA0049 GTCS (explicit before/after change labeled
+     `Frequent`); the two ambiguous rows use "well controlled" ⇒ `Infrequent`.
+     See the Now entry + results
+     `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_gold_audit_results_2026-07-08.md`.
   3. **Pin down why dspy's near-ceiling did not transfer to our deterministic
      extractor on Investigations. Free design work + small costed validation.**
      The Inv no-model oracle (07-06) found our deterministic-only extractor
@@ -956,6 +977,16 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-08: **SF magnitude gold-annotation audit complete — MAGNITUDE LABELS
+  ARE GENUINE, closes pathway #2** (see Now for the full entry). Zero LLM calls,
+  zero scorer calls; read-only inspection of all 19 dev140 `Frequent`/
+  `Infrequent` annotations. 16 genuine magnitude / 1 mislabeled direction
+  (EA0049 GTCS) / 2 ambiguous ("well controlled"). Headline mislabeled share
+  1/17 = 5.9%, robust to ambiguous handling (upper bound 15.8%). Conflation is
+  by design (Appendix L987, "Aligned"); the deconflation residual direction gap
+  (+0.0226) is a pure model gap. No gold-defect caveat warranted. Hypothesis
+  `sf_magnitude_gold_audit_2026-07-08` registered (entry 40). Results:
+  `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_gold_audit_results_2026-07-08.md`.
 - 2026-07-08: **SF magnitude-complement probe complete — TRAILS RULES, closes
   pathway #1** (see Now for the full entry). 13 gpt-4.1-mini calls dev140
   replay. Magnitude-only closed-option selector (3-label Frequent/Infrequent/
