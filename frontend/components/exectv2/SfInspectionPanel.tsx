@@ -19,6 +19,7 @@ import {
   CandidateSpansContext,
   FamilyCards,
   FamilyLegend,
+  GoldCaseLedgerNote,
   LayerA,
   LayerB,
   LetterMatrix,
@@ -371,6 +372,8 @@ function LetterInspector({
       {spans.length > 0 && <CandidateSpansContext spans={spans} />}
 
       <VerdictBanner letter={letter} />
+
+      <GoldCaseLedgerNote letter={letter} />
 
       {showPipeline && (
         <section>

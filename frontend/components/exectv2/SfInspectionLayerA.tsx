@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
 import type { SfInspectionLetter, SfLayerAPair } from "@/lib/types";
 import { fmtVal, phraseSurfaceKind } from "@/lib/sfPresentation";
 import { AttributeSchemaCard } from "./SfAttributeSchema";
@@ -69,8 +69,10 @@ function AttrPair({ pair }: { pair: SfLayerAPair }) {
     );
   }
 
-  const accent =
-    pair.side === "fp" || pair.side === "fn" || surface === "substantive" || !attrsClean
+  const hasAdvisory = pair.gold_advisory !== null;
+  const accent = hasAdvisory
+    ? "border-l-gold"
+    : pair.side === "fp" || pair.side === "fn" || surface === "substantive" || !attrsClean
       ? "border-l-error"
       : "border-l-border";
 
@@ -88,6 +90,26 @@ function AttrPair({ pair }: { pair: SfLayerAPair }) {
       {pair.side === "pair" && attrsClean && surface === "substantive" && (
         <p className="mt-2.5 text-[11px] text-muted">Attributes match — only the phrase text differs.</p>
       )}
+      {hasAdvisory && <GoldAdvisoryBanner advisory={pair.gold_advisory!} />}
+    </div>
+  );
+}
+
+function GoldAdvisoryBanner({ advisory }: { advisory: NonNullable<SfLayerAPair["gold_advisory"]> }) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-md border border-gold/40 bg-gold/10">
+      <div className="flex items-start gap-2 px-3 py-2">
+        <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold" />
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-gold">
+            Gold data issue — {advisory.resolution_status}
+          </p>
+          <p className="mt-1 text-[11px] text-foreground">
+            Gold says <span className="font-mono font-semibold">{advisory.gold_value}</span>.{" "}
+            {advisory.conflicting_evidence}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -5,6 +5,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     DIAGNOSIS,
     ENTITY_REGISTRY,
     INVESTIGATIONS,
+    ONSET,
+    PATIENT_HISTORY,
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
@@ -30,6 +32,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     frequency_state_magnitude,
     headline_duplicate_tags,
     match_key,
+    resolve_point_range,
     score_concept_identity,
     score_entity,
     score_frequency_state,
@@ -310,6 +313,151 @@ def test_active_rate_fidelity_ignores_dates_when_rate_agrees() -> None:
 
     # Rate matches; the missing date is timing, not magnitude, so fidelity is clean.
     assert score.active_rate_fidelity.f1 == 1.0
+
+
+def test_resolve_point_range_collapses_degenerate_range_to_a_point() -> None:
+    triple = ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+    assert resolve_point_range({"NumberOfSeizures": "2"}, triple) == ("point", "2")
+    assert resolve_point_range(
+        {"LowerNumberOfSeizures": "2", "UpperNumberOfSeizures": "2"}, triple
+    ) == ("point", "2")
+    # Asymmetric partial range consistent with the bare value (seen verbatim in an
+    # EA0079 draft mention: NumberOfSeizures=1 alongside a redundant Lower=1).
+    assert resolve_point_range(
+        {"NumberOfSeizures": "1", "LowerNumberOfSeizures": "1"}, triple
+    ) == ("point", "1")
+    assert resolve_point_range({}, triple) is None
+
+
+def test_resolve_point_range_keeps_a_genuine_range_distinct_from_a_point() -> None:
+    triple = ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+    assert resolve_point_range(
+        {"LowerNumberOfSeizures": "1", "UpperNumberOfSeizures": "3"}, triple
+    ) == ("range", "1", "3")
+    assert resolve_point_range({"NumberOfSeizures": "2"}, triple) != resolve_point_range(
+        {"LowerNumberOfSeizures": "1", "UpperNumberOfSeizures": "3"}, triple
+    )
+
+
+def test_resolve_point_range_flags_a_bare_value_that_disagrees_with_the_bounds() -> None:
+    triple = ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures")
+    conflict = resolve_point_range(
+        {"NumberOfSeizures": "5", "LowerNumberOfSeizures": "2", "UpperNumberOfSeizures": "2"},
+        triple,
+    )
+    assert conflict is not None and conflict[0] == "conflict"
+
+
+def test_active_rate_fidelity_treats_bare_count_and_degenerate_range_as_equal() -> None:
+    # EA0005 shape: gold states a bare count; pred expresses the identical value
+    # as a lower==upper range. Same clinical fact, previously scored FP+FN.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="2"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    LowerNumberOfSeizures="2",
+                    UpperNumberOfSeizures="2",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.active_rate_fidelity.f1 == 1.0
+    assert match_key(gold[0].annotations[0]) == match_key(pred[0].annotations[0])
+
+
+def test_active_rate_fidelity_treats_bare_cadence_and_degenerate_range_as_equal() -> None:
+    # EA0008 shape: gold states a bare count + bare cadence; pred expresses both
+    # as lower==upper ranges. Same clinical fact, previously scored FP+FN.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    NumberOfSeizures="1",
+                    NumberOfTimePeriods="3",
+                    TimePeriod="Week",
+                ),
+            ),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    LowerNumberOfSeizures="1",
+                    UpperNumberOfSeizures="1",
+                    LowerNumberOfTimePeriods="3",
+                    UpperNumberOfTimePeriods="3",
+                    TimePeriod="Week",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.active_rate_fidelity.f1 == 1.0
+
+
+def test_active_rate_fidelity_still_penalizes_a_genuine_range_disagreement() -> None:
+    # Regression guard: a real range (1-3) is a strictly looser claim than a
+    # definite count (2) and must not be forgiven by the point/range collapse.
+    gold = [
+        ExectLetter(
+            "L1",
+            "note",
+            (_ann(SEIZURE_FREQUENCY.name, "seizures", NumberOfSeizures="2"),),
+        )
+    ]
+    pred = [
+        ExectLetter(
+            "L1",
+            "note",
+            (
+                _ann(
+                    SEIZURE_FREQUENCY.name,
+                    "seizures",
+                    LowerNumberOfSeizures="1",
+                    UpperNumberOfSeizures="3",
+                ),
+            ),
+        )
+    ]
+
+    score = score_frequency_state(gold, pred)
+
+    assert score.active_rate_fidelity.f1 == 0.0
+
+
+def test_match_key_collapses_onset_and_patient_history_age_range() -> None:
+    for entity in (ONSET, PATIENT_HISTORY):
+        bare = _ann(entity.name, "onset", Age="8")
+        ranged = _ann(entity.name, "onset", AgeLower="8", AgeUpper="8")
+        assert match_key(bare) == match_key(ranged)
+
+        genuine_range = _ann(entity.name, "onset", AgeLower="6", AgeUpper="10")
+        assert match_key(bare) != match_key(genuine_range)
 
 
 def test_frequency_state_faithful_distinguishes_change_from_unknown() -> None:

@@ -253,9 +253,10 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split projection render repair cases",
     ),
     "test_exectv2_scoring.py": AllowlistEntry(
-        1814,
+        1962,
         "P0-6/Wave-C-S1: megatest — split scoring scenario tables; SF-3 deconflated "
-        "direction/magnitude projection tests (2026-07-08)",
+        "direction/magnitude projection tests (2026-07-08); point/range "
+        "shape-equivalence fix tests (2026-07-08)",
     ),
     "test_gan2026_fresh_evidence_reasoner.py": AllowlistEntry(
         1302,
@@ -298,8 +299,9 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split pipeline v1 integration cases",
     ),
     "test_exectv2_clinical_finding_assembly.py": AllowlistEntry(
-        835,
-        "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases",
+        843,
+        "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases; "
+        "point/range shape-equivalence disclosure comments (2026-07-08)",
     ),
     "test_gan2026_clinical_assessment_projection_render.py": AllowlistEntry(
         824,
@@ -316,6 +318,11 @@ FRONTEND_ALLOWLIST: dict[str, AllowlistEntry] = {
     "lib/types/shared.ts": AllowlistEntry(
         660,
         "P2-6/Wave-C-S6: types split — shared cross-domain types pending further slice",
+    ),
+    "lib/types/exectv2.ts": AllowlistEntry(
+        625,
+        "SF point/range shape-equivalence + gold-data-issue advisory types "
+        "(SfGoldAdvisory, SfGoldCaseLedgerRow) (2026-07-08)",
     ),
 }
 

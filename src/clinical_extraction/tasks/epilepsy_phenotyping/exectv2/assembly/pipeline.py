@@ -61,6 +61,11 @@ FOCUSED_ROUTE_HEADLINES = {
     SEIZURE_FREQUENCY.name: 0.6321,
 }
 BASELINE_DX_CONCEPT_NEGATION = 0.6693
+# Lower-bound regression gate ("must beat"), not a frozen equality target. The
+# 2026-07-08 point/range shape-equivalence fix (scoring/normalize.py:
+# resolve_point_range -- a bare count/cadence and an equal-bounds Lower/Upper
+# range now key identically) only ever raises active_rate_fidelity, so this
+# threshold stays a safe (if now conservative) floor and needs no change.
 BASELINE_SF_ACTIVE_RATE_FIDELITY = 0.2887
 MATERIALIZED_SURFACES = (
     "source_scored",

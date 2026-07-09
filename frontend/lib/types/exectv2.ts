@@ -532,6 +532,15 @@ export interface SfAttributeRow {
   match: "ok" | "bad" | "absent";
 }
 
+/** A dated, curated ``gold_data_issues.jsonl`` entry disputing this specific
+ * value in gold -- distinct from an unadjudicated FP/FN. */
+export interface SfGoldAdvisory {
+  source: "gold_data_issues";
+  gold_value: string;
+  conflicting_evidence: string;
+  resolution_status: string;
+}
+
 export interface SfLayerAPair {
   label: string;
   side: "pair" | "fn" | "fp";
@@ -541,6 +550,19 @@ export interface SfLayerAPair {
   pred_normalized: string;
   phrase_match: "ok" | "bad" | "absent";
   attributes: SfAttributeRow[];
+  gold_advisory: SfGoldAdvisory | null;
+}
+
+/** A prior canonical adjudication for this letter, read-only and best-effort:
+ * adjudicated against a different run than the one this payload scores, so it
+ * is letter-level context, not a claim about one exact mention. */
+export interface SfGoldCaseLedgerRow {
+  disagreement_type: string;
+  match_key: string;
+  mechanism: string;
+  verdict: "gold_right" | "model_defensible" | "both_defensible" | "unadjudicated";
+  reason: string;
+  run_id: string;
 }
 
 export interface SfLineageOverrideItem {
@@ -583,6 +605,7 @@ export interface SfInspectionLetter {
   layer_a: { pairs: SfLayerAPair[] };
   layer_b: { components: SfLayerBComponent[] };
   lineage: SfLineage;
+  gold_case_ledger: SfGoldCaseLedgerRow[];
 }
 
 export interface SfInspectionResponse {

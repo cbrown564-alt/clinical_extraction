@@ -225,10 +225,14 @@ def test_p1_v09_dev140_sf_scores_match_frozen_baseline() -> None:
     sf_headline = ladder["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
     sf_fidelity = ladder["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
     assert sf_headline == frozen["headline_target"]["by_indicator"]["SeizureFrequency"]["f1"]
-    assert (
-        sf_fidelity
-        == frozen["fidelity_companions"]["SeizureFrequency"]["active_rate_fidelity"]["f1"]
-    )
+    # active_rate_fidelity is NOT compared against the frozen archive: the SF
+    # point/range shape-equivalence fix (bare count/cadence vs. an equal-bounds
+    # Lower/Upper range now collapse to the same scorer key, see
+    # scoring/normalize.py:resolve_point_range) legitimately moves this
+    # companion metric, and the frozen v09 JSON predates the fix (0.5907 ->
+    # 0.6919 on live replay). Headline is unaffected because clinical_headline
+    # keys on count presence, not shape, so it stays frozen-archive-comparable.
+    assert sf_fidelity == 0.6919
 
 
 def test_registry_package_line_count_gate() -> None:
