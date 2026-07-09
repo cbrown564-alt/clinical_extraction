@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Hashable, Iterable, Sequence
+from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel
 
 from clinical_extraction.core.scoring import PRF1, multiset_prf1, prf1_from_counts, sum_prf1
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    POINT_RANGE_TRIPLES,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.evaluation import (
     DEFAULT_BENCHMARK_IGNORE_ATTRIBUTES,
     SEIZURE_FREQUENCY_BENCHMARK_IGNORE_ATTRIBUTES,
@@ -22,6 +25,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.normal
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
+    canonicalize_point_range_attributes,
 )
 
 # CUIPhrase mirrors the annotated phrase, so including it in the match key is
@@ -162,6 +166,21 @@ class ConceptIdentityScores(BaseModel):
     concept_assertion: ClinicalRecoveryPRF1
 
 
+def _canonical_attributes(annotation: ExectAnnotation) -> Mapping[str, str]:
+    """Collapse degenerate ``Lower*``/``Upper*`` ranges onto their bare key.
+
+    A bare count/age and an equal-bounds range denote the same value; without
+    this, ``match_key``/``_attribute_key`` would score them as unrelated
+    attributes. See :data:`POINT_RANGE_TRIPLES` and
+    :func:`canonicalize_point_range_attributes`.
+    """
+
+    triples = POINT_RANGE_TRIPLES.get(annotation.entity)
+    if not triples:
+        return annotation.attributes
+    return canonicalize_point_range_attributes(annotation.attributes, triples)
+
+
 def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEATURES) -> Hashable:
     phrase = normalize_phrase(annotation.text)
     if not config.include_attributes:
@@ -169,7 +188,7 @@ def match_key(annotation: ExectAnnotation, config: MatchConfig = PHRASE_AND_FEAT
     attributes = tuple(
         sorted(
             (k, canonicalize_attribute_value(k, v))
-            for k, v in annotation.attributes.items()
+            for k, v in _canonical_attributes(annotation).items()
             if k not in config.ignore_attributes
         )
     )
@@ -383,7 +402,7 @@ def _attribute_key(annotation: ExectAnnotation, config: MatchConfig) -> Hashable
     return tuple(
         sorted(
             (k, canonicalize_attribute_value(k, v))
-            for k, v in annotation.attributes.items()
+            for k, v in _canonical_attributes(annotation).items()
             if k not in config.ignore_attributes
         )
     )

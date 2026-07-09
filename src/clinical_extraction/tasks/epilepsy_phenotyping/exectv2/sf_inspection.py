@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import json
 from collections import Counter
+from collections.abc import Mapping
 from datetime import date
 from functools import lru_cache
 from pathlib import Path
@@ -43,6 +44,7 @@ from typing import Any
 
 from clinical_extraction.core.scoring import multiset_prf1
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    POINT_RANGE_TRIPLES,
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import (
@@ -61,6 +63,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
+    resolve_point_range,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     _count_based_state,
@@ -95,6 +98,15 @@ DATESTR = "20260708"
 COMPLEMENT_ARTIFACT = EXPERIMENTS / f"exectv2_sf_magnitude_complement_dev140_{DATESTR}.jsonl"
 BASELINE_ARTIFACT = EXPERIMENTS / "exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl"
 LEDGER_ARTIFACT = EXPERIMENTS / f"exectv2_sf_magnitude_complement_ledger_{DATESTR}.jsonl"
+
+# Gold-quality disclosure sources (the same files ``/gold-noise`` reads -- see
+# ``observatory/routers/gold_noise.py``). Read-only, best-effort: the SF
+# canonical-adjudication ledger is keyed to a different run
+# (``exectv2_gepa_sf_verify_gpt41mini_20260628``) than the one this module
+# scores, so a hit is "a prior adjudication for this letter/state", not a
+# guaranteed match to the exact mention shown.
+GOLD_DATA_ISSUES_ARTIFACT = EXPERIMENTS / "gold_data_issues.jsonl"
+GOLD_CASE_LEDGER_ARTIFACT = EXPERIMENTS / "gold_case_ledger_seizurefrequency.jsonl"
 
 SF_ENTITY = "SeizureFrequency"
 SPLIT = "dev"
@@ -281,6 +293,70 @@ def _ledger_overrides_by_letter() -> dict[str, list[dict[str, Any]]]:
         row = json.loads(line)
         out.setdefault(row["letter_id"], []).append(row)
     return out
+
+
+def _read_jsonl_tolerant(path: Path) -> list[dict[str, Any]]:
+    """Newline-delimited JSON, tolerant of a missing file or a bad line.
+
+    Mirrors ``observatory/routers/gold_noise.py:_read_jsonl`` -- a missing file
+    is an empty list, not an error, and one malformed row can't blank the
+    surface.
+    """
+
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return rows
+
+
+def _gold_data_issues_by_letter() -> dict[str, list[dict[str, Any]]]:
+    """{letter_id: [gold_data_issues.jsonl rows]}, SeizureFrequency only."""
+
+    out: dict[str, list[dict[str, Any]]] = {}
+    for row in _read_jsonl_tolerant(GOLD_DATA_ISSUES_ARTIFACT):
+        if row.get("entity") != SF_ENTITY:
+            continue
+        out.setdefault(row["letter_id"], []).append(row)
+    return out
+
+
+def _gold_case_ledger_by_letter() -> dict[str, list[dict[str, Any]]]:
+    """{letter_id: [gold_case_ledger_seizurefrequency.jsonl rows]}.
+
+    Best-effort, disclosed as such: this ledger was adjudicated against a
+    *different* run than the one this module scores (see
+    ``GOLD_CASE_LEDGER_ARTIFACT``'s module comment), so it is surfaced at the
+    letter level -- "a prior adjudication exists for this letter" -- not
+    matched to one exact mention.
+    """
+
+    out: dict[str, list[dict[str, Any]]] = {}
+    for row in _read_jsonl_tolerant(GOLD_CASE_LEDGER_ARTIFACT):
+        out.setdefault(row["letter_id"], []).append(row)
+    return out
+
+
+def _gold_issue_for_mention(
+    issues: list[dict[str, Any]], attributes: Mapping[str, str]
+) -> dict[str, Any] | None:
+    """The first ``gold_data_issues`` row whose disputed field(s) this mention
+    actually populates, or ``None``. Precise (curated per-fact), unlike the
+    ledger's letter-level, cross-run best-effort join."""
+
+    populated = {key for key, value in attributes.items() if value}
+    for issue in issues:
+        fields = {f.strip() for f in str(issue.get("field", "")).split(",")}
+        if populated & fields:
+            return issue
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -477,9 +553,37 @@ def _scorecard_dict(scores: Any) -> dict[str, dict[str, float | int]]:
     return out
 
 
+def _point_range_match_overrides(
+    gold_attrs: Mapping[str, str],
+    pred_attrs: Mapping[str, str],
+    triples: tuple[tuple[str, str, str], ...],
+) -> dict[str, str]:
+    """Per-key ``ok``/``bad`` verdict for a bare/Lower/Upper triple, non-destructively.
+
+    Unlike :func:`canonicalize_point_range_attributes` (which the scorer uses),
+    this does not rewrite the displayed gold/pred values -- it only decides
+    whether the triple, as a whole, denotes the same fact
+    (:func:`resolve_point_range` equal on both sides), and applies that single
+    verdict to every key in the triple that is populated on either side.
+    """
+
+    overrides: dict[str, str] = {}
+    for triple in triples:
+        gold_resolved = resolve_point_range(gold_attrs, triple)
+        pred_resolved = resolve_point_range(pred_attrs, triple)
+        if gold_resolved is None and pred_resolved is None:
+            continue
+        verdict = "ok" if gold_resolved == pred_resolved else "bad"
+        for key in triple:
+            if gold_attrs.get(key) or pred_attrs.get(key):
+                overrides[key] = verdict
+    return overrides
+
+
 def _layer_a_pairs(
     gold_anns: tuple[ExectAnnotation, ...],
     pred_anns: tuple[ExectAnnotation, ...],
+    gold_issues: list[dict[str, Any]] = (),
 ) -> list[dict[str, Any]]:
     """Layer A — schema attributes. Returns the list of pair dicts.
 
@@ -496,11 +600,17 @@ def _layer_a_pairs(
     for gi, gold_ann in enumerate(gold_anns):
         pi = pairing.get(gi)
         pred_ann = pred_anns[pi] if pi is not None else None
-        pairs.append(_attr_pair(gi, gold_ann, pred_ann, paired=pi is not None))
+        pairs.append(
+            _attr_pair(gi, gold_ann, pred_ann, paired=pi is not None, gold_issues=gold_issues)
+        )
     # Unpaired predictions = false positives.
     for pi, pred_ann in enumerate(pred_anns):
         if pi not in pred_used:
-            pairs.append(_attr_pair(None, None, pred_ann, paired=False, fp_only=True))
+            pairs.append(
+                _attr_pair(
+                    None, None, pred_ann, paired=False, fp_only=True, gold_issues=gold_issues
+                )
+            )
     return pairs
 
 
@@ -511,6 +621,7 @@ def _attr_pair(
     *,
     paired: bool,
     fp_only: bool = False,
+    gold_issues: list[dict[str, Any]] = (),
 ) -> dict[str, Any]:
     if fp_only:
         label = "PREDICTION (no matching gold — FALSE POSITIVE)"
@@ -527,6 +638,17 @@ def _attr_pair(
     gold_attrs = gold_ann.attributes if gold_ann else {}
     pred_attrs = pred_ann.attributes if pred_ann else {}
 
+    # Point/range shape-equivalence: a bare count/cadence and an equal-bounds
+    # Lower/Upper range denote the same fact (see
+    # scoring/normalize.py:resolve_point_range). This overrides the per-key
+    # match verdict for whichever keys are populated on either side of such a
+    # triple, WITHOUT rewriting the displayed raw values -- so the table still
+    # shows gold said a bare count while pred said a range, but no longer
+    # marks that shape difference itself as an error.
+    triple_overrides = _point_range_match_overrides(
+        gold_attrs, pred_attrs, POINT_RANGE_TRIPLES.get(SF_ENTITY, ())
+    )
+
     attributes: list[dict[str, Any]] = []
     for key in SF_ATTR_ORDER:
         gval = gold_attrs.get(key)
@@ -536,6 +658,8 @@ def _attr_pair(
         gcanon = canonicalize_attribute_value(key, gval) if gval is not None else ""
         if pval is None and gval is None:
             match = "absent"
+        elif key in triple_overrides:
+            match = triple_overrides[key]
         else:
             match = "ok" if canon == gcanon else "bad"
         attributes.append(
@@ -558,6 +682,22 @@ def _attr_pair(
     else:
         phrase_match = "ok" if gold_norm == pred_norm else "bad"
 
+    gold_advisory = None
+    if gold_issues:
+        # Fires for a "fp"/"fn" (no counterpart at all) as much as a "pair" row
+        # whose disagreement is a mismatched value rather than a missing
+        # mention (EA0079: gold and pred phrase-pair, but gold's own
+        # TimePeriod/NumberOfTimePeriods disagree with the source text).
+        disputed_keys = {a["key"] for a in attributes if a["match"] == "bad"}
+        issue = _gold_issue_for_mention(list(gold_issues), {k: "1" for k in disputed_keys})
+        if issue is not None:
+            gold_advisory = {
+                "source": "gold_data_issues",
+                "gold_value": issue.get("gold_value", ""),
+                "conflicting_evidence": issue.get("conflicting_evidence", ""),
+                "resolution_status": issue.get("resolution_status", ""),
+            }
+
     return {
         "label": label,
         "side": side,
@@ -567,6 +707,7 @@ def _attr_pair(
         "pred_normalized": pred_norm,
         "phrase_match": phrase_match,
         "attributes": attributes,
+        "gold_advisory": gold_advisory,
     }
 
 
@@ -719,6 +860,8 @@ def _letter_dict(
     row: dict[str, Any],
     baseline_fc: dict[str, list[str]],
     ledger_rows: list[dict[str, Any]],
+    gold_issues: list[dict[str, Any]] = (),
+    gold_case_ledger_rows: list[dict[str, Any]] = (),
 ) -> dict[str, Any]:
     lid = letter.letter_id
     gold_anns = letter.entities(SF_ENTITY)
@@ -737,9 +880,23 @@ def _letter_dict(
         "total_errors": total_errors,
         "direction_errors": {"fp": d_fp, "fn": d_fn},
         "magnitude_errors": {"fp": m_fp, "fn": m_fn},
-        "layer_a": {"pairs": _layer_a_pairs(gold_anns, pred_anns)},
+        "layer_a": {"pairs": _layer_a_pairs(gold_anns, pred_anns, gold_issues)},
         "layer_b": {"components": _layer_b_components(gold_anns, pred_anns)},
         "lineage": _lineage_dict(row, gold_anns, pred_anns, baseline_fc, ledger_rows, lid),
+        # Read-only, best-effort disclosure surface (see GOLD_CASE_LEDGER_ARTIFACT's
+        # module comment): a prior canonical adjudication exists for this
+        # letter, possibly against a different run/mention than shown above.
+        "gold_case_ledger": [
+            {
+                "disagreement_type": r.get("disagreement_type", ""),
+                "match_key": r.get("match_key", ""),
+                "mechanism": r.get("mechanism", ""),
+                "verdict": r.get("verdict", "unadjudicated"),
+                "reason": (r.get("provenance") or {}).get("reason", ""),
+                "run_id": r.get("run_id", ""),
+            }
+            for r in gold_case_ledger_rows
+        ],
     }
 
 
@@ -762,6 +919,8 @@ def build_sf_inspection_payload(*, artifact: Path | None = None) -> dict[str, An
     pred_by_id = {le.letter_id: le for le in pred_letters}
     baseline_fc = _baseline_freqchange_by_letter()
     ledger = _ledger_overrides_by_letter()
+    gold_issues = _gold_data_issues_by_letter()
+    gold_case_ledger = _gold_case_ledger_by_letter()
 
     # ---- Faithfulness gate: reproduce the published F1s exactly. ----
     scores = score_frequency_state(dev_gold, pred_letters)
@@ -785,7 +944,17 @@ def build_sf_inspection_payload(*, artifact: Path | None = None) -> dict[str, An
         letter = gold_by_id.get(lid) or pred_by_id.get(lid)
         pred_anns = pred_by_id[lid].entities(SF_ENTITY) if lid in pred_by_id else ()
         row = rows_by_id.get(lid, {})
-        letters.append(_letter_dict(letter, pred_anns, row, baseline_fc, ledger.get(lid, [])))
+        letters.append(
+            _letter_dict(
+                letter,
+                pred_anns,
+                row,
+                baseline_fc,
+                ledger.get(lid, []),
+                gold_issues.get(lid, []),
+                gold_case_ledger.get(lid, []),
+            )
+        )
 
     n_letters = len(all_ids)
     n_with_errors = sum(1 for d in letters if d["total_errors"])

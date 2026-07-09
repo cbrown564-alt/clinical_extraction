@@ -586,10 +586,18 @@ def test_holistic_manifest_reproduces_dev140_score_ladder() -> None:
     assert headline["by_indicator"]["SeizureFrequency"]["f1"] == 0.8125
     assert headline["by_indicator"]["Prescription"]["f1"] == 0.871
     assert headline["by_indicator"]["Investigations"]["f1"] == 0.8682
-    assert benchmark["raw"] == 0.2968
-    assert benchmark["after_cui_projection"] == 0.3786
+    # benchmark["raw"] re-frozen 0.2968 -> 0.3094 by the SF/Onset/PatientHistory
+    # point/range shape-equivalence fix (a bare count/age and an equal-bounds
+    # Lower/Upper range now collapse to the same match_key/_attribute_key
+    # tuple; see scoring/normalize.py:resolve_point_range). The full-attribute
+    # "benchmark" score runs every entity through match_key, so this moves;
+    # headline and the Diagnosis companion do not (unaffected keying).
+    assert benchmark["raw"] == 0.3094
+    assert benchmark["after_cui_projection"] == 0.3912
     assert companions["Diagnosis"]["concept_negation"]["f1"] == 0.7572
-    assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.3908
+    # active_rate_fidelity re-frozen 0.3908 -> 0.5632 by the same fix (this
+    # pipeline's SF predictions use the Lower/Upper degenerate-range shape).
+    assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.5632
 
 
 def _manifest(

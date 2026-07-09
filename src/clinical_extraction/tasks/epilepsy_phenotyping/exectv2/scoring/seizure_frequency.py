@@ -5,6 +5,9 @@ from collections.abc import Hashable, Iterable, Mapping, Sequence
 from pydantic import BaseModel
 
 from clinical_extraction.core.scoring import PRF1, multiset_prf1, sum_prf1
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    POINT_RANGE_TRIPLES,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation, ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import (
@@ -15,7 +18,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
+    canonicalize_point_range_attributes,
 )
+
+_SF_POINT_RANGE_TRIPLES = POINT_RANGE_TRIPLES["SeizureFrequency"]
 
 # Rate-bearing attributes for active-rate fidelity: seizure counts and cadence,
 # excluding dates / point-in-time so this isolates burden magnitude, not timing.
@@ -249,10 +255,13 @@ def _frequency_active_rate_keys(annotations: Iterable[ExectAnnotation]) -> list[
     for annotation in annotations:
         if _frequency_state(annotation.attributes) != "active-rate":
             continue
+        canonical_attrs = canonicalize_point_range_attributes(
+            annotation.attributes, _SF_POINT_RANGE_TRIPLES
+        )
         rate = tuple(
             sorted(
                 (key, canonicalize_attribute_value(key, value))
-                for key, value in annotation.attributes.items()
+                for key, value in canonical_attrs.items()
                 if key in _FREQUENCY_RATE_ATTRIBUTES and value
             )
         )

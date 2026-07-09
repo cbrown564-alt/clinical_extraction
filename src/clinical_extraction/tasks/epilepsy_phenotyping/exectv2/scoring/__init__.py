@@ -44,6 +44,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match import
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.normalize import (
     canonicalize_attribute_value,
+    canonicalize_point_range_attributes,
+    resolve_point_range,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.prescription import (
     PrescriptionBenchmarkProjectionScores,
@@ -95,6 +97,7 @@ __all__ = [
     "benchmark_ignore_for",
     "canonicalize_attribute_value",
     "canonicalize_medication_name",
+    "canonicalize_point_range_attributes",
     "clinical_headline_unit_keys",
     "concept_keys",
     "frequency_state_direction_deconf",
@@ -110,6 +113,7 @@ __all__ = [
     "prescription_component_key",
     "prescription_component_keys",
     "prf1_from_counts",
+    "resolve_point_range",
     "score_concept_identity",
     "score_entity",
     "score_frequency_state",

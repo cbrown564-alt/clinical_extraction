@@ -55,6 +55,7 @@ function letter(
       ],
     },
     lineage: { candidate_spans: [], override: null },
+    gold_case_ledger: [],
   };
 }
 

@@ -287,3 +287,20 @@ ALL_ENTITIES: tuple[EntitySpec, ...] = (
 )
 
 ENTITY_REGISTRY: dict[str, EntitySpec] = {spec.name: spec for spec in ALL_ENTITIES}
+
+# Entities that let an annotator express the same quantity two ways: a bare
+# attribute, or a ``Lower*``/``Upper*`` split pair (e.g. a seizure count, or a
+# degenerate age range with equal bounds). A literal per-key attribute
+# comparison sees these as unrelated keys even when they denote the identical
+# value; see ``scoring.normalize.resolve_point_range``. Every entity's
+# ``legal_attributes`` was checked for this pattern -- SeizureFrequency (counts
+# and cadence) and the shared Onset/PatientHistory Age triple are the only
+# occurrences; no other entity declares a bare/Lower/Upper duality.
+POINT_RANGE_TRIPLES: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "SeizureFrequency": (
+        ("NumberOfSeizures", "LowerNumberOfSeizures", "UpperNumberOfSeizures"),
+        ("NumberOfTimePeriods", "LowerNumberOfTimePeriods", "UpperNumberOfTimePeriods"),
+    ),
+    "Onset": (("Age", "AgeLower", "AgeUpper"),),
+    "PatientHistory": (("Age", "AgeLower", "AgeUpper"),),
+}

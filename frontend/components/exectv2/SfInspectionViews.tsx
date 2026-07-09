@@ -100,6 +100,49 @@ function VerdictShell({
   );
 }
 
+const LEDGER_VERDICT_LABEL: Record<string, string> = {
+  gold_right: "Gold right",
+  model_defensible: "Model defensible",
+  both_defensible: "Both defensible",
+  unadjudicated: "Unadjudicated",
+};
+
+/** A prior canonical gold-quality adjudication exists for this letter. Read-only
+ * and best-effort: adjudicated against a different run, so this is letter-level
+ * context ("someone already looked at this letter's SF disagreements"), not a
+ * claim that it matches the exact mention shown below. */
+export function GoldCaseLedgerNote({ letter }: { letter: SfInspectionLetter }) {
+  const rows = letter.gold_case_ledger;
+  if (!rows || rows.length === 0) return null;
+
+  return (
+    <section className="overflow-hidden rounded-md border border-gold/40 bg-gold/5">
+      <div className="border-b border-gold/20 px-3 py-1.5">
+        <p className="text-[10px] font-bold uppercase tracking-wide text-gold">
+          Prior gold-quality adjudication ({rows.length})
+        </p>
+        <p className="text-[10px] text-muted">
+          From an earlier canonical row adjudication of a different prediction run — letter-level
+          context, not necessarily the same mention shown below.
+        </p>
+      </div>
+      <ul className="divide-y divide-border">
+        {rows.map((row, i) => (
+          <li key={i} className="px-3 py-2 text-[11px]">
+            <span className="font-mono font-semibold text-foreground">
+              {LEDGER_VERDICT_LABEL[row.verdict] ?? row.verdict}
+            </span>
+            <span className="ml-2 text-muted">
+              {row.disagreement_type} · {row.match_key} · {row.mechanism}
+            </span>
+            {row.reason && <p className="mt-1 text-muted">{row.reason}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function CandidateSpansContext({ spans }: { spans: SfCandidateSpan[] }) {
   if (spans.length === 0) return null;
 
