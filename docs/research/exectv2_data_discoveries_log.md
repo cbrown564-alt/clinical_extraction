@@ -234,7 +234,9 @@ Status: **firm.**
 case/format variants.
 **Evidence.** Profile "Annotation noise summary"; SF audit §5.
 **Rules implication.** Normalize where safe (`days`→`Day`); otherwise leave as an
-accepted miss, don't add rules to reproduce noise.
+accepted miss, don't add rules to reproduce noise. The scorer now performs this
+format-only canonicalization on both gold and predictions (2026-07-09); the
+frozen corpus itself remains unchanged.
 **LLM implication.** These cap achievable F1 a few tenths of a percent; don't
 prompt-engineer toward them. Useful as a "ceiling" line in results.
 Status: **firm.**

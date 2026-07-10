@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-07-08
+Last updated: 2026-07-10
 
 ## Plain-language snapshot (5 bullets)
 
@@ -94,13 +94,28 @@ Current evidence stack:
 
 ## Active Priorities
 
-1. Treat `clinical_headline` recovery as primary; strict benchmark/CUI stays diagnostic.
-2. Keep deterministic validation/projection separate from prediction-bearing facts.
-3. Separate Reliability Scorecard from Component Impact by split, scorer, and inspection boundary.
+1. Complete the ExECTv2 gold, scorer, and interpretation assurance audit before
+   new claims, experiments, or repository simplification.
+2. Treat `clinical_headline` recovery as primary; strict benchmark/CUI stays diagnostic.
+3. Keep deterministic validation/projection separate from prediction-bearing facts
+   and report their family-specific effects.
 
 ## Work Board
 
 ### Now
+
+- 2026-07-10: **Gold, scorer, and interpretation assurance is the mandatory
+  next gate.** The EA0079/EA0169 time-period audit bounded one defect class, but
+  it also demonstrated that a gold or measurement error can look exactly like a
+  model error. Before any further ExECTv2 claim, experiment, or simplification,
+  execute the sceptical all-corpus audit plan:
+  `docs/plans/exectv2_gold_scorer_interpretation_assurance_plan_2026-07-10.md`.
+  It requires mechanical all-corpus validation, blinded source-to-gold review,
+  scorer/matcher and projection verification, same-input replays, and a
+  claim-level release decision. Full 200-letter source/gold review needs a
+  separate no-tuning authorization; Gan test row review remains blocked. Only
+  after the resulting assurance release may the keep/merge/archive/delete
+  inventory begin.
 
 - 2026-07-08: **Investigations dspy surface-attribution probe landed — DSPY's
   90.4% IS EXTRACTOR-DERIVED (closes pathway #3, zero LLM calls).** The
@@ -1007,6 +1022,17 @@ Current evidence stack:
 
 ### Done Recently
 
+- 2026-07-10: **SF time-period corpus audit and format-only scorer repair
+  verified.** The all-200 audit confirms EA0079 is the sole genuine
+  time-period annotation error; EA0169's `TimePeriod="days"` is instead the one
+  closed-vocabulary case/plural variant. Scoring now maps the four time units to
+  their canonical enum values (for example `days` -> `Day`), resolving one
+  projection miss without changing any selected clinical fact. The frozen gold
+  corpus remains unedited; EA0079 and EA0146 remain recorded as open data issues.
+  Audit: `experiments/audit_sf_timeperiod_2026-07-09.py`; issue ledger:
+  `experiments/gold_data_issues.jsonl`. The scorer-edit predeclaration gate is
+  also executable again after repairing one Windows-path JSON escape in
+  `experiments/hypothesis_registry.jsonl`.
 - 2026-07-08: **Investigations dspy surface-attribution probe complete —
   EXTRACTOR-DERIVED, closes pathway #3** (see Now for the full entry). Zero LLM
   calls; cross-codebase read of `dspy-extraction` (corroborated by
