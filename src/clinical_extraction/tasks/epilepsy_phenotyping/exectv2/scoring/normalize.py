@@ -11,6 +11,19 @@ _LOWERCASE_ATTRIBUTE_VALUES: frozenset[str] = frozenset({"DrugName", "DoseUnit"}
 _QUOTES = str.maketrans("", "", "\"'“”‘’‚‛")
 _WHITESPACE = re.compile(r"\s+")
 
+# TimePeriod's closed vocab is {Day, Week, Month, Year}; one gold row (EA0169)
+# uses the lowercase/plural literal "days" (see docs/research/
+# exectv2_data_discoveries_log.md D14 and experiments/gold_data_issues.jsonl).
+# Normalize any case/plural variant of the four canonical units so that gold
+# noise doesn't silently fail to match a correct prediction.
+_TIME_PERIOD_ATTRIBUTES: frozenset[str] = frozenset({"TimePeriod"})
+_TIME_PERIOD_CANONICAL: dict[str, str] = {
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+}
+
 PointRangeTriple = tuple[str, str, str]
 
 
@@ -25,6 +38,9 @@ def canonicalize_attribute_value(key: str, value: str) -> str:
     normalized = _WHITESPACE.sub(" ", str(value).translate(_QUOTES)).strip()
     if key in _LOWERCASE_ATTRIBUTE_VALUES:
         normalized = normalized.lower()
+    elif key in _TIME_PERIOD_ATTRIBUTES:
+        singular = normalized.lower().rstrip("s")
+        normalized = _TIME_PERIOD_CANONICAL.get(singular, normalized)
     return normalized
 
 

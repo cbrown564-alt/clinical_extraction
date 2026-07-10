@@ -1,0 +1,812 @@
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Clinical Extraction Explorer" [ref=e4] [cursor=pointer]:
+        - /url: /workbench
+        - img [ref=e6]
+        - generic [ref=e10]: Clinical Extraction Explorer
+      - generic [ref=e11]:
+        - link "Example Explorer" [ref=e12] [cursor=pointer]:
+          - /url: /workbench
+          - img [ref=e13]
+          - text: Example Explorer
+        - link "Aggregate Performance" [ref=e16] [cursor=pointer]:
+          - /url: /observatory
+          - img [ref=e17]
+          - text: Aggregate Performance
+        - link "Component Impact" [ref=e19] [cursor=pointer]:
+          - /url: /laboratory
+          - img [ref=e20]
+          - text: Component Impact
+        - link "Reliability Scorecard" [ref=e30] [cursor=pointer]:
+          - /url: /reliability-scorecard
+          - img [ref=e31]
+          - text: Reliability Scorecard
+        - link "Error Gallery" [ref=e34] [cursor=pointer]:
+          - /url: /gallery
+          - img [ref=e35]
+          - text: Error Gallery
+        - link "Audit" [ref=e38] [cursor=pointer]:
+          - /url: /gold-audit
+          - img [ref=e39]
+          - text: Audit
+        - link "Gold noise" [ref=e43] [cursor=pointer]:
+          - /url: /gold-noise
+          - img [ref=e44]
+          - text: Gold noise
+        - link "SF inspection" [ref=e46] [cursor=pointer]:
+          - /url: /exectv2-sf-inspection
+          - img [ref=e47]
+          - text: SF inspection
+        - button "Dataset Gan 2026" [ref=e52]:
+          - img [ref=e53]
+          - generic [ref=e57]:
+            - generic [ref=e58]: Dataset
+            - generic [ref=e59]: Gan 2026
+          - img [ref=e60]
+  - main [ref=e62]:
+    - generic [ref=e63]:
+      - generic [ref=e75]:
+        - img [ref=e76]
+        - heading "SeizureFrequency · gold vs. prediction" [level=1] [ref=e79]
+        - generic [ref=e80]: dev · 140 letters · 94 with ≥1 component error
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e85]: Headline
+            - generic [ref=e88]: Change
+            - generic [ref=e91]: Strict
+            - generic [ref=e92]: G/P·TP·FP/FN
+          - button "Family F1" [ref=e93]
+          - 'generic "Predictions: exectv2_sf_magnitude_complement_dev140_20260708.jsonl. Scorer-faithful — backend re-scores with score_frequency_state and aborts unless published F1 reproduces within 1e-4." [ref=e94]':
+            - img [ref=e95]
+      - generic [ref=e97]:
+        - complementary [ref=e98]:
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]: Letters
+              - generic [ref=e102]: "53"
+            - generic [ref=e103]:
+              - button "Actionable53" [ref=e104]
+              - button "Headline48" [ref=e105]
+              - button "Change29" [ref=e106]
+              - button "Bench only41" [ref=e107]
+              - button "Clean10" [ref=e108]
+              - button "All140" [ref=e109]
+            - paragraph [ref=e110]: j/k · Enter · Esc
+          - table [ref=e113]:
+            - rowgroup [ref=e114]:
+              - row "letter g/p Headline Change Strict" [ref=e115]:
+                - columnheader "letter" [ref=e116]
+                - columnheader "g/p" [ref=e117]
+                - columnheader "Headline" [ref=e118]
+                - columnheader "Change" [ref=e119]
+                - columnheader "Strict" [ref=e120]
+                - columnheader [ref=e121]
+            - rowgroup [ref=e122]:
+              - row "EA0005 g2/p4 fp1/fn1 clean fp3/fn1 →" [ref=e123] [cursor=pointer]:
+                - cell "EA0005" [ref=e124]
+                - cell "g2/p4" [ref=e125]
+                - cell "fp1/fn1" [ref=e126]:
+                  - generic [ref=e127]: fp1/fn1
+                - cell "clean" [ref=e128]:
+                  - generic [ref=e129]: clean
+                - cell "fp3/fn1" [ref=e130]:
+                  - generic [ref=e131]: fp3/fn1
+                - cell "→" [ref=e132]:
+                  - button "→" [ref=e133]
+              - row "EA0006 g3/p4 fp2/fn0 clean fp2/fn1 →" [ref=e134] [cursor=pointer]:
+                - cell "EA0006" [ref=e135]
+                - cell "g3/p4" [ref=e136]
+                - cell "fp2/fn0" [ref=e137]:
+                  - generic [ref=e138]: fp2/fn0
+                - cell "clean" [ref=e139]:
+                  - generic [ref=e140]: clean
+                - cell "fp2/fn1" [ref=e141]:
+                  - generic [ref=e142]: fp2/fn1
+                - cell "→" [ref=e143]:
+                  - button "→" [ref=e144]
+              - row "EA0008 g2/p4 fp1/fn0 fp1/fn1 fp4/fn2 →" [ref=e145] [cursor=pointer]:
+                - cell "EA0008" [ref=e146]
+                - cell "g2/p4" [ref=e147]
+                - cell "fp1/fn0" [ref=e148]:
+                  - generic [ref=e149]: fp1/fn0
+                - cell "fp1/fn1" [ref=e150]:
+                  - generic [ref=e151]: fp1/fn1
+                - cell "fp4/fn2" [ref=e152]:
+                  - generic [ref=e153]: fp4/fn2
+                - cell "→" [ref=e154]:
+                  - button "→" [ref=e155]
+              - row "EA0010 g1/p0 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e156] [cursor=pointer]:
+                - cell "EA0010" [ref=e157]
+                - cell "g1/p0" [ref=e158]
+                - cell "fp0/fn1" [ref=e159]:
+                  - generic [ref=e160]: fp0/fn1
+                - cell "fp0/fn1" [ref=e161]:
+                  - generic [ref=e162]: fp0/fn1
+                - cell "fp0/fn1" [ref=e163]:
+                  - generic [ref=e164]: fp0/fn1
+                - cell "→" [ref=e165]:
+                  - button "→" [ref=e166]
+              - row "EA0011 g5/p9 fp1/fn0 clean fp5/fn1 →" [ref=e167] [cursor=pointer]:
+                - cell "EA0011" [ref=e168]
+                - cell "g5/p9" [ref=e169]
+                - cell "fp1/fn0" [ref=e170]:
+                  - generic [ref=e171]: fp1/fn0
+                - cell "clean" [ref=e172]:
+                  - generic [ref=e173]: clean
+                - cell "fp5/fn1" [ref=e174]:
+                  - generic [ref=e175]: fp5/fn1
+                - cell "→" [ref=e176]:
+                  - button "→" [ref=e177]
+              - row "EA0026 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e178] [cursor=pointer]:
+                - cell "EA0026" [ref=e179]
+                - cell "g1/p1" [ref=e180]
+                - cell "fp1/fn1" [ref=e181]:
+                  - generic [ref=e182]: fp1/fn1
+                - cell "clean" [ref=e183]:
+                  - generic [ref=e184]: clean
+                - cell "fp1/fn1" [ref=e185]:
+                  - generic [ref=e186]: fp1/fn1
+                - cell "→" [ref=e187]:
+                  - button "→" [ref=e188]
+              - row "EA0034 g1/p2 fp1/fn0 fp1/fn0 fp1/fn0 →" [ref=e189] [cursor=pointer]:
+                - cell "EA0034" [ref=e190]
+                - cell "g1/p2" [ref=e191]
+                - cell "fp1/fn0" [ref=e192]:
+                  - generic [ref=e193]: fp1/fn0
+                - cell "fp1/fn0" [ref=e194]:
+                  - generic [ref=e195]: fp1/fn0
+                - cell "fp1/fn0" [ref=e196]:
+                  - generic [ref=e197]: fp1/fn0
+                - cell "→" [ref=e198]:
+                  - button "→" [ref=e199]
+              - row "EA0038 g1/p0 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e200] [cursor=pointer]:
+                - cell "EA0038" [ref=e201]
+                - cell "g1/p0" [ref=e202]
+                - cell "fp0/fn1" [ref=e203]:
+                  - generic [ref=e204]: fp0/fn1
+                - cell "fp0/fn1" [ref=e205]:
+                  - generic [ref=e206]: fp0/fn1
+                - cell "fp0/fn1" [ref=e207]:
+                  - generic [ref=e208]: fp0/fn1
+                - cell "→" [ref=e209]:
+                  - button "→" [ref=e210]
+              - row "EA0049 g6/p8 fp1/fn0 clean fp3/fn1 →" [ref=e211] [cursor=pointer]:
+                - cell "EA0049" [ref=e212]
+                - cell "g6/p8" [ref=e213]
+                - cell "fp1/fn0" [ref=e214]:
+                  - generic [ref=e215]: fp1/fn0
+                - cell "clean" [ref=e216]:
+                  - generic [ref=e217]: clean
+                - cell "fp3/fn1" [ref=e218]:
+                  - generic [ref=e219]: fp3/fn1
+                - cell "→" [ref=e220]:
+                  - button "→" [ref=e221]
+              - row "EA0071 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e222] [cursor=pointer]:
+                - cell "EA0071" [ref=e223]
+                - cell "g1/p1" [ref=e224]
+                - cell "fp1/fn1" [ref=e225]:
+                  - generic [ref=e226]: fp1/fn1
+                - cell "clean" [ref=e227]:
+                  - generic [ref=e228]: clean
+                - cell "fp1/fn1" [ref=e229]:
+                  - generic [ref=e230]: fp1/fn1
+                - cell "→" [ref=e231]:
+                  - button "→" [ref=e232]
+              - row "EA0074 g0/p2 fp2/fn0 fp2/fn0 fp2/fn0 →" [ref=e233] [cursor=pointer]:
+                - cell "EA0074" [ref=e234]
+                - cell "g0/p2" [ref=e235]
+                - cell "fp2/fn0" [ref=e236]:
+                  - generic [ref=e237]: fp2/fn0
+                - cell "fp2/fn0" [ref=e238]:
+                  - generic [ref=e239]: fp2/fn0
+                - cell "fp2/fn0" [ref=e240]:
+                  - generic [ref=e241]: fp2/fn0
+                - cell "→" [ref=e242]:
+                  - button "→" [ref=e243]
+              - row "EA0079 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e244] [cursor=pointer]:
+                - cell "EA0079" [ref=e245]
+                - cell "g1/p1" [ref=e246]
+                - cell "fp1/fn1" [ref=e247]:
+                  - generic [ref=e248]: fp1/fn1
+                - cell "clean" [ref=e249]:
+                  - generic [ref=e250]: clean
+                - cell "fp1/fn1" [ref=e251]:
+                  - generic [ref=e252]: fp1/fn1
+                - cell "→" [ref=e253]:
+                  - button "→" [ref=e254]
+              - row "EA0085 g1/p2 fp1/fn0 clean fp1/fn0 →" [ref=e255] [cursor=pointer]:
+                - cell "EA0085" [ref=e256]
+                - cell "g1/p2" [ref=e257]
+                - cell "fp1/fn0" [ref=e258]:
+                  - generic [ref=e259]: fp1/fn0
+                - cell "clean" [ref=e260]:
+                  - generic [ref=e261]: clean
+                - cell "fp1/fn0" [ref=e262]:
+                  - generic [ref=e263]: fp1/fn0
+                - cell "→" [ref=e264]:
+                  - button "→" [ref=e265]
+              - row "EA0087 g3/p4 fp1/fn0 fp1/fn1 fp4/fn3 →" [ref=e266] [cursor=pointer]:
+                - cell "EA0087" [ref=e267]
+                - cell "g3/p4" [ref=e268]
+                - cell "fp1/fn0" [ref=e269]:
+                  - generic [ref=e270]: fp1/fn0
+                - cell "fp1/fn1" [ref=e271]:
+                  - generic [ref=e272]: fp1/fn1
+                - cell "fp4/fn3" [ref=e273]:
+                  - generic [ref=e274]: fp4/fn3
+                - cell "→" [ref=e275]:
+                  - button "→" [ref=e276]
+              - row "EA0092 g0/p1 fp1/fn0 fp1/fn0 fp1/fn0 →" [ref=e277] [cursor=pointer]:
+                - cell "EA0092" [ref=e278]
+                - cell "g0/p1" [ref=e279]
+                - cell "fp1/fn0" [ref=e280]:
+                  - generic [ref=e281]: fp1/fn0
+                - cell "fp1/fn0" [ref=e282]:
+                  - generic [ref=e283]: fp1/fn0
+                - cell "fp1/fn0" [ref=e284]:
+                  - generic [ref=e285]: fp1/fn0
+                - cell "→" [ref=e286]:
+                  - button "→" [ref=e287]
+              - row "EA0096 g2/p1 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e288] [cursor=pointer]:
+                - cell "EA0096" [ref=e289]
+                - cell "g2/p1" [ref=e290]
+                - cell "fp0/fn1" [ref=e291]:
+                  - generic [ref=e292]: fp0/fn1
+                - cell "fp0/fn1" [ref=e293]:
+                  - generic [ref=e294]: fp0/fn1
+                - cell "fp0/fn1" [ref=e295]:
+                  - generic [ref=e296]: fp0/fn1
+                - cell "→" [ref=e297]:
+                  - button "→" [ref=e298]
+              - row "EA0106 g3/p5 fp1/fn0 clean fp3/fn1 →" [ref=e299] [cursor=pointer]:
+                - cell "EA0106" [ref=e300]
+                - cell "g3/p5" [ref=e301]
+                - cell "fp1/fn0" [ref=e302]:
+                  - generic [ref=e303]: fp1/fn0
+                - cell "clean" [ref=e304]:
+                  - generic [ref=e305]: clean
+                - cell "fp3/fn1" [ref=e306]:
+                  - generic [ref=e307]: fp3/fn1
+                - cell "→" [ref=e308]:
+                  - button "→" [ref=e309]
+              - row "EA0108 g3/p2 fp0/fn1 fp1/fn1 fp2/fn3 →" [ref=e310] [cursor=pointer]:
+                - cell "EA0108" [ref=e311]
+                - cell "g3/p2" [ref=e312]
+                - cell "fp0/fn1" [ref=e313]:
+                  - generic [ref=e314]: fp0/fn1
+                - cell "fp1/fn1" [ref=e315]:
+                  - generic [ref=e316]: fp1/fn1
+                - cell "fp2/fn3" [ref=e317]:
+                  - generic [ref=e318]: fp2/fn3
+                - cell "→" [ref=e319]:
+                  - button "→" [ref=e320]
+              - row "EA0111 g2/p1 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e321] [cursor=pointer]:
+                - cell "EA0111" [ref=e322]
+                - cell "g2/p1" [ref=e323]
+                - cell "fp0/fn1" [ref=e324]:
+                  - generic [ref=e325]: fp0/fn1
+                - cell "fp0/fn1" [ref=e326]:
+                  - generic [ref=e327]: fp0/fn1
+                - cell "fp0/fn1" [ref=e328]:
+                  - generic [ref=e329]: fp0/fn1
+                - cell "→" [ref=e330]:
+                  - button "→" [ref=e331]
+              - row "EA0114 g0/p1 fp1/fn0 fp1/fn0 fp1/fn0 →" [ref=e332] [cursor=pointer]:
+                - cell "EA0114" [ref=e333]
+                - cell "g0/p1" [ref=e334]
+                - cell "fp1/fn0" [ref=e335]:
+                  - generic [ref=e336]: fp1/fn0
+                - cell "fp1/fn0" [ref=e337]:
+                  - generic [ref=e338]: fp1/fn0
+                - cell "fp1/fn0" [ref=e339]:
+                  - generic [ref=e340]: fp1/fn0
+                - cell "→" [ref=e341]:
+                  - button "→" [ref=e342]
+              - row "EA0117 g1/p0 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e343] [cursor=pointer]:
+                - cell "EA0117" [ref=e344]
+                - cell "g1/p0" [ref=e345]
+                - cell "fp0/fn1" [ref=e346]:
+                  - generic [ref=e347]: fp0/fn1
+                - cell "fp0/fn1" [ref=e348]:
+                  - generic [ref=e349]: fp0/fn1
+                - cell "fp0/fn1" [ref=e350]:
+                  - generic [ref=e351]: fp0/fn1
+                - cell "→" [ref=e352]:
+                  - button "→" [ref=e353]
+              - row "EA0119 g4/p3 fp1/fn2 clean fp1/fn2 →" [ref=e354] [cursor=pointer]:
+                - cell "EA0119" [ref=e355]
+                - cell "g4/p3" [ref=e356]
+                - cell "fp1/fn2" [ref=e357]:
+                  - generic [ref=e358]: fp1/fn2
+                - cell "clean" [ref=e359]:
+                  - generic [ref=e360]: clean
+                - cell "fp1/fn2" [ref=e361]:
+                  - generic [ref=e362]: fp1/fn2
+                - cell "→" [ref=e363]:
+                  - button "→" [ref=e364]
+              - row "EA0121 g2/p3 fp1/fn0 clean fp2/fn1 →" [ref=e365] [cursor=pointer]:
+                - cell "EA0121" [ref=e366]
+                - cell "g2/p3" [ref=e367]
+                - cell "fp1/fn0" [ref=e368]:
+                  - generic [ref=e369]: fp1/fn0
+                - cell "clean" [ref=e370]:
+                  - generic [ref=e371]: clean
+                - cell "fp2/fn1" [ref=e372]:
+                  - generic [ref=e373]: fp2/fn1
+                - cell "→" [ref=e374]:
+                  - button "→" [ref=e375]
+              - row "EA0123 g3/p5 fp1/fn1 fp0/fn1 fp4/fn2 →" [ref=e376] [cursor=pointer]:
+                - cell "EA0123" [ref=e377]
+                - cell "g3/p5" [ref=e378]
+                - cell "fp1/fn1" [ref=e379]:
+                  - generic [ref=e380]: fp1/fn1
+                - cell "fp0/fn1" [ref=e381]:
+                  - generic [ref=e382]: fp0/fn1
+                - cell "fp4/fn2" [ref=e383]:
+                  - generic [ref=e384]: fp4/fn2
+                - cell "→" [ref=e385]:
+                  - button "→" [ref=e386]
+              - row "EA0127 g2/p2 fp0/fn1 clean fp1/fn1 →" [ref=e387] [cursor=pointer]:
+                - cell "EA0127" [ref=e388]
+                - cell "g2/p2" [ref=e389]
+                - cell "fp0/fn1" [ref=e390]:
+                  - generic [ref=e391]: fp0/fn1
+                - cell "clean" [ref=e392]:
+                  - generic [ref=e393]: clean
+                - cell "fp1/fn1" [ref=e394]:
+                  - generic [ref=e395]: fp1/fn1
+                - cell "→" [ref=e396]:
+                  - button "→" [ref=e397]
+              - row "EA0128 g2/p1 fp0/fn1 fp0/fn1 fp1/fn2 →" [ref=e398] [cursor=pointer]:
+                - cell "EA0128" [ref=e399]
+                - cell "g2/p1" [ref=e400]
+                - cell "fp0/fn1" [ref=e401]:
+                  - generic [ref=e402]: fp0/fn1
+                - cell "fp0/fn1" [ref=e403]:
+                  - generic [ref=e404]: fp0/fn1
+                - cell "fp1/fn2" [ref=e405]:
+                  - generic [ref=e406]: fp1/fn2
+                - cell "→" [ref=e407]:
+                  - button "→" [ref=e408]
+              - row "EA0131 g1/p3 fp1/fn0 fp1/fn0 fp2/fn0 →" [ref=e409] [cursor=pointer]:
+                - cell "EA0131" [ref=e410]
+                - cell "g1/p3" [ref=e411]
+                - cell "fp1/fn0" [ref=e412]:
+                  - generic [ref=e413]: fp1/fn0
+                - cell "fp1/fn0" [ref=e414]:
+                  - generic [ref=e415]: fp1/fn0
+                - cell "fp2/fn0" [ref=e416]:
+                  - generic [ref=e417]: fp2/fn0
+                - cell "→" [ref=e418]:
+                  - button "→" [ref=e419]
+              - row "EA0132 g1/p2 fp1/fn0 clean fp1/fn0 →" [ref=e420] [cursor=pointer]:
+                - cell "EA0132" [ref=e421]
+                - cell "g1/p2" [ref=e422]
+                - cell "fp1/fn0" [ref=e423]:
+                  - generic [ref=e424]: fp1/fn0
+                - cell "clean" [ref=e425]:
+                  - generic [ref=e426]: clean
+                - cell "fp1/fn0" [ref=e427]:
+                  - generic [ref=e428]: fp1/fn0
+                - cell "→" [ref=e429]:
+                  - button "→" [ref=e430]
+              - row "EA0133 g2/p4 fp1/fn0 clean fp2/fn0 →" [ref=e431] [cursor=pointer]:
+                - cell "EA0133" [ref=e432]
+                - cell "g2/p4" [ref=e433]
+                - cell "fp1/fn0" [ref=e434]:
+                  - generic [ref=e435]: fp1/fn0
+                - cell "clean" [ref=e436]:
+                  - generic [ref=e437]: clean
+                - cell "fp2/fn0" [ref=e438]:
+                  - generic [ref=e439]: fp2/fn0
+                - cell "→" [ref=e440]:
+                  - button "→" [ref=e441]
+              - row "EA0135 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e442] [cursor=pointer]:
+                - cell "EA0135" [ref=e443]
+                - cell "g1/p1" [ref=e444]
+                - cell "fp1/fn1" [ref=e445]:
+                  - generic [ref=e446]: fp1/fn1
+                - cell "clean" [ref=e447]:
+                  - generic [ref=e448]: clean
+                - cell "fp1/fn1" [ref=e449]:
+                  - generic [ref=e450]: fp1/fn1
+                - cell "→" [ref=e451]:
+                  - button "→" [ref=e452]
+              - row "EA0137 g2/p2 fp0/fn1 fp0/fn1 fp1/fn1 →" [ref=e453] [cursor=pointer]:
+                - cell "EA0137" [ref=e454]
+                - cell "g2/p2" [ref=e455]
+                - cell "fp0/fn1" [ref=e456]:
+                  - generic [ref=e457]: fp0/fn1
+                - cell "fp0/fn1" [ref=e458]:
+                  - generic [ref=e459]: fp0/fn1
+                - cell "fp1/fn1" [ref=e460]:
+                  - generic [ref=e461]: fp1/fn1
+                - cell "→" [ref=e462]:
+                  - button "→" [ref=e463]
+              - row "EA0139 g1/p2 fp1/fn0 clean fp2/fn1 →" [ref=e464] [cursor=pointer]:
+                - cell "EA0139" [ref=e465]
+                - cell "g1/p2" [ref=e466]
+                - cell "fp1/fn0" [ref=e467]:
+                  - generic [ref=e468]: fp1/fn0
+                - cell "clean" [ref=e469]:
+                  - generic [ref=e470]: clean
+                - cell "fp2/fn1" [ref=e471]:
+                  - generic [ref=e472]: fp2/fn1
+                - cell "→" [ref=e473]:
+                  - button "→" [ref=e474]
+              - row "EA0143 g2/p2 fp1/fn1 clean fp1/fn1 →" [ref=e475] [cursor=pointer]:
+                - cell "EA0143" [ref=e476]
+                - cell "g2/p2" [ref=e477]
+                - cell "fp1/fn1" [ref=e478]:
+                  - generic [ref=e479]: fp1/fn1
+                - cell "clean" [ref=e480]:
+                  - generic [ref=e481]: clean
+                - cell "fp1/fn1" [ref=e482]:
+                  - generic [ref=e483]: fp1/fn1
+                - cell "→" [ref=e484]:
+                  - button "→" [ref=e485]
+              - row "EA0146 g0/p1 fp1/fn0 fp1/fn0 fp1/fn0 →" [ref=e486] [cursor=pointer]:
+                - cell "EA0146" [ref=e487]
+                - cell "g0/p1" [ref=e488]
+                - cell "fp1/fn0" [ref=e489]:
+                  - generic [ref=e490]: fp1/fn0
+                - cell "fp1/fn0" [ref=e491]:
+                  - generic [ref=e492]: fp1/fn0
+                - cell "fp1/fn0" [ref=e493]:
+                  - generic [ref=e494]: fp1/fn0
+                - cell "→" [ref=e495]:
+                  - button "→" [ref=e496]
+              - row "EA0150 g2/p5 fp1/fn0 clean fp3/fn0 →" [ref=e497] [cursor=pointer]:
+                - cell "EA0150" [ref=e498]
+                - cell "g2/p5" [ref=e499]
+                - cell "fp1/fn0" [ref=e500]:
+                  - generic [ref=e501]: fp1/fn0
+                - cell "clean" [ref=e502]:
+                  - generic [ref=e503]: clean
+                - cell "fp3/fn0" [ref=e504]:
+                  - generic [ref=e505]: fp3/fn0
+                - cell "→" [ref=e506]:
+                  - button "→" [ref=e507]
+              - row "EA0151 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e508] [cursor=pointer]:
+                - cell "EA0151" [ref=e509]
+                - cell "g1/p1" [ref=e510]
+                - cell "fp1/fn1" [ref=e511]:
+                  - generic [ref=e512]: fp1/fn1
+                - cell "clean" [ref=e513]:
+                  - generic [ref=e514]: clean
+                - cell "fp1/fn1" [ref=e515]:
+                  - generic [ref=e516]: fp1/fn1
+                - cell "→" [ref=e517]:
+                  - button "→" [ref=e518]
+              - row "EA0154 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e519] [cursor=pointer]:
+                - cell "EA0154" [ref=e520]
+                - cell "g1/p1" [ref=e521]
+                - cell "fp1/fn1" [ref=e522]:
+                  - generic [ref=e523]: fp1/fn1
+                - cell "clean" [ref=e524]:
+                  - generic [ref=e525]: clean
+                - cell "fp1/fn1" [ref=e526]:
+                  - generic [ref=e527]: fp1/fn1
+                - cell "→" [ref=e528]:
+                  - button "→" [ref=e529]
+              - row "EA0156 g1/p2 fp1/fn0 fp1/fn0 fp2/fn1 →" [ref=e530] [cursor=pointer]:
+                - cell "EA0156" [ref=e531]
+                - cell "g1/p2" [ref=e532]
+                - cell "fp1/fn0" [ref=e533]:
+                  - generic [ref=e534]: fp1/fn0
+                - cell "fp1/fn0" [ref=e535]:
+                  - generic [ref=e536]: fp1/fn0
+                - cell "fp2/fn1" [ref=e537]:
+                  - generic [ref=e538]: fp2/fn1
+                - cell "→" [ref=e539]:
+                  - button "→" [ref=e540]
+              - row "EA0157 g1/p0 fp0/fn1 fp0/fn1 fp0/fn1 →" [ref=e541] [cursor=pointer]:
+                - cell "EA0157" [ref=e542]
+                - cell "g1/p0" [ref=e543]
+                - cell "fp0/fn1" [ref=e544]:
+                  - generic [ref=e545]: fp0/fn1
+                - cell "fp0/fn1" [ref=e546]:
+                  - generic [ref=e547]: fp0/fn1
+                - cell "fp0/fn1" [ref=e548]:
+                  - generic [ref=e549]: fp0/fn1
+                - cell "→" [ref=e550]:
+                  - button "→" [ref=e551]
+              - row "EA0158 g2/p4 fp1/fn1 clean fp3/fn1 →" [ref=e552] [cursor=pointer]:
+                - cell "EA0158" [ref=e553]
+                - cell "g2/p4" [ref=e554]
+                - cell "fp1/fn1" [ref=e555]:
+                  - generic [ref=e556]: fp1/fn1
+                - cell "clean" [ref=e557]:
+                  - generic [ref=e558]: clean
+                - cell "fp3/fn1" [ref=e559]:
+                  - generic [ref=e560]: fp3/fn1
+                - cell "→" [ref=e561]:
+                  - button "→" [ref=e562]
+              - row "EA0161 g4/p5 fp2/fn1 fp1/fn1 fp5/fn4 →" [ref=e563] [cursor=pointer]:
+                - cell "EA0161" [ref=e564]
+                - cell "g4/p5" [ref=e565]
+                - cell "fp2/fn1" [ref=e566]:
+                  - generic [ref=e567]: fp2/fn1
+                - cell "fp1/fn1" [ref=e568]:
+                  - generic [ref=e569]: fp1/fn1
+                - cell "fp5/fn4" [ref=e570]:
+                  - generic [ref=e571]: fp5/fn4
+                - cell "→" [ref=e572]:
+                  - button "→" [ref=e573]
+              - row "EA0162 g1/p3 fp1/fn0 fp1/fn0 fp2/fn0 →" [ref=e574] [cursor=pointer]:
+                - cell "EA0162" [ref=e575]
+                - cell "g1/p3" [ref=e576]
+                - cell "fp1/fn0" [ref=e577]:
+                  - generic [ref=e578]: fp1/fn0
+                - cell "fp1/fn0" [ref=e579]:
+                  - generic [ref=e580]: fp1/fn0
+                - cell "fp2/fn0" [ref=e581]:
+                  - generic [ref=e582]: fp2/fn0
+                - cell "→" [ref=e583]:
+                  - button "→" [ref=e584]
+              - row "EA0167 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e585] [cursor=pointer]:
+                - cell "EA0167" [ref=e586]
+                - cell "g1/p1" [ref=e587]
+                - cell "fp1/fn1" [ref=e588]:
+                  - generic [ref=e589]: fp1/fn1
+                - cell "clean" [ref=e590]:
+                  - generic [ref=e591]: clean
+                - cell "fp1/fn1" [ref=e592]:
+                  - generic [ref=e593]: fp1/fn1
+                - cell "→" [ref=e594]:
+                  - button "→" [ref=e595]
+              - row "EA0171 g0/p1 fp1/fn0 fp1/fn0 fp1/fn0 →" [ref=e596] [cursor=pointer]:
+                - cell "EA0171" [ref=e597]
+                - cell "g0/p1" [ref=e598]
+                - cell "fp1/fn0" [ref=e599]:
+                  - generic [ref=e600]: fp1/fn0
+                - cell "fp1/fn0" [ref=e601]:
+                  - generic [ref=e602]: fp1/fn0
+                - cell "fp1/fn0" [ref=e603]:
+                  - generic [ref=e604]: fp1/fn0
+                - cell "→" [ref=e605]:
+                  - button "→" [ref=e606]
+              - row "EA0175 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e607] [cursor=pointer]:
+                - cell "EA0175" [ref=e608]
+                - cell "g1/p1" [ref=e609]
+                - cell "fp1/fn1" [ref=e610]:
+                  - generic [ref=e611]: fp1/fn1
+                - cell "clean" [ref=e612]:
+                  - generic [ref=e613]: clean
+                - cell "fp1/fn1" [ref=e614]:
+                  - generic [ref=e615]: fp1/fn1
+                - cell "→" [ref=e616]:
+                  - button "→" [ref=e617]
+              - row "EA0178 g2/p2 fp1/fn1 fp1/fn1 fp2/fn2 →" [ref=e618] [cursor=pointer]:
+                - cell "EA0178" [ref=e619]
+                - cell "g2/p2" [ref=e620]
+                - cell "fp1/fn1" [ref=e621]:
+                  - generic [ref=e622]: fp1/fn1
+                - cell "fp1/fn1" [ref=e623]:
+                  - generic [ref=e624]: fp1/fn1
+                - cell "fp2/fn2" [ref=e625]:
+                  - generic [ref=e626]: fp2/fn2
+                - cell "→" [ref=e627]:
+                  - button "→" [ref=e628]
+              - row "EA0198 g2/p2 fp0/fn1 fp0/fn1 fp2/fn2 →" [ref=e629] [cursor=pointer]:
+                - cell "EA0198" [ref=e630]
+                - cell "g2/p2" [ref=e631]
+                - cell "fp0/fn1" [ref=e632]:
+                  - generic [ref=e633]: fp0/fn1
+                - cell "fp0/fn1" [ref=e634]:
+                  - generic [ref=e635]: fp0/fn1
+                - cell "fp2/fn2" [ref=e636]:
+                  - generic [ref=e637]: fp2/fn2
+                - cell "→" [ref=e638]:
+                  - button "→" [ref=e639]
+              - row "EA0199 g1/p1 fp1/fn1 clean fp1/fn1 →" [ref=e640] [cursor=pointer]:
+                - cell "EA0199" [ref=e641]
+                - cell "g1/p1" [ref=e642]
+                - cell "fp1/fn1" [ref=e643]:
+                  - generic [ref=e644]: fp1/fn1
+                - cell "clean" [ref=e645]:
+                  - generic [ref=e646]: clean
+                - cell "fp1/fn1" [ref=e647]:
+                  - generic [ref=e648]: fp1/fn1
+                - cell "→" [ref=e649]:
+                  - button "→" [ref=e650]
+              - row "EA0022 g2/p4 clean fp1/fn1 fp4/fn2 →" [ref=e651] [cursor=pointer]:
+                - cell "EA0022" [ref=e652]
+                - cell "g2/p4" [ref=e653]
+                - cell "clean" [ref=e654]:
+                  - generic [ref=e655]: clean
+                - cell "fp1/fn1" [ref=e656]:
+                  - generic [ref=e657]: fp1/fn1
+                - cell "fp4/fn2" [ref=e658]:
+                  - generic [ref=e659]: fp4/fn2
+                - cell "→" [ref=e660]:
+                  - button "→" [ref=e661]
+              - row "EA0050 g4/p5 clean fp0/fn1 fp4/fn3 →" [ref=e662] [cursor=pointer]:
+                - cell "EA0050" [ref=e663]
+                - cell "g4/p5" [ref=e664]
+                - cell "clean" [ref=e665]:
+                  - generic [ref=e666]: clean
+                - cell "fp0/fn1" [ref=e667]:
+                  - generic [ref=e668]: fp0/fn1
+                - cell "fp4/fn3" [ref=e669]:
+                  - generic [ref=e670]: fp4/fn3
+                - cell "→" [ref=e671]:
+                  - button "→" [ref=e672]
+              - row "EA0125 g1/p2 clean fp1/fn1 fp2/fn1 →" [ref=e673] [cursor=pointer]:
+                - cell "EA0125" [ref=e674]
+                - cell "g1/p2" [ref=e675]
+                - cell "clean" [ref=e676]:
+                  - generic [ref=e677]: clean
+                - cell "fp1/fn1" [ref=e678]:
+                  - generic [ref=e679]: fp1/fn1
+                - cell "fp2/fn1" [ref=e680]:
+                  - generic [ref=e681]: fp2/fn1
+                - cell "→" [ref=e682]:
+                  - button "→" [ref=e683]
+              - row "EA0136 g3/p6 clean fp1/fn1 fp6/fn3 →" [ref=e684] [cursor=pointer]:
+                - cell "EA0136" [ref=e685]
+                - cell "g3/p6" [ref=e686]
+                - cell "clean" [ref=e687]:
+                  - generic [ref=e688]: clean
+                - cell "fp1/fn1" [ref=e689]:
+                  - generic [ref=e690]: fp1/fn1
+                - cell "fp6/fn3" [ref=e691]:
+                  - generic [ref=e692]: fp6/fn3
+                - cell "→" [ref=e693]:
+                  - button "→" [ref=e694]
+              - row "EA0184 g2/p2 clean fp1/fn1 fp2/fn2 →" [ref=e695] [cursor=pointer]:
+                - cell "EA0184" [ref=e696]
+                - cell "g2/p2" [ref=e697]
+                - cell "clean" [ref=e698]:
+                  - generic [ref=e699]: clean
+                - cell "fp1/fn1" [ref=e700]:
+                  - generic [ref=e701]: fp1/fn1
+                - cell "fp2/fn2" [ref=e702]:
+                  - generic [ref=e703]: fp2/fn2
+                - cell "→" [ref=e704]:
+                  - button "→" [ref=e705]
+        - main [ref=e706]:
+          - generic [ref=e707]:
+            - generic [ref=e708]:
+              - button "Previous letter (k)" [disabled] [ref=e709]:
+                - img [ref=e710]
+              - button "Next letter (j)" [ref=e712]:
+                - img [ref=e713]
+            - heading "EA0005" [level=2] [ref=e715]
+            - generic [ref=e716]: 1 / 53
+            - generic [ref=e717]: g2 / p4
+            - generic [ref=e718]: Headline fp1/fn1
+            - generic [ref=e719]: Change ✓
+            - generic [ref=e720]: Strict fp3/fn1
+            - generic [ref=e721]:
+              - button "Preview" [ref=e722]
+              - button "Deep dive" [active] [ref=e723]
+          - generic [ref=e818]:
+            - generic [ref=e819]:
+              - img [ref=e821]
+              - paragraph [ref=e823]: Headline miss · active_rate_fidelity fp1/fn1
+            - generic [ref=e824]:
+              - heading "Cause" [level=3] [ref=e825]
+              - button "3 candidate spans" [ref=e828]:
+                - img [ref=e829]
+                - text: 3 candidate spans
+            - generic [ref=e831]:
+              - heading "Evidence" [level=3] [ref=e832]
+              - generic [ref=e833]:
+                - generic [ref=e834]:
+                  - generic [ref=e838]:
+                    - generic [ref=e839]: Match
+                    - generic [ref=e840]: seizures
+                  - generic [ref=e842]:
+                    - paragraph [ref=e843]: Shape mismatch·G a rate→P count + cadence + temporal anchor
+                    - table [ref=e845]:
+                      - rowgroup [ref=e846]:
+                        - row "Count Temporal anchor" [ref=e847]:
+                          - columnheader [ref=e848]
+                          - columnheader "Count" [ref=e849]
+                          - columnheader "Temporal anchor" [ref=e850]
+                        - row "count lower upper since/event" [ref=e851]:
+                          - columnheader [ref=e852]
+                          - columnheader "count" [ref=e853]
+                          - columnheader "lower" [ref=e854]
+                          - columnheader "upper" [ref=e855]
+                          - columnheader "since/event" [ref=e856]
+                      - rowgroup [ref=e857]:
+                        - row "G 2 — — —" [ref=e858]:
+                          - cell "G" [ref=e859]
+                          - cell "2" [ref=e860]
+                          - cell "—" [ref=e861]
+                          - cell "—" [ref=e862]
+                          - cell "—" [ref=e863]
+                        - row "P — 2 2 Since" [ref=e864]:
+                          - cell "P" [ref=e865]
+                          - cell "—" [ref=e866]
+                          - cell "2" [ref=e867]
+                          - cell "2" [ref=e868]
+                          - cell "Since" [ref=e869]
+                - generic [ref=e874]:
+                  - generic [ref=e875]: Pred
+                  - generic [ref=e876]: generalised tonic clonic seizures
+                  - generic [ref=e877]: FP · no gold
+                - generic [ref=e882]:
+                  - generic [ref=e883]: Pred
+                  - generic [ref=e884]: Generalised tonic clonic seizure
+                  - generic [ref=e885]: FP · no gold
+                - paragraph [ref=e886]: +1 full match
+            - generic [ref=e887]:
+              - heading "Lenses" [level=3] [ref=e888]
+              - generic [ref=e889]:
+                - generic [ref=e890]:
+                  - button "Headline state fp1/fn1 clinical_headline" [ref=e891]:
+                    - img [ref=e892]
+                    - generic [ref=e894]: Headline state
+                    - generic [ref=e895]: fp1/fn1
+                    - generic [ref=e896]: clinical_headline
+                  - generic [ref=e898]:
+                    - button "active_rate tp1" [ref=e900]:
+                      - img [ref=e901]
+                      - generic [ref=e903]: active_rate
+                      - generic [ref=e904]: tp1
+                    - generic [ref=e905]:
+                      - button "active_rate_fidelity fp1/fn1" [ref=e906]:
+                        - img [ref=e907]
+                        - generic [ref=e909]: active_rate_fidelity
+                        - generic [ref=e910]: fp1/fn1
+                      - generic [ref=e912]:
+                        - generic [ref=e913]:
+                          - generic [ref=e914]:
+                            - generic [ref=e915]: linked miss
+                            - generic [ref=e916]: FN/FP
+                          - generic [ref=e917]:
+                            - generic [ref=e918]: G
+                            - generic [ref=e919]:
+                              - generic [ref=e920]:
+                                - img [ref=e921]
+                                - text: phrase
+                              - generic "seizures" [ref=e924]
+                            - generic [ref=e925]:
+                              - generic [ref=e926]:
+                                - img [ref=e927]
+                                - text: count
+                              - generic "NS=2/L=/U=" [ref=e930]
+                            - generic [ref=e931]:
+                              - img [ref=e932]
+                              - text: FN
+                          - generic [ref=e934]:
+                            - generic [ref=e935]: P
+                            - generic [ref=e936]:
+                              - generic [ref=e937]:
+                                - img [ref=e938]
+                                - text: phrase
+                              - generic "seizures" [ref=e941]
+                            - generic [ref=e942]:
+                              - generic [ref=e943]:
+                                - img [ref=e944]
+                                - text: count
+                              - generic "NS=/L=2/U=2" [ref=e947]
+                            - generic [ref=e948]:
+                              - img [ref=e949]
+                              - text: FP
+                        - button "+4 matched / filtered" [ref=e951]
+                    - button "seizure_free tp1" [ref=e953]:
+                      - img [ref=e954]
+                      - generic [ref=e956]: seizure_free
+                      - generic [ref=e957]: tp1
+                    - button "unknown tp0" [ref=e959]:
+                      - img [ref=e960]
+                      - generic [ref=e962]: unknown
+                      - generic [ref=e963]: tp0
+                - button "Change state clean state_profile" [ref=e965]:
+                  - img [ref=e966]
+                  - generic [ref=e968]: Change state
+                  - generic [ref=e969]: clean
+                  - generic [ref=e970]: state_profile
+                - button "Strict benchmark fp3/fn1 exact_semantic" [ref=e972]:
+                  - img [ref=e973]
+                  - generic [ref=e975]: Strict benchmark
+                  - generic [ref=e976]: fp3/fn1
+                  - generic [ref=e977]: exact_semantic
+  - button "Open Next.js Dev Tools" [ref=e70] [cursor=pointer]:
+    - img [ref=e71]
+  - alert [ref=e817]

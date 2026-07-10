@@ -238,5 +238,8 @@ def test_build_ledger_on_dev_split_is_consistent_and_has_rx_families() -> None:
     # Total concept-recovered (projection) share for the current dev snapshot.
     # Re-frozen after the D1 hierarchy-aware diagnosis reconciliation (7949a9d4)
     # surfaces more recoverable diagnosis concepts on the dev split.
-    assert totals["projection_misses"] == 513
-    assert totals["projection_share"] == round(513 / totals["gold_misses"], 4)
+    # Re-frozen again 2026-07-09 after canonicalize_attribute_value learned to
+    # normalize TimePeriod case/plural noise (EA0169's gold "days" -> "Day"),
+    # which resolves one previously-mismatched SF projection miss.
+    assert totals["projection_misses"] == 512
+    assert totals["projection_share"] == round(512 / totals["gold_misses"], 4)
