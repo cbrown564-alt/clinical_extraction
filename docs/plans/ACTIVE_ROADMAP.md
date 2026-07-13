@@ -2,12 +2,13 @@
 
 Last updated: 2026-07-01
 
-**This is the single answer to “what are we doing now?”** Individual plans under
-`docs/plans/` remain as historical design records; each carries a status banner
-pointing here.
+This file records current work. Individual plans under `docs/plans/` remain as
+historical design records; each carries a status banner pointing here.
 
-**Thread-based reading:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md)  
-**Live evidence stack:** [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md)  
+**Thread-based reading:** [`docs/THREAD_MAP.md`](../THREAD_MAP.md)
+
+**Current status and evidence:** [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md)
+
 **Plan triage archive:** [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md)
 
 ---
@@ -15,7 +16,7 @@ pointing here.
 ## Active objective
 
 ExECTv2 reliability/component-evidence phase; paper closeout on capability-first
-claims (`clinical_headline` primary). Gan holdout evidence frozen. GEPA workstream
+claims (`clinical_headline` is the primary metric). Gan holdout evidence frozen. GEPA workstream
 closed (negative result — LLM-only plateaus below hybrid).
 
 ---
@@ -43,7 +44,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 
 ---
 
-## P2 — Deferred (stable evidence spine first)
+## P2 — Deferred (freeze and index evidence first)
 
 | Item | Owner doc | Action |
 | --- | --- | --- |
@@ -59,7 +60,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 - **GEPA optimization** — closed negative (`docs/research/exectv2_gepa_single_model_plateau_synthesis_2026-06-28.md`)
 - **Gan holdout tuning** — frozen; aggregate citation only
 - **LLM-only dedup as production control** — plateau ~0.73 vs v08 ~0.92; diagnostic only
-- **Consensus/fresh selector promotion** — CUT (`docs/research/consensus_fresh_selector_fate_2026-06-27.md`)
+- **Making the consensus/fresh selector the default** — CUT (`docs/research/consensus_fresh_selector_fate_2026-06-27.md`)
 - **Dissertation document** — out of scope; IEEE paper is deliverable (`supervisor_brief_gap_closure_plan` Phase D)
 
 ---

@@ -9,7 +9,7 @@ phased authorization gates named below. No benchmark-comparable claim or
 holdout-facing protocol is authorized by this document.
 
 Working agreement: as we work through each phase of this plan, run a
-`/grill-with-docs` session before locking in terminology or architectural
+`$grill-with-docs` session before locking in terminology or architectural
 decisions (e.g. the Section 2 canonical-runner choice, the Section 4/5
 cross-pollination mechanisms, the Section 8 open questions). Use it to
 stress-test naming and decisions against this project's existing `CONTEXT.md`

@@ -4,7 +4,11 @@ Hybrid deterministic-LLM pipelines for extracting structured data from unstructu
 
 The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The active research phase is ExECTv2 reliability and paper closeout on capability-first claims; Gan 2026 holdout evidence is frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
 
-This is also a research codebase. The intended paper contribution is not only higher benchmark performance, but a clearer account of how modular hybrid systems work: what deterministic rules contribute, what LLM reasoning contributes, where each fails, and how evidence/rationale trails can make clinical extraction less opaque.
+This is also a research codebase. The intended paper contribution combines
+benchmark performance with an account of how modular hybrid systems work: what
+deterministic rules contribute, what LLM reasoning contributes, where each
+fails, and how evidence and rationale records can make clinical extraction
+easier to inspect.
 
 ## Current Focus
 
@@ -35,7 +39,7 @@ Active work (2026-07-01):
 hops each).
 
 Both tasks share modular hybrid architecture (rules / LLM-only / hybrid families).
-Gan seizure-frequency remains the deep single-label benchmark surface; ExECTv2
+Gan seizure-frequency remains the focused single-label benchmark; ExECTv2
 covers broad epilepsy phenotyping on de-identified letters.
 
 ## Design Principles
@@ -44,8 +48,8 @@ covers broad epilepsy phenotyping on de-identified letters.
 - Prefer small, inspectable modules over an abstraction-heavy framework.
 - Separate extraction from clinical selection so error analysis can localize failures.
 - Keep deterministic label policy compatible with the author-provided evaluation code.
-- Preserve auditable evidence spans and rationale in schemas, not just final labels.
-- Make notebooks a forcing function for reproducible learning, not a side artifact.
+- Preserve auditable evidence spans and rationale in schemas alongside final labels.
+- Use notebooks to support reproducible analysis, not as untracked side artifacts.
 - Treat deterministic rules as explicit, categorized, testable, and ablatable components.
 - Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
 - Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 Purist (strict Gan scorer) F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
@@ -54,10 +58,10 @@ covers broad epilepsy phenotyping on de-identified letters.
 
 The project is designed around four paper-level claims:
 
-- Previous epilepsy NLP systems tend to handle broad phenotyping or seizure-frequency extraction better than they handle both; a modular architecture should make both feasible.
-- Generalisation should be engineered and measured, especially because both rules-based systems and LLM systems can overfit to local templates or datasets.
+- Previous epilepsy NLP systems tend to handle broad phenotyping or seizure-frequency extraction better than they handle both. This project tests whether a modular architecture can support both.
+- The project must measure generalisation because rules-based and LLM systems can both overfit to local templates or datasets.
 - Transparency requires intermediate schemas, evidence, rationale, error analysis, and ablation studies, not only final predictions.
-- Deterministic preprocessing and post-processing rules should be described as controlled experimental variables rather than hidden implementation details.
+- Reports must describe deterministic preprocessing and post-processing rules as controlled experimental variables, not hide them as implementation details.
 
 See [docs/research/contribution_thesis.md](docs/research/contribution_thesis.md).
 
@@ -67,9 +71,9 @@ See
 [docs/design/component_evidence_attribution_architecture.md](docs/design/component_evidence_attribution_architecture.md)
 and
 [docs/runbooks/gan2026_component_evidence_audit.md](docs/runbooks/gan2026_component_evidence_audit.md)
-for the reusable audit contract used to decide which component solved each
+for the audit method used to decide which component solved each
 clinical subproblem, whether LLM changes to deterministic answers are correct,
-and what evidence/regression gates a candidate satisfies.
+and whether a candidate has the required evidence and regression results.
 
 ## Repository Layout
 
@@ -82,7 +86,7 @@ docs/
   design/                       Architecture and pipeline design notes.
   decisions/                    Lightweight architecture decision records.
   experiments/                  Human-readable experiment reports and predeclarations.
-  NAVIGATION.md                 Tiered routing to control plane and long tail.
+  NAVIGATION.md                 Reading guide for core documents and detailed records.
   plans/                        Forward implementation plans by workstream.
   research/                     Thesis, synthesis, error analysis, and paper-facing notes.
   runbooks/                     Repeatable development/evaluation workflows.
@@ -100,7 +104,7 @@ tests/                          Focused tests for data contracts and determinist
 - **Thread map (pick your narrative):** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
 - **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)
 - **Live control board:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
-- Active experiment surface: [experiments/README.md](experiments/README.md)
+- Active experiments index: [experiments/README.md](experiments/README.md)
 - Superseded notes archive: [experiments/archive/ARCHIVE_INDEX.md](experiments/archive/ARCHIVE_INDEX.md)
 - Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)
 

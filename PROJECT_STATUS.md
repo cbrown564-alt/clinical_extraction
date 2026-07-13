@@ -14,7 +14,7 @@ Last updated: 2026-07-10
   **`clinical_headline`** de-duplicated recovery (strict benchmark/CUI stays
   diagnostic).
 - **Main negative findings:** Gan hit a **confident over-reading limit (The Wall)**
-  — on ambiguous letters the model commits to a rate when it should abstain (~84%
+  — on ambiguous letters the model commits to a rate despite insufficient evidence (~84%
   ceiling, not a tuning target). ExECT shows a **gold-quality / annotation-format
   ceiling** — many benchmark “errors” are label multiplicity or format fidelity,
   not missing clinical concepts.
@@ -24,10 +24,10 @@ Last updated: 2026-07-10
 
 ## Active Objective
 
-ExECTv2 is in a reliability/component-evidence phase after the Satellite 13
+ExECTv2 is in a reliability and component-evidence phase after the Satellite 13
 LLM-only plateau. `clinical_headline` de-duplicated clinical recovery is the
-headline surface; strict benchmark/CUI results stay diagnostic. Paper-facing
-language and results scaffolding live in `docs/research/`. Resume the
+primary metric; strict benchmark/CUI results stay diagnostic. Paper drafts and
+supporting results live in `docs/research/`. Resume the
 paper/results sprint from `docs/research/paper_manuscript_2026-06-26.md` and the
 IEEE LaTeX draft in `literature/IEEE/IEEE-conference-template-062824/`
 (markdown is ahead of the LaTeX draft as of 2026-06-30 — the LaTeX has not yet
@@ -35,10 +35,10 @@ been re-synced with the 2026-06-30 Diagnosis gold-quality revision below).
 
 ## Current Read
 
-*Maintainer detail — dense evidence stack for people updating this board; new
-collaborators should read the plain-language snapshot above first.*
+*Detailed evidence for maintainers updating this file. New collaborators can
+start with the summary above.*
 
-Current evidence stack:
+Current evidence:
 
 - ExECTv2 `clinical_headline` is primary. Full-200 GPT-4.1-mini v08 is `0.8680`
   (was `0.8502`; the 2026-07-02 four-family scorer-correctness sweep moved it to
@@ -104,8 +104,9 @@ Current evidence stack:
 
 ### Now
 
-- 2026-07-10: **Gold, scorer, and interpretation assurance is the mandatory
-  next gate.** The EA0079/EA0169 time-period audit bounded one defect class, but
+- 2026-07-10: **Complete the gold, scorer, and interpretation assurance audit
+  before further ExECTv2 claims, experiments, or repository simplification.**
+  The EA0079/EA0169 time-period audit bounded one defect class, but
   it also demonstrated that a gold or measurement error can look exactly like a
   model error. Before any further ExECTv2 claim, experiment, or simplification,
   execute the sceptical all-corpus audit plan:
@@ -172,7 +173,7 @@ Current evidence stack:
   threshold), **robust to ambiguous handling** (adversarial upper bound 3/19 =
   15.8% still < 30%). The single mislabel is **EA0049 GTCS** labeled `Frequent`
   despite the text *"were infrequent at first they are now happening
-  frequently"* (an explicit before/after change → should be `Increased`). The
+  frequently"* (an explicit before/after change; the expected label is `Increased`). The
   two ambiguous rows (EA0022, EA0059) both use *"well controlled"* ⇒ `Infrequent`
   (guideline List 11 L877–L879), which sits at the boundary of magnitude (low
   rate) and direction (has come under control). Co-annotation cross-tab
@@ -188,8 +189,8 @@ Current evidence stack:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_magnitude_gold_audit_results_2026-07-08.md`;
   hypothesis `sf_magnitude_gold_audit_2026-07-08` (entry 40).
 - 2026-07-08: **SF magnitude-complement probe landed — TRAILS RULES, closes
-  pathway #1 (13 gpt-4.1-mini calls, dev140, replay).** The highest-leverage
-  production pathway from the 07-08 queue. The deconflation probe (just below)
+  pathway #1 (13 gpt-4.1-mini calls, dev140, replay).** This was the first
+  production candidate in the 07-08 queue. The deconflation probe (just below)
   measured the selector's magnitude precision edge (0.9515 vs rules 0.9328)
   and flagged the complement design as "precisely motivated." This probe tests
   it directly: fire a **magnitude-only** closed-option selector (3-label
@@ -300,8 +301,8 @@ Current evidence stack:
   **Combined cross-family claim (the manuscript framing shift):** item 2 showed
   the gap does *not* survive a change of generation contract (refutes
   "fundamental"); item 3 shows it *does* survive a change of input. The gap is
-  **contract-sensitive but input-robust** — not fundamental; the lever that
-  deploys capacity is the closed-option contract, not input salience-priming.
+  **contract-sensitive but input-robust** — not fundamental. The closed-option
+  contract improves performance; input highlighting does not.
   Hypothesis `sf_retrieval_highlight_priming_2026-07-06` registered (entry 33).
   Driver: `scripts/run_exectv2_sf_retrieval_highlight_probe.py`; results:
   `docs/experiments/exectv2/seizure_frequency/exectv2_sf_retrieval_highlight_results_2026-07-06.md`;
@@ -871,7 +872,7 @@ Current evidence stack:
      `clinical_headline` scoring even when the model's current-dose
      prediction is correct. Fix direction: scope the regex to the clause
      containing the scored dose, not the full span. Needs a dev140 replay
-     confirming no regression on the letters this scoping *should* still
+     confirming no regression on the letters this scoping is intended to
      exclude (doses that are genuinely weight-based/future for their whole
      span) before promoting — this retroactively changes historical
      Prescription F1 citations, so treat like any other scorer edit: replay,

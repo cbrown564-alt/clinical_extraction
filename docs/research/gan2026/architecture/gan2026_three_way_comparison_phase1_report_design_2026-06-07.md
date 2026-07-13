@@ -219,7 +219,7 @@ several of which are LLM calls):
 3. Confirm the new report module's name and location against `CONTEXT.md`'s
    established naming conventions before writing it (Section 6) — this is
    exactly the kind of naming call the plan's working agreement asks to be
-   run through `/grill-with-docs` before locking in.
+   run through `$grill-with-docs` before locking in.
 
 ---
 

@@ -15,7 +15,7 @@ Legacy paths under `docs/research/` and `docs/experiments/` redirect here (Wave 
 | # | Topic | Path |
 | --- | --- | --- |
 | 01 | System architecture & three families | [`01_system_architecture.md`](01_system_architecture.md) |
-| 02 | Pipeline spine (Gan + ExECT Plan 11) | [`02_pipeline_spine.md`](02_pipeline_spine.md) |
+| 02 | Pipeline stages (Gan + ExECT Plan 11) | [`02_pipeline_spine.md`](02_pipeline_spine.md) |
 | 03 | Evidence, claims & frozen artifacts | [`03_evidence_claims_frozen.md`](03_evidence_claims_frozen.md) |
 | 04 | Scoring surfaces & gold principles | [`04_scoring.md`](04_scoring.md) |
 | 05 | Ceilings & The Wall | [`05_ceilings_wall.md`](05_ceilings_wall.md) |
@@ -67,14 +67,14 @@ adjudication either family has had at the actual scored `clinical_headline` laye
 
 ---
 
-## Control plane
+## Essential guides
 
 | Doc | Path |
 | --- | --- |
 | Plain-language glossary | [`docs/reference/plain_language_glossary.md`](../reference/plain_language_glossary.md) |
 | Thread map (5 reading paths) | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) |
 | Active roadmap | [`docs/plans/ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md) |
-| Design spine index | [`docs/design/README.md`](../design/README.md) |
+| Design index | [`docs/design/README.md`](../design/README.md) |
 | Archive policy & layout | [`docs/archive/README.md`](../archive/README.md) |
 
 ---

@@ -4,7 +4,7 @@ Five narrative threads span the documentation corpus. Pick one based on your
 job; each path lists at most eight hops before the long tail (bucket READMEs,
 registry rows, row-level case files).
 
-**Control plane first:** [`README.md`](../README.md) → [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) → this map.
+**Read first:** [`README.md`](../README.md) → [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) → this map.
 
 | Don't know which thread? | Start with [`collaborator_onboarding.md`](collaborator_onboarding.md) / [`.html`](collaborator_onboarding.html), then return here. |
 | --- | --- |
@@ -43,9 +43,9 @@ abstention routing failed on binding residuals.
 | Hop | Document | Why |
 | --- | --- | --- |
 | 1 | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) § Active Priorities | `clinical_headline` primary; benchmark/CUI diagnostic |
-| 2 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | **Canon:** P1–P7, surface hierarchy, gold-quality ceiling |
+| 2 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | **Canon:** P1–P7, metric hierarchy, gold-quality ceiling |
 | 3 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) § C1 | Claim register for SF/Dx gold-quality |
-| 4 | [`docs/canon/README.md`](canon/README.md#gold-case-ledger-generated-per-family) § Gold case ledger | Generated, per-family genuine-vs-gold mechanism breakdown for all 4 `KEY_FAMILIES` (not just SF/Dx) |
+| 4 | [`docs/canon/README.md`](canon/README.md#gold-case-ledger-generated-per-family) § Gold case ledger | Generated, per-family genuine-vs-gold mechanism breakdown for all 4 `KEY_FAMILIES`, including Prescription and Investigations |
 | 5 | [`docs/decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md`](decisions/0027-clinical-recovery-is-the-exectv2-headline-projection-is-an-artifact-layer.md) | ADR: headline vs projection |
 | 6 | [`docs/decisions/0037-sf-state-profile-is-primary-clinical-metric.md`](decisions/0037-sf-state-profile-is-primary-clinical-metric.md) | ADR: SF `state_profile` for SF-family experiments |
 | 7 | [`docs/experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](experiments/exectv2/key_entities/HOLISTIC_ASSEMBLY_LADDER_CANON.md) | v01→v08 assembly ladder (v08 frozen) |
@@ -63,12 +63,12 @@ or the SF/Diagnosis “plateau” reframing.
 | Hop | Document | Why |
 | --- | --- | --- |
 | 1 | [`docs/design/architecture.md`](design/architecture.md) | Package layers and task boundaries |
-| 2 | [`docs/design/component_evidence_attribution_architecture.md`](design/component_evidence_attribution_architecture.md) | Component ownership and promotion contract |
+| 2 | [`docs/design/component_evidence_attribution_architecture.md`](design/component_evidence_attribution_architecture.md) | Component ownership and evidence required before a candidate becomes the default |
 | 3 | [`docs/research/contribution_thesis.md`](research/contribution_thesis.md) | Three architecture families (rules / LLM-only / hybrid) |
 | 4 | [`docs/canon/07_exect_plan11.md`](canon/07_exect_plan11.md) | Selected architectures and full-200 evidence |
 | 5 | [`docs/canon/08_gepa.md`](canon/08_gepa.md) | LLM-only vs hybrid (closed negative) |
 | 6 | [`docs/decisions/0009-gan2026-staged-hybrid-assembly.md`](decisions/0009-gan2026-staged-hybrid-assembly.md) | Gan staged hybrid (not LLM-first) |
-| 7 | [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md) | ExECT Plan 11 spine |
+| 7 | [`docs/decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md) | ExECT Plan 11 pipeline |
 | 8 | [`docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md`](experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md) | Cross-task component dividend |
 
 **Start here if:** you are changing pipeline code, running component-off replay,
@@ -92,7 +92,7 @@ or comparing rules vs hybrid vs LLM-only.
 | 8 | [`literature/IEEE/IEEE-conference-template-062824/`](../literature/IEEE/IEEE-conference-template-062824/) | LaTeX draft (may lag markdown) |
 
 **Start here if:** you are editing Results/Discussion, syncing IEEE LaTeX, or
-checking whether a number is promotion-safe.
+checking whether a number can support a paper claim.
 
 ---
 
@@ -159,7 +159,7 @@ canons for Diagnosis, SF, self-consistency; 75 iteration files archived under
 | Structural canon | Path |
 | --- | --- |
 | 01 System architecture | [`canon/01_system_architecture.md`](canon/01_system_architecture.md) |
-| 02 Pipeline spine | [`canon/02_pipeline_spine.md`](canon/02_pipeline_spine.md) |
+| 02 Pipeline stages | [`canon/02_pipeline_spine.md`](canon/02_pipeline_spine.md) |
 | 03 Evidence / frozen | [`canon/03_evidence_claims_frozen.md`](canon/03_evidence_claims_frozen.md) |
 | 04 Scoring | [`canon/04_scoring.md`](canon/04_scoring.md) |
 | 05 Ceilings / Wall | [`canon/05_ceilings_wall.md`](canon/05_ceilings_wall.md) |
