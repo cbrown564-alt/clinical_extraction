@@ -1,7 +1,0 @@
-{
-  "[\"EA0114\", \"('ordinary', 'carbamazepine', '400', 'mg', '2')\", \"missed\"]": {
-    "verdict": "MODEL_DEFENSIBLE",
-    "mechanism": "scorer_mechanics_artifact",
-    "reason": "The 2026-07-02 clause-scope + CUI-unification fixes reclassified this fact: gold's 'Carbamazepine-Controlled-Release-400mgs-bd-to-reduce-to-200mgs-am' was previously dropped from clinical_headline (the future-plan regex fired on 'reduce'), and is now correctly extracted as carbamazepine 400mg/2 (the current dose before the taper). The model DID emit this dose -- as 'Carbamazepine Controlled Release 400mg bd' (case 16, spurious) -- but keyed it carbamazepine-controlled-release (CUI-less) versus gold's now-CUI-unified carbamazepine (CUI C0006949). The drug, dose, and frequency are all clinically correct in the model's prediction; the disagreement is a key-construction/normalization artifact, not a clinical error. This is the same clinical reality and verdict as pre-sweep case 24 (carbamazepine-controlled-release 400/2 spurious, MODEL_DEFENSIBLE/scorer_mechanics_artifact): the 400mg-bd fact is presently accurate and the model states exactly that. The clause-scope fix flipped its surface form from spurious-FP to missed-FN without changing the underlying clinical judgment."
-  }
-}

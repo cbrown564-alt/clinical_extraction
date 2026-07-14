@@ -1,1 +1,0 @@
-> **Archived (Wave 4)** — full narrative: [`../../../archive/experiments/gan2026/rq_series/gan2026_rq3_rich_selected_state_hard_panel_answer_2026-06-04.md`](../../../archive/experiments/gan2026/rq_series/gan2026_rq3_rich_selected_state_hard_panel_answer_2026-06-04.md). Canonical summary: [`COMPONENT_MECHANICS_CANON.md`](../COMPONENT_MECHANICS_CANON.md).

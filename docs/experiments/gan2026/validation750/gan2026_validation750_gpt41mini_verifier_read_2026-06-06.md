@@ -1,1 +1,0 @@
-> **Archived (Wave 4)** — full narrative: [`../../../archive/experiments/gan2026/validation750/gan2026_validation750_gpt41mini_verifier_read_2026-06-06.md`](../../../archive/experiments/gan2026/validation750/gan2026_validation750_gpt41mini_verifier_read_2026-06-06.md). Canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md).

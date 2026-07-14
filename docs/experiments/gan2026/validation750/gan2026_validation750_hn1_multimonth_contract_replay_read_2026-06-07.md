@@ -1,1 +1,0 @@
-> **Archived (Wave 4)** — full narrative: [`../../../archive/experiments/gan2026/validation750/gan2026_validation750_hn1_multimonth_contract_replay_read_2026-06-07.md`](../../../archive/experiments/gan2026/validation750/gan2026_validation750_hn1_multimonth_contract_replay_read_2026-06-07.md). Canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md).

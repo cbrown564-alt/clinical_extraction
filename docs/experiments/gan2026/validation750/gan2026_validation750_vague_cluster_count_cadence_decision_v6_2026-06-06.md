@@ -1,1 +1,0 @@
-> **Archived (Wave 4)** — full narrative: [`../../../archive/experiments/gan2026/validation750/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md`](../../../archive/experiments/gan2026/validation750/gan2026_validation750_vague_cluster_count_cadence_decision_v6_2026-06-06.md). Canonical summary: [`VALIDATION750_CANON.md`](../VALIDATION750_CANON.md).
