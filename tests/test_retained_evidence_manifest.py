@@ -44,6 +44,50 @@ def test_committed_retained_evidence_manifest_is_valid() -> None:
     )
 
 
+def test_architecture_freeze_covers_every_reference_cell_and_policy_role() -> None:
+    manifest = load_retained_evidence_manifest(MANIFEST)
+    freeze = manifest["architecture_freeze"]
+
+    assert set(freeze["reference_cell_ids"]) == {
+        record["id"] for record in manifest["reference_cells"]
+    }
+    assert {policy["role"] for policy in freeze["policy_files"]} == {
+        "dependency",
+        "model",
+        "prompt",
+        "quality",
+        "repair",
+        "scorer",
+        "split",
+        "split_runbook",
+    }
+    assert freeze["model_policy"]["comparison_roster_status"] == "three_of_six_retained"
+
+
+def test_architecture_freeze_rejects_policy_hash_drift() -> None:
+    manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
+    manifest["architecture_freeze"]["policy_files"][0]["sha256"] = "0" * 64
+
+    with pytest.raises(ValueError, match="frozen policy hash or size drift"):
+        validate_retained_evidence_manifest(
+            manifest,
+            repo_root=ROOT,
+            registry_path=REGISTRY,
+        )
+
+
+def test_architecture_freeze_requires_exact_source_commit() -> None:
+    manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
+    manifest["architecture_freeze"]["source_commit"] = "main"
+
+    with pytest.raises(ValueError, match="source_commit"):
+        validate_retained_evidence_manifest(
+            manifest,
+            repo_root=ROOT,
+            registry_path=REGISTRY,
+        )
+
+
 def test_model_transfer_package_keeps_permitted_dev_replay_inputs() -> None:
     manifest = load_retained_evidence_manifest(MANIFEST)
     package = next(
