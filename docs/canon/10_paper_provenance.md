@@ -14,7 +14,7 @@ must not exceed either boundary.
 | S1 | One modular system is evaluated on Gan and ExECT | Six reference cells replay from retained code and outputs | Partial |
 | S2 | Rules-only, LLM-only, and hybrid forms have attributable results on both tasks | Two-task by three-family manifest | Partial |
 | S3 | Gan V12 adds modest quality at higher operational cost | Quality is retained; matched cost and latency are missing | Partial |
-| S4 | Six exact models run on one frozen ExECT architecture | GPT-4.1-mini, DeepSeek, and Qwen are retained | 3/6 |
+| S4 | Six exact models run on one frozen ExECT architecture | Core and policy freeze complete; GPT-4.1-mini, DeepSeek, and Qwen are retained | 3/6 |
 | S5 | Unknown-versus-rate overconfidence generalizes across models and tasks | Gan evidence retained; ExECT transfer proof is not retained | Open |
 | S6 | Extraction, normalization, projection, schema, and evidence stages are explicit and tested | Stage closures and cross-task ablation retained | Partial |
 | S7 | ExECT reproduces the published phrase/CUI/full-attribute surface | Current deterministic strict score remains below the paper | Open |
@@ -64,6 +64,7 @@ must not exceed either boundary.
 2. Implement the deterministic phrase/CUI/full-attribute benchmark surface.
 3. Evaluate model-reported confidence out of sample.
 4. Consolidate the annotation taxonomy and sensitivity analysis.
-5. Run the remaining three frozen model comparisons.
+5. Predeclare the remaining three exact runtime conditions, then run all six
+   under the frozen comparison core.
 6. Regenerate manuscript tables and sync the IEEE source.
 

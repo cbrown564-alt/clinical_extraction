@@ -46,6 +46,24 @@ LLM-only negative comparator, and holistic finding assembly v08.
 | Artifact identity | Retained evidence manifest |
 | Claim strength | [Paper claims register](10_paper_provenance.md) |
 
+## Frozen reduced architecture
+
+Freeze `reduced_reference_architecture_20260714` pins the executable source at
+commit `465621341c6af59f2fc028be7bf5f9e325739c50`. The v3 retained-evidence
+manifest additionally fingerprints the dependency lock, prompts, scorers,
+split policies, repair policies, model policy, and CI workflow.
+
+This freeze governs new evidence; it does not turn every retained historical
+run into a symmetric comparison. In particular, the retained ExECT
+three-model package used model-specific temperature and Qwen prompt/format
+conditions. Its bounded transfer claim remains valid, but a strict six-model
+claim requires six predeclared runtime conditions under the frozen two-call
+core described in [the model policy](../design/model_strategy.md).
+
+Any semantic prompt, scorer, split, repair, model-route, or component-graph
+change requires a new freeze ID and complete replay. The freeze itself does not
+authorize model calls.
+
 The retained cross-task ablation found normalization gains of +0.0389 on ExECT
 dev140 and +0.0293 on Gan validation750. The evidence check changed neither
 headline score on those replays. That score result does not make the evidence

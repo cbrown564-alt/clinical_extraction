@@ -7,28 +7,31 @@ Last updated: 2026-07-14
 
 ## Objective
 
-Finish repository surgery, freeze the reduced architecture, close the named
-paper evidence gaps, and verify the result from a fresh checkout.
+Verify the reduced, frozen architecture from a fresh checkout, then close the
+named paper evidence gaps without weakening split or claim boundaries.
 
 Gan test450 remains aggregate-only. ExECT full200 remains a
 development-inclusive aggregate audit.
 
 ## Order
 
-1. **Engineering checks restored (complete).** Ruff, mypy, all 1,150 tests,
+1. **Engineering checks restored (complete).** Ruff, mypy, all 1,153 tests,
    prompt snapshots, manifest validation, and all six reference replays are
    green. CI enforces Ruff, mypy, and the full suite.
-2. **Freeze the architecture.** Record the exact prompt, scorer, split, repair,
-   and model policies before new calls.
-3. **Run open evidence work.**
+2. **Architecture frozen (complete).** Manifest v3 pins source commit
+   `46562134`, Python/dependencies, the six reference cells, and exact prompt,
+   scorer, split, repair, model, runbook, and CI policies. The freeze does not
+   authorize model calls.
+3. **Close from a fresh checkout.** Install, enforce split barriers, replay both
+   tasks, verify hashes, rebuild surviving tables, and sync the manuscript and
+   IEEE source.
+4. **Run open evidence work.**
    - matched Gan calls, tokens, cost, and latency;
    - deterministic ExECT phrase/CUI/full-attribute reproduction;
    - out-of-sample model confidence and bounded review routing;
    - complete annotation taxonomy and sensitivity analysis;
-   - remaining three models in the frozen six-model comparison.
-4. **Close from a fresh checkout.** Install, enforce split barriers, replay both
-   tasks, verify hashes, rebuild surviving tables, and sync the manuscript and
-   IEEE source.
+   - predeclare the missing three runtime conditions, then run the frozen
+     six-model comparison.
 
 ## Current boundaries
 

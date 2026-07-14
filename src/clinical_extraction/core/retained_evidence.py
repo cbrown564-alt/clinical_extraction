@@ -47,12 +47,37 @@ _REQUIRED_RECORD_FIELDS = {
     "artifacts",
 }
 _REQUIRED_REFERENCE_FIELDS = {"closure", "verification"}
+_FREEZE_REQUIRED_FIELDS = {
+    "freeze_id",
+    "created_date",
+    "status",
+    "source_commit",
+    "source_commit_scope",
+    "python_version",
+    "mutation_policy",
+    "reference_cell_ids",
+    "policy_files",
+    "model_policy",
+    "execution_policy",
+}
+_FREEZE_POLICY_ROLES = {
+    "dependency",
+    "model",
+    "prompt",
+    "quality",
+    "repair",
+    "scorer",
+    "split",
+    "split_runbook",
+}
 _TEXT_ARTIFACT_SUFFIXES = {
     ".json",
     ".jsonl",
+    ".lock",
     ".md",
     ".py",
     ".txt",
+    ".toml",
     ".yaml",
     ".yml",
 }
@@ -72,8 +97,8 @@ def validate_retained_evidence_manifest(
 ) -> None:
     """Validate reference-cell coverage, provenance fields, paths, and hashes."""
 
-    if manifest.get("schema_version") != "retained-evidence-v2":
-        raise ValueError("schema_version must be retained-evidence-v2")
+    if manifest.get("schema_version") != "retained-evidence-v3":
+        raise ValueError("schema_version must be retained-evidence-v3")
 
     reference_cells = _records(manifest, "reference_cells")
     evidence_packages = _records(manifest, "evidence_packages")
@@ -108,6 +133,96 @@ def validate_retained_evidence_manifest(
             seen_artifacts=seen_artifacts,
             reference_cell=False,
         )
+
+    _validate_architecture_freeze(
+        manifest.get("architecture_freeze"),
+        reference_cell_ids={_nonempty_text(record, "id") for record in reference_cells},
+        repo_root=repo_root,
+    )
+
+
+def _validate_architecture_freeze(
+    value: object, *, reference_cell_ids: set[str], repo_root: Path
+) -> None:
+    if not isinstance(value, Mapping):
+        raise ValueError("architecture_freeze must be an object")
+    missing = sorted(_FREEZE_REQUIRED_FIELDS - value.keys())
+    if missing:
+        raise ValueError(f"architecture_freeze is missing fields: {', '.join(missing)}")
+
+    for field in (
+        "freeze_id",
+        "created_date",
+        "status",
+        "source_commit_scope",
+        "python_version",
+        "mutation_policy",
+    ):
+        _nonempty_text(value, field)
+    if value.get("status") != "frozen_for_new_evidence":
+        raise ValueError("architecture_freeze.status must be frozen_for_new_evidence")
+
+    source_commit = _nonempty_text(value, "source_commit")
+    if len(source_commit) != 40 or any(
+        character not in "0123456789abcdef" for character in source_commit
+    ):
+        raise ValueError("architecture_freeze.source_commit must be a full Git commit id")
+
+    frozen_ids = value.get("reference_cell_ids")
+    if not isinstance(frozen_ids, Sequence) or isinstance(frozen_ids, (str, bytes)):
+        raise ValueError("architecture_freeze.reference_cell_ids must be an array")
+    if set(frozen_ids) != reference_cell_ids or len(frozen_ids) != len(reference_cell_ids):
+        raise ValueError("architecture_freeze.reference_cell_ids must match reference_cells")
+
+    policy_files = value.get("policy_files")
+    if not isinstance(policy_files, Sequence) or isinstance(policy_files, (str, bytes)):
+        raise ValueError("architecture_freeze.policy_files must be an array")
+    roles: set[str] = set()
+    paths: set[str] = set()
+    for policy in policy_files:
+        if not isinstance(policy, Mapping):
+            raise ValueError("architecture_freeze policy file must be an object")
+        role = _nonempty_text(policy, "role")
+        roles.add(role)
+        path_text = _nonempty_text(policy, "path")
+        if path_text in paths:
+            raise ValueError(f"duplicate frozen policy path: {path_text}")
+        paths.add(path_text)
+        digest = _nonempty_text(policy, "sha256")
+        size = policy.get("bytes")
+        if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
+            raise ValueError(f"invalid frozen policy sha256: {path_text}")
+        if not isinstance(size, int) or isinstance(size, bool) or size < 0:
+            raise ValueError(f"invalid frozen policy byte size: {path_text}")
+        path = _repo_file(repo_root, path_text, context="frozen policy")
+        if not path.is_file():
+            raise ValueError(f"frozen policy path is missing: {path_text}")
+        if _artifact_fingerprint(path) != (digest, size):
+            raise ValueError(f"frozen policy hash or size drift: {path_text}")
+    if roles != _FREEZE_POLICY_ROLES:
+        raise ValueError("architecture_freeze.policy_files must cover every policy role")
+
+    model_policy = value.get("model_policy")
+    if not isinstance(model_policy, Mapping):
+        raise ValueError("architecture_freeze.model_policy must be an object")
+    runtime_ids = model_policy.get("retained_runtime_ids")
+    if not isinstance(runtime_ids, Sequence) or isinstance(runtime_ids, (str, bytes)):
+        raise ValueError("model_policy.retained_runtime_ids must be an array")
+    if not runtime_ids or any(not isinstance(item, str) or not item for item in runtime_ids):
+        raise ValueError("model_policy.retained_runtime_ids must contain exact identifiers")
+    _nonempty_text(model_policy, "comparison_roster_status")
+    _nonempty_text(model_policy, "new_runtime_rule")
+    _nonempty_text(model_policy, "route_policy")
+
+    execution_policy = value.get("execution_policy")
+    if not isinstance(execution_policy, Mapping):
+        raise ValueError("architecture_freeze.execution_policy must be an object")
+    _nonempty_text(execution_policy, "model_calls")
+    commands = execution_policy.get("required_commands")
+    if not isinstance(commands, Sequence) or isinstance(commands, (str, bytes)):
+        raise ValueError("execution_policy.required_commands must be an array")
+    if not commands or any(not isinstance(item, str) or not item for item in commands):
+        raise ValueError("execution_policy.required_commands must contain commands")
 
 
 def _records(manifest: Mapping[str, Any], field: str) -> tuple[Mapping[str, Any], ...]:
@@ -255,9 +370,8 @@ def _validate_artifact(
     size = artifact.get("bytes")
     retrieval = artifact.get("retrieval")
     if retrieval not in {"git_path", "git_lfs"}:
-        raise ValueError(
-            f"artifact retrieval in {record_id} must be git_path or git_lfs"
-        )
+        raise ValueError(f"artifact retrieval in {record_id} must be git_path or git_lfs")
+
     if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
         raise ValueError(f"invalid sha256 for {path_text}")
     if not isinstance(size, int) or isinstance(size, bool) or size < 0:

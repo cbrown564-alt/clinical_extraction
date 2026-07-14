@@ -5,9 +5,9 @@ Last updated: 2026-07-14
 ## Current outcome
 
 The repository contains a defensible modular clinical-extraction contribution.
-Source, document, and artifact reduction are complete. Quality-gate repair,
-architecture freeze, and fresh-checkout verification remain before new model
-experiments.
+Source, document, and artifact reduction, quality-gate repair, and the reduced
+architecture freeze are complete. Fresh-checkout verification remains before
+new model experiments.
 
 The retained contribution must show:
 
@@ -59,7 +59,8 @@ closures, and replay expectations live in
 - ExECT v08 current-code/P7 treatment: `0.9189` dev140 and `0.8680` full200
   `clinical_headline`. Full200 is aggregate-only and development-inclusive.
 - ExECT same-core model swap currently covers GPT-4.1-mini, DeepSeek, and Qwen
-  3.6:35b. The requested six-model panel has not been run.
+  3.6:35b. The comparison core is frozen; the remaining three exact runtime
+  conditions still require predeclaration before the requested panel can run.
 - Component replay shows positive normalization and projection effects; evidence
   validation is score-inert on the representative Gan validation and ExECT
   dev140 replays. Schema/evidence gates therefore also require rejection and
@@ -87,10 +88,11 @@ engineering cleanup are implemented and verified in the current working tree:
 | Closed Gan candidates | Removed the entire closed agentic runtime and candidate tests; retained only the saved aggregate V12 ceiling evidence named by the evidence manifest |
 | Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
 | Engineering cleanup | Made repository-wide Ruff green and split seven oversized test modules into invariant-focused modules without changing the 1,150-test collection |
+| Architecture freeze | Manifest v3 pins source commit `46562134`, Python/dependency policy, all six reference cells, and exact prompt, scorer, split, repair, model, runbook, and CI fingerprints; the freeze does not authorize model calls |
 
 Verification on the current deletion batch:
 
-- `python -m pytest -q`: 1,150 passed in the repository environment;
+- `python -m pytest -q`: 1,153 passed in the repository environment;
 - `python -m mypy src`: clean across 270 source files;
 - `python -m ruff check .`: clean;
 - retained manifest and hashes pass; all six no-call reference cells replay at
@@ -142,8 +144,7 @@ reproducibility closeout.
 
 ## In progress
 
-1. Freeze the exact retained architecture and execution policies.
-2. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
+1. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
 ## Open research and validation work
 
@@ -173,7 +174,8 @@ reproducibility closeout.
 
 ## Next
 
-1. Freeze the architecture and complete fresh-checkout reproducibility.
+1. Complete fresh-checkout reproducibility and synchronize the surviving paper
+   sources.
 2. Complete the paper evidence studies on the frozen reduced architecture.
 
 ## Guardrails

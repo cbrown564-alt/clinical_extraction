@@ -1,6 +1,8 @@
 # Regenerating retained evidence
 
 The retained evidence manifest owns selected artifact paths and hashes.
+Its `architecture_freeze` object also owns the exact source commit and policy
+fingerprints for new evidence.
 
 ## Retrieve large selected artifacts
 
@@ -42,6 +44,11 @@ Any changed selected artifact requires:
 3. matching registry metadata;
 4. both verification commands; and
 5. an update to the claims register if the result changes.
+
+Changing a frozen prompt, scorer, split, repair layer, model route, or component
+graph requires a new freeze ID. The current freeze does not itself authorize a
+model call; a live run also needs a predeclared question and exact runtime
+condition.
 
 ## Paper
 

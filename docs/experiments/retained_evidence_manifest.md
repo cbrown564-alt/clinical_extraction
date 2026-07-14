@@ -4,7 +4,8 @@ Last rebuilt: 2026-07-14
 
 This is the human-readable view of
 [`retained_evidence_manifest.json`](retained_evidence_manifest.json). The JSON
-file owns selected paths, hashes, byte sizes, retrieval method, dataset and split
+file owns the reduced architecture freeze plus selected paths, hashes, byte
+sizes, retrieval method, dataset and split
 metadata, scorer, model role, prompt/program version, replay mode, repair policy,
 claim boundary, executable replay expectation, and the source/config/scorer/test
 closure needed to regenerate each reference. The full run registry remains
@@ -18,17 +19,34 @@ python scripts/check_retained_evidence_manifest.py
 python scripts/verify_reference_evidence.py
 ```
 
-The structural check fails if a selected file is missing or changed, a run has
-drifted from its registry metadata, a closure path is missing, or the two-task ×
-three-family matrix is incomplete. The replay check rebuilds or re-scores all six
-cells from current code and saved outputs without model calls. Hashes and byte
-sizes for retained text artifacts use canonical LF line endings so the same Git
-content verifies identically on Windows and Unix checkouts.
+The structural check fails if a frozen policy or selected file is missing or
+changed, a run has drifted from its registry metadata, a closure path is
+missing, or the two-task × three-family matrix is incomplete. The replay check
+rebuilds or re-scores all six cells from current code and saved outputs without
+model calls. Hashes and byte sizes for retained text artifacts use canonical LF
+line endings so the same Git content verifies identically on Windows and Unix
+checkouts.
 
 The five largest selected ExECT replay files use Git LFS. Their manifest entries
 record both the canonical content fingerprint and the immutable LFS object ID.
 Run `git lfs pull` after cloning if LFS objects were not downloaded during
 checkout; CI requests them explicitly.
+
+## Architecture freeze
+
+Freeze `reduced_reference_architecture_20260714` records:
+
+- source commit `465621341c6af59f2fc028be7bf5f9e325739c50`;
+- Python 3.11 plus the exact dependency declaration and lock;
+- every retained reference-cell ID;
+- exact prompt, scorer, split, repair, model, split-runbook, quality-workflow,
+  and dependency policy fingerprints;
+- the retained runtime identifiers and the honest three-of-six model-panel
+  boundary; and
+- the no-call verification commands required before evidence changes.
+
+The freeze does not authorize model calls. New calls require a predeclaration;
+semantic changes require a new freeze ID and complete replay.
 
 ## Reference matrix
 

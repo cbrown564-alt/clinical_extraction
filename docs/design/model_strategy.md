@@ -1,84 +1,77 @@
-# LLM Model Strategy
+# LLM model and comparison policy
 
-This project uses LLMs as explicit, swappable components inside a hybrid
-deterministic-LLM pipeline. Model choice is part of the experimental record, not
-an incidental runtime setting.
+Last updated: 2026-07-14
+Status: frozen for new evidence
 
-## Current Default
+The machine-readable freeze is `architecture_freeze` in
+`docs/experiments/retained_evidence_manifest.json`. It pins the reduced source
+tree at commit `465621341c6af59f2fc028be7bf5f9e325739c50`, the policy files,
+the six retained reference cells, and the commands required before a result can
+be added to the paper evidence set.
 
-Use GPT-4.1 mini for the majority of development experiments.
+## Retained runtime identifiers
 
-Rationale:
+| Identifier | Retained role | Boundary |
+| --- | --- | --- |
+| `openai/gpt-4.1-mini` | Gan and ExECT development/reference runtime | Development baseline, not a best-model claim |
+| `deepseek/deepseek-chat` | ExECT same-core model-transfer runtime | Retained three-model evidence |
+| `ollama_chat/qwen3.6:35b` | ExECT local model-transfer runtime | Local transfer evidence; thinking disabled |
+| `deepseek/deepseek-reasoner` | GEPA reflection model | Optimizer provenance only |
+| `openai/gpt-4.1` | Gan V12 frozen holdout reviewer | Aggregate ceiling evidence only |
 
-- cheap enough for rapid iteration over prompts, schemas, and row-level errors
-- fast enough to support tight experiment loops
-- capable enough to establish a credible baseline before investing in heavier
-  reasoning models
+The exact Ollama route is part of the identity. Qwen must use the native
+`ollama_chat/qwen3.6:35b` route with thinking disabled; the OpenAI-compatible
+Ollama endpoint is not an equivalent runtime.
 
-GPT-4.1 mini is the default for early DSPy seizure-event extraction and clinical
-reasoning modules unless a run record explicitly states otherwise.
+## Frozen ExECT model-comparison core
 
-## Strong Local Reasoning Model
+New same-core model evidence must inherit
+`exectv2_2call_no_sf_adjudicator_model_swap`:
 
-Use Qwen 3.6:35b later as a stronger reasoning model and privacy-conscious local
-deployment candidate.
+- split: ExECT `dev140` for row-inspectable development;
+- two live calls per letter: the structured key-family event ledger and the
+  Diagnosis decomposer;
+- no LLM SeizureFrequency adjudicator;
+- deterministic replay stages: SF direct adapter, state projection, unknown
+  suppression, union arbitration, Prescription repair, and finding assembly;
+- output views: raw candidate, evidence-valid, `clinical_headline`, fidelity
+  companion, and benchmark/CUI;
+- primary comparison scorer: the current ExECT `clinical_headline` owner, with
+  strict phrase/CUI/attribute companions reported separately;
+- standard prompt profile: `full`, temperature `0`, with the committed prompt
+  snapshots as the semantic contract;
+- model-specific adapters may repair transport, JSON dialect, or output shape
+  only. Any semantic prompt change, selected-evidence rewrite, deterministic
+  clinical repair, or scorer change creates a new comparison condition.
 
-This model is not part of the first experiment loop. It should be introduced
-after at least one strong pipeline reaches greater than 0.8 purist F1, because
-the first priority is to settle schemas, deterministic normalization, scoring,
-and error analysis on a cheaper/faster model.
+The earlier GPT, DeepSeek, and Qwen artifacts remain valid retained evidence,
+but they are asymmetric: the GPT config used temperature `0.3`, and Qwen used
+the compact prompt plus output-contract repair. They support a bounded
+same-core transfer statement, not a strict same-prompt six-model conclusion.
 
-Planned constraints:
+## Six-model claim boundary
 
-- run on a separate Windows laptop when that infrastructure is ready
-- route local model calls through the repo CLI with LiteLLM's native
-  `ollama_chat/qwen3.6:35b` model identifier and `--api-base
-  http://localhost:11434`, so endpoint provenance is captured in run metadata
-  and reports
-- keep Qwen thinking mode disabled for extraction runs; the shared DSPy LM
-  builder sends `extra_body={"think": False}` for `ollama_chat/...` models
-- avoid Ollama's OpenAI-compatible `/v1/chat/completions` route for Qwen
-  reasoning models, because hidden reasoning can leave the final assistant
-  content empty and create parse failures rather than meaningful model-quality
-  evidence
-- treat the local run as a model-swap experiment against a frozen or clearly
-  versioned pipeline
-- compare quality, latency, operational friction, and failure modes against the
-  GPT-4.1 mini baseline
-- preserve the privacy-conscious deployment argument without overstating it as a
-  validated hospital deployment claim
+The retained roster is three of six: GPT-4.1-mini, DeepSeek chat, and Qwen
+3.6:35b. The other three runtime identifiers were never predeclared in the
+governing evidence and are therefore not invented during cleanup. Before any
+new model call, a comparison predeclaration must name all remaining exact
+provider/API identifiers, hosted-versus-local route, model revision if exposed,
+temperature, token limits, cache mode, hardware/endpoint metadata, and the
+handling of model-specific format adapters.
 
-## Possible Optimizer Teacher
+No six-model ordering or size/reasoning conclusion is permitted until all six
+conditions run under the frozen core and the asymmetries are either removed or
+reported as explicit conditions.
 
-DSPy GEPA optimization is a backlog idea, not current scope. If the project uses
-GEPA, use GPT-5.4 as the teacher model.
+## Run metadata and change control
 
-GEPA should only be introduced after the hand-built pipeline has useful run
-artifacts and known failure slices. The teacher model should be recorded
-separately from the student/runtime model so optimizer effects do not get
-confused with normal inference behavior.
+Every LLM-backed run must record the dataset, split, row policy, scorer,
+runtime model identifier, role, endpoint, prompt profile, cache/replay mode,
+repair policy, and output hashes. New model calls require a predeclared research
+question and must pass the manifest, prompt snapshot, split-barrier, Ruff,
+mypy, full-test, and six-cell replay checks.
 
-## Experiment Metadata Requirements
-
-Every LLM-backed run should record:
-
-- runtime model display name and exact provider/API identifier when available
-- model role, such as extractor, clinical reasoner, adjudicator, or GEPA teacher
-- local versus hosted execution
-- provider, endpoint, quantization, and hardware details when relevant
-- prompt/program version and deterministic-rule configuration
-- whether outputs were direct, repaired, or generated by an optimized program
-
-This metadata is required for reproducibility and for paper-facing claims about
-which behavior came from deterministic rules, which behavior came from model
-reasoning, and which behavior came from optimization.
-
-## Claim Boundaries
-
-- GPT-4.1 mini results are the early development baseline, not a claim that it is
-  the best clinical model.
-- Qwen 3.6:35b results should be described as local-model transfer or deployment
-  feasibility experiments unless broader validation is performed.
-- GPT-5.4 should only be described as a GEPA teacher if GEPA is actually used.
-- Exact model identifiers and versions must be confirmed in run metadata at the
-  time of each experiment.
+Changing a frozen prompt, scorer, split, repair layer, model route, or component
+graph requires a new freeze ID and a complete replay. A no-call re-score may
+retain the freeze only when predictions are unchanged and the scorer change is
+predeclared and separately attributed.

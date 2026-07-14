@@ -1,7 +1,253 @@
 {
-  "schema_version": "retained-evidence-v2",
+  "schema_version": "retained-evidence-v3",
   "generated_date": "2026-07-14",
   "authority": "Machine-readable companion to docs/experiments/retained_evidence_manifest.md. Canonical claim status remains docs/canon/10_paper_provenance.md.",
+  "architecture_freeze": {
+    "freeze_id": "reduced_reference_architecture_20260714",
+    "created_date": "2026-07-14",
+    "status": "frozen_for_new_evidence",
+    "source_commit": "465621341c6af59f2fc028be7bf5f9e325739c50",
+    "source_commit_scope": "Implementation and quality-gate tree before this metadata-only freeze commit; the freeze commit changes manifest validation, tests, and governing documents.",
+    "python_version": "3.11",
+    "mutation_policy": "A semantic prompt, scorer, split, repair, runtime route, or component-graph change requires a new freeze ID and complete replay.",
+    "reference_cell_ids": [
+      "exectv2_rules_reference",
+      "exectv2_llm_only_reference",
+      "exectv2_hybrid_reference",
+      "gan2026_rules_reference",
+      "gan2026_llm_only_reference",
+      "gan2026_hybrid_reference"
+    ],
+    "policy_files": [
+      {
+        "role": "dependency",
+        "path": "pyproject.toml",
+        "sha256": "d5f249ec7d3c6018d8b5e17a87a88064792d430ec62f9506cb23bfc06fe396a0",
+        "bytes": 1333
+      },
+      {
+        "role": "dependency",
+        "path": "uv.lock",
+        "sha256": "5cf2c6d82b165d162dc7e3e10fa2a74d5bb03624b459f270fde7f9c6f97bd840",
+        "bytes": 714173
+      },
+      {
+        "role": "model",
+        "path": "docs/design/model_strategy.md",
+        "sha256": "92d925a7b03574f39ebb4981483d3ea6b3225ff9bae1dce788f7c78e0e98b4ad",
+        "bytes": 3984
+      },
+      {
+        "role": "prompt",
+        "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt",
+        "sha256": "0696442eb95c6b03ce9183a5cc66493557c0a1d5c1f66702d8ad95badc5954c0",
+        "bytes": 1986
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/exectv2__diagnosis_decomposer.txt",
+        "sha256": "1d656417c16e23b1b97955f789564932bd5dfb3e0dfde6a1a61b5a5005f60924",
+        "bytes": 30569
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/exectv2__structured_key_families.txt",
+        "sha256": "93f8a798e1c40c3963bbc0d9448d4e5fe2c2d0a3a4d9c4a6c8ccf0192f75ec05",
+        "bytes": 67621
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events.txt",
+        "sha256": "4ea331bdd24ca70e4fc35f9f6bd502e7a7d0d5a4ffb080d99269a3af89262dda",
+        "bytes": 6450
+      },
+      {
+        "role": "prompt",
+        "path": "tests/snapshots/prompt_contracts/gan2026__llm_only_canonical_pipeline.txt",
+        "sha256": "639b01944a93128131b49d7b1d9a5d49c92c079b682048dac13a902b01b8312e",
+        "bytes": 13191
+      },
+      {
+        "role": "prompt",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_full.py",
+        "sha256": "afb05c9fd91fef20fd60b3a9bda5ab9bf59ea30755028e1cfca37778a01b44af",
+        "bytes": 3949
+      },
+      {
+        "role": "prompt",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_qwen_compact.py",
+        "sha256": "211744b1c242b7d4dd61a435fa6a522f5c17240ed7189557ca39b496d959ffb3",
+        "bytes": 14197
+      },
+      {
+        "role": "quality",
+        "path": ".github/workflows/ci.yml",
+        "sha256": "e385594ade5aaadc8e8994c130a73f94520649bf36a90dbb1a5acc6921bb2158",
+        "bytes": 434
+      },
+      {
+        "role": "repair",
+        "path": "docs/design/llm_repair_attribution_protocol_2026-06-22.md",
+        "sha256": "28ca293c38860c1055c91b7bd4f6a36fa68d32cb33e124251ef0bd9a3cf10443",
+        "bytes": 10941
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml",
+        "sha256": "d8b7720f1982395dcadf4f0a58bda8f6dcba437bd2a9efd6b444a35b6080fe1e",
+        "bytes": 3297
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140.json",
+        "sha256": "d2f3d2f0ebe5960896420596c9846d8e8d12c5a795f3b269700516d4e12ddc7f",
+        "bytes": 5215
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_deepseek_dev140.json",
+        "sha256": "b1aeb5c887da366242cec9662caf0fdb0ba31c142051ab4fcc925b7f7aa5aa16",
+        "bytes": 5093
+      },
+      {
+        "role": "repair",
+        "path": "configs/exectv2/model_swap/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140.json",
+        "sha256": "c25da07009c9e497ac02092729ed7f8fe76047886c0cd136b46048ce888e8f23",
+        "bytes": 5497
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/repair.py",
+        "sha256": "b0b29c9729b0811732db3b8855b788a953184d3700eee48303219bbe2d5a441d",
+        "bytes": 3837
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/benchmark_prediction_repair.py",
+        "sha256": "0b0adfdceb20a4e82b4814b92aba6a974c7bda09e11c37da0c76cd32a0335a9a",
+        "bytes": 32181
+      },
+      {
+        "role": "repair",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
+        "sha256": "ca239a2cbc626a638b8f27271cad0d1ab4d31605373cf7d3651a9d092caec068",
+        "bytes": 8673
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+        "sha256": "78232b0661ba7e9378ea76d70dbe2b7887a3d52fb88d6846b0dbc8e5b3436c27",
+        "bytes": 4087
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/bootstrap.py",
+        "sha256": "95c73308152bd5162cb5ae3dedcd548342b57a156fc1fbd0f5cfe697c0573bef",
+        "bytes": 3098
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/investigations.py",
+        "sha256": "5ddcc75b29e5f7af46d428b91d6e6c7ad3d325a228d27d1cdbd03872f8892a88",
+        "bytes": 4450
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        "sha256": "6f81874e1bf4cee072ba0bd5e57533ba524dcf6b0e121c74c39a58ca8a62742e",
+        "bytes": 28183
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/normalize.py",
+        "sha256": "58ac373e795a1d97ee28bffe04ac7c866f46f066e9311b3c0451e6f75b0d6e9c",
+        "bytes": 5392
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/prescription.py",
+        "sha256": "c31fdc333a5d3c938e2fdffeb0e425b361d68e0bdbd1dff2e8a9e72213e7ae70",
+        "bytes": 16307
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/reporting.py",
+        "sha256": "2dff396718f4352670a8e6a9a35d0a19ab15bf7fc4ff00b9b3348a6a49e9e67e",
+        "bytes": 621
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/seizure_frequency.py",
+        "sha256": "4efe0e56f88e5cb8f98d34b7cd6ddee25ffaf0cb280ec1877444fc8283c1c700",
+        "bytes": 19419
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/reliability/scoring.py",
+        "sha256": "b0d13d14d454b3092e1dec502c878e5e204dab0c111249314ac3afeefb68b035",
+        "bytes": 11202
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py",
+        "sha256": "ea3fe53c5ec235fd84df8bfe785667418516d34141dd3e0a53fb2f36ecf9fc7a",
+        "bytes": 4439
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+        "sha256": "8ebc5a9b0b08fe787f7074cc4125b58c833839a1d3495ac7cc4119dd009ebcb4",
+        "bytes": 8900
+      },
+      {
+        "role": "scorer",
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py",
+        "sha256": "8d79d223e53e8cfdf5a0c4ef19b4864108968f67d9558454f798a7cbe82c715d",
+        "bytes": 7253
+      },
+      {
+        "role": "split",
+        "path": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+        "sha256": "bb1b87ada6812efd73971eb7397a71dba56b9689dfbfefb182634e2153642116",
+        "bytes": 4672
+      },
+      {
+        "role": "split",
+        "path": "data/Gan (2026)/splits/gan2026_split_v1.json",
+        "sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+        "bytes": 23621
+      },
+      {
+        "role": "split_runbook",
+        "path": "docs/runbooks/gated_blockers_2026-06-18.md",
+        "sha256": "d11f1b47c983f5678f0a28e596fb4217288e370f0bc62ac616908ea44cdecc35",
+        "bytes": 1946
+      }
+    ],
+    "model_policy": {
+      "retained_runtime_ids": [
+        "openai/gpt-4.1-mini",
+        "deepseek/deepseek-chat",
+        "ollama_chat/qwen3.6:35b",
+        "deepseek/deepseek-reasoner",
+        "openai/gpt-4.1"
+      ],
+      "comparison_roster_status": "three_of_six_retained",
+      "new_runtime_rule": "Name every remaining exact provider/API identifier and runtime condition in a predeclaration before calls; do not infer the missing roster.",
+      "route_policy": "Qwen uses ollama_chat/qwen3.6:35b with thinking disabled; endpoint and hardware provenance are mandatory for local runs."
+    },
+    "execution_policy": {
+      "model_calls": "Predeclaration required; this architecture freeze does not authorize new model calls.",
+      "required_commands": [
+        "python scripts/check_retained_evidence_manifest.py",
+        "python scripts/verify_reference_evidence.py",
+        "python scripts/check_doc_hygiene.py",
+        "python -m pytest",
+        "python -m ruff check .",
+        "python -m mypy src"
+      ]
+    }
+  },
   "registry_path": "experiments/registry.jsonl",
   "reference_cells": [
     {
