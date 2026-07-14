@@ -25,13 +25,20 @@ Do not create another roadmap, status board, evidence register, or research cano
 
 - Use the repository `.venv` for Python, tests, scripts, notebooks, and package imports. Use `$clinical-extraction-env` when command work is involved.
 - Install the package editable. Repair the environment before interpreting an import failure as a code failure.
-- Run focused tests during iteration. Before a broad completion claim, run the relevant combination of:
+- Run focused tests during iteration. Before a broad completion claim, use the repository interpreter for the current host and run the relevant combination of:
+
+```powershell
+# Windows
+.venv\Scripts\python.exe -m pytest
+.venv\Scripts\python.exe -m ruff check .
+.venv\Scripts\python.exe -m mypy src
+```
 
 ```sh
-source .venv/bin/activate
-python -m pytest
-ruff check .
-mypy src
+# macOS or Linux
+.venv/bin/python -m pytest
+.venv/bin/python -m ruff check .
+.venv/bin/python -m mypy src
 ```
 
 - Never run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.

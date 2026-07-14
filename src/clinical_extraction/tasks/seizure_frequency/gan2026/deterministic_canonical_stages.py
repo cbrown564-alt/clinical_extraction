@@ -124,12 +124,9 @@ def select_and_render_stage(
     """Select & Render: score and pick among normalized candidates, render the final label.
 
     Wraps `_select_final_event` (`deterministic/deterministic_selection.py`)
-    unchanged. Named as one combined stage — not separate Project/Render
-    stages — because the underlying selection logic has no internal seam
-    between "decide the projected fact" and "render it"; see
-    [[0014-evidence-trace-check-not-verify-for-deterministic-canonical-pipeline]]
-    and `CONTEXT.md`'s "Select & Render" entry for why splitting it would be a
-    behavior-risking refactor rather than a staging pass.
+    unchanged. Selection and formatting remain together because the retained
+    function does not expose a safe boundary between them. Splitting them would
+    change behavior rather than merely rename the step.
     """
     return _select_final_event(candidate_events, normalized_events, ablation_config)
 
