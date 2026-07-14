@@ -31,14 +31,17 @@ Current state, as of 2026-07-14:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- All 1,157 tests, Ruff, and mypy pass. CI runs all three checks. A separate
+- All 1,159 tests, Ruff, and mypy pass. CI runs all three checks. A separate
   Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
 - The Markdown manuscript and IEEE source use only selected evidence. The
   compiled three-page PDF has been visually checked.
-- Next work covers Gan efficiency, ExECT published metrics, out-of-sample
-  confidence, annotation evidence, and a strict six-model comparison.
+- The Gan efficiency audit records a 15/450 Purist gain for V12 at three cold
+  model passes per note rather than one; unmatched cost and latency claims were
+  rejected because the old runs lack telemetry.
+- Next work covers ExECT published metrics, out-of-sample confidence,
+  annotation evidence, and a strict six-model comparison.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 
