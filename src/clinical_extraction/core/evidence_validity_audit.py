@@ -26,9 +26,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     load_rich_schema_runs,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_surfacing import (
-    SURFACED_REPLAY_RUNS,
-)
 
 ROOT = Path(__file__).resolve().parents[3]
 REGISTRY_PATH = ROOT / "experiments" / "registry.jsonl"
@@ -183,29 +180,26 @@ def _pick_primary_jsonl(entry: RunRegistryEntry) -> Path | None:
 
 
 def build_registry_targets(entries: Sequence[RunRegistryEntry]) -> list[AuditTarget]:
-    by_run_id = {entry.run_id: entry for entry in entries}
     targets: list[AuditTarget] = []
 
-    for curation in SURFACED_REPLAY_RUNS:
-        entry = by_run_id.get(curation.run_id)
-        rows_path = (
-            Path(curation.source_jsonl)
-            if curation.source_jsonl
-            else _pick_primary_jsonl(entry)
-            if entry
-            else None
-        )
+    architecture_entries = (
+        entry
+        for entry in entries
+        if "architecture_comparator" in entry.registry_roles or entry.surface_as_architecture
+    )
+    for entry in architecture_entries:
+        rows_path = _pick_primary_jsonl(entry)
         if rows_path is None or not rows_path.exists():
             continue
         targets.append(
             AuditTarget(
-                run_id=curation.run_id,
+                run_id=entry.run_id,
                 task="gan2026",
                 rows_path=rows_path,
-                model_label=curation.model_display,
-                pipeline_family=curation.pipeline_family,
-                split="validation",
-                source="registry_surface_as_architecture",
+                model_label=entry.display_label or entry.model,
+                pipeline_family=entry.pipeline_family,
+                split=entry.split,
+                source="registry_architecture_comparator",
             )
         )
 

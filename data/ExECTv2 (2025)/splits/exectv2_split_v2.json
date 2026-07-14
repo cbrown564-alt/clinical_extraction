@@ -12,7 +12,7 @@
   "intended_use": {
     "dev": "Primary development surface: rule iteration, ablations, error analysis, ordinary progress reporting.",
     "test": "Locked holdout. Single confirmatory read per architecture once dev is locked. Do not tune against it.",
-    "full_200": "Benchmark-comparable frozen audit (Phase 7), run once per architecture, no tuning."
+    "full_200": "Development-inclusive full-corpus audit containing dev140 and the held-out 60 rows. Report aggregate results with that limitation; never describe this surface as an independent holdout or tune from the held-out rows."
   },
   "splits": {
     "dev": {

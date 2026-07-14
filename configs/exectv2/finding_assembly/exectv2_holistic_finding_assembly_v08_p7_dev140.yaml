@@ -1,0 +1,71 @@
+candidate_id: exectv2_holistic_finding_assembly_v08_p7_dev140
+pipeline_family: exectv2_holistic_finding_assembly
+ownership: component_attributed_holistic_finding_replay
+split: dev
+row_count: 140
+claim_boundary: dev_only_component_evidence_p7_reference
+baseline_producer: target_single_call_v042
+focused_comparator_artifact: experiments/exectv2_holistic_finding_assembly_v07_dev140_20260621.jsonl
+promotion_decision: retained-reference-no-call
+producers:
+  target_single_call_v042:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_target_indicators_single_call_v042_live_default_quarantine_dev140_qwen36_35b_ollama_autogpu_ctx16384_20260620.jsonl
+    ownership_label: llm_first_control
+    source_lane: v0.42_control
+    label: v0.42 default-quarantine local-Qwen control
+  diagnosis_reconciler_v01:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl
+    ownership_label: hybrid_diagnosis_route
+    source_lane: focused_diagnosis_reconciler_v01
+    label: focused Diagnosis reconciler v0.1
+  sf_union_arbitration_v08:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl
+    ownership_label: hybrid_sf_route+deterministic_union_arbitration
+    source_lane: focused_sf_union_arbitration_v08
+    label: SF union arbitration v0.8 over GPT-4.1-mini route plus deterministic all-entity SF
+  investigations_arbitration_v02:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl
+    ownership_label: llm_investigations_verifier+deterministic_investigations_arbitration
+    source_lane: focused_investigations_arbitration_v02
+    label: Investigations verifier v0.1 plus pending-test arbitration v0.2
+  prescription_repair_v03:
+    kind: saved_jsonl
+    artifact: experiments/exectv2_deterministic_prescription_repair_v03_dev140_p7fix_20260702.jsonl
+    ownership_label: deterministic_prescription_repair_v03_p7fix
+    source_lane: focused_prescription_deterministic_repair_v03_p7fix
+    label: deterministic Prescription regimen repair v0.3 with P7 clause-scope fix
+lenses:
+  Diagnosis:
+    producer: diagnosis_reconciler_v01
+    lens: diagnosis_heading_recovery_residual_benchmark_v05
+    source_lane: focused_diagnosis_reconciler_v01
+    ownership_label: hybrid_diagnosis_route
+    portability: benchmark_format
+  SeizureFrequency:
+    producer: sf_union_arbitration_v08
+    lens: sf_state_union_arbitration_v08
+    source_lane: focused_sf_union_arbitration_v08
+    ownership_label: hybrid_sf_route+deterministic_union_arbitration
+    portability: seizure_frequency
+  Prescription:
+    producer: prescription_repair_v03
+    lens: prescription_regimen_v01
+    source_lane: focused_prescription_deterministic_repair_v03_p7fix
+    ownership_label: deterministic_prescription_repair_v03_p7fix
+    portability: clinical_epilepsy
+  Investigations:
+    producer: investigations_arbitration_v02
+    lens: investigations_result_v01
+    source_lane: focused_investigations_arbitration_v02
+    ownership_label: llm_investigations_verifier+deterministic_investigations_arbitration
+    portability: clinical_epilepsy
+views:
+  - raw_candidate
+  - evidence_valid
+  - clinical_headline
+  - fidelity_companion
+  - benchmark_cui

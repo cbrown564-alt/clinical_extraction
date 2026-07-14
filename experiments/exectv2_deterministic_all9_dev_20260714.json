@@ -1,0 +1,762 @@
+{
+  "active_entities": [
+    "Prescription",
+    "Investigations",
+    "Diagnosis",
+    "Onset",
+    "WhenDiagnosed",
+    "BirthHistory",
+    "EpilepsyCause",
+    "PatientHistory",
+    "SeizureFrequency"
+  ],
+  "call_failures": 0,
+  "cui_attachment_rate": 0.9949,
+  "generated_on": "2026-07-14",
+  "mentions_total": 1186,
+  "mentions_with_cui": 1180,
+  "model": "(model-independent)",
+  "parse_failures": 0,
+  "patient_history_error_ledger": {
+    "gap_families": {
+      "attribute_bundle": {
+        "additional_fn_vs_phrase": 25,
+        "additional_fp_vs_phrase": 25,
+        "note": "Temporal, negation, and certainty mismatches after phrase match."
+      },
+      "cui_projection": {
+        "additional_fn_vs_semantic": 1,
+        "additional_fp_vs_semantic": 1,
+        "note": "Benchmark-format gap from CUI/CUIPhrase projection."
+      },
+      "phrase_scope_or_missing": {
+        "fn": 364,
+        "fp": 73,
+        "note": "Phrase-only misses and over-emissions before attributes or CUI."
+      }
+    },
+    "gold_mentions": 466,
+    "predicted_mentions": 175,
+    "predicted_negated": 36,
+    "predicted_with_cui": 175,
+    "predicted_with_temporal_attributes": 9
+  },
+  "pipeline_family": "exectv2_deterministic_all9",
+  "prescription_benchmark_projection_scores": {
+    "benchmark_with_cui": {
+      "f1": 0.2788,
+      "fn": 148,
+      "fp": 152,
+      "precision": 0.2762,
+      "recall": 0.2816,
+      "tp": 58
+    },
+    "clinical_medication_identity": {
+      "f1": 0.9615,
+      "fn": 6,
+      "fp": 10,
+      "precision": 0.9524,
+      "recall": 0.9709,
+      "tp": 200
+    },
+    "drugname_cui_projection": {
+      "f1": 0.8558,
+      "fn": 28,
+      "fp": 32,
+      "precision": 0.8476,
+      "recall": 0.8641,
+      "tp": 178
+    },
+    "guideline_defaulted_frequency": {
+      "f1": 0.2449,
+      "fn": 74,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 0.1395,
+      "tp": 12
+    },
+    "phrase_scope": {
+      "f1": 0.2981,
+      "fn": 144,
+      "fp": 148,
+      "precision": 0.2952,
+      "recall": 0.301,
+      "tp": 62
+    },
+    "semantic_without_cui": {
+      "f1": 0.2788,
+      "fn": 148,
+      "fp": 152,
+      "precision": 0.2762,
+      "recall": 0.2816,
+      "tp": 58
+    },
+    "source_stated_frequency": {
+      "f1": 0.7547,
+      "fn": 0,
+      "fp": 78,
+      "precision": 0.6061,
+      "recall": 1.0,
+      "tp": 120
+    }
+  },
+  "prescription_component_scores": {
+    "clinical_headline": {
+      "f1": 0.9615,
+      "fn": 6,
+      "fp": 10,
+      "precision": 0.9524,
+      "recall": 0.9709,
+      "tp": 200
+    },
+    "complete": {
+      "f1": 0.9633,
+      "fn": 5,
+      "fp": 10,
+      "precision": 0.9517,
+      "recall": 0.9752,
+      "tp": 197
+    },
+    "dose": {
+      "f1": 0.9682,
+      "fn": 4,
+      "fp": 9,
+      "precision": 0.9565,
+      "recall": 0.9802,
+      "tp": 198
+    },
+    "frequency": {
+      "f1": 0.9663,
+      "fn": 5,
+      "fp": 9,
+      "precision": 0.9571,
+      "recall": 0.9757,
+      "tp": 201
+    },
+    "future_medication": {
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    },
+    "guideline_defaulted_frequency": {
+      "f1": 0.2449,
+      "fn": 74,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 0.1395,
+      "tp": 12
+    },
+    "name": {
+      "f1": 0.9615,
+      "fn": 6,
+      "fp": 10,
+      "precision": 0.9524,
+      "recall": 0.9709,
+      "tp": 200
+    },
+    "ordinary_complete": {
+      "f1": 0.963,
+      "fn": 5,
+      "fp": 10,
+      "precision": 0.9512,
+      "recall": 0.975,
+      "tp": 195
+    },
+    "rescue_regimen": {
+      "f1": 0.9091,
+      "fn": 1,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 0.8333,
+      "tp": 5
+    },
+    "source_stated_frequency": {
+      "f1": 0.7547,
+      "fn": 0,
+      "fp": 78,
+      "precision": 0.6061,
+      "recall": 1.0,
+      "tp": 120
+    },
+    "weight_based_dosing": {
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0
+    }
+  },
+  "routing_count": 0,
+  "row_count": 140,
+  "schema_repairs": 0,
+  "scored_entities": [
+    "BirthHistory",
+    "Diagnosis",
+    "EpilepsyCause",
+    "Investigations",
+    "Onset",
+    "PatientHistory",
+    "Prescription",
+    "SeizureFrequency",
+    "WhenDiagnosed"
+  ],
+  "scores": {
+    "benchmark": {
+      "per_entity": {
+        "BirthHistory": {
+          "per_item": {
+            "f1": 0.5574,
+            "fn": 14,
+            "fp": 13,
+            "precision": 0.5667,
+            "recall": 0.5484,
+            "tp": 17
+          },
+          "per_letter": {
+            "f1": 0.7317,
+            "fn": 11,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.5769,
+            "tp": 15
+          }
+        },
+        "Diagnosis": {
+          "per_item": {
+            "f1": 0.2955,
+            "fn": 297,
+            "fp": 218,
+            "precision": 0.3313,
+            "recall": 0.2667,
+            "tp": 108
+          },
+          "per_letter": {
+            "f1": 0.8158,
+            "fn": 37,
+            "fp": 5,
+            "precision": 0.949,
+            "recall": 0.7154,
+            "tp": 93
+          }
+        },
+        "EpilepsyCause": {
+          "per_item": {
+            "f1": 0.5,
+            "fn": 10,
+            "fp": 12,
+            "precision": 0.4783,
+            "recall": 0.5238,
+            "tp": 11
+          },
+          "per_letter": {
+            "f1": 0.5806,
+            "fn": 7,
+            "fp": 6,
+            "precision": 0.6,
+            "recall": 0.5625,
+            "tp": 9
+          }
+        },
+        "Investigations": {
+          "per_item": {
+            "f1": 0.322,
+            "fn": 84,
+            "fp": 135,
+            "precision": 0.2781,
+            "recall": 0.3824,
+            "tp": 52
+          },
+          "per_letter": {
+            "f1": 0.5755,
+            "fn": 38,
+            "fp": 21,
+            "precision": 0.6557,
+            "recall": 0.5128,
+            "tp": 40
+          }
+        },
+        "Onset": {
+          "per_item": {
+            "f1": 0.2857,
+            "fn": 12,
+            "fp": 13,
+            "precision": 0.2778,
+            "recall": 0.2941,
+            "tp": 5
+          },
+          "per_letter": {
+            "f1": 0.4167,
+            "fn": 8,
+            "fp": 6,
+            "precision": 0.4545,
+            "recall": 0.3846,
+            "tp": 5
+          }
+        },
+        "PatientHistory": {
+          "per_item": {
+            "f1": 0.2371,
+            "fn": 390,
+            "fp": 99,
+            "precision": 0.4343,
+            "recall": 0.1631,
+            "tp": 76
+          },
+          "per_letter": {
+            "f1": 0.5475,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9608,
+            "recall": 0.3828,
+            "tp": 49
+          }
+        },
+        "Prescription": {
+          "per_item": {
+            "f1": 0.2788,
+            "fn": 148,
+            "fp": 152,
+            "precision": 0.2762,
+            "recall": 0.2816,
+            "tp": 58
+          },
+          "per_letter": {
+            "f1": 0.5223,
+            "fn": 72,
+            "fp": 3,
+            "precision": 0.9318,
+            "recall": 0.3628,
+            "tp": 41
+          }
+        },
+        "SeizureFrequency": {
+          "per_item": {
+            "f1": 0.6972,
+            "fn": 50,
+            "fp": 69,
+            "precision": 0.665,
+            "recall": 0.7326,
+            "tp": 137
+          },
+          "per_letter": {
+            "f1": 0.9305,
+            "fn": 12,
+            "fp": 1,
+            "precision": 0.9886,
+            "recall": 0.8788,
+            "tp": 87
+          }
+        },
+        "WhenDiagnosed": {
+          "per_item": {
+            "f1": 0.8182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8182,
+            "recall": 0.8182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.3548,
+        "fn": 1007,
+        "fp": 713,
+        "precision": 0.3988,
+        "recall": 0.3196,
+        "tp": 473
+      },
+      "per_letter": {
+        "f1": 0.6918,
+        "fn": 266,
+        "fp": 44,
+        "precision": 0.8878,
+        "recall": 0.5668,
+        "tp": 348
+      }
+    },
+    "phrase_only": {
+      "per_entity": {
+        "BirthHistory": {
+          "per_item": {
+            "f1": 0.8852,
+            "fn": 4,
+            "fp": 3,
+            "precision": 0.9,
+            "recall": 0.871,
+            "tp": 27
+          },
+          "per_letter": {
+            "f1": 0.9388,
+            "fn": 3,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8846,
+            "tp": 23
+          }
+        },
+        "Diagnosis": {
+          "per_item": {
+            "f1": 0.725,
+            "fn": 140,
+            "fp": 61,
+            "precision": 0.8129,
+            "recall": 0.6543,
+            "tp": 265
+          },
+          "per_letter": {
+            "f1": 0.9615,
+            "fn": 5,
+            "fp": 5,
+            "precision": 0.9615,
+            "recall": 0.9615,
+            "tp": 125
+          }
+        },
+        "EpilepsyCause": {
+          "per_item": {
+            "f1": 0.5909,
+            "fn": 8,
+            "fp": 10,
+            "precision": 0.5652,
+            "recall": 0.619,
+            "tp": 13
+          },
+          "per_letter": {
+            "f1": 0.6667,
+            "fn": 5,
+            "fp": 6,
+            "precision": 0.6471,
+            "recall": 0.6875,
+            "tp": 11
+          }
+        },
+        "Investigations": {
+          "per_item": {
+            "f1": 0.6006,
+            "fn": 39,
+            "fp": 90,
+            "precision": 0.5187,
+            "recall": 0.7132,
+            "tp": 97
+          },
+          "per_letter": {
+            "f1": 0.7625,
+            "fn": 17,
+            "fp": 21,
+            "precision": 0.7439,
+            "recall": 0.7821,
+            "tp": 61
+          }
+        },
+        "Onset": {
+          "per_item": {
+            "f1": 0.4,
+            "fn": 10,
+            "fp": 11,
+            "precision": 0.3889,
+            "recall": 0.4118,
+            "tp": 7
+          },
+          "per_letter": {
+            "f1": 0.5385,
+            "fn": 6,
+            "fp": 6,
+            "precision": 0.5385,
+            "recall": 0.5385,
+            "tp": 7
+          }
+        },
+        "PatientHistory": {
+          "per_item": {
+            "f1": 0.3183,
+            "fn": 364,
+            "fp": 73,
+            "precision": 0.5829,
+            "recall": 0.2189,
+            "tp": 102
+          },
+          "per_letter": {
+            "f1": 0.6387,
+            "fn": 67,
+            "fp": 2,
+            "precision": 0.9683,
+            "recall": 0.4766,
+            "tp": 61
+          }
+        },
+        "Prescription": {
+          "per_item": {
+            "f1": 0.2981,
+            "fn": 144,
+            "fp": 148,
+            "precision": 0.2952,
+            "recall": 0.301,
+            "tp": 62
+          },
+          "per_letter": {
+            "f1": 0.55,
+            "fn": 69,
+            "fp": 3,
+            "precision": 0.9362,
+            "recall": 0.3894,
+            "tp": 44
+          }
+        },
+        "SeizureFrequency": {
+          "per_item": {
+            "f1": 0.743,
+            "fn": 41,
+            "fp": 60,
+            "precision": 0.7087,
+            "recall": 0.7807,
+            "tp": 146
+          },
+          "per_letter": {
+            "f1": 0.9418,
+            "fn": 10,
+            "fp": 1,
+            "precision": 0.9889,
+            "recall": 0.899,
+            "tp": 89
+          }
+        },
+        "WhenDiagnosed": {
+          "per_item": {
+            "f1": 0.8182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8182,
+            "recall": 0.8182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.5461,
+        "fn": 752,
+        "fp": 458,
+        "precision": 0.6138,
+        "recall": 0.4919,
+        "tp": 728
+      },
+      "per_letter": {
+        "f1": 0.7904,
+        "fn": 184,
+        "fp": 44,
+        "precision": 0.9072,
+        "recall": 0.7003,
+        "tp": 430
+      }
+    },
+    "semantic": {
+      "per_entity": {
+        "BirthHistory": {
+          "per_item": {
+            "f1": 0.623,
+            "fn": 12,
+            "fp": 11,
+            "precision": 0.6333,
+            "recall": 0.6129,
+            "tp": 19
+          },
+          "per_letter": {
+            "f1": 0.7619,
+            "fn": 10,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.6154,
+            "tp": 16
+          }
+        },
+        "Diagnosis": {
+          "per_item": {
+            "f1": 0.3119,
+            "fn": 291,
+            "fp": 212,
+            "precision": 0.3497,
+            "recall": 0.2815,
+            "tp": 114
+          },
+          "per_letter": {
+            "f1": 0.8261,
+            "fn": 35,
+            "fp": 5,
+            "precision": 0.95,
+            "recall": 0.7308,
+            "tp": 95
+          }
+        },
+        "EpilepsyCause": {
+          "per_item": {
+            "f1": 0.5,
+            "fn": 10,
+            "fp": 12,
+            "precision": 0.4783,
+            "recall": 0.5238,
+            "tp": 11
+          },
+          "per_letter": {
+            "f1": 0.5806,
+            "fn": 7,
+            "fp": 6,
+            "precision": 0.6,
+            "recall": 0.5625,
+            "tp": 9
+          }
+        },
+        "Investigations": {
+          "per_item": {
+            "f1": 0.3653,
+            "fn": 77,
+            "fp": 128,
+            "precision": 0.3155,
+            "recall": 0.4338,
+            "tp": 59
+          },
+          "per_letter": {
+            "f1": 0.5957,
+            "fn": 36,
+            "fp": 21,
+            "precision": 0.6667,
+            "recall": 0.5385,
+            "tp": 42
+          }
+        },
+        "Onset": {
+          "per_item": {
+            "f1": 0.2857,
+            "fn": 12,
+            "fp": 13,
+            "precision": 0.2778,
+            "recall": 0.2941,
+            "tp": 5
+          },
+          "per_letter": {
+            "f1": 0.4167,
+            "fn": 8,
+            "fp": 6,
+            "precision": 0.4545,
+            "recall": 0.3846,
+            "tp": 5
+          }
+        },
+        "PatientHistory": {
+          "per_item": {
+            "f1": 0.2402,
+            "fn": 389,
+            "fp": 98,
+            "precision": 0.44,
+            "recall": 0.1652,
+            "tp": 77
+          },
+          "per_letter": {
+            "f1": 0.5475,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9608,
+            "recall": 0.3828,
+            "tp": 49
+          }
+        },
+        "Prescription": {
+          "per_item": {
+            "f1": 0.2788,
+            "fn": 148,
+            "fp": 152,
+            "precision": 0.2762,
+            "recall": 0.2816,
+            "tp": 58
+          },
+          "per_letter": {
+            "f1": 0.5223,
+            "fn": 72,
+            "fp": 3,
+            "precision": 0.9318,
+            "recall": 0.3628,
+            "tp": 41
+          }
+        },
+        "SeizureFrequency": {
+          "per_item": {
+            "f1": 0.6972,
+            "fn": 50,
+            "fp": 69,
+            "precision": 0.665,
+            "recall": 0.7326,
+            "tp": 137
+          },
+          "per_letter": {
+            "f1": 0.9305,
+            "fn": 12,
+            "fp": 1,
+            "precision": 0.9886,
+            "recall": 0.8788,
+            "tp": 87
+          }
+        },
+        "WhenDiagnosed": {
+          "per_item": {
+            "f1": 0.8182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8182,
+            "recall": 0.8182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.3668,
+        "fn": 991,
+        "fp": 697,
+        "precision": 0.4123,
+        "recall": 0.3304,
+        "tp": 489
+      },
+      "per_letter": {
+        "f1": 0.6983,
+        "fn": 261,
+        "fp": 44,
+        "precision": 0.8892,
+        "recall": 0.5749,
+        "tp": 353
+      }
+    }
+  },
+  "split": "dev",
+  "validation": {
+    "evidence_not_substring_count": 0,
+    "evidence_validity_rate": 1.0,
+    "schema_error_count": 0,
+    "warning_count": 0
+  }
+}
