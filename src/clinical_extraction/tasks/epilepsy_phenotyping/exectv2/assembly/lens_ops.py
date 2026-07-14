@@ -31,6 +31,7 @@ class LensPolicy:
     source_lane: str
     ownership_label: str
     portability: str | None
+    diagnosis_resolution_candidate: bool = False
 
 
 @dataclass(frozen=True)
@@ -203,6 +204,7 @@ def diagnosis_added_finding(
     selected: list[ClinicalFinding],
     policy: LensPolicy,
     lens_id: str,
+    rule_category: str = "benchmark_format",
 ) -> ClinicalFinding | None:
     source = source_for_residual(
         store,
@@ -237,18 +239,22 @@ def diagnosis_added_finding(
                 stage="entity_lens",
                 action="added_diagnosis_residual_from_dictionary",
                 owner="standard_dictionary",
-                portability="benchmark_format",
+                portability=rule_category,
                 detail={
                     "lens_id": lens_id,
                     "producer_id": policy.producer_id,
                     "source_lane": policy.source_lane,
-                    "rule_category": "benchmark_format",
+                    "rule_category": rule_category,
                     "target_text": text,
                     "evidence": evidence,
                 },
             ),
         ),
-        rationale="The source phrase matches a dev residual benchmark-format concept.",
+        rationale=(
+            "The source phrase explicitly asserts the patient's seizure diagnosis."
+            if rule_category == "clinical_epilepsy"
+            else "The source phrase matches a dev residual benchmark-format concept."
+        ),
         evidence_valid=evidence_is_grounded(store.note_text, evidence),
         raw_surface=False,
     )

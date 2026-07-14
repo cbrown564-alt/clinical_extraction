@@ -39,6 +39,19 @@ def load_clinical_rules() -> list[str]:
     return rules
 
 
+def load_resolution_candidate_rules() -> list[str]:
+    """Return the opt-in dev140 Diagnosis resolution candidate rules."""
+
+    path = _PACKAGE_DIR / "resolution_candidate_rules.yaml"
+    payload = _read_yaml(path)
+    if not isinstance(payload, dict):
+        raise ValueError(f"{path} must contain a mapping")
+    rules = payload.get("clinical_rules")
+    if not isinstance(rules, list):
+        raise ValueError("resolution_candidate_rules.yaml must contain clinical_rules list")
+    return rules
+
+
 def load_worked_examples() -> list[dict[str, Any]]:
     """Return worked examples for the Diagnosis decomposer prompt."""
     examples = _load_corpus_cached().get("worked_examples")

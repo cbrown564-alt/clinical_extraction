@@ -53,12 +53,13 @@ def _store(note_text: str, mentions: list[dict[str, Any]]) -> ClinicalFindingSto
     return store
 
 
-def _policy() -> LensPolicy:
+def _policy(*, diagnosis_resolution_candidate: bool = False) -> LensPolicy:
     return LensPolicy(
         producer_id=_PRODUCER,
         source_lane="single_gpt_structured_v09",
         ownership_label="single_gpt",
         portability="benchmark_format",
+        diagnosis_resolution_candidate=diagnosis_resolution_candidate,
     )
 
 
@@ -699,3 +700,93 @@ def test_diagnosis_dictionary_lens_drops_qwen_dev25_noise_surfaces() -> None:
     assert "convulsive seizures" not in by_text
     assert "nonepileptic events" not in by_text
     assert "frontal lobe brain tumour" not in by_text
+
+
+def test_diagnosis_dictionary_lens_recovers_patient_absence_seizures() -> None:
+    note = (
+        "Medical diagnosis: Generalised epilepsy with absences and GTCS. "
+        "Rachel started having absence seizures at around the age of 8."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "generalised epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Generalised epilepsy",
+            }
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy(diagnosis_resolution_candidate=True))
+
+    absence = next(finding for finding in result.findings if finding.text == "absence seizures")
+    addition = next(
+        event
+        for event in absence.provenance
+        if event.action == "added_diagnosis_residual_from_dictionary"
+    )
+    assert addition.portability == "clinical_epilepsy"
+    assert addition.detail["rule_category"] == "clinical_epilepsy"
+
+
+def test_diagnosis_dictionary_lens_keeps_required_symptomatic_fragment() -> None:
+    note = (
+        "Diagnosis: Symptomatic epilepsy with generalised tonic clonic seizures "
+        "with right temporal meningioma."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "symptomatic epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": note,
+            }
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy(diagnosis_resolution_candidate=True))
+
+    assert "symptomatic" in [finding.text for finding in result.findings]
+
+
+def test_diagnosis_dictionary_lens_avoids_generic_generalised_subtype_duplicate() -> None:
+    note = "Diagnosis: genetic generalised epilepsy."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "genetic generalised epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "genetic generalised epilepsy",
+            }
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy(diagnosis_resolution_candidate=True))
+
+    texts = [finding.text for finding in result.findings]
+    assert "genetic generalised epilepsy" in texts
+    assert "generalised epilepsy" not in texts
