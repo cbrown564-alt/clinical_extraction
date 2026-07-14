@@ -32,7 +32,8 @@ def run_split(
     candidate_set_jsonl_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Execute a run split using the specified unified runner architecture."""
-    if architecture in ("deterministic", "deterministic_canonical_pipeline"):
+    del candidate_set_jsonl_path
+    if architecture == "deterministic_canonical_pipeline":
         return _run_deterministic_split(
             records,
             architecture=architecture,
@@ -44,47 +45,6 @@ def run_split(
             mode=mode,
             dspy_cache=dspy_cache,
             api_base=api_base,
-        )
-
-    if architecture == "hybrid":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-            llm_candidate_set_clinical_assessment_probe,
-        )
-
-        return llm_candidate_set_clinical_assessment_probe.run_split(
-            records,
-            split=split,
-            split_manifest=split_manifest,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            mode=mode,
-            dspy_cache=dspy_cache,
-            api_base=api_base,
-            escalation_reason=escalation_reason,
-            progress_every=progress_every,
-            checkpoint_jsonl_path=checkpoint_jsonl_path,
-            checkpoint_report_path=checkpoint_report_path,
-            candidate_set_jsonl_path=candidate_set_jsonl_path,
-        )
-
-    if architecture == "llm_only_direct_labeler":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_only_direct_labeler
-
-        return llm_only_direct_labeler.run_split(
-            records,
-            split=split,
-            split_manifest=split_manifest,
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            mode=mode,
-            dspy_cache=dspy_cache,
-            api_base=api_base,
-            escalation_reason=escalation_reason,
-            progress_every=progress_every,
-            checkpoint_jsonl_path=checkpoint_jsonl_path,
-            checkpoint_report_path=checkpoint_report_path,
         )
 
     if architecture == "hybrid_structured_events":
@@ -156,7 +116,6 @@ def _run_deterministic_split(
         map_purist,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
-        deterministic,
         deterministic_canonical,
     )
 
@@ -167,11 +126,7 @@ def _run_deterministic_split(
         max_tokens=max_tokens,
         dspy_cache=dspy_cache,
     )
-    run_item = (
-        deterministic.run_item
-        if architecture == "deterministic"
-        else deterministic_canonical.run_item
-    )
+    run_item = deterministic_canonical.run_item
     rows = []
     for record in records:
         result = run_item(record, config)
