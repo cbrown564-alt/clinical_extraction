@@ -25,6 +25,11 @@ cells from current code and saved outputs without model calls. Hashes and byte
 sizes for retained text artifacts use canonical LF line endings so the same Git
 content verifies identically on Windows and Unix checkouts.
 
+The five largest selected ExECT replay files use Git LFS. Their manifest entries
+record both the canonical content fingerprint and the immutable LFS object ID.
+Run `git lfs pull` after cloning if LFS objects were not downloaded during
+checkout; CI requests them explicitly.
+
 ## Reference matrix
 
 | Task | Family | Retained run | Split | Headline result | Boundary |

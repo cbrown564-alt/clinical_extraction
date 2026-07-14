@@ -254,8 +254,10 @@ def _validate_artifact(
     digest = _nonempty_text(artifact, "sha256")
     size = artifact.get("bytes")
     retrieval = artifact.get("retrieval")
-    if retrieval != "git_path":
-        raise ValueError(f"artifact retrieval in {record_id} must be git_path")
+    if retrieval not in {"git_path", "git_lfs"}:
+        raise ValueError(
+            f"artifact retrieval in {record_id} must be git_path or git_lfs"
+        )
     if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
         raise ValueError(f"invalid sha256 for {path_text}")
     if not isinstance(size, int) or isinstance(size, bool) or size < 0:
@@ -269,6 +271,15 @@ def _validate_artifact(
     expected = (digest, size)
     if actual != expected:
         raise ValueError(f"retained artifact hash or size drift: {path_text}")
+    if retrieval == "git_lfs":
+        lfs_oid = artifact.get("lfs_oid")
+        if (
+            not isinstance(lfs_oid, str)
+            or not lfs_oid.startswith("sha256:")
+            or len(lfs_oid) != 71
+            or any(char not in "0123456789abcdef" for char in lfs_oid[7:])
+        ):
+            raise ValueError(f"invalid LFS object id: {path_text}")
     prior = seen_artifacts.get(path_text)
     if prior is not None and prior != expected:
         raise ValueError(f"conflicting retained metadata for {path_text}")

@@ -2,6 +2,20 @@
 
 The retained evidence manifest owns selected artifact paths and hashes.
 
+## Retrieve large selected artifacts
+
+Five large ExECT replay files are content-addressed Git LFS objects. A normal
+clone with Git LFS installed downloads them automatically. If a checkout
+contains pointer files, retrieve the objects before validation:
+
+```sh
+git lfs pull
+```
+
+The JSON manifest records each LFS object ID, canonical content hash, and byte
+size. Do not replace an object without updating all three values and replaying
+the selected evidence.
+
 ## Verify selected files
 
 ```sh

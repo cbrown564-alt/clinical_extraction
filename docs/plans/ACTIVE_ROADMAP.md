@@ -15,21 +15,18 @@ development-inclusive aggregate audit.
 
 ## Order
 
-1. **Verify artifact and document reduction.** Keep only manifest-selected
-   experiment evidence, canonical owners, current design decisions, the
-   manuscript, and operational runbooks.
-2. **Restore engineering checks.** Close the remaining Ruff findings while
+1. **Restore engineering checks.** Close the remaining Ruff findings while
    keeping pytest, mypy, prompt snapshots, manifest validation, and all six
    reference replays green.
-3. **Freeze the architecture.** Record the exact prompt, scorer, split, repair,
+2. **Freeze the architecture.** Record the exact prompt, scorer, split, repair,
    and model policies before new calls.
-4. **Run open evidence work.**
+3. **Run open evidence work.**
    - matched Gan calls, tokens, cost, and latency;
    - deterministic ExECT phrase/CUI/full-attribute reproduction;
    - out-of-sample model confidence and bounded review routing;
    - complete annotation taxonomy and sensitivity analysis;
    - remaining three models in the frozen six-model comparison.
-5. **Close from a fresh checkout.** Install, enforce split barriers, replay both
+4. **Close from a fresh checkout.** Install, enforce split barriers, replay both
    tasks, verify hashes, rebuild surviving tables, and sync the manuscript and
    IEEE source.
 
@@ -43,6 +40,8 @@ development-inclusive aggregate audit.
 - MLflow, the frontend, and Observatory are outside the retained deliverable.
 - Historical plans and experiment narratives are available through Git history,
   not the active documentation tree.
+- The five largest selected ExECT replay artifacts are immutable Git LFS
+  objects with IDs and retrieval metadata in the retained manifest.
 
 ## Completion checks
 

@@ -14,8 +14,10 @@ Start with:
 
 The registry is intentionally selective. Rejected and superseded runs remain
 recoverable from Git history instead of being maintained as a live catalog.
-Large retained artifacts remain in Git until an immutable external store has
-been chosen and its retrieval contract has been added to the manifest.
+The five largest retained ExECT replay artifacts are stored as immutable,
+content-addressed Git LFS objects. Their object IDs and retrieval contract are
+recorded in the retained manifest; run `git lfs pull` if a checkout contains
+pointer files.
 
 Gan `test450` evidence is aggregate-only. Do not add row-level locked-test
 reports or use locked rows for tuning. ExECT `full200` is a

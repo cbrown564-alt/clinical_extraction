@@ -5,9 +5,9 @@ Last updated: 2026-07-14
 ## Current outcome
 
 The repository contains a defensible modular clinical-extraction contribution.
-The classified closed Gan and ExECT source candidates are now removed, but the
-document, artifact, quality-gate, and fresh-checkout phases of repository
-surgery remain open before new model experiments.
+Source, document, and artifact reduction are complete. Quality-gate repair,
+architecture freeze, and fresh-checkout verification remain before new model
+experiments.
 
 The retained contribution must show:
 
@@ -135,15 +135,15 @@ reproducibility closeout.
   for removed behavior were deleted. Completion evidence is the passing full
   suite plus retained manifest/replay checks, not preservation of the old test
   count.
-- **Large artifacts remain unresolved.** Hashing retained files makes the
-  evidence graph trustworthy, but it does not solve the repository-size
-  problem. Immutable external storage with retrieval instructions is still
-  required before broad artifact deletion.
+- **Large retained artifacts are content-addressed.** The five largest selected
+  ExECT replay files now use Git LFS. The manifest records canonical hashes,
+  byte sizes, LFS object IDs, and retrieval instructions; CI requests LFS
+  objects explicitly.
 
 ## In progress
 
-1. Reduce the document and artifact estate to canonical owners plus retained proof.
-2. Close the 122 remaining Ruff findings on the reduced tree.
+1. Close the remaining Ruff findings on the reduced tree.
+2. Freeze the exact retained architecture and execution policies.
 3. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
 ## Open research and validation work
@@ -174,10 +174,9 @@ reproducibility closeout.
 
 ## Next
 
-1. Reduce documents, registries, and artifacts to canonical owners and retained
-   proof, after the external retained-artifact location is defined.
-2. Make repository-wide Ruff green, simplify oversized retained tests, and run
+1. Make repository-wide Ruff green, simplify oversized retained tests, and run
    the full suite without allowlists.
+2. Freeze the architecture and complete fresh-checkout reproducibility.
 3. Complete the paper evidence studies on the frozen reduced architecture,
    then perform the fresh-checkout closeout.
 

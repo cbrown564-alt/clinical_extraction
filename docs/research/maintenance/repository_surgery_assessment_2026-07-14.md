@@ -274,7 +274,9 @@ same claim language.
 
 ### Phase 1 — Name the retained system and rebuild its evidence manifest
 
-Status: implemented except for external storage of large retained artifacts.
+Status: implemented. The five largest selected replay artifacts are stored as
+content-addressed Git LFS objects with IDs, hashes, sizes, and retrieval
+instructions in the retained manifest.
 
 1. Select one active ExECT control and one minimal Gan operational reproduction
    path; list each import, config, scorer, artifact, report, and test closure.
@@ -341,8 +343,9 @@ name deleted producers; it does not keep those producers installed.
 
 ### Phase 4 — Reduce the document estate
 
-Status: started. The core reading path and status documents are current, but
-the historical document and artifact estate remains large.
+Status: implemented. The active tree contains canonical owners, current
+decisions, direct evidence records, the manuscript, and operational runbooks;
+tool-generated session state and the removed Observatory notebook are gone.
 
 Keep the shortest authoritative route:
 
@@ -447,7 +450,7 @@ project interfaces.
 | Which Gan path survives? | The manifest names deterministic, LLM-only, and hybrid reference cells; holdout evidence remains aggregate-only | Keep those reference closures and the operational aggregate evidence; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
 | Does the full-stack Observatory survive? | No required workflow or retained evidence cell depended on it | Removed | `ACTIVE_ROADMAP.md` |
 | Does the frontend survive? | It duplicated report/catalog scope without a required user workflow | Removed with Observatory | `ACTIVE_ROADMAP.md` |
-| Where do large evidence artifacts live? | `experiments/` is 3.8 GB in the working copy and the old index is unreliable | External immutable artifact storage; keep hashes and retrieval metadata in Git | `repo_simplification_plan_2026-06-22.md` |
+| Where do large evidence artifacts live? | Five selected replay files dominate the retained tracked payload | Git LFS objects; keep canonical hashes, LFS IDs, sizes, and retrieval metadata in the retained manifest | `docs/experiments/retained_evidence_manifest.json` |
 | How much generated documentation survives? | Generated documents greatly outnumber canonical owners and have already created false authority | Keep only direct evidence records needed by surviving claims; delete the rest | `docs/NAVIGATION.md` and relevant canon |
 
 ## Operating rules during surgery
@@ -489,9 +492,9 @@ file names or registry decisions:
    behavior is deleted. A lower passing-test count is not a regression when the
    removed tests covered removed code and the retained replay suite remains
    green.
-7. **Artifact storage is a separate decision.** The manifest now proves file
-   identity, but large retained artifacts cannot leave Git safely until an
-   immutable location, checksum, schema, and retrieval procedure exist.
+7. **Artifact storage is a separate decision.** The manifest proves canonical
+   identity while Git LFS provides content-addressed storage for the five
+   largest files; both hashes and retrieval instructions are retained.
 8. **CI should name retained behavior, not surgery history.** Separate frontend,
    line-count, candidate-parity, and curated-subset jobs all became false alarms
    after their owners were deleted. During surgery, one full-suite job is easier

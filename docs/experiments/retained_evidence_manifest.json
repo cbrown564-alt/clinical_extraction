@@ -244,7 +244,8 @@
           "path": "experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl",
           "sha256": "655d462c6a2de68b6ff7120d52d06854c241900634a0d8dc428d46431476169c",
           "bytes": 32698804,
-          "retrieval": "git_path"
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:f2826eacade4e2fdd36ffa176a160e4b58f3e12671d52f16e4e37ee76782666a"
         },
         {
           "path": "experiments/exectv2_deterministic_prescription_repair_v03_dev140_p7fix_20260702.jsonl",
@@ -679,7 +680,8 @@
           "path": "experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.jsonl",
           "sha256": "0bb6b72597be555e3d88fbb91378fcfc587e172b502311e03d520811a5ba6c0c",
           "bytes": 33524601,
-          "retrieval": "git_path"
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:4df2ed86aee663e63f921e492462dccf914be377b65bd37389d4cfd4bd8d1f0c"
         },
         {
           "path": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.json",
@@ -691,7 +693,8 @@
           "path": "experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.jsonl",
           "sha256": "7fc46b3afa8d78c225a1ebcf3905f3a6d8e217a811670a9662879319b454be15",
           "bytes": 34255261,
-          "retrieval": "git_path"
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:174b82a8662a8d5e6ea254e01045dcfac9b7ffb15efb6c3f6e991a2ab8ee2941"
         },
         {
           "path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.json",
@@ -703,7 +706,8 @@
           "path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.jsonl",
           "sha256": "46d56e3da6997357a0ad979e37852439eec50b8f20c7ad6edc41ab7a72377ad0",
           "bytes": 32526846,
-          "retrieval": "git_path"
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:dee65898037923cdb4170d7cd4f9ea356cda48632e5c053e9e91ff3515591913"
         },
         {
           "path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.json",
@@ -715,7 +719,8 @@
           "path": "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl",
           "sha256": "9dd69c0994116e3199e67b1613866b0f9f09bd5e5637b93933a1ba41b135d75b",
           "bytes": 34424697,
-          "retrieval": "git_path"
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:a1b5723be8b9561f8e00d312df34df0feb11032c8335fd8a3f65a34129c47718"
         }
       ]
     },
