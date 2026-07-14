@@ -32,10 +32,10 @@ import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_per_entity as exectv2_per_entity,
+    diagnosis_decomposer as exectv2_diagnosis,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_single_pass as exectv2_single_pass,
+    llm_only_key_entities_structured as exectv2_structured,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -44,7 +44,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
     llm_only_canonical_pipeline,
-    llm_only_direct_labeler,
 )
 
 SNAPSHOT_DIR = Path(__file__).parent / "snapshots" / "prompt_contracts"
@@ -86,9 +85,6 @@ def _exect_letter() -> ExectLetter:
 # call. Name -> zero-arg callable returning the payload (str or JSON-able dict).
 PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     # Gan 2026 seizure-frequency surfaces.
-    "gan2026__llm_only_direct_labeler": lambda: llm_only_direct_labeler.build_prompt_input(
-        _gan_record()
-    ),
     "gan2026__hybrid_structured_events": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record()
     ),
@@ -96,8 +92,12 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
         _gan_record()
     ),
     # ExECTv2 broad-phenotyping surfaces.
-    "exectv2__single_pass": lambda: exectv2_single_pass.build_prompt_input(_exect_letter()),
-    "exectv2__per_entity_default": lambda: exectv2_per_entity.build_prompt_input(_exect_letter()),
+    "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
+        _exect_letter()
+    ),
+    "exectv2__diagnosis_decomposer": lambda: exectv2_diagnosis.build_prompt_input(
+        _exect_letter(), []
+    ),
 }
 
 

@@ -8,7 +8,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as decomposer,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     MentionRecord,
 )
 

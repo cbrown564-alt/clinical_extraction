@@ -21,10 +21,20 @@ __all__ = [
     "ExtractionRecord",
     "MentionRecord",
     "check_evidence",
+    "has_blocking_parse_issue",
     "parse_extraction_json",
     "raw_output_from_adapter_parse_error",
     "repair_attributes",
 ]
+
+
+def has_blocking_parse_issue(errors: Any) -> bool:
+    """Return whether parsing failed before a prediction could be scored."""
+
+    return any(
+        str(error).startswith(("invalid_json:", "schema_validation_error:", "not_run"))
+        for error in (errors or [])
+    )
 
 
 def parse_extraction_json(

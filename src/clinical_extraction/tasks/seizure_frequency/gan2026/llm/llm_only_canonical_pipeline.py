@@ -6,8 +6,8 @@ extract -> select -> normalize -> project -> render into one LLM call, with
 the now-mature deterministic rule taxonomy (cluster-axis ambiguity,
 seizure-free conflict, same-window additive frequency, and similar named
 families) embedded as prompt instructions rather than pre/post processing.
-It sits alongside, not in place of, `llm_only_direct_labeler` and
-`hybrid_structured_events`.
+It is the retained one-call LLM-only comparator alongside the retained
+`hybrid_structured_events` path.
 
 Because this architecture produces one free-text decision rather than a
 `CandidateSet` with source ids, it reports a distinct evidence
@@ -686,8 +686,8 @@ def write_report(
         "scorable, fully rendered label without any deterministic normalization or "
         "projection stage downstream.",
         "",
-        "Minimal change: add an `llm_only_canonical_pipeline` runner alongside (not "
-        "replacing) `llm_only_direct_labeler` and `hybrid_structured_events`. No "
+        "Minimal change: add an `llm_only_canonical_pipeline` runner alongside "
+        "`hybrid_structured_events`. No "
         "deterministic `CandidateSet` is built or consumed; final_label is the model's "
         "directly rendered answer.",
         "",

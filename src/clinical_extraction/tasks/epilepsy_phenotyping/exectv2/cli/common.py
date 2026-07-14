@@ -13,8 +13,8 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
 )
 
 TEST_SPLIT_ERROR = "ERROR: test split is locked; only dev is permitted."

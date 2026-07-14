@@ -36,10 +36,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_sf_union_arbitration as sf_union,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
+)
 
 
 def main() -> None:

@@ -8,8 +8,8 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    _has_blocking_parse_issue,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    has_blocking_parse_issue,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
@@ -65,7 +65,7 @@ def summarize_sf_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         "examples": len(rows),
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
         "parse_failures": sum(
-            _has_blocking_parse_issue(row.get("parse_errors")) for row in rows
+            has_blocking_parse_issue(row.get("parse_errors")) for row in rows
         ),
         "n_draft_mentions": sum(int(row.get("n_draft_mentions", 0)) for row in rows),
         "n_candidate_spans": sum(int(row.get("n_candidate_spans", 0)) for row in rows),

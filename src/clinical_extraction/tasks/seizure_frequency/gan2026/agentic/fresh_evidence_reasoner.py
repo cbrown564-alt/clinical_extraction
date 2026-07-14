@@ -25,13 +25,11 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from clinical_extraction.core.claim_policy import fresh_evidence_claim_boundary_for_split
 from clinical_extraction.core.evidence import evidence_is_substring
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    cross_model_structured_event_adjudicator as cross_model_base,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     family_cv_promotion,
     family_transitions,
-    llm_event_reasoner,
+    fresh_evidence_support as llm_event_reasoner,
     precision_gated_selector,
+    structured_event_traces,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.run_driver import (
     SplitRunParams,
@@ -71,18 +69,21 @@ PROMPT_VERSION_V0_12_TWO_MODEL = "gan2026_fresh_evidence_reasoner_v0_12_two_mode
 SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
 
 # Peer agent included alongside "gpt" for the v0_12 two-model variant.
-_ACTIVE_TWO_MODEL_PEER: cross_model_base.AgentId = "deepseek"
+_ACTIVE_TWO_MODEL_PEER: structured_event_traces.AgentId = "deepseek"
 
 
 def set_active_two_model_peer(peer_agent_id: str) -> None:
     """Select the single peer trace shown in the v0_12 two-model variant."""
     global _ACTIVE_TWO_MODEL_PEER  # noqa: PLW0603
-    if peer_agent_id not in cross_model_base.AGENT_IDS or peer_agent_id == "gpt":
-        raise ValueError(f"peer_agent_id must be a non-gpt agent in {cross_model_base.AGENT_IDS}")
+    if peer_agent_id not in structured_event_traces.AGENT_IDS or peer_agent_id == "gpt":
+        raise ValueError(
+            "peer_agent_id must be a non-gpt agent in "
+            f"{structured_event_traces.AGENT_IDS}"
+        )
     _ACTIVE_TWO_MODEL_PEER = peer_agent_id
 
 
-def get_active_two_model_peer() -> cross_model_base.AgentId:
+def get_active_two_model_peer() -> structured_event_traces.AgentId:
     """Return the peer agent id currently selected for the v0_12 variant."""
     return _ACTIVE_TWO_MODEL_PEER
 
@@ -107,9 +108,11 @@ def get_active_prompt_version() -> str:
 
 
 DEFAULT_STRUCTURED_EVENT_JSONL_PATH = llm_event_reasoner.DEFAULT_STRUCTURED_EVENT_JSONL_PATH
-DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = cross_model_base.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
+DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH = (
+    structured_event_traces.DEFAULT_QWEN_STRUCTURED_EVENT_JSONL_PATH
+)
 DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH = (
-    cross_model_base.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
+    structured_event_traces.DEFAULT_DEEPSEEK_STRUCTURED_EVENT_JSONL_PATH
 )
 TEST_GPT_STRUCTURED_EVENT_JSONL_PATH = Path(
     "experiments/"
@@ -425,8 +428,8 @@ def _build_prompt_input_v0_6(
     """Original v0.6 prompt (unchanged)."""
 
     agent_inputs = [
-        cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
-        for agent_id in cross_model_base.AGENT_IDS
+        structured_event_traces.agent_prompt_summary(agent_id, agent_rows.get(agent_id))
+        for agent_id in structured_event_traces.AGENT_IDS
     ]
     payload = {
         "prompt_version": PROMPT_VERSION,
@@ -569,7 +572,9 @@ def _build_prompt_input_v0_11_gpt_only(
     presence of the peer ensemble.
     """
 
-    agent_inputs = [cross_model_base._agent_prompt_summary("gpt", agent_rows.get("gpt"))]
+    agent_inputs = [
+        structured_event_traces.agent_prompt_summary("gpt", agent_rows.get("gpt"))
+    ]
     payload = {
         "prompt_version": PROMPT_VERSION_V0_11_GPT_ONLY,
         "task": "Gan 2026 fresh-evidence seizure-frequency reasoning",
@@ -711,9 +716,9 @@ def _build_prompt_input_v0_12_two_model(
     """
 
     peer = _ACTIVE_TWO_MODEL_PEER
-    agent_ids: tuple[cross_model_base.AgentId, ...] = ("gpt", peer)
+    agent_ids: tuple[structured_event_traces.AgentId, ...] = ("gpt", peer)
     agent_inputs = [
-        cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
+        structured_event_traces.agent_prompt_summary(agent_id, agent_rows.get(agent_id))
         for agent_id in agent_ids
     ]
     payload = {
@@ -924,8 +929,8 @@ def _build_prompt_input_v0_10(
     """v0.10 triage scaffold prompt — inserts 4-step triage BEFORE label choice."""
 
     agent_inputs = [
-        cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
-        for agent_id in cross_model_base.AGENT_IDS
+        structured_event_traces.agent_prompt_summary(agent_id, agent_rows.get(agent_id))
+        for agent_id in structured_event_traces.AGENT_IDS
     ]
     # Build v0.10 instructions: triage scaffold first, then existing policy rules.
     instructions_v0_10 = [
@@ -1389,7 +1394,7 @@ def _build_row(
         "structured_event_input_available": gpt_row is not None,
         "agent_input_available": {
             agent_id: agent_rows.get(agent_id) is not None
-            for agent_id in cross_model_base.AGENT_IDS
+            for agent_id in structured_event_traces.AGENT_IDS
         },
         "v0_reference": v0_reference,
         "hidden_families": list(
