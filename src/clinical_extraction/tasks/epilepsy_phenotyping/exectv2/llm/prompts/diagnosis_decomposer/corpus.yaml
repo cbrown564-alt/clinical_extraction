@@ -1,3 +1,4 @@
+# Retained verbatim for the model-transfer Diagnosis decomposer.
 clinical_rules:
 - Return only Diagnosis mentions. Do not emit Prescription, SF, or Investigations.
 - Every final evidence value must be an exact substring of the letter.

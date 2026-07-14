@@ -1,4 +1,4 @@
-"""Decomposed Diagnosis verifier over heading and narrative candidate spans."""
+"""Decompose Diagnosis headings and narrative spans for model review."""
 
 from __future__ import annotations
 
@@ -26,16 +26,25 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     MentionRecord,
+    _has_blocking_parse_issue,
     check_evidence,
     parse_extraction_json,
     raw_output_from_adapter_parse_error,
     repair_attributes,
     write_jsonl,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.diagnosis_verification import (
-    verifier as verifier_base,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
+    PHRASE_ONLY,
+    benchmark_config_for,
+    score_concept_identity,
+    score_entity,
+    semantic_config_for,
+    source_near_diagnostic,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+
+from .pipelines.entity_verifier import draft_io, prompt, runner
+from .prompts.diagnosis_decomposer import loader as prompt_loader
 
 PROMPT_VERSION = "exectv2_hybrid_diagnosis_decomposer_v0.1"
 PIPELINE_FAMILY = "exectv2_hybrid_diagnosis_decomposer"
@@ -106,11 +115,24 @@ class DspyDiagnosisDecomposer(dspy.Module):
 
 
 def draft_mentions_by_letter(rows: Sequence[Mapping[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    return verifier_base.draft_mentions_by_letter(rows)
+    drafts: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        drafts[str(row["letter_id"])] = [
+            {
+                "text": str(mention.get("text", "")),
+                "attributes": dict(mention.get("attributes") or {}),
+                "evidence": str(mention.get("evidence", "")),
+                "confidence": str(mention.get("confidence", "")),
+                "rationale": str(mention.get("rationale", "")),
+            }
+            for mention in row.get("predicted_mentions", [])
+            if mention.get("entity") == DIAGNOSIS.name
+        ]
+    return drafts
 
 
 def read_draft_rows(path: Path | None) -> list[dict[str, Any]]:
-    return verifier_base.read_draft_rows(path)
+    return draft_io.read_draft_rows(path)
 
 
 def diagnosis_spans_for_letter(
@@ -215,9 +237,9 @@ def build_prompt_input(
         },
         "draft_diagnosis_mentions": list(draft_mentions),
         "diagnosis_candidate_spans": [span.as_payload() for span in spans],
-        "attribute_vocabulary": verifier_base._attribute_vocabulary(),
+        "attribute_vocabulary": prompt.attribute_vocabulary(DIAGNOSIS.name),
         "clinical_rules": _clinical_rules(),
-        "worked_examples": verifier_base._worked_examples(),
+        "worked_examples": prompt_loader.load_worked_examples(),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
     }
@@ -254,7 +276,7 @@ def _clinical_rules() -> list[str]:
             "family history, non-epileptic/dissociative events, and generic "
             "symptoms unless the source asserts an epileptic diagnosis."
         ),
-    ] + verifier_base._clinical_rules()
+    ] + prompt_loader.load_clinical_rules()
 
 
 def _sentence_spans(text: str) -> list[tuple[str, int, int]]:
@@ -442,7 +464,7 @@ def run_split(
                 "n_mentions_scored": len(predicted_letter.mentions),
                 "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
                 "predicted_mentions": [
-                    verifier_base._mention_to_row(m) for m in predicted_letter.mentions
+                    runner.mention_to_row(m) for m in predicted_letter.mentions
                 ],
                 "gold_mentions": [
                     {"text": a.text, "attributes": dict(a.attributes)}
@@ -481,10 +503,89 @@ def run_split(
 
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
-    summary = verifier_base.summarize_rows(rows)
-    if rows:
-        summary["n_diagnosis_spans"] = sum(int(r.get("n_diagnosis_spans", 0)) for r in rows)
-    return summary
+    n = len(rows)
+    if n == 0:
+        return {"examples": 0}
+    n_mentions_raw = sum(int(row.get("n_mentions_raw", 0)) for row in rows)
+    n_evidence_invalid = sum(int(row.get("n_evidence_invalid", 0)) for row in rows)
+    gold_letters = runner.reconstruct_gold_letters(rows, entity_name=DIAGNOSIS.name)
+    pred_letters = runner.reconstruct_pred_letters(rows, entity_name=DIAGNOSIS.name)
+
+    phrase = score_entity(gold_letters, pred_letters, DIAGNOSIS.name, PHRASE_ONLY)
+    semantic = score_entity(
+        gold_letters,
+        pred_letters,
+        DIAGNOSIS.name,
+        semantic_config_for(DIAGNOSIS.name),
+    )
+    benchmark = score_entity(
+        gold_letters,
+        pred_letters,
+        DIAGNOSIS.name,
+        benchmark_config_for(DIAGNOSIS.name),
+    )
+    source_near = source_near_diagnostic(
+        gold_letters,
+        pred_letters,
+        [DIAGNOSIS.name],
+        semantic_config_for,
+    ).per_entity[DIAGNOSIS.name]
+    clinical = score_concept_identity(
+        gold_letters,
+        pred_letters,
+        DIAGNOSIS.name,
+    ).concept_assertion
+
+    return {
+        "examples": n,
+        "call_failures": sum(bool(row.get("call_error")) for row in rows),
+        "parse_failures": sum(
+            _has_blocking_parse_issue(row.get("parse_errors")) for row in rows
+        ),
+        "n_draft_mentions": sum(int(row.get("n_draft_mentions", 0)) for row in rows),
+        "n_diagnosis_spans": sum(int(row.get("n_diagnosis_spans", 0)) for row in rows),
+        "n_mentions_raw": n_mentions_raw,
+        "n_mentions_scored": sum(int(row.get("n_mentions_scored", 0)) for row in rows),
+        "n_evidence_invalid": n_evidence_invalid,
+        "evidence_validity_rate": (
+            round((n_mentions_raw - n_evidence_invalid) / n_mentions_raw, 4)
+            if n_mentions_raw
+            else 1.0
+        ),
+        "scores": {
+            "phrase_only": _entity_score_to_dict(phrase),
+            "semantic": _entity_score_to_dict(semantic),
+            "benchmark": _entity_score_to_dict(benchmark),
+        },
+        "source_near": {
+            "overlap": _prf1_to_dict(source_near.overlap),
+            "attribute_agreement_tp": source_near.attribute_agreement_tp,
+            "attribute_agreement_total": source_near.attribute_agreement_total,
+            "attribute_agreement_rate": round(source_near.attribute_agreement_rate, 4),
+        },
+        "clinical_recovery": {
+            "target_headline_f1": 0.80,
+            "diagnosis": _prf1_to_dict(clinical),
+        },
+    }
+
+
+def _entity_score_to_dict(score: Any) -> dict[str, Any]:
+    return {
+        "per_item": _prf1_to_dict(score.per_item),
+        "per_letter": _prf1_to_dict(score.per_letter),
+    }
+
+
+def _prf1_to_dict(score: Any) -> dict[str, Any]:
+    return {
+        "precision": round(score.precision, 4),
+        "recall": round(score.recall, 4),
+        "f1": round(score.f1, 4),
+        "tp": score.tp,
+        "fp": score.fp,
+        "fn": score.fn,
+    }
 
 
 def write_report(

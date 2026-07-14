@@ -28,7 +28,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_en
     run_all9_on_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_diagnosis_decomposer as dx_decomposer,
+    diagnosis_decomposer as dx_decomposer,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
@@ -238,10 +238,11 @@ def _write_sf_structured_direct_artifact(*, source: Path, output: Path, letters:
 
 
 def _sf_mention(mention: Mapping[str, object]) -> dict[str, object]:
+    attributes = mention.get("attributes")
     return {
         "entity": SEIZURE_FREQUENCY.name,
         "text": str(mention.get("text", "")),
-        "attributes": dict(mention.get("attributes") or {}),  # type: ignore[arg-type]
+        "attributes": dict(attributes) if isinstance(attributes, Mapping) else {},
         "evidence": str(mention.get("evidence", "")),
         "confidence": str(mention.get("confidence") or "medium"),
         "rationale": str(mention.get("rationale", "")),

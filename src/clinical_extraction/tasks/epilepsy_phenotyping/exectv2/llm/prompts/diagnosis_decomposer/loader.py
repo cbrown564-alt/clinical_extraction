@@ -1,4 +1,4 @@
-"""Load diagnosis-verification prompt corpora from YAML."""
+"""Load the retained Diagnosis decomposer prompt corpus from YAML."""
 
 from __future__ import annotations
 
@@ -23,25 +23,25 @@ def _read_yaml(path: Path) -> Any:
 
 
 @lru_cache(maxsize=1)
-def _load_verifier_corpus_cached() -> dict[str, Any]:
-    path = _PACKAGE_DIR / "verifier_corpus.yaml"
+def _load_corpus_cached() -> dict[str, Any]:
+    path = _PACKAGE_DIR / "corpus.yaml"
     payload = _read_yaml(path)
     if not isinstance(payload, dict):
         raise ValueError(f"{path} must contain a mapping")
     return payload
 
 
-def load_verifier_clinical_rules() -> list[str]:
-    """Return clinical rules for the diagnosis verifier prompt."""
-    rules = _load_verifier_corpus_cached().get("clinical_rules")
+def load_clinical_rules() -> list[str]:
+    """Return clinical rules for the Diagnosis decomposer prompt."""
+    rules = _load_corpus_cached().get("clinical_rules")
     if not isinstance(rules, list):
-        raise ValueError("verifier_corpus.yaml must contain clinical_rules list")
+        raise ValueError("corpus.yaml must contain clinical_rules list")
     return rules
 
 
-def load_verifier_worked_examples() -> list[dict[str, Any]]:
-    """Return worked examples for the diagnosis verifier prompt."""
-    examples = _load_verifier_corpus_cached().get("worked_examples")
+def load_worked_examples() -> list[dict[str, Any]]:
+    """Return worked examples for the Diagnosis decomposer prompt."""
+    examples = _load_corpus_cached().get("worked_examples")
     if not isinstance(examples, list):
-        raise ValueError("verifier_corpus.yaml must contain worked_examples list")
+        raise ValueError("corpus.yaml must contain worked_examples list")
     return examples

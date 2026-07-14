@@ -6,7 +6,7 @@ import json
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_diagnosis_decomposer as decomposer,
+    diagnosis_decomposer as decomposer,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     MentionRecord,
