@@ -6,21 +6,10 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     event_completion_reasoner,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
-    pipeline_specs,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-
-
-def test_event_completion_reasoner_is_registered_on_shared_cli_surface() -> None:
-    spec = pipeline_specs()["event_completion_reasoner"]
-
-    assert "event-completion" in spec.description
-    assert spec.default_max_tokens == 2200
-    assert spec.default_structured_event_jsonl_path is not None
 
 
 def test_event_completion_prompt_has_raw_excerpt_without_forbidden_labels() -> None:

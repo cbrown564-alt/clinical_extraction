@@ -12,27 +12,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_meta
 )
 
 PipelineArchitecture = Literal[
-    "deterministic",
     "deterministic_canonical_pipeline",
-    "hybrid",
-    "llm_only_direct_labeler",
     "hybrid_structured_events",
     "llm_only_canonical_pipeline",
 ]
 
-# Architecture family groupings (for reporting and taxonomy).
-# Two hybrid configs share deterministic downstream stages (normalize/project/render/score)
-# but differ in their LLM task. Contrast with "fully_llm" configs (direct_labeler,
-# canonical_pipeline) that
-# own the full extraction-to-label pass in one LLM call with no deterministic
-# normalization stage. The two hybrids differ in their LLM task:
-#   - hybrid_structured_events: LLM extracts structured events (open-text → schema)
-#   - hybrid: LLM assesses a pre-extracted deterministic candidate set
+# The retained matrix has exactly one architecture per family.
 ARCHITECTURE_FAMILY: dict[str, str] = {
-    "deterministic": "deterministic",
     "deterministic_canonical_pipeline": "deterministic",
-    "hybrid": "hybrid",
-    "llm_only_direct_labeler": "fully_llm",
     "hybrid_structured_events": "hybrid",
     "llm_only_canonical_pipeline": "fully_llm",
 }
@@ -43,7 +30,6 @@ class PipelineConfiguration(BaseModel):
 
     architecture: PipelineArchitecture
     ablation_config: AblationConfig = AblationConfig()
-    use_state_graph_extract: bool = False
     dspy_cache: bool = True
     model: str = "openai/gpt-4.1-mini"
     temperature: float = 0.0

@@ -10,7 +10,7 @@ def claim_boundary_for_split(split: str) -> str:
 
     lower = split.lower()
     if "full200" in lower:
-        return "full200_aggregate_only"
+        return "development_inclusive_full200_aggregate"
     if "test" in lower or "holdout" in lower:
         return "locked_holdout_aggregate"
     if "validation" in lower:

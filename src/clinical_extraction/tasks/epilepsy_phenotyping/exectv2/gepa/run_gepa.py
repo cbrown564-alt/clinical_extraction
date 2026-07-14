@@ -27,6 +27,7 @@ from clinical_extraction.core.registry import (
     validate_run_registry_artifacts,
     write_run_registry,
 )
+from clinical_extraction.core.run_registry_report import write_run_registry_markdown
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
     to_exect_letter,
@@ -61,9 +62,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_components,
     semantic_config_for,
     source_near_diagnostic,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
-    write_run_registry_markdown,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 

@@ -10,9 +10,17 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Mapping
 from pathlib import Path
 
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
+    PRESCRIPTION,
+    SEIZURE_FREQUENCY,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
+    run_all9_on_letters,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_state_projection as sf_projection,
 )
@@ -32,14 +40,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.simplification_frontier import (
-    _write_sf_structured_direct_artifact,
-)
-from scripts.run_exectv2_v08_full200_gpt41mini_audit import (
-    _run_prescription_deterministic,
-)
-
-
 def main() -> None:
     args = _parse_args()
     config = model_swap.load_model_swap_config(args.config)
@@ -185,6 +185,127 @@ def _run_sf_chain(
         jsonl_path=sf_union_jsonl,
         report_path=sf_union_jsonl.with_suffix(".md"),
     )
+
+
+def _write_sf_structured_direct_artifact(*, source: Path, output: Path, letters: list) -> None:
+    """Project direct SeizureFrequency mentions from the shared model output."""
+
+    letter_by_id = {letter.letter_id: letter for letter in letters}
+    rows = []
+    for row in _read_jsonl(source):
+        letter_id = str(row["letter_id"])
+        mentions = [
+            _sf_mention(mention)
+            for mention in row.get("predicted_mentions", [])
+            if str(mention.get("entity")) == SEIZURE_FREQUENCY.name
+        ]
+        rows.append(
+            {
+                "letter_id": letter_id,
+                "split": row.get("split", "dev"),
+                "prompt_version": "structured_direct_no_sf_adjudicator_v01",
+                "pipeline_family": "exectv2_structured_direct_no_sf_adjudicator",
+                "model": row.get("model", ""),
+                "mode": "no-call projection from structured extractor",
+                "source_pipeline_family": row.get("pipeline_family", ""),
+                "source_prompt_version": row.get("prompt_version", ""),
+                "component_owner": "single_gpt_structured_no_sf_adjudicator",
+                "call_error": None,
+                "parse_errors": [],
+                "gate_warnings": [],
+                "predicted_mentions": mentions,
+                "n_mentions_raw": len(mentions),
+                "n_mentions_scored": len(mentions),
+                "n_evidence_invalid": 0,
+                "raw_output": json.dumps(
+                    {"mentions": [_raw_mention(mention) for mention in mentions]},
+                    sort_keys=True,
+                ),
+                "gold_mentions": [
+                    {
+                        "entity": annotation.entity,
+                        "text": annotation.text,
+                        "attributes": dict(annotation.attributes),
+                    }
+                    for annotation in letter_by_id[letter_id].annotations
+                    if annotation.entity == SEIZURE_FREQUENCY.name
+                ],
+            }
+        )
+    write_jsonl(rows, output)
+
+
+def _sf_mention(mention: Mapping[str, object]) -> dict[str, object]:
+    return {
+        "entity": SEIZURE_FREQUENCY.name,
+        "text": str(mention.get("text", "")),
+        "attributes": dict(mention.get("attributes") or {}),  # type: ignore[arg-type]
+        "evidence": str(mention.get("evidence", "")),
+        "confidence": str(mention.get("confidence") or "medium"),
+        "rationale": str(mention.get("rationale", "")),
+        "component_owner": "single_gpt_structured_no_sf_adjudicator",
+    }
+
+
+def _raw_mention(mention: Mapping[str, object]) -> dict[str, object]:
+    raw = dict(mention)
+    raw.pop("entity", None)
+    return raw
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def _run_prescription_deterministic(letters: list, jsonl_path: Path) -> None:
+    """Write the deterministic Prescription producer used by every model arm."""
+
+    predictions = run_all9_on_letters(letters)
+    rows = []
+    for letter, prediction in zip(letters, predictions, strict=True):
+        mentions = [
+            mention.model_dump()
+            for mention in prediction.mentions
+            if mention.entity == PRESCRIPTION.name
+        ]
+        for mention in mentions:
+            mention["component_owner"] = (
+                mention.get("component_owner")
+                or "deterministic:prescription_regimen:current_code"
+            )
+        rows.append(
+            {
+                "letter_id": letter.letter_id,
+                "split": "full_200_authorized",
+                "pipeline_family": "exectv2_deterministic_prescription_repair_v03",
+                "prompt_version": "deterministic_prescription_repair_v03_current_code",
+                "model": "none",
+                "mode": "no-call",
+                "component_owner": "deterministic_prescription_repair_v03_current_code",
+                "call_error": None,
+                "parse_errors": [],
+                "gate_warnings": [],
+                "n_mentions_raw": len(mentions),
+                "n_mentions_scored": len(mentions),
+                "n_evidence_invalid": 0,
+                "predicted_mentions": mentions,
+                "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
+                "gold_mentions": [
+                    {
+                        "entity": annotation.entity,
+                        "text": annotation.text,
+                        "attributes": dict(annotation.attributes),
+                    }
+                    for annotation in letter.annotations
+                    if annotation.entity == PRESCRIPTION.name
+                ],
+            }
+        )
+    write_jsonl(rows, jsonl_path)
 
 
 def _parse_args() -> argparse.Namespace:

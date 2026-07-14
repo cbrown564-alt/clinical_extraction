@@ -3,8 +3,8 @@
 
 Rules enforced
 --------------
-1. Repository root may contain only README.md, CONTEXT.md, PROJECT_STATUS.md
-   as markdown files.
+1. Repository root may contain only AGENTS.md, README.md, CONTEXT.md, and
+   PROJECT_STATUS.md as markdown files.
 2. No underscore-prefixed directories at repository root (orphan dumps).
 3. experiments/*.md at repo root is frozen to the allowlist snapshot unless
    deliberately extended in the same change.
@@ -17,7 +17,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-ROOT_MARKDOWN_ALLOWED = frozenset({"README.md", "CONTEXT.md", "PROJECT_STATUS.md"})
+ROOT_MARKDOWN_ALLOWED = frozenset(
+    {"AGENTS.md", "README.md", "CONTEXT.md", "PROJECT_STATUS.md"}
+)
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "doc_hygiene_experiments_root_allowlist.txt"
 
 

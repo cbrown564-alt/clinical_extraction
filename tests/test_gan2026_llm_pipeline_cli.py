@@ -495,7 +495,7 @@ def test_general_llm_pipeline_cli_rejects_fresh_evidence_test_jsonl_path_drift(
     assert exc_info.value.code == 2
     assert (
         "fresh_evidence_reasoner test split runs must use --jsonl "
-        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
+        "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
         in capsys.readouterr().err
     )
 
@@ -543,7 +543,7 @@ def test_general_llm_pipeline_cli_rejects_fresh_evidence_test_markdown_path_drif
     assert exc_info.value.code == 2
     assert (
         "fresh_evidence_reasoner test split runs must use --markdown "
-        "experiments\\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
+        "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
         in capsys.readouterr().err
     )
 
@@ -1100,41 +1100,14 @@ def test_pipeline_registry_exposes_routine_llm_experiments() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
-        "agentic_matched_budget",
-        "cross_model_challenge_adjudicator",
-        "cross_model_challenge_gated_adjudicator",
-        "cross_model_structured_event_adjudicator",
-        "deterministic",
         "deterministic_canonical_pipeline",
-        "event_completion_reasoner",
         "fresh_evidence_reasoner",
-        "hybrid",
-        "llm_only_direct_labeler",
         "hybrid_structured_events",
-        "llm_event_reasoner",
         "llm_only_canonical_pipeline",
-        "represented_event_normalizer",
-        "structured_event_verifier",
-        "targeted_boundary_router",
-        "temporal_sentinel_specialist",
     }
 
-    assert specs["agentic_matched_budget"].default_max_tokens == 900
-    assert specs["llm_event_reasoner"].default_max_tokens == 1600
-    assert specs["structured_event_verifier"].default_max_tokens == 1800
-    assert specs["targeted_boundary_router"].default_max_tokens == 2000
-    assert specs["event_completion_reasoner"].default_max_tokens == 2200
-    assert specs["represented_event_normalizer"].default_max_tokens == 2200
-    assert specs["temporal_sentinel_specialist"].default_max_tokens == 2400
-    assert specs["cross_model_structured_event_adjudicator"].default_max_tokens == 1800
-    assert specs["cross_model_challenge_adjudicator"].default_max_tokens == 2000
-    assert specs["cross_model_challenge_gated_adjudicator"].default_max_tokens == 2000
     assert specs["fresh_evidence_reasoner"].default_max_tokens == 2800
-    assert specs["deterministic"].default_max_tokens == 900
-    assert specs["hybrid"].default_max_tokens == 2400
-    # hybrid builds CandidateSets live by default (no static-artifact dependency).
-    assert specs["hybrid"].default_candidate_set_jsonl_path is None
-    assert specs["llm_only_direct_labeler"].default_max_tokens == 900
+    assert specs["deterministic_canonical_pipeline"].default_max_tokens == 900
     assert specs["hybrid_structured_events"].default_max_tokens == 5000
     assert specs["llm_only_canonical_pipeline"].default_max_tokens == 1200
 

@@ -15,8 +15,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
-    llm_heavy_clinical_frequency_reasoner,
-    llm_heavy_evidence_selection_with_deterministic_adapters,
     llm_only_canonical_pipeline,
     llm_only_direct_labeler,
 )
@@ -85,16 +83,6 @@ def _payload_text(payload: str | dict[str, object]) -> str:
         ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input, "_record"),
         ("hybrid_structured_events", hybrid_structured_events.build_prompt_input, "_record"),
         ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input, "_record"),
-        (
-            "llm_heavy_clinical_frequency_reasoner",
-            llm_heavy_clinical_frequency_reasoner.build_prompt_input,
-            "_record",
-        ),
-        (
-            "llm_heavy_evidence_selection_with_deterministic_adapters",
-            llm_heavy_evidence_selection_with_deterministic_adapters.build_typed_inputs,
-            "_record",
-        ),
         ("exectv2_single_pass", exectv2_single_pass.build_prompt_input, "_letter"),
         ("exectv2_per_entity", exectv2_per_entity.build_prompt_input, "_letter"),
     ],

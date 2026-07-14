@@ -61,9 +61,9 @@ def normalize_path(path: str) -> str:
 def load_extra_protect() -> set[str]:
     protected: set[str] = set()
     for rel in (
-        "docs/experiments/FROZEN_EVIDENCE_MANIFEST_2026-06-26.md",
+        "docs/experiments/retained_evidence_manifest.md",
         "experiments/README.md",
-        "docs/experiments/final_artifact_index_2026-06-22.md",
+        "docs/experiments/retained_evidence_manifest.json",
     ):
         text = (ROOT / rel).read_text(encoding="utf-8")
         for match in re.findall(r"experiments/[A-Za-z0-9_./-]+\.md", text):

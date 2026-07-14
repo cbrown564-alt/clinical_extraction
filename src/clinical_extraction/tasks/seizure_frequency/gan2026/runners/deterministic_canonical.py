@@ -22,7 +22,6 @@ def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[F
         item.note_text,
         source_row_index=item.source_row_index or 1,
         ablation_config=config.ablation_config,
-        use_state_graph=config.use_state_graph_extract,
     )
 
     normalized_events = canonical_stages.normalize_stage(

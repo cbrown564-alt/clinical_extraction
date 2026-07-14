@@ -14,15 +14,9 @@ from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
-    deterministic,
     deterministic_canonical,
-    hybrid,
     hybrid_structured_events,
     llm_only_canonical,
-    llm_only_direct_labeler,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.artifact import (
-    build_unified_pipeline_artifact,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.cli_specs import (
     get_cli_specs,
@@ -44,17 +38,13 @@ __all__ = [
     "PipelineArchitecture",
     "PipelineConfiguration",
     "PipelineOutputArtifact",
-    "build_unified_pipeline_artifact",
     "get_cli_specs",
     "run_split",
     "write_deterministic_report",
 ]
 
 _ITEM_RUNNERS = {
-    "deterministic": deterministic.run_item,
     "deterministic_canonical_pipeline": deterministic_canonical.run_item,
-    "hybrid": hybrid.run_item,
-    "llm_only_direct_labeler": llm_only_direct_labeler.run_item,
     "hybrid_structured_events": hybrid_structured_events.run_item,
     "llm_only_canonical_pipeline": llm_only_canonical.run_item,
 }

@@ -156,8 +156,8 @@ def fix_moved_canon_links() -> None:
         ("docs/canon/07_exect_plan11.md", "reliability/", "../experiments/exectv2/reliability/"),
         (
             "docs/canon/07_exect_plan11.md",
-            "../final_artifact_index_2026-06-22.md",
-            "../experiments/final_artifact_index_2026-06-22.md",
+            "../retained_evidence_manifest.md",
+            "../experiments/retained_evidence_manifest.md",
         ),
         (
             "docs/canon/07_exect_plan11.md",
