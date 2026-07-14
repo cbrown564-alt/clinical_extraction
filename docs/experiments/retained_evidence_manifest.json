@@ -253,6 +253,30 @@
           "retrieval": "git_path"
         },
         {
+          "path": "experiments/exectv2_target_indicators_single_call_v042_live_default_quarantine_dev140_qwen36_35b_ollama_autogpu_ctx16384_20260620.jsonl",
+          "sha256": "4a9b1e6632fd5c5dce9fdaa4dead0189dfc89b02304758b584b3fe9774af78fe",
+          "bytes": 3392615,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl",
+          "sha256": "beb69e5b07b84ffceafcc6013337199e1a104d814eca07eb209e07fc39df1a07",
+          "bytes": 5139504,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl",
+          "sha256": "8726ccaf57c31cec1b9b6f6086aa915b9a6c4064bdbdacc25f6cbc78460cc041",
+          "bytes": 6019449,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_llm_investigations_arbitration_v02_dev140_20260621.jsonl",
+          "sha256": "d787039a746f9d98ffc39ff769f4bedb0aa3ea5716affa596ccdf9df3a12cc0f",
+          "bytes": 1268017,
+          "retrieval": "git_path"
+        },
+        {
           "path": "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml",
           "sha256": "d8b7720f1982395dcadf4f0a58bda8f6dcba437bd2a9efd6b444a35b6080fe1e",
           "bytes": 3297,

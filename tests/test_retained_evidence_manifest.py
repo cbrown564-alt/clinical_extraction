@@ -5,6 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+import yaml
 
 from clinical_extraction.core.retained_evidence import (
     load_retained_evidence_manifest,
@@ -55,6 +56,23 @@ def test_model_transfer_package_keeps_permitted_dev_replay_inputs() -> None:
         "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl",
     }
     assert expected <= artifact_paths
+
+
+def test_hybrid_reference_manifest_keeps_all_finding_assembly_inputs() -> None:
+    manifest = load_retained_evidence_manifest(MANIFEST)
+    reference = next(
+        record
+        for record in manifest["reference_cells"]
+        if record["id"] == "exectv2_hybrid_reference"
+    )
+    artifact_paths = {artifact["path"] for artifact in reference["artifacts"]}
+    config_path = ROOT / reference["verification"]["inputs"]["path"]
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    replay_inputs = {
+        producer["artifact"] for producer in config["producers"].values()
+    }
+
+    assert replay_inputs <= artifact_paths
 
 
 def test_retained_evidence_manifest_requires_complete_two_by_three_matrix(

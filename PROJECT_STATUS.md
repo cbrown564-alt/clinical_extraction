@@ -74,31 +74,32 @@ closures, and replay expectations live in
 
 ## Surgery state
 
-Earlier batches are on `main`; the latest source-candidate removal is
-implemented and verified in the current working tree:
+Earlier surgery batches are on `main`. The CI reduction and retained ExECT
+replay-closure repair are implemented and verified in the current working tree:
 
 | Area | Current result |
 | --- | --- |
 | Evidence boundaries | Removed row-level Gan locked-test reports and generators; corrected ExECT full200 to development-inclusive audit; retained split barriers and aggregate-only claim rules |
-| Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays |
+| Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays; restored and selected the four hybrid producer outputs accidentally removed by the broad artifact prune |
 | Product scope | Removed the frontend and Observatory; the repository now targets the Python extraction package, retained evidence, and paper |
-| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, and orphaned supervisor runtime |
+| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, orphaned supervisor runtime, and stale six-job CI; CI is now one install plus full-pytest job |
 | Closed ExECT candidates | Removed generation-selection, all four verifier families, closed GEPA variants and launchers, completed SF diagnostic drivers, one-shot analysis tools, and superseded model-swap configs outside the retained closures |
 | Closed Gan candidates | Removed the entire closed agentic runtime and candidate tests; retained only the saved aggregate V12 ceiling evidence named by the evidence manifest |
 | Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
 
 Verification on the current deletion batch:
 
-- `python -m pytest -q`: 1,145 passed;
+- `python -m pytest -q`: 1,144 passed in the repository environment;
 - `python -m mypy src`: clean across 270 source files;
-- retained manifest, hash, and all six no-call reference replay tests pass as
-  part of the full suite;
+- retained manifest and hashes pass; all six no-call reference cells replay at
+  their recorded metrics;
 - `git diff --check`: clean;
 - registry audit: all path-bearing fields resolve across 15 rows;
 - repository-wide Ruff still fails with 120 `E501` and two `I001` findings.
 
-These checks verify the current reduced working tree. They do not complete the
-fresh-checkout reproducibility closeout.
+These checks verify the current reduced working tree. The simplified workflow
+has not run on GitHub yet, and these checks do not complete the fresh-checkout
+reproducibility closeout.
 
 ## Findings and pitfalls
 
@@ -106,6 +107,14 @@ fresh-checkout reproducibility closeout.
   candidate-like filename is not enough. Retained modules imported private
   helpers from closed verifier and Gan candidates. Those helpers had to move
   before their former owners could be deleted.
+- **Replay inputs are retained evidence.** The broad artifact prune deleted four
+  producer outputs named by the selected ExECT hybrid config. The manifest now
+  records their paths, hashes, and sizes, and a test compares the config inputs
+  with the selected artifact set.
+- **CI job lists rot with deleted scope.** The failing workflow still built the
+  removed frontend and named deleted gates and candidate tests. One full-suite
+  job is the temporary surgery contract; lint and typing remain local gates
+  until the reduced tree is ready to add them back.
 - **Saved replay and executable research are different needs.** The six
   reference cells can replay without model calls, but the planned ExECT
   six-model comparison still needs the structured extractor, Diagnosis

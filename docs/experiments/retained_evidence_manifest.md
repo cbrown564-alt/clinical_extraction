@@ -36,7 +36,8 @@ cells from current code and saved outputs without model calls.
 
 These six cells are the minimum scientific comparison set. They do not require
 keeping every prompt, candidate, ablation, report, UI adapter, or runner that led
-to them.
+to them. The ExECT hybrid cell does require the five saved producer outputs named
+by its assembly config; those inputs are selected and hash-checked here.
 
 ## Supporting evidence packages
 

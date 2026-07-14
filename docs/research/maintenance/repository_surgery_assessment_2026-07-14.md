@@ -383,6 +383,21 @@ on deleted research history.
 Status: in progress. Pytest and mypy pass, the line-count allowlist is gone,
 and Ruff has 120 line-length and two import-order findings remaining.
 
+The 2026-07-14 GitHub run `29336220397` exposed a stale workflow rather than a
+retained-code regression. Its six jobs still built the deleted frontend, called
+the removed line-count script and SF registry-parity test, and named a deleted
+Gan candidate test in a hand-curated backend subset. CI is now one Python 3.11
+job that installs the package and runs the complete pytest suite. Ruff and mypy
+remain required surgery closeout commands, but are deliberately not duplicated
+in CI until they are added back after the reduced tree is stable.
+
+Running that complete suite exposed a separate artifact-prune defect: four
+producer outputs required by the selected ExECT hybrid replay config had been
+deleted in `cdee88e9` after one had already been restored in `5ed75d59`. The four
+inputs are restored, hash-selected in the retained manifest, and covered by a
+config-to-manifest regression test. Four obsolete tests for deleted Gan gap
+history were replaced by two checks of the current split-authorization runbook.
+
 1. Delete tests with deleted behavior.
 2. Split remaining megatests by invariant or user-facing command.
 3. Keep three test levels:
@@ -477,12 +492,17 @@ file names or registry decisions:
 7. **Artifact storage is a separate decision.** The manifest now proves file
    identity, but large retained artifacts cannot leave Git safely until an
    immutable location, checksum, schema, and retrieval procedure exist.
+8. **CI should name retained behavior, not surgery history.** Separate frontend,
+   line-count, candidate-parity, and curated-subset jobs all became false alarms
+   after their owners were deleted. During surgery, one full-suite job is easier
+   to trust and harder to leave stale.
 
 ## Current handoff
 
-The classified closed Gan and ExECT source candidates are removed in the current
-working tree. Continue with the major work packages in `ACTIVE_ROADMAP.md`: the
-next deletion work is the historical document and artifact estate, followed by
-the remaining Ruff findings and fresh-checkout closeout. Re-open source
-classification only when a specific retained closure or new predeclared study
-requires it.
+The classified closed Gan and ExECT source candidates are removed. CI now tests
+the complete retained Python suite in one job, and the selected ExECT hybrid
+replay closure is repaired and manifest-protected. Continue with the major work
+packages in `ACTIVE_ROADMAP.md`: the next deletion work is the historical
+document and artifact estate, followed by the remaining Ruff findings and
+fresh-checkout closeout. Re-open source classification only when a specific
+retained closure or new predeclared study requires it.
