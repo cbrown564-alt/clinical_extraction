@@ -6,8 +6,8 @@ Rules enforced
 1. Repository root may contain only AGENTS.md, README.md, CONTEXT.md, and
    PROJECT_STATUS.md as markdown files.
 2. No underscore-prefixed directories at repository root (orphan dumps).
-3. experiments/*.md at repo root is frozen to the allowlist snapshot unless
-   deliberately extended in the same change.
+3. experiments/*.md at repo root must exactly match the retained-evidence
+   allowlist.
 
 Run: python scripts/check_doc_hygiene.py
 """
@@ -61,13 +61,20 @@ def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> l
 
     current = frozenset(p.name for p in experiments.glob("*.md"))
     unexpected = sorted(current - allowlist)
-    if not unexpected:
+    missing = sorted(allowlist - current)
+    if not unexpected and not missing:
         return []
 
-    return [
-        "new experiments/*.md outside allowlist (move narrative to docs/experiments/ "
-        "or append to scripts/doc_hygiene_experiments_root_allowlist.txt): " + ", ".join(unexpected)
-    ]
+    violations = []
+    if unexpected:
+        violations.append(
+            "experiments/*.md outside retained allowlist: " + ", ".join(unexpected)
+        )
+    if missing:
+        violations.append(
+            "retained experiments/*.md missing from the working tree: " + ", ".join(missing)
+        )
+    return violations
 
 
 def check_doc_hygiene(root: Path | None = None) -> list[str]:

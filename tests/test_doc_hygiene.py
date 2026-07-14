@@ -13,8 +13,14 @@ from scripts.check_doc_hygiene import (
 )
 
 
-def test_load_allowlist_non_empty() -> None:
-    assert len(load_allowlist()) >= 100
+def test_load_allowlist_names_only_retained_root_markdown() -> None:
+    assert load_allowlist() == {
+        "README.md",
+        "exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.md",
+        "gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md",
+        "gan2026_reliability_master_scorecard_2026-06-17.md",
+        "gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md",
+    }
 
 
 def test_repo_root_markdown_allowed_only() -> None:
