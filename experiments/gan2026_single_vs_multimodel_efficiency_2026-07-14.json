@@ -1,0 +1,157 @@
+{
+  "artifact_kind": "gan2026_single_vs_multimodel_efficiency_audit",
+  "date": "2026-07-14",
+  "source_commit": "5f3e81b47de889e3a31b6cb534e8fbbd128097c2",
+  "working_tree": "new uncommitted research artifacts and documentation",
+  "analysis_runtime": {
+    "python": "3.13.5",
+    "dependencies": "Python standard library only",
+    "mode": "no-call aggregate replay"
+  },
+  "question": "What efficiency conclusion can the retained Gan test450 evidence support for the single structured-event pass and V12?",
+  "dataset": "Gan 2026 synthetic seizure-frequency subset",
+  "split": "test450",
+  "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+  "row_count": 450,
+  "row_policy": "aggregate_only_no_row_inspection",
+  "scorer": "Gan 2026 saved aggregate Purist score",
+  "repair_policy": "Preserve each saved run's recorded format repair and V12 safety gates; no replay changes",
+  "sources": [
+    "experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.json",
+    "experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md",
+    "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md",
+    "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md",
+    "experiments/registry.jsonl"
+  ],
+  "methods": [
+    {
+      "method_id": "single_pass_event_extractor",
+      "method": "llm_with_rules",
+      "model_roles": [
+        {
+          "model": "openai/gpt-4.1-mini",
+          "role": "structured-event extraction",
+          "runtime": "hosted API",
+          "hardware": "provider hardware not disclosed"
+        }
+      ],
+      "purist_correct": 364,
+      "purist_total": 450,
+      "purist_rate": 0.808889,
+      "cold_model_passes_per_note": 1,
+      "cold_structural_calls_for_split": 450,
+      "call_count_evidence": "derived from the one-pass architecture and 450-row coverage; no retained per-call telemetry",
+      "cache_condition": "saved aggregate originated from a live pass; cache-hit telemetry was not retained",
+      "parse_or_null_rows": 2
+    },
+    {
+      "method_id": "v12_multi_model_comparison",
+      "method": "llm_with_rules",
+      "model_roles": [
+        {
+          "model": "openai/gpt-4.1-mini",
+          "role": "upstream structured-event extraction",
+          "runtime": "hosted API",
+          "hardware": "provider hardware not disclosed"
+        },
+        {
+          "model": "Qwen-3.6-35B",
+          "role": "upstream structured-event extraction",
+          "runtime": "local",
+          "hardware": "not retained"
+        },
+        {
+          "model": "openai/gpt-4.1",
+          "role": "fresh-evidence reasoner",
+          "runtime": "hosted API",
+          "hardware": "provider hardware not disclosed"
+        }
+      ],
+      "purist_correct": 379,
+      "purist_total": 450,
+      "purist_rate": 0.842222,
+      "cold_model_passes_per_note": 3,
+      "cold_structural_calls_for_split": 1350,
+      "recorded_live_reasoner_calls": 450,
+      "call_count_evidence": "450 reasoner calls observed; the run registry and aggregate schema audit show GPT and Qwen inputs present and DeepSeek absent on all 450 rows",
+      "cache_condition": "the holdout reasoner audit replayed two saved upstream traces and made one live reasoner call per note",
+      "input_availability_rows": {
+        "gpt": 450,
+        "qwen": 450,
+        "deepseek": 0
+      },
+      "call_failures": 0,
+      "parse_or_validation_failures": 0,
+      "wrong_to_correct_vs_single_pass": 26,
+      "correct_to_wrong_vs_single_pass": 13,
+      "changed_label_precision_vs_single_pass": 0.3171,
+      "exact_evidence_substrings": 423
+    }
+  ],
+  "comparison": {
+    "purist_correct_delta": 15,
+    "purist_percentage_point_delta": 3.333333,
+    "cold_model_pass_ratio": 3.0,
+    "additional_cold_model_passes_per_note": 2,
+    "quality_per_cold_pass": {
+      "single_pass": 0.808889,
+      "v12": 0.280741,
+      "status": "derived architecture ratio, not a token, cost, or latency metric"
+    },
+    "component_attribution": {
+      "scope": "aggregate system-level only",
+      "changed_row_exact_evidence": "unavailable",
+      "clinical_subproblem_breakdown": "unavailable",
+      "first_failure_owner": "unavailable",
+      "deterministic_correct_regressions": 13,
+      "note": "The saved final-score delta is 15 rows while the saved changed-row counts net to 13; row-level reconciliation is prohibited."
+    }
+  },
+  "dimension_evidence": [
+    {
+      "dimension": "quality",
+      "status": "observed",
+      "result": "364/450 versus 379/450 Purist; V12 +15 rows (+3.33 percentage points)"
+    },
+    {
+      "dimension": "calls",
+      "status": "derived",
+      "result": "cold execution requires one versus three model passes per note; the V12 holdout audit itself recorded 450 new reasoner calls and reused two upstream traces"
+    },
+    {
+      "dimension": "tokens",
+      "status": "unavailable",
+      "result": "prompt and completion token telemetry was not retained for both methods"
+    },
+    {
+      "dimension": "cost",
+      "status": "unavailable",
+      "result": "token usage, historical prices, local energy, and amortized hardware cost were not retained"
+    },
+    {
+      "dimension": "latency",
+      "status": "unavailable",
+      "result": "matched wall-clock or per-call timing was not retained"
+    },
+    {
+      "dimension": "hardware",
+      "status": "partial",
+      "result": "hosted versus local routes are known, but provider hardware and the local Qwen machine are not retained"
+    },
+    {
+      "dimension": "cache_use",
+      "status": "partial",
+      "result": "V12 reused two upstream saved traces; comparable cache-hit telemetry for the originating calls is absent"
+    }
+  ],
+  "decision": "retain_single_pass_and_reject_matched_efficiency_claim",
+  "result_class": "holdout_quality_plus_diagnostic_operational_audit",
+  "claim_supported": "On the saved Gan test450 aggregate, V12 gained 15 Purist-correct rows while requiring a three-pass cold architecture instead of one pass.",
+  "claims_not_supported": [
+    "V12 had a measured fourfold dollar cost",
+    "the single pass was faster by a measured amount",
+    "either system used fewer tokens on a matched run",
+    "the quality gain is attributable to a named clinical subproblem on test450"
+  ],
+  "next_action": "Proceed to ExECT published-metric reproduction; do not reconstruct or rerun V12 for retrospective telemetry."
+}

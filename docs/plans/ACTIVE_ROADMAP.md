@@ -28,17 +28,20 @@ held-out rows, so it is not an independent holdout.
    replayed all six runs, passed the full suite, and reproduced the tables. The
    Markdown and IEEE sources now use only selected evidence and state what each
    result can support.
+5. **Gan efficiency closed with a bounded result.** On saved test450 aggregates,
+   V12 gains 15 Purist-correct rows while requiring three cold model passes per
+   note rather than one. Matched token, cost, latency, hardware, and cache
+   telemetry was not retained, so those claims were removed instead of
+   reconstructed from incompatible runs.
 
 ## Ordered evidence work
 
-1. Compare quality, calls, tokens, cost, latency, hardware, and cache use for
-   the Gan single-pass system and its multi-model comparator.
-2. Reproduce ExECT normalized phrase, CUI, and full-attribute scores using the
+1. Reproduce ExECT normalized phrase, CUI, and full-attribute scores using the
    published metrics.
-3. Evaluate model confidence out of sample and test only review policies that
+2. Evaluate model confidence out of sample and test only review policies that
    were specified before the run.
-4. Complete the paper's annotation taxonomy and sensitivity record.
-5. Specify the missing three runtime conditions, then run all six models with
+3. Complete the paper's annotation taxonomy and sensitivity record.
+4. Specify the missing three runtime conditions, then run all six models with
    the same pipeline and scorer.
 
 ## Limits

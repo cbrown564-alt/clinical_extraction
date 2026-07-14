@@ -16,9 +16,9 @@ complexity/accuracy frontier and converged on a clear result:
 
 > **The single GPT structured-event pass — one model, no reasoner, no peer
 > ensemble, no guard layer — is the right production architecture. It scores
-> 364/450 = 0.809 on test450, just 3.3pp below the full three-model LLM-with-rules method
+> 364/450 = 0.809 on test450, just 3.3pp below the saved multi-model comparison
 > (0.842), and on validation it actually *beats* both the one-model and two-model
-> reasoner variants. The entire reasoner + 3-model-ensemble + guard apparatus buys
+> reasoner variants. The saved GPT + Qwen + reasoner + guard test system buys
 > only +15 test rows, and that value does not decompose into anything cheaper.**
 
 A material provenance caveat applies (see §6): every LLM-with-rules/reasoner run here was
@@ -34,10 +34,15 @@ of distinct model passes, since each upstream model is real operational and
 financial weight. Goal: find the knee of the complexity/accuracy frontier, not a
 single point.
 
-The V12 LLM-with-rules method that scores 0.842 is concretely: **three upstream structured-event
-extractions** (GPT, Qwen-3.6-35B, DeepSeek) + **a fourth fresh-evidence reasoner
-pass** that may keep or replace the GPT answer + **a ~6-rule deterministic guard
-layer**. The question was how much of that the score actually needs.
+The retained validation and test conditions differ. The validation V12
+decomposition uses **three upstream structured-event extractions** (GPT,
+Qwen-3.6-35B, DeepSeek) plus a fourth fresh-evidence reasoner pass. The saved
+`379/450` test audit had GPT and Qwen inputs available on all 450 rows, DeepSeek
+available on zero rows, and one fresh-evidence reasoner pass. Its cold
+architecture is therefore **two upstream passes plus one reasoner pass**, with
+the deterministic guard layer after them. The earlier version of this report
+incorrectly transferred the four-pass validation description to the test
+result; the 2026-07-14 efficiency audit records the correction.
 
 ## 2. Method
 
@@ -102,7 +107,7 @@ row-level inspection):
 | Deterministic floor | 0 | 343/450 = 0.762 |
 | Naive direct labeler (`llm_only`) | 1 | ~323/450 = 0.71 |
 | **GPT structured-event pass** | **1** | **364/450 = 0.809** |
-| Full V12 LLM-with-rules method (3 + reasoner + guards) | 3+reasoner | 379/450 = 0.842 |
+| Saved GPT + Qwen + reasoner comparison | 2+reasoner | 379/450 = 0.842 |
 
 **The whole apparatus buys +15 rows (+3.3pp) over a single GPT pass on test** —
 far less than its 2.8pp validation footprint at a much higher base, and with the
@@ -110,15 +115,13 @@ guard layer contributing almost none of it.
 
 ## 4. Analysis
 
-**Where the value is, and is not.** The 0.842 LLM-with-rules method's advantage over one model is
-not in its deterministic guards (near-inert, +6/750 val) and not in the reasoner's
-raw cleverness. It is in **cross-model agreement disciplining the model's decision
-to overwrite its own answer.** The reasoner is a free-to-replace agent; given only
-one trace it over-replaces (A3: 79 hurt vs 28 helped), and the over-replacement is
-the same failure family as the night synthesis's *unknown-over-reading wall* — the
-model converts weak/ambiguous evidence into confident labels. Independent
-corroboration from peers is what suppresses bad replacements; it takes **three**
-traces, not two, to tip the balance positive.
+**Where the value is, and is not.** The validation decomposition shows that the
+guard layer is near-inert (+6/750) and that peer corroboration changes the
+reasoner's overwrite behavior. It does not establish that three upstream traces
+are always necessary. The saved test comparison had only GPT and Qwen upstream
+and was 15 rows above the single pass. Because the GPT+Qwen condition was not
+run as the matched validation one-peer rung, peer identity and distribution are
+confounded; no stronger mechanism claim is supported.
 
 **Simpler dominates, not merely approximates.** On validation the one-model pass
 (0.881) beats the one-model reasoner (0.813) and the two-model reasoner (0.841).
@@ -133,8 +136,10 @@ clinical-wall cases, so guard value and ensemble value can only be trusted from 
 locked split — which is exactly why the test anchor was the highest-information
 single number in the whole exercise.
 
-**Cost.** The +15 test rows cost two extra upstream models — including a local
-35B — plus a fourth LLM pass and a guard layer to maintain. For the project's real
+**Call structure.** The +15 test rows require one extra upstream model (local
+Qwen-3.6-35B), a reasoner pass, and a guard layer to maintain. This is three
+model passes per note rather than one. Tokens, cost, latency, hardware, and
+cache telemetry were not retained in matched form. For the project's real
 deliverables (KCL transfer, auditability, operational simplicity) that is a poor
 trade; a single transparent extraction pass is far more portable to real letters.
 
@@ -152,9 +157,10 @@ trade; a single transparent extraction pass is far more portable to real letters
    is what disciplines a free-to-replace agent. When an LLM may overwrite a prior
    answer, the abstain/keep signal must come from an **independent** source, never
    from the model's own confidence (the unknown-over-reading lesson, restated).
-4. **Corroboration is non-linear in depth.** Going 1 → 2 → 3 traces moved the replace
-   decision −51 → −30 → +21. Two corroborators were not enough; there is no cheap
-   2-model middle ground for this mechanism.
+4. **Corroboration depends on peer identity as well as depth.** On validation,
+   GPT-only → GPT+DeepSeek → GPT+Qwen+DeepSeek moved the replace decision
+   −51 → −30 → +21. The saved test result used GPT+Qwen+reasoner and was positive,
+   so the old claim that three upstream traces are necessary is rejected.
 5. **Added components can actively hurt.** A simpler architecture out-scoring a more
    complex one (1-model pass > 1- and 2-model reasoners) is a real, common outcome,
    not a measurement artifact — always include the "do less" baseline.
@@ -186,8 +192,8 @@ must assume mini + Qwen, not full gpt-4.1.
 
 **Correction — the single GPT pass was already on mini (verified 2026-06-16, no new
 calls).** The §6 caveat above conflated two distinct passes. The full-`gpt-4.1`
-provenance applies to the **fourth fresh-evidence reasoner pass and the 3-model
-LLM-with-rules method** — *not* to the GPT structured-event extraction that constitutes the chosen
+provenance applies to the fresh-evidence reasoner pass and the multi-model
+comparison — *not* to the GPT structured-event extraction that constitutes the chosen
 single-pass architecture. Both the validation750 and test450 GPT structured-event
 artifacts that supply the `v0_reference` anchor record `model = openai/gpt-4.1-mini`,
 mode `live`, temperature 0, prompt `gan2026_hybrid_structured_events_v0.5`:
@@ -213,11 +219,12 @@ extraction's model.)
   result on both validation750 (0.881) and test450 (0.809); no new run required. The
   remaining optional item is the **Qwen-3.6-35B local pass** as a fully-local,
   zero-closed-model anchor for portability.
-- **Reserve the 3-model LLM-with-rules method only if +3.3pp is essential to a specific claim** — it
-  has no cheaper form; two models do not suffice.
+- **Do not restore the saved GPT+Qwen+reasoner comparator solely for +3.3pp.** Its
+  source was removed, and matched token, cost, latency, hardware, and cache
+  evidence was not retained.
 - Optional, to close the frontier: the **GPT+Qwen** two-model rung (stronger peer,
-  one live cost, peer trace already saved) as the one-peer upper bound. Expected to
-  remain below the one-model pass.
+  one live cost, peer trace already saved) as a matched validation rung. The
+  saved test comparison used this peer pair, but validation did not.
 
 ## 8. Reproducibility — artifacts produced
 

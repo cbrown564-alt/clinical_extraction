@@ -68,7 +68,7 @@ by its assembly config; those inputs are selected and hash-checked here.
 
 | Package | Story support | What is proven | What remains open |
 | --- | --- | --- | --- |
-| Gan holdout quality | S2, S3, S8 | Single-call operational `364/450` versus V12 ceiling `379/450` Purist | Matched calls, tokens, cost, latency, model, hardware, and cache table |
+| Gan holdout quality and efficiency | S2, S3, S8 | Single-pass `364/450` versus V12 `379/450` Purist; one versus three cold model passes per note | Tokens, cost, latency, hardware, retries, and cache use were not measured in a matched run and must not be claimed |
 | Gan reliability | S5, S8 | Existing grounding, calibration, routing, consistency, robustness, and operational analyses | Deployment validation and final matched cross-task scorecard |
 | ExECT model transfer | S4, S5, S8 | Same-core GPT-4.1-mini, DeepSeek, and Qwen evidence, with permitted dev140 cached outputs and configs retained | Three remaining exact models and cross-model overconfidence analysis |
 | Cross-task ablation | S1, S6 | Normalization contributes on both tasks; current evidence gate is score-inert | Schema/evidence rejection and repair challenge fixtures; remaining stage isolation |

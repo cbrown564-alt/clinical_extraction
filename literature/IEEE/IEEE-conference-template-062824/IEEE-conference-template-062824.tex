@@ -193,16 +193,19 @@ headline result.
 \toprule
 System & Purist & Role \\
 \midrule
-Single structured-event pass & 364/450 & Single-pass system \\
-V12 multi-trace reviewer & 379/450 & Multi-model comparison \\
+Single structured-event pass & 364/450 & One model pass per note \\
+V12 multi-trace reviewer & 379/450 & Three model passes per note \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Both rows in Table~\ref{tab:gan-holdout} are saved aggregate evidence. The
-15-row quality difference does not yet support an efficiency conclusion. A
-matched table of calls, tokens, cost, latency, hardware, and cache policy
-remains open.
+15-row quality difference is 3.33 percentage points. A cold execution requires
+one model pass per note for the single-pass system and three for the saved V12
+test condition. DeepSeek input was unavailable on all 450 rows. The saved V12
+audit made 450 new reasoner calls while replaying two upstream traces.
+Matched tokens, cost, latency, hardware, and cache telemetry were not retained,
+so no measured token, dollar, energy, or latency comparison is claimed.
 
 \subsection{ExECT Same-Core Model Evidence}
 

@@ -13,7 +13,7 @@ must not make a stronger claim than either source supports.
 | --- | --- | --- | --- |
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
 | S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method | Partial |
-| S3 | The Gan multi-model method adds modest quality at higher cost | Quality is saved; matched cost and latency are missing | Partial |
+| S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved holdout quality, run metadata, and aggregate input availability | Bounded |
 | S4 | Six exact models run on one fixed ExECT pipeline | GPT-4.1-mini, DeepSeek, and Qwen are selected | 3/6 |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; no selected ExECT transfer study exists | Open |
 | S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests and cross-task replay exist | Partial |
@@ -30,6 +30,7 @@ must not make a stronger claim than either source supports.
 | C3 | Gan unknown-versus-rate behavior transfers to ExECT | Unsupported | Do not claim |
 | C4 | The same main ExECT pipeline runs with GPT-4.1-mini, DeepSeek, and Qwen | Strong but runtime conditions differ | Full200 development-inclusive aggregate |
 | C5 | Split and evaluation rules are enforced | Strong for selected paths | Engineering verification, not external validation |
+| C6 | Gan V12 gains 15/450 Purist-correct rows while requiring a three-pass cold architecture rather than one pass | Strong for saved quality and architecture structure | Tokens, cost, latency, and hardware were not measured in a matched run |
 
 ## Selected headline results
 
@@ -50,12 +51,12 @@ must not make a stronger claim than either source supports.
 - Do not claim cross-task transfer without a selected ExECT study.
 - Do not present the GEPA run as a production reference.
 - Do not state a six-model conclusion from three models.
+- Do not turn Gan model-pass counts into measured token, dollar, energy, or
+  latency savings.
 
 ## Open work
 
-1. Add a matched Gan quality, calls, tokens, cost, and latency table.
-2. Implement the published ExECT phrase, CUI, and full-attribute metrics.
-3. Evaluate model-reported confidence out of sample.
-4. Combine annotation issues with sensitivity results.
-5. Specify the remaining model runtimes, then run all six with the same pipeline.
-6. Regenerate manuscript tables and synchronize the IEEE source.
+1. Implement the published ExECT phrase, CUI, and full-attribute metrics.
+2. Evaluate model-reported confidence out of sample.
+3. Combine annotation issues with sensitivity results.
+4. Specify the remaining model runtimes, then run all six with the same pipeline.

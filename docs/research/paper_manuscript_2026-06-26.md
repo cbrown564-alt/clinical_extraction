@@ -126,8 +126,15 @@ does not affect the reproduced 0.9189 clinical fact score.
 | Single-pass event extractor | 364/450 (0.809) | Saved aggregate only |
 | Multi-model comparison (`V12`) | 379/450 (0.842) | Saved aggregate; source removed |
 
-The 15-row difference does not yet support an efficiency conclusion. Calls,
-tokens, cost, latency, hardware, and cache use require a matched study.
+The saved difference is 15 rows, or 3.33 percentage points. A cold execution
+requires one model pass per note for the single-pass system and three for the
+saved V12 test condition (GPT and Qwen extractors plus one reasoner). DeepSeek
+input was unavailable on all 450 rows. The V12 holdout audit itself made 450
+new reasoner calls while replaying the two upstream traces.
+
+Matched prompt/completion tokens, cost, wall time, hardware, and cache telemetry
+were not retained. These runs therefore support a quality-versus-model-pass
+comparison, not measured token, dollar, energy, or latency efficiency.
 
 ### 4.3 ExECT three-model results
 

@@ -792,14 +792,16 @@
       "model": "openai/gpt-4.1-mini operational; openai/gpt-4.1 V12 reviewer",
       "model_role": "Frozen aggregate comparison of four architectures plus V12 ceiling",
       "prompt_program_version": "hybrid structured-events v0.5; fresh-evidence reasoner v0.4",
-      "cache_replay_mode": "live frozen holdout runs; aggregate reports retained",
+      "cache_replay_mode": "single-pass saved live aggregate; V12 final audit made 450 live reasoner calls over two saved upstream traces; no-call efficiency audit",
       "repair_policy": "Recorded format repair and safety gates; no post-holdout semantic tuning",
-      "claim_boundary": "Supports the 364/450 operational and 379/450 ceiling quality comparison. Matched calls/tokens/cost/latency remains open.",
+      "claim_boundary": "Supports the 364/450 versus 379/450 quality comparison and the one-pass versus three-pass cold architecture comparison. Matched tokens, cost, latency, hardware, retries, and cache telemetry are unavailable and must not be claimed.",
       "story_ids": ["S2", "S3", "S8"],
       "result_summary": {
         "operational_purist": "364/450",
         "ceiling_purist": "379/450",
-        "efficiency_status": "open"
+        "operational_cold_model_passes_per_note": 1,
+        "ceiling_cold_model_passes_per_note": 3,
+        "efficiency_status": "bounded_complete"
       },
       "artifacts": [
         {
@@ -822,8 +824,32 @@
         },
         {
           "path": "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md",
-          "sha256": "04f489559e1b0fa2bb31fca23c7d4322659599e50a49604df96b0bb71bc745d2",
-          "bytes": 14149,
+          "sha256": "de25bfc645f28e32e9701a13d566bc06c6f97669d29466b910508d225ad0a13f",
+          "bytes": 14547,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/gan2026_single_vs_multimodel_efficiency_2026-07-14.json",
+          "sha256": "bf4e2bbdfadb74d6e15a98bf931a231dc7c2c12a613a3758a8f371c294ea4a6d",
+          "bytes": 6492,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_protocol_2026-07-14.md",
+          "sha256": "b5c7fc2aa9b7f34f3fdb87f1959d0cbbb38617c611f4b11ae4aa68a2f3166dff",
+          "bytes": 3894,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md",
+          "sha256": "395d81ed1c45a09d56627805ea12618ed843af6e3fb54b0bb8e20a82f51a82bf",
+          "bytes": 3731,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/check_gan2026_efficiency_comparison.py",
+          "sha256": "62f9bb0bf0d446cb9f402ed00502d03ab8426be22d1b4b7e8b80300eceed50bc",
+          "bytes": 5448,
           "retrieval": "git_path"
         }
       ]

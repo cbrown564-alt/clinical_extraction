@@ -15,6 +15,7 @@
 | Selected files, hashes, and replay requirements | [retained evidence index](experiments/retained_evidence_manifest.md) |
 | Strength of paper claims | [paper claim status](canon/10_paper_provenance.md) |
 | Gan evidence and holdout rules | [Gan evidence summary](canon/06_gan_clinical_policy.md) |
+| Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
