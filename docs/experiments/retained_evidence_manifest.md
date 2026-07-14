@@ -21,7 +21,9 @@ python scripts/verify_reference_evidence.py
 The structural check fails if a selected file is missing or changed, a run has
 drifted from its registry metadata, a closure path is missing, or the two-task ×
 three-family matrix is incomplete. The replay check rebuilds or re-scores all six
-cells from current code and saved outputs without model calls.
+cells from current code and saved outputs without model calls. Hashes and byte
+sizes for retained text artifacts use canonical LF line endings so the same Git
+content verifies identically on Windows and Unix checkouts.
 
 ## Reference matrix
 
@@ -36,7 +38,8 @@ cells from current code and saved outputs without model calls.
 
 These six cells are the minimum scientific comparison set. They do not require
 keeping every prompt, candidate, ablation, report, UI adapter, or runner that led
-to them.
+to them. The ExECT hybrid cell does require the five saved producer outputs named
+by its assembly config; those inputs are selected and hash-checked here.
 
 ## Supporting evidence packages
 

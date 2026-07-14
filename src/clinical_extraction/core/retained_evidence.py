@@ -47,6 +47,15 @@ _REQUIRED_RECORD_FIELDS = {
     "artifacts",
 }
 _REQUIRED_REFERENCE_FIELDS = {"closure", "verification"}
+_TEXT_ARTIFACT_SUFFIXES = {
+    ".json",
+    ".jsonl",
+    ".md",
+    ".py",
+    ".txt",
+    ".yaml",
+    ".yml",
+}
 
 
 def load_retained_evidence_manifest(path: Path) -> Mapping[str, Any]:
@@ -256,7 +265,7 @@ def _validate_artifact(
     if not path.is_file():
         raise ValueError(f"retained artifact is missing: {path_text}")
 
-    actual = (hashlib.sha256(path.read_bytes()).hexdigest(), path.stat().st_size)
+    actual = _artifact_fingerprint(path)
     expected = (digest, size)
     if actual != expected:
         raise ValueError(f"retained artifact hash or size drift: {path_text}")
@@ -264,6 +273,15 @@ def _validate_artifact(
     if prior is not None and prior != expected:
         raise ValueError(f"conflicting retained metadata for {path_text}")
     seen_artifacts[path_text] = expected
+
+
+def _artifact_fingerprint(path: Path) -> tuple[str, int]:
+    """Return a platform-stable fingerprint for retained artifact content."""
+
+    content = path.read_bytes()
+    if path.suffix.lower() in _TEXT_ARTIFACT_SUFFIXES:
+        content = content.replace(b"\r\n", b"\n")
+    return hashlib.sha256(content).hexdigest(), len(content)
 
 
 def _nonempty_text(record: Mapping[str, Any], field: str) -> str:

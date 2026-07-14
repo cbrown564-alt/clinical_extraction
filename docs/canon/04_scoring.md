@@ -42,6 +42,12 @@ These are internal adjudication records. They support bounded claims about
 annotation multiplicity, representation, ambiguity, and concrete defects. They
 do not provide independent clinical validation.
 
+A pre-surgery, no-model-call diagnostic also identified `EA0171`, where an
+explicit Diagnosis annotation stores the literal placeholder `CUI=null`. The
+finding is retained in `experiments/gold_data_issues.jsonl`; the discarded
+diagnostic workflow and its generated review artifacts do not upgrade the
+project's annotation-assurance or clinical-validity claims.
+
 ## Open requirements
 
 - implement and test deterministic phrase/CUI/full-attribute scoring;
