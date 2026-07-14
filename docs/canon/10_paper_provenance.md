@@ -1,70 +1,61 @@
-# 10 — Paper claims and provenance
+# 10 — Paper claims and supporting evidence
 
 Last updated: 2026-07-14
 
-This document owns claim strength. The
-[retained evidence manifest](../experiments/retained_evidence_manifest.md) owns
-selected files and hashes. The [manuscript](../research/paper_manuscript_2026-06-26.md)
-must not exceed either boundary.
+This file states how strongly the paper may make each claim. The
+[retained evidence index](../experiments/retained_evidence_manifest.md) records
+the exact files and hashes. The [manuscript](../research/paper_manuscript_2026-06-26.md)
+must not make a stronger claim than either source supports.
 
-## Required paper story
+## Required paper statements
 
-| ID | Required statement | Current evidence | State |
+| ID | Statement | Current evidence | State |
 | --- | --- | --- | --- |
-| S1 | One modular system is evaluated on Gan and ExECT | Six reference cells replay from retained code and outputs | Partial |
-| S2 | Rules-only, LLM-only, and hybrid forms have attributable results on both tasks | Two-task by three-family manifest | Partial |
-| S3 | Gan V12 adds modest quality at higher operational cost | Quality is retained; matched cost and latency are missing | Partial |
-| S4 | Six exact models run on one frozen ExECT architecture | Core and policy freeze complete; GPT-4.1-mini, DeepSeek, and Qwen are retained | 3/6 |
-| S5 | Unknown-versus-rate overconfidence generalizes across models and tasks | Gan evidence retained; ExECT transfer proof is not retained | Open |
-| S6 | Extraction, normalization, projection, schema, and evidence stages are explicit and tested | Stage closures and cross-task ablation retained | Partial |
-| S7 | ExECT reproduces the published phrase/CUI/full-attribute surface | Current deterministic strict score remains below the paper | Open |
-| S8 | Both tasks have bounded reliability evidence | Gan package and ExECT internal calibration retained | Partial |
-| S9 | Annotation flaws and conventions have complete transparent handling | Four family ledgers and selected row analyses retained | Partial |
+| S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
+| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method | Partial |
+| S3 | The Gan multi-model method adds modest quality at higher cost | Quality is saved; matched cost and latency are missing | Partial |
+| S4 | Six exact models run on one fixed ExECT pipeline | GPT-4.1-mini, DeepSeek, and Qwen are selected | 3/6 |
+| S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; no selected ExECT transfer study exists | Open |
+| S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests and cross-task replay exist | Partial |
+| S7 | ExECT reproduces published phrase, CUI, and full-attribute metrics | Current deterministic strict score remains below the paper | Open |
+| S8 | Both tasks have reliability evidence with stated limits | Gan package and ExECT internal calibration are selected | Partial |
+| S9 | Annotation flaws and conventions have transparent handling | Four entity ledgers and selected row analyses exist | Partial |
 
-## Current capability claims
+## Current claims
 
-| ID | Claim | Strength | Retained proof | Boundary |
-| --- | --- | --- | --- | --- |
-| C1 | Some ExECT Diagnosis and SF disagreements are annotation multiplicity or representation issues | Soft | Canonical row analyses, blind replication, family ledgers | Internal dev140 adjudication |
-| C2 | Normalization improves both tasks while the evidence check is score-inert on representative replays | Strong | Cross-task ablation package | Development replay only |
-| C3 | Gan unknown-versus-rate behavior transfers to ExECT | Open | No selected ExECT transfer artifact | Do not claim yet |
-| C4 | The same ExECT core runs across GPT-4.1-mini, DeepSeek, and Qwen | Strong but asymmetric | Three-model package | Full200 development-inclusive aggregate |
-| C5 | Split and evaluation discipline is enforced | Strong for retained paths | Split manifests, CLI barriers, registry, replay tests | Not external validation |
+| ID | Claim | Strength | Evidence limit |
+| --- | --- | --- | --- |
+| C1 | Some ExECT diagnosis and seizure-frequency disagreements concern annotation multiplicity or representation | Limited | Internal dev140 review by the same team |
+| C2 | Normalization improves both tasks; the exact-evidence check is score-neutral on selected replays | Strong for the named replays | Development data only |
+| C3 | Gan unknown-versus-rate behavior transfers to ExECT | Unsupported | Do not claim |
+| C4 | The same main ExECT pipeline runs with GPT-4.1-mini, DeepSeek, and Qwen | Strong but runtime conditions differ | Full200 development-inclusive aggregate |
+| C5 | Split and evaluation rules are enforced | Strong for selected paths | Engineering verification, not external validation |
 
-## Retained headline results
+## Selected headline results
 
-### Gan
-
-| Subject | Result |
+| Task and method | Result |
 | --- | ---: |
-| Operational frozen test450 | 364/450 Purist |
-| V12 frozen ceiling | 379/450 Purist |
+| Gan single-pass system, test450 | 364/450 Purist |
+| Gan multi-model comparison, test450 | 379/450 Purist |
+| ExECT rules only, dev140 | strict item F1 0.3548 |
+| ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393 |
+| ExECT LLM with rules, dev140 | clinical fact F1 0.9189 |
+| ExECT GPT / DeepSeek / Qwen, full200 | 0.8356 / 0.8566 / 0.8197 clinical fact F1 |
 
-### ExECT
-
-| Subject | Result |
-| --- | ---: |
-| Deterministic dev140 strict item F1 | 0.3548 |
-| GEPA LLM-only dev140 headline F1 | 0.7393 |
-| Hybrid v08 dev140 headline F1 | 0.9189 |
-| Same-core full200 GPT / DeepSeek / Qwen | 0.8356 / 0.8566 / 0.8197 |
-
-## Prohibited wording
+## Wording the paper must avoid
 
 - Do not describe ExECT full200 as an independent holdout.
 - Do not describe `clinical_headline` as the published strict benchmark.
-- Do not present internal annotation adjudication as independent clinical validation.
-- Do not claim ExECT Wall transfer without adding selected evidence.
-- Do not present the GEPA cell as a production control.
-- Do not state a six-model conclusion from the current three-model package.
+- Do not present internal annotation review as independent clinical validation.
+- Do not claim cross-task transfer without a selected ExECT study.
+- Do not present the GEPA run as a production reference.
+- Do not state a six-model conclusion from three models.
 
 ## Open work
 
-1. Add the matched Gan quality, calls, tokens, cost, and latency table.
-2. Implement the deterministic phrase/CUI/full-attribute benchmark surface.
+1. Add a matched Gan quality, calls, tokens, cost, and latency table.
+2. Implement the published ExECT phrase, CUI, and full-attribute metrics.
 3. Evaluate model-reported confidence out of sample.
-4. Consolidate the annotation taxonomy and sensitivity analysis.
-5. Predeclare the remaining three exact runtime conditions, then run all six
-   under the frozen comparison core.
-6. Regenerate manuscript tables and sync the IEEE source.
-
+4. Combine annotation issues with sensitivity results.
+5. Specify the remaining model runtimes, then run all six with the same pipeline.
+6. Regenerate manuscript tables and synchronize the IEEE source.

@@ -1,9 +1,8 @@
-"""General CLI harness for Gan 2026 LLM-backed pipelines.
+"""Shared command-line runner for Gan 2026 pipelines.
 
-This module is the single CLI surface for routine Gan 2026 LLM-backed
-experiments. Pipeline modules own extraction and report formatting; this module
-owns split loading, model/cache flags, progress cadence, checkpoint paths, and
-the pipeline registry.
+Pipeline modules extract and format results. This module loads the requested
+data split, applies model and cache options, reports progress, and writes
+checkpoints.
 """
 
 from __future__ import annotations
@@ -67,7 +66,7 @@ class PipelineSummarizer(Protocol):
 
 @dataclass(frozen=True)
 class GanLlmPipelineCliSpec:
-    """Callbacks and defaults needed to expose a Gan LLM pipeline on the CLI."""
+    """Callbacks and defaults for one command-line pipeline choice."""
 
     description: str
     default_jsonl_path: Path
@@ -81,7 +80,7 @@ class GanLlmPipelineCliSpec:
 
 
 def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
-    """Return routine LLM experiment pipelines exposed by the single CLI."""
+    """Return the three routine Gan pipeline choices."""
     from clinical_extraction.tasks.seizure_frequency.gan2026 import runner
 
     return runner.get_cli_specs()
@@ -166,8 +165,8 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     spec = specs[args.pipeline]
     if args.split == "test":
         parser.error(
-            "Gan test runs are not exposed by the retained CLI; a new frozen protocol "
-            "and explicit authorization are required before adding a locked-test launch"
+            "This command cannot run the Gan holdout. Write and approve a fixed test "
+            "protocol before adding a holdout command."
         )
     requested_source_indices = _parse_requested_source_indices(args, parser)
 

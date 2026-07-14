@@ -126,9 +126,8 @@ class DspyCanonicalLlmExtractor(dspy.Module):
         return self.predict(prompt_input_json=prompt_input_json)
 
 
-# Named clinical-reasoning rule families from the deterministic/hybrid rule
-# taxonomy (see CONTEXT.md), embedded as prompt instructions rather than
-# pre/post processing — the defining trait of this "purest form" comparator.
+# Guidance for clinically difficult cases is embedded in the prompt. No
+# deterministic clinical rule changes the model's answer afterward.
 _RULE_TAXONOMY_INSTRUCTIONS: list[str] = [
     (
         "cluster_axis_ambiguity: when a cluster statement could describe "

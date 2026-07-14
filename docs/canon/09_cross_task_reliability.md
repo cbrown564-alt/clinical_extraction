@@ -1,30 +1,21 @@
-# 09 — Cross-task reliability
+# 09 — Reliability across tasks
 
 Last updated: 2026-07-14
 
-## Retained component evidence
-
-| Component | ExECT dev140 delta | Gan validation750 delta |
+| Component removed | ExECT dev140 score change | Gan validation750 score change |
 | --- | ---: | ---: |
-| Evidence validation | 0.0000 | 0.0000 |
-| Normalization / standard dictionary | +0.0389 | +0.0293 |
+| Exact-evidence check | 0.0000 | 0.0000 |
+| Normalization and shared dictionary | +0.0389 | +0.0293 |
 
-These are saved-output development replays. A zero score delta does not prove
-that evidence checks are unnecessary; schema and evidence rejection still need
-challenge fixtures.
+These are development replays of saved outputs. No score change does not make
+the evidence check unnecessary; rejection and repair still require direct
+tests.
 
-## Retained task evidence
+Gan retains aggregate evidence for grounding, calibration, review routing,
+consistency, distribution shifts, and runtime behavior. ExECT retains the
+internal calibration probe and three-model results. No selected ExECT report
+tests the Gan unknown-versus-rate problem or broad self-consistency.
 
-- Gan retains aggregate grounding, calibration, routing, consistency,
-  robustness, and operational scorecard evidence.
-- ExECT retains the internal calibration signal probe and three-model same-core
-  outputs.
-- The manifest does not retain an ExECT Wall-transfer probe or a broad
-  self-consistency study.
-
-## Open claims
-
-Cross-task overconfidence, out-of-sample model confidence, and low-burden review
-routing remain open. The final reliability table must name dataset, split,
-model, scorer, repair policy, and inspection boundary for every row.
-
+Cross-task overconfidence, out-of-sample confidence, and low-burden review
+policies remain open. Every final reliability result must state its dataset,
+split, model, scorer, repair policy, and row-inspection rule.

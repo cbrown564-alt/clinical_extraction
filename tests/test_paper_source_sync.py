@@ -55,4 +55,4 @@ def test_surviving_paper_sources_preserve_claim_boundaries(source_path: Path) ->
 
     assert "not an independent holdout" in source
     assert "three of six" in source
-    assert "does not support an exect wall-transfer claim" in source
+    assert "does not support a cross-task over-reading claim" in source

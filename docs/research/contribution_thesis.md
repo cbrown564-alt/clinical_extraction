@@ -1,142 +1,53 @@
-﻿# Research Contribution Thesis
+# Research contribution
 
-This project sits in a long line of epilepsy NLP work, summarized for this repo in:
+The literature review is in
+`literature/hybrid_seizure_phenotype_literature_review.pdf`.
 
-```text
-literature/hybrid_seizure_phenotype_literature_review.pdf
-```
+The project studies clinical extraction as a sequence of inspectable decisions.
+Deterministic rules and model reasoning are both explicit, testable components.
 
-The engineering design should support a research paper, not only a benchmark run. The core claim is that seizure-frequency extraction should be treated as a modular, auditable clinical extraction problem where deterministic rules and LLM reasoning are both explicit, testable components.
+## Methods compared
 
-## Experimental Ontology
+- **Rules only:** deterministic rules determine the clinical facts.
+- **LLM only:** the model determines the clinical facts; deterministic code may
+  validate or format them.
+- **LLM with rules:** model and deterministic code can both change clinical meaning.
 
-Pipeline names should describe the research role of each component, not the
-order in which an idea happened to be tried. Gan 2026 experiments should be
-organized into three top-level families:
+Saved filenames retain older long identifiers. Current commands and prose use
+the plain names above; see the [naming guide](../reference/plain_language_glossary.md).
 
-- `rules_only`: deterministic rules produce the prediction-bearing clinical
-  interpretation. This family is the baseline for portability, rule-category
-  ablation, evidence validity, and reproducibility.
-- `llm_only`: an LLM produces the prediction-bearing clinical interpretation.
-  Deterministic code may validate JSON, check evidence, normalize already
-  selected facts, repair benchmark-facing format, and score outputs, but it
-  must not introduce or choose the clinical fact.
-- `hybrid`: both deterministic rules and an LLM contribute semantic behavior.
-  Hybrid experiments must state which component extracts candidate facts, which
-  component selects or adjudicates the final clinical interpretation, and which
-  deterministic steps remain formatting or scoring only.
+## Contribution 1: one package for narrow and broad extraction
 
-Within each family, pipeline and artifact names should include the task
-decomposition and component ownership:
+Gan 2026 tests one difficult concept, current seizure frequency. ExECTv2 tests
+several epilepsy phenotypes. The package keeps shared code in `core` and task
+logic in `tasks` so the same extraction, evidence, scoring, and analysis tools
+can support both.
 
-- direct final-label prediction
-- event extraction followed by final selection
-- claim-table extraction followed by a query over claims
-- rules-generated candidates followed by LLM adjudication
-- LLM-generated candidates followed by deterministic normalization or selection
+## Contribution 2: test transfer rather than assume it
 
-Examples:
+Rules and models can both fit a local template or benchmark. The project labels
+rules by expected portability, separates clinical logic from benchmark
+formatting, records models as experimental conditions, and removes components
+in saved-output comparisons. Results must state the dataset and split to which
+they apply.
 
-```text
-rules_only_v1
-llm_only_direct_labeler
-hybrid_structured_events
-llm_only_claim_table_selector
-hybrid_rules_candidates_llm_adjudicator
-hybrid_llm_events_rules_normalizer
-```
+## Contribution 3: make decisions inspectable
 
-Artifact names should follow the same ontology before run details:
+Per-letter outputs retain extracted events, evidence spans, assertion status,
+time, uncertainty, normalized values, and rationale. Corpus analyses count
+clinically meaningful failure types and identify the first component that made
+an error unrecoverable.
 
-```text
-gan2026_rules_only_v1_validation750_2026-06-01.json
-gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v4_2026-06-01.jsonl
-gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v01_2026-06-01.jsonl
-```
+## Contribution 4: treat rules as experimental variables
 
-Legacy labels such as `Architecture 2` or `section-claim-table` can appear in
-historical notes when referring to already-created artifacts, but they should
-not remain as runnable aliases or current code names. New code, CLI choices,
-reports, and project-status entries should use the ontological names above.
+Deterministic behavior is grouped as general, clinical epilepsy,
+seizure-frequency, Gan-specific, or benchmark-format logic. Tests and ablations
+show which group helps or hurts. This prevents preprocessing and repair rules
+from disappearing into an undifferentiated method description.
 
-## Contribution 1: Modular Breadth And Depth
+## Paper outputs
 
-Prior epilepsy NLP systems often do one of two things well:
-
-- broad epilepsy phenotyping
-- narrow seizure-frequency extraction
-
-The project aims to show that a modular clinical extraction architecture can support both. Gan 2026 seizure frequency is the first high-pressure task, but the package should keep enough structure to later support broader phenotyping and other extraction targets.
-
-Implication for the repo:
-
-- Keep task-specific code under `tasks/`.
-- Keep reusable primitives in `core/` only when they genuinely apply across tasks.
-- Treat seizure frequency as the first task module, not the identity of the whole package.
-
-## Contribution 2: Generalisation By Design
-
-Rules-based systems are often precise but brittle: they can work well on a particular note template, institution, or clinician style, then lose recall elsewhere. LLM systems can also overfit to a dataset, prompt, or benchmark surface.
-
-The project aims to build and evaluate a hybrid system that is:
-
-- transparent about which behavior is deterministic and which behavior is model-mediated
-- efficient enough to run practical experiments
-- modular enough to test general versus dataset-specific components
-- designed for cross-template and cross-dataset evaluation rather than only local benchmark fit
-
-Implication for the repo:
-
-- Label rules by portability: general, task-specific, dataset-specific, or benchmark-specific.
-- Separate clinical logic from benchmark formatting.
-- Preserve ablation switches so each component can be removed or replaced.
-- Treat model choice as an experimental variable. Early hosted GPT-4.1 mini runs,
-  later local Qwen 3.6:35b comparisons, and possible GPT-5.4 GEPA-teacher runs
-  should be reported as distinct conditions rather than blended together.
-
-## Contribution 3: Transparency Through Evidence, Reasoning, And Error Analysis
-
-Many systems are black boxes in practice. Rules are inspectable in principle, but complex regex stacks can become difficult to reason about. LLMs add another layer of opacity.
-
-The project aims to make system behavior inspectable at two levels:
-
-- per-note transparency: extracted events, evidence spans, assertions, temporality, uncertainty, normalized values, final rationale
-- corpus-level transparency: rigorous error analysis, failure-mode taxonomies, and ablation studies showing which components help or hurt
-
-Implication for the repo:
-
-- Store intermediate events, not just final predictions.
-- Validate evidence as source substrings where possible.
-- Maintain row-level error-analysis outputs as first-class experiment artifacts.
-- Track failure modes in clinically meaningful categories.
-
-## Contribution 4: Deterministic Rules As A Controlled Variable
-
-LLM clinical extraction papers often include preprocessing and post-processing rules, but these rules may be underdescribed, hard to reproduce, or treated as implementation detail. Here, deterministic rules are part of the scientific object.
-
-The project should make rules explicit, categorized, testable, and ablatable.
-
-Rule categories should distinguish:
-
-- general date and duration patterns likely to transfer across clinical settings
-- seizure-frequency expressions likely to transfer across epilepsy notes
-- task-specific temporal-selection rules for seizure frequency
-- Gan-specific synthetic-letter patterns, such as diary phrasing or benchmark label quirks
-- benchmark-formatting rules needed only to score against Gan-style labels
-
-The expected pattern is itself a research question: highly specific rules may fit local training data exceptionally well but generalize poorly. The repo should make that visible instead of hiding it inside regex soup.
-
-## Paper-Relevant Outputs
-
-The implementation should produce artifacts that can become paper tables and figures:
-
-- component ablation table
-- reliability scorecard and component-impact table as separate outputs; the
-  ExECTv2 paper-language boundary is maintained in
-  `docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md`
-- deterministic-rule category ablation table
-- error taxonomy with counts and examples
-- per-label purist and pragmatic performance
-- evidence-validity rate
-- schema-validity and repair-rate summaries
-- examples showing successful and failed temporal reasoning
+The final evidence should include method comparisons for both tasks, component
+and rule-group ablations, error counts and examples, task-appropriate scores,
+evidence and schema validity, repair rates, confidence results, and worked
+examples of successful and failed temporal reasoning.

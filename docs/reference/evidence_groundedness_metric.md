@@ -1,89 +1,36 @@
-# Evidence Groundedness Metric
+# Evidence groundedness
 
-**Canonical reference** for cross-task evidence validity in gan2026, ExECTv2, and future tasks.
+Implementation: `src/clinical_extraction/core/evidence.py`.
 
-Implementation: `src/clinical_extraction/core/evidence.py` (`grade_evidence`, `score_evidence_set`).
+Evidence groundedness asks whether cited text is present in the note after
+format-only text repair. It does not judge whether the text clinically supports
+the prediction.
 
----
+- `evidence_grounded_rate`: exact or safely repaired citations divided by all citations;
+- `evidence_exact_rate`: exact substring citations divided by all citations.
 
-## Definition
+`score_evidence_set(note_text, evidence)` accepts one string or a sequence and
+returns exact, repaired, absent, or empty grades. New runs use
+`evidence_grounded`; older saved files may use `evidence_valid` or
+`evidence_text_contained`.
 
-**Evidence groundedness** answers one question: *is the cited text present in the source note, allowing semantically-neutral formatting repair?*
+## Grades
 
-The headline published rate is **`evidence_grounded_rate`** (grounded ÷ total cited evidence strings). The transparency sub-metric **`evidence_exact_rate`** retains raw verbatim copy fidelity (exact substring only).
+| Grade | Meaning | Counts as grounded? |
+| --- | --- | :---: |
+| `EXACT` | Verbatim substring | Yes |
+| `REPAIRED_ARTIFACT` | Found after neutral encoding/control-character cleanup | Yes |
+| `REPAIRED_CASE` | Found after case-only repair | Yes |
+| `REPAIRED_WHITESPACE` | Found after whitespace repair | Yes |
+| `REPAIRED_ELLIPSIS` | Both ends of a bounded omission are present | Yes |
+| `REPAIRED_SECTION` | Header and list item occur in one source section | Yes |
+| `ABSENT` | Not found | No |
+| `EMPTY` | No citation supplied | No |
 
-**Grounded** = any `EXACT` or `REPAIRED_*` grade below. **Not grounded** = `ABSENT` or `EMPTY`.
+Every repaired grade is returned only when the repaired text exists in the note.
+Prediction filters may still require an exact match; changing such a filter can
+change predictions and requires a separate study.
 
-This is a **fidelity/presence** metric. It does **not** judge whether evidence semantically supports the label (faithfulness / entailment is a separate reliability question).
-
----
-
-## Input contract
-
-Every caller uses the same pure function:
-
-```python
-score_evidence_set(note_text: str, evidence: str | Sequence[str]) -> EvidenceGroundedness
-```
-
-- Single string → one grade; sequence → aggregate `EvidenceGroundedness`.
-- Per-row boolean back-compat field: `evidence_grounded` (all items grounded).
-- Per-run summary: `evidence_grounded_rate`, `evidence_exact_rate`, `by_grade` counts.
-
-Retired public metric names: `evidence_valid` and `evidence_text_contained` (same raw-substring computation, accidentally divergent naming). New runs emit the unified names only.
-
----
-
-## Taxonomy (8 grades)
-
-| Grade | Meaning | Grounded? | Repair hook |
-|-------|---------|:---------:|-------------|
-| `EXACT` | Verbatim substring of note | yes | `evidence_is_substring` |
-| `REPAIRED_ARTIFACT` | Source-exact after mojibake/control-char normalisation | yes | `clean_semantically_neutral_text_artifacts` |
-| `REPAIRED_CASE` | Source-exact after case-only repair | yes | `repair_case_only_evidence_copy` |
-| `REPAIRED_WHITESPACE` | Source-exact after whitespace flex | yes | `repair_whitespace_evidence_copy` |
-| `REPAIRED_ELLIPSIS` | Bounded `…`/`...` span omission, both ends source-exact | yes | `repair_ellipsis_span_evidence_copy` |
-| `REPAIRED_SECTION` | `header + list-item` composition in one source section | yes | `repair_section_header_list_item_evidence_copy` |
-| `ABSENT` | Not found after all repairs | no | — |
-| `EMPTY` | No evidence string provided | no | — |
-
-The repair cascade only returns spans that exist verbatim in the source after neutral normalisation — so every `REPAIRED_*` grade is semantically safe to count as grounded for **scoring**. Functional **gates** that filter evidence before prediction may still require exact match (Phase 5, protocol-gated).
-
----
-
-## Worked example — Qwen `≤` artifact
-
-**Note text (excerpt):** `overall a frequency of ≤ four seizures per week`
-
-**Model evidence (copy quirk):** `overall a frequency of \x026 four seizures per week`
-
-| Metric | Result |
-|--------|--------|
-| Old exact-substring (`evidence_valid` / `evidence_text_contained`) | **invalid** |
-| Unified `grade_evidence` | `REPAIRED_ARTIFACT` → **grounded** |
-
-On validation750 surfaced Qwen rows, this artifact class explained most of the
-gap between roughly 75% exact-valid and 91–95% grounded in the 2026-06-27
-replay. The retained Gan reliability scorecard preserves the bounded result.
-
----
-
-## ADR — why one metric, why repaired counts as grounded
-
-1. **One function, one name.** Three call sites previously computed the same raw `in` test under two names (`evidence_valid` vs `evidence_text_contained`). The divergence was accidental, not semantic. Collapsing to `evidence_grounded_rate` removes cross-architecture footnotes that blocked fair comparison.
-
-2. **Repair cascade already trusted for anchoring.** `locate_evidence()` and offset placement use the same cascade. Scoring validity with a stricter test than anchoring was internally inconsistent.
-
-3. **Repaired spans are source-exact by construction.** Each repair function returns only when the result is found verbatim in `note_text`. Phase 0 taxonomy audit + unit fixtures lock the boundary between recoverable quirk and genuine absence.
-
-4. **Prediction filters are separate.** Widening a filter to accept
-   `REPAIRED_*` spans can move predictions and requires a new protocol. The
-   groundedness metric alone does not authorize that change.
-
----
-
-## Related documents
-
-- [Evidence authority and retention](../canon/03_evidence_claims_frozen.md)
-- [Cross-task reliability](../canon/09_cross_task_reliability.md)
-- [Retained evidence manifest](../experiments/retained_evidence_manifest.md)
+In a selected Qwen replay, neutral repair recovered an encoding error in the
+`≤` symbol and explained much of the difference between exact-copy and grounded
+rates. The Gan reliability report records the limited result.

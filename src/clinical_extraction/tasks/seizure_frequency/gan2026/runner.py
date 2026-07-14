@@ -1,4 +1,4 @@
-"""Unified parameterized runner framework for Gan 2026 pipelines.
+"""Shared runner for the three Gan 2026 pipelines.
 
 Thin facade over the ``runners/`` package. Every public symbol is re-exported
 so existing importers keep working.
@@ -26,6 +26,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.cli_specs impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     ARCHITECTURE_FAMILY,
+    PIPELINE_METHOD,
     PipelineArchitecture,
     PipelineConfiguration,
     PipelineOutputArtifact,
@@ -37,6 +38,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import ru
 
 __all__ = [
     "ARCHITECTURE_FAMILY",
+    "PIPELINE_METHOD",
     "Gan2026PipelineRunner",
     "PipelineArchitecture",
     "PipelineConfiguration",
@@ -54,13 +56,13 @@ _ITEM_RUNNERS = {
 
 
 class Gan2026PipelineRunner:
-    """Unified runner capable of executing all Gan 2026 pipeline configurations."""
+    """Run one of the three retained Gan pipelines."""
 
     def __init__(self, config: PipelineConfiguration) -> None:
         self.config = config
 
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
-        """Run a single record through the unified schema flow based on architecture."""
+        """Run one record through the configured pipeline."""
         if self.config.architecture == "deterministic_canonical_pipeline":
             return deterministic_canonical.run_item(item, self.config)
 
@@ -74,7 +76,7 @@ class Gan2026PipelineRunner:
         if self.config.architecture == "llm_only_canonical_pipeline":
             return llm_only_canonical.run_item(item, self.config)
         raise ValueError(
-            f"Unsupported architecture for single-item run: {self.config.architecture}"
+            f"Unsupported retained pipeline ID: {self.config.architecture}"
         )
 
     def run_split(

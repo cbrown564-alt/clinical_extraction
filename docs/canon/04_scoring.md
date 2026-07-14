@@ -2,56 +2,30 @@
 
 Last updated: 2026-07-14
 
-## Score hierarchy
-
 | Score | Question | Use |
 | --- | --- | --- |
-| `clinical_headline` | Were the right clinical facts recovered across the four key families? | Primary project comparison |
-| Family headline | Was the family-specific clinical object recovered? | Family analysis |
-| SeizureFrequency state profile | Was the consolidated burden state recovered? | SF-family development |
-| Phrase, CUI, and full attribute bundle | Does output match the published benchmark representation? | Paper-comparable companion |
-| Evidence groundedness | Is the cited evidence present after neutral text repair? | Fidelity |
+| Clinical fact recovery (`clinical_headline`) | Were the right facts recovered across the four main entity types? | Primary internal comparison |
+| Entity-specific score | Was the entity's clinical object recovered? | Entity analysis |
+| Seizure-frequency state profile | Was the combined seizure-burden state recovered? | Seizure-frequency development |
+| Phrase, CUI, and full attributes | Does the output match the published representation? | Published-metric comparison |
+| Evidence groundedness | Is the cited text present after neutral text repair? | Evidence fidelity |
 
-Do not describe `clinical_headline` as a reproduction of the published strict
-benchmark. The deterministic reference still needs full phrase/CUI/attribute
-engineering before that claim can be made.
+Do not describe `clinical_headline` as the published strict benchmark. The
+deterministic system still needs full phrase, CUI, and attribute engineering.
 
-## Retained reference results
-
-| Architecture | Split | Primary result |
+| Method | Split | Selected result |
 | --- | --- | ---: |
-| Deterministic all nine | dev140 | strict benchmark item F1 0.3548 |
-| GEPA LLM-only | dev140 | `clinical_headline` F1 0.7393 |
-| Hybrid v08 | dev140 | `clinical_headline` F1 0.9189 |
+| Rules only, all nine entities | dev140 | strict item F1 0.3548 |
+| GEPA LLM only | dev140 | clinical fact F1 0.7393 |
+| LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 |
 
-Exact scorer versions and companion results are in the
-[manifest](../experiments/retained_evidence_manifest.md).
+The selected annotation records include diagnosis and seizure-frequency row
+analyses, a blind replication report, four entity ledgers,
+`experiments/gold_data_issues.jsonl`, and the extracted annotation guidelines.
+The same team produced and reviewed these records. They support limited claims
+about multiplicity, representation, ambiguity, and specific defects; they are
+not independent clinical validation.
 
-## Annotation evidence
-
-The retained evidence includes:
-
-- [Diagnosis canonical row analysis](../experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md);
-- [SeizureFrequency canonical row analysis](../experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md);
-- [blind replication report](../experiments/exectv2/reliability/exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md);
-- four family ledgers under `experiments/gold_case_ledger_*.jsonl`;
-- `experiments/gold_data_issues.jsonl`; and
-- the extracted annotation guideline source.
-
-These are internal adjudication records. They support bounded claims about
-annotation multiplicity, representation, ambiguity, and concrete defects. They
-do not provide independent clinical validation.
-
-A pre-surgery, no-model-call diagnostic also identified `EA0171`, where an
-explicit Diagnosis annotation stores the literal placeholder `CUI=null`. The
-finding is retained in `experiments/gold_data_issues.jsonl`; the discarded
-diagnostic workflow and its generated review artifacts do not upgrade the
-project's annotation-assurance or clinical-validity claims.
-
-## Open requirements
-
-- implement and test deterministic phrase/CUI/full-attribute scoring;
-- verify the published IAA method against the primary source;
-- consolidate cited annotation issues into one generated taxonomy with scoring
-  effects and review status.
-
+Open work: implement the published phrase/CUI/full-attribute scores, check the
+published inter-annotator agreement method against its primary source, and
+combine cited annotation issues with their scoring effects and review status.

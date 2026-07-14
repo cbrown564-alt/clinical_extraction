@@ -1,4 +1,4 @@
-"""Split-run dispatch for Gan 2026 pipeline architectures."""
+"""Run a Gan 2026 pipeline on one data split."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def run_split(
     checkpoint_report_path: Path | None,
     candidate_set_jsonl_path: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Execute a run split using the specified unified runner architecture."""
+    """Run the selected retained pipeline on one data split."""
     del candidate_set_jsonl_path
     if architecture == "deterministic_canonical_pipeline":
         return _run_deterministic_split(
@@ -89,7 +89,7 @@ def run_split(
             checkpoint_report_path=checkpoint_report_path,
         )
 
-    raise ValueError(f"Unknown architecture: {architecture}")
+    raise ValueError(f"Unknown retained pipeline ID: {architecture}")
 
 
 def _run_deterministic_split(

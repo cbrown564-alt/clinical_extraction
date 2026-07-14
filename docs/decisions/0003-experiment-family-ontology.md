@@ -1,46 +1,37 @@
-﻿# 0003: Experiment Family Ontology
+# 0003: Use plain names for pipeline comparisons
 
 Date: 2026-06-01
+Updated: 2026-07-14
 
 ## Decision
 
-Name Gan 2026 experiment code, CLI choices, reports, and new artifacts by
-research role rather than by iteration order or informal architecture numbers.
+Use names that say how a prediction is produced. Command-line choices are
+`rules`, `llm`, and `llm_with_rules`.
 
-Current experiments should be organized under three top-level families:
+Research tables may use the corresponding method names:
 
-- `rules_only`: deterministic rules produce the prediction-bearing clinical
-  interpretation.
-- `llm_only`: the LLM produces the prediction-bearing clinical interpretation;
-  deterministic code may validate, format, normalize already selected facts, and
-  score.
-- `hybrid`: deterministic rules and LLM components both contribute semantic
-  behavior, with extraction, selection/adjudication, and repair ownership named
-  explicitly.
+- `rules_only`: deterministic rules produce the clinical interpretation.
+- `llm_only`: the LLM produces the clinical interpretation. Deterministic code
+  may validate or format facts the model has already selected.
+- `llm_with_rules`: an LLM extracts or selects clinical facts and deterministic
+  code can change clinical meaning through normalization, selection, or repair.
 
 ## Context
 
-Early Gan 2026 work accumulated labels such as `Architecture 2` and
-`section-claim-table`. These described implementation history but not the
-scientific object under test. That made it harder to compare pipelines, assign
-attribution, and explain whether a result was rules-only, LLM-only, or hybrid.
+Early work accumulated version codes and names such as `Architecture 2`,
+`section-claim-table`, `deterministic_canonical_pipeline`, and
+`hybrid_structured_events`. These names record implementation history but do
+not help a new collaborator choose a pipeline.
 
-The project is young enough that clean current names matter more than backward
-compatibility. Historical documents and artifact filenames may keep old labels
-when describing prior runs, but runnable code should not preserve old aliases.
+Saved evidence and its filenames keep their original identifiers because hashes
+and replay checks depend on them. Current commands and prose use plain names.
 
 ## Consequences
 
-- Current CLI choices use ontology-aligned names such as
-  `llm_only_direct_labeler`, `hybrid_structured_events`,
-  `llm_only_claim_table_selector`, and
-  `hybrid_rules_candidates_llm_adjudicator`.
-- Current modules use matching names, for example
-  `llm_only_claim_table_selector.py` and
-  `hybrid_rules_candidates_llm_adjudicator.py`.
-- Old runnable aliases such as `architecture2`, `section-claim-table`,
-  `dspy_modules.py`, and `section_claim_table.py` are removed.
-- New artifact names should put the experiment family and decomposition before
-  split, model, version, and date.
-- Historical runs worth preserving can be rerun under the new naming scheme
-  rather than supported through compatibility layers.
+- CLI help uses `rules`, `llm`, and `llm_with_rules`.
+- Code may retain an old identifier only when saved evidence or an import path
+  requires it. Comments must identify it as a retained evidence ID.
+- New output filenames start with the task and plain method name, followed by
+  the split, model, date, and version when needed.
+- Prose gives a version code such as `V12` or `v08` only when linking to saved
+  evidence; it also states what the version does.

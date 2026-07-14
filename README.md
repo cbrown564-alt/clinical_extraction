@@ -1,132 +1,100 @@
 # Clinical Extraction
 
-Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
+Python pipelines that combine deterministic rules and language models to turn
+clinical notes into structured data.
 
-The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. Repository reduction, engineering cleanup, architecture freeze, and fresh-checkout closeout are complete. The active phase is the final paper evidence work on that frozen base. Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
+The repository supports loading data, extracting clinical facts, normalizing
+values, validating evidence, scoring predictions, and analysing errors. It is
+also the research code for a paper about which pipeline component improves a
+clinical result and where each method fails.
 
-This is also a research codebase. The intended paper contribution combines
-benchmark performance with an account of how modular hybrid systems work: what
-deterministic rules contribute, what LLM reasoning contributes, where each
-fails, and how evidence and rationale records can make clinical extraction
-easier to inspect.
+Repository cleanup, engineering repair, pipeline fixation, and clean-checkout
+verification are complete. The active work fills the remaining paper evidence
+gaps. Gan 2026 holdout evidence remains locked. See
+[project status](PROJECT_STATUS.md) for current results and limits.
 
-## Current Focus
+## Current work
 
-**Authoritative steering:** [`PROJECT_STATUS.md`](PROJECT_STATUS.md) and
-[`docs/plans/ACTIVE_ROADMAP.md`](docs/plans/ACTIVE_ROADMAP.md).
+The repository contains two tasks:
 
-The repo runs two parallel extraction tracks. **Track 1 (Gan 2026)** asks a single
-question per letter: what is the patient's current seizure frequency? Its held-out
-test set (`test450`) is frozen — cite aggregate scores only, not row-level tuning.
-**Track 2 (ExECTv2)** extracts several epilepsy phenotypes (diagnosis, seizure
-frequency, prescriptions, investigations) from de-identified letters; this track is
-still active. Primary scoreboards: **Purist** on Gan `test450`; **`clinical_headline`**
-composite on ExECT.
+- **Gan 2026** extracts one current seizure-frequency label from each letter.
+  Its 450-row test split is locked; only saved aggregate results may be used.
+- **ExECTv2** extracts diagnosis, seizure frequency, prescriptions, and
+  investigations from de-identified letters. Its 140-row development split
+  remains available for research.
 
-Active work (2026-07-14):
+The main scores are Gan Purist accuracy and ExECT de-duplicated clinical fact
+recovery (`clinical_headline`). The ExECT score is an internal research metric,
+not the published strict benchmark.
 
-- **Surgery:** source, document, and artifact reduction are complete. The
-  retained manifest selects the six no-call reference cells; the five largest
-  replay artifacts are content-addressed Git LFS objects.
-- **Quality:** all 1,157 tests, Ruff, and mypy pass on the reduced backend. CI
-  enforces all three gates; a separate Python 3.11 checkout reproduced the
-  hashes, split barriers, and six no-call reference cells.
-- **Freeze:** manifest v3 pins the source commit and exact dependency, prompt,
-  scorer, split, repair, model, runbook, and CI policies for new evidence.
-- **Paper:** the surviving Markdown and IEEE sources are synchronized to the
-  retained manifest; the compiled IEEE PDF has been visually checked.
-- **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
-  reproduction, broad-phenotyping confidence calibration, annotation-evidence
-  consolidation, and a predeclared six-model comparison follow the cleanup.
-- **Split boundary:** Gan test450 remains aggregate-only; ExECT full200 is a
-  development-inclusive aggregate audit, not an independent holdout.
+Current state, as of 2026-07-14:
 
-The surgery assessment, completed batches, inspection findings, and deletion
-pitfalls are recorded in
-[`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
+- The retained evidence index selects six no-call reference runs. The five
+  largest replay files are content-addressed Git LFS objects.
+- All 1,157 tests, Ruff, and mypy pass. CI runs all three checks. A separate
+  Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
+- Retained evidence index v3 records the source commit and exact dependency,
+  prompt, scorer, split, repair, model, runbook, and CI versions.
+- The Markdown manuscript and IEEE source use only selected evidence. The
+  compiled three-page PDF has been visually checked.
+- Next work covers Gan efficiency, ExECT published metrics, out-of-sample
+  confidence, annotation evidence, and a strict six-model comparison.
 
-**Reading by thread:** [`docs/THREAD_MAP.md`](docs/THREAD_MAP.md) (five paths, ≤8
-hops each).
+Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 
-Both tasks share modular hybrid architecture (rules / LLM-only / hybrid families).
-Gan seizure-frequency remains the focused single-label benchmark; ExECTv2
-covers broad epilepsy phenotyping on de-identified letters.
+## Method names
 
-## Design Principles
+Current commands use three plain names:
 
-- Build for Gan 2026 first, but keep task boundaries clean enough for later datasets.
-- Prefer small, inspectable modules over an abstraction-heavy framework.
-- Separate extraction from clinical selection so error analysis can localize failures.
-- Keep deterministic label policy compatible with the author-provided evaluation code.
-- Preserve auditable evidence spans and rationale in schemas alongside final labels.
-- Keep reproducible analysis in tested scripts and manifest-selected artifacts.
-- Treat deterministic rules as explicit, categorized, testable, and ablatable components.
-- Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
-- Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 Purist (strict Gan scorer) F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
+- `rules`: deterministic rules produce the clinical interpretation;
+- `llm`: the model produces the clinical interpretation;
+- `llm_with_rules`: the model extracts or selects facts and deterministic code
+  can normalize, select, or repair them.
 
-## Research Thesis
+Older long identifiers and version codes remain in saved filenames because
+replay hashes and research provenance depend on them. The
+[naming guide](docs/reference/plain_language_glossary.md) maps those identifiers
+to their plain descriptions.
 
-The project is designed around four paper-level claims:
+## Design principles
 
-- Previous epilepsy NLP systems tend to handle broad phenotyping or seizure-frequency extraction better than they handle both. This project tests whether a modular architecture can support both.
-- The project must measure generalisation because rules-based and LLM systems can both overfit to local templates or datasets.
-- Transparency requires intermediate schemas, evidence, rationale, error analysis, and ablation studies, not only final predictions.
-- Reports must describe deterministic preprocessing and post-processing rules as controlled experimental variables, not hide them as implementation details.
+- Keep task boundaries clear enough to support more datasets later.
+- Prefer small modules that expose where a failure occurred.
+- Separate extraction from final clinical selection.
+- Keep label normalization compatible with the author-provided scorer.
+- Store evidence spans and rationale with final labels.
+- Use tested scripts and selected saved outputs for reproducible analysis.
+- Treat deterministic rules as named, testable components.
+- Separate general clinical rules from seizure-frequency, dataset-specific,
+  and benchmark-format rules.
 
-See [docs/research/contribution_thesis.md](docs/research/contribution_thesis.md).
-
-See [docs/design/model_strategy.md](docs/design/model_strategy.md) for LLM model policy and required run metadata.
-
-See
-[docs/design/component_evidence_attribution_architecture.md](docs/design/component_evidence_attribution_architecture.md)
-and
-[docs/runbooks/gan2026_component_evidence_audit.md](docs/runbooks/gan2026_component_evidence_audit.md)
-for the audit method used to decide which component solved each
-clinical subproblem, whether LLM changes to deterministic answers are correct,
-and whether a candidate has the required evidence and regression results.
-
-## Repository Layout
+## Repository layout
 
 ```text
 src/clinical_extraction/
-  core/                         Shared pipeline, schema, evidence, validation primitives.
+  core/                         Shared pipeline, schema, evidence, and validation code.
   tasks/seizure_frequency/
-    gan2026/                    Gan-specific loader, labels, scoring, pipeline, and analysis.
+    gan2026/                    Gan loader, labels, scoring, pipeline, and analysis.
 docs/
-  design/                       Architecture and pipeline design notes.
-  decisions/                    Lightweight architecture decision records.
-  experiments/                  Human-readable experiment reports and predeclarations.
-  NAVIGATION.md                 Short guide to current documents and retained evidence.
-  plans/                        The active roadmap.
-  research/                     Thesis, manuscript, annotation source, and surgery owner.
-  runbooks/                     Repeatable development/evaluation workflows.
-  literature/                   Literature reviews and source PDFs.
-experiments/                    Manifest-selected outputs and the retained registry.
-tests/                          Focused tests for data contracts and deterministic behavior.
+  design/                       Current software and data decisions.
+  decisions/                    Reasons for active behavior.
+  experiments/                  Human-readable selected evidence.
+  plans/                        Ordered work.
+  research/                     Thesis, manuscript, annotation source, and cleanup record.
+  runbooks/                     Repeatable procedures.
+experiments/                    Selected machine-readable outputs and run records.
+tests/                          Data, scoring, and behavior checks.
 ```
 
-## Resuming Work
+## Start here
 
-- **Plain-language glossary:** [docs/reference/plain_language_glossary.md](docs/reference/plain_language_glossary.md)
-- **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
-- **Short reading paths:** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
-- **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)
-- **Live control board:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
-- Active experiments index: [experiments/README.md](experiments/README.md)
-- Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)
+- [Project status](PROJECT_STATUS.md)
+- [Active roadmap](docs/plans/ACTIVE_ROADMAP.md)
+- [Documentation navigation](docs/NAVIGATION.md)
+- [Retained evidence index](docs/experiments/retained_evidence_manifest.md)
+- [Regeneration instructions](docs/REGENERATION.md)
 
-## Getting Started
-
-Create and activate an environment, then install the package in editable mode:
-
-macOS/Linux:
-
-```shell
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-python -m pytest
-```
+## Setup
 
 Windows PowerShell:
 
@@ -137,21 +105,15 @@ python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
-The first implementation milestone is to reproduce Gan-compatible data loading, label normalization, and evaluation locally before optimizing the DSPy pipeline.
+macOS or Linux:
 
-## Local Ollama Runs
-
-Ollama setup is intentionally separate from the repo setup. Once Ollama is
-running on a Windows laptop, use the LLM CLI's local endpoint flag so the run
-metadata records the model route:
-
-```powershell
-gan2026-llm-experiment --pipeline llm_only_claim_table_selector --mode live --limit 1 --model ollama_chat/qwen3.6:35b --api-base http://localhost:11434 --disable-dspy-cache
+```sh
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+python -m pytest
 ```
 
-Use Ollama's native LiteLLM route, `ollama_chat/...`, for Qwen reasoning models.
-The shared LM builder sends `think=false`; do not use the OpenAI-compatible
-`openai/...` plus `/v1` route for Qwen 3.6 because it can hide reasoning while
-leaving DSPy with empty structured output. Keep early local runs tiny
-(`--limit 1`, then `--limit 5`, then `--limit 25`) until latency, format
-adherence, and endpoint behavior are known.
+Use the repository environment for all Python commands. For local Ollama runs,
+start with one row, then five, then 25. Record the model route and API base in
+the run metadata.

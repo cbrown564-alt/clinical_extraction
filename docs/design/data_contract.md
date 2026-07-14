@@ -1,71 +1,45 @@
-# Data Contract
+# Data records and split rules
 
-## Immediate Dataset
+## Gan 2026 records
 
-Gan 2026 data lives at:
+The source file is `data/Gan (2026)/synthetic_data_subset_1500.json`.
 
-```text
-data/Gan (2026)/synthetic_data_subset_1500.json
-```
+The loader preserves:
 
-The initial loader treats each row as:
+- `source_row_index`: stable row identifier;
+- `clinic_date`: the full note text, despite the field name;
+- the source seizure-frequency label and supporting text;
+- author quality flags;
+- `raw`: the complete source row;
+- normalized label kind, yearly bounds, and monthly frequency used by Gan scoring.
 
-- `source_row_index`: stable source identifier
-- `clinic_date`: full clinical note text, despite the field name
-- `check__Seizure Frequency Number.seizure_frequency_number[0]`: canonical local gold seizure-frequency label
-- `check__Seizure Frequency Number.reference[-1]`: local gold evidence/reference text
-- `labels_match_all_categories`, `quotes_ok_all_categories`, `row_ok`: author quality flags
-- `raw`: complete original row for gold labels and quality flags
-- `gold_normalized_label`, `gold_label_kind`, `gold_yearly_bounds`, `gold_monthly_frequency`:
-  tested Gan-specific conversion fields that preserve raw semantic state before scoring collapse
+See [Gan normalization](gan2026_normalization_semantics.md) for exact conversions.
 
-See `docs/design/gan2026_normalization_semantics.md` for the normalization and semantic
-conversion contract.
+## Required behavior
 
-## Split Surface
+- Preserve source rows unchanged in `raw`.
+- Keep Gan-specific label policy inside the Gan task.
+- Keep `row_ok=False` rows and retain the flag for separate analysis.
+- Use the fixed split definition; never treat all 1,500 rows as routine development data.
+- Add tests before changing raw-label conversion or metric mapping.
+- Preserve raw semantic labels separately from scoring sentinel values.
+- Keep `unknown` distinct from `no seizure frequency reference`, even though
+  the Gan scorer maps both to one category.
+- Do not erase a frequency-bearing prediction merely because its phrase is hard
+  to format. Preserve vague frequency, hourly rates, and cluster information
+  according to the tested repair rules.
+- Prefer the author evaluation script when it conflicts with the CSV preparation parser.
+- Keep gold normalization, strict formatting repair, and clinical deterministic
+  rules as separate tested steps.
 
-Gan 2026 split policy lives in `docs/design/gan2026_split_protocol.md`. The locked
-v1 manifest is:
+## ExECT split names
 
-```text
-data/Gan (2026)/splits/gan2026_split_v1.json
-```
+- `dev140`: development rows; inspection allowed.
+- `test60`: held-out rows; no row-level development.
+- `full200`: dev140 plus test60. Report aggregate behavior only and never call
+  it an independent holdout.
 
-Use validation, not the full dataset, for ordinary deterministic-rule, prompt,
-ablation, and error-analysis work. Reserve train for DSPy GEPA or another optimizer
-that needs training examples. Treat test as a locked final holdout and never tune
-on it.
+## Open design question
 
-## Contract Principles
-
-- Preserve original rows untouched in `raw`.
-- Keep benchmark-specific label policy inside `gan2026`.
-- Include `row_ok=False` rows in the development/evaluation surface, while retaining the flag for stratified analysis.
-- Use explicit split manifests for development and holdout evaluation; do not treat
-  all 1,500 rows as the default iteration surface.
-- Add tests before changing any conversion from raw labels to numeric rates or categories.
-- Preserve raw semantic labels separately from scoring sentinels where possible.
-- Treat `unknown` and `no seizure frequency reference` as distinct raw states even though Gan scoring maps both to the unknown category.
-- Do not demote a frequency-bearing prediction to `no seizure frequency reference`
-  merely because the scorer-facing surface is awkward. H5 repair policy v1 keeps
-  vague frequency words as unresolved-multiple labels, maps per-hour rates to
-  `multiple per day`, and preserves cluster frequency content when cluster
-  context is present.
-- Prefer the author evaluation-script scoring policy where it conflicts with the CSV-preparation parser.
-- Keep scorer-facing gold normalization separate from strict benchmark-format
-  repair and named deterministic semantic modules. Adopted conversions must be
-  tested and described in `docs/design/gan2026_normalization_semantics.md`.
-
-## ExECTv2 Split Names
-
-- `dev140` is the development surface.
-- `test60` is the held-out subset. It has not been used for row-level tuning.
-- `full200` is the complete corpus: `dev140` plus `test60`. Call it the
-  **development-inclusive full200 audit**, not a holdout. Aggregate full200 results
-  may describe whole-corpus behavior, but they are not an independent estimate of
-  generalisation and must not be used to tune from the held-out 60 rows.
-
-## Known Open Questions
-
-- Whether later task-neutral schemas should reuse the Gan-specific `FrequencyLabelKind` names or map
-  them into broader clinical-extraction ontology terms.
+Decide whether future shared schemas should keep Gan's
+`FrequencyLabelKind` names or map them to broader clinical terms.

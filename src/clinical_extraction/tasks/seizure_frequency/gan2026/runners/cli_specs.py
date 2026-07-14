@@ -1,4 +1,4 @@
-"""CLI specs for the retained Gan architecture matrix."""
+"""Command-line choices for the three retained Gan pipelines."""
 
 from __future__ import annotations
 
@@ -26,8 +26,8 @@ def get_cli_specs() -> dict[str, Any]:
         write_jsonl_rows(rows, path)
 
     return {
-        "deterministic_canonical_pipeline": GanLlmPipelineCliSpec(
-            description="Run the retained Gan deterministic rules pipeline.",
+        "rules": GanLlmPipelineCliSpec(
+            description="Run the Gan rules-only pipeline.",
             default_jsonl_path=Path(
                 "experiments/gan2026_deterministic_canonical_pipeline_validation.jsonl"
             ),
@@ -43,8 +43,8 @@ def get_cli_specs() -> dict[str, Any]:
             write_report=write_deterministic_report,
             default_max_tokens=900,
         ),
-        "llm_only_canonical_pipeline": GanLlmPipelineCliSpec(
-            description="Run the retained single-call LLM-only pipeline.",
+        "llm": GanLlmPipelineCliSpec(
+            description="Run the Gan LLM-only pipeline (one model call per letter).",
             default_jsonl_path=llm_only_canonical_pipeline.DEFAULT_JSONL_PATH,
             default_report_path=llm_only_canonical_pipeline.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
@@ -57,8 +57,11 @@ def get_cli_specs() -> dict[str, Any]:
             summarize_rows=llm_only_canonical_pipeline.summarize_records,
             default_max_tokens=1200,
         ),
-        "hybrid_structured_events": GanLlmPipelineCliSpec(
-            description="Run the retained single-call structured-event hybrid.",
+        "llm_with_rules": GanLlmPipelineCliSpec(
+            description=(
+                "Run the Gan pipeline that extracts events with one model call, then "
+                "normalizes and scores them with deterministic code."
+            ),
             default_jsonl_path=hybrid_structured_events.DEFAULT_JSONL_PATH,
             default_report_path=hybrid_structured_events.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(

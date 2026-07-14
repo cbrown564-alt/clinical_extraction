@@ -1,4 +1,4 @@
-"""Shared Gan 2026 pipeline runner configuration types."""
+"""Configuration types for Gan 2026 pipeline runs."""
 
 from __future__ import annotations
 
@@ -17,12 +17,16 @@ PipelineArchitecture = Literal[
     "llm_only_canonical_pipeline",
 ]
 
-# The retained matrix has exactly one architecture per family.
-ARCHITECTURE_FAMILY: dict[str, str] = {
-    "deterministic_canonical_pipeline": "deterministic",
-    "hybrid_structured_events": "hybrid",
-    "llm_only_canonical_pipeline": "fully_llm",
+# These values are retained evidence identifiers. User-facing commands use
+# ``rules``, ``llm``, and ``llm_with_rules``.
+PIPELINE_METHOD: dict[str, str] = {
+    "deterministic_canonical_pipeline": "rules_only",
+    "hybrid_structured_events": "llm_with_rules",
+    "llm_only_canonical_pipeline": "llm_only",
 }
+
+# Kept for readers of saved run metadata and older imports.
+ARCHITECTURE_FAMILY = PIPELINE_METHOD
 
 
 class PipelineConfiguration(BaseModel):

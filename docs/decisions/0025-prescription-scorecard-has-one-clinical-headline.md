@@ -1,5 +1,10 @@
-# Prescription Scorecard Has One Clinical Headline
+# 0025: Use one primary prescription score
 
 Date: 2026-06-17
 
-For ExECTv2 Prescription reporting, the primary clinical score should be a single Prescription clinical headline combining accepted current-regimen component shapes, including ordinary complete regimen tuples and rescue medication regimens. Subscores such as medication identity, absolute dose, source-stated frequency, guideline-defaulted frequency, split/merge behavior, future-medication evidence, weight-based dosing, phrase projection, and `DrugName`/CUI projection should remain diagnostics so partial or projection-specific gains are not overstated as the main clinical result.
+The primary ExECT prescription score combines accepted current regimens,
+including ordinary drug-dose-frequency tuples and rescue medication. Keep drug
+identity, dose, stated or defaulted frequency, split/merge behavior, future
+medication, weight-based dosing, phrase formatting, and CUI mapping as separate
+diagnostics. Partial or formatting-specific gains must not be reported as the
+main clinical result.

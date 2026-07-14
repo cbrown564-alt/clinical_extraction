@@ -1,71 +1,42 @@
-# 02 — Pipeline stages
+# 02 — Processing steps
 
 Last updated: 2026-07-14
 
-This document names the stages shared by the retained Gan and ExECT reference
-systems. Exact source, configuration, scorer, test, and replay paths live in the
-[retained evidence manifest](../experiments/retained_evidence_manifest.md).
+Exact source, configuration, scorer, test, and replay paths are in the
+[retained evidence index](../experiments/retained_evidence_manifest.md).
 
 ## Gan 2026
 
 ```text
 letter
-  → clinical assessment or structured event extraction
-  → deterministic selection and normalization
-  → Gan label rendering
+  → rules or model extract seizure-frequency facts
+  → deterministic selection and normalization where the method permits it
+  → Gan label formatting
   → Purist and Pragmatic scoring
 ```
 
-The retained comparison contains rules-only, single-pass LLM-only, and
-single-pass hybrid cells. The multi-trace V12 result is saved aggregate ceiling
-evidence, not an executable reference cell.
+The selected comparison has one rules-only run, one LLM-only run, and one run
+that combines an LLM event extractor with deterministic normalization. The
+saved multi-model result (`V12`) is an aggregate comparison, not runnable code.
 
 ## ExECTv2
 
 ```text
 letter
-  → family producers
-  → Diagnosis, SeizureFrequency, Prescription, and Investigations transforms
-  → clinical finding assembly
-  → clinical_headline and companion scoring
+  → task-specific extractors
+  → diagnosis, seizure-frequency, prescription, and investigation transforms
+  → combine clinical findings
+  → score clinical fact recovery and the stricter companion metrics
 ```
 
-The retained comparison contains the deterministic all-nine baseline, the GEPA
-LLM-only negative comparator, and holistic finding assembly v08.
+The selected comparison has a deterministic all-nine baseline, a GEPA LLM-only
+negative comparison, and the current LLM-with-rules system (`v08`).
 
-## Stage ownership
+Retained evidence index v3 fixes source commit `46562134` and records the exact
+dependencies, prompts, scorers, split rules, repairs, model policy, and CI
+workflow. Any change that can alter a prediction requires a new recorded
+version and a complete replay. This rule does not authorize model calls.
 
-| Stage | Owner |
-| --- | --- |
-| Data and split policy | Task data modules and checked split manifests |
-| Extraction | Deterministic or LLM task modules |
-| Clinical selection | Task-specific deterministic or hybrid modules |
-| Normalization and projection | Task deterministic modules |
-| Evidence and schema checks | Shared core plus task contracts |
-| Scoring | Gan or ExECT scorer packages |
-| Artifact identity | Retained evidence manifest |
-| Claim strength | [Paper claims register](10_paper_provenance.md) |
-
-## Frozen reduced architecture
-
-Freeze `reduced_reference_architecture_20260714` pins the executable source at
-commit `465621341c6af59f2fc028be7bf5f9e325739c50`. The v3 retained-evidence
-manifest additionally fingerprints the dependency lock, prompts, scorers,
-split policies, repair policies, model policy, and CI workflow.
-
-This freeze governs new evidence; it does not turn every retained historical
-run into a symmetric comparison. In particular, the retained ExECT
-three-model package used model-specific temperature and Qwen prompt/format
-conditions. Its bounded transfer claim remains valid, but a strict six-model
-claim requires six predeclared runtime conditions under the frozen two-call
-core described in [the model policy](../design/model_strategy.md).
-
-Any semantic prompt, scorer, split, repair, model-route, or component-graph
-change requires a new freeze ID and complete replay. The freeze itself does not
-authorize model calls.
-
-The retained cross-task ablation found normalization gains of +0.0389 on ExECT
-dev140 and +0.0293 on Gan validation750. The evidence check changed neither
-headline score on those replays. That score result does not make the evidence
-check unnecessary; rejection and repair behavior still needs direct tests.
-
+Saved-output replays found normalization gains of +0.0389 on ExECT dev140 and
++0.0293 on Gan validation750. The exact-evidence check changed neither score;
+rejection and repair tests provide its separate evidence.

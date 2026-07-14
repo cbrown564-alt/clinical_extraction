@@ -10,6 +10,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.cli_specs impor
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     ARCHITECTURE_FAMILY,
+    PIPELINE_METHOD,
     PipelineArchitecture,
     PipelineConfiguration,
     PipelineOutputArtifact,
@@ -21,6 +22,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import ru
 
 __all__ = [
     "ARCHITECTURE_FAMILY",
+    "PIPELINE_METHOD",
     "PipelineArchitecture",
     "PipelineConfiguration",
     "PipelineOutputArtifact",

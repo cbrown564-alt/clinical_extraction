@@ -1,23 +1,20 @@
-# 08 — GEPA negative comparator
+# 08 — GEPA negative comparison
 
 Last updated: 2026-07-14
 
-The retained ExECT LLM-only cell is one GEPA-optimized GPT-4.1-mini program on
+The selected ExECT LLM-only run is one GEPA-optimized GPT-4.1-mini program on
 dev140.
 
 | Measure | Result |
 | --- | ---: |
-| `clinical_headline` F1 | 0.7393 |
+| Clinical fact F1 (`clinical_headline`) | 0.7393 |
 | Strict benchmark item F1 | 0.1356 |
-| Hybrid v08 headline F1 | 0.9189 |
+| Current LLM-with-rules result (`v08`) | 0.9189 |
 
-This is a negative development comparator. It used an optimizer-only development
-sub-split and is not a benchmark-cleared or production result.
+This is a negative development comparison. It used an optimizer-only
+development subset and is not a published-benchmark or production result. The
+selected files retain the exact instruction, predictions, summary, entry point,
+metric, adapter, scorer, and tests needed for replay.
 
-The retained package contains the exact instruction, predictions, summary,
-entry point, metric, adapter, scorer, and tests. Other GEPA variants and their
-launchers were removed because they are not needed to replay this cell.
-
-Do not claim that LLM-only matches the hybrid or that the historical GEPA search
-establishes a universal model ceiling.
-
+Do not claim that LLM only matches the combined method or that this historical
+search establishes a limit for all models.

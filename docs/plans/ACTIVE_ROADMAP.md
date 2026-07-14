@@ -3,55 +3,56 @@
 Last updated: 2026-07-14
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
-[Paper provenance](../canon/10_paper_provenance.md) owns claim strength.
+[Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
 
 ## Objective
 
-Close the named paper evidence gaps on the verified, frozen reduced
-architecture without weakening split or claim boundaries.
+Close the paper's named evidence gaps without changing the verified pipeline,
+data splits, or limits on what each result supports.
 
-Gan test450 remains aggregate-only. ExECT full200 remains a
-development-inclusive aggregate audit.
+Gan test450 remains aggregate-only. ExECT full200 combines development and
+held-out rows, so it is not an independent holdout.
 
 ## Completed foundation
 
-1. **Repository reduced.** Historical documents, artifacts, candidates,
-   report/catalog machinery, and the secondary UI product were removed.
-2. **Engineering gates restored.** Ruff, mypy, full pytest, prompt snapshots,
-   manifest validation, and all six no-call reference replays are green; CI
-   enforces the three repository-wide quality gates.
-3. **Architecture frozen.** Manifest v3 pins source commit `46562134`,
-   Python/dependencies, the six reference cells, and exact prompt, scorer,
-   split, repair, model, runbook, and CI policies.
-4. **Fresh checkout and paper synchronized.** A separate Python 3.11 checkout
-   retrieved the Git LFS evidence, passed hashes and split barriers, replayed
-   all six cells, passed the full suite, and reproduced the retained tables.
-   The Markdown and IEEE sources now contain only manifest-retained evidence
-   and explicit claim boundaries.
+1. **Repository reduced.** Historical documents, saved outputs, unused
+   candidates, reporting machinery, and the secondary UI were removed.
+2. **Engineering checks restored.** Ruff, mypy, full pytest, prompt snapshots,
+   retained-evidence validation, and all six reference replays pass. CI runs
+   the three repository-wide checks.
+3. **Pipeline fixed for new evidence.** Retained evidence index v3 records source
+   commit `46562134`, Python and dependency versions, the six reference runs,
+   and the exact prompt, scorer, split, repair, model, runbook, and CI policies.
+4. **Clean checkout and paper checked.** A separate Python 3.11 checkout
+   retrieved the Git LFS evidence, checked hashes and split restrictions,
+   replayed all six runs, passed the full suite, and reproduced the tables. The
+   Markdown and IEEE sources now use only selected evidence and state what each
+   result can support.
 
 ## Ordered evidence work
 
-1. Build the matched Gan calls, tokens, cost, latency, hardware, and cache-policy
-   comparison for the operational pass and multi-trace ceiling.
-2. Reproduce ExECT normalized phrase, CUI, and full-attribute scoring on the
-   paper-comparable surface.
-3. Evaluate model confidence out of sample and test only predeclared bounded
-   review-routing policies.
-4. Complete the paper-facing annotation taxonomy and sensitivity ledger.
-5. Predeclare the missing three runtime conditions, then run the frozen
-   six-model comparison with one component graph and scorer.
+1. Compare quality, calls, tokens, cost, latency, hardware, and cache use for
+   the Gan single-pass system and its multi-model comparator.
+2. Reproduce ExECT normalized phrase, CUI, and full-attribute scores using the
+   published metrics.
+3. Evaluate model confidence out of sample and test only review policies that
+   were specified before the run.
+4. Complete the paper's annotation taxonomy and sensitivity record.
+5. Specify the missing three runtime conditions, then run all six models with
+   the same pipeline and scorer.
 
-## Boundaries
+## Limits
 
-- GEPA optimization is closed; one saved LLM-only cell remains a negative
-  comparator.
-- Gan V12 source is removed; its aggregate ceiling report remains.
-- No ExECT Wall-transfer claim is active because no selected transfer artifact
-  remains.
-- MLflow, the frontend, and Observatory are outside the retained deliverable.
-- The five largest selected ExECT replay artifacts are immutable Git LFS
-  objects with identities and retrieval metadata in the retained manifest.
-- The freeze does not authorize model calls or locked-row inspection.
+- GEPA optimization is closed; one saved LLM-only run remains as a negative
+  comparison.
+- The source for the Gan multi-model comparator (`V12`) was removed; its
+  aggregate report remains.
+- No cross-task ExECT over-reading claim is active because no selected report
+  supports it.
+- MLflow, the frontend, and Observatory are outside the retained deliverables.
+- The five largest selected ExECT replay files are immutable Git LFS objects;
+  the retained evidence index records their identities and retrieval details.
+- Fixing the pipeline does not authorize model calls or locked-row inspection.
 
 ## Verification commands
 

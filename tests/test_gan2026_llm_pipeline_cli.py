@@ -134,7 +134,7 @@ def test_general_llm_pipeline_cli_rejects_test_before_loading_rows(
 
     assert exc_info.value.code == 2
     assert calls == []
-    assert "not exposed by the retained CLI" in capsys.readouterr().err
+    assert "cannot run the Gan holdout" in capsys.readouterr().err
 
 
 def test_general_llm_pipeline_cli_filters_source_row_indices_in_requested_order(
@@ -305,17 +305,17 @@ def test_general_llm_pipeline_cli_allows_deliberate_overwrite(tmp_path: Path, mo
     assert calls["jsonl"] == ([{"source_row_index": 101}], spec.default_jsonl_path)
 
 
-def test_pipeline_registry_exposes_exact_retained_architecture_matrix() -> None:
+def test_pipeline_registry_exposes_three_plain_method_names() -> None:
     specs = llm_pipeline_cli.pipeline_specs()
 
     assert set(specs) == {
-        "deterministic_canonical_pipeline",
-        "hybrid_structured_events",
-        "llm_only_canonical_pipeline",
+        "rules",
+        "llm",
+        "llm_with_rules",
     }
-    assert specs["deterministic_canonical_pipeline"].default_max_tokens == 900
-    assert specs["hybrid_structured_events"].default_max_tokens == 5000
-    assert specs["llm_only_canonical_pipeline"].default_max_tokens == 1200
+    assert specs["rules"].default_max_tokens == 900
+    assert specs["llm_with_rules"].default_max_tokens == 5000
+    assert specs["llm"].default_max_tokens == 1200
 
 
 def _dummy_spec(

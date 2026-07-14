@@ -1,88 +1,67 @@
-# Architecture
+# Software design
 
-This project should grow from a concrete benchmark implementation into a reusable clinical extraction package without becoming over-engineered early.
+The package separates shared extraction code from task-specific clinical logic.
 
-## Package Layers
+## Package ownership
 
-`clinical_extraction.core` contains task-neutral primitives:
+`clinical_extraction.core` contains code shared across tasks:
 
-- pipeline protocols and result containers
-- evidence-span utilities
-- validation and repair result types
-- shared schema base models
+- pipeline interfaces and result objects;
+- evidence-span utilities;
+- validation and repair results;
+- shared schema base models.
 
-`clinical_extraction.tasks` contains task-specific implementations. A task can define its own data contract, schemas, label policy, deterministic components, DSPy modules, evaluators, and error-analysis views.
+`clinical_extraction.tasks` contains dataset and task implementations. Each task
+owns its loader, schemas, label rules, deterministic components, model programs,
+scorers, and error analysis.
 
-The first task is `seizure_frequency.gan2026`.
+The implementation keeps these decisions separate:
 
-## Boundary Choices
+- loading and scoring;
+- extracting events and selecting the final clinical answer;
+- normalizing labels and mapping them to metrics;
+- checking evidence and judging clinical correctness;
+- choosing a model and choosing a prompt;
+- saved outputs and package source;
+- general, clinical, dataset-specific, and benchmark-format rules.
 
-The project intentionally separates:
+Record the model and route in every run. Use
+[component attribution](component_evidence_attribution_architecture.md) when a
+study compares methods or changes a selected result.
 
-- Loading from scoring
-- Event extraction from final clinical reasoning
-- Label normalization from metric mapping
-- Evidence validation from correctness evaluation
-- Model selection from prompt/program behavior
-- Experiment output from package source
-- General rules from task-specific, dataset-specific, and benchmark-specific rules
+## ExECT clinical findings
 
-These boundaries are useful now because they expose failure modes. They are also the minimum reusable shape needed later for other clinical extraction tasks.
+Current ExECT code combines extracted findings before scoring them:
 
-LLM model policy is documented in `docs/design/model_strategy.md`. Model choice
-should be recorded as run metadata so experiments can distinguish schema,
-prompt, deterministic-rule, optimizer, and runtime-model effects.
+- `ClinicalFinding` stores one clinical assertion, its attributes, evidence,
+  source, and change history.
+- `ClinicalFindingStore` collects findings for one letter.
+- `CandidateProducer` proposes findings, including adapters that replay saved
+  JSONL outputs.
+- `EntityLens` is the retained code name for entity-specific reconciliation.
+  In prose, call it a diagnosis, seizure-frequency, prescription, or
+  investigation transform.
+- `FindingView` formats the final findings for each score.
+- `AttributionSidecar` is the retained code name for records that identify the
+  producer, deterministic changes, evidence status, and score-specific output.
 
-Candidate-promotion and architecture-comparison work should also follow the
-component evidence contract in
-`docs/design/component_evidence_attribution_architecture.md`. That contract
-defines how every candidate answers which component solved each clinical
-subproblem, under which evidence gate, with what regression risk, and on which
-distribution.
+The first saved implementation,
+`exectv2_holistic_finding_assembly_v01_dev140`, replays development outputs
+through these objects without changing behavior. Its identifier remains only
+for saved-evidence compatibility.
 
-## ExECTv2 Clinical Finding Assembly
+## Deterministic rule groups
 
-For ExECTv2 Plan 11, the implementation spine is a manifest-driven clinical
-finding assembly:
+- `general`: dates, durations, intervals, sections, and evidence checks;
+- `clinical_epilepsy`: seizure terminology and epilepsy-note conventions;
+- `seizure_frequency`: rates, clusters, seizure-free duration, and temporal selection;
+- `gan2026_specific`: Gan synthetic-letter patterns and data quirks;
+- `benchmark_format`: Gan label formatting that does not change clinical meaning.
 
-- `ClinicalFinding`: an evidence-backed clinical assertion with entity, text,
-  attributes, evidence, source metadata, and provenance.
-- `ClinicalFindingStore`: a per-letter collection of raw and scored findings
-  from all candidate producers.
-- `CandidateProducer`: a component that proposes findings, currently including
-  saved JSONL replay adapters for frozen LLM or hybrid artifacts.
-- `EntityLens`: entity-specific reconciliation over the store, such as
-  Diagnosis hierarchy/negation, SeizureFrequency state adjudication,
-  Prescription regimen, or Investigations result lenses.
-- `FindingView`: a scoring/rendering view over the final findings, including
-  raw candidate, evidence-valid, clinical headline, fidelity companion, and
-  benchmark/CUI views.
-- `AttributionSidecar`: row-level `FindingSource` and `ProvenanceEvent` records
-  that preserve producer ownership, deterministic actions, evidence status, and
-  view-specific rendering.
+Each group must be testable and, where practical, removable for comparison.
 
-The first implementation is behavior-preserving:
-`exectv2_holistic_finding_assembly_v01_dev140` structurally replays frozen
-dev140 artifacts through this object model. It is architecture cleanup and
-component evidence only, not a full-200, holdout, or benchmark claim.
+## Deliberate exclusions
 
-## Rule Taxonomy
-
-Deterministic behavior should not collapse into an unstructured regex pile. Rules should be grouped by clinical meaning and expected portability:
-
-- `general`: dates, durations, intervals, section boundaries, evidence substring checks
-- `clinical_epilepsy`: seizure terminology and epilepsy-note conventions
-- `seizure_frequency`: rates, clusters, seizure-free durations, current-versus-historical selection helpers
-- `gan2026_specific`: synthetic-letter patterns or data quirks specific to Gan 2026
-- `benchmark_format`: transformations needed to produce accepted Gan label strings without changing clinical interpretation
-
-Each category should be separately testable and, where practical, ablatable.
-
-## Non-Goals For The First Pass
-
-- A generic workflow engine
-- A fully pluggable registry system
-- Dataset-agnostic prompt abstractions
-- Broad support for every epilepsy dataset
-
-Those can come later if repeated code proves they are needed.
+The project does not need a generic workflow engine, a fully pluggable registry,
+dataset-independent prompt abstractions, or support for every epilepsy dataset.
+Add such machinery only after repeated code demonstrates the need.

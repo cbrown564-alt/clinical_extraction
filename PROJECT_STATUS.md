@@ -1,102 +1,86 @@
-# Project Status
+# Project status
 
 Last updated: 2026-07-14
 
 ## Current outcome
 
-The four cleanup phases are complete:
+The cleanup and verification work is complete. The repository now has three
+deliverables: the Python package, selected machine-readable evidence, and the
+paper. New work must add research evidence without changing the fixed pipeline
+or weakening data-split rules.
 
-1. the document and artifact estate was reduced to the retained system;
-2. engineering quality gates were restored around retained behavior;
-3. the reduced reference architecture was frozen; and
-4. a separate clean checkout reproduced the retained evidence, after which the
-   Markdown manuscript and IEEE paper were synchronized to that evidence.
+[Paper claim status](docs/canon/10_paper_provenance.md) records what the paper
+may say. [The active roadmap](docs/plans/ACTIVE_ROADMAP.md) gives the work order.
 
-The repository now targets three deliverables: the Python extraction package,
-the machine-readable retained evidence, and the paper. New work is research and
-validation on the frozen architecture, not further repository surgery.
+## Data and scoring limits
 
-The paper acceptance matrix and claim strength live in
-[`docs/canon/10_paper_provenance.md`](docs/canon/10_paper_provenance.md).
-Execution order lives in
-[`docs/plans/ACTIVE_ROADMAP.md`](docs/plans/ACTIVE_ROADMAP.md).
+- **Gan 2026:** `test450` is a locked holdout whose rows have not been inspected
+  by the authors. Only the saved aggregate results may be cited or reviewed.
+- **ExECTv2:** `dev140` permits row review. `full200` combines dev140 with the
+  held-out test60 rows, so it is not an independent holdout. Test60 rows must
+  not be inspected during development.
+- **Scoring:** Gan uses Purist and Pragmatic label accuracy. ExECT's primary
+  internal score is de-duplicated clinical fact recovery (`clinical_headline`).
+  Phrase, CUI, evidence-valid, and full-attribute scores remain separate. The
+  internal score is not the published ExECT benchmark.
 
-## Evidence boundaries
+## Selected results
 
-- **Gan 2026:** `test450` is an author-uninspected locked holdout. Only frozen
-  aggregate results may be cited; row-level test output is not a development
-  surface.
-- **ExECTv2:** `dev140` is row-inspectable development data. `full200` combines
-  dev140 with held-out test60 and is a development-inclusive aggregate audit,
-  not an independent holdout. Test60 row-level development remains barred.
-- **Scoring:** Gan uses Purist/Pragmatic label accuracy. ExECT's retained
-  research-control surface is de-duplicated `clinical_headline` recovery.
-  Phrase, CUI, evidence-valid, and full-attribute companions remain separate;
-  `clinical_headline` is not the strict published ExECT benchmark.
-
-## Retained results
-
-| Task | Rules only | LLM only | Hybrid | Boundary |
+| Task | Rules only | LLM only | LLM with rules | Scope |
 | --- | ---: | ---: | ---: | --- |
-| ExECT dev140 | 0.3548 strict item F1 | 0.7393 headline F1 | 0.9189 headline F1 | Development references; scores do not share one strict benchmark surface |
-| Gan validation750 | 697/750 Purist | 581/750 Purist | 661/748 rendered Purist | Development and replay references |
+| ExECT dev140 | 0.3548 strict item F1 | 0.7393 clinical fact F1 | 0.9189 clinical fact F1 | Development results; the first score uses a stricter metric |
+| Gan validation750 | 697/750 Purist | 581/750 Purist | 661/748 rendered Purist | Development and replay results |
 
-Additional paper-facing evidence:
+Other paper evidence:
 
-- Gan locked `test450`: operational single-pass structured-event system
-  `364/450` Purist; V12 multi-trace ceiling `379/450`.
-- ExECT full200 same-core aggregate: DeepSeek `0.8566`, GPT-4.1-mini `0.8356`,
-  and Qwen 3.6:35B `0.8197` headline F1. The three retained conditions are
-  asymmetric, so this is bounded portability evidence, not the requested
-  strict six-model comparison.
-- Saved-output normalization contribution: `+0.0389` ExECT dev140 and
-  `+0.0293` Gan validation750. Evidence validation is score-inert on these
-  selected replays; rejection and repair tests carry its separate evidence.
+- Gan locked test450: the single-pass event extractor scored `364/450` Purist;
+  the saved multi-model comparator scored `379/450`.
+- ExECT full200 using the same main pipeline: DeepSeek `0.8566`, GPT-4.1-mini
+  `0.8356`, and Qwen 3.6:35B `0.8197` clinical fact F1. Runtime and prompt
+  differences limit this to a three-model comparison, not the planned strict
+  six-model study.
+- Normalizing saved outputs improved ExECT dev140 by `0.0389` and Gan
+  validation750 by `0.0293`. The exact-evidence check did not change these
+  replay scores; rejection and repair tests provide its separate evidence.
 - ExECT full200 internal calibration: Brier `0.2225`, base-rate Brier `0.2340`,
-  ECE `0.0587`. No low-burden review policy is promoted.
+  ECE `0.0587`. No review policy has been adopted from this result.
 
-Exact paths, hashes, policy fingerprints, closures, and replay expectations
-live in
-[`docs/experiments/retained_evidence_manifest.json`](docs/experiments/retained_evidence_manifest.json).
+Exact files, hashes, versions, and replay expectations are in the
+[retained evidence index](docs/experiments/retained_evidence_manifest.json).
 
-## Cleanup closeout
+## Completed work
 
-| Phase | Completed result |
+| Work | Verified result |
 | --- | --- |
-| Document and artifact reduction | Removed historical tool state, stale notebooks, closed reports and candidates, the frontend and Observatory; selected immutable replay artifacts use Git LFS |
-| Engineering cleanup | Repository-wide Ruff and mypy are clean; seven oversized tests were split by invariant; CI enforces Ruff, mypy, and full pytest |
-| Architecture freeze | Manifest v3 pins the reduced graph, all six reference cells, Python/dependency policy, and exact prompt, scorer, split, repair, model, runbook, and CI fingerprints |
-| Fresh-checkout and paper closeout | Clean Python 3.11 install, hashes, split barriers, six no-call replays, full quality gates, synchronized paper sources, and a visually checked three-page IEEE PDF |
+| Repository reduction | Removed stale documents, notebooks, reports, candidates, the frontend, and Observatory; large selected replay files use Git LFS |
+| Engineering checks | Ruff and mypy pass; seven oversized tests were split by invariant; CI runs Ruff, mypy, and full pytest |
+| Fixed reference pipeline | Retained evidence index v3 records the source commit, six reference runs, Python and dependency versions, prompts, scorers, splits, repairs, models, runbooks, and CI policy |
+| Clean-checkout and paper check | A separate Python 3.11 checkout retrieved Git LFS files, checked hashes and split restrictions, replayed six runs, passed all checks, reproduced the tables, and produced a visually checked three-page IEEE PDF |
 
-Fresh-checkout verification used a separate clone with Git LFS objects
-retrieved and Python 3.11 explicitly selected. The first unconstrained `uv sync`
-selected Python 3.12; the documented install now pins Python 3.11 before any
-result is interpreted. The final retained suite contains 1,157 tests.
-
-The surgery rationale and lessons remain as a historical record in
-[`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
+The final retained suite contains 1,157 tests. The cleanup history is in the
+[repository cleanup record](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
 
 ## Open research and validation work
 
-1. **Gan efficiency:** add a matched quality/call/token/cost/latency comparison
-   for the operational pass and multi-trace ceiling.
-2. **ExECT benchmark reproduction:** implement deterministic normalized-phrase,
-   CUI, and full attribute-bundle engineering on the paper-comparable surface.
-3. **Confidence:** evaluate model-reported confidence out of sample and retain a
-   negative result if confidence remains degenerate.
-4. **Annotation evidence:** consolidate cited defect, convention, ambiguity,
-   multiplicity, scorer-artifact, handling, and sensitivity evidence. External
-   clinical-validity language still requires independent domain review.
-5. **Six-model comparison:** predeclare the three missing exact runtime
-   conditions, then run the frozen component graph and scorer.
+1. **Gan efficiency:** compare quality, calls, tokens, cost, latency, hardware,
+   and cache use for the single-pass system and multi-model comparator.
+2. **ExECT benchmark reproduction:** implement normalized phrase, CUI, and full
+   attribute-bundle scoring using the published metrics.
+3. **Confidence:** evaluate model-reported confidence out of sample and keep a
+   negative result if the values remain uninformative.
+4. **Annotation evidence:** combine the cited defect, convention, ambiguity,
+   multiplicity, scoring, handling, and sensitivity evidence. Claims of
+   clinical validity still require independent clinical review.
+5. **Six-model comparison:** specify the three missing runtime conditions, then
+   run the same pipeline and scorer for all six models.
 
-## Guardrails
+## Rules that protect the evidence
 
-- Never inspect Gan `test450` or ExECT test60 row-level failures for development.
+- Never inspect Gan test450 or ExECT test60 row-level failures during development.
 - Never describe ExECT full200 as an independent holdout.
-- Never describe `clinical_headline` as reproduction of the strict published benchmark.
-- Keep raw model output, format repair, semantic repair, projection,
-  verification, and scoring separately attributable.
-- A frozen architecture does not authorize a model call; live work still needs
-  a predeclared question, runtime condition, and permitted split.
+- Never describe `clinical_headline` as the published strict benchmark.
+- Keep raw model output, format repair, clinical repair, final formatting,
+  evidence checking, and scoring separately attributable.
+- A fixed pipeline does not authorize a model call. Live work still needs a
+  stated question, runtime condition, and permitted data split.
 - Use *implemented*, *verified*, *validated*, and *promoted* precisely.

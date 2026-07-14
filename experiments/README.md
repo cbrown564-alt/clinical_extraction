@@ -1,24 +1,19 @@
-# Retained experiment evidence
+# Selected experiment evidence
 
-This directory contains only the saved outputs needed by the retained
-two-task, three-family reference system and the paper's direct evidence
-packages.
+This directory contains the saved outputs and run records needed by the paper.
 
 Start with:
 
-- [`docs/experiments/retained_evidence_manifest.md`](../docs/experiments/retained_evidence_manifest.md)
-  for the human-readable evidence map;
-- [`docs/experiments/retained_evidence_manifest.json`](../docs/experiments/retained_evidence_manifest.json)
-  for paths, hashes, replay inputs, and claim boundaries; and
-- [`registry.jsonl`](registry.jsonl) for the retained run records.
+- the [retained evidence index](../docs/experiments/retained_evidence_manifest.md)
+  for a readable map;
+- its [JSON source](../docs/experiments/retained_evidence_manifest.json) for
+  paths, hashes, replay inputs, and evidence limits;
+- [registry.jsonl](registry.jsonl) for selected run records.
 
-The registry is intentionally selective. Rejected and superseded runs remain
-recoverable from Git history instead of being maintained as a live catalog.
-The five largest retained ExECT replay artifacts are stored as immutable,
-content-addressed Git LFS objects. Their object IDs and retrieval contract are
-recorded in the retained manifest; run `git lfs pull` if a checkout contains
-pointer files.
+Rejected and superseded runs remain in Git history instead of a live catalogue.
+Five large ExECT replay files are immutable Git LFS objects; run `git lfs pull`
+when a checkout contains pointer files.
 
-Gan `test450` evidence is aggregate-only. Do not add row-level locked-test
-reports or use locked rows for tuning. ExECT `full200` is a
-development-inclusive audit, not an independent holdout.
+Gan test450 permits aggregate results only. Do not add or inspect row-level
+holdout reports. ExECT full200 includes development rows and is not an
+independent holdout.

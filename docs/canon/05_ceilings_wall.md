@@ -1,34 +1,28 @@
-# 05 — Observed ceilings
+# 05 — Observed performance limits
 
 Last updated: 2026-07-14
 
-Two different mechanisms limit the reported scores. They must not be combined.
+## Gan: ambiguous unknown-versus-rate cases
 
-## Gan: confident unknown-versus-rate errors
-
-The retained Gan reliability package records a hard residual where available
-signals do not reliably separate an honest unknown from a numeric rate. The
-frozen V12 aggregate reaches 379/450 Purist on test450; the operational
-single-pass path reaches 364/450.
-
-This is aggregate holdout evidence. Test450 rows are not a development surface.
+The saved Gan reliability analysis identifies cases where available signals do
+not reliably distinguish an unknown frequency from a numeric rate. On locked
+test450, the multi-model comparison scored 379/450 Purist and the single-pass
+system scored 364/450. These are aggregate holdout results; the rows are not a
+development resource.
 
 ## ExECT: annotation and representation disagreements
 
-The retained Diagnosis and SeizureFrequency row analyses show that many scored
-disagreements concern multiplicity or representation rather than a clearly
-wrong clinical reading:
+Selected diagnosis and seizure-frequency analyses found many disagreements
+about multiplicity or output representation rather than a clearly wrong
+clinical reading.
 
-| Family | Retained bounded result |
+| Entity | Selected internal result |
 | --- | --- |
 | Diagnosis | Metric F1 0.6617; internally adjusted F1 0.9501 |
-| SeizureFrequency | 62.1% metric-defensible; 89.3% internally judged clinically defensible |
+| Seizure frequency | 62.1% metric-defensible; 89.3% internally judged clinically defensible |
 
-The same team produced and adjudicated these outputs. Manuscript language must
-state that limitation.
+The same team produced and reviewed these outputs, so the paper must state that
+limitation.
 
-## Cross-task transfer
-
-No ExECT Wall-transfer artifact is selected by the retained manifest. A
-cross-task transfer claim is therefore open, not current evidence.
-
+No selected ExECT report tests whether the Gan unknown-versus-rate problem
+transfers across tasks.
