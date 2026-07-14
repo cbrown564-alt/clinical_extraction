@@ -119,8 +119,8 @@ at n=20, but the direction is consistent with, and corroborates, the manuscript'
 pre-existing caveat that the five-independent-reviewer, no-cross-check Diagnosis pass is
 weaker-provenance than SF's single coherent pass. The honest reading is that the original
 Diagnosis adjudication likely undercounted genuine model errors somewhat, not that the
-core finding (most Diagnosis disagreements are gold-multiplicity artifacts, not model errors)
-is wrong.
+internal finding (many Diagnosis disagreements concern annotation multiplicity
+rather than clear model errors) is reversed.
 
 ## Revised Magnitude Ranges
 
@@ -136,15 +136,18 @@ within verdict, so a uniform scaling is applied to both `missed_defensible` and
 | Diagnosis adjusted F1 | 0.9501 | **0.9241** | [0.853, 0.995] |
 | SF clinically-defensible % | 89.3% | **88.5%** | [82.4%, 94.6%] |
 
-Both revised point estimates remain dramatically above the respective official/raw scores
-(Diagnosis official F1 0.6617; SF metric-credited 62.1%) — **the core C1 finding survives**:
-most of the benchmark-score gap on these two families is gold-quality artifact, not model
-deficit. What changes is the claimed magnitude, most for Diagnosis: the manuscript's single
+Both revised point estimates remain above the respective official/raw scores
+(Diagnosis official F1 0.6617; SF metric-credited 62.1%). Within this internal,
+LLM-reviewed sample, the direction of C1 remains consistent with annotation and
+representation disagreement accounting for part of the measured gap. This is
+not independent clinical validation and does not establish how much of the
+full benchmark gap is annotation error. What changes most is the Diagnosis
+magnitude: the manuscript's single
 point estimate (0.9501) must be reported as a **range** (approximately 0.85–0.99, point
 estimate ≈0.92) rather than a bare point figure, and the wording must credit this blinded
 check rather than resting solely on the original five-reviewer pass's stated 0.9501.
-SeizureFrequency's number is materially corroborated and can keep its existing framing with a
-pointer to this check.
+SeizureFrequency's internal estimate is consistent with this small re-review,
+but it remains an internally adjudicated development result.
 
 ## Decision-Band Verdict
 
@@ -157,7 +160,7 @@ original point estimate is well within a tight CI of the blind reweighted estima
 "lower estimate" for SF is 82.4%, close to the original 89.3%, and we report that as the range
 floor rather than silently keeping the untested single point figure.
 
-**This is not full independent corroboration of C1** — it does not clear the plan's κ ≥ 0.6
+**This is not independent corroboration of C1** — it does not clear the plan's κ ≥ 0.6
 bar, and it is explicitly not external clinical validation (see limitation below). It is,
 however, evidence of two distinct things that both matter: (1) individual borderline-case
 verdicts are not highly reproducible between reviewers even within this project's own
@@ -168,9 +171,9 @@ and directionally-but-uncertainly so for Diagnosis.
 
 ## Explicit Limitation
 
-This strengthens internal robustness (agreement across two independent passes within the
-project's own evaluation framework: the original multi-reviewer/single-pass adjudications, and
-a fresh sub-agent blind to both the original verdicts and this conversation) — it is **not**
+This tests internal robustness across two passes within the project's own
+evaluation framework: the original adjudications and a fresh sub-agent blind
+to the original verdicts. It is **not**
 external clinical validation. A blinded board-certified neurologist/epileptologist reviewing
 the same sample remains the gold-standard check this replication cannot substitute for, and is
 named as residual future work in the manuscript's D.5/D.2, unchanged by this check. The
@@ -190,17 +193,18 @@ its own, a tight re-estimate.
   note that the revision direction corroborates (does not newly discover) the existing
   five-reviewer-provenance caveat.
 - SeizureFrequency's 89.3% figure can retain its existing framing with a forward pointer to
-  this check as corroborating evidence (reweighted point estimate 88.5%, CI 82.4–94.6%,
+  this check as a consistency result (reweighted point estimate 88.5%, CI 82.4–94.6%,
   comfortably overlapping the original).
-- The core C1 argument (most of the SF and Diagnosis benchmark-score gap is gold-quality
-  artifact, not model deficit) is unchanged in direction and remains strongly supported; only
-  the Diagnosis magnitude is narrowed from a single point estimate to a bounded range.
+- C1 must remain a limited internal claim: some of the SF and Diagnosis score
+  gap concerns annotation multiplicity, representation, or ambiguity. The
+  Diagnosis estimate is reported as a range rather than a clinically validated
+  correction to benchmark F1.
 - Add an explicit note that item-level verdict reproducibility (κ≈0.33–0.40) is weaker than
   the aggregate-rate robustness — this is itself worth stating plainly rather than only
   reporting the more favorable aggregate number, per the project's standing evaluation
   discipline of not smoothing over an honest negative alongside a positive.
 
-## Source Artifacts
+## Source files
 
 - `_dx_canonical/_adjudication.csv`, `_sf_canonical/_adjudication.csv` (original verdicts,
   population)

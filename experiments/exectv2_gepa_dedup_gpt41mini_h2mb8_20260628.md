@@ -2,7 +2,12 @@
 
 Date: 2026-06-28
 
-DSPy-native GEPA run. The optimizable surface is the signature instruction; the existing de-dup parse/evidence-gate/adapter and the canonical clinical_headline scorers are reused unchanged. Trained on a seeded sub-split of `dev` (optimizer-only); evaluated on the full `dev` split (development surface, NOT test). Attribution-clean LLM-only: the adapter performs representation mapping only, it adds no facts.
+DSPy-native GEPA run. GEPA optimizes the signature instruction; the existing
+de-duplication parser, evidence check, adapter, and `clinical_headline` scorers
+are reused unchanged. Training used a seeded optimizer-only sub-split of `dev`.
+Evaluation used the full development split, not the test split. This is an
+LLM-only comparison because the adapter maps representations without adding
+clinical facts.
 
 ## Models
 
@@ -18,9 +23,9 @@ DSPy-native GEPA run. The optimizable surface is the signature instruction; the 
 - output budget: 2000 tok (alpha 0.05)
 - **final instruction length: 490 tokens** (seed was 121 tokens)
 
-## Final evaluation (dev, clinical-recovery surface)
+## Final development evaluation (clinical fact recovery)
 
-- **Canonical clinical_headline overall F1: 0.719** (P=0.689 R=0.753, Diagnosis=concept_negation)
+- **`clinical_headline` overall F1: 0.719** (P=0.689 R=0.753, Diagnosis=concept_negation)
   - Diagnosis=0.662  SeizureFrequency=0.540  Prescription=0.850  Investigations=0.862
 - Strict benchmark per-item F1 (diagnostic, NOT paper-cleared): 0.136
 - Semantic (CUI-dropped) per-item F1: 0.146
@@ -29,7 +34,7 @@ DSPy-native GEPA run. The optimizable surface is the signature instruction; the 
 ## Comparators (dev140, from plan 13)
 
 - Hand-tuned single-prompt de-dup plateau: GPT-4.1-mini 0.710, DeepSeek 0.745, Qwen 0.694
-- v08 hybrid (multi-component) control: 0.9155
+- v08 LLM-with-rules (multi-component) control: 0.9155
 
 ## Evolved instruction
 

@@ -14,6 +14,7 @@ The project is intended to become a modular clinical extraction package, but the
 
 - Shared `core` modules are deliberately thin.
 - Gan-specific policy lives under `tasks/seizure_frequency/gan2026`.
-- Future datasets must copy, then factor shared behavior only after repetition is real.
+- By default, a new dataset starts with task-local behavior. Factor shared code
+  after the same behavior recurs across tasks.
 - Error analysis and notebooks are first-class project outputs.
 

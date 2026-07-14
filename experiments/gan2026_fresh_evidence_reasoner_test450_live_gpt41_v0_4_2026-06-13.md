@@ -2,7 +2,7 @@
 
 Date: 2026-06-14
 
-This is a frozen aggregate-only V12 fresh-evidence holdout audit artifact.
+This report records the fixed, aggregate-only V12 fresh-evidence holdout audit.
 The model may replace the GPT structured-event final only from exact raw-note evidence.
 
 ## Experiment Unit
@@ -13,7 +13,7 @@ The model may replace the GPT structured-event final only from exact raw-note ev
 - Mode: `live`
 - Model: `openai/gpt-4.1`
 - Prompt version: `gan2026_fresh_evidence_reasoner_v0_4`
-- JSONL artifact: `experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl`
+- JSONL output: `experiments\gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.jsonl`
 
 ## Summary
 
@@ -37,14 +37,17 @@ The model may replace the GPT structured-event final only from exact raw-note ev
 - Actions: `{'keep_original_structured_event_final': 332, 'replace_with_fresh_evidence_final': 118}`
 - Profiles: omitted from the test report to keep the first readout aggregate-only.
 
-## Gate
+## Check result
 
-- Status: `pass_contract_smoke`
-- Interpretation: Contract smoke passes; evaluate against hard-slice gates next.
+- Recorded status: `pass_contract_smoke`
+- Interpretation at the time: the schema smoke check passed. Any hard-slice
+  evaluation remained separate.
 
 ## Claim Boundary
 
-frozen aggregate-only V12 test450 audit; first readout is aggregate Purist/Pragmatic and health metrics only; no row-level test inspection, post-test tuning, or benchmark-comparable claim without separate review
+This is an aggregate-only V12 `test450` audit. It reports Purist, Pragmatic,
+and run-health totals only. It does not permit row-level test inspection or
+post-test tuning. Any broader benchmark comparison requires separate review.
 
 ## Aggregate-Only Holdout Readout
 

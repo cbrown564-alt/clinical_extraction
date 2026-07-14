@@ -49,7 +49,7 @@ each operative rule once; this is its headline contradiction.
   aligns with register §7.1 "if unclear, prefer `unknown`." Rejected: a positive
   current rate is direct evidence of ongoing seizures; abstaining to `unknown`
   discards real quantified evidence. A genuine same-target current contradiction
-  is almost always a subtype/scope artifact (seizure-free for one event type,
+  usually reflects an event-type or scope mismatch (seizure-free for one event type,
   a rate for another), not true ambiguity about whether seizures occur.
 - **Rate wins** (chosen). A current positive rate is direct evidence of ongoing
   seizures; a same-period seizure-free claim is then about a subtype/scope and

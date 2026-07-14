@@ -34,8 +34,8 @@
       {
         "role": "model",
         "path": "docs/design/model_strategy.md",
-        "sha256": "92d925a7b03574f39ebb4981483d3ea6b3225ff9bae1dce788f7c78e0e98b4ad",
-        "bytes": 3984
+        "sha256": "322ee983dbff3ade6b7bbd5a6fe15a617fc51e58928e938446ac591a741862e7",
+        "bytes": 3989
       },
       {
         "role": "prompt",
@@ -88,8 +88,8 @@
       {
         "role": "repair",
         "path": "docs/design/llm_repair_attribution_protocol_2026-06-22.md",
-        "sha256": "28ca293c38860c1055c91b7bd4f6a36fa68d32cb33e124251ef0bd9a3cf10443",
-        "bytes": 10941
+        "sha256": "86f15943c8f63d6f82e22465a78cd99a29370c3a197e82c7cf9d1f8ac3f7a535",
+        "bytes": 11030
       },
       {
         "role": "repair",
@@ -220,8 +220,8 @@
       {
         "role": "split_runbook",
         "path": "docs/runbooks/gated_blockers_2026-06-18.md",
-        "sha256": "d11f1b47c983f5678f0a28e596fb4217288e370f0bc62ac616908ea44cdecc35",
-        "bytes": 1946
+        "sha256": "853960e09861156755388d238f48f9120dc409e0d9045dc00bd4e419b927512e",
+        "bytes": 1944
       }
     ],
     "model_policy": {
@@ -398,8 +398,8 @@
         },
         {
           "path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.md",
-          "sha256": "3e788f7a88fb3e2b1241e02232e97c6c6bb10fb1b49937ab575525eaab2dd0e9",
-          "bytes": 4036,
+          "sha256": "050a9430d6780e4d460fde3b622c4026e34a1c8d8e2f3acca2d3e774dfd53ad8",
+          "bytes": 4035,
           "retrieval": "git_path"
         },
         {
@@ -485,8 +485,8 @@
       "artifacts": [
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.md",
-          "sha256": "06c78c6991d836edfbb12348280a3871332484b3b2bafbadfd85b2f28b64c3ad",
-          "bytes": 5167,
+          "sha256": "eb36af5e5e87dfb2483c10662d17becea16786daba92c9634fabfb9aa685c2e6",
+          "bytes": 5196,
           "retrieval": "git_path"
         },
         {
@@ -810,20 +810,20 @@
         },
         {
           "path": "experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md",
-          "sha256": "d5afe13eda34b9150d37092f27e23739786472746e48b4faf97d31809c025b99",
-          "bytes": 7220,
+          "sha256": "f66ab491f4c930f0b77661dc59de2ac63079921def60ab93945e5e8eb14d249d",
+          "bytes": 6371,
           "retrieval": "git_path"
         },
         {
           "path": "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md",
-          "sha256": "4be19467f1b3e23c2ae5d5cf25dc2f3257b9126ba6f76a00ec2e0c7310e4533a",
-          "bytes": 1853,
+          "sha256": "2e3a6d0bf68a7c54ae94f16a53ac0e1928ab0a21878a22b744593c8be1beabf5",
+          "bytes": 1918,
           "retrieval": "git_path"
         },
         {
           "path": "docs/research/gan2026/architecture/gan2026_simplest_near_ceiling_architecture_results_2026-06-16.md",
-          "sha256": "e4f1d71b0e6b083cb061be80125d31eb741b6c28fe4cd31421525d11c90d6be7",
-          "bytes": 13994,
+          "sha256": "04f489559e1b0fa2bb31fca23c7d4322659599e50a49604df96b0bb71bc745d2",
+          "bytes": 14149,
           "retrieval": "git_path"
         }
       ]
@@ -855,8 +855,8 @@
         },
         {
           "path": "experiments/gan2026_reliability_master_scorecard_2026-06-17.md",
-          "sha256": "8979801dbcf74224e013c684c97e0eab98914cb4666de1649be87f980f7a312f",
-          "bytes": 3719,
+          "sha256": "ced55e06d65251addf3fab68302a8afe69084b0c5497d3aea5ee891b803a5cfd",
+          "bytes": 3369,
           "retrieval": "git_path"
         }
       ]
@@ -882,8 +882,8 @@
       "artifacts": [
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md",
-          "sha256": "0bf7326d340d3398128f247686b8b08dec04a165d70ac563c92ddf874c99b044",
-          "bytes": 2708,
+          "sha256": "ae1762906cbc1a49fd5b9fe087ea9424f3f1222c282ff6ecebb915d4b25f2923",
+          "bytes": 2706,
           "retrieval": "git_path"
         },
         {
@@ -894,8 +894,8 @@
         },
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md",
-          "sha256": "4b7f6c75e15e0ab8d9166ea61b683f2f87584bcbf25a85429b53db5797b7378c",
-          "bytes": 4345,
+          "sha256": "35e23d48b6a38fbe972e8fd29bcc858b3e996684a6dd1271f685018ec363e737",
+          "bytes": 4355,
           "retrieval": "git_path"
         },
         {
@@ -1007,8 +1007,8 @@
       "artifacts": [
         {
           "path": "docs/experiments/reliability/cross_task_shared_component_ablation_2026-06-27.md",
-          "sha256": "9bb2287c035d173960ed1ba803f7e9656f68e6f732f652bbd2d7a05f901c1d41",
-          "bytes": 4074,
+          "sha256": "ffe250a4783a75a19e1ba6d4819155989dc86292b4ff1bc37d09f324b6d4cf59",
+          "bytes": 3880,
           "retrieval": "git_path"
         },
         {
@@ -1051,14 +1051,14 @@
       "artifacts": [
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md",
-          "sha256": "d090d03cacd0590cee13cb78c3f011e854d469ba31a979a7b756999c2d686c88",
-          "bytes": 10021,
+          "sha256": "5059cb5d31cdd74d76850df5ce291d3e94246892304ee5884249f782755564bd",
+          "bytes": 10047,
           "retrieval": "git_path"
         },
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md",
-          "sha256": "c0b7119db30db7d379eefca332d94081025bc98b3ec9c0abbd7aa1759431a54d",
-          "bytes": 4361,
+          "sha256": "f88402959a151b305d7015026e705b586cbb4bf6fcfab2da1cf1f9c64d305f53",
+          "bytes": 4383,
           "retrieval": "git_path"
         },
         {
@@ -1120,20 +1120,20 @@
         },
         {
           "path": "docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md",
-          "sha256": "6478c69f08359f34e295fc21b32a1c5f9c390e6f71084383a41b0d3b2a3d0520",
-          "bytes": 24760,
+          "sha256": "739d9e60ba52eeb08e9e5859b35f05e87cd7339470e621a7f10ac5c221771cd7",
+          "bytes": 24633,
           "retrieval": "git_path"
         },
         {
           "path": "docs/experiments/exectv2/diagnosis/exectv2_dx_canonical_row_analysis_2026-06-30.md",
-          "sha256": "53f2e516a34fa013d460c600d120fe42947b64a6175f46a1f77264de9d5d8ecb",
-          "bytes": 11094,
+          "sha256": "ffbc5dd0971760acf113c38f7f00e9ae2973dd922eb0a7c5f3bb9ec34348e03a",
+          "bytes": 11165,
           "retrieval": "git_path"
         },
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md",
-          "sha256": "17c30d3702c142ee0ad0439ca90e4321c1500dbcba51ebfdca6703811e289ab7",
-          "bytes": 14531,
+          "sha256": "3d032be36687e67dc8c654858a2ab5a2e0d363cf7b4a1a02bb13550a5937d33e",
+          "bytes": 14583,
           "retrieval": "git_path"
         }
       ]

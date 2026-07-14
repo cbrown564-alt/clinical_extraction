@@ -1,8 +1,16 @@
-# Gan 2026 Phase 4 Frozen test450 Aggregate Audit (openai/gpt-4.1-mini)
+# Gan 2026 Phase 4 Locked `test450` Aggregate Audit (openai/gpt-4.1-mini)
 
-Phase 4 frozen test450 aggregate audit, openai/gpt-4.1-mini pass. One-shot frozen aggregate read of the locked test450 split for four of the six PipelineArchitecture configs (deterministic_canonical_pipeline, hybrid v5 prompt, hybrid_structured_events, llm_only_canonical_pipeline v0.5 prompt); deterministic and llm_only_direct_labeler are intentionally excluded (plan Section 6 rationale: DCP is numerically identical to deterministic, DL consistently underperforms CP). No row-level holdout tuning and no re-runs based on these results (plan Section 7 guardrails). Compares the four architectures on the axes that are universally meaningful (rendered/null disposition, Purist/Pragmatic-correct of rendered rows, evidence-trace validity, final-answer distribution); hybrid additionally carries a routing-taxonomy appendix that no other architecture has an analogous surface for.
+This report records a one-time aggregate read of the locked `test450` split for
+four of six saved `PipelineArchitecture` configurations:
+`deterministic_canonical_pipeline`, `hybrid`, `hybrid_structured_events`, and
+`llm_only_canonical_pipeline`. The exact identifiers are retained because they
+name saved configurations. The deterministic and `llm_only_direct_labeler`
+configurations were excluded under the recorded plan. No row-level holdout
+tuning or result-driven reruns followed. The shared table reports output
+disposition and task scores; evidence checks differ by method and are not
+directly comparable. Only `hybrid` has the routing results shown later.
 
-## Artifacts
+## Saved files
 
 - Comparison JSONL: `experiments\gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.jsonl`
 - Summary JSON: `experiments\gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.json`
@@ -21,8 +29,21 @@ Phase 4 frozen test450 aggregate audit, openai/gpt-4.1-mini pass. One-shot froze
 Footnotes:
 
 - Evidence-trace metrics are NOT uniform across architectures: deterministic, deterministic_canonical_pipeline, llm_only_direct_labeler, and hybrid_structured_events report `evidence_valid` (free-text substring presence in the source note); llm_only_canonical_pipeline reports the deliberately distinct `evidence_text_contained`; hybrid reports a formal CandidateSet source-id validity rate sourced from its deep-replay projection stage. These measure different things -- do not read them as comparable accuracy numbers (see the per-architecture metric table below the shared table).
-- Architecture taxonomy: `hybrid_structured_events` is architecturally a hybrid, not a fully-LLM pipeline. Its LLM stage extracts structured events from raw note text; the same deterministic normalize/project/render/score stages used by `hybrid` then process that output. The name reflects its LLM extraction approach, not the presence of a deterministic downstream. Contrast with `llm_only_direct_labeler` and `llm_only_canonical_pipeline`, which complete the full extraction-to-label pass in one LLM call with no deterministic normalization. The two hybrid configs differ in their LLM task: `hybrid_structured_events` asks the LLM to extract structured events from raw text (open-text → schema); `hybrid` asks the LLM to assess a pre-extracted deterministic candidate set. Their shared deterministic downstream makes the performance gap between them a direct measure of how much the LLM task and the verification/routing layer matter.
-- hybrid's row above is the only one not sourced from raw `run_split` output: its assessment-stage probe reports schema-fit diagnostics only and has no rendered/null/purist/routed numbers of its own (design doc Section 2-3). This report replays its assessment rows -- using the live-generated CandidateSets the fixed `run_split` now embeds in its own output rows, so no static-artifact dependency or 250-row scoping applies -- through projection_render -> score -> verification_route -> verification_decision (`build_unified_pipeline_artifact`). This asymmetry is the architectural fact under comparison, not a methodology artifact.
+- Method classification: `hybrid_structured_events` is an LLM-with-rules
+  method. Its LLM extracts structured events from raw text; deterministic
+  normalization, selection, rendering, and scoring then process them.
+  `hybrid` instead asks an LLM to assess a deterministic candidate set.
+  `llm_only_direct_labeler` and `llm_only_canonical_pipeline` complete clinical
+  selection in the model call without deterministic normalization. The gap
+  between the two LLM-with-rules configurations combines differences in the
+  LLM task and in verification or routing; this aggregate report does not
+  isolate those effects.
+- The `hybrid` row is the only row not taken directly from raw `run_split`
+  output. Its assessment probe contains schema diagnostics rather than final
+  output counts. This report replays the saved candidate sets through
+  `projection_render`, scoring, routing, and the final decision
+  (`build_unified_pipeline_artifact`). That source difference limits direct
+  comparison and is recorded here explicitly.
 
 ### Evidence-Trace Metric By Architecture
 
@@ -40,9 +61,11 @@ Footnotes:
 - `hybrid_structured_events`: {'seizure_freq_unknown': 118, 'seizure_freq_more1week_less1day': 80, 'currently_no_seizure': 64, 'seizure_freq_more1mon_less1week': 59, 'seizure_freq_more1per6mon_less1mon': 48, 'seizure_freq_1ormore_daily': 37, 'seizure_freq_1_per_mon': 26, 'seizure_freq_1_per_yr': 8, 'seizure_freq_1_per_week': 6, 'None': 2, 'seizure_freq_1_per_6mon': 2}
 - `llm_only_canonical_pipeline`: {'unknown': 59, 'no seizure frequency reference': 38, 'seizure free for multiple year': 30, 'multiple per week': 21, 'multiple per day': 12, '1 per month': 12, '1 per day': 11, 'seizure free for 3 month': 8, '2 to 3 per month': 7, '2 to 3 per week': 6, 'seizure free for 6 month': 6, '1 per 2 to 3 month': 5}
 
-## Hybrid-Only Routing Appendix
+## Routing appendix for `hybrid`
 
-No other architecture in this comparison has a routing stage; this appendix exists to characterize what `hybrid` does with the rows it doesn't render directly, not to provide a column the other three could also fill. Drawn from the same deep-replay artifact that supplies hybrid's shared-table row above.
+No other method in this comparison has a routing step. This appendix describes
+what `hybrid` does with rows it does not render directly. Its values come from
+the same deep-replay output as the `hybrid` row in the shared table.
 
 - Routed rows: 30 (0.090 of rendered)
 - Unrouted rows: 420
@@ -61,7 +84,9 @@ No other architecture in this comparison has a routing stage; this appendix exis
 
 ## What This Report Does Not Claim
 
-- This is a one-shot frozen `test450` aggregate read for four architectures only (deterministic and llm_only_direct_labeler are excluded by design -- see claim boundary above).
+- This is a one-time locked `test450` aggregate read for four methods only
+  (deterministic and `llm_only_direct_labeler` were excluded under the recorded
+  plan).
 - No row-level holdout tuning was performed and no re-runs are planned based on these results (plan Section 7 guardrails).
 - Evidence-trace metrics are not uniform across architectures (see footnote and per-architecture metric table above) -- they measure different things and must not be compared as if they were one accuracy number.
 - hybrid's shared-table numbers come from deep-replay, not its raw `run_split` output (see footnote above); the other three architectures' numbers come directly from their `run_split` output.

@@ -1,6 +1,6 @@
 > **Superseded for navigation —** canonical summary: [`DIAGNOSIS_FAMILY_LADDER_CANON.md`](../../../canon/workstreams/DIAGNOSIS_FAMILY_LADDER_CANON.md). Full detail retained below.
 
-# Diagnosis canonical row-analysis — the Dx "consolidation" gap is gold quality, not genuine recall
+# Diagnosis row analysis — separating recall errors from annotation mismatch
 
 Status: **CLOSED (positive — reframes the manuscript's gap-mechanism claim for Diagnosis).**
 Date: 2026-06-30.
@@ -26,7 +26,8 @@ misses" as the model failing to enumerate every co-present diagnostic concept th
 the model consolidates to one). That characterization used a simplified, miss-only,
 home-tagged-only diagnostic (`experiments/exectv2_genuine_recall_analysis.py`) and never asked
 the SF-style question: of the letters scored wrong, how many are genuine model error vs. the
-model being clinically right but scored wrong because gold double-tagged or under-annotated?
+the model output being defensible but scored wrong because the annotation uses
+different multiplicity or omits a concept?
 
 This analysis answers that question on the **official** Diagnosis `clinical_headline` scorer
 (`score_concept_identity(gold, pred, "Diagnosis").concept_only` — entity-agnostic recall pool,
@@ -53,8 +54,9 @@ verdicts, mirroring the SF Phase 6/7 taxonomy:
 
 - **GOLD_RIGHT** — genuine model error (true omission, or a fabricated/over-read diagnosis the
   letter does not support).
-- **MODEL_DEFENSIBLE** — the model is clinically correct; the score is wrong because of a gold
-  artifact (consolidation/multiplicity, under-annotation, or pure canonicalization/wording
+- **MODEL_DEFENSIBLE** — the project reviewers judged the model output
+  defensible and attributed the disagreement to annotation multiplicity,
+  likely under-annotation, or concept normalization and wording
   mismatch of identical text).
 - **BOTH_DEFENSIBLE** — genuine ambiguity (hedged/queried diagnoses, differential vs confirmed).
 
@@ -67,7 +69,7 @@ the row-analysis script enumerated (no missing, no extra) before tallying.
 | | n | share |
 | --- | ---: | ---: |
 | GOLD_RIGHT (genuine model error) | 31 | 14.8% |
-| MODEL_DEFENSIBLE (gold artifact) | 167 | 79.9% |
+| MODEL_DEFENSIBLE (annotation mismatch) | 167 | 79.9% |
 | BOTH_DEFENSIBLE (genuine ambiguity) | 11 | 5.3% |
 
 By direction:
@@ -77,7 +79,7 @@ By direction:
 | MISSED (FN) | 92 | 7 | 80 | 5 |
 | SPURIOUS (FP) | 117 | 24 | 87 | 6 |
 
-**Clinically-adjusted aggregate** (treating MODEL_DEFENSIBLE + BOTH_DEFENSIBLE as correct,
+**Internally adjusted aggregate** (treating MODEL_DEFENSIBLE + BOTH_DEFENSIBLE as correct,
 recomputing precision/recall from the adjusted tp counts):
 
 | | precision | recall | F1 |
@@ -122,7 +124,8 @@ in `_dx_canonical/_adjudication.csv`):
 
 **The Diagnosis "0.66 GEPA ceiling, 0.18 below the LLM-with-rules method" framing in the plateau synthesis
 overstates genuine model error in the same way the pre-Phase-7 SF framing did.** Counting only
-the 31 genuine errors among the 209 measured disagreements, the model is clinically correct on
+the 31 disagreements classed as model errors, the project reviewers judged the
+model defensible on
 the overwhelming majority of what the official scorer counts against it. This is **not** a
 "Diagnosis is benchmark-format-fidelity-only" story (mechanism A in the manuscript's current
 §4.1.2 framing) — it carries the same **mechanism B (gold-quality/convention ceiling)** that
@@ -140,12 +143,14 @@ dominated by closeable format fidelity. That is no longer accurate for Diagnosis
 result into Phase E as a parallel Diagnosis paragraph alongside the existing SF one, and revise
 the "architectural gap is genuine recall" language in the GEPA plateau synthesis's still-active
 conclusion (§4–5 of that doc) to note that the genuine-recall component is much smaller than
-56/209 once gold-consolidation and canonicalization artifacts are excluded.
+56/209 after excluding disagreements attributed to annotation multiplicity or
+concept normalization.
 
 **Consequence for the GEPA workstream:** the multi-stage/focused-lanes investigations that
 chased Diagnosis "genuine recall" (the exhaustive co-present enumeration schema in
 `exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md` Phase 1) were optimizing partly against
-a gold-consolidation artifact, not a pure recall deficit — consistent with that plan's own
+an annotation-multiplicity mismatch, not a pure recall deficit — consistent
+with that plan's own
 Phase 3 finding that deterministic Dx convention re-keying (not more retrieval) bought the
 larger, cleaner win (0.703 → 0.792).
 
@@ -164,7 +169,7 @@ larger, cleaner win (0.703 → 0.792).
 - No deterministic projection or prompt change was made here; this is a pure measurement /
   interpretation result, gated for promotion into the manuscript at Phase E.
 
-## 7. Artifacts
+## 7. Files
 
 - `experiments/exectv2_dx_canonical_row_analysis.py` — zero-LLM row decomposition + self-validation.
 - `experiments/exectv2_dx_canonical_adjudication.py` — embedded verdicts + self-validation + tally.

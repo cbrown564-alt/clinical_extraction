@@ -5,7 +5,8 @@ Scope: **all 140 dev letters**, SeizureFrequency, scored on the **exact metric w
 (`state_profile` — the direction-blind, type-agnostic per-letter *set* of
 `frequency_state_faithful` states ∈ {active-rate, seizure-free, changed, unknown}). Captures and
 projects **both** model stages: stage 1 = the first LLM (`generate`), stage 2 = the verifier
-(`verify`). Every gold≠model row is adjudicated clinically and set in stone.
+(`verify`). The project team adjudicated every gold≠model row; these internal
+judgments are not independent clinical validation.
 
 Supersedes the narrow `exectv2_sf_changed_class_row_analysis_2026-06-29.md` (changed-class only).
 This is the canonical SF metric analysis: it answers "how often does the first LLM get it wrong",
@@ -19,26 +20,28 @@ through the metric, self-validates the decomposition == `score_frequency_state`)
 
 ---
 
-## 0. TL;DR (the answers, set in stone)
+## 0. Summary of the internal development review
 
 1. **The first LLM (stage 1) gets the per-letter answer wrong ~50% of the time** (exact-match 49.3%,
    71/140; state_profile F1 0.710). The verifier cuts that to **37.9% wrong** (87/140 exact; F1 0.772).
    So the user's "~50% wrong" is precisely the **first LLM's** rate; the verifier helps.
-2. **Gold is NOT always right.** Of the verifier's 53 metric-errors, only **15 (28%) are genuine model
-   mistakes**. **22 (42%) are the model being clinically correct and scored wrong** because gold
-   *under-annotated* the stated frequency (13) or *redundantly double-tagged* a type (9). **16 (30%)
-   are genuine ambiguity** (IAA-0.47 coin-flips + gold temporal conventions).
-3. **Counting only genuine model errors, the two-stage model is clinically defensible on 125/140 =
-   89.3% of letters** — the metric reports 62.1%. The 27-point gap is gold noise, not model error.
+2. In the team's internal review of 53 metric disagreements, reviewers assigned
+   15 (28%) to model error, 22 (42%) to annotation mismatch or redundant
+   annotation, and 16 (30%) to ambiguity or temporal convention.
+3. Under those internal verdicts, 125/140 letters (89.3%) were classed as
+   clinically defensible, while exact per-letter agreement was 62.1%. This gap
+   does not establish externally validated clinical accuracy.
 4. **The metric itself is noisy.** A faithful re-run of the *same evolved program* scores **0.772**,
    not the logged **0.741**; **41/140 letters (29%) flip state-set across identical-instruction runs**
    from gpt-4.1-mini temp-0 nondeterminism alone. Part of "the wall" is ±0.03 measurement noise.
 5. **The verifier is a net good but does real damage:** it fixes 14 letters and **breaks 7** (incl. 3
    where it *deleted a correct seizure-free* via over-zealous non-epileptic suppression).
 
-The standing "we keep hitting a wall at ~0.74–0.78" is now fully explained: the model is already
-~89% clinically right; the metric can't see it because **the gold it scores against is itself only
-~0.47 self-consistent on this entity.** This is a gold/measurement ceiling, not a model ceiling.
+The repeated ~0.74–0.78 result is consistent with both run-to-run variation and
+annotation disagreement. The internal review classed 89.3% of letters as
+clinically defensible, and reported inter-annotator agreement for this entity
+is about 0.47. These observations support a measurement-limitation hypothesis;
+they do not establish a fixed clinical or model ceiling.
 
 ---
 
@@ -210,24 +213,26 @@ Every error maps to exactly one mechanism family (all 53 accounted, no remainder
 | **Genuine model over-read** | 13 | G | historical/superseded rates read as current; inter-event gaps and clinic-exam observations read as seizure-free; single/lifetime/non-epileptic events read as frequencies; undirected statements stamped `changed` |
 | **Verify regression** | 2 | G | the verifier deleted a correct stage-1 `seizure-free` (EA0102, EA0120; EA0059 lost a changed) |
 
-**The two metric-artefact families (gold under-annotation + redundant multiplicity = 22 letters, all
-MODEL_DEFENSIBLE) are the single largest block — bigger than the genuine-model-error block (15).**
+The two annotation-mismatch groups (likely under-annotation and redundant
+multiplicity) contain 22 letters under the internal verdicts, compared with 15
+letters classified as model error.
 
-## 7. Is gold always right? — the answer, set in stone
+## 7. Internal adjudication of annotation disagreements
 
 **No.** On the 53 letters where the metric marks the model wrong:
 - **28% (15) the model is genuinely wrong** — 13 over-reads + 2 verify regressions. These are the real,
   fixable model errors (mostly: historical/superseded rate vs current state, and clinic-observation or
   inter-event-gap mis-read as seizure freedom).
-- **42% (22) the model is clinically right and gold is the problem** — gold either failed to annotate a
-  stated frequency (13) or redundantly multi-tagged a type so the set-metric penalises a clean single
-  fact (9).
-- **30% (16) is a genuine coin-flip** — IAA-0.47 ambiguity (10) or a gold temporal-keying convention (6),
-  where neither answer is "correct".
+- **42% (22) were classed as model-defensible annotation mismatches** — 13
+  likely omitted frequencies and nine redundant multi-tags.
+- **30% (16) were classed as ambiguous or convention-dependent** — ten
+  ambiguity cases and six temporal-keying differences.
 
-**Counting only genuine model errors, the two-stage model's per-letter answer is clinically defensible
-on 125/140 = 89.3% of dev letters.** The metric reports 62.1%. The 27-point gap is the gold's own noise
-— consistent with SeizureFrequency being the **2nd-worst-agreed entity in the corpus (human IAA F1 0.47)**.
+Under the project team's verdicts, the two-stage model was classed as clinically
+defensible on 125/140 (89.3%) development letters. The metric reports 62.1%
+exact per-letter agreement. This difference is consistent with annotation and
+representation disagreement, but the internal review cannot quantify clinical
+validity independently.
 
 (34 of the 53 errors fall in the optimizer-seen trainset and 19 in the held-out valset, so the dev140
 headline is mildly optimistic, but the error *structure* is the same across both splits.)
@@ -242,9 +247,10 @@ headline is mildly optimistic, but the error *structure* is the same across both
   **not** what caps `state_profile`.)
 - **It is not feedback or determinism.** Phase 5 (feedback precision) and Phase 3b (deterministic
   projection) each bought ~+0.03–0.04, inside the **±0.03 run-to-run noise band** measured in §2.
-- **It is ~⅔ a gold-quality ceiling.** 38/53 metric-errors are not model mistakes. A perfect clinical
-  reader scores ~0.77–0.80 against *this* gold because the gold is ~0.47 self-consistent. The
-  workstream's repeated "wall at ~0.74–0.78" is that ceiling.
+- **Internal review attributes much of the gap to annotation or convention.**
+  Reviewers did not class 38/53 metric disagreements as clear model errors.
+  That supports a measurement-limitation hypothesis; it does not establish how
+  a perfect clinical reader would score or prove a fixed ceiling.
 - **The genuinely fixable ~28% (15 letters)** splits into two clean, learnable rules and decomposes the
   active-rate precision leak:
   1. **Temporal discipline** (7 letters: EA0038, EA0135, EA0143, EA0006, EA0182, EA0046, EA0123): a
@@ -277,16 +283,17 @@ headline is mildly optimistic, but the error *structure* is the same across both
 1. **Stop chasing the `state_profile` number with feedback/demo/determinism iterations** — the remaining
    headroom against this gold (~0.77–0.80) is inside the noise band and ~⅔ gold quality. Report SF with a
    **re-run ±0.03 band**, never a single decimal.
-2. **The only attributable model lever left is the 15 genuine errors**, and it is small and rule-shaped:
+2. **The 15 internally classified model errors suggest a focused next test:**
    wire **temporal discipline** (historical/last-event ≠ current) + **state-evidence discipline**
    (exam/gap/"stable"/non-epileptic ≠ a state) + **stop the verify deletions**. That is the Phase-3b
    deterministic SF projection, already built — the LLM-only route will not out-learn it on these 7+6+2.
-3. **The real headline for the thesis is the gold-quality finding, not another SF point:** under the
-   metric we score, the two-stage LLM is already ~89% clinically defensible; the benchmark's ~0.77 SF
-   ceiling is a property of a 0.47-IAA gold, not of the model. This belongs in the closing
-   benchmark-vs-clinical-recovery reconciliation, not in another SF optimisation cycle.
+3. **Report the annotation limitation without converting it into clinical
+   validation.** The internal 89.3% defensibility judgment and the published
+   0.47 inter-annotator agreement motivate sensitivity analysis and independent
+   review. They do not prove that the observed ~0.77 score is solely a property
+   of the annotations.
 
-## 11. Artifacts
+## 11. Files
 
 - Harness (re-runs both stages, projects through the exact metric, self-validates ==
   `score_frequency_state`): `experiments/exectv2_sf_canonical_row_analysis.py`.

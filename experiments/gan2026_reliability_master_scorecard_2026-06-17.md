@@ -2,9 +2,12 @@
 
 Date: 2026-06-17  ·  Phases 0-2 complete (P2.1 varying-temperature semantic entropy run)  ·  Model calls: 0
 
-Canonical subject: single GPT structured-event pass on gpt-4.1-mini (v0_reference, decision 0018).
+Subject: the selected single GPT structured-event pass on gpt-4.1-mini
+(`v0_reference`, decision 0018).
 
-Every metric below is computed on the canonical subject layer unless tagged `[comparator: ...]`. All figures are re-derived from frozen artifacts by the P0.1–P0.8 drivers; no number is admissible without a layer.
+Every metric below is computed for that subject unless tagged
+`[comparator: ...]`. The P0.1–P0.8 drivers re-derived the figures from saved
+outputs. Each number remains tied to the method and data named in its row.
 
 | # | Dimension | Cov. | Computed metric (Phase 0) |
 |---|---|:--:|---|
@@ -28,4 +31,12 @@ Every metric below is computed on the canonical subject layer unless tagged `[co
 
 ---
 
-**Headline.** The single highest-leverage artifact is the P0.2 risk–coverage curve: it gives Abstention a full curve (AUC 0.040 vs oracle 0.007) and Calibration its first real failure-prediction number (AUROC 0.781). The two previously weak legs — Calibration (self-confidence degenerate) and Operational cost — are now populated from external signals and offline estimates respectively. The unifying empirical result is consistent across dimensions and now mechanistic: the model's *own* certainty is uninformative (degenerate self-confidence, chance-level self-consistency, and — P2.1 — temperature-stable decisions whose entropy is ~0 even on the residual), while *external* corroboration (cross-model agreement, residual-shape flags, exact evidence) carries the reliability signal. P2.1 closes the loop: the over-reading residual is *confident, not uncertain*, which is precisely why no self-signal can flag it — *a clinical extractor that knows what it cannot extract, but only when told by something other than itself.*
+**Interpretation.** The P0.2 risk–coverage curve supplies an abstention curve
+(AUC 0.040 versus oracle 0.007) and a failure-prediction AUROC of 0.781 for the
+external confidence score used in this Gan study. Model-reported confidence
+was concentrated in one bucket, and the P2.1 sample had near-zero decision
+entropy, including on its 23 residual cases. Within these saved validation and
+holdout aggregates, those self-reported signals did not distinguish the
+observed errors. The external score was more informative in this study, but
+the report does not establish that every external signal is reliable or that
+model confidence is uninformative on other tasks, models, or data.
