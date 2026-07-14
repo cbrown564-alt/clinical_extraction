@@ -186,6 +186,12 @@ _RESIDUAL_GENERIC_EPILEPSY_NOISE = re.compile(
 )
 
 #: dev-derived source-phrase -> benchmark concept additions (``benchmark_format``).
+_PATIENT_ABSENCE_SEIZURES = re.compile(
+    r"\b(?:the patient|patient|she|he|[A-Z][a-z]+)\s+"
+    r"(?:started having|continues to have)\s+absence seizures\b",
+    re.IGNORECASE,
+)
+
 RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"Diagnosis:\s*focal onset epilepsy \(occipital\)", re.IGNORECASE),
@@ -395,6 +401,9 @@ RESIDUAL_SOURCE_CONCEPT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (re.compile(r"\bcomplex partial seizures\b", re.IGNORECASE), "complex partial seizures"),
 )
+_RESOLUTION_CANDIDATE_SOURCE_CONCEPT_PATTERNS: tuple[
+    tuple[re.Pattern[str], str], ...
+] = ((_PATIENT_ABSENCE_SEIZURES, "absence seizures"),)
 
 
 def diagnosis_convention_target(text: str, evidence: str) -> str | None:
@@ -583,7 +592,9 @@ def should_add_generic_epilepsy_companion(
     return bool(_GENERIC_EPILEPSY_COMPANION_CONTEXT.search(evidence))
 
 
-def diagnosis_residual_additions(note_text: str) -> list[tuple[str, str]]:
+def diagnosis_residual_additions(
+    note_text: str, *, include_resolution_candidate: bool = False
+) -> list[tuple[str, str]]:
     """Return dev-derived ``(concept_text, evidence)`` additions for a letter.
 
     De-duplicated by canonical concept, matching the v05 lens behaviour. The
@@ -592,7 +603,10 @@ def diagnosis_residual_additions(note_text: str) -> list[tuple[str, str]]:
 
     added: list[tuple[str, str]] = []
     seen: set[str] = set()
-    for pattern, text in RESIDUAL_SOURCE_CONCEPT_PATTERNS:
+    patterns = RESIDUAL_SOURCE_CONCEPT_PATTERNS
+    if include_resolution_candidate:
+        patterns = (*_RESOLUTION_CANDIDATE_SOURCE_CONCEPT_PATTERNS, *patterns)
+    for pattern, text in patterns:
         match = pattern.search(note_text)
         if match is None:
             continue
@@ -604,17 +618,33 @@ def diagnosis_residual_additions(note_text: str) -> list[tuple[str, str]]:
     return added
 
 
+def diagnosis_residual_addition_category(text: str, evidence: str) -> str:
+    """Return the declared rule category for one source-bound addition."""
+
+    if (
+        canonicalize_diagnosis_concept(text) == "absence seizures"
+        and _PATIENT_ABSENCE_SEIZURES.search(evidence)
+    ):
+        return "clinical_epilepsy"
+    return "benchmark_format"
+
+
 def is_redundant_diagnosis_residual_addition(
     text: str,
     *,
     evidence: str,
     selected_texts: Sequence[str],
+    include_resolution_candidate: bool = False,
 ) -> bool:
     """True when a dev residual fragment is already covered by a specific concept."""
 
     del evidence
     concept = canonicalize_diagnosis_concept(text)
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
+    if include_resolution_candidate and concept == "generalised epilepsy":
+        return any(
+            item != concept and item.endswith("generalised epilepsy") for item in selected
+        )
     if concept == "focal":
         return concept in selected
     if concept == "generalised":

@@ -1,0 +1,65 @@
+{
+  "schema_version": "exectv2_diagnosis_pattern_assisted_review_v1",
+  "generated_at": "2026-07-14T21:18:05.585172Z",
+  "audit_jsonl": "experiments\\exectv2_diagnosis_interpretation_audit_dev140_20260714.jsonl",
+  "audit_sha256": "0c454b253d57cc572658eed62c232b7e5c688bfdfca68ebc1e8e87c332bee13f",
+  "manual_overlay_json": "C:\\Users\\cbrow\\Downloads\\exectv2-diagnosis-review-2026-07-14.json",
+  "manual_overlay_sha256": "69ab1deaf6429005dd71cdbd28e021ffaf020be24f655cd7b3fef6f92d77becd",
+  "audit_row_count": 246,
+  "manual_decision_count": 33,
+  "automatic_decision_count": 197,
+  "remaining_manual_review_count": 16,
+  "remaining_manual_review_keys": [
+    "EA0033|spurious|myoclonic seizures",
+    "EA0043|spurious|myoclonic seizures",
+    "EA0073|spurious|epilepsy",
+    "EA0076|spurious|epilepsy",
+    "EA0076|spurious|epileptic seizures",
+    "EA0100|spurious|epilepsy",
+    "EA0102|spurious|epilepsy",
+    "EA0102|spurious|epileptic seizures",
+    "EA0104|spurious|epilepsy",
+    "EA0109|spurious|epilepsy",
+    "EA0114|spurious|tonic clonic seizures",
+    "EA0120|spurious|epilepsy",
+    "EA0125|spurious|myoclonic seizures",
+    "EA0189|spurious|absence seizures",
+    "EA0189|spurious|myoclonic seizures",
+    "EA0198|spurious|non epileptic psychogenic seizures"
+  ],
+  "conflict_count": 0,
+  "automatic_triage_counts": {
+    "extraction_error": 39,
+    "representation": 158
+  },
+  "automatic_rule_counts": {
+    "non_target_diagnosis_scope": 16,
+    "opposite_direction_same_cui": 23,
+    "related_gold_representation": 44,
+    "related_prediction_representation": 49,
+    "reviewed_equivalence_pair": 36,
+    "reviewed_negated_focal_pattern": 1,
+    "supported_gold_omission": 25,
+    "unsupported_gold_concept_miss": 21,
+    "unsupported_spurious_concept": 1
+  },
+  "automatic_method_memberships": {
+    "llm_only": 153,
+    "llm_with_rules": 56,
+    "rules_only": 63
+  },
+  "conflicts": {},
+  "manual_calibration": {
+    "manual_count": 33,
+    "matched_count": 30,
+    "unclassified_count": 3,
+    "unclassified_keys": [
+      "EA0016|spurious|epilepsy",
+      "EA0020|spurious|tonic clonic seizures",
+      "EA0028|spurious|epilepsy"
+    ],
+    "contradicted_count": 0,
+    "contradictions": {}
+  },
+  "claim_boundary": "Diagnostic dev140 review aid; automatic labels are hypotheses, not independent clinical adjudication, corrected gold, or scorer changes."
+}

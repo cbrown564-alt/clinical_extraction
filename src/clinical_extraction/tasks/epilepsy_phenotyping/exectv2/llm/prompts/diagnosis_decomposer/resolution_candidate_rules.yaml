@@ -1,0 +1,10 @@
+clinical_rules:
+- Diagnosis covers epileptic disorders and named epileptic seizure types only. Do not return causes,
+  risk factors, or other conditions such as stroke, brain lesions, tumours, hydrocephalus, tuberous
+  sclerosis, head injury, syncope, migraine, anxiety, depression, diabetes, hypertension, heart disease,
+  or alcohol use.
+- Do not treat the word epilepsy as the patient's diagnosis when it occurs only in a service header,
+  family history, general counselling, sudden-death explanation, epilepsy nurse contact, medication
+  indication, or a negated or non-epileptic statement.
+- Keep explicitly asserted named types that are easy to miss, including nocturnal seizures, status
+  epilepticus, grand mal, occipital or frontal lobe seizures, and temporal or frontal lobe onset seizures.

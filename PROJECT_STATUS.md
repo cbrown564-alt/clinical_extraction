@@ -8,7 +8,9 @@ The cleanup, verification, and Gan efficiency phases are complete. The
 repository has three deliverables: the Python package, selected
 machine-readable evidence, and the paper. The Gan result supports a saved
 quality-versus-model-pass comparison, not measured token, cost, or latency
-efficiency. The next executable phase is ExECT published-metric reproduction.
+efficiency. The ExECT published-metric development phase is also complete. The
+ExECT Diagnosis review and development implementation are complete. The next
+executable phase is out-of-sample confidence and selective-action testing.
 
 [Paper claim status](docs/canon/10_paper_provenance.md) records what the paper
 may say. [The active roadmap](docs/plans/ACTIVE_ROADMAP.md) gives the work order.
@@ -34,6 +36,10 @@ may say. [The active roadmap](docs/plans/ACTIVE_ROADMAP.md) gives the work order
 
 Other paper evidence:
 
+- The ExECT rules-only no-call dev140 replay reports paper-derived macro item F1
+  of `0.5687` for normalized phrase, `0.7144` for CUI, and `0.6020` for all
+  features across all nine entity types. These are development results, not a
+  reproduction of the paper's original system or its `0.87`/`0.90` scores.
 - Gan locked test450: the single-pass event extractor scored `364/450` Purist;
   the saved multi-model comparator scored `379/450`.
 - The multi-model comparator gains 15 rows (3.33 percentage points) but needs
@@ -62,8 +68,10 @@ Exact files, hashes, versions, and replay expectations are in the
 | Fixed reference pipeline | Retained evidence index v3 records the source commit, six reference runs, Python and dependency versions, prompts, scorers, splits, repairs, models, runbooks, and CI policy |
 | Clean-checkout and paper check | A separate Python 3.11 checkout retrieved Git LFS files, checked hashes and split restrictions, replayed six runs, passed all checks, reproduced the tables, and produced a visually checked three-page IEEE PDF |
 | Gan efficiency | Aggregate-only audit reproduced `364/450` versus `379/450`, one versus three cold model passes, the V12 cache asymmetry, and the absence of matched telemetry; it also corrected an earlier validation-to-test provenance transfer |
+| ExECT published metrics | Added and tested paper-derived normalized-phrase, CUI, and full-attribute scoring; a no-call all-nine-entity dev140 replay reports macro item F1 `0.5687` / `0.7144` / `0.6020` and leaves the existing strict micro replay unchanged at `0.3548` |
+| ExECT Diagnosis resolution | Completed all 246 dev140 review decisions: 173 representation issues, 72 extraction errors, and one uncertain row. Diagnostic sensitivity raises fixed F1 to `0.9344`/`0.8499`/`0.9789` for rules/LLM/hybrid under the conservative view. Shared deterministic fixes improve rules from `0.8599` to `0.8926` and hybrid from `0.8984` to `0.9034`; the fixed LLM prompt candidate regresses from `0.6861` to `0.6210` and is rejected. Gold and the fixed scorer are unchanged; test60 was not inspected. |
 
-The current suite contains 1,159 tests. On 2026-07-14, all tests, Ruff, mypy,
+The current suite contains 1,194 tests. On 2026-07-14, all tests, Ruff, mypy,
 the retained-evidence check, all six no-call reference replays, and a two-pass
 IEEE build passed. All three PDF pages were rendered and visually checked. The
 cleanup history is in the
@@ -71,14 +79,12 @@ cleanup history is in the
 
 ## Open research and validation work
 
-1. **ExECT benchmark reproduction:** implement normalized phrase, CUI, and full
-   attribute-bundle scoring using the published metrics.
-2. **Confidence:** evaluate model-reported confidence out of sample and keep a
+1. **Confidence:** evaluate model-reported confidence out of sample and keep a
    negative result if the values remain uninformative.
-3. **Annotation evidence:** combine the cited defect, convention, ambiguity,
+2. **Annotation evidence:** combine the cited defect, convention, ambiguity,
    multiplicity, scoring, handling, and sensitivity evidence. Claims of
    clinical validity still require independent clinical review.
-4. **Six-model comparison:** specify the three missing runtime conditions, then
+3. **Six-model comparison:** specify the three missing runtime conditions, then
    run the same pipeline and scorer for all six models.
 
 ## Rules that protect the evidence

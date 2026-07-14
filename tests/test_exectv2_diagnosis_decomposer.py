@@ -62,6 +62,22 @@ def test_build_prompt_input_includes_decomposition_contract() -> None:
     assert "Do not emit CUI or CUIPhrase" in rules
 
 
+def test_resolution_candidate_prompt_is_explicit_and_opt_in() -> None:
+    payload = json.loads(
+        decomposer.build_prompt_input(
+            _LETTER,
+            [],
+            prompt_variant="resolution_v02",
+        )
+    )
+
+    assert payload["prompt_version"].endswith("_v0.2")
+    rules = " ".join(payload["clinical_rules"])
+    assert "epileptic disorders and named epileptic seizure types only" in rules
+    assert "service header" in rules
+    assert "status epilepticus" in rules
+
+
 def test_to_predicted_letter_strips_projection_attrs_and_projects_cui() -> None:
     pred, warnings = decomposer.to_predicted_letter(
         "TEST001",
@@ -118,6 +134,9 @@ def test_summarize_rows_reports_diagnosis_spans() -> None:
     summary = decomposer.summarize_rows(rows)
 
     assert summary["clinical_recovery"]["diagnosis"]["f1"] == 1.0
+    assert summary["clinical_recovery"]["concept_only"]["f1"] == 1.0
+    assert summary["clinical_recovery"]["concept_negation"]["f1"] == 1.0
+    assert summary["clinical_recovery"]["concept_assertion"]["f1"] == 1.0
     assert summary["clinical_recovery"]["target_headline_f1"] == 0.8
     assert summary["n_diagnosis_spans"] == 2
 

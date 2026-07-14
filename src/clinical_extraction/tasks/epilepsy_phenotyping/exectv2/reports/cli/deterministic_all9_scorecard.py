@@ -31,6 +31,8 @@ def main() -> None:
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY_PATH)
     parser.add_argument("--run-index", type=Path, default=DEFAULT_RUN_INDEX_PATH)
     parser.add_argument("--no-register", action="store_true")
+    parser.add_argument("--diagnosis-resolution-candidate", action="store_true")
+    parser.add_argument("--diagnosis-benchmark-residuals", action="store_true")
     args = parser.parse_args()
 
     json_path, md_path = write_scorecard_artifacts(
@@ -39,6 +41,8 @@ def main() -> None:
         split=args.split,
         registry_path=None if args.no_register else args.registry,
         run_index_path=args.run_index,
+        include_diagnosis_resolution_candidate=args.diagnosis_resolution_candidate,
+        include_diagnosis_benchmark_residuals=args.diagnosis_benchmark_residuals,
     )
     print(f"Wrote {json_path}")
     print(f"Wrote {md_path}")

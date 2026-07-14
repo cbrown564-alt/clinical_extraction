@@ -52,9 +52,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build
 from .prompts.diagnosis_decomposer import loader as prompt_loader
 
 PROMPT_VERSION = "exectv2_hybrid_diagnosis_decomposer_v0.1"
+RESOLUTION_CANDIDATE_PROMPT_VERSION = "exectv2_hybrid_diagnosis_decomposer_v0.2"
 PIPELINE_FAMILY = "exectv2_hybrid_diagnosis_decomposer"
 COMPONENT_OWNER = "hybrid_diagnosis_decomposer"
 PromptProfile = Literal["full", "qwen_compact"]
+PromptVariant = Literal["retained", "resolution_v02"]
 
 _HEADING_RE = re.compile(
     r"\b(diagnosis|impression|epilepsy|classification|syndrome)\b",
@@ -221,6 +223,7 @@ def build_prompt_input(
     diagnosis_spans: Sequence[DiagnosisSpan] | None = None,
     *,
     prompt_profile: PromptProfile = "full",
+    prompt_variant: PromptVariant = "retained",
 ) -> str:
     spans = (
         list(diagnosis_spans)
@@ -228,7 +231,7 @@ def build_prompt_input(
         else diagnosis_spans_for_letter(letter, draft_mentions)
     )
     payload = {
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": _prompt_version(prompt_variant),
         "task": (
             "Review the clinical letter, the draft Diagnosis mentions, and the "
             "decomposed diagnosis spans. Return final Diagnosis mentions only. "
@@ -269,7 +272,7 @@ def build_prompt_input(
         "draft_diagnosis_mentions": list(draft_mentions),
         "diagnosis_candidate_spans": [span.as_payload() for span in spans],
         "attribute_vocabulary": _attribute_vocabulary(),
-        "clinical_rules": _clinical_rules(),
+        "clinical_rules": _clinical_rules(prompt_variant),
         "worked_examples": prompt_loader.load_worked_examples(),
         "letter_id": letter.letter_id,
         "letter_text": letter.note_text,
@@ -284,8 +287,8 @@ def build_prompt_input(
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
-def _clinical_rules() -> list[str]:
-    return [
+def _clinical_rules(prompt_variant: PromptVariant = "retained") -> list[str]:
+    prefix = [
         (
             "Treat the candidate spans as a clinical checklist, not as predictions. "
             "A span can yield zero, one, or several Diagnosis mentions."
@@ -307,7 +310,21 @@ def _clinical_rules() -> list[str]:
             "family history, non-epileptic/dissociative events, and generic "
             "symptoms unless the source asserts an epileptic diagnosis."
         ),
-    ] + prompt_loader.load_clinical_rules()
+    ]
+    retained = prompt_loader.load_clinical_rules()
+    if prompt_variant == "resolution_v02":
+        retained = [
+            *retained[:1],
+            *prompt_loader.load_resolution_candidate_rules(),
+            *retained[1:],
+        ]
+    return prefix + retained
+
+
+def _prompt_version(prompt_variant: PromptVariant) -> str:
+    if prompt_variant == "resolution_v02":
+        return RESOLUTION_CANDIDATE_PROMPT_VERSION
+    return PROMPT_VERSION
 
 
 def _sentence_spans(text: str) -> list[tuple[str, int, int]]:
@@ -352,6 +369,7 @@ def to_predicted_letter(
     mentions: list[MentionRecord],
     *,
     note_text: str,
+    prompt_version: str = PROMPT_VERSION,
 ) -> tuple[PredictedLetter, list[str]]:
     all_warnings: list[str] = []
     evidence_valid, evidence_invalid, ev_warnings = check_evidence(mentions, note_text=note_text)
@@ -387,7 +405,7 @@ def to_predicted_letter(
                 letter_id=letter_id,
                 mentions=tuple(predicted_mentions),
                 diagnostics={
-                    "prompt_version": PROMPT_VERSION,
+                    "prompt_version": prompt_version,
                     "pipeline_family": PIPELINE_FAMILY,
                     "n_evidence_invalid": len(evidence_invalid),
                     "attribute_warnings": all_warnings,
@@ -414,7 +432,9 @@ def run_split(
     checkpoint_report_path: Path | None = None,
     resume: bool = False,
     prompt_profile: PromptProfile = "full",
+    prompt_variant: PromptVariant = "retained",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    prompt_version = _prompt_version(prompt_variant)
     program = DspyDiagnosisDecomposer()
     if mode == "live":
         dspy.configure(
@@ -445,6 +465,7 @@ def run_split(
             draft_mentions,
             diagnosis_spans,
             prompt_profile=prompt_profile,
+            prompt_variant=prompt_variant,
         )
         raw_output = ""
         call_error: str | None = None
@@ -472,13 +493,15 @@ def run_split(
             letter.letter_id,
             mentions,
             note_text=letter.note_text,
+            prompt_version=prompt_version,
         )
         rows.append(
             {
                 "letter_id": letter.letter_id,
                 "split": split,
-                "prompt_version": PROMPT_VERSION,
+                "prompt_version": prompt_version,
                 "prompt_profile": prompt_profile,
+                "prompt_variant": prompt_variant,
                 "pipeline_family": PIPELINE_FAMILY,
                 "model": model,
                 "mode": mode,
@@ -511,12 +534,14 @@ def run_split(
                 split=split,
                 model=model,
                 mode=mode,
+                prompt_version=prompt_version,
             )
 
     rows = merge_rows(rows, order, key="letter_id")
     metadata = {
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "prompt_profile": prompt_profile,
+        "prompt_variant": prompt_variant,
         "pipeline_family": PIPELINE_FAMILY,
         "model": model,
         "temperature": temperature,
@@ -563,7 +588,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         gold_letters,
         pred_letters,
         DIAGNOSIS.name,
-    ).concept_assertion
+    )
 
     return {
         "examples": n,
@@ -592,7 +617,10 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         },
         "clinical_recovery": {
             "target_headline_f1": 0.80,
-            "diagnosis": _prf1_to_dict(clinical),
+            "diagnosis": _prf1_to_dict(clinical.concept_assertion),
+            "concept_only": _prf1_to_dict(clinical.concept_only),
+            "concept_negation": _prf1_to_dict(clinical.concept_negation),
+            "concept_assertion": _prf1_to_dict(clinical.concept_assertion),
         },
     }
 
@@ -678,11 +706,12 @@ def _emit_checkpoint(
     split: str,
     model: str,
     mode: str,
+    prompt_version: str,
 ) -> None:
     if jsonl_path:
         write_jsonl(rows, jsonl_path)
     metadata = {
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "pipeline_family": PIPELINE_FAMILY,
         "model": model,
         "mode": mode,

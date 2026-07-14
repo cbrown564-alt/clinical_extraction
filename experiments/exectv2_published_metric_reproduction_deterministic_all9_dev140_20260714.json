@@ -1,0 +1,1546 @@
+{
+  "call_mode": "no_call_deterministic_replay",
+  "candidate": "exectv2_deterministic_all9",
+  "claim_boundary": "Development evidence that the repository implements the paper-derived metric family. This is not a reproduction of the original ExECTv2 system's score, independent clinical validation, or holdout evidence.",
+  "dataset": "ExECTv2 synthetic clinic letters",
+  "development_result": {
+    "entity_coverage": "9/9",
+    "mechanism_counts": {
+      "cui_match_feature_miss": 215,
+      "phrase_match_cui_miss": 52,
+      "phrase_miss_cui_match": 215
+    },
+    "mechanism_examples": [
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C0270838",
+        "differing_attribute_names": [
+          "DiagCategory"
+        ],
+        "entity": "Diagnosis",
+        "gold_cui": "C0270838",
+        "gold_phrase": "secondary generalised seizures",
+        "letter_id": "EA0002",
+        "predicted_cui": "C0270838",
+        "predicted_phrase": "secondary generalised seizures"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0006949",
+        "differing_attribute_names": [],
+        "entity": "Prescription",
+        "gold_cui": "C0006949",
+        "gold_phrase": "carbamazepine",
+        "letter_id": "EA0002",
+        "predicted_cui": "C0006949",
+        "predicted_phrase": "carbamazepine 400 mg twice a day"
+      },
+      {
+        "category": "phrase_match_cui_miss",
+        "cui": "",
+        "differing_attribute_names": [
+          "EEG_Results"
+        ],
+        "entity": "Investigations",
+        "gold_cui": "C0151611",
+        "gold_phrase": "eeg",
+        "letter_id": "EA0004",
+        "predicted_cui": "C0013819",
+        "predicted_phrase": "eeg"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0436481",
+        "differing_attribute_names": [],
+        "entity": "Investigations",
+        "gold_cui": "C0436481",
+        "gold_phrase": "mri 2012 normal",
+        "letter_id": "EA0005",
+        "predicted_cui": "C0436481",
+        "predicted_phrase": "mri"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0494475",
+        "differing_attribute_names": [],
+        "entity": "SeizureFrequency",
+        "gold_cui": "C0494475",
+        "gold_phrase": "generalised tonic clonic seizures 2014",
+        "letter_id": "EA0006",
+        "predicted_cui": "C0494475",
+        "predicted_phrase": "generalised tonic clonic seizures"
+      },
+      {
+        "category": "phrase_match_cui_miss",
+        "cui": "",
+        "differing_attribute_names": [],
+        "entity": "Diagnosis",
+        "gold_cui": "C0472349",
+        "gold_phrase": "symptomatic structural focal epilepsy",
+        "letter_id": "EA0008",
+        "predicted_cui": "C0014547",
+        "predicted_phrase": "symptomatic structural focal epilepsy"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C0009952",
+        "differing_attribute_names": [
+          "Age",
+          "AgeLower",
+          "AgeUnit",
+          "AgeUpper"
+        ],
+        "entity": "PatientHistory",
+        "gold_cui": "C0009952",
+        "gold_phrase": "febrile seizures",
+        "letter_id": "EA0009",
+        "predicted_cui": "C0009952",
+        "predicted_phrase": "febrile seizures"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C3203523",
+        "differing_attribute_names": [],
+        "entity": "PatientHistory",
+        "gold_cui": "C3203523",
+        "gold_phrase": "cluster of seizure",
+        "letter_id": "EA0009",
+        "predicted_cui": "C3203523",
+        "predicted_phrase": "cluster of seizures"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0005604",
+        "differing_attribute_names": [],
+        "entity": "EpilepsyCause",
+        "gold_cui": "C0005604",
+        "gold_phrase": "erinatal insult",
+        "letter_id": "EA0010",
+        "predicted_cui": "C0005604",
+        "predicted_phrase": "perinatal insult"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C2725260",
+        "differing_attribute_names": [
+          "DrugName"
+        ],
+        "entity": "Prescription",
+        "gold_cui": "C2725260",
+        "gold_phrase": "eslicarbazepine",
+        "letter_id": "EA0011",
+        "predicted_cui": "C2725260",
+        "predicted_phrase": "eslicarbazepine, 800 mg once a day"
+      },
+      {
+        "category": "phrase_match_cui_miss",
+        "cui": "",
+        "differing_attribute_names": [
+          "DrugName"
+        ],
+        "entity": "Prescription",
+        "gold_cui": "C0700087",
+        "gold_phrase": "tegretol 600 mg daily",
+        "letter_id": "EA0012",
+        "predicted_cui": "C0006949",
+        "predicted_phrase": "tegretol 600 mg daily"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C3665337",
+        "differing_attribute_names": [
+          "PrematureBirth"
+        ],
+        "entity": "BirthHistory",
+        "gold_cui": "C3665337",
+        "gold_phrase": "normal birth",
+        "letter_id": "EA0021",
+        "predicted_cui": "C3665337",
+        "predicted_phrase": "normal birth"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C0751495",
+        "differing_attribute_names": [
+          "PointInTime"
+        ],
+        "entity": "SeizureFrequency",
+        "gold_cui": "C0751495",
+        "gold_phrase": "focal seizures",
+        "letter_id": "EA0022",
+        "predicted_cui": "C0751495",
+        "predicted_phrase": "focal seizures"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0014544",
+        "differing_attribute_names": [],
+        "entity": "Onset",
+        "gold_cui": "C0014544",
+        "gold_phrase": "epileps",
+        "letter_id": "EA0033",
+        "predicted_cui": "C0014544",
+        "predicted_phrase": "epilepsy"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0270838",
+        "differing_attribute_names": [
+          "DiagCategory"
+        ],
+        "entity": "Diagnosis",
+        "gold_cui": "C0270838",
+        "gold_phrase": "secondly generalised seizures",
+        "letter_id": "EA0040",
+        "predicted_cui": "C0270838",
+        "predicted_phrase": "secondarily generalised seizures"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C0014544",
+        "differing_attribute_names": [
+          "Age",
+          "AgeUnit",
+          "NumberOfTimePeriods",
+          "TimePeriod"
+        ],
+        "entity": "Onset",
+        "gold_cui": "C0014544",
+        "gold_phrase": "epilepsy",
+        "letter_id": "EA0057",
+        "predicted_cui": "C0014544",
+        "predicted_phrase": "epilepsy"
+      },
+      {
+        "category": "phrase_match_cui_miss",
+        "cui": "",
+        "differing_attribute_names": [],
+        "entity": "PatientHistory",
+        "gold_cui": "C0011847",
+        "gold_phrase": "diabetes",
+        "letter_id": "EA0073",
+        "predicted_cui": "C0011849",
+        "predicted_phrase": "diabetes"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C0014544",
+        "differing_attribute_names": [],
+        "entity": "WhenDiagnosed",
+        "gold_cui": "C0014544",
+        "gold_phrase": "epilepsy",
+        "letter_id": "EA0075",
+        "predicted_cui": "C0014544",
+        "predicted_phrase": "epileps"
+      },
+      {
+        "category": "cui_match_feature_miss",
+        "cui": "C0560017",
+        "differing_attribute_names": [
+          "CT_Performed",
+          "CT_Results",
+          "EEG_Performed",
+          "EEG_Results"
+        ],
+        "entity": "Investigations",
+        "gold_cui": "C0560017",
+        "gold_phrase": "eeg",
+        "letter_id": "EA0129",
+        "predicted_cui": "C0560017",
+        "predicted_phrase": "ct"
+      },
+      {
+        "category": "phrase_miss_cui_match",
+        "cui": "C4054482",
+        "differing_attribute_names": [],
+        "entity": "BirthHistory",
+        "gold_cui": "C4054482",
+        "gold_phrase": "prematurely",
+        "letter_id": "EA0133",
+        "predicted_cui": "C4054482",
+        "predicted_phrase": "born prematurely at 32 weeks"
+      },
+      {
+        "category": "phrase_match_cui_miss",
+        "cui": "",
+        "differing_attribute_names": [],
+        "entity": "BirthHistory",
+        "gold_cui": "C0005604",
+        "gold_phrase": "perinatal injury",
+        "letter_id": "EA0137",
+        "predicted_cui": "C0456798",
+        "predicted_phrase": "perinatal injury"
+      }
+    ],
+    "missing_cui": {
+      "by_entity": {
+        "BirthHistory": {
+          "gold": 0,
+          "predicted": 0
+        },
+        "Diagnosis": {
+          "gold": 1,
+          "predicted": 0
+        },
+        "EpilepsyCause": {
+          "gold": 0,
+          "predicted": 0
+        },
+        "Investigations": {
+          "gold": 0,
+          "predicted": 1
+        },
+        "Onset": {
+          "gold": 0,
+          "predicted": 0
+        },
+        "PatientHistory": {
+          "gold": 0,
+          "predicted": 0
+        },
+        "Prescription": {
+          "gold": 0,
+          "predicted": 0
+        },
+        "SeizureFrequency": {
+          "gold": 0,
+          "predicted": 5
+        },
+        "WhenDiagnosed": {
+          "gold": 0,
+          "predicted": 0
+        }
+      },
+      "gold": 1,
+      "predicted": 6
+    },
+    "paper_comparable_nine_entity_overall": true,
+    "representation_deltas": {
+      "BirthHistory": {
+        "cui_to_all_features": -0.19672131147540983,
+        "phrase_to_cui": 0.032786885245901565
+      },
+      "Diagnosis": {
+        "cui_to_all_features": -0.4322845417236663,
+        "phrase_to_cui": 0.03556771545827642
+      },
+      "EpilepsyCause": {
+        "cui_to_all_features": 0.0,
+        "phrase_to_cui": 0.09090909090909094
+      },
+      "Investigations": {
+        "cui_to_all_features": -0.012383900928792546,
+        "phrase_to_cui": -0.16718266253869962
+      },
+      "Onset": {
+        "cui_to_all_features": -0.11428571428571432,
+        "phrase_to_cui": 0.2285714285714287
+      },
+      "PatientHistory": {
+        "cui_to_all_features": -0.10296411856474258,
+        "phrase_to_cui": 0.0717628705148205
+      },
+      "Prescription": {
+        "cui_to_all_features": -0.09134615384615385,
+        "phrase_to_cui": 0.5625
+      },
+      "SeizureFrequency": {
+        "cui_to_all_features": -0.06106870229007633,
+        "phrase_to_cui": 0.27480916030534364
+      },
+      "WhenDiagnosed": {
+        "cui_to_all_features": 0.0,
+        "phrase_to_cui": 0.18181818181818177
+      }
+    },
+    "scores": {
+      "all_features": {
+        "macro_per_item": {
+          "f1": 0.6020393507949513,
+          "precision": 0.6181673732072414,
+          "recall": 0.6064957830242411
+        },
+        "macro_per_letter": {
+          "f1": 0.7921961159822157,
+          "precision": 0.8732677459039703,
+          "recall": 0.7471676072616338
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "entity": "BirthHistory",
+            "per_item": {
+              "f1": 0.7213114754098361,
+              "fn": 9,
+              "fp": 8,
+              "precision": 0.7333333333333333,
+              "recall": 0.7096774193548387,
+              "tp": 22
+            },
+            "per_letter": {
+              "f1": 0.8444444444444443,
+              "fn": 7,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 0.7307692307692307,
+              "tp": 19
+            }
+          },
+          "Diagnosis": {
+            "entity": "Diagnosis",
+            "per_item": {
+              "f1": 0.3009575923392613,
+              "fn": 295,
+              "fp": 216,
+              "precision": 0.3374233128834356,
+              "recall": 0.2716049382716049,
+              "tp": 110
+            },
+            "per_letter": {
+              "f1": 0.8157894736842105,
+              "fn": 37,
+              "fp": 5,
+              "precision": 0.9489795918367347,
+              "recall": 0.7153846153846154,
+              "tp": 93
+            }
+          },
+          "EpilepsyCause": {
+            "entity": "EpilepsyCause",
+            "per_item": {
+              "f1": 0.6818181818181819,
+              "fn": 6,
+              "fp": 8,
+              "precision": 0.6521739130434783,
+              "recall": 0.7142857142857143,
+              "tp": 15
+            },
+            "per_letter": {
+              "f1": 0.742857142857143,
+              "fn": 3,
+              "fp": 6,
+              "precision": 0.6842105263157895,
+              "recall": 0.8125,
+              "tp": 13
+            }
+          },
+          "Investigations": {
+            "entity": "Investigations",
+            "per_item": {
+              "f1": 0.4210526315789474,
+              "fn": 68,
+              "fp": 119,
+              "precision": 0.36363636363636365,
+              "recall": 0.5,
+              "tp": 68
+            },
+            "per_letter": {
+              "f1": 0.6711409395973156,
+              "fn": 28,
+              "fp": 21,
+              "precision": 0.704225352112676,
+              "recall": 0.6410256410256411,
+              "tp": 50
+            }
+          },
+          "Onset": {
+            "entity": "Onset",
+            "per_item": {
+              "f1": 0.5142857142857143,
+              "fn": 8,
+              "fp": 9,
+              "precision": 0.5,
+              "recall": 0.5294117647058824,
+              "tp": 9
+            },
+            "per_letter": {
+              "f1": 0.6428571428571429,
+              "fn": 4,
+              "fp": 6,
+              "precision": 0.6,
+              "recall": 0.6923076923076923,
+              "tp": 9
+            }
+          },
+          "PatientHistory": {
+            "entity": "PatientHistory",
+            "per_item": {
+              "f1": 0.2870514820592823,
+              "fn": 374,
+              "fp": 83,
+              "precision": 0.5257142857142857,
+              "recall": 0.19742489270386265,
+              "tp": 92
+            },
+            "per_letter": {
+              "f1": 0.5869565217391304,
+              "fn": 74,
+              "fp": 2,
+              "precision": 0.9642857142857143,
+              "recall": 0.421875,
+              "tp": 54
+            }
+          },
+          "Prescription": {
+            "entity": "Prescription",
+            "per_item": {
+              "f1": 0.7692307692307692,
+              "fn": 46,
+              "fp": 50,
+              "precision": 0.7619047619047619,
+              "recall": 0.7766990291262136,
+              "tp": 160
+            },
+            "per_letter": {
+              "f1": 0.8952380952380952,
+              "fn": 19,
+              "fp": 3,
+              "precision": 0.9690721649484536,
+              "recall": 0.831858407079646,
+              "tp": 94
+            }
+          },
+          "SeizureFrequency": {
+            "entity": "SeizureFrequency",
+            "per_item": {
+              "f1": 0.7226463104325701,
+              "fn": 45,
+              "fp": 64,
+              "precision": 0.6893203883495146,
+              "recall": 0.7593582887700535,
+              "tp": 142
+            },
+            "per_letter": {
+              "f1": 0.9304812834224598,
+              "fn": 12,
+              "fp": 1,
+              "precision": 0.9886363636363636,
+              "recall": 0.8787878787878788,
+              "tp": 87
+            }
+          },
+          "WhenDiagnosed": {
+            "entity": "WhenDiagnosed",
+            "per_item": {
+              "f1": 1.0,
+              "fn": 0,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "tp": 11
+            },
+            "per_letter": {
+              "f1": 1.0,
+              "fn": 0,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "tp": 11
+            }
+          }
+        }
+      },
+      "cui": {
+        "macro_per_item": {
+          "f1": 0.7143787333632354,
+          "precision": 0.7452528088956957,
+          "recall": 0.711300712847634
+        },
+        "macro_per_letter": {
+          "f1": 0.8534360732484327,
+          "precision": 0.8815401743274283,
+          "recall": 0.844756319147912
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "entity": "BirthHistory",
+            "per_item": {
+              "f1": 0.9180327868852459,
+              "fn": 3,
+              "fp": 2,
+              "precision": 0.9333333333333333,
+              "recall": 0.9032258064516129,
+              "tp": 28
+            },
+            "per_letter": {
+              "f1": 0.9803921568627451,
+              "fn": 1,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 0.9615384615384616,
+              "tp": 25
+            }
+          },
+          "Diagnosis": {
+            "entity": "Diagnosis",
+            "per_item": {
+              "f1": 0.7332421340629276,
+              "fn": 137,
+              "fp": 58,
+              "precision": 0.8220858895705522,
+              "recall": 0.6617283950617284,
+              "tp": 268
+            },
+            "per_letter": {
+              "f1": 0.9694656488549619,
+              "fn": 3,
+              "fp": 5,
+              "precision": 0.9621212121212122,
+              "recall": 0.9769230769230769,
+              "tp": 127
+            }
+          },
+          "EpilepsyCause": {
+            "entity": "EpilepsyCause",
+            "per_item": {
+              "f1": 0.6818181818181819,
+              "fn": 6,
+              "fp": 8,
+              "precision": 0.6521739130434783,
+              "recall": 0.7142857142857143,
+              "tp": 15
+            },
+            "per_letter": {
+              "f1": 0.742857142857143,
+              "fn": 3,
+              "fp": 6,
+              "precision": 0.6842105263157895,
+              "recall": 0.8125,
+              "tp": 13
+            }
+          },
+          "Investigations": {
+            "entity": "Investigations",
+            "per_item": {
+              "f1": 0.43343653250773995,
+              "fn": 66,
+              "fp": 117,
+              "precision": 0.37433155080213903,
+              "recall": 0.5147058823529411,
+              "tp": 70
+            },
+            "per_letter": {
+              "f1": 0.68,
+              "fn": 27,
+              "fp": 21,
+              "precision": 0.7083333333333334,
+              "recall": 0.6538461538461539,
+              "tp": 51
+            }
+          },
+          "Onset": {
+            "entity": "Onset",
+            "per_item": {
+              "f1": 0.6285714285714287,
+              "fn": 6,
+              "fp": 7,
+              "precision": 0.6111111111111112,
+              "recall": 0.6470588235294118,
+              "tp": 11
+            },
+            "per_letter": {
+              "f1": 0.7333333333333334,
+              "fn": 2,
+              "fp": 6,
+              "precision": 0.6470588235294118,
+              "recall": 0.8461538461538461,
+              "tp": 11
+            }
+          },
+          "PatientHistory": {
+            "entity": "PatientHistory",
+            "per_item": {
+              "f1": 0.3900156006240249,
+              "fn": 341,
+              "fp": 50,
+              "precision": 0.7142857142857143,
+              "recall": 0.26824034334763946,
+              "tp": 125
+            },
+            "per_letter": {
+              "f1": 0.6868686868686867,
+              "fn": 60,
+              "fp": 2,
+              "precision": 0.9714285714285714,
+              "recall": 0.53125,
+              "tp": 68
+            }
+          },
+          "Prescription": {
+            "entity": "Prescription",
+            "per_item": {
+              "f1": 0.860576923076923,
+              "fn": 27,
+              "fp": 31,
+              "precision": 0.8523809523809524,
+              "recall": 0.8689320388349514,
+              "tp": 179
+            },
+            "per_letter": {
+              "f1": 0.9406392694063926,
+              "fn": 10,
+              "fp": 3,
+              "precision": 0.9716981132075472,
+              "recall": 0.911504424778761,
+              "tp": 103
+            }
+          },
+          "SeizureFrequency": {
+            "entity": "SeizureFrequency",
+            "per_item": {
+              "f1": 0.7837150127226464,
+              "fn": 33,
+              "fp": 52,
+              "precision": 0.7475728155339806,
+              "recall": 0.8235294117647058,
+              "tp": 154
+            },
+            "per_letter": {
+              "f1": 0.9473684210526315,
+              "fn": 9,
+              "fp": 1,
+              "precision": 0.989010989010989,
+              "recall": 0.9090909090909091,
+              "tp": 90
+            }
+          },
+          "WhenDiagnosed": {
+            "entity": "WhenDiagnosed",
+            "per_item": {
+              "f1": 1.0,
+              "fn": 0,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "tp": 11
+            },
+            "per_letter": {
+              "f1": 1.0,
+              "fn": 0,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "tp": 11
+            }
+          }
+        }
+      },
+      "normalized_phrase": {
+        "macro_per_item": {
+          "f1": 0.5686517699983082,
+          "precision": 0.5929717106857043,
+          "recall": 0.5686045734490448
+        },
+        "macro_per_letter": {
+          "f1": 0.7518010490991044,
+          "precision": 0.8645436322167266,
+          "recall": 0.6916844669656248
+        },
+        "per_entity": {
+          "BirthHistory": {
+            "entity": "BirthHistory",
+            "per_item": {
+              "f1": 0.8852459016393444,
+              "fn": 4,
+              "fp": 3,
+              "precision": 0.9,
+              "recall": 0.8709677419354839,
+              "tp": 27
+            },
+            "per_letter": {
+              "f1": 0.9387755102040816,
+              "fn": 3,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 0.8846153846153846,
+              "tp": 23
+            }
+          },
+          "Diagnosis": {
+            "entity": "Diagnosis",
+            "per_item": {
+              "f1": 0.6976744186046512,
+              "fn": 150,
+              "fp": 71,
+              "precision": 0.7822085889570553,
+              "recall": 0.6296296296296297,
+              "tp": 255
+            },
+            "per_letter": {
+              "f1": 0.9615384615384616,
+              "fn": 5,
+              "fp": 5,
+              "precision": 0.9615384615384616,
+              "recall": 0.9615384615384616,
+              "tp": 125
+            }
+          },
+          "EpilepsyCause": {
+            "entity": "EpilepsyCause",
+            "per_item": {
+              "f1": 0.5909090909090909,
+              "fn": 8,
+              "fp": 10,
+              "precision": 0.5652173913043478,
+              "recall": 0.6190476190476191,
+              "tp": 13
+            },
+            "per_letter": {
+              "f1": 0.6666666666666667,
+              "fn": 5,
+              "fp": 6,
+              "precision": 0.6470588235294118,
+              "recall": 0.6875,
+              "tp": 11
+            }
+          },
+          "Investigations": {
+            "entity": "Investigations",
+            "per_item": {
+              "f1": 0.6006191950464396,
+              "fn": 39,
+              "fp": 90,
+              "precision": 0.5187165775401069,
+              "recall": 0.7132352941176471,
+              "tp": 97
+            },
+            "per_letter": {
+              "f1": 0.7624999999999998,
+              "fn": 17,
+              "fp": 21,
+              "precision": 0.7439024390243902,
+              "recall": 0.782051282051282,
+              "tp": 61
+            }
+          },
+          "Onset": {
+            "entity": "Onset",
+            "per_item": {
+              "f1": 0.39999999999999997,
+              "fn": 10,
+              "fp": 11,
+              "precision": 0.3888888888888889,
+              "recall": 0.4117647058823529,
+              "tp": 7
+            },
+            "per_letter": {
+              "f1": 0.5384615384615384,
+              "fn": 6,
+              "fp": 6,
+              "precision": 0.5384615384615384,
+              "recall": 0.5384615384615384,
+              "tp": 7
+            }
+          },
+          "PatientHistory": {
+            "entity": "PatientHistory",
+            "per_item": {
+              "f1": 0.3182527301092044,
+              "fn": 364,
+              "fp": 73,
+              "precision": 0.5828571428571429,
+              "recall": 0.21888412017167383,
+              "tp": 102
+            },
+            "per_letter": {
+              "f1": 0.6387434554973821,
+              "fn": 67,
+              "fp": 2,
+              "precision": 0.9682539682539683,
+              "recall": 0.4765625,
+              "tp": 61
+            }
+          },
+          "Prescription": {
+            "entity": "Prescription",
+            "per_item": {
+              "f1": 0.2980769230769231,
+              "fn": 144,
+              "fp": 148,
+              "precision": 0.29523809523809524,
+              "recall": 0.30097087378640774,
+              "tp": 62
+            },
+            "per_letter": {
+              "f1": 0.55,
+              "fn": 69,
+              "fp": 3,
+              "precision": 0.9361702127659575,
+              "recall": 0.3893805309734513,
+              "tp": 44
+            }
+          },
+          "SeizureFrequency": {
+            "entity": "SeizureFrequency",
+            "per_item": {
+              "f1": 0.5089058524173028,
+              "fn": 87,
+              "fp": 106,
+              "precision": 0.4854368932038835,
+              "recall": 0.5347593582887701,
+              "tp": 100
+            },
+            "per_letter": {
+              "f1": 0.8095238095238095,
+              "fn": 31,
+              "fp": 1,
+              "precision": 0.9855072463768116,
+              "recall": 0.6868686868686869,
+              "tp": 68
+            }
+          },
+          "WhenDiagnosed": {
+            "entity": "WhenDiagnosed",
+            "per_item": {
+              "f1": 0.8181818181818182,
+              "fn": 2,
+              "fp": 2,
+              "precision": 0.8181818181818182,
+              "recall": 0.8181818181818182,
+              "tp": 9
+            },
+            "per_letter": {
+              "f1": 0.9,
+              "fn": 2,
+              "fp": 0,
+              "precision": 1.0,
+              "recall": 0.8181818181818182,
+              "tp": 9
+            }
+          }
+        }
+      }
+    }
+  },
+  "entities": [
+    "BirthHistory",
+    "Diagnosis",
+    "EpilepsyCause",
+    "Investigations",
+    "Onset",
+    "PatientHistory",
+    "Prescription",
+    "SeizureFrequency",
+    "WhenDiagnosed"
+  ],
+  "existing_score_regression": {
+    "benchmark_micro": {
+      "per_entity": {
+        "BirthHistory": {
+          "entity": "BirthHistory",
+          "per_item": {
+            "f1": 0.5573770491803278,
+            "fn": 14,
+            "fp": 13,
+            "precision": 0.5666666666666667,
+            "recall": 0.5483870967741935,
+            "tp": 17
+          },
+          "per_letter": {
+            "f1": 0.7317073170731707,
+            "fn": 11,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.5769230769230769,
+            "tp": 15
+          }
+        },
+        "Diagnosis": {
+          "entity": "Diagnosis",
+          "per_item": {
+            "f1": 0.295485636114911,
+            "fn": 297,
+            "fp": 218,
+            "precision": 0.3312883435582822,
+            "recall": 0.26666666666666666,
+            "tp": 108
+          },
+          "per_letter": {
+            "f1": 0.8157894736842105,
+            "fn": 37,
+            "fp": 5,
+            "precision": 0.9489795918367347,
+            "recall": 0.7153846153846154,
+            "tp": 93
+          }
+        },
+        "EpilepsyCause": {
+          "entity": "EpilepsyCause",
+          "per_item": {
+            "f1": 0.5,
+            "fn": 10,
+            "fp": 12,
+            "precision": 0.4782608695652174,
+            "recall": 0.5238095238095238,
+            "tp": 11
+          },
+          "per_letter": {
+            "f1": 0.5806451612903225,
+            "fn": 7,
+            "fp": 6,
+            "precision": 0.6,
+            "recall": 0.5625,
+            "tp": 9
+          }
+        },
+        "Investigations": {
+          "entity": "Investigations",
+          "per_item": {
+            "f1": 0.3219814241486068,
+            "fn": 84,
+            "fp": 135,
+            "precision": 0.27807486631016043,
+            "recall": 0.38235294117647056,
+            "tp": 52
+          },
+          "per_letter": {
+            "f1": 0.5755395683453238,
+            "fn": 38,
+            "fp": 21,
+            "precision": 0.6557377049180327,
+            "recall": 0.5128205128205128,
+            "tp": 40
+          }
+        },
+        "Onset": {
+          "entity": "Onset",
+          "per_item": {
+            "f1": 0.28571428571428575,
+            "fn": 12,
+            "fp": 13,
+            "precision": 0.2777777777777778,
+            "recall": 0.29411764705882354,
+            "tp": 5
+          },
+          "per_letter": {
+            "f1": 0.41666666666666663,
+            "fn": 8,
+            "fp": 6,
+            "precision": 0.45454545454545453,
+            "recall": 0.38461538461538464,
+            "tp": 5
+          }
+        },
+        "PatientHistory": {
+          "entity": "PatientHistory",
+          "per_item": {
+            "f1": 0.23712948517940716,
+            "fn": 390,
+            "fp": 99,
+            "precision": 0.4342857142857143,
+            "recall": 0.1630901287553648,
+            "tp": 76
+          },
+          "per_letter": {
+            "f1": 0.547486033519553,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9607843137254902,
+            "recall": 0.3828125,
+            "tp": 49
+          }
+        },
+        "Prescription": {
+          "entity": "Prescription",
+          "per_item": {
+            "f1": 0.27884615384615385,
+            "fn": 148,
+            "fp": 152,
+            "precision": 0.2761904761904762,
+            "recall": 0.2815533980582524,
+            "tp": 58
+          },
+          "per_letter": {
+            "f1": 0.5222929936305732,
+            "fn": 72,
+            "fp": 3,
+            "precision": 0.9318181818181818,
+            "recall": 0.36283185840707965,
+            "tp": 41
+          }
+        },
+        "SeizureFrequency": {
+          "entity": "SeizureFrequency",
+          "per_item": {
+            "f1": 0.6972010178117047,
+            "fn": 50,
+            "fp": 69,
+            "precision": 0.6650485436893204,
+            "recall": 0.732620320855615,
+            "tp": 137
+          },
+          "per_letter": {
+            "f1": 0.9304812834224598,
+            "fn": 12,
+            "fp": 1,
+            "precision": 0.9886363636363636,
+            "recall": 0.8787878787878788,
+            "tp": 87
+          }
+        },
+        "WhenDiagnosed": {
+          "entity": "WhenDiagnosed",
+          "per_item": {
+            "f1": 0.8181818181818182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8181818181818182,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.3548387096774194,
+        "fn": 1007,
+        "fp": 713,
+        "precision": 0.3988195615514334,
+        "recall": 0.3195945945945946,
+        "tp": 473
+      },
+      "per_letter": {
+        "f1": 0.6918489065606361,
+        "fn": 266,
+        "fp": 44,
+        "precision": 0.8877551020408163,
+        "recall": 0.5667752442996743,
+        "tp": 348
+      }
+    },
+    "phrase_only_micro": {
+      "per_entity": {
+        "BirthHistory": {
+          "entity": "BirthHistory",
+          "per_item": {
+            "f1": 0.8852459016393444,
+            "fn": 4,
+            "fp": 3,
+            "precision": 0.9,
+            "recall": 0.8709677419354839,
+            "tp": 27
+          },
+          "per_letter": {
+            "f1": 0.9387755102040816,
+            "fn": 3,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8846153846153846,
+            "tp": 23
+          }
+        },
+        "Diagnosis": {
+          "entity": "Diagnosis",
+          "per_item": {
+            "f1": 0.7250341997264022,
+            "fn": 140,
+            "fp": 61,
+            "precision": 0.8128834355828221,
+            "recall": 0.654320987654321,
+            "tp": 265
+          },
+          "per_letter": {
+            "f1": 0.9615384615384616,
+            "fn": 5,
+            "fp": 5,
+            "precision": 0.9615384615384616,
+            "recall": 0.9615384615384616,
+            "tp": 125
+          }
+        },
+        "EpilepsyCause": {
+          "entity": "EpilepsyCause",
+          "per_item": {
+            "f1": 0.5909090909090909,
+            "fn": 8,
+            "fp": 10,
+            "precision": 0.5652173913043478,
+            "recall": 0.6190476190476191,
+            "tp": 13
+          },
+          "per_letter": {
+            "f1": 0.6666666666666667,
+            "fn": 5,
+            "fp": 6,
+            "precision": 0.6470588235294118,
+            "recall": 0.6875,
+            "tp": 11
+          }
+        },
+        "Investigations": {
+          "entity": "Investigations",
+          "per_item": {
+            "f1": 0.6006191950464396,
+            "fn": 39,
+            "fp": 90,
+            "precision": 0.5187165775401069,
+            "recall": 0.7132352941176471,
+            "tp": 97
+          },
+          "per_letter": {
+            "f1": 0.7624999999999998,
+            "fn": 17,
+            "fp": 21,
+            "precision": 0.7439024390243902,
+            "recall": 0.782051282051282,
+            "tp": 61
+          }
+        },
+        "Onset": {
+          "entity": "Onset",
+          "per_item": {
+            "f1": 0.39999999999999997,
+            "fn": 10,
+            "fp": 11,
+            "precision": 0.3888888888888889,
+            "recall": 0.4117647058823529,
+            "tp": 7
+          },
+          "per_letter": {
+            "f1": 0.5384615384615384,
+            "fn": 6,
+            "fp": 6,
+            "precision": 0.5384615384615384,
+            "recall": 0.5384615384615384,
+            "tp": 7
+          }
+        },
+        "PatientHistory": {
+          "entity": "PatientHistory",
+          "per_item": {
+            "f1": 0.3182527301092044,
+            "fn": 364,
+            "fp": 73,
+            "precision": 0.5828571428571429,
+            "recall": 0.21888412017167383,
+            "tp": 102
+          },
+          "per_letter": {
+            "f1": 0.6387434554973821,
+            "fn": 67,
+            "fp": 2,
+            "precision": 0.9682539682539683,
+            "recall": 0.4765625,
+            "tp": 61
+          }
+        },
+        "Prescription": {
+          "entity": "Prescription",
+          "per_item": {
+            "f1": 0.2980769230769231,
+            "fn": 144,
+            "fp": 148,
+            "precision": 0.29523809523809524,
+            "recall": 0.30097087378640774,
+            "tp": 62
+          },
+          "per_letter": {
+            "f1": 0.55,
+            "fn": 69,
+            "fp": 3,
+            "precision": 0.9361702127659575,
+            "recall": 0.3893805309734513,
+            "tp": 44
+          }
+        },
+        "SeizureFrequency": {
+          "entity": "SeizureFrequency",
+          "per_item": {
+            "f1": 0.7430025445292621,
+            "fn": 41,
+            "fp": 60,
+            "precision": 0.7087378640776699,
+            "recall": 0.7807486631016043,
+            "tp": 146
+          },
+          "per_letter": {
+            "f1": 0.9417989417989419,
+            "fn": 10,
+            "fp": 1,
+            "precision": 0.9888888888888889,
+            "recall": 0.898989898989899,
+            "tp": 89
+          }
+        },
+        "WhenDiagnosed": {
+          "entity": "WhenDiagnosed",
+          "per_item": {
+            "f1": 0.8181818181818182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8181818181818182,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.5461365341335335,
+        "fn": 752,
+        "fp": 458,
+        "precision": 0.6138279932546374,
+        "recall": 0.4918918918918919,
+        "tp": 728
+      },
+      "per_letter": {
+        "f1": 0.7904411764705882,
+        "fn": 184,
+        "fp": 44,
+        "precision": 0.9071729957805907,
+        "recall": 0.7003257328990228,
+        "tp": 430
+      }
+    },
+    "semantic_micro": {
+      "per_entity": {
+        "BirthHistory": {
+          "entity": "BirthHistory",
+          "per_item": {
+            "f1": 0.6229508196721313,
+            "fn": 12,
+            "fp": 11,
+            "precision": 0.6333333333333333,
+            "recall": 0.6129032258064516,
+            "tp": 19
+          },
+          "per_letter": {
+            "f1": 0.761904761904762,
+            "fn": 10,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.6153846153846154,
+            "tp": 16
+          }
+        },
+        "Diagnosis": {
+          "entity": "Diagnosis",
+          "per_item": {
+            "f1": 0.31190150478796175,
+            "fn": 291,
+            "fp": 212,
+            "precision": 0.3496932515337423,
+            "recall": 0.2814814814814815,
+            "tp": 114
+          },
+          "per_letter": {
+            "f1": 0.8260869565217392,
+            "fn": 35,
+            "fp": 5,
+            "precision": 0.95,
+            "recall": 0.7307692307692307,
+            "tp": 95
+          }
+        },
+        "EpilepsyCause": {
+          "entity": "EpilepsyCause",
+          "per_item": {
+            "f1": 0.5,
+            "fn": 10,
+            "fp": 12,
+            "precision": 0.4782608695652174,
+            "recall": 0.5238095238095238,
+            "tp": 11
+          },
+          "per_letter": {
+            "f1": 0.5806451612903225,
+            "fn": 7,
+            "fp": 6,
+            "precision": 0.6,
+            "recall": 0.5625,
+            "tp": 9
+          }
+        },
+        "Investigations": {
+          "entity": "Investigations",
+          "per_item": {
+            "f1": 0.3653250773993808,
+            "fn": 77,
+            "fp": 128,
+            "precision": 0.3155080213903743,
+            "recall": 0.4338235294117647,
+            "tp": 59
+          },
+          "per_letter": {
+            "f1": 0.5957446808510638,
+            "fn": 36,
+            "fp": 21,
+            "precision": 0.6666666666666666,
+            "recall": 0.5384615384615384,
+            "tp": 42
+          }
+        },
+        "Onset": {
+          "entity": "Onset",
+          "per_item": {
+            "f1": 0.28571428571428575,
+            "fn": 12,
+            "fp": 13,
+            "precision": 0.2777777777777778,
+            "recall": 0.29411764705882354,
+            "tp": 5
+          },
+          "per_letter": {
+            "f1": 0.41666666666666663,
+            "fn": 8,
+            "fp": 6,
+            "precision": 0.45454545454545453,
+            "recall": 0.38461538461538464,
+            "tp": 5
+          }
+        },
+        "PatientHistory": {
+          "entity": "PatientHistory",
+          "per_item": {
+            "f1": 0.24024960998439937,
+            "fn": 389,
+            "fp": 98,
+            "precision": 0.44,
+            "recall": 0.16523605150214593,
+            "tp": 77
+          },
+          "per_letter": {
+            "f1": 0.547486033519553,
+            "fn": 79,
+            "fp": 2,
+            "precision": 0.9607843137254902,
+            "recall": 0.3828125,
+            "tp": 49
+          }
+        },
+        "Prescription": {
+          "entity": "Prescription",
+          "per_item": {
+            "f1": 0.27884615384615385,
+            "fn": 148,
+            "fp": 152,
+            "precision": 0.2761904761904762,
+            "recall": 0.2815533980582524,
+            "tp": 58
+          },
+          "per_letter": {
+            "f1": 0.5222929936305732,
+            "fn": 72,
+            "fp": 3,
+            "precision": 0.9318181818181818,
+            "recall": 0.36283185840707965,
+            "tp": 41
+          }
+        },
+        "SeizureFrequency": {
+          "entity": "SeizureFrequency",
+          "per_item": {
+            "f1": 0.6972010178117047,
+            "fn": 50,
+            "fp": 69,
+            "precision": 0.6650485436893204,
+            "recall": 0.732620320855615,
+            "tp": 137
+          },
+          "per_letter": {
+            "f1": 0.9304812834224598,
+            "fn": 12,
+            "fp": 1,
+            "precision": 0.9886363636363636,
+            "recall": 0.8787878787878788,
+            "tp": 87
+          }
+        },
+        "WhenDiagnosed": {
+          "entity": "WhenDiagnosed",
+          "per_item": {
+            "f1": 0.8181818181818182,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.8181818181818182,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          },
+          "per_letter": {
+            "f1": 0.9,
+            "fn": 2,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 0.8181818181818182,
+            "tp": 9
+          }
+        }
+      },
+      "per_item": {
+        "f1": 0.36684171042760694,
+        "fn": 991,
+        "fp": 697,
+        "precision": 0.4123102866779089,
+        "recall": 0.3304054054054054,
+        "tp": 489
+      },
+      "per_letter": {
+        "f1": 0.698318496538081,
+        "fn": 261,
+        "fp": 44,
+        "precision": 0.889168765743073,
+        "recall": 0.5749185667752443,
+        "tp": 353
+      }
+    }
+  },
+  "generated_on": "2026-07-14",
+  "hypothesis_id": "exectv2_published_metric_reproduction_2026-07-14",
+  "metric_definitions": {
+    "all_features": "entity plus non-empty CUI and all evaluated attributes; CUIPhrase excluded; Certainty evaluated only for Diagnosis and PatientHistory; Negation evaluated only for PatientHistory",
+    "cui": "entity plus non-empty UMLS CUI; missing CUIs never match",
+    "normalized_phrase": "entity plus normalized selected text",
+    "overall": "unweighted macro mean across entity scores, matching paper Table 1",
+    "per_item": "multiset mention matching within letter, micro-aggregated per entity",
+    "per_letter": "entity is correct when at least one feature-complete mention matches"
+  },
+  "model": "none",
+  "paper_reference": {
+    "doi": "10.1186/s13326-024-00316-z",
+    "overall_per_item_f1": 0.87,
+    "overall_per_letter_f1": 0.9,
+    "per_entity_item_f1": {
+      "BirthHistory": 0.97,
+      "Diagnosis": 0.85,
+      "EpilepsyCause": 0.9,
+      "Investigations": 0.95,
+      "Onset": 0.96,
+      "PatientHistory": 0.78,
+      "Prescription": 0.87,
+      "SeizureFrequency": 0.66,
+      "WhenDiagnosed": 0.91
+    },
+    "scope": "original ExECTv2 validation on full200 with all nine entities"
+  },
+  "prompt_program": "none",
+  "repair_policy": "candidate output fixed before scoring; scorer performs format-only canonicalization",
+  "row_count": 140,
+  "row_policy": "all rows in the named development split; no test60 inspection",
+  "schema_version": 1,
+  "scorer_version": "exectv2_published_metrics_v1",
+  "source": {
+    "dependencies": {
+      "pydantic": "2.13.4",
+      "pyyaml": "6.0.3"
+    },
+    "dirty_tree": true,
+    "python": "3.13.5",
+    "revision": "6277796a0f4a8ee2afe793e6f1dd33a20c2e5ad2"
+  },
+  "split": "dev140",
+  "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v2.json",
+  "split_manifest_sha256": "fc1dde0d3666e116b4a0d47eef1e119dac8f5158eae43edceb961620c3ad8739"
+}

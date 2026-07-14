@@ -73,6 +73,7 @@ by its assembly config; those inputs are selected and hash-checked here.
 | ExECT model transfer | S4, S5, S8 | Same-core GPT-4.1-mini, DeepSeek, and Qwen evidence, with permitted dev140 cached outputs and configs retained | Three remaining exact models and cross-model overconfidence analysis |
 | Cross-task ablation | S1, S6 | Normalization contributes on both tasks; current evidence gate is score-inert | Schema/evidence rejection and repair challenge fixtures; remaining stage isolation |
 | ExECT calibration | S5, S8 | Internal correctness rule: Brier `0.2225`, base-rate `0.2340`, ECE `0.0587` | Out-of-sample model-reported confidence and bounded routing verdict |
+| ExECT published metrics | S7 | Paper-derived normalized-phrase, CUI, and all-feature scorer plus a no-call all-nine-entity dev140 replay: macro item F1 `0.5687`, `0.7144`, and `0.6020` | Original system, annotation process, and reported `0.87`/`0.90` validation scores are not reproduced |
 | Annotation quality | S7, S9 | Family ledgers, canonical SF/Dx analyses, and blind replication are retained | One complete generated taxonomy with every cited case, handling, sensitivity, and review status |
 
 ## Authority and deletion rule

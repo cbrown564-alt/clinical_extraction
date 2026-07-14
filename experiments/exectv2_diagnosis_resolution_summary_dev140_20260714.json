@@ -1,0 +1,44 @@
+{
+  "audit_jsonl": "experiments\\exectv2_diagnosis_interpretation_audit_dev140_20260714.jsonl",
+  "audit_sha256": "0c454b253d57cc572658eed62c232b7e5c688bfdfca68ebc1e8e87c332bee13f",
+  "completed_overlay_json": "C:\\Users\\cbrow\\Downloads\\exectv2-diagnosis-review-2026-07-14 (1).json",
+  "completed_overlay_sha256": "8744ca0af51a0c878dac995978502e0e342b619a44b3e555bf9ed4a3419bf7ac",
+  "decision_provenance_counts": {
+    "manual": 49,
+    "pattern_assisted": 197
+  },
+  "mechanism_counts": {
+    "clinical_granularity": 93,
+    "context_scope_error": 1,
+    "likely_gold_omission": 25,
+    "manual_extraction_error": 33,
+    "manual_representation": 15,
+    "missed_named_diagnosis": 21,
+    "non_target_diagnosis": 16,
+    "reviewed_equivalence": 17,
+    "same_cui_representation": 23,
+    "unresolved_clinical_ambiguity": 1,
+    "unsupported_spurious_diagnosis": 1
+  },
+  "method_memberships": {
+    "llm_only": 185,
+    "llm_with_rules": 62,
+    "rules_only": 82
+  },
+  "review_row_count": 246,
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "schema_version": "exectv2_diagnosis_resolution_ledger_v1",
+  "split": "dev140",
+  "triage_counts": {
+    "extraction_error": 72,
+    "representation": 173,
+    "uncertain": 1
+  },
+  "triage_direction_counts": {
+    "extraction_error:missed": 22,
+    "extraction_error:spurious": 50,
+    "representation:missed": 72,
+    "representation:spurious": 101,
+    "uncertain:spurious": 1
+  }
+}

@@ -25,13 +25,14 @@ The repository contains two tasks:
 
 The main scores are Gan Purist accuracy and ExECT de-duplicated clinical fact
 recovery (`clinical_headline`). The ExECT score is an internal research metric,
-not the published strict benchmark.
+not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
+full-attribute views are also available for explicit benchmark comparison.
 
 Current state, as of 2026-07-14:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- All 1,159 tests, Ruff, and mypy pass. CI runs all three checks. A separate
+- All 1,168 tests, Ruff, and mypy pass. CI runs all three checks. A separate
   Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
@@ -40,8 +41,11 @@ Current state, as of 2026-07-14:
 - The Gan efficiency audit records a 15/450 Purist gain for V12 at three cold
   model passes per note rather than one; unmatched cost and latency claims were
   rejected because the old runs lack telemetry.
-- Next work covers ExECT published metrics, out-of-sample confidence,
-  annotation evidence, and a strict six-model comparison.
+- The ExECT rules-only no-call dev140 replay reports macro item F1 of 0.5687 for
+  normalized phrase, 0.7144 for CUI, and 0.6020 for all features. This is a
+  development metric result, not reproduction of the original ExECT system.
+- Next work covers out-of-sample confidence, annotation evidence, and a strict
+  six-model comparison.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 

@@ -1,0 +1,3545 @@
+{
+  "baselines": {
+    "llm_only": {
+      "fixed_primary": {
+        "f1": 0.6861099349953924,
+        "fn": 84,
+        "fp": 101,
+        "gold_count": 297,
+        "precision": 0.6576271186440678,
+        "precision_tp": 194,
+        "pred_count": 295,
+        "recall": 0.7171717171717171,
+        "recall_tp": 213,
+        "tp": 213
+      },
+      "fixed_secondary": {
+        "concept_assertion": {
+          "f1": 0.5322314049586777,
+          "fn": 149,
+          "fp": 134,
+          "gold_count": 310,
+          "precision": 0.5457627118644067,
+          "precision_tp": 161,
+          "pred_count": 295,
+          "recall": 0.5193548387096775,
+          "recall_tp": 161,
+          "tp": 161
+        },
+        "concept_negation": {
+          "f1": 0.6624078962075162,
+          "fn": 91,
+          "fp": 108,
+          "gold_count": 297,
+          "precision": 0.6338983050847458,
+          "precision_tp": 187,
+          "pred_count": 295,
+          "recall": 0.6936026936026936,
+          "recall_tp": 206,
+          "tp": 206
+        }
+      },
+      "multiplicity_and_clinical_granularity_f1": 0.8499270131376352,
+      "reviewed_interpretation_f1": 0.9055616029799471
+    },
+    "llm_with_rules": {
+      "fixed_primary": {
+        "f1": 0.8983635875883036,
+        "fn": 21,
+        "fp": 41,
+        "gold_count": 297,
+        "precision": 0.8694267515923567,
+        "precision_tp": 273,
+        "pred_count": 314,
+        "recall": 0.9292929292929293,
+        "recall_tp": 276,
+        "tp": 276
+      },
+      "fixed_secondary": {
+        "concept_assertion": {
+          "f1": 0.7942583732057417,
+          "fn": 61,
+          "fp": 68,
+          "gold_count": 310,
+          "precision": 0.7854889589905363,
+          "precision_tp": 249,
+          "pred_count": 317,
+          "recall": 0.8032258064516129,
+          "recall_tp": 249,
+          "tp": 249
+        },
+        "concept_negation": {
+          "f1": 0.8852699015734932,
+          "fn": 25,
+          "fp": 45,
+          "gold_count": 297,
+          "precision": 0.856687898089172,
+          "precision_tp": 269,
+          "pred_count": 314,
+          "recall": 0.9158249158249159,
+          "recall_tp": 272,
+          "tp": 272
+        }
+      },
+      "multiplicity_and_clinical_granularity_f1": 0.97891261136452,
+      "reviewed_interpretation_f1": 0.9950374748775532
+    },
+    "rules_only": {
+      "fixed_primary": {
+        "f1": 0.8598519606043923,
+        "fn": 45,
+        "fp": 37,
+        "gold_count": 297,
+        "precision": 0.8715277777777778,
+        "precision_tp": 251,
+        "pred_count": 288,
+        "recall": 0.8484848484848485,
+        "recall_tp": 252,
+        "tp": 252
+      },
+      "fixed_secondary": {
+        "concept_assertion": {
+          "f1": 0.6622073578595318,
+          "fn": 112,
+          "fp": 90,
+          "gold_count": 310,
+          "precision": 0.6875,
+          "precision_tp": 198,
+          "pred_count": 288,
+          "recall": 0.6387096774193548,
+          "recall_tp": 198,
+          "tp": 198
+        },
+        "concept_negation": {
+          "f1": 0.7812191399587036,
+          "fn": 68,
+          "fp": 60,
+          "gold_count": 297,
+          "precision": 0.7916666666666666,
+          "precision_tp": 228,
+          "pred_count": 288,
+          "recall": 0.7710437710437711,
+          "recall_tp": 229,
+          "tp": 229
+        }
+      },
+      "multiplicity_and_clinical_granularity_f1": 0.9344139276602131,
+      "reviewed_interpretation_f1": 0.9519599174771588
+    }
+  },
+  "candidates": {
+    "llm_only_v02": {
+      "baseline_method": "llm_only",
+      "component": "Diagnosis decomposer prompt v0.2; no post-model clinical repair",
+      "evidence": {
+        "diagnosis_mentions": 300,
+        "evidence_validity_rate": 1.0,
+        "exact_evidence_mentions": 300,
+        "invalid_evidence": []
+      },
+      "input": {
+        "path": "experiments/exectv2_diagnosis_llm_only_candidate_dev140_20260714.jsonl",
+        "sha256": "a2bf46082cc14cbedfdc2f63091298c1d2d512b04d9fd3293816258f21badda2"
+      },
+      "residual_changes": {
+        "new_residual_rows": 116,
+        "new_residuals": [
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0002"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Since her last clinic appointment she has had four secondary generalised seizures."
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0002"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Since her last clinic appointment she has had four secondary generalised seizures."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0002"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Comments: we had a discussion about epilepsy in general."
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0005"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0008"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0008"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0011"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Focal seizures with altered awareness approximately 1 per fortnight"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0011"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0021"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0021"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "John\u2019s epilepsy started at the age of 4."
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0021"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "juvenile myoclonic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0026"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0026"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "juvenile myoclonic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0030"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0038"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0038"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis: symptomatic epilepsy with complex partial seizures and secondarily generalised seizures"
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0040"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "I think that Miss Clark has the syndrome of epilepsy with tonic \nclonic seizures alone."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0043"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "I think that Miss Clark has the syndrome of epilepsy with tonic \nclonic seizures alone."
+            ],
+            "concept": "tonic clonic seizures alone",
+            "direction": "spurious",
+            "letter_id": "EA0043"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0045"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0046"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "myoclonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0049"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "He frequently gets myoclonic jerks before the generalised tonic chronic seizures.",
+              "Myoclonic jerks daily."
+            ],
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "letter_id": "EA0049"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0054"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Unfortunately he still gets his focal seizures with altered awareness where he gets twitching of his right arm.",
+              "focal seizures with altered awareness (right arm movement)"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0054"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0057"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "He used to have focal motor seizures without changes in awareness, these would involve his left arm twitching with retained awareness."
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0057"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0059"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0061"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0067"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "temporal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0067"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0068"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0072"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0072"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "symptomatic focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0072"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0075"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "two unprovoked generalised seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0075"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0079"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "juvenile absence epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0082"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "sometimes trigger absences",
+              "the absences continue fairly frequent, he probably gets 2-3 per day"
+            ],
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0082"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "driving with epilepsy"
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0082"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "frontal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0088"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "generalised epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0093"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalisation",
+            "direction": "missed",
+            "letter_id": "EA0104"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "simple partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0104"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0106"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0106"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0108"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0108"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "There is usually a warning in the form of twitching in his left hand and then the episode progresses to a tonic clonic convulsion."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0108"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis:  Focal Seizures, probably temporal lobe."
+            ],
+            "concept": "temporal lobe epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0109"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "no focal to bilateral tonic clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0114"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0117"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0119"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0121"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "His most troubling type of seizure at the moment are focal seizures with altered awareness"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0121"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "generalised tonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0125"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Focal frontal lobe seizures consist of stiffening with posturing of an arm lasting around a minute"
+            ],
+            "concept": "focal frontal lobe seizures",
+            "direction": "spurious",
+            "letter_id": "EA0126"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0127"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0127"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizure",
+            "direction": "missed",
+            "letter_id": "EA0132"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "He has only ever had one episode of loss of consciousness which in hindsight was probably a focal to bilateral convulsive seizure"
+            ],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "spurious",
+            "letter_id": "EA0132"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0133"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0133"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0135"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0136"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "He has not had any generalised convulsions now for several years."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0136"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0137"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "She continues to have around 2 secondary generalised seizures per year."
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0137"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "She continues to have around 2 secondary generalised seizures per year."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0137"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "MRI scan of the brain with epilepsy protocol",
+              "We briefly discuss epilepsy surgery today as this might be an option if she continues to get seizures despite pharmacological treatment"
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0139"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "one secondarily generalised seizures which happend when she was 22"
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0143"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Her seizures were consistent with a temporal lobe semiology"
+            ],
+            "concept": "temporal lobe seizure",
+            "direction": "spurious",
+            "letter_id": "EA0143"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "one secondarily generalised seizures which happend when she was 22"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0143"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0146"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0149"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0150"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondary generalised seizures"
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0150"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondary generalised seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0150"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0152"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures in 2 days."
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0152"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0153"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "I think that these sterotyped brief epsiodes are focal seizures with altered awareness and that gives the diagnosis of epilepsy."
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0153"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "juvenile absence epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0156"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis Juvenile Absence Epilepsy"
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0156"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0157"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Hannah has a focal epilepsy with a mixture of complex partial and secondary generalised seizures."
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0157"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0158"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "She gets around 3-4 generalised seizures per month, usually when asleep."
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0158"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "temporal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0160"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0162"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "temporal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0163"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0167"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Jason gets focal seizures with altered awareness where he will have an abnormal sensation on the right side of his body and then find it difficult to talk"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0167"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0168"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0169"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "symptomatic epilepsy due to previous neurocysticercosis"
+            ],
+            "concept": "focal epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0169"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal dyscognitive seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0169"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0172"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0179"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0179"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0180"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0181"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "symptomatic epilepsy due to previous neurocysticercosis"
+            ],
+            "concept": "focal epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0181"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal dyscognitive seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0181"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0183"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0183"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0185"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "focal motor seizures",
+            "direction": "missed",
+            "letter_id": "EA0186"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "As you recall Mr Owens has had focal motor seizures in the past where he has had jerking of his right leg."
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0186"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondary generalised seizure which start like her normal seizure but then will progress to involve loss of consciousness with limb shaking"
+            ],
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0188"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondary generalised seizure which start like her normal seizure but then will progress to involve loss of consciousness with limb shaking"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0188"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Symptomatic epilepsy with generalised tonic clonic seizures with right temporal meningioma (2013)"
+            ],
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0195"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0197"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "complex partial seizures",
+            "direction": "missed",
+            "letter_id": "EA0198"
+          },
+          {
+            "candidate_exact_source_evidence": [],
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0198"
+          }
+        ],
+        "remaining_review_rows": 83,
+        "resolved_extraction_examples": [
+          {
+            "concept": "episodic migraine",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0010",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "generalised seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0014",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "nonepileptic events",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0015",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "stroke",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0016",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "mild head injury",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0022",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0023",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "excess alcohol consumption",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0024",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "unwitnessed blackouts",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0024",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0025",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0026",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0028",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0033",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "syncope",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0039",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0050",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "hydrocephalus",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0068",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "diabetes",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0073",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "hypertension",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "ischaemic heart disease",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0078",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "anxiety",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0102",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "avm",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0108",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "Focal-Seizures"
+            ],
+            "letter_id": "EA0109",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "focal"
+            ],
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0120",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0125",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tuberous sclerosis",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0126",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0129",
+            "mechanism": "unsupported_spurious_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "depression",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0146",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "focal-seizures-with-altered-awareness"
+            ],
+            "letter_id": "EA0158",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tuberous sclerosis",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0158",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonus",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0168",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "syncope",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0179",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonus",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0180",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0183",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "non epileptic psychogenic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [],
+            "letter_id": "EA0198",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_mechanism_counts": {
+          "clinical_granularity": 30,
+          "likely_gold_omission": 15,
+          "manual_extraction_error": 19,
+          "manual_representation": 8,
+          "missed_named_diagnosis": 5,
+          "non_target_diagnosis": 15,
+          "reviewed_equivalence": 5,
+          "same_cui_representation": 3,
+          "unresolved_clinical_ambiguity": 1,
+          "unsupported_spurious_diagnosis": 1
+        },
+        "resolved_review_rows": 102,
+        "resolved_rows": [
+          {
+            "concept": "epilepsy with generalised tonic clonic seizures alone",
+            "direction": "missed",
+            "letter_id": "EA0005",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0006",
+            "mechanism": "unresolved_clinical_ambiguity",
+            "triage": "uncertain"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0009",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "episodic migraine",
+            "direction": "spurious",
+            "letter_id": "EA0010",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "intractable epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0014",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0014",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0014",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0015",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "nonepileptic events",
+            "direction": "spurious",
+            "letter_id": "EA0015",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0016",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "stroke",
+            "direction": "spurious",
+            "letter_id": "EA0016",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "temporal lobe seizure",
+            "direction": "missed",
+            "letter_id": "EA0018",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0022",
+            "mechanism": "manual_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "mild head injury",
+            "direction": "spurious",
+            "letter_id": "EA0022",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "seizures",
+            "direction": "spurious",
+            "letter_id": "EA0023",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "excess alcohol consumption",
+            "direction": "spurious",
+            "letter_id": "EA0024",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "unwitnessed blackouts",
+            "direction": "spurious",
+            "letter_id": "EA0024",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "letter_id": "EA0025",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "letter_id": "EA0026",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0028",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0033",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "psychogenic nonepileptic attack disorder",
+            "direction": "spurious",
+            "letter_id": "EA0038",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "syncope",
+            "direction": "spurious",
+            "letter_id": "EA0039",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "secondarily generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0040",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0045",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0046",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonic jerks",
+            "direction": "spurious",
+            "letter_id": "EA0050",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic structural frontal lobe epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0054",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "non epileptic psychogenic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0056",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0057",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0057",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0057",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0059",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0059",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0059",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "hydrocephalus",
+            "direction": "spurious",
+            "letter_id": "EA0068",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal motor seizure",
+            "direction": "missed",
+            "letter_id": "EA0072",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "diabetes",
+            "direction": "spurious",
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0073",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "hypertension",
+            "direction": "spurious",
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "ischaemic heart disease",
+            "direction": "spurious",
+            "letter_id": "EA0073",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "seizures",
+            "direction": "spurious",
+            "letter_id": "EA0078",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0082",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "genetic epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0092",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "single seizure",
+            "direction": "spurious",
+            "letter_id": "EA0100",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "anxiety",
+            "direction": "spurious",
+            "letter_id": "EA0102",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "non epileptic psychogenic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0102",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0106",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "intractable epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0107",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0108",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "avm",
+            "direction": "spurious",
+            "letter_id": "EA0108",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0108",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0109",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "temporal lobe seizure",
+            "direction": "missed",
+            "letter_id": "EA0109",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0117",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0120",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0120",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0124",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0125",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0125",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tuberous sclerosis",
+            "direction": "spurious",
+            "letter_id": "EA0126",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0129",
+            "mechanism": "unsupported_spurious_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0133",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0133",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0133",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epileptic seizures",
+            "direction": "missed",
+            "letter_id": "EA0135",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0135",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0143",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "depression",
+            "direction": "spurious",
+            "letter_id": "EA0146",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "dissociative seizures",
+            "direction": "spurious",
+            "letter_id": "EA0146",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0150",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0150",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0152",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "missed",
+            "letter_id": "EA0156",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0158",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures with altered awareness",
+            "direction": "missed",
+            "letter_id": "EA0158",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic structural epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0158",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "tuberous sclerosis",
+            "direction": "spurious",
+            "letter_id": "EA0158",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "non epileptic attack disorder",
+            "direction": "spurious",
+            "letter_id": "EA0160",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "temporal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0167",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic structural temporal lobe epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0167",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0168",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonus",
+            "direction": "spurious",
+            "letter_id": "EA0168",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal dyscognitive seizures",
+            "direction": "spurious",
+            "letter_id": "EA0169",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "nocturnal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0172",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary generalised tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0178",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0178",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "syncope",
+            "direction": "spurious",
+            "letter_id": "EA0179",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0180",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonus",
+            "direction": "spurious",
+            "letter_id": "EA0180",
+            "mechanism": "non_target_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal dyscognitive seizures",
+            "direction": "spurious",
+            "letter_id": "EA0181",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0183",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0188",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0195",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "non epileptic psychogenic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0198",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0200",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          }
+        ],
+        "resolved_triage_counts": {
+          "extraction_error": 40,
+          "representation": 61,
+          "uncertain": 1
+        },
+        "resolved_triage_direction_counts": {
+          "extraction_error:missed": 5,
+          "extraction_error:spurious": 35,
+          "representation:missed": 18,
+          "representation:spurious": 43,
+          "uncertain:spurious": 1
+        }
+      },
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.4646840148698885,
+          "fn": 185,
+          "fp": 103,
+          "gold_count": 310,
+          "precision": 0.5482456140350878,
+          "precision_tp": 125,
+          "pred_count": 228,
+          "recall": 0.4032258064516129,
+          "recall_tp": 125,
+          "tp": 125
+        },
+        "concept_negation": {
+          "f1": 0.5333333333333334,
+          "fn": 157,
+          "fp": 88,
+          "gold_count": 297,
+          "precision": 0.6140350877192983,
+          "precision_tp": 140,
+          "pred_count": 228,
+          "recall": 0.4713804713804714,
+          "recall_tp": 140,
+          "tp": 140
+        },
+        "concept_only": {
+          "f1": 0.620952380952381,
+          "fn": 134,
+          "fp": 65,
+          "gold_count": 297,
+          "precision": 0.7149122807017544,
+          "precision_tp": 163,
+          "pred_count": 228,
+          "recall": 0.5488215488215489,
+          "recall_tp": 163,
+          "tp": 163
+        }
+      }
+    },
+    "llm_with_rules_full": {
+      "baseline_method": "llm_with_rules",
+      "component": "shared deterministic Diagnosis dictionary replay",
+      "evidence": {
+        "diagnosis_mentions": 415,
+        "evidence_validity_rate": 1.0,
+        "exact_evidence_mentions": 415,
+        "invalid_evidence": []
+      },
+      "input": {
+        "path": "experiments/exectv2_diagnosis_hybrid_resolution_candidate_dev140_20260714.jsonl",
+        "sha256": "97d42e983664b83597f370777ec719f5958189739cde2e26a2e856adfbefabe0"
+      },
+      "residual_changes": {
+        "new_residual_rows": 0,
+        "new_residuals": [],
+        "remaining_review_rows": 59,
+        "resolved_extraction_examples": [
+          {
+            "concept": "generalised epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "genetic generalised epilepsy"
+            ],
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "absence-seizures"
+            ],
+            "letter_id": "EA0161",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "Symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0195",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_mechanism_counts": {
+          "manual_extraction_error": 1,
+          "missed_named_diagnosis": 2
+        },
+        "resolved_review_rows": 3,
+        "resolved_rows": [
+          {
+            "concept": "generalised epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "missed",
+            "letter_id": "EA0161",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic",
+            "direction": "missed",
+            "letter_id": "EA0195",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_triage_counts": {
+          "extraction_error": 3
+        },
+        "resolved_triage_direction_counts": {
+          "extraction_error:missed": 2,
+          "extraction_error:spurious": 1
+        }
+      },
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.802547770700637,
+          "fn": 58,
+          "fp": 66,
+          "gold_count": 310,
+          "precision": 0.7924528301886793,
+          "precision_tp": 252,
+          "pred_count": 318,
+          "recall": 0.8129032258064516,
+          "recall_tp": 252,
+          "tp": 252
+        },
+        "concept_negation": {
+          "f1": 0.8936198173335961,
+          "fn": 22,
+          "fp": 43,
+          "gold_count": 297,
+          "precision": 0.8634920634920635,
+          "precision_tp": 272,
+          "pred_count": 315,
+          "recall": 0.9259259259259259,
+          "recall_tp": 275,
+          "tp": 275
+        },
+        "concept_only": {
+          "f1": 0.9034240302520016,
+          "fn": 19,
+          "fp": 40,
+          "gold_count": 297,
+          "precision": 0.873015873015873,
+          "precision_tp": 275,
+          "pred_count": 315,
+          "recall": 0.936026936026936,
+          "recall_tp": 278,
+          "tp": 278
+        }
+      }
+    },
+    "rules_boundary_only": {
+      "baseline_method": "rules_only",
+      "component": "clinical_epilepsy context and surface rules",
+      "evidence": {
+        "diagnosis_mentions": 311,
+        "evidence_validity_rate": 1.0,
+        "exact_evidence_mentions": 311,
+        "invalid_evidence": []
+      },
+      "input": {
+        "path": "experiments/exectv2_diagnosis_rules_boundary_candidate_dev140_20260714.jsonl",
+        "sha256": "ec53a367218dbc8f64ae98639b6dbae4fdc7b4e9fa12e88c98898912bfe94b27"
+      },
+      "residual_changes": {
+        "new_residual_rows": 1,
+        "new_residuals": [
+          {
+            "candidate_exact_source_evidence": [
+              "generalised tonic-clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0162"
+          }
+        ],
+        "remaining_review_rows": 61,
+        "resolved_extraction_examples": [
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0006",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "myoclonic seizures"
+            ],
+            "letter_id": "EA0043",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "Localisation-related-epilepsy"
+            ],
+            "letter_id": "EA0056",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epileptic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epileptic seizures"
+            ],
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0100",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0109",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "tonic clonic seizures"
+            ],
+            "letter_id": "EA0114",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0169",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0181",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "absence seizures"
+            ],
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "myoclonic seizures"
+            ],
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "generalised-tonic-clonic-seizures"
+            ],
+            "letter_id": "EA0200",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0200",
+            "mechanism": "context_scope_error",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_mechanism_counts": {
+          "context_scope_error": 1,
+          "likely_gold_omission": 3,
+          "manual_extraction_error": 11,
+          "missed_named_diagnosis": 5,
+          "same_cui_representation": 1
+        },
+        "resolved_review_rows": 21,
+        "resolved_rows": [
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0006",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0038",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0043",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0056",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0071",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epileptic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0100",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0109",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0110",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0114",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0169",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0181",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "typical absences",
+            "direction": "missed",
+            "letter_id": "EA0184",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0200",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0200",
+            "mechanism": "context_scope_error",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_triage_counts": {
+          "extraction_error": 17,
+          "representation": 4
+        },
+        "resolved_triage_direction_counts": {
+          "extraction_error:missed": 5,
+          "extraction_error:spurious": 12,
+          "representation:missed": 1,
+          "representation:spurious": 3
+        }
+      },
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.6983050847457628,
+          "fn": 104,
+          "fp": 74,
+          "gold_count": 310,
+          "precision": 0.7357142857142858,
+          "precision_tp": 206,
+          "pred_count": 280,
+          "recall": 0.6645161290322581,
+          "recall_tp": 206,
+          "tp": 206
+        },
+        "concept_negation": {
+          "f1": 0.8232709864335287,
+          "fn": 59,
+          "fp": 43,
+          "gold_count": 297,
+          "precision": 0.8464285714285714,
+          "precision_tp": 237,
+          "pred_count": 280,
+          "recall": 0.8013468013468014,
+          "recall_tp": 238,
+          "tp": 238
+        },
+        "concept_only": {
+          "f1": 0.8925953597318417,
+          "fn": 39,
+          "fp": 23,
+          "gold_count": 297,
+          "precision": 0.9178571428571428,
+          "precision_tp": 257,
+          "pred_count": 280,
+          "recall": 0.8686868686868687,
+          "recall_tp": 258,
+          "tp": 258
+        }
+      }
+    },
+    "rules_full": {
+      "baseline_method": "rules_only",
+      "component": "clinical_epilepsy rules plus benchmark-format residual dictionary",
+      "evidence": {
+        "diagnosis_mentions": 369,
+        "evidence_validity_rate": 1.0,
+        "exact_evidence_mentions": 369,
+        "invalid_evidence": []
+      },
+      "input": {
+        "path": "experiments/exectv2_diagnosis_rules_resolution_candidate_dev140_20260714.jsonl",
+        "sha256": "d598f5dcc8335c6427e8329ff82d9683e52fa09d051fbdf43a6768b6dc849a85"
+      },
+      "residual_changes": {
+        "new_residual_rows": 30,
+        "new_residuals": [
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures with altered awareness"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0008"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0008"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency:\u00a0 Focal seizures with altered awareness"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0011"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency:\u00a0 Focal seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0011"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis:\t single focal seizure"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0016"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Complex partial seizures with secondary generalised tonic clonic seizures"
+            ],
+            "concept": "generalised",
+            "direction": "spurious",
+            "letter_id": "EA0021"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis: symptomatic epilepsy with complex partial seizures and secondarily generalised seizures"
+            ],
+            "concept": "generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0040"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures with altered awareness"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0054"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0054"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures with altered awareness"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0061"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0061"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: Secondary generalised seizures"
+            ],
+            "concept": "generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0067"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal epilepsy"
+            ],
+            "concept": "focal epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0072"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis:\t1. Symptomatic epilepsy presenting with\tfocal motor seizures with secondary generalised tonic clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0108"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Nocturnal generalised tonic clonic seizures"
+            ],
+            "concept": "nocturnal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0111"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal impaired awareness seizures"
+            ],
+            "concept": "focal seizures with altered awareness",
+            "direction": "spurious",
+            "letter_id": "EA0114"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal impaired awareness seizures"
+            ],
+            "concept": "focal seizures with altered awareness",
+            "direction": "spurious",
+            "letter_id": "EA0117"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Complex partial seizures with secondary generalised tonic clonic seizures"
+            ],
+            "concept": "generalised",
+            "direction": "spurious",
+            "letter_id": "EA0127"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Complex partial seizures with secondary generalised tonic clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0127"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency:\tFocal seizures with altered awareness"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0132"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "focal to bilateral convulsive seizure"
+            ],
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "spurious",
+            "letter_id": "EA0132"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis:\tSecondary generalised seizures"
+            ],
+            "concept": "generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0137"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondarily generalised seizures"
+            ],
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0143"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "diagnosed with epilepsy at the age of 22"
+            ],
+            "concept": "focal",
+            "direction": "spurious",
+            "letter_id": "EA0152"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Complex partial seizures (deja-vu, automatism) 1-2 per month\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Secondary generalised seizures 3-4 per year\n\u00a0\nanti-epileptic medication:\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Carbamazapine 400mg bd\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 Clobazam 10-20mg bd for seizure clusters\n\u00a0\nPrevious medications tried: Lamotrigine (rash)\n\u00a0\nInvestigations: \u00a0 MRI 14/3/2006 right temporal lobe focal cortical dysplasia\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0 EEG sharp waves, right temporal lobe\n\u00a0\nI reviewed this 40 year old woman in clinic today. As you know she was diagnosed with epilepsy at the age of 22 after having 2 secondary generalised seizures"
+            ],
+            "concept": "secondary",
+            "direction": "spurious",
+            "letter_id": "EA0152"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "generalised tonic-clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0162"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Diagnosis: Focal epilepsy with secondary generalised tonic clonic seizures"
+            ],
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0178"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "secondary generalised seizure"
+            ],
+            "concept": "secondary generalised seizures",
+            "direction": "spurious",
+            "letter_id": "EA0188"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Seizure type and frequency: focal seizures"
+            ],
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0190"
+          },
+          {
+            "candidate_exact_source_evidence": [
+              "Complex partial seizures with secondary generalised seizures"
+            ],
+            "concept": "secondary",
+            "direction": "spurious",
+            "letter_id": "EA0198"
+          }
+        ],
+        "remaining_review_rows": 34,
+        "resolved_extraction_examples": [
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0006",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "myoclonic seizures"
+            ],
+            "letter_id": "EA0043",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "Localisation-related-epilepsy"
+            ],
+            "letter_id": "EA0056",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epileptic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epileptic seizures"
+            ],
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "nocturnal seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "nocturnal-"
+            ],
+            "letter_id": "EA0079",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0100",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0109",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "temporal lobe onset seizure",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "temporal-lobe-onset"
+            ],
+            "letter_id": "EA0114",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "tonic clonic seizures"
+            ],
+            "letter_id": "EA0114",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "focal"
+            ],
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "frontal lobe onset seizure",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "frontal-lobe-onset"
+            ],
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0169",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0181",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "temporal",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "TLE"
+            ],
+            "letter_id": "EA0182",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "drug",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "drug-refractory"
+            ],
+            "letter_id": "EA0188",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "absence seizures"
+            ],
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "myoclonic seizures"
+            ],
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "symptomatic",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "Symptomatic-epilepsy"
+            ],
+            "letter_id": "EA0195",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "epilepsy"
+            ],
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "exact_source_evidence": [
+              "generalised-tonic-clonic-seizures"
+            ],
+            "letter_id": "EA0200",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "exact_source_evidence": [
+              "focal seizures"
+            ],
+            "letter_id": "EA0200",
+            "mechanism": "context_scope_error",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_mechanism_counts": {
+          "clinical_granularity": 12,
+          "context_scope_error": 1,
+          "likely_gold_omission": 3,
+          "manual_extraction_error": 11,
+          "missed_named_diagnosis": 12,
+          "reviewed_equivalence": 1,
+          "same_cui_representation": 8
+        },
+        "resolved_review_rows": 48,
+        "resolved_rows": [
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0005",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0006",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal to bilateral convulsive seizures",
+            "direction": "missed",
+            "letter_id": "EA0034",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "occipital lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0034",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0038",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary generalised seizures",
+            "direction": "missed",
+            "letter_id": "EA0040",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0043",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0056",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "parietal lobe epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0061",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0071",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0072",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epileptic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0076",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "nocturnal seizures",
+            "direction": "missed",
+            "letter_id": "EA0079",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0100",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0104",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0109",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0110",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "spurious",
+            "letter_id": "EA0110",
+            "mechanism": "likely_gold_omission",
+            "triage": "representation"
+          },
+          {
+            "concept": "temporal lobe onset seizure",
+            "direction": "missed",
+            "letter_id": "EA0114",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0114",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "frontal lobe onset seizure",
+            "direction": "missed",
+            "letter_id": "EA0116",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "generalised",
+            "direction": "missed",
+            "letter_id": "EA0123",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0126",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "generalised",
+            "direction": "missed",
+            "letter_id": "EA0128",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "focal",
+            "direction": "missed",
+            "letter_id": "EA0143",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary",
+            "direction": "missed",
+            "letter_id": "EA0150",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0169",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "missed",
+            "letter_id": "EA0171",
+            "mechanism": "reviewed_equivalence",
+            "triage": "representation"
+          },
+          {
+            "concept": "drug refractory epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0172",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "drug refractory epilepsies",
+            "direction": "missed",
+            "letter_id": "EA0175",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0181",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "temporal",
+            "direction": "missed",
+            "letter_id": "EA0182",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "generalised",
+            "direction": "missed",
+            "letter_id": "EA0183",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "typical absences",
+            "direction": "missed",
+            "letter_id": "EA0184",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "drug",
+            "direction": "missed",
+            "letter_id": "EA0188",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal",
+            "direction": "missed",
+            "letter_id": "EA0188",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "occipital",
+            "direction": "missed",
+            "letter_id": "EA0188",
+            "mechanism": "clinical_granularity",
+            "triage": "representation"
+          },
+          {
+            "concept": "secondary",
+            "direction": "missed",
+            "letter_id": "EA0188",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "absence seizures",
+            "direction": "spurious",
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "myoclonic seizures",
+            "direction": "spurious",
+            "letter_id": "EA0189",
+            "mechanism": "manual_extraction_error",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal",
+            "direction": "missed",
+            "letter_id": "EA0190",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "generalised",
+            "direction": "missed",
+            "letter_id": "EA0195",
+            "mechanism": "same_cui_representation",
+            "triage": "representation"
+          },
+          {
+            "concept": "symptomatic",
+            "direction": "missed",
+            "letter_id": "EA0195",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "epilepsy",
+            "direction": "missed",
+            "letter_id": "EA0198",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "tonic clonic seizures",
+            "direction": "missed",
+            "letter_id": "EA0200",
+            "mechanism": "missed_named_diagnosis",
+            "triage": "extraction_error"
+          },
+          {
+            "concept": "focal seizures",
+            "direction": "spurious",
+            "letter_id": "EA0200",
+            "mechanism": "context_scope_error",
+            "triage": "extraction_error"
+          }
+        ],
+        "resolved_triage_counts": {
+          "extraction_error": 24,
+          "representation": 24
+        },
+        "resolved_triage_direction_counts": {
+          "extraction_error:missed": 12,
+          "extraction_error:spurious": 12,
+          "representation:missed": 20,
+          "representation:spurious": 4
+        }
+      },
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.6894409937888198,
+          "fn": 88,
+          "fp": 112,
+          "gold_count": 310,
+          "precision": 0.6646706586826348,
+          "precision_tp": 222,
+          "pred_count": 334,
+          "recall": 0.7161290322580646,
+          "recall_tp": 222,
+          "tp": 222
+        },
+        "concept_negation": {
+          "f1": 0.8445950767035318,
+          "fn": 30,
+          "fp": 68,
+          "gold_count": 297,
+          "precision": 0.7964071856287425,
+          "precision_tp": 266,
+          "pred_count": 334,
+          "recall": 0.898989898989899,
+          "recall_tp": 267,
+          "tp": 267
+        },
+        "concept_only": {
+          "f1": 0.8984779801796464,
+          "fn": 13,
+          "fp": 51,
+          "gold_count": 297,
+          "precision": 0.8473053892215568,
+          "precision_tp": 283,
+          "pred_count": 334,
+          "recall": 0.9562289562289562,
+          "recall_tp": 284,
+          "tp": 284
+        }
+      }
+    }
+  },
+  "claim_boundary": "Development evidence on inspected dev140 only. The report does not correct gold, change the primary scorer, inspect test60, validate clinical correctness, or promote a reference.",
+  "component_ablations": {
+    "hybrid_dictionary_effect": {
+      "delta_f1": 0.005060442663697984,
+      "from": 0.8983635875883036,
+      "to": 0.9034240302520016
+    },
+    "llm_prompt_v02_effect": {
+      "delta_f1": -0.06515755404301138,
+      "from": 0.6861099349953924,
+      "to": 0.620952380952381
+    },
+    "rules_benchmark_residual_marginal_effect": {
+      "delta_f1": 0.005882620447804743,
+      "from": 0.8925953597318417,
+      "to": 0.8984779801796464
+    },
+    "rules_clinical_boundary_effect": {
+      "delta_f1": 0.03274339912744939,
+      "from": 0.8598519606043923,
+      "to": 0.8925953597318417
+    }
+  },
+  "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+  "decision": {
+    "hybrid_candidate": "retain_for_development_only",
+    "llm_only_candidate": "reject_regressed_fixed_primary",
+    "promotion": "do_not_promote_without_frozen_holdout_protocol",
+    "reason": "The deterministic components improve dev140 with attributable mechanisms, but the LLM-only candidate regresses and no test60 or independent clinical validation was used.",
+    "reference": "retain_v08",
+    "rules_boundary_candidate": "retain_for_development_only",
+    "rules_full_residual_candidate": "reject_30_new_residuals"
+  },
+  "fixed_scorer": "score_concept_identity Diagnosis: entity-agnostic recall, home-tagged precision, concept de-duplication, specificity collapse, hierarchy reconciliation",
+  "inputs": {
+    "audit_summary": {
+      "path": "experiments/exectv2_diagnosis_interpretation_audit_dev140_20260714.json",
+      "sha256": "71ec73099501de7f8fe2b85c09f8de7cb9182e68da75cf22f4b24ff311d2637b"
+    },
+    "hybrid_candidate": {
+      "path": "experiments/exectv2_diagnosis_hybrid_resolution_candidate_dev140_20260714.jsonl",
+      "sha256": "97d42e983664b83597f370777ec719f5958189739cde2e26a2e856adfbefabe0"
+    },
+    "ledger": {
+      "path": "experiments/exectv2_diagnosis_resolution_ledger_dev140_20260714.jsonl",
+      "sha256": "9604b2269863b9c5388a43b2387cc59796264e3018fb26113f96e867387ce642"
+    },
+    "llm_candidate": {
+      "path": "experiments/exectv2_diagnosis_llm_only_candidate_dev140_20260714.jsonl",
+      "sha256": "a2bf46082cc14cbedfdc2f63091298c1d2d512b04d9fd3293816258f21badda2"
+    },
+    "rules_boundary": {
+      "path": "experiments/exectv2_diagnosis_rules_boundary_candidate_dev140_20260714.jsonl",
+      "sha256": "ec53a367218dbc8f64ae98639b6dbae4fdc7b4e9fa12e88c98898912bfe94b27"
+    },
+    "rules_full": {
+      "path": "experiments/exectv2_diagnosis_rules_resolution_candidate_dev140_20260714.jsonl",
+      "sha256": "d598f5dcc8335c6427e8329ff82d9683e52fa09d051fbdf43a6768b6dc849a85"
+    },
+    "sensitivity": {
+      "path": "experiments/exectv2_diagnosis_sensitivity_dev140_20260714.json",
+      "sha256": "8072d3f89024fb2898380a586915ee95641dfeabc5e3eec30dffe54f92397b37"
+    }
+  },
+  "primary_gold_or_scorer_changed": false,
+  "row_count": 140,
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "schema_version": "exectv2_diagnosis_component_comparison_v1",
+  "split": "dev140"
+}

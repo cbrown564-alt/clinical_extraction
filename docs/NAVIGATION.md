@@ -17,6 +17,9 @@
 | Gan evidence and holdout rules | [Gan evidence summary](canon/06_gan_clinical_policy.md) |
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
+| ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
+| ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
+| Guide to the different ExECT Diagnosis F1 scores | [Diagnosis score guide](experiments/exectv2/diagnosis/exectv2_diagnosis_score_guide_2026-07-14.md) |
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
 

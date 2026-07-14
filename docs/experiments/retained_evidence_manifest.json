@@ -1096,6 +1096,55 @@
       ]
     },
     {
+      "id": "exectv2_published_metric_subject",
+      "task": "exectv2",
+      "architecture_family": "rules_only",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140",
+      "row_count": 140,
+      "row_inspection_policy": "development_rows_permitted",
+      "scorer": "ExECTv2 paper-derived normalized-phrase, CUI, and all-feature macro scorer v1",
+      "model": "none; deterministic rules-only replay",
+      "model_role": "Paper-derived metric-family development reproduction",
+      "prompt_program_version": "none; deterministic_all9",
+      "cache_replay_mode": "no-call replay from deterministic predictions",
+      "repair_policy": "Raw selected phrase normalized for phrase view; missing CUIs never match; entity-specific paper attribute policy",
+      "claim_boundary": "Development metric implementation over all nine entity types. It does not reproduce the original ExECT system, annotation process, or reported 0.87/0.90 validation scores and does not replace the frozen six-cell reference matrix.",
+      "story_ids": [
+        "S7"
+      ],
+      "result_summary": {
+        "normalized_phrase_macro_item_f1": 0.5687,
+        "cui_macro_item_f1": 0.7144,
+        "all_features_macro_item_f1": 0.602,
+        "normalized_phrase_macro_letter_f1": 0.7518,
+        "cui_macro_letter_f1": 0.8534,
+        "all_features_macro_letter_f1": 0.7922,
+        "original_score_reproduction": false
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_published_metric_reproduction_deterministic_all9_dev140_20260714.json",
+          "sha256": "c3cd4cc66c57e06d669869d1bd27e58061a8e42b2617a5b2a5cef4843f2d10d2",
+          "bytes": 44130,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_published_metric_reproduction_2026-07-14.md",
+          "sha256": "48d2675e2724dca8d9538f645fc1646243817fedb738273b6218c310d40d2398",
+          "bytes": 7376,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md",
+          "sha256": "243ddf98937780a09754b0065b6b780a119aa20beb5fc43ef9b013c5d4a9e6c6",
+          "bytes": 4862,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
       "id": "annotation_quality_subject",
       "task": "cross_task",
       "architecture_family": "cross_family",

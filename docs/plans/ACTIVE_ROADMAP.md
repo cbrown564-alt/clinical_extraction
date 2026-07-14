@@ -33,15 +33,23 @@ held-out rows, so it is not an independent holdout.
    note rather than one. Matched token, cost, latency, hardware, and cache
    telemetry was not retained, so those claims were removed instead of
    reconstructed from incompatible runs.
+6. **ExECT published-metric development closed.** A no-call rules-only dev140
+   replay now reports normalized-phrase, CUI, and all-feature scores for all
+   nine entity types. Macro item F1 is 0.5687, 0.7144, and 0.6020 respectively;
+   this is a development metric-family result, not reproduction of the paper's
+   original system or 0.87/0.90 validation scores.
+7. **ExECT Diagnosis review and implementation closed.** All 246 dev140 review
+   rows were resolved into 173 representation issues, 72 extraction errors,
+   and one uncertain row. Sensitivity views were added without changing gold
+   or the fixed scorer. Shared deterministic fixes improved the rules-only and
+   hybrid development scores; the one fixed LLM prompt candidate regressed and
+   was rejected. Test60 was not inspected and no candidate was promoted.
 
 ## Ordered evidence work
 
-1. Reproduce ExECT normalized phrase, CUI, and full-attribute scores using the
-   published metrics.
-2. Evaluate model confidence out of sample and test only review policies that
+1. Evaluate model confidence out of sample and test only review policies that
    were specified before the run.
-3. Complete the paper's annotation taxonomy and sensitivity record.
-4. Specify the missing three runtime conditions, then run all six models with
+2. Specify the missing three runtime conditions, then run all six models with
    the same pipeline and scorer.
 
 ## Limits

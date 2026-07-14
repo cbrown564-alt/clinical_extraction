@@ -66,6 +66,11 @@ def main() -> None:
     parser.add_argument("--out-jsonl", type=Path, default=None)
     parser.add_argument("--out-json", type=Path, default=None)
     parser.add_argument("--out-md", type=Path, default=None)
+    parser.add_argument(
+        "--diagnosis-resolution-candidate",
+        action="store_true",
+        help="Opt into the unpromoted dev140 Diagnosis resolution rules.",
+    )
     args = parser.parse_args()
 
     manifest = load_finding_assembly_manifest(args.manifest)
@@ -73,7 +78,10 @@ def main() -> None:
     out_json = args.out_json or _default_out(manifest.candidate_id, "json")
     out_md = args.out_md or _default_out(manifest.candidate_id, "md")
 
-    run = build_finding_assembly(manifest)
+    run = build_finding_assembly(
+        manifest,
+        diagnosis_resolution_candidate=args.diagnosis_resolution_candidate,
+    )
     report = run.report
 
     write_artifact_bundle(

@@ -28,14 +28,16 @@ epilepsy-letter tasks: current seizure-frequency labeling on the Gan 2026
 synthetic benchmark and broad epilepsy phenotyping on ExECTv2. For each task we
 compare rules only, LLM only, and LLM with rules. Saved Gan holdout results are
 364/450 Purist for the single-pass system and 379/450 for a multi-model
-comparison. On ExECT dev140, rules only reached 0.3548 strict item F1, the LLM
-only method reached 0.7393 clinical fact F1, and the combined method reached
+comparison. On ExECT dev140, rules only reached 0.6020 paper-derived all-features
+macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
+method reached 0.7393 clinical fact F1, and the combined method reached
 0.9189. Three full200 model runs ranged from 0.8197 to 0.8566 clinical fact F1.
 Saved-output ablations show positive normalization contributions on both tasks,
 while the evidence check is score-inert on those representative replays. The
 selected evidence supports a reproducible component comparison with explicit
-data limits. It does not support independent clinical validation, strict ExECT
-benchmark reproduction, or a completed six-model result.
+data limits and a tested implementation of the published ExECT metric views. It
+does not reproduce the original ExECT system or its reported 0.87/0.90 scores,
+and it does not support independent clinical validation or a completed six-model result.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -133,6 +135,10 @@ score. ExECT's primary internal score is de-duplicated
 evidence-valid, and full-attribute companions are reported separately.
 \code{clinical\_headline} is not presented as reproduction of the published
 strict ExECT benchmark.
+The paper-derived views score each entity type separately and report their macro
+mean. Per-item scoring counts mentions; per-letter scoring requires at least one
+correct mention and feature bundle. Certainty applies to Diagnosis and
+PatientHistory; negation applies only to PatientHistory.
 
 Raw model selection, JSON or format repair, source-exact evidence repair,
 deterministic semantic repair, projection, and final scoring are separate
@@ -166,7 +172,7 @@ differ.
 \toprule
 Task & Method & Split & Selected result & Use and limit \\
 \midrule
-ExECTv2 & Rules only & dev140 & Strict item F1 0.3548 & Incomplete deterministic development reference. \\
+ExECTv2 & Rules only & dev140 & All-feature macro item F1 0.6020 & Paper-derived development result; strict micro F1 0.3548. \\
 ExECTv2 & LLM only & dev140 & Headline F1 0.7393 & GEPA negative development comparator. \\
 ExECTv2 & LLM with rules & dev140 & Clinical fact F1 0.9189 & Current development reference. \\
 Gan 2026 & Rules only & validation750 & 697/750 Purist & Deterministic development comparator. \\
@@ -177,10 +183,34 @@ Gan 2026 & LLM with rules & validation750 & 661/748 rendered Purist & Single-pas
 \end{table}
 
 All six runs replay from current code and selected outputs without model calls.
-The ExECT combined-method replay also returns evidence-valid F1 0.8913. Its current
-benchmark/CUI companion is 0.4791 versus 0.4729 in the saved run;
-this companion-scorer drift is open and does not affect the reproduced 0.9189
-headline result.
+The ExECT combined-method replay also returns evidence-valid F1 0.8913. Its legacy
+benchmark/CUI companion is 0.4791 versus 0.4729 in the saved run; this diagnostic
+does not define the paper-derived rules-only result or affect the reproduced
+0.9189 headline score.
+
+\subsection{ExECT Paper-Derived Metric Replay}
+
+\begin{table}[tbp]
+\caption{ExECT Rules-Only Dev140 Metric Views}
+\label{tab:exect-published}
+\centering
+\scriptsize
+\begin{tabular}{lrr}
+\toprule
+View & Per-item F1 & Per-letter F1 \\
+\midrule
+Normalized phrase & 0.5687 & 0.7518 \\
+CUI & 0.7144 & 0.8534 \\
+All features & 0.6020 & 0.7922 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The no-call replay covers all nine entity types. CUI identity recovers many
+surface-form misses, while attribute agreement---especially for Diagnosis---is
+the main remaining loss. One gold mention and six predictions lack a CUI;
+missing identifiers never match. The original 0.87 per-item and 0.90 per-letter
+scores remain reference values, not reproduced results.
 
 \subsection{Gan Locked Holdout Evidence}
 
@@ -287,8 +317,10 @@ cross-task over-reading claim.
 The reduced system can reproduce six selected runs while keeping component ownership and
 data limits explicit. The combined ExECT method is substantially stronger than
 the retained ExECT rules-only and LLM-only development references on
-\code{clinical\_headline}, but the three runs do not share a strict published
-benchmark score. Deterministic published-metric engineering remains open.
+\code{clinical\_headline}, but the three runs do not share the paper-derived
+metric views and cannot establish strict benchmark superiority. The rules-only
+replay shows that CUI matching recovers surface variation, while feature
+completion remains the larger limitation.
 
 The model-transfer result shows that the component graph runs with three
 qualitatively different runtime models. DeepSeek leads the retained full200
@@ -305,8 +337,9 @@ insufficient: rejection, source attribution, and repair need direct tests.
 Gan test450 contains saved aggregate evidence only and cannot support row-level tuning.
 ExECT full200 includes dev140 and is not an independent holdout.
 \code{clinical\_headline} is a clinical fact score, not the published
-strict benchmark. The ExECT benchmark/CUI companion has small current-code
-replay drift. The model panel is three of six and uses asymmetric runtime
+strict benchmark. The paper-derived replay uses development data and does not
+reproduce the original system, annotation process, or 0.87/0.90 scores. A
+legacy benchmark/CUI companion has small current-code replay drift. The model panel is three of six and uses asymmetric runtime
 conditions. Model-reported confidence and low-burden review routing are not
 validated. Annotation-quality findings are internally adjudicated; unqualified
 clinical validity would require independent domain review. The current retained
@@ -317,7 +350,7 @@ evidence does not support a cross-task over-reading claim.
 An inspectable clinical extraction system can preserve performance evidence
 and the source needed to interpret it. The selected results support three
 methods on two tasks, saved Gan holdout results, and three named ExECT model runs. They
-do not yet support strict ExECT benchmark reproduction, a six-model conclusion,
+do not support strict ExECT score reproduction, a six-model conclusion,
 or independent clinical validation. Those boundaries are part of the result,
 not footnotes to it.
 

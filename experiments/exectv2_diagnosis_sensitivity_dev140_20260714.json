@@ -1,0 +1,155 @@
+{
+  "audit_summary_json": "experiments\\exectv2_diagnosis_interpretation_audit_dev140_20260714.json",
+  "audit_summary_sha256": "71ec73099501de7f8fe2b85c09f8de7cb9182e68da75cf22f4b24ff311d2637b",
+  "call_mode": "no_calls_review_overlay_arithmetic",
+  "claim_boundary": "Development diagnostic sensitivity only. These views do not modify gold, the fixed primary scorer, test60, or any holdout claim.",
+  "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+  "fixed_primary_scorer": "score_concept_identity Diagnosis: entity-agnostic recall, home-tagged precision, concept de-duplication, specificity collapse, hierarchy reconciliation",
+  "fixed_reproduction": "passed",
+  "ledger_jsonl": "experiments\\exectv2_diagnosis_resolution_ledger_dev140_20260714.jsonl",
+  "ledger_sha256": "9604b2269863b9c5388a43b2387cc59796264e3018fb26113f96e867387ce642",
+  "primary_result_changed": false,
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "schema_version": "exectv2_diagnosis_sensitivity_v1",
+  "split": "dev140",
+  "views": {
+    "multiplicity_and_clinical_granularity": {
+      "description": "Forgives reviewed same-CUI, accepted-equivalence, and clinical-granularity differences; excludes likely gold omissions and manually classified rows.",
+      "mechanism_counts": {
+        "clinical_granularity": 93,
+        "reviewed_equivalence": 17,
+        "same_cui_representation": 23
+      },
+      "methods": {
+        "llm_only": {
+          "adjustments": {
+            "forgiven_missed": 63,
+            "forgiven_spurious": 37
+          },
+          "delta_f1_vs_fixed_primary": 0.16381707814224278,
+          "fixed_primary_f1": 0.6861099349953924,
+          "scores": {
+            "f1": 0.8499270131376352,
+            "gold_count": 297,
+            "precision": 0.7830508474576271,
+            "precision_tp": 231,
+            "pred_count": 295,
+            "recall": 0.9292929292929293,
+            "recall_tp": 276,
+            "remaining_fn": 21,
+            "remaining_fp": 64
+          }
+        },
+        "llm_with_rules": {
+          "adjustments": {
+            "forgiven_missed": 19,
+            "forgiven_spurious": 30
+          },
+          "delta_f1_vs_fixed_primary": 0.08054902377621642,
+          "fixed_primary_f1": 0.8983635875883036,
+          "scores": {
+            "f1": 0.97891261136452,
+            "gold_count": 297,
+            "precision": 0.964968152866242,
+            "precision_tp": 303,
+            "pred_count": 314,
+            "recall": 0.9932659932659933,
+            "recall_tp": 295,
+            "remaining_fn": 2,
+            "remaining_fp": 11
+          }
+        },
+        "rules_only": {
+          "adjustments": {
+            "forgiven_missed": 31,
+            "forgiven_spurious": 13
+          },
+          "delta_f1_vs_fixed_primary": 0.07456196705582085,
+          "fixed_primary_f1": 0.8598519606043923,
+          "scores": {
+            "f1": 0.9344139276602131,
+            "gold_count": 297,
+            "precision": 0.9166666666666666,
+            "precision_tp": 264,
+            "pred_count": 288,
+            "recall": 0.9528619528619529,
+            "recall_tp": 283,
+            "remaining_fn": 14,
+            "remaining_fp": 24
+          }
+        }
+      },
+      "review_rows_in_view": 133
+    },
+    "reviewed_interpretation": {
+      "description": "Forgives every disagreement classified as a representation issue in the completed review, including likely gold omissions and manual decisions.",
+      "mechanism_counts": {
+        "clinical_granularity": 93,
+        "likely_gold_omission": 25,
+        "manual_representation": 15,
+        "reviewed_equivalence": 17,
+        "same_cui_representation": 23
+      },
+      "methods": {
+        "llm_only": {
+          "adjustments": {
+            "forgiven_missed": 67,
+            "forgiven_spurious": 63
+          },
+          "delta_f1_vs_fixed_primary": 0.21945166798455473,
+          "fixed_primary_f1": 0.6861099349953924,
+          "scores": {
+            "f1": 0.9055616029799471,
+            "gold_count": 297,
+            "precision": 0.8711864406779661,
+            "precision_tp": 257,
+            "pred_count": 295,
+            "recall": 0.9427609427609428,
+            "recall_tp": 280,
+            "remaining_fn": 17,
+            "remaining_fp": 38
+          }
+        },
+        "llm_with_rules": {
+          "adjustments": {
+            "forgiven_missed": 19,
+            "forgiven_spurious": 40
+          },
+          "delta_f1_vs_fixed_primary": 0.09667388728924964,
+          "fixed_primary_f1": 0.8983635875883036,
+          "scores": {
+            "f1": 0.9950374748775532,
+            "gold_count": 297,
+            "precision": 0.9968152866242038,
+            "precision_tp": 313,
+            "pred_count": 314,
+            "recall": 0.9932659932659933,
+            "recall_tp": 295,
+            "remaining_fn": 2,
+            "remaining_fp": 1
+          }
+        },
+        "rules_only": {
+          "adjustments": {
+            "forgiven_missed": 33,
+            "forgiven_spurious": 21
+          },
+          "delta_f1_vs_fixed_primary": 0.09210795687276652,
+          "fixed_primary_f1": 0.8598519606043923,
+          "scores": {
+            "f1": 0.9519599174771588,
+            "gold_count": 297,
+            "precision": 0.9444444444444444,
+            "precision_tp": 272,
+            "pred_count": 288,
+            "recall": 0.9595959595959596,
+            "recall_tp": 285,
+            "remaining_fn": 12,
+            "remaining_fp": 16
+          }
+        }
+      },
+      "review_rows_in_view": 173
+    }
+  }
+}

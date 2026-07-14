@@ -34,6 +34,20 @@ paper claim status when the result changes.
 A prediction-changing prompt, scorer, split, repair, model route, or pipeline
 change requires a new recorded version. It does not authorize a model call.
 
+## ExECT paper-derived metrics
+
+Regenerate the additive rules-only dev140 metric artifact without model calls:
+
+```sh
+python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cli.published_metric_reproduction \
+  --out-json experiments/exectv2_published_metric_reproduction_deterministic_all9_dev140_20260714.json \
+  --out-md docs/experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md \
+  --generated-on 2026-07-14
+```
+
+This reports normalized phrase, CUI, and all-feature macro scores for all nine
+entity types. It uses dev140 only and must not inspect test60 or full200 rows.
+
 ## Paper
 
 The Markdown manuscript is `docs/research/paper_manuscript_2026-06-26.md`. The

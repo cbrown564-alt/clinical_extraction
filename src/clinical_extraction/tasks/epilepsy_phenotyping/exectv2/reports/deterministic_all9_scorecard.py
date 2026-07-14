@@ -152,14 +152,29 @@ def write_scorecard_artifacts(
     generated_on: str | None = None,
     registry_path: Path | None = None,
     run_index_path: Path = DEFAULT_RUN_INDEX_PATH,
+    include_diagnosis_resolution_candidate: bool = False,
+    include_diagnosis_benchmark_residuals: bool = False,
 ) -> tuple[Path, Path]:
     """Run, write JSON/Markdown artifacts, and optionally register the run."""
 
     generated_on = generated_on or date.today().isoformat()
     gold_letters = load_letters_for_split(split)
-    predictions = run_all9_on_letters(gold_letters)
+    predictions = run_all9_on_letters(
+        gold_letters,
+        include_diagnosis_resolution_candidate=(
+            include_diagnosis_resolution_candidate
+        ),
+        include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
+    )
     scorecard = build_scorecard(gold_letters, predictions)
-    scorecard.update({"split": split, "generated_on": generated_on})
+    scorecard.update(
+        {
+            "split": split,
+            "generated_on": generated_on,
+            "diagnosis_resolution_candidate": include_diagnosis_resolution_candidate,
+            "diagnosis_benchmark_residuals": include_diagnosis_benchmark_residuals,
+        }
+    )
 
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_md.parent.mkdir(parents=True, exist_ok=True)

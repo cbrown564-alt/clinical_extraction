@@ -1,0 +1,151 @@
+{
+  "architecture": "llm_only",
+  "architecture_classification_reason": "No draft predictions were supplied and no clinical fact was added, removed, or changed after the model response.",
+  "candidate_rules_sha256": "9c3076308f186d4f6cf9b7e3ae9d5fa8020686a15e955ba74914c65748f22942",
+  "claim_boundary": "Fixed-prompt dev140 development candidate only; not test60, holdout, clinical validation, or a promoted reference.",
+  "draft_source": null,
+  "dspy_cache": false,
+  "dspy_version": "3.2.1",
+  "max_tokens": 3200,
+  "mode": "live",
+  "model": "openai/gpt-4.1-mini",
+  "n_letters": 140,
+  "n_resumed": 140,
+  "pipeline_family": "exectv2_hybrid_diagnosis_decomposer",
+  "post_model_clinical_repair": "none",
+  "post_model_format_projection": "deterministic_CUI_projection_only",
+  "pre_model_span_hints": "deterministic nonbinding sentence checklist; full letter also supplied",
+  "prompt_corpus_sha256": "641a5a87096145c8c80fe3e134732e7b4e9ef35869ed7e324aaef0f5c9ae577b",
+  "prompt_payloads_sha256": "02d2d0d70d887fecf4748d411db0e455f6b110a113ca9018afb7dab7fc02d8d2",
+  "prompt_profile": "full",
+  "prompt_variant": "resolution_v02",
+  "prompt_version": "exectv2_hybrid_diagnosis_decomposer_v0.2",
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "runtime_usage": {
+    "history_entries": 140,
+    "reported_cost": 0.3352475999999996,
+    "usage": {
+      "completion_tokens": 27463,
+      "prompt_tokens": 921515,
+      "total_tokens": 948978
+    }
+  },
+  "semantic_decision_owner": "model",
+  "split": "dev",
+  "summary": {
+    "call_failures": 0,
+    "clinical_recovery": {
+      "concept_assertion": {
+        "f1": 0.4647,
+        "fn": 185,
+        "fp": 103,
+        "precision": 0.5482,
+        "recall": 0.4032,
+        "tp": 125
+      },
+      "concept_negation": {
+        "f1": 0.5333,
+        "fn": 157,
+        "fp": 88,
+        "precision": 0.614,
+        "recall": 0.4714,
+        "tp": 140
+      },
+      "concept_only": {
+        "f1": 0.621,
+        "fn": 134,
+        "fp": 65,
+        "precision": 0.7149,
+        "recall": 0.5488,
+        "tp": 163
+      },
+      "diagnosis": {
+        "f1": 0.4647,
+        "fn": 185,
+        "fp": 103,
+        "precision": 0.5482,
+        "recall": 0.4032,
+        "tp": 125
+      },
+      "target_headline_f1": 0.8
+    },
+    "evidence_validity_rate": 1.0,
+    "examples": 140,
+    "n_diagnosis_spans": 606,
+    "n_draft_mentions": 0,
+    "n_evidence_invalid": 0,
+    "n_mentions_raw": 300,
+    "n_mentions_scored": 300,
+    "parse_failures": 0,
+    "scores": {
+      "benchmark": {
+        "per_item": {
+          "f1": 0.3801,
+          "fn": 271,
+          "fp": 166,
+          "precision": 0.4467,
+          "recall": 0.3309,
+          "tp": 134
+        },
+        "per_letter": {
+          "f1": 0.8037,
+          "fn": 42,
+          "fp": 1,
+          "precision": 0.9888,
+          "recall": 0.6769,
+          "tp": 88
+        }
+      },
+      "phrase_only": {
+        "per_item": {
+          "f1": 0.4511,
+          "fn": 246,
+          "fp": 141,
+          "precision": 0.53,
+          "recall": 0.3926,
+          "tp": 159
+        },
+        "per_letter": {
+          "f1": 0.8458,
+          "fn": 34,
+          "fp": 1,
+          "precision": 0.9897,
+          "recall": 0.7385,
+          "tp": 96
+        }
+      },
+      "semantic": {
+        "per_item": {
+          "f1": 0.4028,
+          "fn": 263,
+          "fp": 158,
+          "precision": 0.4733,
+          "recall": 0.3506,
+          "tp": 142
+        },
+        "per_letter": {
+          "f1": 0.8145,
+          "fn": 40,
+          "fp": 1,
+          "precision": 0.989,
+          "recall": 0.6923,
+          "tp": 90
+        }
+      }
+    },
+    "source_near": {
+      "attribute_agreement_rate": 0.8297,
+      "attribute_agreement_total": 229,
+      "attribute_agreement_tp": 190,
+      "overlap": {
+        "f1": 0.6496,
+        "fn": 176,
+        "fp": 71,
+        "precision": 0.7633,
+        "recall": 0.5654,
+        "tp": 229
+      }
+    }
+  },
+  "temperature": 0.0
+}

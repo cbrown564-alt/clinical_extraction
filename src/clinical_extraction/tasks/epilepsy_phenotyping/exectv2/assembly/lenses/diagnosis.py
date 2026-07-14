@@ -181,14 +181,23 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
             kept.append(current)
 
         added: list[ClinicalFinding] = []
-        for text, evidence in sd.diagnosis_residual_additions(store.note_text):
-            if _has_diagnosis_concept([*kept, *added], text=text):
+        addition_rule_categories: list[str] = []
+        for text, evidence in sd.diagnosis_residual_additions(
+            store.note_text,
+            include_resolution_candidate=policy.diagnosis_resolution_candidate,
+        ):
+            if _has_diagnosis_concept(
+                [*kept, *added],
+                text=text,
+                include_resolution_candidate=policy.diagnosis_resolution_candidate,
+            ):
                 continue
             selected_texts = [finding.text for finding in [*kept, *added]]
             if sd.is_redundant_diagnosis_residual_addition(
                 text,
                 evidence=evidence,
                 selected_texts=selected_texts,
+                include_resolution_candidate=policy.diagnosis_resolution_candidate,
             ):
                 continue
             new_finding = diagnosis_added_finding(
@@ -198,9 +207,13 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 selected=[*kept, *added],
                 policy=policy,
                 lens_id=self.lens_id,
+                rule_category=sd.diagnosis_residual_addition_category(text, evidence),
             )
             if new_finding is not None:
                 added.append(new_finding)
+                addition_rule_categories.append(
+                    sd.diagnosis_residual_addition_category(text, evidence)
+                )
 
         companion_added: list[ClinicalFinding] = []
         for finding in [*kept, *added]:
@@ -241,12 +254,18 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
             stage="entity_lens",
             action="applied_standard_dictionary_diagnosis_repair",
             owner="standard_dictionary",
-            portability="benchmark_format",
+            portability=(
+                "clinical_epilepsy"
+                if "clinical_epilepsy" in addition_rule_categories
+                else "benchmark_format"
+            ),
             detail={
                 "lens_id": self.lens_id,
                 "producer_id": policy.producer_id,
                 "source_lane": policy.source_lane,
-                "rule_category": "benchmark_format",
+                "rule_categories": sorted(
+                    {"benchmark_format", *addition_rule_categories}
+                ),
                 "rewritten_count": len(rewritten),
                 "rewritten_text_counts": rewrite_counts(rewritten),
                 "added_count": len(added),
@@ -377,13 +396,21 @@ def _has_diagnosis_key(
     return False
 
 
-def _has_diagnosis_concept(findings: list[ClinicalFinding], *, text: str) -> bool:
+def _has_diagnosis_concept(
+    findings: list[ClinicalFinding],
+    *,
+    text: str,
+    include_resolution_candidate: bool = False,
+) -> bool:
     target = canonicalize_diagnosis_concept(text)
     for finding in findings:
         concept = canonicalize_diagnosis_concept(finding.text)
         if concept == target:
             return True
-        if target in {"drug", "focal", "generalised", "occipital", "secondary", "symptomatic"}:
+        fragments = {"drug", "focal", "generalised", "occipital", "secondary", "symptomatic"}
+        if include_resolution_candidate:
+            fragments.remove("symptomatic")
+        if target in fragments:
             if target in concept.split():
                 return True
     return False

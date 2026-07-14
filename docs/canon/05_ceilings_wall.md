@@ -18,11 +18,16 @@ clinical reading.
 
 | Entity | Selected internal result |
 | --- | --- |
-| Diagnosis | Metric F1 0.6617; internally adjusted F1 0.9501 |
+| Diagnosis | Historical GEPA run under the pre-D1 scorer: metric F1 0.6617 and internally adjusted F1 0.9501; current selected LLM-only run under the hierarchy-aware scorer: F1 0.6861, not yet adjudicated |
 | Seizure frequency | 62.1% metric-defensible; 89.3% internally judged clinically defensible |
 
 The same team produced and reviewed these outputs, so the paper must state that
 limitation.
+
+The [current Diagnosis audit substrate](../experiments/exectv2/diagnosis/exectv2_diagnosis_interpretation_audit_substrate_results_2026-07-14.md)
+contains 246 unreviewed union disagreements across rules-only, LLM-only, and
+LLM-with-rules dev140 outputs. Do not transfer the historical 0.9501 adjustment
+onto the current 0.6861 scoring surface.
 
 No selected ExECT report tests whether the Gan unknown-versus-rate problem
 transfers across tasks.

@@ -45,12 +45,21 @@ ACTIVE_DETERMINISTIC_ENTITIES: tuple[str, ...] = (
 )
 
 
-def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
+def extract_deterministic_all9(
+    letter: ExectLetter,
+    *,
+    include_diagnosis_resolution_candidate: bool = False,
+    include_diagnosis_benchmark_residuals: bool = False,
+) -> PredictedLetter:
     """Extract the active deterministic baseline entities from one letter."""
 
     sf_prediction = extract_seizure_frequency(letter)
     mentions = (
-        *_extract_diagnoses(letter.note_text),
+        *_extract_diagnoses(
+            letter.note_text,
+            include_resolution_candidate=include_diagnosis_resolution_candidate,
+            include_benchmark_residuals=include_diagnosis_benchmark_residuals,
+        ),
         *_extract_investigations(letter.note_text),
         *_extract_onsets(letter.note_text),
         *_extract_when_diagnosed(letter.note_text),
@@ -73,13 +82,29 @@ def extract_deterministic_all9(letter: ExectLetter) -> PredictedLetter:
             "rule_set": "deterministic_all9_v0_active_structured_plus_sf",
             "active_entities": ACTIVE_DETERMINISTIC_ENTITIES,
             "entity_counts": counts,
+            "diagnosis_resolution_candidate": include_diagnosis_resolution_candidate,
+            "diagnosis_benchmark_residuals": include_diagnosis_benchmark_residuals,
             "sf_diagnostics": sf_prediction.diagnostics,
             "rule_families": _rule_family_summary(),
         },
     )
 
 
-def run_all9_on_letters(letters: Sequence[ExectLetter]) -> list[PredictedLetter]:
+def run_all9_on_letters(
+    letters: Sequence[ExectLetter],
+    *,
+    include_diagnosis_resolution_candidate: bool = False,
+    include_diagnosis_benchmark_residuals: bool = False,
+) -> list[PredictedLetter]:
     """Run the deterministic active all-entity baseline over letters."""
 
-    return [extract_deterministic_all9(letter) for letter in letters]
+    return [
+        extract_deterministic_all9(
+            letter,
+            include_diagnosis_resolution_candidate=(
+                include_diagnosis_resolution_candidate
+            ),
+            include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
+        )
+        for letter in letters
+    ]

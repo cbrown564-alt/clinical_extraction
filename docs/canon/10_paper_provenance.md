@@ -17,7 +17,7 @@ must not make a stronger claim than either source supports.
 | S4 | Six exact models run on one fixed ExECT pipeline | GPT-4.1-mini, DeepSeek, and Qwen are selected | 3/6 |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; no selected ExECT transfer study exists | Open |
 | S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests and cross-task replay exist | Partial |
-| S7 | ExECT reproduces published phrase, CUI, and full-attribute metrics | Current deterministic strict score remains below the paper | Open |
+| S7 | ExECT reports paper-derived normalized-phrase, CUI, and full-attribute metrics | No-call rules-only dev140 replay covers all nine entities; original 0.87/0.90 scores are not reproduced | Development answer |
 | S8 | Both tasks have reliability evidence with stated limits | Gan package and ExECT internal calibration are selected | Partial |
 | S9 | Annotation flaws and conventions have transparent handling | Four entity ledgers and selected row analyses exist | Partial |
 
@@ -25,12 +25,13 @@ must not make a stronger claim than either source supports.
 
 | ID | Claim | Strength | Evidence limit |
 | --- | --- | --- | --- |
-| C1 | Some ExECT diagnosis and seizure-frequency disagreements concern annotation multiplicity or representation | Limited | Internal dev140 review by the same team |
+| C1 | Some ExECT diagnosis and seizure-frequency disagreements concern annotation multiplicity or representation | Limited | Diagnosis evidence is historical pre-D1 internal review; the current three-method union is not yet adjudicated |
 | C2 | Normalization improves both tasks; the exact-evidence check is score-neutral on selected replays | Strong for the named replays | Development data only |
 | C3 | Gan unknown-versus-rate behavior transfers to ExECT | Unsupported | Do not claim |
 | C4 | The same main ExECT pipeline runs with GPT-4.1-mini, DeepSeek, and Qwen | Strong but runtime conditions differ | Full200 development-inclusive aggregate |
 | C5 | Split and evaluation rules are enforced | Strong for selected paths | Engineering verification, not external validation |
 | C6 | Gan V12 gains 15/450 Purist-correct rows while requiring a three-pass cold architecture rather than one pass | Strong for saved quality and architecture structure | Tokens, cost, latency, and hardware were not measured in a matched run |
+| C7 | The ExECT rules-only system scores 0.5687 phrase, 0.7144 CUI, and 0.6020 all-features macro item F1 | Strong for the named no-call dev140 replay | Paper-derived metric implementation on development data; not reproduction of the original system or reported scores |
 
 ## Selected headline results
 
@@ -38,7 +39,7 @@ must not make a stronger claim than either source supports.
 | --- | ---: |
 | Gan single-pass system, test450 | 364/450 Purist |
 | Gan multi-model comparison, test450 | 379/450 Purist |
-| ExECT rules only, dev140 | strict item F1 0.3548 |
+| ExECT rules only, dev140 | paper-derived macro item F1: phrase 0.5687, CUI 0.7144, all features 0.6020; strict micro item F1 0.3548 |
 | ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393 |
 | ExECT LLM with rules, dev140 | clinical fact F1 0.9189 |
 | ExECT GPT / DeepSeek / Qwen, full200 | 0.8356 / 0.8566 / 0.8197 clinical fact F1 |
@@ -47,6 +48,8 @@ must not make a stronger claim than either source supports.
 
 - Do not describe ExECT full200 as an independent holdout.
 - Do not describe `clinical_headline` as the published strict benchmark.
+- Do not describe the paper-derived development replay as reproduction of the
+  original ExECT system or its 0.87/0.90 validation scores.
 - Do not present internal annotation review as independent clinical validation.
 - Do not claim cross-task transfer without a selected ExECT study.
 - Do not present the GEPA run as a production reference.
@@ -56,7 +59,8 @@ must not make a stronger claim than either source supports.
 
 ## Open work
 
-1. Implement the published ExECT phrase, CUI, and full-attribute metrics.
-2. Evaluate model-reported confidence out of sample.
-3. Combine annotation issues with sensitivity results.
-4. Specify the remaining model runtimes, then run all six with the same pipeline.
+1. Evaluate model-reported confidence out of sample.
+2. Adjudicate the current 246-row Diagnosis union and combine annotation issues
+   with sensitivity results; do not transfer the historical 0.9501 adjustment
+   to the current scorer.
+3. Specify the remaining model runtimes, then run all six with the same pipeline.

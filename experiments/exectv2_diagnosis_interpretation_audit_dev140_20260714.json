@@ -1,0 +1,193 @@
+{
+  "adjudication_status": "unreviewed",
+  "audit_date": "2026-07-14",
+  "call_mode": "no_calls_saved_replay_and_deterministic_generation",
+  "claim_boundary": "Pre-adjudication development substrate only; not corrected gold, clinical validation, test60 evidence, or holdout generalization.",
+  "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+  "gold_sha256": "5a54a0279a235e268d7c7c5c5b6d98c280336fceb0b24a30bbdd0e73f80f4f59",
+  "methods": {
+    "llm_only": {
+      "disagreements": {
+        "letters": 96,
+        "missed": 84,
+        "spurious": 101,
+        "total": 185
+      },
+      "input_path": "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl",
+      "input_sha256": "7ed1e8c8d7b175c5d305fbca995178355683380fb8a3c4a4469b210b812303c7",
+      "input_sha256_mode": "working_tree_file_bytes",
+      "prediction_source": "saved_jsonl",
+      "row_count": 140,
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.5322314049586777,
+          "fn": 149,
+          "fp": 134,
+          "gold_count": 310,
+          "precision": 0.5457627118644067,
+          "precision_tp": 161,
+          "pred_count": 295,
+          "recall": 0.5193548387096775,
+          "recall_tp": 161,
+          "tp": 161
+        },
+        "concept_negation": {
+          "f1": 0.6624078962075162,
+          "fn": 91,
+          "fp": 108,
+          "gold_count": 297,
+          "precision": 0.6338983050847458,
+          "precision_tp": 187,
+          "pred_count": 295,
+          "recall": 0.6936026936026936,
+          "recall_tp": 206,
+          "tp": 206
+        },
+        "concept_only": {
+          "f1": 0.6861099349953924,
+          "fn": 84,
+          "fp": 101,
+          "gold_count": 297,
+          "precision": 0.6576271186440678,
+          "precision_tp": 194,
+          "pred_count": 295,
+          "recall": 0.7171717171717171,
+          "recall_tp": 213,
+          "tp": 213
+        }
+      }
+    },
+    "llm_with_rules": {
+      "disagreements": {
+        "letters": 42,
+        "missed": 21,
+        "spurious": 41,
+        "total": 62
+      },
+      "input_path": "experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl",
+      "input_sha256": "f2826eacade4e2fdd36ffa176a160e4b58f3e12671d52f16e4e37ee76782666a",
+      "input_sha256_mode": "working_tree_file_bytes",
+      "prediction_source": "saved_jsonl",
+      "row_count": 140,
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.7942583732057417,
+          "fn": 61,
+          "fp": 68,
+          "gold_count": 310,
+          "precision": 0.7854889589905363,
+          "precision_tp": 249,
+          "pred_count": 317,
+          "recall": 0.8032258064516129,
+          "recall_tp": 249,
+          "tp": 249
+        },
+        "concept_negation": {
+          "f1": 0.8852699015734932,
+          "fn": 25,
+          "fp": 45,
+          "gold_count": 297,
+          "precision": 0.856687898089172,
+          "precision_tp": 269,
+          "pred_count": 314,
+          "recall": 0.9158249158249159,
+          "recall_tp": 272,
+          "tp": 272
+        },
+        "concept_only": {
+          "f1": 0.8983635875883036,
+          "fn": 21,
+          "fp": 41,
+          "gold_count": 297,
+          "precision": 0.8694267515923567,
+          "precision_tp": 273,
+          "pred_count": 314,
+          "recall": 0.9292929292929293,
+          "recall_tp": 276,
+          "tp": 276
+        }
+      }
+    },
+    "rules_only": {
+      "disagreements": {
+        "letters": 50,
+        "missed": 45,
+        "spurious": 37,
+        "total": 82
+      },
+      "input_path": null,
+      "input_sha256": "41114cd61d562a56fa0aa3c80f8be808f57079daedfe15ff97bfd814f4c7c86e",
+      "input_sha256_mode": "canonical_prediction_json",
+      "prediction_source": "deterministic_no_call",
+      "row_count": 140,
+      "scores": {
+        "concept_assertion": {
+          "f1": 0.6622073578595318,
+          "fn": 112,
+          "fp": 90,
+          "gold_count": 310,
+          "precision": 0.6875,
+          "precision_tp": 198,
+          "pred_count": 288,
+          "recall": 0.6387096774193548,
+          "recall_tp": 198,
+          "tp": 198
+        },
+        "concept_negation": {
+          "f1": 0.7812191399587036,
+          "fn": 68,
+          "fp": 60,
+          "gold_count": 297,
+          "precision": 0.7916666666666666,
+          "precision_tp": 228,
+          "pred_count": 288,
+          "recall": 0.7710437710437711,
+          "recall_tp": 229,
+          "tp": 229
+        },
+        "concept_only": {
+          "f1": 0.8598519606043923,
+          "fn": 45,
+          "fp": 37,
+          "gold_count": 297,
+          "precision": 0.8715277777777778,
+          "precision_tp": 251,
+          "pred_count": 288,
+          "recall": 0.8484848484848485,
+          "recall_tp": 252,
+          "tp": 252
+        }
+      }
+    }
+  },
+  "protocol_source_commit": "6277796a0f4a8ee2afe793e6f1dd33a20c2e5ad2",
+  "row_count": 140,
+  "row_inspection_policy": "dev140_rows_permitted_test60_forbidden",
+  "schema_version": "exectv2_diagnosis_interpretation_audit_v1",
+  "scorer": "score_concept_identity Diagnosis: entity-agnostic recall, home-tagged precision, concept de-duplication, specificity collapse, hierarchy reconciliation",
+  "split": "dev140",
+  "union": {
+    "direction_counts": {
+      "missed": 94,
+      "spurious": 152
+    },
+    "exclusive_method_membership": {
+      "llm_only": 120,
+      "llm_only&llm_with_rules": 13,
+      "llm_only&llm_with_rules&rules_only": 16,
+      "llm_only&rules_only": 36,
+      "llm_with_rules": 31,
+      "llm_with_rules&rules_only": 2,
+      "rules_only": 28
+    },
+    "inclusive_method_intersections": {
+      "llm_only&llm_with_rules": 29,
+      "llm_only&llm_with_rules&rules_only": 16,
+      "llm_only&rules_only": 52,
+      "llm_with_rules&rules_only": 18
+    },
+    "letter_count": 104,
+    "review_row_count": 246
+  },
+  "working_tree_at_predeclaration": "dirty"
+}

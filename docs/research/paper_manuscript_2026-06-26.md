@@ -17,15 +17,17 @@ label; ExECTv2 extracts several epilepsy phenotypes. On Gan validation750, the
 three selected methods produced 697/750, 581/750, and 661/748 rendered
 Purist-correct predictions. Saved Gan holdout results are 364/450 for the
 single-pass system and 379/450 for a multi-model comparison. On ExECT dev140,
-rules only reached 0.3548 strict item F1, the GEPA LLM-only negative comparison
+rules only reached 0.6020 paper-derived all-features macro item F1 (0.3548 under
+the existing strict micro scorer), the GEPA LLM-only negative comparison
 reached 0.7393 clinical fact F1, and the LLM-with-rules method reached 0.9189.
 Three full200 model runs ranged from 0.8197 to 0.8566 clinical fact F1, but used
 different runtime conditions. Replays of saved outputs found normalization
 gains on both tasks (+0.0389 ExECT; +0.0293 Gan); the exact-evidence check did
 not change those replay scores. The selected evidence supports a reproducible
-component comparison with explicit data limits. It does not yet support strict
-ExECT benchmark reproduction, a six-model conclusion, or independent clinical
-validation.
+component comparison with explicit data limits and a tested implementation of
+the published ExECT metric views. It does not reproduce the original ExECT
+system or its reported 0.87/0.90 scores, and it does not support a six-model
+conclusion or independent clinical validation.
 
 ## 1. Introduction
 
@@ -86,6 +88,14 @@ internal score is de-duplicated clinical fact recovery (`clinical_headline`).
 Phrase, CUI, evidence-valid, and full-attribute scores remain separate.
 `clinical_headline` is not the published strict ExECT benchmark.
 
+The paper-derived ExECT views score each entity type separately and report their
+macro mean. Normalized phrase compares entity-linked surface forms; CUI compares
+entity-linked concept identifiers; all features adds the entity-specific
+attributes. Certainty applies to Diagnosis and PatientHistory; negation applies
+only to PatientHistory.
+Per-item scoring counts every mention, while per-letter scoring asks whether a
+letter contains at least one correct mention and attribute bundle.
+
 ### 3.4 Repair and attribution
 
 The pipeline records raw model selection, JSON or format repair, evidence repair,
@@ -107,7 +117,7 @@ This rule does not authorize model calls.
 
 | Task | Method | Split | Result | Use |
 | --- | --- | --- | ---: | --- |
-| ExECTv2 | Rules only | dev140 | strict item F1 0.3548 | Incomplete published-metric development reference |
+| ExECTv2 | Rules only | dev140 | all-features macro item F1 0.6020 | Paper-derived metric development reference; strict micro item F1 0.3548 |
 | ExECTv2 | LLM only | dev140 | clinical fact F1 0.7393 | GEPA negative development comparison |
 | ExECTv2 | LLM with rules | dev140 | clinical fact F1 0.9189 | Current development reference |
 | Gan 2026 | Rules only | validation750 | 697/750 Purist | Development comparison |
@@ -115,11 +125,27 @@ This rule does not authorize model calls.
 | Gan 2026 | LLM with rules | validation750 | 661/748 rendered Purist | Development comparison |
 
 All six runs replay from selected files without model calls. The ExECT combined
-method also returns evidence-valid F1 0.8913. Its current benchmark/CUI replay is
-0.4791 versus 0.4729 in the saved run; this scorer difference remains open and
-does not affect the reproduced 0.9189 clinical fact score.
+method also returns evidence-valid F1 0.8913. Its legacy benchmark/CUI companion
+replays at 0.4791 versus 0.4729 in the saved run; that diagnostic does not define
+the new paper-derived rules-only result and does not affect the reproduced
+0.9189 clinical fact score.
 
-### 4.2 Gan locked holdout
+### 4.2 ExECT paper-derived metric replay
+
+| View | Macro per-item F1 | Macro per-letter F1 |
+| --- | ---: | ---: |
+| Normalized phrase | 0.5687 | 0.7518 |
+| CUI | 0.7144 | 0.8534 |
+| All features | 0.6020 | 0.7922 |
+
+The no-call rules-only replay covers all nine entity types on dev140. CUI
+identity recovers many matches lost to surface variation, while the fall from
+CUI to all features shows that attribute agreement is the main remaining loss,
+especially for Diagnosis. One gold mention and six predictions lack a CUI;
+missing identifiers never match each other. The paper's original 0.87 per-item
+and 0.90 per-letter results remain reference values, not reproduced scores.
+
+### 4.3 Gan locked holdout
 
 | Method | Purist | Limit |
 | --- | ---: | --- |
@@ -136,7 +162,7 @@ Matched prompt/completion tokens, cost, wall time, hardware, and cache telemetry
 were not retained. These runs therefore support a quality-versus-model-pass
 comparison, not measured token, dollar, energy, or latency efficiency.
 
-### 4.3 ExECT three-model results
+### 4.4 ExECT three-model results
 
 | Model condition | Overall | Diagnosis | Seizure frequency | Prescription | Investigations | Call / parse failures |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -148,7 +174,7 @@ These are full200 development-inclusive aggregates. They do not form a strict
 same-prompt comparison: GPT used temperature 0.3, and Qwen used a shorter prompt
 and output repair. Three further model conditions remain to be specified.
 
-### 4.4 Component replays
+### 4.5 Component replays
 
 | Component removed | ExECT dev140 score change | Gan validation750 score change |
 | --- | ---: | ---: |
@@ -159,7 +185,7 @@ No score change does not make the evidence check unnecessary. Rejection and
 repair tests cover malformed or unsupported outputs that do not occur in the
 selected replay rows.
 
-### 4.5 Reliability evidence
+### 4.6 Reliability evidence
 
 | Subject | Selected result | Limit |
 | --- | --- | --- |
@@ -176,8 +202,10 @@ adopted. No selected report supports a cross-task over-reading claim.
 The repository can replay six selected runs while preserving which component
 made each clinical decision. On ExECT's internal clinical fact score, the
 combined method exceeds the selected rules-only and LLM-only development
-references. Those three results do not share the published strict metric, so
-they cannot establish strict benchmark superiority.
+references. Those three results do not share the paper-derived metric views, so
+they cannot establish strict benchmark superiority. The rules-only replay does
+show that CUI matching recovers surface-form variation, but feature completion
+remains a larger limitation than identifier coverage.
 
 The ExECT pipeline ran with three different model providers. Runtime differences
 and the incomplete model set limit the conclusion to those named runs.
@@ -190,7 +218,10 @@ and repair behavior require direct tests.
 - Gan test450 permits saved aggregate results only.
 - ExECT full200 includes development rows and is not an independent holdout.
 - The internal ExECT clinical fact score is not the published strict benchmark.
-- The ExECT benchmark/CUI replay has a small unresolved scorer difference.
+- The paper-derived rules-only replay uses permitted development data and does
+  not reproduce the original ExECT system, annotation process, or reported
+  0.87/0.90 validation scores.
+- A legacy ExECT benchmark/CUI companion has a small unresolved scorer difference.
 - The model study covers three of six planned conditions and uses different runtimes.
 - Model-reported confidence and low-burden review routing are not validated.
 - Annotation findings were reviewed internally, not by an independent clinical team.
@@ -201,7 +232,7 @@ and repair behavior require direct tests.
 The selected results support an inspectable comparison of rules-only, LLM-only,
 and LLM-with-rules methods on two tasks, saved Gan holdout results, and three
 named ExECT model runs. They do not yet support strict ExECT benchmark
-reproduction, a six-model conclusion, or independent clinical validation.
+score reproduction, a six-model conclusion, or independent clinical validation.
 
 ## References
 

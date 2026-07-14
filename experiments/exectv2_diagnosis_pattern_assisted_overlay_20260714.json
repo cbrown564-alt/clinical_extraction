@@ -1,0 +1,1160 @@
+{
+  "schema_version": "exectv2_diagnosis_review_overlay_v1",
+  "exported_at": "2026-07-14T21:18:05.585172Z",
+  "source_gold_sha256": "5a54a0279a235e268d7c7c5c5b6d98c280336fceb0b24a30bbdd0e73f80f4f59",
+  "source_audit_schema": "exectv2_diagnosis_interpretation_audit_v1",
+  "source_review_row_count": 246,
+  "triaged_count": 230,
+  "decisions": {
+    "EA0005|missed|epilepsy with generalised tonic clonic seizures alone": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:35:14.511Z"
+    },
+    "EA0005|spurious|epilepsy": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:35:53.258Z"
+    },
+    "EA0005|spurious|focal seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:36:22.385Z"
+    },
+    "EA0005|spurious|generalised epilepsy": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:36:50.527Z"
+    },
+    "EA0006|spurious|absence seizures": {
+      "triage": "uncertain",
+      "note": "",
+      "updated_at": "2026-07-14T20:37:24.387Z"
+    },
+    "EA0006|spurious|focal seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:38:04.969Z"
+    },
+    "EA0008|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:39:05.889Z"
+    },
+    "EA0009|spurious|focal epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:39:37.564Z"
+    },
+    "EA0010|spurious|episodic migraine": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:40:08.169Z"
+    },
+    "EA0011|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:40:41.891Z"
+    },
+    "EA0014|missed|intractable epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:41:53.564Z"
+    },
+    "EA0014|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:41:59.091Z"
+    },
+    "EA0014|spurious|generalised seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:42:12.403Z"
+    },
+    "EA0015|missed|epileptic attack": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:42:30.585Z"
+    },
+    "EA0015|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:42:32.377Z"
+    },
+    "EA0015|spurious|nonepileptic events": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:42:43.730Z"
+    },
+    "EA0016|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:44:54.789Z"
+    },
+    "EA0016|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:45:12.216Z"
+    },
+    "EA0016|spurious|stroke": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:45:20.734Z"
+    },
+    "EA0018|missed|occipital lobe seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:45:47.527Z"
+    },
+    "EA0018|missed|temporal lobe seizure": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:46:07.148Z"
+    },
+    "EA0020|spurious|absence seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:46:20.797Z"
+    },
+    "EA0020|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:46:50.154Z"
+    },
+    "EA0021|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:47:20.784Z"
+    },
+    "EA0022|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:47:44.412Z"
+    },
+    "EA0022|spurious|epileptic seizures": {
+      "triage": "representation",
+      "note": "",
+      "updated_at": "2026-07-14T20:48:45.862Z"
+    },
+    "EA0022|spurious|mild head injury": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:49:00.485Z"
+    },
+    "EA0023|spurious|seizures": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:49:13.536Z"
+    },
+    "EA0024|spurious|excess alcohol consumption": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:49:19.202Z"
+    },
+    "EA0024|spurious|unwitnessed blackouts": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:49:20.203Z"
+    },
+    "EA0025|spurious|myoclonic jerks": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:50:58.010Z"
+    },
+    "EA0026|spurious|myoclonic jerks": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:51:00.019Z"
+    },
+    "EA0028|spurious|epilepsy": {
+      "triage": "extraction_error",
+      "note": "",
+      "updated_at": "2026-07-14T20:51:24.636Z"
+    },
+    "EA0033|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0034|missed|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0034|missed|focal to bilateral convulsive seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0034|missed|occipital lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0034|spurious|focal to bilateral convulsive seizure": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0035|missed|epilepsy with generalised tonic clonic seizures alone": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0038|missed|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0038|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0038|spurious|psychogenic nonepileptic attack disorder": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0039|spurious|syncope": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0040|missed|secondary generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0040|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0040|spurious|generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0040|spurious|secondarily generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0043|missed|epilepsy with generalised tonic clonic seizures alone": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0043|missed|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0043|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0044|missed|epilepsy with generalised tonic clonic seizures alone": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0044|spurious|generalised epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0044|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0045|missed|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0045|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0046|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0049|missed|myoclonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0049|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0050|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0050|spurious|myoclonic jerks": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0054|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0054|missed|focal to bilateral convulsive seizure": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0054|missed|frontal lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0054|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0054|spurious|symptomatic structural frontal lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0056|missed|focal epilepsy": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0056|spurious|non epileptic psychogenic seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0057|missed|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0057|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0057|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0057|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0057|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0059|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0059|missed|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0059|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0059|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0061|missed|focal to bilateral convulsive seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0061|missed|parietal lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0061|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0061|spurious|focal to bilateral seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0067|spurious|generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0068|spurious|hydrocephalus": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0071|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0072|missed|focal motor seizure": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0072|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0072|spurious|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0073|spurious|diabetes": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0073|spurious|hypertension": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0073|spurious|ischaemic heart disease": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0076|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0078|spurious|seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0079|missed|nocturnal seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0082|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0082|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0092|spurious|genetic epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0096|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0100|spurious|single seizure": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0102|spurious|anxiety": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0102|spurious|non epileptic psychogenic seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0106|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0106|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0107|missed|generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0107|missed|intractable epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|missed|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|missed|secondary generalised tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|missed|symptomatic epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|missed|tonic clonic convulsion": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|spurious|avm": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|spurious|secondary generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0108|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0109|missed|focal seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0109|missed|temporal lobe seizure": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0109|missed|temporal lobe seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0110|missed|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0110|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0110|spurious|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0111|missed|refractory epilepsies": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0111|spurious|nocturnal seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0114|missed|temporal lobe onset seizure": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0114|spurious|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0114|spurious|focal to bilateral tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0116|missed|focal seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0116|missed|frontal lobe onset seizure": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0117|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0117|spurious|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0120|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0121|missed|drug resistant epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0123|missed|generalised": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0124|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0125|missed|generalised tonic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0125|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0125|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0126|missed|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0126|missed|frontal lobe seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0126|spurious|tuberous sclerosis": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0127|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0128|missed|generalised": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0128|spurious|myoclonic jerks": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0129|spurious|tonic clonic seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_spurious_concept] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0132|missed|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0132|spurious|focal to bilateral convulsive seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0133|missed|epileptic seizure": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0133|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0133|missed|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0133|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0135|missed|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0135|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0137|spurious|generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0139|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0141|missed|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0143|missed|focal": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0143|missed|secondarily generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0143|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0143|spurious|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0143|spurious|secondary generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0146|missed|grand mal": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0146|spurious|depression": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0146|spurious|dissociative seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0150|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0150|missed|secondary": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0150|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0152|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0156|missed|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0157|missed|complex partial seizure": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0157|spurious|complex partial seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0158|missed|focal epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0158|missed|focal seizures with altered awareness": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0158|spurious|symptomatic structural epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0158|spurious|tuberous sclerosis": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0160|spurious|non epileptic attack disorder": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0161|missed|absence seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0162|missed|status epilepticus": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0162|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0164|missed|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0167|missed|temporal lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0167|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0167|spurious|symptomatic structural temporal lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0168|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0168|spurious|myoclonus": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0169|missed|dyscognitive seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0169|missed|symptomatic epilepsy": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0169|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0169|spurious|focal dyscognitive seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0171|missed|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0171|spurious|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0172|missed|drug refractory epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0172|spurious|nocturnal seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0172|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0175|missed|drug refractory epilepsies": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0178|missed|secondary generalised tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0178|spurious|secondary generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0178|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0179|spurious|syncope": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0180|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0180|spurious|myoclonus": {
+      "triage": "extraction_error",
+      "note": "[auto:non_target_diagnosis_scope] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0181|missed|dyscognitive seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0181|missed|symptomatic epilepsy": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0181|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0181|spurious|focal dyscognitive seizures": {
+      "triage": "representation",
+      "note": "[auto:reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0182|missed|temporal": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0183|missed|epilepsy": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0183|missed|generalised": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0183|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0184|missed|typical absences": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0184|spurious|absence seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0186|missed|focal to bilateral convulsive seizure": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|missed|drug": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|missed|focal": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|missed|occipital": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|missed|occipital lobe epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|missed|secondary": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|spurious|secondary generalised seizure": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|spurious|secondary generalised seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0188|spurious|secondary generalised tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0189|missed|epileptic": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0189|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_gold_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0189|spurious|epileptic seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0189|spurious|single seizure": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0190|missed|focal": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0190|missed|focal seizures with altered awareness": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0190|spurious|focal seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0195|missed|generalised": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0195|missed|symptomatic": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0195|spurious|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0195|spurious|symptomatic epilepsy": {
+      "triage": "representation",
+      "note": "[auto:supported_gold_omission] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0195|spurious|tonic clonic seizures": {
+      "triage": "representation",
+      "note": "[auto:opposite_direction_same_cui,reviewed_equivalence_pair] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0198|missed|epilepsy": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0200|missed|epilepsy": {
+      "triage": "representation",
+      "note": "[auto:related_prediction_representation] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0200|missed|tonic clonic seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:unsupported_gold_concept_miss] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    },
+    "EA0200|spurious|focal seizures": {
+      "triage": "extraction_error",
+      "note": "[auto:reviewed_negated_focal_pattern] Pattern-assisted hypothesis; confirm if needed.",
+      "updated_at": "2026-07-14T21:18:05.585172Z"
+    }
+  }
+}
