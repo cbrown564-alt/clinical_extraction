@@ -439,6 +439,11 @@ def _registry_entry(
             "First GPT-first rules_only all-9 substrate. Not freeze-ready; incomplete "
             "entity coverage remains explicit in per-entity scores."
         ),
+        surface_as_architecture=True,
+        display_label="ExECTv2 rules-only dev140 reference",
+        architecture_family="rules_only",
+        comparison_role="control",
+        registry_roles=("architecture_comparator",),
     )
 
 

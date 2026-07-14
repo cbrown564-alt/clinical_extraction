@@ -155,10 +155,7 @@ def load_dev140_self_consistency_entropy(
 def auroc(scores: Sequence[float], labels: Sequence[bool]) -> float:
     """AUROC via the Mann-Whitney U statistic (True label = positive class).
 
-    Inlined here (rather than imported from the gan2026 ``artifact_analysis``
-    research package) so the reliability reporting layer keeps a clean dependency
-    boundary: production code must not import from the research layer (see
-    ``scripts/check_artifact_analysis_imports.py``). The implementation matches the
+    Kept local to the reliability reporting layer. The implementation matches the
     Mann-Whitney formulation used by the SF wall-transfer probe, so figures remain
     directly comparable.
     """

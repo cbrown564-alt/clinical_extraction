@@ -18,7 +18,7 @@ from clinical_extraction.core.registry import (
     validate_run_registry_artifacts,
     write_run_registry,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry_report import (
+from clinical_extraction.core.run_registry_report import (
     write_run_registry_markdown,
 )
 
