@@ -6,7 +6,7 @@
 | --- | --- |
 | Current outcome and checks | [PROJECT_STATUS.md](../PROJECT_STATUS.md) |
 | Ordered next work | [ACTIVE_ROADMAP.md](plans/ACTIVE_ROADMAP.md) |
-| Surgery rules and measurements | [repository surgery assessment](research/maintenance/repository_surgery_assessment_2026-07-14.md) |
+| Historical cleanup decisions and measurements | [repository surgery assessment](research/maintenance/repository_surgery_assessment_2026-07-14.md) |
 
 ## Evidence and claims
 

@@ -4,189 +4,99 @@ Last updated: 2026-07-14
 
 ## Current outcome
 
-The repository contains a defensible modular clinical-extraction contribution.
-Source, document, and artifact reduction, quality-gate repair, and the reduced
-architecture freeze are complete. Fresh-checkout verification remains before
-new model experiments.
+The four cleanup phases are complete:
 
-The retained contribution must show:
+1. the document and artifact estate was reduced to the retained system;
+2. engineering quality gates were restored around retained behavior;
+3. the reduced reference architecture was frozen; and
+4. a separate clean checkout reproduced the retained evidence, after which the
+   Markdown manuscript and IEEE paper were synchronized to that evidence.
 
-- one shared, stage-owned architecture evaluated on Gan seizure frequency and
-  ExECT broad phenotyping;
-- deterministic, LLM-only, and hybrid reference configurations on both tasks;
-- explicit evidence extraction, normalization, projection, schema validation,
-  and evidence verification with component attribution;
-- reproducible scoring, reliability, efficiency, and annotation-quality evidence;
-- conservative split and claim boundaries.
+The repository now targets three deliverables: the Python extraction package,
+the machine-readable retained evidence, and the paper. New work is research and
+validation on the frozen architecture, not further repository surgery.
 
-The acceptance matrix and current claim strength live in
+The paper acceptance matrix and claim strength live in
 [`docs/canon/10_paper_provenance.md`](docs/canon/10_paper_provenance.md).
 Execution order lives in
 [`docs/plans/ACTIVE_ROADMAP.md`](docs/plans/ACTIVE_ROADMAP.md).
 
-## Current evidence
-
-### Task and split boundaries
+## Evidence boundaries
 
 - **Gan 2026:** `test450` is an author-uninspected locked holdout. Only frozen
   aggregate results may be cited; row-level test output is not a development
   surface.
-- **ExECTv2:** `dev140` is the row-inspectable development surface. `full200`
-  contains dev140 plus held-out test60 and is a development-inclusive aggregate
-  audit, not an independent holdout. Test60 row-level development remains barred.
-- **Primary scores:** Gan uses Purist/Pragmatic label accuracy. ExECT uses
-  de-duplicated `clinical_headline` recovery across Diagnosis,
-  SeizureFrequency, Prescription, and Investigations; strict phrase/CUI/full
-  attribute-bundle scoring remains the paper-comparability surface.
+- **ExECTv2:** `dev140` is row-inspectable development data. `full200` combines
+  dev140 with held-out test60 and is a development-inclusive aggregate audit,
+  not an independent holdout. Test60 row-level development remains barred.
+- **Scoring:** Gan uses Purist/Pragmatic label accuracy. ExECT's retained
+  research-control surface is de-duplicated `clinical_headline` recovery.
+  Phrase, CUI, evidence-valid, and full-attribute companions remain separate;
+  `clinical_headline` is not the strict published ExECT benchmark.
 
-### Retained architecture evidence
+## Retained results
 
-| Task | Deterministic | LLM-only | Hybrid / operational control | Current boundary |
-| --- | --- | --- | --- | --- |
-| Gan seizure frequency | Canonical deterministic comparator | Canonical single-call comparator | Single structured-event pass is operational; V12 multi-trace is a ceiling comparator | Six-cell validation reference replays from saved outputs; holdout aggregate remains frozen |
-| ExECT broad phenotyping | Current all-9 deterministic reference | GEPA negative comparator | Holistic finding assembly v08 | All three dev140 cells replay from current code/saved outputs; not independent holdout evidence |
+| Task | Rules only | LLM only | Hybrid | Boundary |
+| --- | ---: | ---: | ---: | --- |
+| ExECT dev140 | 0.3548 strict item F1 | 0.7393 headline F1 | 0.9189 headline F1 | Development references; scores do not share one strict benchmark surface |
+| Gan validation750 | 697/750 Purist | 581/750 Purist | 661/748 rendered Purist | Development and replay references |
 
-This table records the scientific cells that must survive. It does not authorize
-retention of every historical candidate within a cell. Exact paths, hashes,
-closures, and replay expectations live in
+Additional paper-facing evidence:
+
+- Gan locked `test450`: operational single-pass structured-event system
+  `364/450` Purist; V12 multi-trace ceiling `379/450`.
+- ExECT full200 same-core aggregate: DeepSeek `0.8566`, GPT-4.1-mini `0.8356`,
+  and Qwen 3.6:35B `0.8197` headline F1. The three retained conditions are
+  asymmetric, so this is bounded portability evidence, not the requested
+  strict six-model comparison.
+- Saved-output normalization contribution: `+0.0389` ExECT dev140 and
+  `+0.0293` Gan validation750. Evidence validation is score-inert on these
+  selected replays; rejection and repair tests carry its separate evidence.
+- ExECT full200 internal calibration: Brier `0.2225`, base-rate Brier `0.2340`,
+  ECE `0.0587`. No low-burden review policy is promoted.
+
+Exact paths, hashes, policy fingerprints, closures, and replay expectations
+live in
 [`docs/experiments/retained_evidence_manifest.json`](docs/experiments/retained_evidence_manifest.json).
 
-### Paper-facing results that currently survive
+## Cleanup closeout
 
-- Gan operational structured-event pass: `364/450` Purist on frozen `test450`;
-  multi-trace V12 ceiling comparator: `379/450`. A matched cost/latency table is
-  still missing.
-- ExECT v08 current-code/P7 treatment: `0.9189` dev140 and `0.8680` full200
-  `clinical_headline`. Full200 is aggregate-only and development-inclusive.
-- ExECT same-core model swap currently covers GPT-4.1-mini, DeepSeek, and Qwen
-  3.6:35b. The comparison core is frozen; the remaining three exact runtime
-  conditions still require predeclaration before the requested panel can run.
-- Component replay shows positive normalization and projection effects; evidence
-  validation is score-inert on the representative Gan validation and ExECT
-  dev140 replays. Schema/evidence gates therefore also require rejection and
-  repair challenge tests, not only F1 deltas.
-- The 2026-07-07 calibration redesign is an internal scoring-rule result:
-  full200 aggregate Brier `0.2225` versus base rate `0.2340`, ECE `0.0587`.
-  Model-reported confidence is not used, and no low-burden review policy is promoted.
-- Gold-quality evidence exists in the four generated family ledgers and
-  `experiments/gold_data_issues.jsonl`, but the cited defect, convention,
-  scorer-artifact, and ambiguity evidence is not yet consolidated into one
-  paper-facing ledger.
-
-## Surgery state
-
-Earlier surgery batches are on `main`. Document/artifact reduction and the
-engineering cleanup are implemented and verified in the current working tree:
-
-| Area | Current result |
+| Phase | Completed result |
 | --- | --- |
-| Evidence boundaries | Removed row-level Gan locked-test reports and generators; corrected ExECT full200 to development-inclusive audit; retained split barriers and aggregate-only claim rules |
-| Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays; restored and selected the four hybrid producer outputs accidentally removed by the broad artifact prune |
-| Product scope | Removed the frontend and Observatory; the repository now targets the Python extraction package, retained evidence, and paper |
-| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, orphaned supervisor runtime, and stale six-job CI; CI is now one install plus Ruff, mypy, and full-pytest job |
-| Closed ExECT candidates | Removed generation-selection, all four verifier families, closed GEPA variants and launchers, completed SF diagnostic drivers, one-shot analysis tools, and superseded model-swap configs outside the retained closures |
-| Closed Gan candidates | Removed the entire closed agentic runtime and candidate tests; retained only the saved aggregate V12 ceiling evidence named by the evidence manifest |
-| Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
-| Engineering cleanup | Made repository-wide Ruff green and split seven oversized test modules into invariant-focused modules without changing the 1,150-test collection |
-| Architecture freeze | Manifest v3 pins source commit `46562134`, Python/dependency policy, all six reference cells, and exact prompt, scorer, split, repair, model, runbook, and CI fingerprints; the freeze does not authorize model calls |
+| Document and artifact reduction | Removed historical tool state, stale notebooks, closed reports and candidates, the frontend and Observatory; selected immutable replay artifacts use Git LFS |
+| Engineering cleanup | Repository-wide Ruff and mypy are clean; seven oversized tests were split by invariant; CI enforces Ruff, mypy, and full pytest |
+| Architecture freeze | Manifest v3 pins the reduced graph, all six reference cells, Python/dependency policy, and exact prompt, scorer, split, repair, model, runbook, and CI fingerprints |
+| Fresh-checkout and paper closeout | Clean Python 3.11 install, hashes, split barriers, six no-call replays, full quality gates, synchronized paper sources, and a visually checked three-page IEEE PDF |
 
-Verification on the current deletion batch:
+Fresh-checkout verification used a separate clone with Git LFS objects
+retrieved and Python 3.11 explicitly selected. The first unconstrained `uv sync`
+selected Python 3.12; the documented install now pins Python 3.11 before any
+result is interpreted. The final retained suite contains 1,157 tests.
 
-- `python -m pytest -q`: 1,153 passed in the repository environment;
-- `python -m mypy src`: clean across 270 source files;
-- `python -m ruff check .`: clean;
-- retained manifest and hashes pass; all six no-call reference cells replay at
-  their recorded metrics;
-- `git diff --check`: clean;
-- registry audit: all path-bearing fields resolve across 15 rows.
-
-These checks verify the current reduced working tree. The simplified workflow
-has not run on GitHub yet, and these checks do not complete the fresh-checkout
-reproducibility closeout.
-
-## Findings and pitfalls
-
-- **Dependency closure decides deletion.** A rejected registry decision or a
-  candidate-like filename is not enough. Retained modules imported private
-  helpers from closed verifier and Gan candidates. Those helpers had to move
-  before their former owners could be deleted.
-- **Replay inputs are retained evidence.** The broad artifact prune deleted four
-  producer outputs named by the selected ExECT hybrid config. The manifest now
-  records their paths, hashes, and sizes, and a test compares the config inputs
-  with the selected artifact set.
-- **CI job lists rot with deleted scope.** The failing workflow still built the
-  removed frontend and named deleted gates and candidate tests. One reduced
-  job now installs the package and enforces Ruff, mypy, and the full suite.
-- **Saved replay and executable research are different needs.** The six
-  reference cells can replay without model calls, but the planned ExECT
-  six-model comparison still needs the structured extractor, Diagnosis
-  decomposer, and SF union runtime. Do not delete those modules merely because
-  the retained v08 score replays from saved lane artifacts.
-- **Historical text is not always a live dependency.** Producer labels and
-  `supersedes` fields may accurately describe how a retained artifact was made.
-  Preserve truthful provenance strings while removing executable imports,
-  broken paths, and registry records for closed candidates.
-- **Registries are evidence leads, not authorities.** Initial inspection found
-  records that named absent archive files and builders whose defaults pointed
-  to missing artifacts. Validate every path before treating a registry row as
-  retained evidence.
-- **Prompt removal can affect unrelated paths.** Generic prompt and runner
-  packages were shared by retained code. Every prompt-bearing deletion must run
-  retained prompt snapshots as well as focused tests.
-- **Test counts fall during valid deletion.** The suite decreased because tests
-  for removed behavior were deleted. Completion evidence is the passing full
-  suite plus retained manifest/replay checks, not preservation of the old test
-  count.
-- **Large retained artifacts are content-addressed.** The five largest selected
-  ExECT replay files now use Git LFS. The manifest records canonical hashes,
-  byte sizes, LFS object IDs, and retrieval instructions; CI requests LFS
-  objects explicitly.
-
-## In progress
-
-1. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
+The surgery rationale and lessons remain as a historical record in
+[`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
 
 ## Open research and validation work
 
-- **Gan efficiency:** add a matched quality/call/token/cost/latency comparison
-  for the operational pass and multi-trace ceiling.
-- **ExECT benchmark reproduction:** implement deterministic normalized-phrase,
-  CUI, and full attribute-bundle engineering and evaluate it on the
-  paper-comparable surface.
-- **Broad confidence calibration:** evaluate model-reported confidence out of
-  sample; preserve a negative result if confidence remains degenerate.
-- **Annotation evidence:** consolidate every cited under-annotation,
-  multiplicity, ambiguity, concrete defect, and scorer artifact with its
-  handling and sensitivity effect. Unqualified clinical-validity language still
-  requires independent domain review.
-- **Six-model comparison:** after the reduced architecture is frozen, run the
-  same prompt/program/scorer with the six exact runtime models and conclude from
-  the result rather than assuming a size/reasoning ordering.
-
-## Blocked boundaries
-
-- Gan holdout-facing reruns, row analysis, and post-test tuning require a fresh
-  frozen protocol and explicit authorization.
-- ExECT test60 row inspection is not permitted for development. Full200 work is
-  aggregate-only.
-- No benchmark-reproduction, calibrated-confidence, six-model, or external
-  gold-validity claim is complete until its named evidence exists.
-
-## Next
-
-1. Complete fresh-checkout reproducibility and synchronize the surviving paper
-   sources.
-2. Complete the paper evidence studies on the frozen reduced architecture.
+1. **Gan efficiency:** add a matched quality/call/token/cost/latency comparison
+   for the operational pass and multi-trace ceiling.
+2. **ExECT benchmark reproduction:** implement deterministic normalized-phrase,
+   CUI, and full attribute-bundle engineering on the paper-comparable surface.
+3. **Confidence:** evaluate model-reported confidence out of sample and retain a
+   negative result if confidence remains degenerate.
+4. **Annotation evidence:** consolidate cited defect, convention, ambiguity,
+   multiplicity, scorer-artifact, handling, and sensitivity evidence. External
+   clinical-validity language still requires independent domain review.
+5. **Six-model comparison:** predeclare the three missing exact runtime
+   conditions, then run the frozen component graph and scorer.
 
 ## Guardrails
 
 - Never inspect Gan `test450` or ExECT test60 row-level failures for development.
 - Never describe ExECT full200 as an independent holdout.
-- Never describe `clinical_headline` as a reproduction of the strict published benchmark.
-- Keep raw model output, format repair, deterministic semantic repair,
-  projection, verification, and scoring separately attributable.
-- Delete source, configs, prompts, artifacts, registries, UI adapters, documents,
-  and tests together for a closed candidate.
-- Do not move bulk history into another tracked archive or add compatibility
-  shims for removed internal paths.
+- Never describe `clinical_headline` as reproduction of the strict published benchmark.
+- Keep raw model output, format repair, semantic repair, projection,
+  verification, and scoring separately attributable.
+- A frozen architecture does not authorize a model call; live work still needs
+  a predeclared question, runtime condition, and permitted split.
 - Use *implemented*, *verified*, *validated*, and *promoted* precisely.

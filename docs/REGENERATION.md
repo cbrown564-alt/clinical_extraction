@@ -4,6 +4,15 @@ The retained evidence manifest owns selected artifact paths and hashes.
 Its `architecture_freeze` object also owns the exact source commit and policy
 fingerprints for new evidence.
 
+## Recreate the verified environment
+
+Use Python 3.11 explicitly. An unconstrained resolver may select a newer
+interpreter even when the lock is otherwise unchanged.
+
+```sh
+uv sync --python 3.11 --frozen --extra dev
+```
+
 ## Retrieve large selected artifacts
 
 Five large ExECT replay files are content-addressed Git LFS objects. A normal
@@ -54,6 +63,10 @@ condition.
 
 The maintained manuscript source is
 `docs/research/paper_manuscript_2026-06-26.md`. The IEEE source remains under
-`literature/IEEE/IEEE-conference-template-062824/` and may lag until the final
-evidence sync.
+`literature/IEEE/IEEE-conference-template-062824/`. The two sources are
+synchronized to the retained manifest, and tests reject retired headline and
+calibration values.
+
+Build the IEEE PDF from that directory with two `pdflatex` passes, then inspect
+every rendered page before treating the PDF as current.
 

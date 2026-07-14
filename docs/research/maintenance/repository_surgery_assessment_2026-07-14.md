@@ -1,16 +1,22 @@
 # Repository Surgery Assessment
 
 Date: 2026-07-14
-Status: active supporting assessment
+Status: historical closeout record
 Canonical execution order: [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md)
 Current work and evidence: [`PROJECT_STATUS.md`](../../../PROJECT_STATUS.md)
 
-This document records why the repository needs major reduction and how to carry
-it out safely. It is not a second roadmap, status board, evidence register, or
+This document records why the repository needed major reduction and how it was
+carried out safely. It is not a second roadmap, status board, evidence register, or
 research canon. `ACTIVE_ROADMAP.md` owns sequence, `PROJECT_STATUS.md` owns
 current work, and the canon documents own research claims.
 
 ## Executive conclusion
+
+Closeout, 2026-07-14: the deletion-led reduction, engineering cleanup,
+architecture freeze, fresh-checkout verification, and paper synchronization
+are complete. Historical baseline language below is retained to explain the
+decisions; it is not a description of the current tree. Current evidence and
+next research work live in `PROJECT_STATUS.md` and `ACTIVE_ROADMAP.md`.
 
 The repository contains a credible research contribution, but its current shape
 is not maintainable. It preserves too many closed experiments as live code,
@@ -386,8 +392,8 @@ on deleted research history.
 
 ### Phase 6 — Rebuild tests and quality gates around the retained tree
 
-Status: in progress. Pytest and mypy pass, the line-count allowlist is gone,
-and Ruff has 120 line-length and two import-order findings remaining.
+Status: complete. Pytest, Ruff, and mypy pass, the line-count allowlist is gone,
+and CI enforces the complete retained suite plus both static-quality gates.
 
 The 2026-07-14 GitHub run `29336220397` exposed a stale workflow rather than a
 retained-code regression. Its six jobs still built the deleted frontend, called
@@ -427,8 +433,12 @@ model calls.
 
 ### Phase 7 — Verify reproducibility and close the surgery
 
-Status: pending until source, document, artifact, and quality-gate reduction is
-complete.
+Status: complete. A separate clean checkout retrieved all Git LFS objects,
+created a Python 3.11 environment from the frozen dependency policy, validated
+the manifest and split barriers, replayed all six reference cells without model
+calls, and passed pytest, Ruff, and mypy. The surviving paper tables and both
+paper sources were then synchronized, the IEEE source compiled without layout
+overflow, and every PDF page was inspected.
 
 From a fresh checkout:
 
@@ -505,10 +515,9 @@ file names or registry decisions:
 
 ## Current handoff
 
-The classified closed Gan and ExECT source candidates are removed. CI now tests
-the complete retained Python suite in one job, and the selected ExECT hybrid
-replay closure is repaired and manifest-protected. Continue with the major work
-packages in `ACTIVE_ROADMAP.md`: the next deletion work is the historical
-document and artifact estate, followed by the remaining Ruff findings and
-fresh-checkout closeout. Re-open source classification only when a specific
-retained closure or new predeclared study requires it.
+Repository surgery is closed. The classified closed Gan and ExECT source
+candidates are removed, the selected replay closure is manifest-protected, and
+the final paper sources contain only retained evidence. Continue with the open
+research evidence packages in `ACTIVE_ROADMAP.md`. Re-open cleanup scope only
+when a specific retained closure or predeclared study demonstrates a concrete
+need.

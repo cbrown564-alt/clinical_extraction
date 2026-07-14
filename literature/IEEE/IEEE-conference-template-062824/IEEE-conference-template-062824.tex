@@ -1,622 +1,342 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath,amssymb}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage{cite}
 \usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
-\usepackage{url}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,fit,positioning}
+\usepackage{url}
+\usetikzlibrary{arrows.meta,positioning}
 
 \newcommand{\code}[1]{\texttt{#1}}
-
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
 \begin{document}
 
 \title{Modular and Auditable Clinical Extraction from Epilepsy Letters}
 
-\author{\IEEEauthorblockN{Author Names Omitted for Draft}
-\IEEEauthorblockA{\textit{Affiliations Omitted for Draft}\\
-City, Country \\
-email@example.com}}
+\author{\IEEEauthorblockN{Anonymous submission}}
 
 \maketitle
 
 \begin{abstract}
-We evaluate a modular clinical extraction architecture on two complementary
-epilepsy-letter tasks: deep seizure-frequency extraction and broad clinical
-phenotyping. The first task tests temporal reasoning and benchmark-facing
-normalization on the Gan 2026 seizure-frequency corpus; the second tests
-multi-entity recovery on ExECTv2 using de-duplicated clinical-headline facts as
-the primary surface. Across both tasks, the system separates model-mediated
-clinical interpretation, deterministic normalization and projection,
-evidence-grounding checks, reliability audits, and component-impact analyses.
-This draft reports aggregate validation and frozen holdout evidence under fixed
-inspection boundaries, and it deliberately separates reliability scorecards from
-component-causal claims.
+Clinical extraction systems need more than a single aggregate score: their
+model, deterministic rules, repairs, evidence, scorer, and evaluation boundary
+must remain separately inspectable. We evaluate a modular architecture on two
+epilepsy-letter tasks: current seizure-frequency labeling on the Gan 2026
+synthetic benchmark and broad epilepsy phenotyping on ExECTv2. For each task we
+retain rules-only, LLM-only, and hybrid reference cells with executable source
+closure and no-call replay. On the frozen Gan holdout, the operational
+single-pass structured-event system reaches 364/450 Purist accuracy, while a
+more complex multi-trace ceiling reaches 379/450. On ExECT dev140, the retained
+deterministic, LLM-only, and hybrid references reach 0.3548 strict per-item F1,
+0.7393 clinical-headline F1, and 0.9189 clinical-headline F1, respectively. A
+bounded same-core full-200 aggregate comparison spans 0.8197--0.8566
+clinical-headline F1 across Qwen 3.6 35B, GPT-4.1-mini, and DeepSeek chat.
+Saved-output ablations show positive normalization contributions on both tasks,
+while the evidence check is score-inert on those representative replays. The
+contribution is a reproducible, stage-owned comparison with explicit claim
+boundaries, not a claim of independent clinical validation, strict ExECT
+benchmark reproduction, or a completed six-model result.
 \end{abstract}
 
 \begin{IEEEkeywords}
 clinical information extraction, epilepsy, large language models, hybrid
-systems, reliability, component ablation
+systems, reproducibility, evidence provenance
 \end{IEEEkeywords}
 
 \section{Introduction}
 
-Clinical extraction systems must often trade breadth, depth, auditability, and
-portability. Epilepsy letters make the tension concrete: seizure-frequency
-statements require temporal anchoring, seizure-free handling,
-current-versus-historical selection, and benchmark-compatible normalization,
-while phenotyping requires the same infrastructure to recover diagnosis,
-medication, investigation, and seizure-frequency facts without collapsing into a
-task-specific rule stack. Prior epilepsy NLP has shown both the value of broad
-clinic-letter extraction and the persistent difficulty of seizure-frequency
-concepts \cite{fonferko2019exect,fonferko2024annotation}, while recent work
-emphasizes pretrained models, LLM fine-tuning, and synthetic but task-faithful
-supervision
-\cite{xie2022seizure,abeysinghe2025leveraging,holgate2025fine,gan2026synthetic}.
+Epilepsy letters combine temporal reasoning, clinical terminology, medication
+regimens, investigation findings, and ambiguous current-versus-historical
+statements. Large language models (LLMs) can broaden extraction, but a model
+call can hide where a result came from. Deterministic systems are easier to
+inspect, yet often fail on linguistic variation and long-range clinical
+selection.
 
-This paper studies a modular extraction design in which deterministic rules and
-large language model (LLM) components are explicit, testable parts of the
-scientific object, evaluated on a deep single-concept task (Gan 2026
-seizure-frequency extraction) and a broad multi-entity task (ExECTv2
-clinical-fact recovery). The central claim is not that any one model or rule set
-is universally optimal, but that explicit component boundaries let us report
-performance, reliability, and component impact without blending incompatible
-evidence surfaces.
+We study these approaches as explicit architecture families rather than as one
+opaque pipeline. The same project contains a deep single-label task and a broad
+multi-entity task. This makes it possible to ask which stages transfer, which
+results depend on task-specific scoring, and where evidence is insufficient for
+a stronger claim.
+
+The paper contributes: (1) a retained two-task by three-family comparison with
+exact replay closure; (2) explicit ownership of extraction, normalization,
+projection, repair, evidence validation, and scoring; (3) frozen aggregate
+evidence for the Gan operational-versus-ceiling trade-off and a three-model
+ExECT transfer study; and (4) reproducibility controls that pin prompts,
+scorers, splits, repair policies, runtime identifiers, dependencies, and
+artifact hashes.
 
 \section{Related Work}
 
-Prior epilepsy natural language processing includes broad phenotyping systems
-and narrow seizure-frequency extraction systems. Recent LLM-based clinical
-extraction has improved coverage and flexibility, but can obscure the role of
-deterministic preprocessing, schema repair, normalization, and post-processing
-\cite{abeysinghe2025leveraging,holgate2025fine}. We instead position
-deterministic rules as controlled variables rather than incidental
-implementation detail, and treat reliability audits and component-impact replays
-as separate manuscript objects. This emphasis aligns with evidence-grounded
-seizure-frequency supervision in recent synthetic-letter work, extending its
-reporting discipline to component boundaries and aggregate replay evidence
-\cite{gan2026synthetic}.
+ExECT demonstrated structured epilepsy extraction from unstructured clinic
+letters and later work documented the corresponding annotation resource
+\cite{fonferko2019exect,fonferko2024annotation}. Seizure-frequency extraction
+has also been studied with machine-reading and pretrained-language-model
+approaches \cite{xie2022seizure,abeysinghe2025leveraging}, while recent work
+has explored fine-tuned LLMs and reproducible synthetic clinical letters
+\cite{holgate2025fine,gan2026synthetic}. Our focus is complementary: pipeline
+stages and evidence boundaries are part of the scientific object, and
+rules-only, LLM-only, and hybrid forms are compared without collapsing their
+different scoring and repair mechanisms.
 
 \section{Methods}
 
-\subsection{Dataset Construction and Scoring Surfaces}
+\subsection{Tasks and Split Policy}
 
-Gan 2026 is used as the deep seizure-frequency task \cite{gan2026synthetic}.
-The working corpus is the released 1,500-letter synthetic seizure-frequency
-set, partitioned once into train, validation, and locked test manifests. Train
-rows are reserved for optimizer-only procedures, validation rows are the
-development surface, and \code{test450} is reserved for frozen final aggregate
-evaluation. Gan outputs are rendered to the task label grammar and scored under
-the Purist and Pragmatic surfaces. Purist is the stricter final-label surface;
-Pragmatic is a companion read of acceptable clinical-label equivalence. Test-set
-row-level failure inspection is not used for development or tuning.
+Gan 2026 asks for one current seizure-frequency label per synthetic letter
+\cite{gan2026synthetic}. Validation750 is the row-inspectable development and
+replay surface. Test450 is a locked holdout: only frozen aggregate results are
+retained, and row-level holdout failures are not used for development.
 
-ExECTv2 is used as the broad phenotyping task, building on the ExECT lineage of
-epilepsy clinic-letter extraction and the later synthetic-letter annotation
-resource \cite{fonferko2019exect,fonferko2024annotation}. The ExECTv2 working
-sets are treated as clinical-letter assemblies with entity-specific annotations
-for Diagnosis, SeizureFrequency, Prescription, and Investigations. The primary
-surface is de-duplicated \code{clinical\_headline} recovery: predictions and
-gold annotations are projected to one clinical-fact view per headline assertion
-before scoring. Strict benchmark and CUI-oriented outputs are retained as
-diagnostic compatibility surfaces with the original annotation contract, not as
-the primary success criterion.
+ExECTv2 covers Diagnosis, SeizureFrequency, Prescription, and Investigations in
+the primary comparison, with additional entities retained in the deterministic
+all-nine reference \cite{fonferko2019exect,fonferko2024annotation}. Dev140 is
+the row-inspectable development surface. Full200 combines dev140 with held-out
+test60 and is reported only as a development-inclusive aggregate audit; it is
+not an independent holdout.
 
 \subsection{Architecture Families}
 
-We compare rules-only, LLM-only, and hybrid families. In Gan 2026, the promoted
-hybrid structured-event architecture uses an LLM to extract source-near seizure
-events and deterministic code for normalization, projection, rendering, and
-scoring. In ExECTv2, a manifest-driven clinical-finding assembly combines
-candidate producers, entity-specific reconciliation lenses, evidence validation,
-and scoring views.
+For each task, the retained manifest contains exactly one rules-only, LLM-only,
+and hybrid cell. Rules-only cells use deterministic extraction, normalization,
+projection, validation, and rendering without model calls. LLM-only cells
+concentrate clinical extraction in one model program. The ExECT GEPA cell is a
+negative development comparator, not the production control. Hybrid cells keep
+model-owned clinical extraction distinct from deterministic selection,
+normalization, evidence checks, and scoring. Gan uses one structured-event
+pass; ExECT uses manifest-driven finding assembly with family-specific lenses.
 
-\subsection{Inspection Boundaries and Claim Classes}
-
-Each result row carries an inspection boundary. Gan validation artifacts support
-development and row-level error analysis; Gan locked-test artifacts are aggregate
-final-evaluation evidence only unless a separate post-hoc protocol is declared.
-ExECTv2 dev140 artifacts support row-level development and model-swap
-diagnostics; full-200 aggregate artifacts authorize only aggregate reliability
-and component-impact reads, not full-200 row-level failure tuning.
-
-We distinguish four evidence types throughout. Architecture comparison describes
-aggregate task performance under a fixed scorer. Frozen holdout evidence reports
-locked evaluation outputs without authorizing post-hoc tuning. Reliability
-scorecards test whether a fixed system is grounded, calibrated, robust,
-consistent, and operationally replayable. Component-impact analysis is reserved
-for ablations or same-input replays that measure a named component's score
-contribution under the declared scorer, split, and inspection boundary.
-Appendix Table~\ref{tab:artifact-provenance} records the source artifacts and
-claim boundary for the main result families so that frozen aggregate evidence,
-development evidence, reliability evidence, and component-impact evidence remain
-traceable and non-interchangeable.
-
-\begin{figure*}[tbp]
+\begin{figure}[tbp]
 \centering
-\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
-  font=\scriptsize,
-  box/.style={draw, rounded corners=2pt, align=center, minimum width=2.8cm, minimum height=0.86cm, fill=white},
-  task/.style={box, fill=blue!7},
-  llm/.style={box, fill=green!8},
-  rule/.style={box, fill=orange!10},
-  view/.style={box, fill=purple!7},
-  audit/.style={box, fill=gray!10},
-  arrow/.style={-{Latex[length=2mm]}, line width=0.35pt},
-  dashedarrow/.style={-{Latex[length=2mm]}, dashed, line width=0.35pt}
+  node distance=4mm,
+  box/.style={draw,rounded corners=2pt,align=center,font=\scriptsize,
+    text width=0.75\columnwidth,minimum height=5mm},
+  arrow/.style={-{Latex[length=1.6mm]},line width=0.35pt}
 ]
-\node[task] (gan) {Gan 2026\\deep seizure-frequency};
-\node[task, below=0.55cm of gan] (exect) {ExECTv2\\broad clinical facts};
+\node[box] (input) {Clinical letter and frozen split policy};
+\node[box,below=of input] (extract) {Rules or model-owned extraction};
+\node[box,below=of extract] (clinical) {Clinical selection and deterministic repair};
+\node[box,below=of clinical] (project) {Normalization, projection, and evidence checks};
+\node[box,below=of project] (score) {Task scorer, artifact identity, and claim boundary};
+\draw[arrow] (input) -- (extract);
+\draw[arrow] (extract) -- (clinical);
+\draw[arrow] (clinical) -- (project);
+\draw[arrow] (project) -- (score);
+\end{tikzpicture}
+\caption{Stage-owned extraction spine. Ownership remains explicit even when a
+stage is implemented by an LLM.}
+\label{fig:spine}
+\end{figure}
 
-\node[llm, right=1.0cm of gan] (ganllm) {LLM event\\or label selection};
-\node[llm, right=1.0cm of exect] (exectllm) {LLM candidate\\producers};
+\subsection{Scoring, Repair, and Attribution}
 
-\node[rule, right=1.0cm of ganllm] (ganrules) {Deterministic\\normalize/project/render};
-\node[rule, right=1.0cm of exectllm] (exectrules) {Entity lenses\\and projection};
+Gan uses Purist and Pragmatic label scoring; Purist is the primary strict label
+surface. ExECT's primary research-control surface is de-duplicated
+\code{clinical\_headline} recovery across four families. Phrase, CUI,
+evidence-valid, and full-attribute companions are reported separately.
+\code{clinical\_headline} is not presented as reproduction of the published
+strict ExECT benchmark.
 
-\node[view, right=1.0cm of ganrules] (ganviews) {Purist / pragmatic\\benchmark views};
-\node[view, right=1.0cm of exectrules] (exectviews) {Clinical-headline\\and diagnostic views};
+Raw model selection, JSON or format repair, source-exact evidence repair,
+deterministic semantic repair, projection, and final scoring are separate
+stages. Model-specific transport or output-shape adapters do not become model
+quality evidence. Semantic repairs retain a named deterministic owner and must
+be ablated or otherwise tested before supporting a causal interpretation.
 
-\node[audit, right=1.0cm of ganviews] (ganclaims) {Frozen aggregate\\holdout evidence};
-\node[audit, right=1.0cm of exectviews] (exectclaims) {Reliability and\\component impact};
+\subsection{Architecture Freeze}
 
-\draw[arrow] (gan) -- (ganllm);
-\draw[arrow] (ganllm) -- (ganrules);
-\draw[arrow] (ganrules) -- (ganviews);
-\draw[arrow] (ganviews) -- (ganclaims);
-
-\draw[arrow] (exect) -- (exectllm);
-\draw[arrow] (exectllm) -- (exectrules);
-\draw[arrow] (exectrules) -- (exectviews);
-\draw[arrow] (exectviews) -- (exectclaims);
-
-\draw[dashedarrow] (ganrules.south) -- node[right, align=left, font=\tiny]{portable temporal\\and SF logic} (exectrules.north);
-\draw[dashedarrow] (ganviews.south) -- node[right, align=left, font=\tiny]{same reporting\\boundary discipline} (exectviews.north);
-
-\node[draw, rounded corners=3pt, fit=(gan)(ganclaims), inner sep=5pt, label={[font=\scriptsize]above:Deep task}] {};
-\node[draw, rounded corners=3pt, fit=(exect)(exectclaims), inner sep=5pt, label={[font=\scriptsize]below:Broad task}] {};
-\end{tikzpicture}}
-\caption{Two-task modular evidence architecture. Gan 2026 stresses temporal seizure-frequency extraction under frozen aggregate holdout rules; ExECTv2 reuses the same separation of model-mediated candidates, deterministic clinical logic, scoring views, and reliability/component-impact evidence for broad clinical-fact recovery.}
-\label{fig:evidence-layout}
-\end{figure*}
+The 14 July 2026 reduced-reference-architecture freeze pins the implementation
+at commit \code{46562134}. Manifest v3 fingerprints the
+dependency declaration and lock, prompt contracts, scorers, split manifests,
+repair policies, model policy, split runbook, and CI workflow. A semantic
+prompt, scorer, split, repair, runtime-route, or component-graph change requires
+a new freeze and complete replay. The freeze does not itself authorize model
+calls.
 
 \section{Results}
 
-We evaluate the shared modular architecture on two complementary epilepsy-letter
-tasks: deep seizure-frequency extraction (Section~\ref{sec:gan-results}) and
-broad multi-entity phenotyping (Section~\ref{sec:exectv2-results}). For each
-task we report architecture comparison, frozen holdout or aggregate validation
-evidence under declared inspection boundaries, and, where predeclared, separate
-reliability and component-impact readouts.
+\subsection{Retained Architecture Comparison}
 
-\subsection{Gan 2026 Seizure-Frequency Extraction}
-\label{sec:gan-results}
+Table~\ref{tab:reference-cells} is the minimum retained scientific comparison.
+Scores are not compared across tasks because the datasets, outputs, and scorers
+differ.
 
-\subsubsection{Three-Way Architecture Comparison}
-
-On validation750, \code{hybrid\_structured\_events} combined the best
-LLM-using coverage and accuracy balance among the canonical families: the LLM
-extracts source-near structured events with exact evidence spans, and
-deterministic code owns normalization, projection, and scoring. The deterministic
-canonical pipeline led validation after de-overfitting but showed the largest
-validation-to-holdout drop on the frozen \code{test450} audit, supporting the
-portability warning that high validation score from rules alone is incomplete
-generalization evidence. The validation750 table is retained as supporting
-development evidence in Appendix Table~\ref{tab:gan-validation}.
-
-\begin{table*}[tbp]
-\caption{Gan 2026 Frozen \code{test450} Aggregate Audit (\code{gpt-4.1-mini})}
-\label{tab:gan-test}
+\begin{table}[!t]
+\caption{Retained Two-Task by Three-Family Reference Cells}
+\label{tab:reference-cells}
 \centering
 \scriptsize
-\begin{tabular}{lrrrl}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}p{0.13\columnwidth}p{0.12\columnwidth}p{0.16\columnwidth}p{0.20\columnwidth}p{0.29\columnwidth}@{}}
 \toprule
-Architecture & Rendered & Purist (of rendered) & Pragmatic (of rendered) & Claim use \\
+Task & Family & Split & Retained result & Role and boundary \\
 \midrule
-\code{deterministic\_canonical\_pipeline} & 450/450 & 329/450 (0.731) & 341/450 (0.758) & Frozen aggregate; validation-to-test gap warning. \\
-\code{hybrid} & 334/450 & 269/334 (0.805) & 281/334 (0.841) & Frozen aggregate; coverage-limited. \\
-\code{hybrid\_structured\_events} & 448/450 & 364/448 (0.812) & 381/448 (0.850) & Strongest frozen hybrid aggregate on rendered rows. \\
-\code{llm\_only\_canonical\_pipeline} & 450/450 & 326/450 (0.724) & 346/450 (0.769) & Frozen comparator row. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-The promoted close-off candidate is the single GPT structured-event pass on
-\code{gpt-4.1-mini}, which reached 364/450 Purist (0.809) on locked
-\code{test450} with the smallest validation-to-test drop among LLM-using
-architectures. The full V12 fresh-evidence hybrid reached 379/450 Purist
-(0.842) but is retained only as a high-complexity ceiling comparator, not the
-operational headline system.
-
-\subsubsection{Frozen Holdout Aggregate Evidence}
-
-Late-cycle consensus/fresh selector evidence is reported only as frozen
-aggregate audits completed under predeclared Gate 4 protocols. The
-constrained-source audit failed promotion bars; the exact-source audit passed
-promotion bars. Neither audit authorizes post-test tuning or row-level failure
-inspection.
-The audit rows are appendix evidence because they are late-cycle selector
-diagnostics rather than the promoted operational architecture
-(Appendix Table~\ref{tab:gan-gate4}).
-
-Gan holdout-facing claims are limited to aggregate \code{test450} numbers under
-frozen protocols. Validation750 rows are development evidence. The
-structured-event hybrid leads the frozen three-way comparison, while the
-exact-source consensus/fresh selector records a bounded +16 Purist holdout gain
-at 0.6000 changed-label precision. These results do not authorize further gate,
-prompt, or selector tuning from locked-test aggregates.
-
-\subsubsection{Bridge to ExECTv2}
-
-Seizure-frequency normalization, temporal anchoring, and seizure-free handling
-developed for Gan 2026 are the direct substrate for ExECTv2 SeizureFrequency
-recovery. The cross-task read is not a benchmark-win claim: it tests whether the
-modular investment transfers to a new annotation schema and scoring surface.
-ExECTv2 SeizureFrequency remains the weakest family on \code{clinical\_headline}
-despite positive full-200 aggregate recovery, consistent with the deep-reasoning
-difficulty established by Gan 2026.
-
-\subsection{ExECTv2 Clinical-Fact Recovery}
-\label{sec:exectv2-results}
-
-\subsubsection{Architecture and Clinical-Headline Performance}
-
-We evaluate the selected ExECTv2 clinical-finding assembly primarily by
-de-duplicated clinical-headline recovery rather than strict full-schema
-annotation reproduction. On the aggregate full-200 current-code audit, the
-verifier-backed GPT-4.1-mini v08-shaped architecture scored 0.8680 overall
-clinical-headline F1 (0.8502 before the 2026-07-02 scorer-correctness sweep
-and same-day P7 deterministic-producer fix; see
-Table~\ref{tab:exectv2-architecture} footnote). The accepted lean candidate,
-the 2-call no-SF-adjudicator GPT-4.1-mini system, reduced the full-200 call
-profile to 400 calls while preserving the governing cost-performance gates:
-0.8356 overall and 0.7525 SeizureFrequency F1 (pre-sweep scoring; not yet
-re-scored under the finalized scorer).
-
-Strict benchmark and CUI-oriented outputs measure compatibility with the
-original annotation surface. They are reported only as secondary diagnostics and
-are not described as the primary ExECTv2 success criterion.
-
-\begin{table*}[tbp]
-\caption{ExECTv2 Architecture Comparison on Full-200 Aggregate \code{clinical\_headline}. The v08 row reflects the finalized scorer (2026-07-02 four-family scorer-correctness sweep + same-day P7 deterministic-producer fix: overall 0.8502$\to$0.8680). The no-verifier and lean 2-call rows are retained at their pre-sweep values (not yet re-scored under the current scorer) as component-role and cost-frontier comparators; their relative ordering is unchanged.}
-\label{tab:exectv2-architecture}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrl}
-\toprule
-System/view & Overall & Diagnosis & SF & Prescription & Investigations & Claim use \\
-\midrule
-Current-code v08-shaped GPT-4.1-mini & 0.8680 & 0.8546 & 0.7842 & 0.9278 & 0.9213 & Aggregate architecture evidence. \\
-No-verifier ablation$^{\dagger}$ & 0.8431 & 0.8410 & 0.7850 & 0.8926 & 0.8563 & Component-role comparison. \\
-Accepted lean 2-call no-SF-adjudicator$^{\dagger}$ & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & Cost-performance frontier. \\
-\multicolumn{7}{l}{\footnotesize $^{\dagger}$Pre-sweep scoring; not yet re-scored under the finalized scorer.} \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\subsubsection{Same-Core Model Swap}
-
-Using the frozen \code{exectv2\_2call\_no\_sf\_adjudicator\_model\_swap}
-core, DeepSeek chat, GPT-4.1-mini, and Qwen 3.6 35B were compared under the
-same component graph and \code{clinical\_headline} scorer. On dev140, DeepSeek
-produced the strongest aggregate score, GPT-4.1-mini remained operationally
-clean, and the unrepaired Qwen row remained diagnostic because output-contract
-failures blocked operational promotion. Qwen repair v02 later passed the
-predeclared dev140 and full-200 aggregate gates with zero call/parse failures in
-both assemblies. Detailed model-swap rows move to the appendix because they
-support model-family robustness rather than the central architecture comparison
-(Appendix Tables~\ref{tab:exectv2-model-swap-dev} and
-\ref{tab:exectv2-model-swap-full}).
-
-The same-core model-swap study suggests that the ExECTv2 component graph is not
-GPT-4.1-mini-specific. DeepSeek reached 0.8643 and GPT-4.1-mini reached 0.8526
-clinical-headline F1 on dev140 under the frozen core (re-scored under the
-finalized 2026-07-02 scorer), with full-200 aggregate
-rows of 0.8566 and 0.8356 respectively. Qwen repair v02 provides additional
-same-core model-family evidence after output-contract repair, but remains below
-the operational GPT-4.1-mini and DeepSeek rows. The unrepaired Qwen dev140 row
-is retained as a diagnostic comparator only.
-
-\subsubsection{Reliability Scorecard}
-
-The reliability scorecard follows the main performance tables and tests whether
-the selected ExECTv2 system behaves faithfully under fixed scoring and
-inspection boundaries. Current evidence supports aggregate full-200 reliability
-claims with no holdout or deployment-probability claim.
-
-\begin{table*}[tbp]
-\caption{ExECTv2 Reliability Scorecard}
-\label{tab:exectv2-reliability}
-\centering
-\scriptsize
-\begin{tabular}{p{0.18\textwidth}p{0.47\textwidth}p{0.25\textwidth}}
-\toprule
-Dimension & Current evidence & Manuscript claim \\
-\midrule
-Evidence grounding & Same-core rows report minimum exact evidence rate 1.0000; robustness audit has schema/evidence validity 1.0000. & Outputs are evidence-grounded on audited surfaces. \\
-Calibration & Frozen grouped scoring rule validates on full-200 with ECE 0.0432, Brier 0.2245, and base-rate Brier 0.2387. & Aggregate calibration evidence. \\
-Review routing & Lower-burden candidate failed validation because burden rose to 0.9661 despite 0.9037 catch. & No promoted low-burden triage policy. \\
-Robustness & Current-code v08 hard-slice F1 is 0.8336 across 414 eligible family cells versus 0.8503 overall. & Aggregate hard-slice validation evidence. \\
-Consistency & Lean candidate has hard50 temp-0 exact agreement 0.9217 and dev140 varying-temperature exact agreement 0.8857. & Live-repeat consistency evidence. \\
-Component role & Investigations verifier plus deterministic suppression remains strongest at 0.9213; deterministic replacement is not ready. & Rules are verification/suppression aids. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-The reliability scorecard tests whether the selected ExECTv2 system behaves
-faithfully under fixed scoring and inspection boundaries. Calibration and
-robustness have predeclared aggregate full-200 evidence; review routing has a
-useful high-recall diagnostic but no validated low-burden policy; and
-consistency is supported by saved live-repeat panels for the selected lean
-candidate. These results support trust in the fixed architecture but are not
-holdout performance claims and are not component-causal ablation evidence.
-
-\subsubsection{Component Impact}
-
-Component impact is reported separately from the reliability scorecard. Claims
-are limited to aggregate replay deltas under a fixed scorer, split, and
-inspection boundary. Dev140 one-component-off replay and full-200 aggregate-only
-replay support limited component-impact language for dictionary normalization,
-residual semantic recovery, and headline projection on \code{clinical\_headline}.
-
-\begin{table*}[tbp]
-\caption{Component-Off Aggregate Deltas on \code{clinical\_headline}}
-\label{tab:exectv2-component-impact}
-\centering
-\scriptsize
-\begin{tabular}{llllll}
-\toprule
-Component & Type & Split & Overall delta & Main family signal & Claim boundary \\
-\midrule
-\code{standard\_dictionary} & dictionary & dev140 & +0.0389 to +0.1120 & Diagnosis/SF gains & Conditional dictionary recovery. \\
-\code{standard\_dictionary} & dictionary & full200 & +0.0186 to +0.0290 & Diagnosis up to +0.0802 & Same-core full-200 impact only. \\
-\code{residual\_semantic\_lens} & semantic lens & dev140 & +0.0175 to +0.1041 & Investigations gains & Prediction-bearing semantic contribution. \\
-\code{residual\_semantic\_lens} & semantic lens & full200 & +0.0098 to +0.0117 & Diagnosis up to +0.0310 & Aggregate replay only. \\
-\code{headline\_projection} & deterministic projection & dev140 & +0.0283 to +0.0446 & SF up to +0.2031 & Projection/format contribution. \\
-\code{headline\_projection} & deterministic projection & full200 & +0.0302 to +0.0350 & SF up to +0.1417 & Format layer only. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-The no-verifier full-200 ablation and Investigations rule ablation remain
-separate component-role comparisons. They should not be blended with the
-layer-ladder component-off readouts above. Component-impact claims are reserved
-for ablations and same-input replay deltas under a declared scorer and
-inspection boundary. Dictionary, residual-semantic, and headline-projection
-layers show positive aggregate deltas on dev140 and full-200 replay, but these
-results do not prove any component is globally required.
-
-\subsubsection{Gap Mechanism: Gold-Quality Ceilings}
-
-A whole-corpus row-level adjudication of every \code{clinical\_headline}
-disagreement, scored under the finalized 2026-07-02 scorer, separates genuine
-model error from gold-quality and scorer-mechanics artifacts. The finding is
-family-specific and inverts the naive reading of the per-family F1 gap.
-
-\textbf{Diagnosis} carries the most disagreements (199 on dev140), but only
-\textbf{15.6\%} (31/199) are genuine model errors; the remaining 84.4\% are
-gold-quality artifacts --- dominantly gold multiplicity, where the gold tags
-both a parent and a child concept (or splits one compound diagnostic phrase
-into separate atomic tags) from a single statement and the model's reasonable
-one-tag consolidation is scored wrong. The D1 hierarchy-aware concept match
-folded 5 such parent/child pairs into the metric (F1 0.6617$\to$0.6779),
-reinforcing rather than threatening the gold-artifact finding.\footnote{Diagnosis
-is reported on the \code{concept\_only} surface (entity-agnostic recall,
-home-tagged precision) --- the surface \code{clinical\_headline\_unit\_keys}
-actually maps Diagnosis to, and the surface the production assembly's
-\code{score\_for\_primary} uses for the overall. The companion
-\code{concept\_negation} surface (0.6617, negation-aware) is retained as a
-diagnostic only; the finalized overall uses \code{concept\_only} (0.6779) so
-the headline equals the micro-average of the four cited per-family surfaces.}
-
-\textbf{SeizureFrequency} is the corpus's lowest-agreement entity (human IAA
-0.47). Of its 64 adjudicated disagreements, \textbf{29.7\%} (19/64) are genuine;
-the rest are gold under-annotation, redundant double-tagging, and
-inter-annotator ambiguity. Counting only genuine errors, the program is
-clinically defensible on far more letters than the raw metric credits. The
-metric carries $\pm$0.03 run-to-run variance from temperature-0
-nondeterminism, so SF figures are reported as bands.
-
-\textbf{Prescription} is the exception: \textbf{72.2\%} (26/36) of its
-disagreements are genuine model errors (polypharmacy drug omissions,
-current-vs-future dose conflation, non-AED over-extraction) --- the opposite
-pattern, where the model is the bottleneck, not the gold.
-
-\textbf{Deterministic vs LLM-tuned Prescription (comparator).} The v08
-architecture uses a deterministic Prescription lane (AED-only by lexicon
-construction, with per-clause current-vs-future gating). A best-effort LLM
-extractor (the canonical evolved instruction plus current-vs-future and
-AED-only behavior probes, the latter with an emit-if-unsure safety clause)
-was run through the same assembly as a comparator. The result is
-split-dependent: on dev140 the deterministic producer wins (0.9615 vs
-0.9526, recall-driven); on full-200 the LLM-tuned extractor wins
-(0.9492 vs 0.9278 Rx F1; 0.8730 vs 0.8680 overall, precision+recall). The
-two approaches fix different failure modes with different dev/test
-prevalence --- the deterministic P7 fix targets multi-dose weight-context
-over-suppression (recall); the LLM AED-only gate targets non-AED
-comorbidity-drug over-extraction (precision) that the deterministic lexicon
-does not fully handle on the broader test surface. The deterministic lane is
-competitive with, not strictly dominant over, a tuned LLM on Prescription;
-the full-200 LLM overall advantage (+0.0050) is within run-to-run variance
-and is not over-claimed. Table~\ref{tab:rx-comparator}.
-
-\begin{table}[tbp]
-\caption{Deterministic vs LLM-tuned Prescription producer through the v08 assembly (Rx \code{clinical\_headline}).}
-\label{tab:rx-comparator}
-\centering
-\scriptsize
-\begin{tabular}{llrrrr}
-\toprule
-Split & Producer & F1 & P & R & TP/FP/FN \\
-\midrule
-dev140 & Deterministic pre-P7 & 0.9386 & 0.9502 & 0.9272 & 191/10/15 \\
-dev140 & LLM-tuned & 0.9526 & 0.9795 & 0.9272 & 191/4/15 \\
-dev140 & \textbf{Deterministic P7-fixed} & \textbf{0.9615} & 0.9524 & 0.9709 & 200/10/6 \\
-\midrule
-full-200 & Deterministic pre-P7 & 0.9033 & 0.9312 & 0.8771 & 257/19/36 \\
-full-200 & Deterministic P7-fixed & 0.9278 & 0.9343 & 0.9215 & 270/19/23 \\
-full-200 & \textbf{LLM-tuned} & \textbf{0.9492} & 0.9748 & 0.9249 & 271/7/22 \\
+ExECTv2 & Rules only & dev140 & Strict item F1 0.3548 & Incomplete deterministic development reference. \\
+ExECTv2 & LLM only & dev140 & Headline F1 0.7393 & GEPA negative development comparator. \\
+ExECTv2 & Hybrid & dev140 & Headline F1 0.9189 & Current development performance control. \\
+Gan 2026 & Rules only & validation750 & 697/750 Purist & Deterministic development comparator. \\
+Gan 2026 & LLM only & validation750 & 581/750 Purist & Single-pass development comparator. \\
+Gan 2026 & Hybrid & validation750 & 661/748 rendered Purist & Single-pass structured-event comparator. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{Investigations:} \textbf{65.7\%} (23/35) genuine, concentrated in the
-MRI-crowds-out-EEG recall omission pattern.
+All six cells replay from current code and retained outputs without model calls.
+The ExECT hybrid replay also returns evidence-valid F1 0.8913. Its current
+benchmark/CUI companion is 0.4791 versus 0.4729 in the retained run artifact;
+this companion-scorer drift is open and does not affect the reproduced 0.9189
+headline result.
 
-The implication for benchmark interpretation: a per-family F1 gap is not
-interchangeable with a model deficit. Two of four families are bounded by gold
-quality, not model capacity; one (Prescription) is bounded by the model and
-mitigated by the deterministic lane on dev but not strictly dominated by it at
-full-200; one is a genuine recall target. Full provenance:
-\code{docs/canon/workstreams/*\_CANONICAL\_LEDGER\_CANON.md}.
+\subsection{Gan Frozen Holdout Evidence}
+
+\begin{table}[tbp]
+\caption{Gan Operational and Ceiling Evidence on Locked Test450}
+\label{tab:gan-holdout}
+\centering
+\scriptsize
+\begin{tabular}{lrl}
+\toprule
+System & Purist & Role \\
+\midrule
+Single structured-event pass & 364/450 & Operational close-off \\
+V12 multi-trace reviewer & 379/450 & Complexity ceiling \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both rows in Table~\ref{tab:gan-holdout} are frozen aggregate evidence. The
+15-row quality difference does not yet support an efficiency conclusion. A
+matched table of calls, tokens, cost, latency, hardware, and cache policy
+remains open.
+
+\subsection{ExECT Same-Core Model Evidence}
+
+The retained model-transfer package holds the two-call no-SF-adjudicator
+component graph fixed while changing the runtime model. Table~\ref{tab:model-swap}
+is a full200 development-inclusive aggregate read; no test60 row-level analysis
+is used.
+
+\begin{table}[!t]
+\caption{ExECT Same-Core Full200 Aggregate \code{clinical\_headline}}
+\label{tab:model-swap}
+\centering
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Model condition & Overall & Diagnosis & SF & Prescription & Investigations & Call/parse failures \\
+\midrule
+DeepSeek chat & 0.8566 & 0.8708 & 0.7602 & 0.8926 & 0.9091 & 0/1 \\
+GPT-4.1-mini & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & 0/0 \\
+Qwen 3.6 35B repair v02 & 0.8197 & 0.8307 & 0.7020 & 0.8926 & 0.8503 & 0/0 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+These runs support a bounded same-core transfer statement. They are not a
+strict same-prompt panel: the retained GPT condition used temperature 0.3, and
+Qwen used a compact prompt and output-contract repair. The requested six-model
+comparison remains incomplete, with three missing runtime conditions requiring
+predeclaration.
+
+\subsection{Cross-Task Components and Reliability}
+
+\begin{table}[tbp]
+\caption{Saved-Output Component Ablation}
+\label{tab:components}
+\centering
+\scriptsize
+\begin{tabular}{lrr}
+\toprule
+Component & ExECT dev140 & Gan validation750 \\
+\midrule
+Normalization/dictionary & +0.0389 & +0.0293 \\
+Evidence validation & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The zero score delta in Table~\ref{tab:components} does not show that evidence
+validation is unnecessary. A filter may be essential on malformed or
+hallucinated outputs even when all selected reference predictions already
+satisfy it. Rejection and repair tests, not aggregate F1 alone, carry that part
+of the evidence.
+
+\begin{table}[!t]
+\caption{Retained Reliability Evidence and Limits}
+\label{tab:reliability}
+\centering
+\scriptsize
+\begin{tabular}{@{}p{0.18\columnwidth}p{0.42\columnwidth}p{0.30\columnwidth}@{}}
+\toprule
+Subject & Retained result & Boundary \\
+\midrule
+ExECT evidence & Hybrid dev140 minimum exact evidence rate 1.0000 & Development reference. \\
+ExECT calibration & Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 & Full200 aggregate internal scoring-rule result. \\
+Gan grounding & Architecture-specific validation grounding packages retained & Metrics are not uniform across families. \\
+Reproducibility & 1,153 tests, Ruff, mypy, hashes, split barriers, and six-cell replay pass on Python 3.11 & Engineering verification, not clinical validation. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Model-reported confidence remains unused, and no low-burden review-routing
+policy is promoted. The retained manifest does not include evidence for a
+cross-task Wall-transfer claim.
 
 \section{Discussion}
 
-The two-task readout supports the value of modular, auditable extraction over a
-single monolithic score. Gan 2026 demonstrates that seizure-frequency extraction
-is a high-pressure temporal reasoning task: deterministic rules can reach high
-validation scores but show a pronounced holdout gap, while hybrid structured
-events provide the strongest frozen LLM-using aggregate evidence. ExECTv2 tests
-whether the same design discipline scales to broader clinical-fact recovery,
-where \code{clinical\_headline} provides the headline surface and strict
-benchmark/CUI outputs remain diagnostic.
+The strongest result is structural rather than universal. The reduced system
+can reproduce six architecture cells while keeping component ownership and
+evaluation boundaries explicit. Hybrid assembly is substantially stronger than
+the retained ExECT rules-only and LLM-only development references on
+\code{clinical\_headline}, but the three cells do not share a strict published
+benchmark surface. Deterministic paper-comparable engineering remains open.
 
-The most important reporting constraint is the separation of reliability from
-component impact. Reliability scorecards say whether a fixed architecture is
-grounded, calibrated, robust, consistent, and replayable under the declared
-surface; they do not prove that an individual component caused the observed
-performance. That causal question is reserved for the ablations and same-input
-replays of the component-impact analysis, bounded to the declared scorer, split,
-and inspection policy.
+The model-transfer result shows that the component graph runs with three
+qualitatively different runtime models. DeepSeek leads the retained full200
+aggregate, while Qwen trails most clearly on SeizureFrequency. Because runtime
+conditions are asymmetric and the panel is only three of six, this is evidence
+of bounded portability rather than a universal model-agnostic claim.
 
-\subsection{Limitations}
+The cross-task ablation suggests that normalization is useful in both tasks.
+The evidence gate's zero F1 delta illustrates why clinical pipeline evidence
+cannot be reduced to aggregate score changes: rejection, provenance, and repair
+behavior need direct contract tests.
 
-Gan 2026 locked-test evidence is aggregate-only and does not authorize
-row-level test debugging or post-test tuning. ExECTv2 full-200 evidence is also
-aggregate-only under the current reliability and component-impact protocols.
-The ExECTv2 \code{clinical\_headline} surface is intentionally not a strict
-benchmark win claim. Calibration and review-routing results are not deployment
-readiness claims, and Qwen repair v02 is model-family evidence rather than an
-operational promotion over GPT-4.1-mini or DeepSeek.
+\section{Limitations}
+
+Gan test450 is frozen aggregate evidence and cannot support row-level tuning.
+ExECT full200 includes dev140 and is not an independent holdout.
+\code{clinical\_headline} is a clinical-recovery surface, not the published
+strict benchmark. The ExECT benchmark/CUI companion has small current-code
+replay drift. The model panel is three of six and uses asymmetric runtime
+conditions. Model-reported confidence and low-burden review routing are not
+validated. Annotation-quality findings are internally adjudicated; unqualified
+clinical validity would require independent domain review. The current retained
+evidence does not support an ExECT Wall-transfer claim.
 
 \section{Conclusion}
 
-Across deep seizure-frequency extraction and broad epilepsy-letter phenotyping,
-the modular architecture enables performance reporting, reliability assessment,
-and component-impact analysis without conflating their evidence boundaries.
-The current results support aggregate, claim-bounded conclusions: hybrid
-structured events are the strongest frozen Gan 2026 close-off candidate, and
-ExECTv2 achieves strong de-duplicated clinical-headline recovery with separate
-reliability and component-impact evidence.
+A small, frozen, stage-owned clinical extraction system can preserve both
+performance evidence and the provenance needed to interpret it. The retained
+results support a two-task rules/LLM/hybrid comparison, a bounded Gan
+operational-versus-ceiling result, and a three-model ExECT same-core study. They
+do not yet support strict ExECT benchmark reproduction, a six-model conclusion,
+or independent clinical validation. Those boundaries are part of the result,
+not footnotes to it.
 
-\appendices
-\section{Artifact Provenance and Claim Boundaries}
+\section*{Reproducibility Statement}
 
-\begin{table*}[tbp]
-\caption{Manuscript Result Provenance and Claim Boundaries}
-\label{tab:artifact-provenance}
-\centering
-\tiny
-\begin{tabular}{p{0.15\textwidth}p{0.22\textwidth}p{0.36\textwidth}p{0.17\textwidth}}
-\toprule
-Result family & Manuscript use & Source artifact anchor & Boundary \\
-\midrule
-Gan validation architecture comparison & Appendix development context for the three-way comparison. & \url{docs/research/paper_manuscript_2026-06-26.md}; Gan close-off synthesis artifacts listed there. & Validation development evidence; not a frozen holdout claim. \\
-Gan frozen architecture audit & Main frozen \code{test450} comparison table. & \url{experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md} & One-shot locked-test aggregate audit; no row-level test tuning. \\
-Gan consensus/fresh Gate 4 audits & Appendix late-cycle selector diagnostics. & \url{experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_constrained_aggregate_audit_2026-06-26.md}; \url{experiments/gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md} & Frozen aggregate evidence only; constrained row failed, exact-source row passed within its source set. \\
-ExECTv2 architecture and lean frontier & Main \code{clinical\_headline} architecture table. & \url{docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.md}; \url{docs/experiments/exectv2/reliability/exectv2_gpt41mini_simplification_frontier_2026-06-24.md} & Full-200 aggregate architecture evidence; no full-200 row-level development claim. \\
-ExECTv2 same-core model swap & Appendix model-family robustness tables. & \url{docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_qwen_model_swap_repair_v02_full200_readout_2026-06-26.md} & Same-core aggregate model-family evidence; Qwen repair v02 is not operational promotion over GPT-4.1-mini or DeepSeek. \\
-ExECTv2 reliability scorecard & Main reliability table and trust-language paragraph. & \url{docs/research/exectv2_reliability_component_evidence_paper_language_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md}; \url{docs/experiments/exectv2/reliability/exectv2_robustness_validation_audit_2026-06-25.md} & Reliability evidence for a fixed architecture; not holdout validation or component-causal proof. \\
-ExECTv2 component impact & Main component-impact table. & \url{experiments/exectv2_component_off_replay_full200_20260626.md}; \url{docs/experiments/exectv2/reliability/exectv2_component_off_full200_predeclaration_2026-06-26.md} & Replay-only component-impact evidence under the declared scorer and aggregate-only boundary. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\section{Supporting Result Tables}
-
-The main text keeps four result tables: the Gan 2026 frozen aggregate audit,
-the ExECTv2 architecture comparison, the ExECTv2 reliability scorecard, and the
-ExECTv2 component-impact table. The remaining four tables are supporting
-evidence: validation development context, late-cycle selector diagnostics, and
-same-core model-family robustness.
-
-\begin{table*}[tbp]
-\caption{Gan 2026 Three-Way Comparison on Validation750 (\code{gpt-4.1-mini})}
-\label{tab:gan-validation}
-\centering
-\scriptsize
-\begin{tabular}{lrrrl}
-\toprule
-Architecture & Rendered & Purist (of rendered) & Pragmatic (of rendered) & Reading \\
-\midrule
-\code{deterministic\_canonical\_pipeline} & 741/750 & 673/741 (0.908) & 681/741 (0.919) & High validation score; large holdout drop. \\
-\code{hybrid} & 597/750 & 526/597 (0.881) & 545/597 (0.913) & Strong rendered accuracy; too many null/routed rows. \\
-\code{hybrid\_structured\_events} & 748/750 & 661/748 (0.884) & 679/748 (0.908) & Best LLM-using validation coverage/accuracy balance. \\
-\code{llm\_only\_canonical\_pipeline} & 750/750 & 582/750 (0.776) & 614/750 (0.819) & Comparator; below hybrid structured events. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\begin{table*}[tbp]
-\caption{Gan 2026 Consensus/Fresh v0.9 Frozen Gate 4 Aggregate Audits (\code{test450})}
-\label{tab:gan-gate4}
-\centering
-\scriptsize
-\begin{tabular}{llrrrl}
-\toprule
-Audit & Source symmetry & Selected Purist & Net gain & Changed precision & Gate outcome \\
-\midrule
-Constrained & constrained & 348/450 (0.7733) & +19 & 0.5909 & Failed; final-evaluation evidence only. \\
-Exact-source & exact & 359/450 (0.7978) & +16 & 0.6000 & Passed; frozen exact selector holdout. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\begin{table*}[tbp]
-\caption{Same-Core Model Swap on Dev140 \code{clinical\_headline}}
-\label{tab:exectv2-model-swap-dev}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrl}
-\toprule
-Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Operational caveat \\
-\midrule
-DeepSeek chat & 0.8596 & 0.8845 & 0.7658 & 0.8895 & 0.8966 & One parse/schema failure. \\
-GPT-4.1-mini & 0.8396 & 0.8573 & 0.7645 & 0.8895 & 0.8347 & Operationally clean. \\
-Qwen 3.6 35B repair v02 & 0.8319 & 0.8473 & 0.7182 & 0.8895 & 0.8755 & Passes repair gates. \\
-Qwen 3.6 35B unrepaired & 0.8018 & 0.8027 & 0.6919 & 0.8895 & 0.8354 & Diagnostic only. \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\begin{table*}[tbp]
-\caption{Same-Core Model Swap on Full-200 Aggregate \code{clinical\_headline}}
-\label{tab:exectv2-model-swap-full}
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrr}
-\toprule
-Candidate/model & Overall & Diagnosis & SF & Prescription & Investigations & Call/parse failures \\
-\midrule
-DeepSeek chat & 0.8566 & 0.8708 & 0.7602 & 0.8926 & 0.9091 & 0 / 1 \\
-GPT-4.1-mini & 0.8356 & 0.8397 & 0.7525 & 0.8926 & 0.8563 & 0 / 0 \\
-Qwen 3.6 35B repair v02 & 0.8197 & 0.8307 & 0.7020 & 0.8926 & 0.8503 & 0 / 0 \\
-\bottomrule
-\end{tabular}
-\end{table*}
-
-\section*{Acknowledgment}
-
-Acknowledgments omitted for draft.
+The machine-readable retained-evidence manifest records the six reference
+cells, selected artifacts and hashes, policy fingerprints, and no-call replay
+expectations. The synchronized Markdown manuscript and this IEEE source use
+only evidence retained by that manifest and claim strength permitted by the
+paper-provenance canon.
 
 \begin{thebibliography}{00}
 \bibitem{fonferko2019exect} B. Fonferko-Shadrach, A. S. Lacey, A. Roberts,
