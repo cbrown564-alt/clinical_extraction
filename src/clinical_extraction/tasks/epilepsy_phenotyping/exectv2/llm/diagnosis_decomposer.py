@@ -33,6 +33,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     repair_attributes,
     write_jsonl,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.replay_rows import (
+    reconstruct_gold_letters,
+    reconstruct_pred_letters,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     PHRASE_ONLY,
     benchmark_config_for,
@@ -43,7 +47,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
-from .pipelines.entity_verifier import draft_io, prompt, runner
 from .prompts.diagnosis_decomposer import loader as prompt_loader
 
 PROMPT_VERSION = "exectv2_hybrid_diagnosis_decomposer_v0.1"
@@ -132,7 +135,39 @@ def draft_mentions_by_letter(rows: Sequence[Mapping[str, Any]]) -> dict[str, lis
 
 
 def read_draft_rows(path: Path | None) -> list[dict[str, Any]]:
-    return draft_io.read_draft_rows(path)
+    if path is None or not path.exists():
+        return []
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line
+    ]
+
+
+def _attribute_vocabulary() -> dict[str, Any]:
+    spec = ENTITY_REGISTRY[DIAGNOSIS.name]
+    vocabulary: dict[str, Any] = {}
+    for attribute in sorted(spec.legal_attributes):
+        if attribute in {"CUI", "CUIPhrase"}:
+            vocabulary[attribute] = (
+                "Do not emit this; deterministic projection fills it later."
+            )
+        elif attribute in spec.closed_vocab:
+            vocabulary[attribute] = sorted(spec.closed_vocab[attribute])
+        else:
+            vocabulary[attribute] = "string copied or normalized from the letter."
+    return vocabulary
+
+
+def _mention_to_row(mention: PredictedMention) -> dict[str, Any]:
+    return {
+        "entity": mention.entity,
+        "text": mention.text,
+        "attributes": dict(mention.attributes),
+        "evidence": mention.evidence,
+        "confidence": mention.confidence,
+        "rationale": mention.rationale,
+    }
 
 
 def diagnosis_spans_for_letter(
@@ -237,7 +272,7 @@ def build_prompt_input(
         },
         "draft_diagnosis_mentions": list(draft_mentions),
         "diagnosis_candidate_spans": [span.as_payload() for span in spans],
-        "attribute_vocabulary": prompt.attribute_vocabulary(DIAGNOSIS.name),
+        "attribute_vocabulary": _attribute_vocabulary(),
         "clinical_rules": _clinical_rules(),
         "worked_examples": prompt_loader.load_worked_examples(),
         "letter_id": letter.letter_id,
@@ -464,7 +499,7 @@ def run_split(
                 "n_mentions_scored": len(predicted_letter.mentions),
                 "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
                 "predicted_mentions": [
-                    runner.mention_to_row(m) for m in predicted_letter.mentions
+                    _mention_to_row(m) for m in predicted_letter.mentions
                 ],
                 "gold_mentions": [
                     {"text": a.text, "attributes": dict(a.attributes)}
@@ -508,8 +543,8 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         return {"examples": 0}
     n_mentions_raw = sum(int(row.get("n_mentions_raw", 0)) for row in rows)
     n_evidence_invalid = sum(int(row.get("n_evidence_invalid", 0)) for row in rows)
-    gold_letters = runner.reconstruct_gold_letters(rows, entity_name=DIAGNOSIS.name)
-    pred_letters = runner.reconstruct_pred_letters(rows, entity_name=DIAGNOSIS.name)
+    gold_letters = reconstruct_gold_letters(rows, entity_name=DIAGNOSIS.name)
+    pred_letters = reconstruct_pred_letters(rows, entity_name=DIAGNOSIS.name)
 
     phrase = score_entity(gold_letters, pred_letters, DIAGNOSIS.name, PHRASE_ONLY)
     semantic = score_entity(

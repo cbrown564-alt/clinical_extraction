@@ -20,7 +20,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     source_near_diagnostic,
 )
 
-from ..llm.pipelines.entity_verifier.runner import (
+from ..replay_rows import (
     reconstruct_gold_letters,
     reconstruct_pred_letters,
 )
