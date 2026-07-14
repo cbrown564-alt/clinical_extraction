@@ -36,12 +36,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidate
     CandidateKind,
     RawCandidate,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
-    assemble_clinical_assessment,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.deterministic_selection import (
-    FinalSelection,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
 )
@@ -53,6 +47,13 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     _fallback_evidence,
     _normalize_candidate,
     _select_final_event,
+)
+
+from .deterministic.clinical_assessment_assembly import (
+    assemble_clinical_assessment,
+)
+from .deterministic.deterministic_selection import (
+    FinalSelection,
 )
 
 
@@ -141,7 +142,8 @@ def evidence_trace_check_stage(
     selected_index: int,
     disabled_ablation_switches: set[str] | frozenset[str] | None = None,
 ) -> tuple[bool, ClinicalAssessment | None]:
-    """Evidence Trace Check: verbatim evidence-substring check plus a diagnostic-only `ClinicalAssessment` probe.
+    """Evidence Trace Check: verbatim evidence-substring check plus a
+    diagnostic-only `ClinicalAssessment` probe.
 
     Wraps the existing `evidence_is_substring` check and the existing
     `AssessmentDraft`/`assemble_clinical_assessment` diagnostic probe —

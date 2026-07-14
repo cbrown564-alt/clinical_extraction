@@ -1,13 +1,14 @@
 """Full and qwen_compact prompt builders for the structured-event extractor."""
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
+
+from .constants import (
     PromptProfile,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders_full import (
+from .prompt_builders_full import (
     build_full_prompt_input,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders_qwen_compact import (
+from .prompt_builders_qwen_compact import (
     _build_qwen_compact_prompt_input,
 )
 

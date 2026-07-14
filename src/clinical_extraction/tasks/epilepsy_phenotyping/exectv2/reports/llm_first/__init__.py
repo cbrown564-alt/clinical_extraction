@@ -5,11 +5,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.ar
     letters_from_artifact,
     predicted_by_id_from_artifact,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.audits.certainty import (
-    certainty_dropped_config_for,
-    certainty_projection_audit,
-    project_guideline_certainty_negation,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.audits.cui import (
     cui_concept_buckets,
     cui_projection_audit,
@@ -32,6 +27,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.re
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.render import (
     architecture_report,
+)
+
+from .audits.certainty import (
+    certainty_dropped_config_for,
+    certainty_projection_audit,
+    project_guideline_certainty_negation,
 )
 
 __all__ = (

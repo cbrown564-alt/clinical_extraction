@@ -77,8 +77,8 @@ def test_projection_uses_exact_evidence_and_gepa_attribution() -> None:
     assert record is not None
     assert errors == []
 
-    predicted, gate_warnings, provenance, adapter_notes = (
-        to_predicted_letter_from_dedup_facts(LETTER, record)
+    predicted, gate_warnings, provenance, adapter_notes = to_predicted_letter_from_dedup_facts(
+        LETTER, record
     )
 
     assert gate_warnings == []

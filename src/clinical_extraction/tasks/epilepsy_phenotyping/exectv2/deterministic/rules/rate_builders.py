@@ -572,70 +572,151 @@ def _build_article_count(match: re.Match[str], _ctx: ExtractionContext) -> Attri
 RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "rate.range_per_n_periods": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?per\\s+(?P<period_count>\\d+)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five"
+            "|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|e"
+            "ighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*"
+            "\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attac"
+            "ks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?per\\s+(?P<period_coun"
+            "t>\\d+)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_range_per_n_periods,
     ),
     "rate.range_per_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five"
+            "|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|e"
+            "ighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*"
+            "\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attac"
+            "ks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\"
+            "s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_range_per_period,
     ),
     "rate.range_to_per_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four|"
+            "five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|sevente"
+            "en|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑"
+            "–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|a"
+            "ttacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|ever"
+            "y)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_range_to_per_period,
     ),
     "rate.between_range_per_period": ExtractRuleImpl(
         re.compile(
-            "\\bbetween\\s+(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+and\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\bbetween\\s+(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine"
+            "|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|sing"
+            "le|once|twice|thrice|several|few))\\s+and\\s+(?P<upper>(?:multiple|\\d+|one|two|three"
+            "|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|s"
+            "eventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a"
+            "-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spa"
+            "sms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|eac"
+            "h|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_between_range_per_period,
     ),
     "rate.range_of_seizure_terms": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+of\\s+(?:his|her|their|the)?\\s*(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\b",
+            "\\b(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven"
+            "|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twi"
+            "ce|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four"
+            "|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|sevent"
+            "een|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+of\\s+(?:his|her|thei"
+            "r|the)?\\s*(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|ab"
+            "sences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))"
+            "\\b",
             re.IGNORECASE,
         ),
         _build_range_of_seizure_terms,
     ),
     "rate.count_per_n_periods": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+per\\s+(?P<period_count>\\d+)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+per\\s+(?P<period_count>\\d+)\\s+(?P<unit>day|week|month|ye"
+            "ar|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_count_per_n_periods,
     ),
     "rate.count_in_last_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)?\\s*(?:in|over)\\s+(?:the\\s+)?(?:last|past)\\s+(?:(?P<period_count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+)?(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsion"
+            "s?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)?\\s*(?:in|over)\\s+"
+            "(?:the\\s+)?(?:last|past)\\s+(?:(?P<period_count>\\d+|one|two|three|four|five|six|sev"
+            "en|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|"
+            "nineteen|single|once|twice|thrice|several|few)\\s+)?(?P<unit>day|week|month|year|days"
+            "|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_count_in_last_period,
     ),
     "rate.range_over_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:of\\s+(?:these\\s+)?(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+)?over\\s+(?P<period_count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s*[-–—]\\s*(?P<upper>(?:multiple|\\d+|one|two|three|four|five"
+            "|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|e"
+            "ighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:of\\s+(?:these\\s+)?(?:"
+            "seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonic"
+            "s?|jerks?|auras?|status epilepticus)\\s+)?over\\s+(?P<period_count>\\d+|one|two|three"
+            "|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|s"
+            "eventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+(?P<unit>day|week"
+            "|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_range_over_period,
     ),
     "rate.count_over_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)?\\s*over\\s+(?P<period_count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsion"
+            "s?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)?\\s*over\\s+(?P<per"
+            "iod_count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirtee"
+            "n|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|sever"
+            "al|few)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_count_over_period,
     ),
     "rate.count_per_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|"
+            "events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|sta"
+            "tus epilepticus))\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|week"
+            "s|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_count_per_period,
@@ -643,7 +724,13 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.count_per_fortnight": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+)?(?:per|a|each|every)\\s+fortnights?\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|"
+            "events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|sta"
+            "tus epilepticus))\\s+)?(?:per|a|each|every)\\s+fortnights?\\b",
             re.IGNORECASE,
         ),
         _build_count_per_fortnight,
@@ -651,7 +738,14 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.header_continuation_rate": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:[a-z][a-z\\-]*\\s+){0,8}(?:seizures?|absences?|jerks?)(?:\\s+with\\s+(?:loss|altered|impaired)\\s+(?:of\\s+)?awareness)?)(?:\\s*\\([^)]{1,80}\\))?\\s*(?:\\r?\\n)[\\t ]*(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:[a-z][a-z\\-]*\\s+){0,8}(?:seizures?|absences?|jerks?)(?:\\s+with\\s+(?:loss"
+            "|altered|impaired)\\s+(?:of\\s+)?awareness)?)(?:\\s*\\([^)]{1,80}\\))?\\s*(?:\\r?\\n)"
+            "[\\t ]*(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|el"
+            "even|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once"
+            "|twice|thrice|several|few))\\s+(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episo"
+            "des?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras"
+            "?|status epilepticus)|times?)\\s+)?(?:per|a|each|every)\\s+(?P<unit>day|week|month|ye"
+            "ar|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_header_continuation_rate,
@@ -659,7 +753,12 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.n_times_per_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+)?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+times?\\s+(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absence"
+            "s?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)),?\\s+"
+            ")?(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+            "twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twic"
+            "e|thrice|several|few))\\s+times?\\s+(?:per|a|each|every)\\s+(?P<unit>day|week|month|y"
+            "ear|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_n_times_per_period,
@@ -667,21 +766,34 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.range_every_period": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?P<lower>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven"
+            "|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twi"
+            "ce|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper>(?:multiple|\\d+|one|two|three|four"
+            "|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|sevent"
+            "een|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:per|a|each|every)"
+            "\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_range_every_period,
     ),
     "rate.period_range": ExtractRuleImpl(
         re.compile(
-            "\\bevery\\s+(?P<lower_period>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper_period>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?P<unit>days?|weeks?|months?|years?)\\b",
+            "\\bevery\\s+(?P<lower_period>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight"
+            "|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+            "|single|once|twice|thrice|several|few))\\s+(?:to|or)\\s+(?P<upper_period>(?:multiple|"
+            "\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen"
+            "|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\"
+            "s+(?P<unit>days?|weeks?|months?|years?)\\b",
             re.IGNORECASE,
         ),
         _build_period_range,
     ),
     "rate.every_n_periods": ExtractRuleImpl(
         re.compile(
-            "\\bevery\\s+(?P<period_count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\bevery\\s+(?P<period_count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight"
+            "|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen"
+            "|single|once|twice|thrice|several|few))\\s+(?P<unit>day|week|month|year|days|weeks|mo"
+            "nths|years)\\b",
             re.IGNORECASE,
         ),
         _build_every_n_periods,
@@ -696,14 +808,18 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.several_times_per_period": ExtractRuleImpl(
         re.compile(
-            "\\bseveral\\s+times?\\s+(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\bseveral\\s+times?\\s+(?:per|a|each|every)\\s+(?P<unit>day|week|month|year|days|wee"
+            "ks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_several_times_per_period,
     ),
     "rate.adverbial": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?P<mult>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:times?\\s+)?)?(?P<adv>daily|weekly|monthly|fortnightly|annually|yearly)\\b",
+            "\\b(?:(?P<mult>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|elev"
+            "en|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|t"
+            "wice|thrice|several|few))\\s+(?:times?\\s+)?)?(?P<adv>daily|weekly|monthly|fortnightl"
+            "y|annually|yearly)\\b",
             re.IGNORECASE,
         ),
         _build_adverbial,
@@ -714,7 +830,10 @@ RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "rate.bare_count": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)\\b",
+            "\\b(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven"
+            "|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twi"
+            "ce|thrice|several|few))\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)"
+            "\\b",
             re.IGNORECASE,
         ),
         _build_bare_count,

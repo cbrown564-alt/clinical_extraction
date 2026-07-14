@@ -2,7 +2,7 @@
 
 Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
 
-The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The active phase is deletion-led repository surgery and evidence repair before the final paper experiments; Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
+The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. Repository reduction and engineering cleanup are complete; the active phase is architecture freeze and fresh-checkout closeout before the final paper experiments. Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
 
 This is also a research codebase. The intended paper contribution combines
 benchmark performance with an account of how modular hybrid systems work: what
@@ -28,9 +28,8 @@ Active work (2026-07-14):
 - **Surgery:** source, document, and artifact reduction are complete. The
   retained manifest selects the six no-call reference cells; the five largest
   replay artifacts are content-addressed Git LFS objects.
-- **Quality:** pytest and mypy pass on the reduced backend. Ruff has 120
-  line-length and two import-order findings; fresh-checkout verification is
-  still outstanding.
+- **Quality:** all 1,150 tests, Ruff, and mypy pass on the reduced backend. CI
+  enforces all three gates; fresh-checkout verification is still outstanding.
 - **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
   reproduction, broad-phenotyping confidence calibration, annotation-evidence
   consolidation, and the frozen six-model comparison follow the cleanup.

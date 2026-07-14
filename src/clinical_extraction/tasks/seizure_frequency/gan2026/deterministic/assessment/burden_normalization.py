@@ -1,11 +1,11 @@
 """Deterministic assessment burden normalization."""
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.cluster import (
+from .burden.cluster import (
     _cluster_burden,
     _cluster_burden_from_label,
     _is_renderable_cluster_burden,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.frequency import (
+from .burden.frequency import (
     _additive_frequency_burden,
     _burden_from_label,
     _deterministic_label_from_source_phrase,
@@ -25,7 +25,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _rate_burden_from_label,
     _seizure_free_burden_from_label,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.normalize import (
+from .burden.normalize import (
     _is_prior_encounter_relative_interval_phrase,
     _is_unrenderable_seizure_free_burden,
     _prior_encounter_relative_duration_burden,

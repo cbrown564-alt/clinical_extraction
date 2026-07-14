@@ -309,7 +309,8 @@ def _markdown(payload: dict[str, Any], instruction: str) -> str:
         "## Length penalty (prompt-bloat control)",
         "",
         f"- enabled: {lp['enabled']}",
-        f"- instruction budget: {lp['instruction_token_budget']} tok (beta {lp['beta_instruction']})",
+        f"- instruction budget: {lp['instruction_token_budget']} tok "
+        f"(beta {lp['beta_instruction']})",
         f"- demo budget: {lp['demo_token_budget']} tok (beta {lp['beta_demo']})",
         f"- output budget: {lp['output_token_budget']} tok (alpha {lp['alpha_output']})",
         f"- **final instruction length: {payload['final_instruction_tokens']} tokens** "
@@ -322,7 +323,8 @@ def _markdown(payload: dict[str, Any], instruction: str) -> str:
         f"  - Diagnosis={pf['Diagnosis']:.3f}  SeizureFrequency={pf['SeizureFrequency']:.3f}  "
         f"Prescription={pf['Prescription']:.3f}  Investigations={pf['Investigations']:.3f}",
         (
-            f"- **Producer evidence-recall (source_near): {s['evidence_recall']['overall_recall']:.3f}** "
+            "- **Producer evidence-recall (source_near): "
+            f"{s['evidence_recall']['overall_recall']:.3f}** "
             f"(GEPA per-family baseline 0.694, v08 hybrid 0.883) — Dx="
             f"{s['evidence_recall']['per_family']['Diagnosis']:.3f} "
             f"SF={s['evidence_recall']['per_family']['SeizureFrequency']:.3f} "

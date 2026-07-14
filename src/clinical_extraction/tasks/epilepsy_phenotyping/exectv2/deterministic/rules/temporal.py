@@ -396,14 +396,21 @@ def _build_last_seizure_ago(match: re.Match[str], _ctx: ExtractionContext) -> At
 TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "temporal.last_seizure_date": ExtractRuleImpl(
         re.compile(
-            "\\blast\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)\\s+(?:was\\s+)?(?:in|on)\\s+(?:(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+)?(?:(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\s*)?(?P<year>(?:19|20)\\d\\d)?",
+            "\\blast\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)\\s+(?:was\\s+)?"
+            "(?:in|on)\\s+(?:(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+)?(?:(?P<month>January|February|"
+            "March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|"
+            "Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\s*)?(?P<year>(?:19|20)\\d\\d)?",
             re.IGNORECASE,
         ),
         _build_last_seizure_date,
     ),
     "temporal.last_event_date": ExtractRuleImpl(
         re.compile(
-            "\\blast\\s+(?:event|one)\\s+(?:was\\s+|being\\s+)?(?:around\\s+|about\\s+|in\\s+|on\\s+|at\\s+)?(?:(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+)?(?:(?P<christmas>christmas)(?:\\s+(?P<christmas_qualifier>day|time))?|(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec))?\\s*(?P<year>(?:19|20)\\d\\d)?\\b",
+            "\\blast\\s+(?:event|one)\\s+(?:was\\s+|being\\s+)?(?:around\\s+|about\\s+|in\\s+|on\\"
+            "s+|at\\s+)?(?:(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+)?(?:(?P<christmas>christmas)(?:\\"
+            "s+(?P<christmas_qualifier>day|time))?|(?P<month>January|February|March|April|May|June"
+            "|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep"
+            "|Oct|Nov|Dec))?\\s*(?P<year>(?:19|20)\\d\\d)?\\b",
             re.IGNORECASE,
         ),
         _build_last_event_date,
@@ -411,21 +418,33 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.last_seizure_ago": ExtractRuleImpl(
         re.compile(
-            "\\blast\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)\\s+(?:was\\s+)?(?P<count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+(?P<unit>day|week|month|year)s?\\s+ago\\b",
+            "\\blast\\s+(?:[a-z][a-z\\-]*\\s+){0,3}?(?:seizures?|absences?|jerks?)\\s+(?:was\\s+)?"
+            "(?P<count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirtee"
+            "n|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|sever"
+            "al|few)\\s+(?P<unit>day|week|month|year)s?\\s+ago\\b",
             re.IGNORECASE,
         ),
         _build_last_seizure_ago,
     ),
     "temporal.last_event_ago": ExtractRuleImpl(
         re.compile(
-            "\\blast\\s+(?:event|one)\\s+(?:was\\s+|being\\s+)?(?:around\\s+|about\\s+|more\\s+than\\s+)?(?P<count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)\\s+(?P<unit>day|week|month|year)s?\\s+ago\\b",
+            "\\blast\\s+(?:event|one)\\s+(?:was\\s+|being\\s+)?(?:around\\s+|about\\s+|more\\s+tha"
+            "n\\s+)?(?P<count>\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+            "thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thric"
+            "e|several|few)\\s+(?P<unit>day|week|month|year)s?\\s+ago\\b",
             re.IGNORECASE,
         ),
         _build_last_event_ago,
     ),
     "temporal.seizure_term_month_year": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec),?\\s+(?P<year>(?:19|20)\\d\\d)\\b",
+            "\\b(?:(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|ele"
+            "ven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|"
+            "twice|thrice|several|few))\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episode"
+            "s?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|"
+            "status epilepticus))\\s+(?P<month>January|February|March|April|May|June|July|August|S"
+            "eptember|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec),"
+            "?\\s+(?P<year>(?:19|20)\\d\\d)\\b",
             re.IGNORECASE,
         ),
         _build_seizure_term_month_year,
@@ -433,7 +452,11 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.seizure_term_year": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?P<year>(?:19|20)\\d\\d)\\b",
+            "\\b(?:(?P<count>(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|ele"
+            "ven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|"
+            "twice|thrice|several|few))\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episode"
+            "s?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|"
+            "status epilepticus))\\s+(?P<year>(?:19|20)\\d\\d)\\b",
             re.IGNORECASE,
         ),
         _build_seizure_term_year,
@@ -441,7 +464,8 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.christmas_since": ExtractRuleImpl(
         re.compile(
-            "\\bsince\\s+(?:before\\s+|after\\s+)?(?:the\\s+)?christmas\\b(?:\\s+(?P<year>(?:19|20)\\d\\d))?",
+            "\\bsince\\s+(?:before\\s+|after\\s+)?(?:the\\s+)?christmas\\b(?:\\s+(?P<year>(?:19|20"
+            ")\\d\\d))?",
             re.IGNORECASE,
         ),
         _build_christmas,
@@ -449,7 +473,13 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.point_in_time_since": ExtractRuleImpl(
         re.compile(
-            "\\b(?:since|after)\\s+(?:[a-z][a-z'\\-]*\\s+){0,4}?(?P<trig>last\\s+clinic|last\\s+(?:seen|review(?:ed)?|appointment|visit)|being\\s+seen|previous\\s+(?:phone\\s+)?call|start(?:ing|ed)?|commenc(?:ing|ed)|introduc\\w+|increas\\w+|reduc\\w+|stop(?:ping|ped)?|discontinu\\w+|withdraw\\w+|dose\\s+(?:increase|change|adjustment)|(?:drug|medication)\\s+change|chang(?:ing|ed)\\s+(?:the\\s+)?(?:dose|drug|medication)|surgery|operation|resection|last\\s+month|last\\s+week|last\\s+year|this\\s+year|birthday|last\\s+christmas|easter|discharge\\w*)\\b",
+            "\\b(?:since|after)\\s+(?:[a-z][a-z'\\-]*\\s+){0,4}?(?P<trig>last\\s+clinic|last\\s+(?"
+            ":seen|review(?:ed)?|appointment|visit)|being\\s+seen|previous\\s+(?:phone\\s+)?call|s"
+            "tart(?:ing|ed)?|commenc(?:ing|ed)|introduc\\w+|increas\\w+|reduc\\w+|stop(?:ping|ped)"
+            "?|discontinu\\w+|withdraw\\w+|dose\\s+(?:increase|change|adjustment)|(?:drug|medicati"
+            "on)\\s+change|chang(?:ing|ed)\\s+(?:the\\s+)?(?:dose|drug|medication)|surgery|operati"
+            "on|resection|last\\s+month|last\\s+week|last\\s+year|this\\s+year|birthday|last\\s+ch"
+            "ristmas|easter|discharge\\w*)\\b",
             re.IGNORECASE,
         ),
         _build_pit_since,
@@ -464,7 +494,9 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.date_day_month_year": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<prep>since|after|in|on|during)\\s+(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\s+(?P<year>(?:19|20)\\d\\d)\\b",
+            "\\b(?P<prep>since|after|in|on|during)\\s+(?P<day>\\d{1,2})(?:st|nd|rd|th)?\\s+(?P<mon"
+            "th>January|February|March|April|May|June|July|August|September|October|November|Decem"
+            "ber|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\s+(?P<year>(?:19|20)\\d\\d)\\b",
             re.IGNORECASE,
         ),
         _build_date_dmy,
@@ -472,7 +504,10 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.date_month_year": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<prep>since|after|in|on|during)\\s+(?:(?:the\\s+)?(?:beginning|start|early|end|middle|mid|late|last)\\s+(?:of\\s+)?)?(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec),?\\s+(?P<year>(?:19|20)\\d\\d)\\b",
+            "\\b(?P<prep>since|after|in|on|during)\\s+(?:(?:the\\s+)?(?:beginning|start|early|end|"
+            "middle|mid|late|last)\\s+(?:of\\s+)?)?(?P<month>January|February|March|April|May|June"
+            "|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep"
+            "|Oct|Nov|Dec),?\\s+(?P<year>(?:19|20)\\d\\d)\\b",
             re.IGNORECASE,
         ),
         _build_date_my,
@@ -480,7 +515,10 @@ TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "temporal.date_month": ExtractRuleImpl(
         re.compile(
-            "\\b(?P<prep>since|after|in|on|during)\\s+(?:(?:the\\s+)?(?:beginning|start|early|end|middle|mid|late|last)\\s+(?:of\\s+)?)?(?P<month>January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\b(?!\\s+(?:(?:19|20)\\d\\d|\\d))",
+            "\\b(?P<prep>since|after|in|on|during)\\s+(?:(?:the\\s+)?(?:beginning|start|early|end|"
+            "middle|mid|late|last)\\s+(?:of\\s+)?)?(?P<month>January|February|March|April|May|June"
+            "|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep"
+            "|Oct|Nov|Dec)\\b(?!\\s+(?:(?:19|20)\\d\\d|\\d))",
             re.IGNORECASE,
         ),
         _build_date_month,

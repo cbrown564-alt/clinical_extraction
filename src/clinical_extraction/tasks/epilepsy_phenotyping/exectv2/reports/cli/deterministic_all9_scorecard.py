@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.deterministic_all9_scorecard import (
+from ..deterministic_all9_scorecard import (
     DEFAULT_REGISTRY_PATH,
     DEFAULT_RUN_INDEX_PATH,
     write_scorecard_artifacts,

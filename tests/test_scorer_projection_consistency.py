@@ -34,8 +34,8 @@ from dataclasses import dataclass
 import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectAnnotation
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.conventions.prescription import (
-    prescription_residual_additions,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
+    conventions,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.prescription import (
     _prescription_component_key,
@@ -134,7 +134,7 @@ def _scorer_keeps(case: _ScopeCase) -> bool:
 def _projection_keeps(case: _ScopeCase) -> bool:
     """True iff the convention layer retains the regimen as a current addition."""
 
-    return len(prescription_residual_additions(case.note_text)) > 0
+    return len(conventions.prescription_residual_additions(case.note_text)) > 0
 
 
 @pytest.mark.parametrize("case", _CASES, ids=lambda c: c.name)

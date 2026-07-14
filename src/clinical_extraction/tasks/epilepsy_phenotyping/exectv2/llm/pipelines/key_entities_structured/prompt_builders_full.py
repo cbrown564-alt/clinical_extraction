@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
+
+from .constants import (
     PromptProfile,
     prompt_version_for,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_content import (
+from .prompt_content import (
     _attribute_vocabulary,
     _decision_procedure,
     _event_lane_guide,
@@ -17,7 +18,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     _worked_examples,
     candidate_evidence_ledger_for_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_rules_full import (
+from .prompt_rules_full import (
     _clinical_rules,
 )
 

@@ -71,7 +71,8 @@ def render_markdown(payload: dict[str, Any]) -> str:
                 "",
                 "## Secondary Table (SF-normalization structure)",
                 "",
-                "| Component | Task | Split | Baseline | Component-off | Δ (contribution) | Metric |",
+                "| Component | Task | Split | Baseline | Component-off | "
+                "Δ (contribution) | Metric |",
                 "| --- | --- | --- | ---: | ---: | ---: | --- |",
             ]
         )

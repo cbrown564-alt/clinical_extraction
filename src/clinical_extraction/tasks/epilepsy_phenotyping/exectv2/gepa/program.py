@@ -86,14 +86,16 @@ FROM_SCRATCH_SEED_INSTRUCTION = (
 
 
 class GepaDedupFactsSignature(dspy.Signature):
-    """You read one clinical letter and list its de-duplicated clinical facts in four families: diagnosis, seizure_frequency, prescription, and investigation.
-
-    Emit each distinct clinical fact once, grounded by an exact substring of the
-    letter as evidence; do not repeat a diagnosis, seizure-type state, drug
-    regimen, or investigation you have already listed. Return exactly one JSON
-    object matching output_schema, with a 'clinical_facts' list and no markdown or
-    commentary outside the JSON.
-    """
+    (
+        "You read one clinical letter and list its de-duplicated clinical facts "
+        "in four families: diagnosis, seizure_frequency, prescription, and "
+        "investigation.\n\n"
+        "Emit each distinct clinical fact once, grounded by an exact substring of the\n"
+        "letter as evidence; do not repeat a diagnosis, seizure-type state, drug\n"
+        "regimen, or investigation you have already listed. Return exactly one JSON\n"
+        "object matching output_schema, with a 'clinical_facts' list and no markdown or\n"
+        "commentary outside the JSON."
+    )
 
     letter_text: str = dspy.InputField(desc="One clinical letter.")
     output_schema: str = dspy.InputField(

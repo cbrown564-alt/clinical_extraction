@@ -11,7 +11,8 @@ import yaml
 REPO = Path(__file__).resolve().parents[1]
 DEFS = (
     REPO
-    / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/component_ablation/definitions.yaml"
+    / "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports"
+    / "component_ablation/definitions.yaml"
 )
 
 

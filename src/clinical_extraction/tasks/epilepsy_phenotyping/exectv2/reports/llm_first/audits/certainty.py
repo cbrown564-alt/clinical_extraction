@@ -16,9 +16,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.clinical_recovery_scorecard import (
-    ARTIFACT_LAYER_ENTITIES,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.constants import (
     CERTAINTY,
     CERTAINTY_ATTRS,
@@ -39,6 +36,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     benchmark_ignore_for,
     score_overall,
+)
+
+from ...clinical_recovery_scorecard import (
+    ARTIFACT_LAYER_ENTITIES,
 )
 
 

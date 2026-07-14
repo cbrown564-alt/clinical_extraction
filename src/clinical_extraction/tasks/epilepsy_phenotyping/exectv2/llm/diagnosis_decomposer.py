@@ -32,9 +32,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
     raw_output_from_adapter_parse_error,
     repair_attributes,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows as write_jsonl,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.replay_rows import (
     reconstruct_gold_letters,
     reconstruct_pred_letters,
@@ -46,6 +43,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_entity,
     semantic_config_for,
     source_near_diagnostic,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -139,11 +139,7 @@ def draft_mentions_by_letter(rows: Sequence[Mapping[str, Any]]) -> dict[str, lis
 def read_draft_rows(path: Path | None) -> list[dict[str, Any]]:
     if path is None or not path.exists():
         return []
-    return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line
-    ]
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
 def _attribute_vocabulary() -> dict[str, Any]:
@@ -151,9 +147,7 @@ def _attribute_vocabulary() -> dict[str, Any]:
     vocabulary: dict[str, Any] = {}
     for attribute in sorted(spec.legal_attributes):
         if attribute in {"CUI", "CUIPhrase"}:
-            vocabulary[attribute] = (
-                "Do not emit this; deterministic projection fills it later."
-            )
+            vocabulary[attribute] = "Do not emit this; deterministic projection fills it later."
         elif attribute in spec.closed_vocab:
             vocabulary[attribute] = sorted(spec.closed_vocab[attribute])
         else:
@@ -500,9 +494,7 @@ def run_split(
                 "n_mentions_raw": len(mentions),
                 "n_mentions_scored": len(predicted_letter.mentions),
                 "n_evidence_invalid": len(mentions) - len(predicted_letter.mentions),
-                "predicted_mentions": [
-                    _mention_to_row(m) for m in predicted_letter.mentions
-                ],
+                "predicted_mentions": [_mention_to_row(m) for m in predicted_letter.mentions],
                 "gold_mentions": [
                     {"text": a.text, "attributes": dict(a.attributes)}
                     for a in letter.entities(DIAGNOSIS.name)
@@ -576,9 +568,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     return {
         "examples": n,
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
-        "parse_failures": sum(
-            has_blocking_parse_issue(row.get("parse_errors")) for row in rows
-        ),
+        "parse_failures": sum(has_blocking_parse_issue(row.get("parse_errors")) for row in rows),
         "n_draft_mentions": sum(int(row.get("n_draft_mentions", 0)) for row in rows),
         "n_diagnosis_spans": sum(int(row.get("n_diagnosis_spans", 0)) for row in rows),
         "n_mentions_raw": n_mentions_raw,

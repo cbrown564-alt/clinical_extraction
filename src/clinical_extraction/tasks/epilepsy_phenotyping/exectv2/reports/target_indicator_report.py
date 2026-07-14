@@ -98,7 +98,8 @@ def render_target_indicator_markdown(report: Mapping[str, Any]) -> str:
             "",
             "## Candidate Readout",
             "",
-            "| Candidate | Ownership | Overall target F1 | Clears all four? | Blocking indicators |",
+            "| Candidate | Ownership | Overall target F1 | Clears all four? | "
+            "Blocking indicators |",
             "| --- | --- | ---: | --- | --- |",
         ]
     )

@@ -9,18 +9,19 @@ import json
 import re
 from typing import Any
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
-    ALLOWED_EVENT_FAMILIES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.records import (
-    MentionForEvidence,
-    StructuredExtractionRecord,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     extract_json_object,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
+)
+
+from .constants import (
+    ALLOWED_EVENT_FAMILIES,
+)
+from .records import (
+    MentionForEvidence,
+    StructuredExtractionRecord,
 )
 
 

@@ -263,7 +263,8 @@ ABS_ADJECTIVE_RATE_RULE = RuleSpec(
     ),
     provenance=(
         "Generalized from GAN 2026 compact notation (2026-06-09 Phase 2 de-overfitting): "
-        "no asterisk separator, 'absence' added as prefix alternative, SEIZURE_FREQUENCY portability."
+        "no asterisk separator, 'absence' added as prefix alternative, "
+        "SEIZURE_FREQUENCY portability."
     ),
 )
 

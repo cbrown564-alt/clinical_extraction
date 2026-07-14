@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
+from ..sf_surface_registry.adapters.convention import (
     is_sf_convention_noise,
     sf_convention_rewrite,
     sf_residual_additions,
 )
-
 from .diagnosis import (
     DIAGNOSIS_CONVENTION_ALIAS_REPAIRS,
     DIAGNOSIS_RESIDUAL_CONVENTION_NOISE,

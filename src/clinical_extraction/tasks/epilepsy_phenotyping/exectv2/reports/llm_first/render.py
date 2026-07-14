@@ -9,13 +9,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.clinical_recovery_scorecard import (
-    ARTIFACT_LAYER_ENTITIES,
-    build_scorecard,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.audits.certainty import (
-    certainty_projection_audit,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.audits.cui import (
     cui_projection_audit,
 )
@@ -36,6 +29,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.re
     error_taxonomy_summary,
     evidence_validation_summary,
     primary_recovery,
+)
+
+from ..clinical_recovery_scorecard import (
+    ARTIFACT_LAYER_ENTITIES,
+    build_scorecard,
+)
+from .audits.certainty import (
+    certainty_projection_audit,
 )
 
 

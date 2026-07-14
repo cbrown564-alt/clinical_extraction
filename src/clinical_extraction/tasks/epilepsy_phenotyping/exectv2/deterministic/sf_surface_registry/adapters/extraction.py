@@ -13,19 +13,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.change import (
     CHANGE_EXTRACT_IMPLS,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.extract_impl_types import (
-    ExtractRuleImpl,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.rate_builders import (
-    RATE_EXTRACT_IMPLS,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.seizure_free import (
-    SEIZURE_FREE_EXTRACT_IMPLS,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.rules.temporal import (
     TEMPORAL_EXTRACT_IMPLS,
 )
 
+from ...rules.extract_impl_types import (
+    ExtractRuleImpl,
+)
+from ...rules.rate_builders import (
+    RATE_EXTRACT_IMPLS,
+)
+from ...rules.seizure_free import (
+    SEIZURE_FREE_EXTRACT_IMPLS,
+)
 from ..extract_catalog import ExtractCatalogEntry, extract_rules_for_set, load_extract_catalog
 from ..patterns import PERIOD_UNIT
 

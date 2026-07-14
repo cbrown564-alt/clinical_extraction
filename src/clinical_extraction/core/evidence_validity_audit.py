@@ -548,10 +548,13 @@ def _render_task_section(
                 f"### `{run['run_id']}`",
                 "",
                 f"- Model: {run['model_label']}",
-                f"- Pipeline: `{run['pipeline_family']}` · split `{run['split']}` · source `{run['source']}`",
+                f"- Pipeline: `{run['pipeline_family']}` · split `{run['split']}` · "
+                f"source `{run['source']}`",
                 f"- Artifact: `{run['rows_path']}`",
-                f"- Audited {run['row_count']} rows · {run['evidence_string_count']} evidence strings",
-                f"- Current exact-valid rate ({granularity}): {_fmt_pct(run['row_exact_valid_rate'])}",
+                f"- Audited {run['row_count']} rows · "
+                f"{run['evidence_string_count']} evidence strings",
+                f"- Current exact-valid rate ({granularity}): "
+                f"{_fmt_pct(run['row_exact_valid_rate'])}",
                 f"- Grounded rate (all extracted strings): {_fmt_pct(run['grounded_rate'])}",
                 f"- Exact-only string rate: {_fmt_pct(run['exact_rate'])}",
                 "",
@@ -622,6 +625,19 @@ def _is_qwen_run(run: Mapping[str, Any]) -> bool:
     return "qwen" in run_id or "qwen" in model
 
 
+def _qwen_row_grounded_rate(
+    runs: Sequence[Mapping[str, Any]], pipeline: str
+) -> float | None:
+    return next(
+        (
+            run.get("row_grounded_rate")
+            for run in runs
+            if run.get("gan_pipeline") == pipeline and "three_way" in run["run_id"]
+        ),
+        None,
+    )
+
+
 def render_reconciliation_markdown(payload: Mapping[str, Any]) -> str:
     all_runs = [*payload["gan2026_runs"], *payload["exectv2_runs"]]
     priority_runs = [run for run in all_runs if run.get("source") in PRIORITY_SOURCES]
@@ -633,7 +649,8 @@ def render_reconciliation_markdown(payload: Mapping[str, Any]) -> str:
         f"Date: {payload['date']}  ·  Model calls: {payload['model_calls']} (replay-only)",
         "",
         "Replay-only recompute of the unified `evidence_grounded_rate` over saved artifacts "
-        f"using the canonical metric in `core/evidence.py`. See [{METRIC_DOC}](../../reference/evidence_groundedness_metric.md).",
+        "using the canonical metric in `core/evidence.py`. See "
+        f"[{METRIC_DOC}](../../reference/evidence_groundedness_metric.md).",
         "",
         "## Qwen headline (validation750 surfaced rows)",
         "",
@@ -646,14 +663,14 @@ def render_reconciliation_markdown(payload: Mapping[str, Any]) -> str:
                 f"{_fmt_pct(headline.get('qwen_hybrid_row_exact_valid_rate'))} → "
                 f"grounded {_fmt_pct(headline.get('qwen_hybrid_grounded_rate'))} "
                 f"(string-level); row-grounded "
-                f"{_fmt_pct(next((r.get('row_grounded_rate') for r in qwen_runs if r.get('gan_pipeline') == 'hybrid' and 'three_way' in r['run_id']), None))}"
+                f"{_fmt_pct(_qwen_row_grounded_rate(qwen_runs, 'hybrid'))}"
             ),
             (
                 f"- **LLM-only canonical:** exact-valid "
                 f"{_fmt_pct(headline.get('qwen_llm_row_exact_valid_rate'))} → "
                 f"grounded {_fmt_pct(headline.get('qwen_llm_grounded_rate'))} "
                 f"(string-level); row-grounded "
-                f"{_fmt_pct(next((r.get('row_grounded_rate') for r in qwen_runs if r.get('gan_pipeline') == 'llm_only' and 'three_way' in r['run_id']), None))}"
+                f"{_fmt_pct(_qwen_row_grounded_rate(qwen_runs, 'llm_only'))}"
             ),
             "",
             "The Qwen gap was overwhelmingly `REPAIRED_*` formatting (especially `≤` copy "

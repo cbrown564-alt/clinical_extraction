@@ -10,7 +10,7 @@ directly.
 """
 # ruff: noqa: F401 — thin re-export facade for the legacy ``structured`` API.
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
+from .constants import (
     _DIAGNOSIS_RE,
     _INVESTIGATION_RE,
     _MEDICATION_RE,
@@ -27,7 +27,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     PromptProfile,
     prompt_version_for,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing import (
+from .parsing import (
     _coerce_structured_payload,
     _legacy_mention_to_event,
     _stringify_mapping,
@@ -42,7 +42,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
 # module imported ``benchmark_projection`` first, and that import primes a
 # pre-existing deterministic.normalization <-> scoring circular import. Loading
 # ``prompt_content`` first re-triggers that cycle, so keep this order.
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection import (
+from .projection import (
     _SF_STATE_ATTRS,
     _apply_render_safety_gates,
     _drop_duplicate_modality_only_investigations,
@@ -53,11 +53,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     _strip_model_supplied_projection_attrs,
     to_predicted_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders import (
+from .prompt_builders import (
     _build_qwen_compact_prompt_input,
     build_prompt_input,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_content import (
+from .prompt_content import (
     _attribute_vocabulary,
     _decision_procedure,
     _diagnosis_lane_hint,
@@ -74,13 +74,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     candidate_evidence_ledger_for_letter,
     high_priority_evidence_ledger_for_letter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.records import (
+from .records import (
     MentionForEvidence,
     RenderedMentionRecord,
     StructuredClinicalEvent,
     StructuredExtractionRecord,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.runner import (
+from .runner import (
     _checkpoint_report_path,
     _clinical_recovery_lines,
     _diagnostic_ladder_lines,
@@ -97,7 +97,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_en
     write_jsonl,
     write_report,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures import (
+from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
     ExECTv2KeyEntitiesStructuredSignature,
 )
