@@ -406,7 +406,7 @@ Each agent delivered: verdict, top structural findings, code-judo opportunities,
 | `…/prompt_builders.py` (structured) | 815 | 🟡 Allowlisted |
 | `llm_only_clinical_findings.py` (facade) | **45** | ✅ → `pipelines/clinical_findings/` |
 | `…/extract.py` | **50** | ✅ Decomposed S6; corpus in YAML |
-| `pipelines/diagnosis_verification/verifier_content.py` | 929 | 🟡 Allowlisted (P3-2 YAML split) |
+| Diagnosis verifier runtime | Removed 2026-07-14 | Closed candidate; retained model-transfer helpers now live in `llm/diagnosis_decomposer.py` |
 | `llm_target_indicators_single_call.py` (facade) | **80** | ✅ → `pipelines/target_indicators_single_call/` |
 | `cross_model_reliability_analysis.py` (facade) | **153** | ✅ → `reports/reliability/` |
 | `component_ablation_replay.py` (facade) | **99** | ✅ → `reports/component_ablation/` |

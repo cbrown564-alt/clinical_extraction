@@ -66,17 +66,12 @@ at low cost (Phase A below) independent of any new engineering.
   means *Claude sub-agents auditing the project*, not the brief's *cooperating
   LLM roles that jointly perform extraction*. These are unrelated meanings of
   the same word — worth flagging so it is never conflated in the dissertation.
-- The production ExECTv2 pipeline (v08 hybrid, dev140 F1 0.9155) **does**
-  decompose into cooperating stages with LLM calls at each: per-family
-  candidate producers (`exectv2/assembly/producers.py`,
-  `exectv2/llm/pipelines/*`), per-family verifiers
-  (`exectv2/llm/pipelines/entity_verifier/{sf,investigations,med_inv}.py`,
-  `diagnosis_verification/verifier.py`), and a final assembly stage
-  (`exectv2/assembly/pipeline.py`, `clinical_finding.py`) that emits a
-  `ClinicalFinding` with `confidence: Literal["low","medium","high"]` and an
-  `evidence` (source-quote) field per finding. Structurally this **is** a
-  field-extractor + verifier + aggregator system. It has just never been
-  described in those terms.
+- The retained ExECTv2 v08 control is a no-call replay over selected
+  per-family producer artifacts followed by deterministic lenses and final
+  assembly. It emits a `ClinicalFinding` with confidence, exact-source
+  evidence, provenance, and rationale. The repository previously contained
+  live per-family verifier experiments, but those closed runtimes are not part
+  of the retained implementation.
 
 ### 2. Role (a) — Section/Timeline Agent
 
@@ -104,16 +99,13 @@ anywhere.
 
 ### 4. Role (c) — Verification Agent (evidence spans, contradictions, missingness)
 
-**Verdict: Met, and more rigorously than the brief implies.** Two
-deterministic gates run on every prediction and are reported as first-class
-metrics (manuscript §2.2): schema validation and evidence verification
-(cited span must be an exact source substring). On top of that there are
-LLM-driven verifier stages per family (`entity_verifier/*`,
-`diagnosis_verification/{verifier.py,reconciler.py,acceptance_gate.py,phase2_panel.py}`)
-that check contradictions and missingness, plus a whole reliability program
-(calibration ECE 0.0432, review-routing, robustness hard-slice battery
-across 414 cells) that goes well past "checks evidence spans." This is the
-strongest-covered role in the brief.
+**Verdict: Met in the retained implementation.** Two deterministic gates run
+on every prediction and are reported as first-class metrics (manuscript
+§2.2): schema validation and evidence verification, where every cited span
+must be an exact source substring. The retained v08 artifacts also preserve
+the outputs of the selected focused lanes for no-call assembly replay. Earlier
+LLM-driven verifier stages and their reliability studies are historical
+experiments, not active runtime components.
 
 ### 5. Role (d) — Aggregator Agent (final JSON + confidence + citations)
 

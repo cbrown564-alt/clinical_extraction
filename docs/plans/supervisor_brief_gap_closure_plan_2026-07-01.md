@@ -41,9 +41,9 @@ renaming working code or risking regressions.
      target_indicators_single_call}/`
      (one lane per entity family: Diagnosis, SeizureFrequency, Prescription,
      Investigations)
-   - Verification Agent → `exectv2/llm/pipelines/entity_verifier/*`,
-     `diagnosis_verification/{verifier.py,reconciler.py,acceptance_gate.py}`,
-     plus the always-on schema/evidence gates (manuscript §2.2)
+   - Verification Agent → the always-on schema/evidence gates (manuscript
+     §2.2) plus the evidence and provenance retained in the selected v08 lane
+     artifacts; the earlier per-family LLM verifier runtimes are closed
    - Aggregator Agent → `exectv2/assembly/{pipeline.py,clinical_finding.py}`
      (`ClinicalFinding.confidence`, `.evidence`, `.provenance`)
 2. Add one paragraph to the manuscript's Methods section (§2.2 or a new

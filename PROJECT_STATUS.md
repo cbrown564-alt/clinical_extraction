@@ -89,15 +89,19 @@ Implemented in the current working tree:
   and orphaned supervisor runtime have been removed;
 - the closed hand-tuned ExECT generation-selection family has been removed as a
   vertical slice; GEPA now owns the small de-duplicated-fact adapter required by
-  the retained LLM-only comparator.
+  the retained LLM-only comparator;
+- the closed ExECT Diagnosis verifier runtime, pilot reports, unused full200
+  output, and nine verifier-dependent registry records have been removed. The
+  retained model-transfer Diagnosis decomposer is now one direct module with
+  an unchanged rendered prompt contract.
 
 Verification on the current deletion batch:
 
 - `python -m pytest`: 1,348 passed;
-- `python -m mypy src`: clean across 312 source files;
+- `python -m mypy src`: clean across 308 source files;
 - retained manifest, hash, and all six no-call reference replay tests pass as
   part of the full suite;
-- repository-wide Ruff has 172 remaining `E501` findings and no other rule
+- repository-wide Ruff has 162 remaining `E501` findings and no other rule
   failures.
 
 These checks verify the current reduced working tree. They do not complete the
@@ -107,7 +111,7 @@ fresh-checkout reproducibility closeout.
 
 1. Remove the next closed candidate as a complete vertical slice before
    mechanically wrapping retained code.
-2. Close the 172 remaining Ruff line-length findings on the reduced tree.
+2. Close the 162 remaining Ruff line-length findings on the reduced tree.
 3. Reduce the document and artifact estate to canonical owners plus retained proof.
 4. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
