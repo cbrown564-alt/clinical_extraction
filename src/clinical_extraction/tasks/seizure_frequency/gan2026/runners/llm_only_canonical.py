@@ -5,14 +5,16 @@ from __future__ import annotations
 from clinical_extraction.core.evidence import grade_evidence, is_grounded
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineConfiguration,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.lm import configure_lm
 
 
-def run_item(item: GanRecord, config: PipelineConfiguration) -> PipelineResult[FinalExtraction]:
+def run_item(
+    item: GanFrequencyRecord, config: PipelineConfiguration
+) -> PipelineResult[FinalExtraction]:
     """Run one record through the LLM-only canonical pipeline architecture."""
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         llm_only_canonical_pipeline,

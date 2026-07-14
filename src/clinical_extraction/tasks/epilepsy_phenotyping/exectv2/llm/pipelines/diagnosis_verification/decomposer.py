@@ -564,7 +564,8 @@ def _emit_checkpoint(
     }
     if report_path:
         write_report(rows, metadata, report_path, jsonl_path=jsonl_path or Path(""))
-    summary = metadata["summary"]
+    summary_value = metadata["summary"]
+    summary = summary_value if isinstance(summary_value, Mapping) else {}
     print(
         json.dumps(
             {

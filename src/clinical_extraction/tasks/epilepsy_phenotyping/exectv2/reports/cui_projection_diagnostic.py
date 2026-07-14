@@ -21,7 +21,7 @@ documented projection artifact — never a clinical-reasoning gain); a low
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
@@ -77,7 +77,7 @@ class CuiProjectionDiagnostic:
 
 def _first_overlap(
     gold_phrase: str,
-    predictions: Sequence[dict[str, str]],
+    predictions: Sequence[Mapping[str, str | None]],
     used: set[int],
 ) -> int | None:
     if not gold_phrase:
@@ -85,7 +85,7 @@ def _first_overlap(
     for i, pred in enumerate(predictions):
         if i in used:
             continue
-        pred_phrase = normalize_phrase(pred.get("text", ""))
+        pred_phrase = normalize_phrase(pred.get("text") or "")
         if pred_phrase and (gold_phrase in pred_phrase or pred_phrase in gold_phrase):
             return i
     return None

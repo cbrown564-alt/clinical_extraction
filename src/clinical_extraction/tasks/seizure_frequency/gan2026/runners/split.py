@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
@@ -169,8 +169,13 @@ def _run_deterministic_split(
         api_base=api_base,
         row_count=len(records),
     )
-    purist_correct = sum(1 for r in rows if r["comparison"]["purist_correct"])
-    pragmatic_correct = sum(1 for r in rows if r["comparison"]["pragmatic_correct"])
+
+    def comparison_flag(row: Mapping[str, object], key: str) -> bool:
+        comparison = row.get("comparison")
+        return bool(comparison.get(key)) if isinstance(comparison, Mapping) else False
+
+    purist_correct = sum(comparison_flag(row, "purist_correct") for row in rows)
+    pragmatic_correct = sum(comparison_flag(row, "pragmatic_correct") for row in rows)
     metadata["summary"] = {
         "examples": len(rows),
         "purist_correct": purist_correct,

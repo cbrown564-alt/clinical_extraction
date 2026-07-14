@@ -319,7 +319,10 @@ def run_qwen_pool_group_adjudication_letter(
 
 
 def _pool_mentions_for_letter(ctx: StrategyContext) -> list[dict[str, Any]]:
-    return list((ctx.pool_mentions_by_letter or {}).get(ctx.letter.letter_id, []))
+    return [
+        dict(mention)
+        for mention in (ctx.pool_mentions_by_letter or {}).get(ctx.letter.letter_id, [])
+    ]
 
 
 def _outcome_from_pool_run(

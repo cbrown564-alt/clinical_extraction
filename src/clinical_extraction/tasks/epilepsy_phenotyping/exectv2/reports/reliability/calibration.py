@@ -172,7 +172,7 @@ def group_folds(
     fold_count: int,
 ) -> list[set[str]]:
     letter_ids = sorted({str(cell["letter_id"]) for cell in cells})
-    folds = [set() for _ in range(fold_count)]
+    folds: list[set[str]] = [set() for _ in range(fold_count)]
     for index, letter_id in enumerate(letter_ids):
         folds[index % fold_count].add(letter_id)
     return folds

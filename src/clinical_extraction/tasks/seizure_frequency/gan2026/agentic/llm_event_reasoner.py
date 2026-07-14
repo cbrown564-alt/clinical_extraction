@@ -396,7 +396,7 @@ def parse_reasoned_decision_json(raw_output: str) -> ParsedReasonedDecision:
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize V1 rows across raw, format-only, final, and V0 layers."""
 
-    summary = {
+    summary: dict[str, Any] = {
         "rows": len(rows),
         "prediction_bearing_rows": 0,
         "model_calls_attempted": 0,

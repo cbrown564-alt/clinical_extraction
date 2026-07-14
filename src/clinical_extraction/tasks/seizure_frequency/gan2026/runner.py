@@ -12,7 +12,10 @@ from typing import Any, Literal
 
 from clinical_extraction.core.pipeline import PipelineResult
 from clinical_extraction.core.schemas import FinalExtraction
-from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanRecord
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    GanFrequencyRecord,
+    GanRecord,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
     deterministic_canonical,
     hybrid_structured_events,
@@ -58,12 +61,21 @@ class Gan2026PipelineRunner:
 
     def run(self, item: GanRecord) -> PipelineResult[FinalExtraction]:
         """Run a single record through the unified schema flow based on architecture."""
-        run_item = _ITEM_RUNNERS.get(self.config.architecture)
-        if run_item is None:
-            raise ValueError(
-                f"Unsupported architecture for single-item run: {self.config.architecture}"
+        if self.config.architecture == "deterministic_canonical_pipeline":
+            return deterministic_canonical.run_item(item, self.config)
+
+        if not isinstance(item, GanFrequencyRecord):
+            raise TypeError(
+                f"{self.config.architecture} requires a GanFrequencyRecord with "
+                "normalized gold frequency fields"
             )
-        return run_item(item, self.config)
+        if self.config.architecture == "hybrid_structured_events":
+            return hybrid_structured_events.run_item(item, self.config)
+        if self.config.architecture == "llm_only_canonical_pipeline":
+            return llm_only_canonical.run_item(item, self.config)
+        raise ValueError(
+            f"Unsupported architecture for single-item run: {self.config.architecture}"
+        )
 
     def run_split(
         self,

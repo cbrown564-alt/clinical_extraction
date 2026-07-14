@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
     ProvenanceEvent,
@@ -102,7 +104,7 @@ class SeizureFrequencyDictionaryLens(ThinArtifactLens):
             key = _sf_recovery_key_from_parts(text, attrs)
             if key in existing_keys:
                 continue
-            finding = _sf_added_finding(
+            new_finding = _sf_added_finding(
                 store,
                 text=text,
                 evidence=evidence,
@@ -111,10 +113,10 @@ class SeizureFrequencyDictionaryLens(ThinArtifactLens):
                 policy=policy,
                 lens_id=self.lens_id,
             )
-            if finding is None:
+            if new_finding is None:
                 continue
             existing_keys.add(key)
-            added.append(finding)
+            added.append(new_finding)
 
         event = ProvenanceEvent(
             stage="entity_lens",
@@ -156,7 +158,7 @@ def _sf_recovery_key(finding: ClinicalFinding) -> tuple[str, ...]:
 
 def _sf_recovery_key_from_parts(
     text: str,
-    attributes: dict[str, str] | dict[str, object],
+    attributes: Mapping[str, object],
 ) -> tuple[str, ...]:
     attrs = {str(key): str(value) for key, value in attributes.items()}
     concept = attrs.get("CUI") or normalize_phrase(text)

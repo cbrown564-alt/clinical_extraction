@@ -21,6 +21,8 @@ from check_line_counts import (  # noqa: E402
     check_tests_line_counts,
     is_exectv2_llm_production,
     src_root,
+)
+from check_line_counts import (
     tests_root as get_tests_root,
 )
 

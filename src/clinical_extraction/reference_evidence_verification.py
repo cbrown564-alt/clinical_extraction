@@ -56,16 +56,12 @@ def assert_expected_metrics(
     for metric, expected_value in expected.items():
         actual_value = actual.get(metric)
         if actual_value is None or not _equal_number(actual_value, expected_value):
-            mismatches.append(
-                f"{metric}: expected {expected_value!r}, observed {actual_value!r}"
-            )
+            mismatches.append(f"{metric}: expected {expected_value!r}, observed {actual_value!r}")
     if mismatches:
         raise ReferenceEvidenceMismatch(f"{record_id}: " + "; ".join(mismatches))
 
 
-def _run_replay(
-    verification: Mapping[str, Any], *, repo_root: Path
-) -> dict[str, int | float]:
+def _run_replay(verification: Mapping[str, Any], *, repo_root: Path) -> dict[str, int | float]:
     replay = verification.get("replay")
     inputs = verification.get("inputs")
     if not isinstance(inputs, Mapping):

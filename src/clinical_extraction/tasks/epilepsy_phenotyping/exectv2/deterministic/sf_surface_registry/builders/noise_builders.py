@@ -26,7 +26,7 @@ def builder_noise_branch_01(ctx: ConventionContext) -> bool | None:
 
 
 @register_builder("noise_branch_02")
-def builder_noise_branch_02(ctx: ConventionContext) -> bool:
+def builder_noise_branch_02(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     attrs.get("CUI")
@@ -57,7 +57,7 @@ def builder_noise_branch_02(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_03")
-def builder_noise_branch_03(ctx: ConventionContext) -> bool:
+def builder_noise_branch_03(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
@@ -68,7 +68,7 @@ def builder_noise_branch_03(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_04")
-def builder_noise_branch_04(ctx: ConventionContext) -> bool:
+def builder_noise_branch_04(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
@@ -79,7 +79,7 @@ def builder_noise_branch_04(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_05")
-def builder_noise_branch_05(ctx: ConventionContext) -> bool:
+def builder_noise_branch_05(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     attrs.get("CUI")
@@ -89,7 +89,7 @@ def builder_noise_branch_05(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_06")
-def builder_noise_branch_06(ctx: ConventionContext) -> bool:
+def builder_noise_branch_06(ctx: ConventionContext) -> bool | None:
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     cui = attrs.get("CUI")
@@ -109,7 +109,7 @@ def builder_noise_branch_06(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_07")
-def builder_noise_branch_07(ctx: ConventionContext) -> bool:
+def builder_noise_branch_07(ctx: ConventionContext) -> bool | None:
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     cui = attrs.get("CUI")
@@ -123,7 +123,7 @@ def builder_noise_branch_07(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_08")
-def builder_noise_branch_08(ctx: ConventionContext) -> bool:
+def builder_noise_branch_08(ctx: ConventionContext) -> bool | None:
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     cui = attrs.get("CUI")
@@ -138,14 +138,14 @@ def builder_noise_branch_08(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_09")
-def builder_noise_branch_09(ctx: ConventionContext) -> bool:
+def builder_noise_branch_09(ctx: ConventionContext) -> bool | None:
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     cui = attrs.get("CUI")
     if (
         cui == "C1299590"
         and attrs.get("NumberOfSeizures") == "0"
-        and _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
+        and re.search(_SF_CONTEXTUAL_RATE_NOISE_RE, evidence)
     ):
         return True
     return None
@@ -161,20 +161,20 @@ def builder_noise_keep_canonical_seizure_free(ctx: ConventionContext) -> bool | 
 
 
 @register_builder("noise_branch_11")
-def builder_noise_branch_11(ctx: ConventionContext) -> bool:
+def builder_noise_branch_11(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
     attrs.get("CUI")
-    if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and (
-        _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
+    if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and re.search(
+        _SF_CONTEXTUAL_RATE_NOISE_RE, evidence
     ):
         return True
     return None
 
 
 @register_builder("noise_branch_12")
-def builder_noise_branch_12(ctx: ConventionContext) -> bool:
+def builder_noise_branch_12(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}
@@ -187,7 +187,7 @@ def builder_noise_branch_12(ctx: ConventionContext) -> bool:
 
 
 @register_builder("noise_branch_13")
-def builder_noise_branch_13(ctx: ConventionContext) -> bool:
+def builder_noise_branch_13(ctx: ConventionContext) -> bool | None:
     phrase = ctx.phrase
     evidence = ctx.evidence
     attrs = {str(k): str(v) for k, v in ctx.attrs.items()}

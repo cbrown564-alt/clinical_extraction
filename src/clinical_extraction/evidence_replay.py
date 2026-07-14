@@ -50,9 +50,7 @@ def replay_exectv2_deterministic(*, split: str) -> dict[str, int | float]:
     }
 
 
-def replay_exectv2_saved_predictions(
-    path: Path, *, split: str
-) -> dict[str, int | float]:
+def replay_exectv2_saved_predictions(path: Path, *, split: str) -> dict[str, int | float]:
     """Re-score saved ExECT prediction mentions without invoking a model."""
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
@@ -133,9 +131,7 @@ def replay_exectv2_finding_assembly(path: Path) -> dict[str, int | float]:
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for line_number, line in enumerate(
-        path.read_text(encoding="utf-8-sig").splitlines(), start=1
-    ):
+    for line_number, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), start=1):
         if not line.strip():
             continue
         value = json.loads(line)

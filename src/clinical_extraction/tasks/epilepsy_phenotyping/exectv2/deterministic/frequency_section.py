@@ -18,6 +18,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
 
 from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
+from .candidates import AnchorCandidate
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
 from .rule_metadata import DEFAULT_ABLATION, ExtractionContext
@@ -91,7 +92,7 @@ def _first_anchor(line: str) -> tuple[str, tuple[int, int]] | None:
     anchors = [
         c
         for c in SEIZURE_TYPE_ANCHOR_RULE.apply(ctx, DEFAULT_ABLATION)
-        if c.evidence and c.evidence in line
+        if isinstance(c, AnchorCandidate) and c.evidence and c.evidence in line
     ]
     if not anchors:
         return None

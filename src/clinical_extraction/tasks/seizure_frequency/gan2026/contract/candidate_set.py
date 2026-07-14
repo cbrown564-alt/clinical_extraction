@@ -180,7 +180,9 @@ class CandidateSet(BaseModel):
     row_context: RowContext = Field(default_factory=RowContext)
     candidates: list[ExtractedCandidate]
     assembly_issues: list[str] = Field(default_factory=list)
-    schema_version: Literal["gan2026_candidate_set_source_near_v0"] = SCHEMA_VERSION
+    schema_version: Literal["gan2026_candidate_set_source_near_v0"] = (
+        "gan2026_candidate_set_source_near_v0"
+    )
 
 
 def candidate_source_phrase(candidate: ExtractedCandidate) -> str | None:

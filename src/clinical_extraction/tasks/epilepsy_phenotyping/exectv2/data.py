@@ -167,4 +167,6 @@ def load_letters_for_split(
 def _optional_int(value: object) -> int | None:
     if value is None or value == "":
         return None
+    if not isinstance(value, (str, int)):
+        raise TypeError(f"expected integer-compatible value, got {type(value).__name__}")
     return int(value)

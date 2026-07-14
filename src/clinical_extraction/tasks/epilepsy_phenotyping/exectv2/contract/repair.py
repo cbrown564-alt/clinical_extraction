@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from collections.abc import Sequence
+from typing import Any, Literal, Protocol, Self, TypeVar
 
 from pydantic import BaseModel, ConfigDict
 
@@ -34,6 +35,23 @@ class ExtractionRecord(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     mentions: list[MentionRecord] = []
+
+
+class EvidenceMention(Protocol):
+    """Structural mention interface required by the evidence gate."""
+
+    text: str
+    evidence: str
+
+    def model_copy(
+        self,
+        *,
+        update: dict[str, Any] | None = None,
+        deep: bool = False,
+    ) -> Self: ...
+
+
+EvidenceMentionT = TypeVar("EvidenceMentionT", bound=EvidenceMention)
 
 
 def repair_attributes(
@@ -70,17 +88,17 @@ def repair_attributes(
 
 
 def check_evidence(
-    mentions: list[MentionRecord],
+    mentions: Sequence[EvidenceMentionT],
     *,
     note_text: str,
-) -> tuple[list[MentionRecord], list[MentionRecord], list[str]]:
+) -> tuple[list[EvidenceMentionT], list[EvidenceMentionT], list[str]]:
     """Partition mentions into (evidence_valid, evidence_invalid).
 
     Per policy: mentions whose evidence is not an exact substring of the note
     are dropped from the scored set and logged. They are never silently kept.
     """
-    valid: list[MentionRecord] = []
-    invalid: list[MentionRecord] = []
+    valid: list[EvidenceMentionT] = []
+    invalid: list[EvidenceMentionT] = []
     warnings: list[str] = []
     for mention in mentions:
         repaired_evidence = repair_evidence_text_if_source_exact(mention.evidence, note_text)

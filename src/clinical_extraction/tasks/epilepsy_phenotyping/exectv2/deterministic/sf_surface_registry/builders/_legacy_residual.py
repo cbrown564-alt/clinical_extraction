@@ -17,7 +17,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
     """Return bounded dev residual SF additions from explicit source patterns."""
 
     additions: list[tuple[str, str, dict[str, str]]] = []
-    for match in _SF_GENERIC_EVERY_RANGE_RE.finditer(note_text):
+    for match in re.finditer(_SF_GENERIC_EVERY_RANGE_RE, note_text):
         additions.append(
             (
                 "seizures",
@@ -283,7 +283,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_GENERIC_NO_FURTHER_SINCE_RE.finditer(note_text):
+    for match in re.finditer(_SF_GENERIC_NO_FURTHER_SINCE_RE, note_text):
         additions.append(
             (
                 "seizures",
@@ -338,7 +338,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
         )
     for match in _SF_BROAD_SEIZURE_FREE_RE.finditer(note_text):
         window = note_text[max(0, match.start() - 60) : match.end() + 60]
-        if _SF_CONTEXTUAL_RATE_NOISE_RE.search(window):
+        if re.search(_SF_CONTEXTUAL_RATE_NOISE_RE, window):
             continue
         additions.append(
             (
@@ -366,7 +366,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_DATED_GTC_RE.finditer(note_text):
+    for match in re.finditer(_SF_DATED_GTC_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -409,7 +409,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_GTC_RANGE_PER_WEEK_RE.finditer(note_text):
+    for match in re.finditer(_SF_GTC_RANGE_PER_WEEK_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -424,7 +424,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_GTC_FOUR_LAST_THREE_WEEKS_RE.finditer(note_text):
+    for match in re.finditer(_SF_GTC_FOUR_LAST_THREE_WEEKS_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -452,7 +452,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_GTC_PER_MONTH_RE.finditer(note_text):
+    for match in re.finditer(_SF_GTC_PER_MONTH_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -481,7 +481,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_GTC_FURTHER_SINCE_RE.finditer(note_text):
+    for match in re.finditer(_SF_GTC_FURTHER_SINCE_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -494,7 +494,7 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    for match in _SF_NO_FURTHER_GTC_SINCE_RE.finditer(note_text):
+    for match in re.finditer(_SF_NO_FURTHER_GTC_SINCE_RE, note_text):
         additions.append(
             (
                 "generalised tonic clonic seizures",
@@ -521,12 +521,12 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    match = _SF_FSAW_FORTNIGHT_RE.search(note_text)
-    if match is not None:
+    matched = _SF_FSAW_FORTNIGHT_RE.search(note_text)
+    if matched is not None:
         additions.append(
             (
                 "focal seizures with altered awareness",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C0270834",
                     "CUIPhrase": "focal seizures with altered awareness",
@@ -822,12 +822,12 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    match = _SF_SEIZURES_RETURNED_RE.search(note_text)
-    if match is not None:
+    matched = _SF_SEIZURES_RETURNED_RE.search(note_text)
+    if matched is not None:
         additions.append(
             (
                 "seizure",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C0036572",
                     "CUIPhrase": "seizure",
@@ -835,28 +835,28 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
                 },
             )
         )
-    match = _SF_CLUSTER_AUGUST_RE.search(note_text)
-    if match is not None:
+    matched = _SF_CLUSTER_AUGUST_RE.search(note_text)
+    if matched is not None:
         additions.append(
             (
                 "cluster of seizures",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C3203523",
                     "CUIPhrase": "cluster of seizures",
                     "MonthDate": "8",
                     "NumberOfSeizures": "1",
                     "TimeSince_or_TimeOfEvent": "During",
-                    "YearDate": match.group("year"),
+                    "YearDate": matched.group("year"),
                 },
             )
         )
-    match = _SF_FTB_LAST_EVENT_RE.search(note_text)
-    if match is not None:
+    matched = _SF_FTB_LAST_EVENT_RE.search(note_text)
+    if matched is not None:
         additions.append(
             (
                 "focal to bilateral convulsive seizures",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C0877017",
                     "CUIPhrase": "focal to bilateral convulsive seizures",
@@ -867,28 +867,28 @@ def sf_residual_additions(note_text: str) -> list[tuple[str, str, dict[str, str]
         additions.append(
             (
                 "convulsive seizure",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C0751494",
                     "CUIPhrase": "convulsive seizure",
                     "NumberOfSeizures": "0",
                     "TimeSince_or_TimeOfEvent": "Since",
-                    "YearDate": match.group("year"),
+                    "YearDate": matched.group("year"),
                 },
             )
         )
-    match = _SF_SINGLE_CONVULSIVE_LAST_EVENT_RE.search(note_text)
-    if match is not None:
+    matched = _SF_SINGLE_CONVULSIVE_LAST_EVENT_RE.search(note_text)
+    if matched is not None:
         additions.append(
             (
                 "convulsive seizure",
-                match.group(0),
+                matched.group(0),
                 {
                     "CUI": "C0751494",
                     "CUIPhrase": "convulsive seizure",
                     "NumberOfSeizures": "0",
                     "TimeSince_or_TimeOfEvent": "Since",
-                    "YearDate": match.group("year"),
+                    "YearDate": matched.group("year"),
                 },
             )
         )

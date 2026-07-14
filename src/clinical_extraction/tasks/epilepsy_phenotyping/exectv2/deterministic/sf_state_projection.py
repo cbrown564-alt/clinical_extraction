@@ -231,7 +231,7 @@ def _apply_state_projection(
         repaired = _repair_state_mention(mention)
         if repaired is not mention:
             actions.append(_action("state.last_event_active_to_seizure_free", "repair", mention))
-        kept.append(repaired)
+        kept.append(dict(repaired))
 
     for candidate in row.get("candidate_spans", []):
         for new_mention, rule_id in _mentions_from_candidate(candidate):

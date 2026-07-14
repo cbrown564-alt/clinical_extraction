@@ -26,16 +26,6 @@ def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
     event frame per clinically supported fact.
     """
 
-
-def _build_qwen_compact_prompt_input(letter: ExectLetter) -> str:
-    """Build a shorter Qwen-oriented event-frame prompt.
-
-    The full v0.9 prompt is intentionally comprehensive, but local Qwen has
-    shown diagnosis-enumeration and SF-state drift on dev25. This profile keeps
-    the same output contract while reducing prompt bulk and emphasizing one
-    event frame per clinically supported fact.
-    """
-
     payload = {
         "prompt_version": prompt_version_for("qwen_compact"),
         "prompt_profile": "qwen_compact",

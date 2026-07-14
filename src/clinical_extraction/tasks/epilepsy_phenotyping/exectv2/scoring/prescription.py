@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Hashable, Iterable, Sequence
+from typing import cast
 
 from pydantic import BaseModel
 
@@ -179,25 +180,36 @@ def _prescription_component_key(
         frequency = attrs.get("Frequency")
         return canonicalize_attribute_value("Frequency", frequency).lower() if frequency else None
     if component == "source_stated_frequency":
-        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        frequency = cast(
+            str | None, _prescription_component_key(annotation, "frequency", note_text)
+        )
         if frequency and _has_source_stated_frequency(annotation, note_text):
             return frequency
         return None
     if component == "guideline_defaulted_frequency":
-        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        frequency = cast(
+            str | None, _prescription_component_key(annotation, "frequency", note_text)
+        )
         if frequency and not _has_source_stated_frequency(annotation, note_text):
             return frequency
         return None
     if component == "complete":
-        name = _prescription_component_key(annotation, "name", note_text)
-        dose = _prescription_component_key(annotation, "dose", note_text)
-        frequency = _prescription_component_key(annotation, "frequency", note_text)
-        if name is None or dose is None or frequency is None:
+        name = cast(str | None, _prescription_component_key(annotation, "name", note_text))
+        complete_dose = cast(
+            tuple[Hashable, ...] | None,
+            _prescription_component_key(annotation, "dose", note_text),
+        )
+        frequency = cast(
+            str | None, _prescription_component_key(annotation, "frequency", note_text)
+        )
+        if name is None or complete_dose is None or frequency is None:
             return None
-        return (name, *dose, frequency)
+        return (name, *complete_dose, frequency)
     if component == "ordinary_complete":
         complete = _prescription_component_key(annotation, "complete", note_text)
-        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        frequency = cast(
+            str | None, _prescription_component_key(annotation, "frequency", note_text)
+        )
         if (
             complete is None
             or frequency == _AS_REQUIRED
@@ -207,8 +219,10 @@ def _prescription_component_key(
             return None
         return complete
     if component == "rescue_regimen":
-        name = _prescription_component_key(annotation, "name", note_text)
-        frequency = _prescription_component_key(annotation, "frequency", note_text)
+        name = cast(str | None, _prescription_component_key(annotation, "name", note_text))
+        frequency = cast(
+            str | None, _prescription_component_key(annotation, "frequency", note_text)
+        )
         if (
             name is None
             or frequency != _AS_REQUIRED
@@ -218,23 +232,29 @@ def _prescription_component_key(
             return None
         return (name, _AS_REQUIRED)
     if component == "clinical_headline":
-        rescue = _prescription_component_key(annotation, "rescue_regimen", note_text)
+        rescue = cast(
+            tuple[Hashable, ...] | None,
+            _prescription_component_key(annotation, "rescue_regimen", note_text),
+        )
         if rescue is not None:
             return ("rescue", *rescue)
-        ordinary = _prescription_component_key(annotation, "ordinary_complete", note_text)
+        ordinary = cast(
+            tuple[Hashable, ...] | None,
+            _prescription_component_key(annotation, "ordinary_complete", note_text),
+        )
         if ordinary is not None:
             return ("ordinary", *ordinary)
         return None
     if component == "future_medication":
         if not _is_future_medication(annotation):
             return None
-        name = _prescription_component_key(annotation, "name", note_text)
+        name = cast(str | None, _prescription_component_key(annotation, "name", note_text))
         phrase = normalize_phrase(_future_medication_clause(annotation))
         return (name or phrase, phrase)
     if component == "weight_based_dosing":
         if not _is_weight_based_dosing(annotation):
             return None
-        name = _prescription_component_key(annotation, "name", note_text)
+        name = cast(str | None, _prescription_component_key(annotation, "name", note_text))
         phrase = normalize_phrase(_weight_based_dosing_clause(annotation))
         return (name or phrase, phrase)
     raise ValueError(f"Unknown prescription component {component!r}")

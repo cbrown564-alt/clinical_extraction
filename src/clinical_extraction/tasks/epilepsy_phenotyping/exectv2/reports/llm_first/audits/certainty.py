@@ -115,7 +115,7 @@ def _first_overlap_index(
 
 def _certainty_recovery_on_overlap(
     gold_letters: Sequence[ExectLetter],
-    pred_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[Any],
     entity: str,
 ) -> dict[str, Any]:
     pred_by_id = {letter.letter_id: letter for letter in pred_letters}
@@ -206,7 +206,7 @@ def _guideline_projection_score(
     gold_letters: Sequence[ExectLetter],
     entity: str,
 ) -> dict[str, Any]:
-    stats = {
+    stats: dict[str, dict[str, Any]] = {
         attr: {"gold_has_value": 0, "projected": 0, "agree": 0, "mismatches": Counter()}
         for attr in (CERTAINTY, NEGATION)
     }
@@ -260,7 +260,7 @@ def _guideline_projection_score(
 
 def certainty_projection_audit(
     gold_letters: Sequence[ExectLetter],
-    pred_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[Any],
     entities: Sequence[str] = ARTIFACT_LAYER_ENTITIES,
 ) -> dict[str, Any]:
     """Quantify how mechanical certainty is and the certainty-only benchmark loss."""

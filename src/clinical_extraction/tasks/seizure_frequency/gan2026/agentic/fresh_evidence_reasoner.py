@@ -72,7 +72,7 @@ PROMPT_VERSION_V0_12_TWO_MODEL = "gan2026_fresh_evidence_reasoner_v0_12_two_mode
 SAFETY_GATE_VERSION = "gan2026_fresh_evidence_safety_gate_v0_9"
 
 # Peer agent included alongside "gpt" for the v0_12 two-model variant.
-_ACTIVE_TWO_MODEL_PEER: str = "deepseek"
+_ACTIVE_TWO_MODEL_PEER: cross_model_base.AgentId = "deepseek"
 
 
 def set_active_two_model_peer(peer_agent_id: str) -> None:
@@ -83,7 +83,7 @@ def set_active_two_model_peer(peer_agent_id: str) -> None:
     _ACTIVE_TWO_MODEL_PEER = peer_agent_id
 
 
-def get_active_two_model_peer() -> str:
+def get_active_two_model_peer() -> cross_model_base.AgentId:
     """Return the peer agent id currently selected for the v0_12 variant."""
     return _ACTIVE_TWO_MODEL_PEER
 
@@ -354,7 +354,15 @@ def run_split(
         )
         metadata["precision_gated_selector"] = (
             precision_gated_selector.summarize_precision_gated_selector(
-                rows, **family_transitions.FRESH_EVIDENCE_PATHS
+                rows,
+                transition_path=family_transitions.FRESH_EVIDENCE_PATHS["transition_path"],
+                label_changed_path=family_transitions.FRESH_EVIDENCE_PATHS["label_changed_path"],
+                baseline_correct_path=family_transitions.FRESH_EVIDENCE_PATHS[
+                    "baseline_correct_path"
+                ],
+                candidate_correct_path=family_transitions.FRESH_EVIDENCE_PATHS[
+                    "candidate_correct_path"
+                ],
             )
         )
     return rows, metadata
@@ -704,7 +712,7 @@ def _build_prompt_input_v0_12_two_model(
     """
 
     peer = _ACTIVE_TWO_MODEL_PEER
-    agent_ids = ("gpt", peer)
+    agent_ids: tuple[cross_model_base.AgentId, ...] = ("gpt", peer)
     agent_inputs = [
         cross_model_base._agent_prompt_summary(agent_id, agent_rows.get(agent_id))
         for agent_id in agent_ids

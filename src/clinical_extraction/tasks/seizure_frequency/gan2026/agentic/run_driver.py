@@ -65,8 +65,8 @@ SplitDispatchKind = Literal[
     "cross_model_structured_event",
     "matched_budget",
 ]
-ValidateConditions = Callable[[Sequence[str]], None]
-BuildMatchedBudgets = Callable[..., Mapping[str, Any]]
+ValidateConditions = Callable[..., None]
+BuildMatchedBudgets = Callable[..., Mapping[Any, Any]]
 
 
 @dataclass(frozen=True)
@@ -172,21 +172,18 @@ def dispatch_registered_split(
             f"unknown agentic stage {stage_id!r}; registered stages: {registered}"
         ) from exc
 
-    split_kwargs = {
-        "records": records,
-        "params": params,
-        "prompt_version": hooks.prompt_version,
-        "metadata_extra": hooks.metadata_extra,
-        "build_row": hooks.build_row,
-        "summarize_rows": hooks.summarize_rows,
-        "gate_interpretation": hooks.gate_interpretation,
-        "write_report": hooks.write_report,
-        "progress_fields": hooks.progress_fields,
-    }
     if stage.dispatch_kind == "standard":
         return run_standard_split(
-            **split_kwargs,
+            records=records,
+            params=params,
+            prompt_version=hooks.prompt_version,
+            metadata_extra=hooks.metadata_extra,
+            build_row=hooks.build_row,
+            summarize_rows=hooks.summarize_rows,
+            gate_interpretation=hooks.gate_interpretation,
             finalize_metadata=hooks.finalize_metadata,
+            write_report=hooks.write_report,
+            progress_fields=hooks.progress_fields,
             row_kwargs=(structured_event_context.row_kwargs if structured_event_context else None),
         )
     if stage.dispatch_kind == "structured_event":
@@ -195,7 +192,15 @@ def dispatch_registered_split(
                 f"stage {stage_id!r} requires structured_event_context for structured_event dispatch"
             )
         return run_structured_event_split(
-            **split_kwargs,
+            records=records,
+            params=params,
+            prompt_version=hooks.prompt_version,
+            metadata_extra=hooks.metadata_extra,
+            build_row=hooks.build_row,
+            summarize_rows=hooks.summarize_rows,
+            gate_interpretation=hooks.gate_interpretation,
+            write_report=hooks.write_report,
+            progress_fields=hooks.progress_fields,
             default_structured_event_jsonl_path=(
                 structured_event_context.default_structured_event_jsonl_path
             ),
@@ -211,7 +216,15 @@ def dispatch_registered_split(
                 f"{stage_id!r} requires cross_model_context for cross_model_structured_event dispatch"
             )
         return run_cross_model_structured_event_split(
-            **split_kwargs,
+            records=records,
+            params=params,
+            prompt_version=hooks.prompt_version,
+            metadata_extra=hooks.metadata_extra,
+            build_row=hooks.build_row,
+            summarize_rows=hooks.summarize_rows,
+            gate_interpretation=hooks.gate_interpretation,
+            write_report=hooks.write_report,
+            progress_fields=hooks.progress_fields,
             gpt_structured_event_source_path=cross_model_context.gpt_structured_event_source_path,
             agent_source_paths=cross_model_context.agent_source_paths,
             agent_ids=cross_model_context.agent_ids,

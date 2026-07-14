@@ -37,7 +37,7 @@ def sf_convention_rewrite(
     if format_rewrite is not None:
         return format_rewrite
 
-    match = _SF_GENERIC_EVERY_RANGE_RE.search(surface)
+    match = re.search(_SF_GENERIC_EVERY_RANGE_RE, surface)
     if match is not None:
         attrs["CUI"] = "C0036572"
         attrs["CUIPhrase"] = "seizures"
@@ -229,7 +229,7 @@ def sf_convention_rewrite(
         attrs["CUIPhrase"] = "seizure-free"
         attrs["NumberOfSeizures"] = "0"
         return "seizure-free", attrs, "rewrite_generic_seizure_free_to_state_concept"
-    if attrs.get("CUI") == "C0494475" and _SF_GTCS_ACTIVE_WITHOUT_COUNT_RE.search(evidence):
+    if attrs.get("CUI") == "C0494475" and re.search(_SF_GTCS_ACTIVE_WITHOUT_COUNT_RE, evidence):
         attrs["NumberOfSeizures"] = "1"
         attrs.pop("FrequencyChange", None)
         return text, attrs, "rewrite_gtcs_active_without_count_to_active_rate"
@@ -269,7 +269,7 @@ def sf_convention_rewrite(
         attrs["CUIPhrase"] = "seizures"
         attrs["NumberOfSeizures"] = "0"
         return "seizures", attrs, "rewrite_no_further_seizures_to_generic_seizures"
-    if attrs.get("CUI") == "C0036572" and _SF_NO_FURTHER_GTC_SINCE_RE.search(evidence):
+    if attrs.get("CUI") == "C0036572" and re.search(_SF_NO_FURTHER_GTC_SINCE_RE, evidence):
         attrs["CUI"] = "C0494475"
         attrs["CUIPhrase"] = "generalised tonic clonic seizures"
         attrs["NumberOfSeizures"] = "0"
@@ -320,7 +320,7 @@ def _sf_operand_format_rewrite(
     original = dict(attrs)
     rule_ids: list[str] = []
 
-    if attrs.get("CUI") == "C0036572" and _SF_NO_FURTHER_GTC_SINCE_RE.search(surface):
+    if attrs.get("CUI") == "C0036572" and re.search(_SF_NO_FURTHER_GTC_SINCE_RE, surface):
         return None
 
     every_weeks = re.search(

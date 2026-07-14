@@ -379,9 +379,9 @@ def final_mentions_from_mention_id_selection(
 
     selected: list[structured.MentionForEvidence] = []
     for mention_id in record.final_mention_ids:
-        mention = by_id.get(str(mention_id))
-        if mention is None:
+        selected_mention = by_id.get(str(mention_id))
+        if selected_mention is None:
             notes.append(f"unknown_final_mention_id: {mention_id}")
             continue
-        selected.append(structured.MentionForEvidence.model_validate(mention))
+        selected.append(structured.MentionForEvidence.model_validate(selected_mention))
     return selected, notes

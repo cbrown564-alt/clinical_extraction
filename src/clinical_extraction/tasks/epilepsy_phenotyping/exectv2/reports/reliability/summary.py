@@ -46,7 +46,9 @@ def latest_run_check() -> dict[str, Any]:
             {
                 "surface_id": "active_llm_only",
                 "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
-                "latest_runs": [run_ref(run) for run in ACTIVE_LLM_ONLY_RUNS if not _is_control(run)],
+                "latest_runs": [
+                    run_ref(run) for run in ACTIVE_LLM_ONLY_RUNS if not _is_control(run)
+                ],
                 "replacement_policy": "reported separately; different claim surface",
                 "rationale": (
                     "Phase 6 uses model-emitted de-duplicated clinical facts, "

@@ -48,6 +48,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, dataclass
+from typing import Any
 
 import dspy
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -146,11 +147,14 @@ class ConfidenceReviewStage(AgenticStage[ConfidenceReviewDecision]):
     def build_prompt_input(
         self,
         record: GanFrequencyRecord,
-        *,
-        final_label: str | None,
-        final_kind: str | None,
-        **_: object,
+        **context: Any,
     ) -> str:
+        final_label = context.get("final_label")
+        final_kind = context.get("final_kind")
+        if final_label is not None and not isinstance(final_label, str):
+            raise TypeError("final_label must be a string or None")
+        if final_kind is not None and not isinstance(final_kind, str):
+            raise TypeError("final_kind must be a string or None")
         return build_review_payload(record.note_text, final_label, final_kind)
 
     def parse_response(
@@ -229,7 +233,7 @@ class ConfidenceReviewer:
     ) -> None:
         self._stage = stage or STAGE
         self._lm = lm or build_isolated_dspy_lm(
-            model,
+            model=model,
             temperature=temperature,
             max_tokens=max_tokens,
             api_base=api_base,
@@ -272,6 +276,8 @@ def _parse_confidence_response(raw: str) -> ParsedStageResponse[ConfidenceReview
     if not isinstance(raw_payload, dict):
         return ParsedStageResponse(None, parse_errors=[*parse_errors, "no_probability_field"])
     prob_raw = raw_payload.get("probability")
+    if prob_raw is None:
+        return ParsedStageResponse(None, parse_errors=[*parse_errors, "no_probability_field"])
     try:
         probability = _clamp(int(round(float(prob_raw))))
     except (TypeError, ValueError):

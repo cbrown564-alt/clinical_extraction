@@ -18,7 +18,8 @@ def write_deterministic_report(
     jsonl_path: Path,
 ) -> None:
     del jsonl_path
-    summary = metadata.get("summary", {})
+    summary_value = metadata.get("summary", {})
+    summary = summary_value if isinstance(summary_value, Mapping) else {}
     lines = [
         "# Gan 2026 Deterministic Pipeline Validation Run",
         "",
@@ -40,10 +41,13 @@ def write_deterministic_report(
         "| ---: | --- | --- | --- | --- |",
     ]
     for row in rows:
-        comp = row.get("comparison", {})
+        comp_value = row.get("comparison", {})
+        comp = comp_value if isinstance(comp_value, Mapping) else {}
+        reference_value = row.get("reference", {})
+        reference = reference_value if isinstance(reference_value, Mapping) else {}
         lines.append(
-            f"| {row['source_row_index']} | {row['final_label']} | "
-            f"{row['reference']['gold_label']} | "
+            f"| {row.get('source_row_index')} | {row.get('final_label')} | "
+            f"{reference.get('gold_label')} | "
             f"{'yes' if comp.get('purist_correct') else 'no'} | "
             f"{'yes' if comp.get('pragmatic_correct') else 'no'} |"
         )

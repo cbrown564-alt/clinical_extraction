@@ -16,9 +16,7 @@ MANIFEST = ROOT / "docs" / "experiments" / "retained_evidence_manifest.json"
 
 
 def test_all_six_retained_reference_cells_replay_without_model_calls() -> None:
-    results = verify_reference_cells(
-        load_retained_evidence_manifest(MANIFEST), repo_root=ROOT
-    )
+    results = verify_reference_cells(load_retained_evidence_manifest(MANIFEST), repo_root=ROOT)
 
     assert set(results) == {
         "exectv2_rules_reference",

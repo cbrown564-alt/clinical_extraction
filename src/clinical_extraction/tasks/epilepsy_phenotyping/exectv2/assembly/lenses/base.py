@@ -18,8 +18,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lens_ops im
 
 
 class EntityLens(Protocol):
-    lens_id: str
-    entity: str
+    @property
+    def lens_id(self) -> str: ...
+
+    @property
+    def entity(self) -> str: ...
 
     def reconcile(
         self,

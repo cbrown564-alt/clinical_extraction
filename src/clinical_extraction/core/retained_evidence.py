@@ -70,8 +70,7 @@ def validate_retained_evidence_manifest(
     evidence_packages = _records(manifest, "evidence_packages")
     expected_cells = {(task, family) for task in _TASKS for family in _FAMILIES}
     actual_cells = {
-        (record.get("task"), record.get("architecture_family"))
-        for record in reference_cells
+        (record.get("task"), record.get("architecture_family")) for record in reference_cells
     }
     if len(reference_cells) != len(expected_cells) or actual_cells != expected_cells:
         raise ValueError(
@@ -123,9 +122,7 @@ def _validate_record(
     seen_artifacts: dict[str, tuple[str, int]],
     reference_cell: bool,
 ) -> None:
-    required = _REQUIRED_RECORD_FIELDS | (
-        _REQUIRED_REFERENCE_FIELDS if reference_cell else set()
-    )
+    required = _REQUIRED_RECORD_FIELDS | (_REQUIRED_REFERENCE_FIELDS if reference_cell else set())
     missing = sorted(required - record.keys())
     if missing:
         raise ValueError(f"evidence record is missing fields: {', '.join(missing)}")
@@ -182,9 +179,7 @@ def _validate_record(
         )
     if reference_cell:
         _validate_closure(record.get("closure"), record_id=record_id, repo_root=repo_root)
-        _validate_verification(
-            record.get("verification"), record_id=record_id, repo_root=repo_root
-        )
+        _validate_verification(record.get("verification"), record_id=record_id, repo_root=repo_root)
 
 
 def _validate_closure(value: object, *, record_id: str, repo_root: Path) -> None:
@@ -234,9 +229,7 @@ def _validate_verification(value: object, *, record_id: str, repo_root: Path) ->
         if not isinstance(metric, str) or not metric:
             raise ValueError(f"verification.expected in {record_id} has an invalid metric")
         if not isinstance(expected_value, (int, float)) or isinstance(expected_value, bool):
-            raise ValueError(
-                f"verification.expected.{metric} in {record_id} must be numeric"
-            )
+            raise ValueError(f"verification.expected.{metric} in {record_id} must be numeric")
 
 
 def _validate_artifact(
