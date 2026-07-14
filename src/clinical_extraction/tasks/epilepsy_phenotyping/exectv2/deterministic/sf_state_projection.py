@@ -1,4 +1,4 @@
-"""Deterministic state/ownership projection over SF state-adjudicator rows.
+"""Deterministic state/ownership projection over saved SF rows.
 
 This is an attribution-preserving replay layer for the saved v0.5
 SeizureFrequency state-adjudicator output. It does not call a model and it does
@@ -27,11 +27,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import normalize_phrase
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_state_adjudicator as adjudicator_base,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (
+    summarize_sf_rows,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
     frequency_state_faithful,
@@ -112,7 +112,7 @@ def project_rows(
         "ablation": ablation,
         "split": _first_value(rows, "split") or "dev",
         "n_letters": len(projected),
-        "summary": adjudicator_base.summarize_rows(projected),
+        "summary": summarize_sf_rows(projected),
         "projection_action_counts": _action_counts(projected),
     }
     return projected, metadata

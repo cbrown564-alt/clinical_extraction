@@ -93,15 +93,19 @@ Implemented in the current working tree:
 - the closed ExECT Diagnosis verifier runtime, pilot reports, unused full200
   output, and nine verifier-dependent registry records have been removed. The
   retained model-transfer Diagnosis decomposer is now one direct module with
-  an unchanged rendered prompt contract.
+  an unchanged rendered prompt contract;
+- the closed ExECT SeizureFrequency verifier and state-adjudicator runtimes,
+  their prompt corpus, reports, residual ledgers, unused full200 output, and 13
+  registry records have been removed. Retained SF projection, suppression, and
+  union replay now share a model-independent row-scoring module.
 
 Verification on the current deletion batch:
 
-- `python -m pytest`: 1,348 passed;
-- `python -m mypy src`: clean across 308 source files;
+- `python -m pytest`: 1,339 passed;
+- `python -m mypy src`: clean across 305 source files;
 - retained manifest, hash, and all six no-call reference replay tests pass as
   part of the full suite;
-- repository-wide Ruff has 162 remaining `E501` findings and no other rule
+- repository-wide Ruff has 151 remaining `E501` findings and no other rule
   failures.
 
 These checks verify the current reduced working tree. They do not complete the
@@ -111,7 +115,7 @@ fresh-checkout reproducibility closeout.
 
 1. Remove the next closed candidate as a complete vertical slice before
    mechanically wrapping retained code.
-2. Close the 162 remaining Ruff line-length findings on the reduced tree.
+2. Close the 151 remaining Ruff line-length findings on the reduced tree.
 3. Reduce the document and artifact estate to canonical owners plus retained proof.
 4. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 

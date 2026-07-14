@@ -18,11 +18,11 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_state_adjudicator as adjudicator_base,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (
+    summarize_sf_rows,
 )
 
 SUPPRESSION_VERSION = "exectv2_hybrid_sf_unknown_suppression_v0.7"
@@ -63,8 +63,8 @@ def read_rows(path: Path) -> list[dict[str, Any]]:
 
 def suppress_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     suppressed = [suppress_row(row) for row in rows]
-    baseline_summary = adjudicator_base.summarize_rows([dict(row) for row in rows])
-    summary = adjudicator_base.summarize_rows(suppressed)
+    baseline_summary = summarize_sf_rows([dict(row) for row in rows])
+    summary = summarize_sf_rows(suppressed)
     metadata = {
         "suppression_version": SUPPRESSION_VERSION,
         "pipeline_family": PIPELINE_FAMILY,
