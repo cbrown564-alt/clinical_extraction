@@ -21,37 +21,12 @@ def _read_yaml(path: Path) -> Any:
 
 
 @lru_cache(maxsize=1)
-def _load_sf_corpus_cached() -> dict[str, Any]:
-    path = _PACKAGE_DIR / "sf_corpus.yaml"
-    payload = _read_yaml(path)
-    if not isinstance(payload, dict):
-        raise ValueError(f"{path} must contain a mapping")
-    return payload
-
-
-@lru_cache(maxsize=1)
 def _load_med_inv_corpus_cached() -> dict[str, Any]:
     path = _PACKAGE_DIR / "med_inv_corpus.yaml"
     payload = _read_yaml(path)
     if not isinstance(payload, dict):
         raise ValueError(f"{path} must contain a mapping")
     return payload
-
-
-def load_sf_clinical_rules() -> list[str]:
-    """Return clinical rules for the SeizureFrequency verifier prompt."""
-    rules = _load_sf_corpus_cached().get("clinical_rules")
-    if not isinstance(rules, list):
-        raise ValueError("sf_corpus.yaml must contain clinical_rules list")
-    return rules
-
-
-def load_sf_worked_examples() -> list[dict[str, Any]]:
-    """Return worked examples for the SeizureFrequency verifier prompt."""
-    examples = _load_sf_corpus_cached().get("worked_examples")
-    if not isinstance(examples, list):
-        raise ValueError("sf_corpus.yaml must contain worked_examples list")
-    return examples
 
 
 def load_med_inv_clinical_rules() -> list[str]:

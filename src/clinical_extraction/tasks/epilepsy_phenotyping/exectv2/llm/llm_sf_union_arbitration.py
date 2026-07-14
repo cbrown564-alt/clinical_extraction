@@ -22,11 +22,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.text import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     run_all9_on_letters,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_state_adjudicator as adjudicator_base,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
     write_jsonl,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (
+    summarize_sf_rows,
 )
 
 ARBITRATION_VERSION = "exectv2_hybrid_sf_union_arbitration_v08"
@@ -160,7 +160,7 @@ def arbitrate_rows(
         "source_deterministic_pipeline_family": _first_value(deterministic_rows, "pipeline_family"),
         "split": _first_value(current_rows, "split") or "dev",
         "n_letters": len(rows),
-        "summary": adjudicator_base.summarize_rows(rows),
+        "summary": summarize_sf_rows(rows),
         "arbitration_action_counts": _action_counts(rows),
     }
     return rows, metadata
