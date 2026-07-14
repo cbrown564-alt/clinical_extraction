@@ -22,7 +22,6 @@ from clinical_extraction.core.evidence import (
 from clinical_extraction.core.registry import RunRegistryEntry, load_run_registry
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.loader import (
-    load_active_llm_only_runs,
     load_rich_schema_runs,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import load_records
@@ -227,7 +226,7 @@ def build_registry_targets(entries: Sequence[RunRegistryEntry]) -> list[AuditTar
 
 def build_exectv2_catalog_targets() -> list[AuditTarget]:
     targets: list[AuditTarget] = []
-    for run in (*load_rich_schema_runs(), *load_active_llm_only_runs()):
+    for run in load_rich_schema_runs():
         rows_path = run.rows_path
         if not rows_path.exists():
             continue

@@ -213,7 +213,7 @@ Notes:
 | `experiments/run_sf_verify_phase5_matrix.ps1` | overnight orchestrator (4 runs; `-Smoke`) |
 | `tests/test_exectv2_gepa_sf_verify.py` | unit tests (8) |
 | `src/.../exectv2/scoring/seizure_frequency.py` | `state_profile` (type-agnostic) + `frequency_state_faithful` |
-| `src/.../llm/pipelines/key_entities_generation_selection/facts.py` | `_seizure_state_attributes` (state→attribute projection, finding #9) |
+| `src/.../gepa/dedup_adapter.py` | `_seizure_state_attributes` (state→attribute projection, finding #9) |
 
 ---
 

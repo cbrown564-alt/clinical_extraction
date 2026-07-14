@@ -4,7 +4,8 @@ Date: 2026-06-23
 
 ## Status
 
-Accepted for ExECTv2 LLM-only development on the dev split.
+Closed negative. The de-duplicated fact representation survives only in the
+retained GEPA LLM-only comparator.
 
 ## Context
 
@@ -30,9 +31,8 @@ ExECTv2 annotation schema that is later collapsed by the scorer.
 
 ## Decision
 
-The primary ExECTv2 LLM-only development target is now a single-prompt,
-attribution-clean route that emits de-duplicated clinical facts directly for
-the `clinical_headline` scorer.
+The ExECTv2 LLM-only study targeted an attribution-clean program that emitted
+de-duplicated clinical facts directly for the `clinical_headline` scorer.
 
 The route will use a simplified model-owned fact schema:
 
@@ -48,21 +48,17 @@ facts, choose omitted seizure-frequency states, expand ontology companions, or
 perform deterministic de-duplication that rescues a fact the model did not
 select.
 
-The working target is `>0.900` dev140 `clinical_headline` F1 with GPT-4.1-mini,
-followed by unchanged-configuration rollout to DeepSeek and Qwen. The strict
-benchmark surface remains a required diagnostic and paper-comparability
-readout, but it is not the optimization target for this LLM-only workstream.
+The study did not clear the `>0.900` dev140 target or displace the v08 hybrid.
+The retained GEPA result is a negative LLM-only comparator. Its exact program,
+adapter, artifacts, tests, and claim boundary are recorded in the retained
+evidence manifest.
 
 ## Consequences
 
-- Satellite 13 becomes the primary active ExECTv2 research workstream.
-- Rich-schema LLM-only and hybrid artifacts are demoted to comparison controls,
-  not active optimization targets.
-- Phase 1 must archive superseded rich-schema iteration sprawl without deleting
-  evidence, leaving only the two live comparators in the active scoreboard:
-  bare rich-schema LLM-only and v08 hybrid.
-- Phase 2 must prove the adapter by reproducing the existing de-duplicated
-  baseline before any new prompt result is claimed.
+- The historical prompt variants, strategy registry, CLI, snapshots, and
+  candidate-specific tests are not active repository interfaces.
+- `exectv2/gepa/dedup_adapter.py` retains only the representation mapping needed
+  by the selected GEPA comparator.
 - Result language must say "clinical-recovery" or "`clinical_headline`"; it
   must not describe de-duplicated recovery as clearing the strict benchmark.
 - Any future full-200 or holdout-facing audit requires a separate frozen
@@ -70,10 +66,6 @@ readout, but it is not the optimization target for this LLM-only workstream.
 
 ## Verification
 
-Phase 0 is complete when:
-
-- this ADR is accepted;
-- `docs/plans/exectv2/13_dedup_clinical_facts_llm_only.md` names the route and
-  de-duplicated clinical-recovery surface as the primary LLM-only target; and
-- `PROJECT_STATUS.md` records Phase 1 cleanup as the next active step.
-
+`tests/test_exectv2_gepa_dedup_adapter.py` protects one-to-one mapping,
+evidence gating, and GEPA component attribution. The retained evidence manifest
+owns the no-call result replay.

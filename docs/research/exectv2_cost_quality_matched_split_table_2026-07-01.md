@@ -218,9 +218,8 @@ hybrid number (0.9152) is **not itself an independently registered run_id**
 — it is embedded as a field inside the v09 study row, sourced originally from
 `docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md`'s
 `clinical_headline` score view. A ~0.0003-level rounding variant of the same
-artifact (0.9155) is the number actually repeated across ~15 other docs
-(e.g. `docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md:25`)
-but **is not itself a registry `primary_metrics` value under any run_id**.
+artifact (0.9155) was repeated in historical comparison notes but **is not
+itself a registry `primary_metrics` value under any run_id**.
 Using 0.9155 instead of 0.9152 moves the dev140 premium to +0.0759 and the
 ratio to 5.20x — no material difference.
 

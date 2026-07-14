@@ -25,7 +25,7 @@ promoted, not buried, and drafts the framing and text for that promotion.
 ### dev140 (validation only, four-family `clinical_headline`—Diagnosis,
 SeizureFrequency, Prescription, and Investigations)
 
-Source: `catalog.yaml` (`active_llm_only_runs`);
+Source: `catalog.yaml` (`rich_schema_runs`);
 reconciliation in `benchmark_surface_reconciliation_2026-06-27.md` Table 1.
 
 | Model | Headline F1 | Clinical-recovery F1 | Δ (format layers) |

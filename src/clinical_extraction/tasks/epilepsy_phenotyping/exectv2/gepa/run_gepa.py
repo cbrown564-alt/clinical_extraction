@@ -34,6 +34,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import data as gepa_data
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter import (
+    parse_dedup_clinical_facts_json,
+    to_predicted_letter_from_dedup_facts,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.metric import (
     KEY_FAMILIES,
     LengthPenaltyConfig,
@@ -46,12 +50,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program import 
     GepaDedupFactsExtractor,
     approx_tokens,
     build_from_scratch_program,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
-    parse_dedup_clinical_facts_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
-    to_predicted_letter_from_dedup_facts,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,

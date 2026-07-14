@@ -38,7 +38,7 @@ renaming working code or risking regressions.
    - Section/Timeline Agent → *gap, see Phase C*
    - Field Extractor Agents → `exectv2/assembly/producers.py`,
      `exectv2/llm/pipelines/{key_entities_structured,
-     key_entities_generation_selection, target_indicators_single_call}/`
+     target_indicators_single_call}/`
      (one lane per entity family: Diagnosis, SeizureFrequency, Prescription,
      Investigations)
    - Verification Agent → `exectv2/llm/pipelines/entity_verifier/*`,

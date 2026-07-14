@@ -16,11 +16,10 @@ Human scan order for the current paper/results sprint:
 | ExECTv2 component-off dev140 | [`exectv2_component_off_replay_dev140_20260626.md`](exectv2_component_off_replay_dev140_20260626.md) |
 | ExECTv2 same-core full-200 model swap | [`docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md`](../docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md) |
 | ExECTv2 reliability validations | [`docs/experiments/exectv2/reliability/`](../docs/experiments/exectv2/reliability/) (robustness, calibration, review routing) |
-| ExECTv2 active scoreboard | [`docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md`](../docs/experiments/exectv2/key_entities/exectv2_dedup_phase1_active_scoreboard_2026-06-23.md) |
+| ExECTv2 retained references | [`docs/experiments/retained_evidence_manifest.md`](../docs/experiments/retained_evidence_manifest.md) |
 | Gan reliability master scorecard | [`gan2026_reliability_master_scorecard_2026-06-17.md`](gan2026_reliability_master_scorecard_2026-06-17.md) |
 | Gan v0.9 selector — Gate 4 exact holdout audit | [`gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md`](gan2026_consensus_fresh_agreement_selector_v0_9_frozen_gate4_exact_aggregate_audit_2026-06-26.md) |
 | Paper-facing rows | [`docs/research/`](../docs/research/) (`exectv2_results_section_draft_2026-06-26.md`, `paper_manuscript_2026-06-26.md`) |
-| Retained evidence manifest | [`docs/experiments/retained_evidence_manifest.md`](../docs/experiments/retained_evidence_manifest.md) |
 
 ### Gan holdout promotion ladder (Gates 1–4)
 

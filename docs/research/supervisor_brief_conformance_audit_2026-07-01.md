@@ -96,8 +96,8 @@ producer/extraction lane per entity family (Diagnosis, SeizureFrequency,
 Prescription, Investigations — the four families the brief names as examples:
 ASM, seizure type/frequency, investigations, epilepsy syndrome/type map
 directly onto Prescription, SeizureFrequency, Investigations, Diagnosis).
-Evidence: `exectv2/llm/pipelines/{key_entities_structured,
-key_entities_generation_selection, target_indicators_single_call}/`,
+Evidence: `exectv2/llm/pipelines/key_entities_structured/` and the retained
+focused lane implementations,
 `exectv2/assembly/producers.py`'s `CandidateProducer` protocol. This is real,
 substantial, working code — it just isn't labeled "Field Extractor Agent"
 anywhere.

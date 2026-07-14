@@ -31,15 +31,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     to_exect_letter,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter import (
+    parse_dedup_clinical_facts_json,
+    to_predicted_letter_from_dedup_facts,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program import approx_tokens
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifamily import (
     _facts_of,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.parsing import (
-    parse_dedup_clinical_facts_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.projection import (
-    to_predicted_letter_from_dedup_facts,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     concept_keys,

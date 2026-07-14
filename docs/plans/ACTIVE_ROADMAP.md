@@ -35,9 +35,9 @@ closed; its LLM-only result remains a reference comparator.
 | **Freeze retained paper story** | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | Keep the S1–S9 acceptance matrix current; no deletion may remove required proof |
 | **Evidence manifest repair** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Manifest rebuilt with present hashes; external large-artifact storage remains open |
 | **Minimal reference system** | [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md) | Six cells now have exact source/config/scorer/test closure and passing no-call replay |
-| **Delete closed work** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Remove closed candidates, their configs, reports, artifacts, and tests together |
+| **Delete closed work** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Generation-selection and connected historical surfaces removed; continue with the next closed vertical slice |
 | **Frontend / Observatory scope** | [`repository_surgery_assessment_2026-07-14.md`](../research/maintenance/repository_surgery_assessment_2026-07-14.md) | Removed: neither product was required by the retained contribution or evidence closure |
-| **Restore real quality gates** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Make full pytest, Ruff, and mypy green on the reduced tree; remove historical allowlist exemptions |
+| **Restore real quality gates** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Pytest and mypy are green; line-count allowlists are gone; close the remaining Ruff `E501` findings |
 
 ---
 

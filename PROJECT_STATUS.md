@@ -84,27 +84,32 @@ Implemented in the current working tree:
 - every reference cell has a validated artifact hash, source/config/scorer/test
   closure, and passing no-call replay;
 - broken report/catalog builders tied to missing historical artifacts have been
-  removed with their scripts and tests.
+  removed with their scripts and tests;
+- the frontend residue, line-count allowlist gate, one-shot migration scripts,
+  and orphaned supervisor runtime have been removed;
+- the closed hand-tuned ExECT generation-selection family has been removed as a
+  vertical slice; GEPA now owns the small de-duplicated-fact adapter required by
+  the retained LLM-only comparator.
 
-Verification before the current deletion batch:
+Verification on the current deletion batch:
 
-- all six reference cells replayed successfully;
-- 35 focused manifest, replay, deterministic-reference, Ruff, and mypy checks passed;
-- the full backend suite had 2,511 passed, 20 failed, and 2 skipped before the
-  broken report/catalog and UI slices were removed;
-- repository-wide Ruff and mypy were not green on the unreduced tree.
+- `python -m pytest`: 1,348 passed;
+- `python -m mypy src`: clean across 312 source files;
+- retained manifest, hash, and all six no-call reference replay tests pass as
+  part of the full suite;
+- repository-wide Ruff has 172 remaining `E501` findings and no other rule
+  failures.
 
-These checks are evidence for the first boundary-protection slice only. They do
-not verify the full surgery.
+These checks verify the current reduced working tree. They do not complete the
+fresh-checkout reproducibility closeout.
 
 ## In progress
 
-1. Re-run the backend suite after the UI/report deletion batch and remove any
-   orphaned imports or stale quality-gate entries.
-2. Remove closed candidates as complete vertical slices before repairing broad
-   static-quality debt.
+1. Remove the next closed candidate as a complete vertical slice before
+   mechanically wrapping retained code.
+2. Close the 172 remaining Ruff line-length findings on the reduced tree.
 3. Reduce the document and artifact estate to canonical owners plus retained proof.
-4. Recount repository-wide Ruff/mypy debt on the smaller tree and close it.
+4. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
 ## Open research and validation work
 
@@ -134,14 +139,10 @@ not verify the full surgery.
 
 ## Next
 
-1. Generate the current registry/path/hash audit and propose the retained manifest.
-2. Trace the two operational controls and six reference cells through source,
-   configuration, artifacts, reports, and tests.
-3. Delete or repair the first complete broken ExECT report/catalog feature.
-4. Re-run the full backend suite and recount Ruff/mypy on the smaller tree.
-5. Continue vertical deletion until no closed candidate remains installed.
-6. Complete the four research follow-ups on the frozen reduced architecture.
-7. Verify a fresh checkout can install, replay both tasks, rebuild every
+1. Continue vertical deletion until no closed candidate remains installed.
+2. Make repository-wide Ruff green without allowlists.
+3. Complete the four research follow-ups on the frozen reduced architecture.
+4. Verify a fresh checkout can install, replay both tasks, rebuild every
    surviving paper table, verify hashes, and enforce split barriers.
 
 ## Guardrails

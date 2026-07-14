@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.loader import (
-    load_active_llm_only_runs,
     load_rich_schema_runs,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
@@ -18,7 +17,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.target_indic
 FAMILIES: tuple[str, ...] = tuple(TARGET_INDICATORS)
 
 RICH_SCHEMA_RUNS: tuple[ReliabilityRun, ...] = load_rich_schema_runs()
-ACTIVE_LLM_ONLY_RUNS: tuple[ReliabilityRun, ...] = load_active_llm_only_runs()
 
 _FAMILY_BASE_RISK = {
     "Diagnosis": 0.22,

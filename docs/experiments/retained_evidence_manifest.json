@@ -105,7 +105,8 @@
         "implementation": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/run_gepa.py",
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/program.py",
-          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/metric.py"
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/metric.py",
+          "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py"
         ],
         "scoring": [
           "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
@@ -120,7 +121,7 @@
         ],
         "tests": [
           "tests/test_exectv2_gepa_metric.py",
-          "tests/test_exectv2_dedup_facts_route.py",
+          "tests/test_exectv2_gepa_dedup_adapter.py",
           "tests/test_exectv2_scoring.py"
         ]
       },
