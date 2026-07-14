@@ -18,6 +18,7 @@ from ..rule_metadata import (
     Portability,
     RuleGroup,
 )
+from .extract_impl_types import ExtractRuleImpl
 
 _SEIZURE_NOUN = rf"(?:seizure|{SEIZURE_TERMS})\s+(?:frequency|rate|burden|control)"
 
@@ -86,8 +87,6 @@ def _build_frequent(match: re.Match[str], _ctx: ExtractionContext) -> AttributeE
 
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
-
-from .extract_impl_types import ExtractRuleImpl
 
 CHANGE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "change.decreased": ExtractRuleImpl(

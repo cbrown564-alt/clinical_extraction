@@ -26,6 +26,7 @@ from ..rule_metadata import (
     Portability,
     RuleGroup,
 )
+from .extract_impl_types import ExtractRuleImpl
 
 # ---------------------------------------------------------------------------
 # Seizure-type descriptors (clinically meaningful pre-modifiers of a seizure
@@ -93,8 +94,6 @@ def _build_seizure_free_anchor(match: re.Match[str], _ctx: ExtractionContext) ->
 
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
-
-from .extract_impl_types import ExtractRuleImpl
 
 ANCHOR_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "anchor.seizure_type_phrase": ExtractRuleImpl(

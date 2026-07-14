@@ -26,6 +26,7 @@ from ..rule_metadata import (
     Portability,
     RuleGroup,
 )
+from .extract_impl_types import ExtractRuleImpl
 
 _UNIT = r"day|week|month|year|days|weeks|months|years"
 _COUNT = NUMBER_TOKEN
@@ -234,8 +235,6 @@ def _build_zero_count(match: re.Match[str], _ctx: ExtractionContext) -> Attribut
 
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
-
-from .extract_impl_types import ExtractRuleImpl
 
 SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "sf.duration": ExtractRuleImpl(

@@ -1,9 +1,8 @@
 """Shared record + structured-event row fixtures for the gan2026 agentic run-driver dispatch tests.
 
-Extracted from ``test_gan2026_agentic_run_driver.py`` when that megatest was
-split into stage-family files to satisfy the ``tests<=800`` line-count gate
-(``scripts/check_line_counts.py``). These are pure constructors with no LLM
-calls; consumers import them aliased to their original underscore names.
+Extracted from ``test_gan2026_agentic_run_driver.py`` when that test module was
+split into stage-family files. These are pure constructors with no LLM calls;
+consumers import them aliased to their original underscore names.
 """
 
 from __future__ import annotations

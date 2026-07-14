@@ -18,14 +18,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities im
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    run_all9_on_letters,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_state_projection as sf_projection,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_unknown_suppression as sf_suppression,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
+    run_all9_on_letters,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_diagnosis_decomposer as dx_decomposer,
@@ -40,6 +40,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_
     write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
+
+
 def main() -> None:
     args = _parse_args()
     config = model_swap.load_model_swap_config(args.config)
