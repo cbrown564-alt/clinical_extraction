@@ -36,7 +36,7 @@ Primary Gan sources:
 - `experiments/gan2026_three_way_comparison_phase3_report_gpt41mini_validation750_2026-06-09.md`
 - `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.md`
 - `experiments/gan2026_v06_validation750_hybrid_structured_events_deepseek_2026-06-12.md`
-- `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`
+- Row-level DeepSeek test report removed by split policy.
 - `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_2026-06-12.md`
 - `experiments/gan2026_v06_validation750_hybrid_structured_events_qwen3635b_replay_repairfix_2026-06-21.md`
 - `experiments/gan2026_v06_validation750_qwen3635b_repairfix_attribution_2026-06-21.md`

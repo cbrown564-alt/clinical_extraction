@@ -18,7 +18,7 @@ how to archive them.
 | Active experiment scan order | [`experiments/README.md`](../experiments/README.md) |
 | Machine run registry | [`experiments/registry.jsonl`](../experiments/registry.jsonl) |
 | Human scan of registry | [`experiments/RUN_INDEX.md`](../experiments/RUN_INDEX.md) |
-| Frozen evidence index (hashes + claim boundaries) | [`docs/experiments/final_artifact_index_2026-06-22.md`](experiments/final_artifact_index_2026-06-22.md) |
+| Retained evidence manifest (selected paths + hashes) | [`docs/experiments/retained_evidence_manifest.md`](experiments/retained_evidence_manifest.md) |
 | Regenerating tracked artifacts | [`docs/REGENERATION.md`](REGENERATION.md) |
 | Older status entries (rolling archive) | [`docs/research/maintenance/project_status_digest_2026-06.md`](research/maintenance/project_status_digest_2026-06.md) |
 | Active roadmap (open work only) | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) |

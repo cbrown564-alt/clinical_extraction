@@ -31,7 +31,7 @@ the live control board keeps a rolling ~30-day window only.
   `1012` registry-filtered/unregistered iteration notes (`104` root `.md`
   remain active). Indexes: `experiments/README.md`,
   `experiments/archive/ARCHIVE_INDEX.md`, `docs/REGENERATION.md`,
-  `docs/experiments/FROZEN_EVIDENCE_MANIFEST_2026-06-26.md`.
+  `docs/experiments/retained_evidence_manifest.md` (the current replacement).
 - Paper scaffold and Section 4 integration — IEEE TikZ figure, methods/results
   tables, appendix move, and manuscript Section 4 folded into LaTeX with
   compiled PDF.

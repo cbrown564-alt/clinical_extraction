@@ -85,7 +85,7 @@ or comparing rules vs hybrid vs LLM-only.
 | 1 | [`docs/canon/10_paper_provenance.md`](canon/10_paper_provenance.md) | **Canon:** C1–C5 claims register and provenance |
 | 2 | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) | Open paper/manuscript work only |
 | 3 | [`docs/research/paper_manuscript_2026-06-26.md`](research/paper_manuscript_2026-06-26.md) | Markdown manuscript source |
-| 4 | [`docs/experiments/final_artifact_index_2026-06-22.md`](experiments/final_artifact_index_2026-06-22.md) | Frozen hashes and claim boundaries |
+| 4 | [`docs/experiments/retained_evidence_manifest.md`](experiments/retained_evidence_manifest.md) | Selected evidence, hashes, and claim boundaries |
 | 5 | [`docs/canon/04_scoring.md`](canon/04_scoring.md) | Scoring surfaces and gold-quality |
 | 6 | [`docs/canon/07_exect_plan11.md`](canon/07_exect_plan11.md) | Frozen experiment evidence tables |
 | 7 | [`docs/research/paper_claims_evidence_review_2026-07-01.md`](research/paper_claims_evidence_review_2026-07-01.md) | Detailed gap analysis (companion) |

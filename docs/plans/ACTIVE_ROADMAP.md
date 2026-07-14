@@ -1,6 +1,6 @@
 # Active Roadmap
 
-Last updated: 2026-07-01
+Last updated: 2026-07-14
 
 This file records current work. Individual plans under `docs/plans/` remain as
 historical design records; each carries a status banner pointing here.
@@ -9,49 +9,57 @@ historical design records; each carries a status banner pointing here.
 
 **Current status and evidence:** [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md)
 
+**Surgery findings and deletion rules:**
+[`repository_surgery_assessment_2026-07-14.md`](../research/maintenance/repository_surgery_assessment_2026-07-14.md)
+
 **Plan triage archive:** [`recent_plan_rationalisation_2026-06-25.md`](recent_plan_rationalisation_2026-06-25.md)
 
 ---
 
 ## Active objective
 
-ExECTv2 reliability/component-evidence phase; paper closeout on capability-first
-claims (`clinical_headline` is the primary metric). Gan holdout evidence frozen. GEPA workstream
-closed (negative result — LLM-only plateaus below hybrid).
+Complete the deletion-led repository surgery, then close the four research
+follow-ups against the retained architecture. The reduced system must preserve
+one active control per task plus minimal deterministic, LLM-only, and hybrid
+reference configurations for both tasks. Gan `test450` remains an
+author-uninspected, aggregate-only holdout. ExECT full200 is a
+development-inclusive audit, not an independent holdout. GEPA optimization is
+closed; its LLM-only result remains a reference comparator.
 
 ---
 
-## P0 — Do now (paper integrity)
+## P0 — Do now (repository surgery)
 
 | Item | Owner doc | Action |
 | --- | --- | --- |
-| **Manuscript evidence gaps (5 items)** | [`manuscript_evidence_gaps_closure_plan_2026-07-01.md`](manuscript_evidence_gaps_closure_plan_2026-07-01.md) | Close gaps from [`paper_claims_evidence_review_2026-07-01.md`](../research/paper_claims_evidence_review_2026-07-01.md): GEPA three-way write-up, cross-task ablation (already run 2026-06-27), SF+Dx gold-quality in abstract/§1, stale “gap” language |
-| **IEEE LaTeX re-sync** | [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md) § Now | Markdown manuscript includes 2026-06-30 Diagnosis gold-quality revision; LaTeX still at 2026-06-26 |
-| **Documentation consolidation Wave 1** | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) | Done — thread map, roadmap, plan headers |
-| **Documentation consolidation Wave 2** | See canon table in [`THREAD_MAP.md`](../THREAD_MAP.md) | Done — five canon documents + source stubs |
+| **Freeze retained paper story** | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | Keep the S1–S9 acceptance matrix current; no deletion may remove required proof |
+| **Evidence manifest repair** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Manifest rebuilt with present hashes; external large-artifact storage remains open |
+| **Minimal reference system** | [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md) | Six cells now have exact source/config/scorer/test closure and passing no-call replay |
+| **Delete closed work** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Remove closed candidates, their configs, reports, artifacts, and tests together |
+| **Frontend / Observatory scope** | [`repository_surgery_assessment_2026-07-14.md`](../research/maintenance/repository_surgery_assessment_2026-07-14.md) | Removed: neither product was required by the retained contribution or evidence closure |
+| **Restore real quality gates** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Make full pytest, Ruff, and mypy green on the reduced tree; remove historical allowlist exemptions |
 
 ---
 
-## P1 — Next (claims strengthening, no new model calls unless predeclared)
+## P1 — Next (close evidence gaps on the reduced tree)
 
 | Item | Owner doc | Action |
 | --- | --- | --- |
-| **Calibration / review-routing manuscript framing** | [`calibration_abstention_review_routing_strengthening_plan_2026-07-01.md`](calibration_abstention_review_routing_strengthening_plan_2026-07-01.md) | Honest weak-pillar language (Brier Δ 0.0142; binding-slice AUROC 0.676) — framing only unless plan authorizes new runs |
-| **Documentation consolidation Wave 2** | [`docs/THREAD_MAP.md`](../THREAD_MAP.md) § Consolidation | Done — five cross-cutting canon docs |
-| **Documentation consolidation Wave 3** | [`docs/canon/README.md`](../canon/README.md) | Done — three workstream canons, ~75 stubs |
-| **Documentation consolidation Wave 4** | [`docs/canon/README.md`](../canon/README.md) | Done — structural 01–10, Dx/SF/self-consistency canons, archive moves |
-| **Predeclaration runbook** | (not yet written) | Template for frozen aggregate audits |
+| **Gan efficiency comparison (S3)** | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | Match quality with calls, tokens, cost, latency, model, hardware, cache, split, and scorer |
+| **Phrase/CUI/attribute-bundle reproduction (S7)** | [`docs/canon/04_scoring.md`](../canon/04_scoring.md) | Re-prioritize deterministic paper-surface engineering and run a paper-comparable evaluation |
+| **Broad confidence calibration (S8)** | [`calibration_abstention_review_routing_strengthening_plan_2026-07-01.md`](calibration_abstention_review_routing_strengthening_plan_2026-07-01.md) | Evaluate model-reported confidence out of sample; preserve a negative result if confidence is degenerate |
+| **Annotation evidence consolidation (S9)** | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | Generate one complete ledger/taxonomy with scoring effects, handling, sensitivity, and review status |
+| **Manuscript evidence sync** | [`docs/research/paper_manuscript_2026-06-26.md`](../research/paper_manuscript_2026-06-26.md) | Regenerate tables and reconcile stale calibration, comparator, and gold-adjudication language |
 
 ---
 
-## P2 — Deferred (freeze and index evidence first)
+## P2 — After cleanup (fresh model calls require predeclaration)
 
 | Item | Owner doc | Action |
 | --- | --- | --- |
-| **Repo simplification / archive cleanup** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Freeze-and-index before delete; dedicated cleanup branch |
-| **MLflow dry-run sync** | [`mlflow_experiment_observability_implementation_plan_2026-06-25.md`](mlflow_experiment_observability_implementation_plan_2026-06-25.md) | Phases 0–2 complete; optional mirror only — registry remains claim-of-record |
-| **Thermo-nuclear code quality debt** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Incremental: agentic monoliths, YAML corpora — no big-bang refactor |
-| **Experiment narrative consolidation** | [`docs/canon/README.md`](../canon/README.md) | Wave 4 done — structural canons + Dx/SF/self-consistency + archive |
+| **Six-model frozen comparison (S4/S5)** | [`docs/design/model_strategy.md`](../design/model_strategy.md) | Run the same frozen architecture/prompt/scorer with the six exact runtime models; conclude from the observed result, not the preferred ordering |
+| **Final reliability table** | [`docs/canon/09_cross_task_reliability.md`](../canon/09_cross_task_reliability.md) | Consolidate both tasks and the six-model failure/calibration analysis with bounded claim language |
+| **Fresh-checkout closeout** | [`repository_surgery_assessment_2026-07-14.md`](../research/maintenance/repository_surgery_assessment_2026-07-14.md) | Install, replay both tasks, rebuild every surviving paper table, verify hashes and split barriers, then run the full quality suite |
 
 ---
 
@@ -61,6 +69,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 - **Gan holdout tuning** — frozen; aggregate citation only
 - **LLM-only dedup as production control** — plateau ~0.73 vs v08 ~0.92; diagnostic only
 - **Making the consensus/fresh selector the default** — CUT (`docs/research/consensus_fresh_selector_fate_2026-06-27.md`)
+- **MLflow expansion** — optional mirror, not part of the retained contribution
 - **Dissertation document** — out of scope; IEEE paper is deliverable (`supervisor_brief_gap_closure_plan` Phase D)
 
 ---
@@ -72,7 +81,7 @@ closed (negative result — LLM-only plateaus below hybrid).
 | Closing campaign (2026-06-27) | [`closing_campaign_closeout_2026-06-27.md`](closing_campaign_closeout_2026-06-27.md) |
 | Supervisor brief gap closure | [`supervisor_brief_gap_closure_plan_2026-07-01.md`](supervisor_brief_gap_closure_plan_2026-07-01.md) |
 | Evidence groundedness unification | [`evidence_validity_unification_plan_2026-06-27.md`](evidence_validity_unification_plan_2026-06-27.md) → `core/evidence.py`, [`docs/reference/evidence_groundedness_metric.md`](../reference/evidence_groundedness_metric.md) |
-| Same-core full-200 aggregate | [`exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md`](exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md) |
+| Same-core development-inclusive full200 aggregate | [`exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md`](exectv2_same_core_model_swap_architecture_freeze_plan_2026-06-25.md) |
 | ExECTv2 v08 holistic assembly | [`docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md`](../experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md) |
 | GEPA program | [`exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md`](exectv2_gepa_focused_lanes_recall_plan_2026-06-28.md) |
 
@@ -82,6 +91,6 @@ closed (negative result — LLM-only plateaus below hybrid).
 
 | Status | Plans |
 | --- | --- |
-| **ACTIVE** | `ACTIVE_ROADMAP.md` (this file), `manuscript_evidence_gaps_closure_plan_2026-07-01.md`, `calibration_abstention_review_routing_strengthening_plan_2026-07-01.md`, `recent_plan_rationalisation_2026-06-25.md` (triage index) |
-| **DEFERRED** | `repo_simplification_plan_2026-06-22.md`, `mlflow_experiment_observability_implementation_plan_2026-06-25.md`, `thermo_nuclear_code_quality_audit_plan_2026-06-26.md` |
+| **ACTIVE** | `ACTIVE_ROADMAP.md` (this file), `repo_simplification_plan_2026-06-22.md`, `thermo_nuclear_code_quality_audit_plan_2026-06-26.md` |
+| **DEFERRED UNTIL REDUCED TREE** | `calibration_abstention_review_routing_strengthening_plan_2026-07-01.md` and the S4–S9 studies named above |
 | **HISTORICAL** | All other plans under `docs/plans/` including `exectv2/00–13` — see status banner on each file |

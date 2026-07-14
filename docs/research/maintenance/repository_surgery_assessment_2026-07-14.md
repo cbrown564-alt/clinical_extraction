@@ -1,0 +1,430 @@
+# Repository Surgery Assessment
+
+Date: 2026-07-14
+Status: active supporting assessment
+Canonical execution order: [`docs/plans/ACTIVE_ROADMAP.md`](../../plans/ACTIVE_ROADMAP.md)
+Current work and evidence: [`PROJECT_STATUS.md`](../../../PROJECT_STATUS.md)
+
+This document records why the repository needs major reduction and how to carry
+it out safely. It is not a second roadmap, status board, evidence register, or
+research canon. `ACTIVE_ROADMAP.md` owns sequence, `PROJECT_STATUS.md` owns
+current work, and the canon documents own research claims.
+
+## Executive conclusion
+
+The repository contains a credible research contribution, but its current shape
+is not maintainable. It preserves too many closed experiments as live code,
+keeps large generated artifact and document collections in the main tree, and
+uses tests and UI projections to perpetuate historical machinery. Several control
+documents describe the intended rules, but the code and artifact graph do not
+consistently enforce them.
+
+The right response is deletion-led simplification. The target is:
+
+- one active ExECT control and one minimal Gan operational reproduction path;
+- the smallest deterministic, LLM-only, and hybrid reference configuration or
+  replay contract for each task, so the central three-family comparison remains
+  reproducible without retaining discarded candidates;
+- the shared clinical, evidence, scoring, and data-contract code those paths use;
+- the evidence required for surviving paper claims, indexed by path and hash;
+- a small set of canonical documents and repeatable commands;
+- a test suite that covers retained behavior instead of missing historical
+  artifacts.
+
+Do not refactor code that is likely to be deleted. Decide what survives, prove
+the retained evidence, remove complete closed slices, and repair quality gates
+on the smaller tree.
+
+## Repository snapshot
+
+The following measurements were taken from the 2026-07-14 working copy. Git
+index counts include files currently marked for deletion. Directory sizes are
+working-copy sizes and may include ignored caches or installed dependencies;
+they are not Git payload measurements.
+
+| Measure | Current value | Why it matters |
+| --- | ---: | --- |
+| Tracked files | 6,790 | Too large to understand as one active research system |
+| Files under `experiments/` | 3,855 | Experiment history is more than half of the tracked file count |
+| Markdown files | 2,487 | The documentation estate is itself a major maintenance system |
+| Plan files | 40 | Closed and superseded choices remain prominent |
+| Python files under `src/` | 665 | Far larger than the two retained research paths require |
+| Python test modules | 230 | Tests encode many historical implementations and artifacts |
+| `experiments/` working-copy size | 3.8 GB | Large evidence belongs in an external retained-artifact store |
+| Full backend suite after the first cut | 2,500 passed, 18 failed, 2 skipped | All remaining failures concern broken ExECT report and catalog features |
+| Repository-wide Ruff baseline, 2026-07-13 | 1,224 errors | The repository does not meet its declared static-quality gate |
+| Mypy baseline, 2026-07-13 | 341 errors | Types do not currently protect the full installed package |
+
+The largest remaining runtime modules include a 2,040-line Gan agentic
+reasoner, a 1,547-line boundary-rescue candidate, several 1,200–1,450-line LLM
+and deterministic modules, and tests above 2,000 lines. The line-count gate
+contains broad exemptions, so passing it does not mean the retained source is
+small or coherent.
+
+## High-level findings
+
+### 1. The repository has no small, explicit active product
+
+The project describes two research tracks, many pipeline families, a backend
+Observatory, a frontend workbench, MLflow mirroring, report builders, artifact
+registries, paper-generation paths, and extensive experiment history. It does
+not yet identify the exact files that constitute the active controls and the
+minimal two-task × three-family reference set.
+
+This is the central problem. Without an explicit retained set, every historical
+component appears important and every deletion looks risky. The retained set
+must be narrower than the experiment history but broader than two promoted
+paths: it also needs the six minimal family comparators required by the paper.
+
+### 2. Experiment history has become installed application code
+
+Closed deterministic, LLM-only, hybrid, agentic, verifier, rescue, selector,
+and model-comparison candidates remain under `src/clinical_extraction/`.
+Several are large, architecture-specific modules stored in the installed
+package. Their tests, reports, registries, CLI hooks, and frontend adapters make
+them look supported even after the research question has closed.
+
+An archive directory inside the repository does not solve this problem if the
+archive remains indexed, tested, rendered, or imported. Closed code must leave
+the installed package. Historical source remains recoverable from version
+control; reproducibility-critical artifacts belong in the retained evidence
+manifest or external artifact storage.
+
+### 3. Evidence records and the files they name disagree
+
+The existing frozen artifact index was treated as a prerequisite for cleanup,
+but the 2026-07-13 audit found that it could not reproduce much of the file and
+hash graph it claimed to govern. The first surgery pass repaired the run
+registry so its current artifact paths exist, but the broader evidence manifest
+still needs to be rebuilt from actual files and hashes.
+
+The remaining 18 backend failures are concentrated in calibration,
+component-ablation, cross-model reliability, final-consolidation, and
+review-routing reports. They depend on missing archived ExECT iteration
+artifacts or on Observatory/static frontend projections of those reports. A
+test that requires a file the repository does not contain is not protecting a
+working feature.
+
+### 4. Research rules were clearer in prose than in code
+
+Gan `test450` was correctly author-uninspected, but the repository contained
+agent-generated row-level reports and Observatory could expose test-labelled
+rows. ExECT `full200` had not been used for row-level test60 tuning, but several
+documents and labels described it too much like an independent holdout.
+
+The first surgery pass repaired this specific problem:
+
+- 31 row-level Gan `test450` reports and three connected generators were
+  removed;
+- Observatory now rejects locked-test record, artifact, membership, and
+  ablation access;
+- the frontend neither offers nor defaults to Gan test runs;
+- ExECT `full200` is consistently labelled a **development-inclusive full200
+  audit**: dev140 plus held-out test60, with no row-level test60 tuning and no
+  independent-holdout claim.
+
+This pattern must become normal. Split policy, scoring policy, and claim policy
+must be enforced at the loading and serving boundaries, not only described in
+documents.
+
+### 5. Documentation volume obscures document authority
+
+The repository contains 2,487 Markdown files, including 40 plan files, a
+2,840-line generated run index, and a 1,200-line live status file. Navigation
+documents and canon summaries help, but they do not eliminate the cost of
+contradictory status banners, superseded plans, generated narratives, duplicate
+experiment reports, and historical conclusions written as current guidance.
+
+The problem is not that research has a history. The problem is that the main
+reading path makes too much of that history look active. Long-lived documents
+need one of four declared roles: canonical owner, active reference, evidence
+record, or archive. Agent-generated documents that serve none of those roles
+must be deleted.
+
+### 6. Tests preserve obsolete scope
+
+The suite is large and valuable, but it also treats historical report formats,
+catalog entries, frontend payloads, and candidate-specific behavior as permanent
+interfaces. Several test modules exceed 1,200 lines; the two largest exceed
+1,900 lines. Twenty-one large test files were explicitly exempted from the
+line-count rule.
+
+Tests must be removed with the behavior they protect. Retained tests must
+concentrate on clinical semantics, split barriers, scorer correctness, evidence
+validity, active pipeline replay, and a small number of end-to-end commands.
+
+### 7. The frontend and Observatory may be separate products
+
+The Next.js frontend and FastAPI Observatory have their own adapters, static
+artifacts, registries, report projections, tests, build system, and data-access
+rules. They can be useful, but they are not free research documentation. If the
+paper and reproducible extraction package are the deliverables, keeping a
+full-stack review product creates a second product scope.
+
+The default surgery decision is to remove them unless the owner names a
+specific user, required workflow, and retained evidence source. If retained,
+they must serve only the surviving pipelines and must not require historical
+catalogs or locked row access.
+
+### 8. Previous cleanup optimized structure before deciding scope
+
+The June quality campaign split large files, introduced facades, moved prompt
+content into YAML, added registries, and created more formal boundaries. Some
+of that work improved real code. Some of it also made closed candidates easier
+to keep by wrapping them in cleaner packages and compatibility layers.
+
+The repository now needs fewer concepts, not another round of facade extraction.
+Compatibility with deleted internal candidates is not a requirement.
+
+### 9. The strongest material is identifiable and worth preserving
+
+The data split manifests, author-provided evaluation semantics, clinical
+normalization and scoring rules, evidence-span validation, component attribution,
+active ExECT assembly results, frozen aggregate Gan evidence, and paper claim
+boundaries form a defensible core. The surgery must protect these directly.
+
+The existence of this core is why a large reduction is possible: the project's
+value does not depend on preserving every route taken to reach it.
+
+## Preservation rules
+
+A file remains in the primary repository only when at least one of these is
+true:
+
+1. It is required by the selected active ExECT or Gan operational control.
+2. It is required by a minimal deterministic, LLM-only, or hybrid reference
+   configuration/replay for either task.
+3. It enforces a clinical, scoring, evidence, or split invariant used by those
+   paths.
+4. It is necessary to reproduce a surviving paper table or claim.
+5. It is a canonical owner document or the shortest operational guide needed by
+   a new collaborator.
+
+Preserve explicitly:
+
+- dataset split manifests and source identifiers;
+- locked-split barriers;
+- scorer and label-normalization semantics required by the paper;
+- evidence validity and component-provenance contracts;
+- exact configs, environment metadata, paths, and hashes for retained results;
+- permitted development examples needed to explain mechanisms;
+- canonical claim boundaries and the manuscript source.
+
+Do not retain a file merely because another retained file links to it. Repair
+the retained document to state the durable conclusion and remove the obsolete
+dependency.
+
+## Deletion unit
+
+Delete a closed research candidate as one vertical unit:
+
+```text
+candidate source
+  + configuration and CLI entry point
+  + prompt or schema used only by that candidate
+  + raw and rendered artifacts
+  + registry/catalog entries
+  + Observatory and frontend adapters
+  + candidate-specific tests
+  + superseded plans and narratives
+```
+
+Partial deletion creates broken catalogs and compatibility shims. Each batch
+must remove the full chain or explicitly record which retained claim still
+needs part of it.
+
+## Surgery plan
+
+### Phase 0 — Protect evidence boundaries
+
+Status: implemented and focused checks verified in the current working tree.
+
+- Remove row-level Gan locked-test reports and their generators.
+- Add backend and frontend barriers against locked-test serving or selection.
+- Correct ExECT `full200` terminology without implying test60 tuning.
+- Keep aggregate Gan holdout evidence; do not inspect clinical note text or
+  locked row failures.
+
+Exit condition: split rules are enforced in code and active documents use the
+same claim language.
+
+### Phase 1 — Name the retained system and rebuild its evidence manifest
+
+1. Select one active ExECT control and one minimal Gan operational reproduction
+   path; list each import, config, scorer, artifact, report, and test closure.
+2. Name the minimal deterministic, LLM-only, and hybrid reference configuration
+   or replay for each task. These six cells may share code and saved outputs;
+   they must not preserve superseded candidate families merely for history.
+3. Map every surviving paper claim in `docs/canon/10_paper_provenance.md` to the
+   smallest source and artifact set that supports it.
+4. Verify every retained artifact path and compute its hash from the file that
+   actually exists.
+5. Store large retained artifacts outside primary Git, with immutable location,
+   checksum, size, schema version, and retrieval instructions in the manifest.
+
+Exit condition: every retained source file and artifact has a named reason to
+exist; all six task/family cells are reproducible or replayable; every surviving
+claim resolves to present, hashed evidence.
+
+### Phase 2 — Remove broken report and catalog machinery
+
+Start with the 18 failing ExECT report/catalog tests because they identify a
+coherent dead or incomplete feature set:
+
+- calibration validation;
+- component-ablation replay and readout;
+- cross-model reliability scorecard upgrades;
+- final-consolidation and static frontend scorecards;
+- review-routing validation;
+- their Observatory endpoints and missing archive dependencies.
+
+For each feature, either point it to retained evidence and prove it works, or
+delete the builder, endpoint, static payload, catalog entry, and tests together.
+Do not recreate missing historical artifacts merely to make the old tests pass.
+
+Exit condition: full pytest has no failures caused by absent historical
+artifacts, and no retained registry or report names a missing path.
+
+### Phase 3 — Cut closed source-code families
+
+Work from the leaves toward shared code:
+
+1. Remove closed Gan agentic, rescue, selector, probe, alternate-reasoner, and
+   state-graph candidates outside the chosen reproduction path.
+2. Remove closed ExECT LLM-only, verifier, model-swap, simplification, and
+   diagnostic variants outside the chosen active path.
+3. Remove candidate-only YAML, prompt corpora, schemas, CLI commands, and
+   compatibility exports.
+4. Re-run import analysis after each batch and delete shared helpers with no
+   retained consumers.
+5. Collapse thin facades when only one implementation remains.
+
+Do not preserve package layout for hypothetical future candidates. New research
+can add a new module when it begins.
+
+Exit condition: `src/clinical_extraction/` contains the shared core and the two
+named retained paths, not the project's complete experiment history.
+
+### Phase 4 — Reduce the document estate
+
+Keep the shortest authoritative route:
+
+- `README.md` for repository purpose and entry points;
+- `PROJECT_STATUS.md` for current work only;
+- `docs/plans/ACTIVE_ROADMAP.md` for open sequence only;
+- the structural and workstream canons needed for surviving claims;
+- the manuscript and its direct evidence records;
+- essential data contracts, decisions, and runbooks.
+
+Then:
+
+1. Delete agent-generated plans, reports, syntheses, and status prose that no
+   longer own a decision or support a retained claim.
+2. Replace large generated indexes with machine-readable registries plus a
+   short human view generated on demand.
+3. Move genuinely useful history out of the default reading path. Do not keep
+   duplicate archive copies in several repository directories.
+4. Shorten `PROJECT_STATUS.md` to current facts, current work, next work, and
+   blockers; move or delete chronology according to the documentation lifecycle.
+5. Remove links to deleted candidates. Do not create redirect stubs for internal,
+   unpublished material.
+
+Exit condition: a capable new collaborator can find the active pipeline,
+evidence, commands, and claim limits without reading historical plans.
+
+### Phase 5 — Decide the fate of Observatory and the frontend
+
+The owner must make an explicit product-scope decision.
+
+Default: delete both if the deliverable is the package plus paper.
+
+If retained:
+
+- name the user and the one complete workflow the UI must support;
+- serve only the selected ExECT and Gan paths;
+- use the retained evidence manifest, not historical report catalogs;
+- keep locked-test barriers at the backend regardless of frontend behavior;
+- remove galleries, comparisons, and adapters for deleted candidates;
+- keep frontend tests and build checks only for retained routes.
+
+Exit condition: the UI is either gone or is a bounded product with no dependency
+on deleted research history.
+
+### Phase 6 — Rebuild tests and quality gates around the retained tree
+
+1. Delete tests with deleted behavior.
+2. Split remaining megatests by invariant or user-facing command.
+3. Keep three test levels:
+   - fast unit tests for clinical, schema, scoring, and evidence semantics;
+   - artifact replay tests for the selected pipelines;
+   - governance tests for split, claim, registry, and locked-data policy.
+4. Remove line-count and lint allowlists. Do not move exceptions to new files.
+5. Make these commands pass on a fresh checkout:
+
+   ```sh
+   source .venv/bin/activate
+   python -m pytest
+   python -m ruff check .
+   python -m mypy src
+   ```
+
+6. If the frontend remains, also require its tests, lint, and production build.
+
+Exit condition: all retained gates pass without historical exemptions or live
+model calls.
+
+### Phase 7 — Verify reproducibility and close the surgery
+
+From a fresh checkout:
+
+1. install the package;
+2. load the split manifests without locked-row inspection;
+3. run the minimal Gan path on permitted data;
+4. run or replay the selected ExECT path;
+5. rebuild every surviving paper table from the retained manifest;
+6. verify artifact hashes and registry paths;
+7. build the frontend only if it survived Phase 5;
+8. update the canonical status and roadmap, then mark this assessment historical.
+
+Exit condition: a new collaborator can reproduce the retained results using the
+documented commands and cannot accidentally access locked rows through normal
+project interfaces.
+
+## Decision ledger
+
+| Question | Current evidence | Recommended default | Owner document |
+| --- | --- | --- | --- |
+| Which ExECT path survives? | `PROJECT_STATUS.md` identifies holistic finding assembly v08 as the current control, while later simplification candidates are closed or diagnostic | Keep v08 plus its direct shared dependencies unless the owner selects a smaller promoted candidate before Phase 2 | `PROJECT_STATUS.md` |
+| Which Gan path survives? | Gan research is closed and holdout evidence is aggregate-only; many candidate families remain | Keep the smallest development-data reproduction path for the canonical aggregate claim; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
+| Does the full-stack Observatory survive? | It creates separate API, artifact, and data-policy obligations and currently carries broken ExECT report endpoints | Delete unless a concrete retained review workflow is an explicit deliverable | `ACTIVE_ROADMAP.md` |
+| Does the frontend survive? | It duplicates report/catalog scope and requires its own adapters and static artifacts | Delete with Observatory unless a named user workflow justifies both | `ACTIVE_ROADMAP.md` |
+| Where do large evidence artifacts live? | `experiments/` is 3.8 GB in the working copy and the old index is unreliable | External immutable artifact storage; keep hashes and retrieval metadata in Git | `repo_simplification_plan_2026-06-22.md` |
+| How much generated documentation survives? | Generated documents greatly outnumber canonical owners and have already created false authority | Keep only direct evidence records needed by surviving claims; delete the rest | `docs/NAVIGATION.md` and relevant canon |
+
+## Operating rules during surgery
+
+- Do not run new model experiments unless a surviving claim has a predeclared,
+  owner-approved evidence gap.
+- Never inspect Gan `test450` or ExECT test60 row-level failures for development.
+- Do not repair a dead candidate before deciding whether it survives.
+- Do not add compatibility shims for internal paths being removed.
+- Do not move bulk history to another tracked directory and call that reduction.
+- Preserve unrelated author changes.
+- Make deletion batches reviewable by research slice, not by file extension.
+- Record exact verification after each batch; use *implemented*, *verified*,
+  *validated*, and *promoted* precisely.
+
+## Immediate next batch
+
+1. Build the retained-claim and retained-artifact manifest from present files
+   and hashes.
+2. Confirm the exact ExECT v08 closure and the minimal Gan reproduction closure.
+3. Classify the 18 failing ExECT report/catalog tests as retain-and-repair or
+   delete-with-feature.
+4. Remove the first complete dead feature, including source, artifacts,
+   registry entries, UI adapters, documents, and tests.
+5. Run the full backend suite and recount Ruff and mypy errors on the reduced
+   tree before choosing the next batch.
+
+This order prevents another cleanup campaign from spending effort preserving
+the wrong system.

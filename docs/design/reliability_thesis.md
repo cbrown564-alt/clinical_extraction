@@ -119,7 +119,7 @@ or formats.
 ### 3.3 Current ExECTv2 Reliability Boundary
 
 The 2026-06-25 ExECTv2 reliability refresh makes the paper claim stronger but
-also narrower. Calibration and robustness now have frozen aggregate full-200
+also narrower. Calibration and robustness now have development-inclusive full200 aggregate
 validation evidence, and the selected lean GPT-4.1-mini candidate has saved
 same-prompt consistency evidence. The lower-burden review-routing candidate was
 tested and not promoted, so the high-recall operating point remains standing

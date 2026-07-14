@@ -1,4 +1,7 @@
-> **Status: DEFERRED** — not started until evidence spine and paper closeout stabilize. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) P2.
+> **Status: ACTIVE, PRIOR VERDICT SUPERSEDED** — the 2026-07-13 re-audit found
+> 26 full-suite failures, 1,224 repository-wide Ruff errors, 341 mypy errors,
+> broad line-count allowlists, closed candidate code in the installed package,
+> and broken artifact catalogs. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) P0.
 
 # Thermo-Nuclear Code Quality Audit — Plan & Status
 
@@ -6,7 +9,9 @@
 **Last updated:** 2026-06-27 (Wave C Sprint 7 complete; 8 commits `37046bd` … `3a39380`)  
 **Scope:** Full-repo audit on `main` (not a single PR)  
 **Standard:** [thermo-nuclear-code-quality-review](../../.claude/skills/thermo-nuclear-code-quality-review/SKILL.md) — structural simplification, code-judo moves, 1k-line file discipline, boundary cleanliness  
-**Overall verdict:** **APPROVE** — Sprint 6–7 cleared structural blockers (runner, artifact_analysis, diagnosis, lenses, frontend debt, verifier YAML, Observatory contracts, atomic writes); remaining debt is incremental agentic monolith migration (12 left), optional typed row models, and megatest splits
+**Historical verdict:** **SUPERSEDED.** The earlier `APPROVE` assessment did not
+survive the 2026-07-13 repository-wide checks. Current work is deletion-led
+simplification, followed by full-suite, Ruff, and mypy repair on the reduced tree.
 
 ---
 

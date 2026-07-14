@@ -482,6 +482,6 @@ models it currently confounds schema adherence with clinical extraction quality.
 - `experiments/gan2026_llm_only_claim_table_selector_validation50_v5_max2400_component_ablation_2026-06-01.md`
 - `experiments/gan2026_llm_only_claim_table_selector_validation250_gpt41mini_v5_max2400_2026-06-01.md`
 - `experiments/gan2026_llm_only_claim_table_selector_validation250_v5_max2400_component_ablation_2026-06-01.md`
-- `experiments/gan2026_llm_only_claim_table_selector_test450_gpt41mini_v5_max2400_2026-06-01.md`
+- Row-level test report removed by split policy.
 - `experiments/gan2026_llm_only_claim_table_selector_validation1_qwen36_35b_v5_ollama_chat_smoke_2026-06-01.md`
 - `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation250_gpt41mini_v02_live_2026-06-01.md`

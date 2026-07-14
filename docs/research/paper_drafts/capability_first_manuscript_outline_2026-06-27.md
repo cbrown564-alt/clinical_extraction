@@ -586,7 +586,7 @@ the closeout. The closeout headline stands alone.
 - Experiment artifacts: `experiments/gan2026_consensus_fresh_*` and frozen gate reports
   `2026-06-26` (retain archived copies under `experiments/archive/` per repo policy)
 - Cross-references: `paper_manuscript_2026-06-26.md` §4.1.2, Table 3, source list;
-  `src/.../gan2026/agentic/README.md`; `docs/experiments/FROZEN_EVIDENCE_MANIFEST_2026-06-26.md`;
+  `src/.../gan2026/agentic/README.md`; `docs/experiments/retained_evidence_manifest.md`;
   `docs/design/gan2026_rule_register.md` (selector policy entries)
 
 ---

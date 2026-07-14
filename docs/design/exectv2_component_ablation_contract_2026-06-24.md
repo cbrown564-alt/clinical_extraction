@@ -4,7 +4,7 @@ Date: 2026-06-24
 
 Scope: final-consolidation Phase 4 defines the replay-only component-impact
 contract for ExECTv2. This document is a planning and frontend payload contract,
-not an authorization to run full-200 or holdout-facing row-level analysis.
+not an authorization to run development-inclusive full200 or held-out test60 row-level analysis.
 
 ## Claim Boundary
 
@@ -13,7 +13,7 @@ not an authorization to run full-200 or holdout-facing row-level analysis.
   Qwen v0.9.22 diagnostic runs, using already available source artifacts.
 - Not allowed here: new model calls, post-run tuning from ablation failures, or
   hidden promotion of deterministic rescue layers into an LLM-only score line.
-- No full-200 or holdout-facing row-level inspection is introduced by this
+- No development-inclusive full200 or held-out test60 row-level inspection is introduced by this
   contract.
 - Any paper-facing audit beyond dev140 must be predeclared with split, scorer,
   stop rule, aggregate reporting surface, and row-inspection boundary.
@@ -198,4 +198,4 @@ additions, and headline projection:
 | DeepSeek diagnostic | +0.0836 | +0.0394 | +0.0446 |
 | Qwen diagnostic | +0.1120 | +0.1041 | +0.0434 |
 
-No full-200 or holdout-facing row-level inspection was introduced.
+No development-inclusive full200 or held-out test60 row-level inspection was introduced.

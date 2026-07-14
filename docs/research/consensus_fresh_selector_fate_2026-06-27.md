@@ -125,7 +125,7 @@ finding #3 (“hybrid/ensemble/guard apparatus buys little”).
 - `experiments/build_gan2026_v09_residual_component_generation_audit.py`
 - `experiments/build_gan2026_v09_frozen_gate1_hard_slice_audit.py`
 - `experiments/build_gan2026_v09_frozen_gate2_robustness_stress.py` (if present)
-- `experiments/build_gan2026_v09_frozen_gate3_source_symmetry_preflight.py`
+- The row-report-dependent preflight generator was removed by split policy.
 - `experiments/build_gan2026_v09_frozen_gate3_exact_source_symmetry_preflight.py`
 - `experiments/build_gan2026_v09_frozen_gate4_constrained_aggregate_audit.py`
 - `experiments/build_gan2026_v09_frozen_gate4_exact_aggregate_audit.py`
@@ -145,7 +145,7 @@ non-archived `experiments/gan2026_consensus_fresh_*` and frozen gate reports
 
 - `docs/research/paper_manuscript_2026-06-26.md` §4.1.2, Table 3, source list
 - `src/clinical_extraction/tasks/seizure_frequency/gan2026/agentic/README.md`
-- `docs/experiments/FROZEN_EVIDENCE_MANIFEST_2026-06-26.md`
+- `docs/experiments/retained_evidence_manifest.md` (current replacement)
 - `docs/experiments/gan2026/agentic/gan2026_agentic_next_phase_brief_2026-06-14.md`
   (selector ladder sections — trim or footnote as superseded)
 - `docs/design/gan2026_rule_register.md` (selector policy entries)

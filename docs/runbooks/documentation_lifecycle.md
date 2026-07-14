@@ -30,9 +30,9 @@ adding a new root-level `.md` requires updating that allowlist deliberately.
 
 New files: `topic_descriptor_YYYY-MM-DD.md`.
 
-Do not rename paths referenced by `final_artifact_index_2026-06-22.md`,
-`registry.jsonl`, or frozen holdout evidence without updating those indexes
-first.
+Do not rename paths referenced by `retained_evidence_manifest.json`,
+`registry.jsonl`, or frozen holdout evidence without updating those owners and
+re-running their checks.
 
 ## PROJECT_STATUS hygiene
 

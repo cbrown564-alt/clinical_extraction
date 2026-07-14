@@ -143,7 +143,7 @@ Hybrid **raises** phrase-only/semantic but **lowers** benchmark on SF cell.
 
 ---
 
-## Full-200 frozen aggregates (promotion-safe citations)
+## Development-inclusive full200 aggregates
 
 From [`CLOSEOUT_EVIDENCE_CANON.md`](07_exect_plan11.md):
 
@@ -152,7 +152,8 @@ From [`CLOSEOUT_EVIDENCE_CANON.md`](07_exect_plan11.md):
 | Same-core `clinical_headline` | 0.8356 | 0.8566 | 0.8197 |
 
 Component-off full200: dictionary +0.019–0.029; headline projection +0.030–0.035
-(aggregate-only, predeclared).
+(aggregate-only, predeclared). This surface contains dev140 and test60; it is not
+an independent holdout estimate.
 
 ---
 
@@ -162,7 +163,8 @@ Component-off full200: dictionary +0.019–0.029; headline projection +0.030–0
 | --- | --- | --- |
 | **dev140** | Allowed | v08 control, GEPA, ablations |
 | **validation750** | Allowed | Gan component ladder |
-| **full200 / test450** | **Forbidden** (aggregate only) | Model swap, holdout audits |
+| **ExECTv2 full200** | Aggregate only | Development-inclusive full-corpus audit |
+| **Gan test450** | **Forbidden** (aggregate only) | Author-untouched locked holdout |
 | **fixture / smoke** | Panel rules | Agentic hard panel (filter empty-gold letters) |
 
 Replay modes (live / no-call / saved-output) affect causal strength — see RUN_INDEX conventions.

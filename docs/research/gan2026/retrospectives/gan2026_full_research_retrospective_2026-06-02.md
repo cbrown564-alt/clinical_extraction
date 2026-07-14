@@ -708,7 +708,7 @@ Primary sources for this synthesis:
 - `experiments/gan2026_arch2_validation750_v01_interpretation_2026-06-01.md`
 - `experiments/gan2026_hybrid_adjudicator_v02_selective_action_report_2026-06-01.md`
 - `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_validation750_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`
-- `experiments/gan2026_hybrid_rules_candidates_llm_adjudicator_test450_gpt41mini_v02_cluster_diary_candidate_recall_live_2026-06-02.md`
+- Row-level test report removed by split policy.
 - `experiments/gan2026_clinical_frequency_state_graph_protocol_2026-06-02.md`
 - `experiments/gan2026_clinical_frequency_state_graph_validation50_diagnostics_2026-06-02.md`
 - `experiments/gan2026_hybrid_clinical_frequency_state_graph_projection_arbitration_ablation_2026-06-02.md`

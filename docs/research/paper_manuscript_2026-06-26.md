@@ -293,10 +293,12 @@ attribute classification. The two surfaces are reconciled with the like-for-like
 Every number in this paper carries an explicit evidence-validity level, and no claim is read
 above the level of its source. Four levels recur: **dev140 validation-only** (ExECTv2
 development split; not a holdout estimate); **validation750** (Gan development aggregate);
-**frozen aggregate full-200** (ExECTv2, aggregate-only, no row-level inspection); and **frozen
-`test450` holdout** (Gan, the only row-locked holdout in the work). Frozen runs are governed by
-a standing **aggregate-only inspection policy**: no full-200 or holdout row-level inspection
-without a fresh predeclaration, which protected the test set through every experiment cycle.
+**development-inclusive full200 aggregate** (ExECTv2; dev140 plus test60, so not an
+independent holdout estimate); and **frozen `test450` holdout** (Gan, the only
+author-uninspected holdout in the work). Gan test450 runs are governed by an
+**aggregate-only author-inspection policy**: the author did not inspect row-level test output
+or tune from it. Agent-generated row reports were removed from the repository, and Observatory
+now blocks locked-test row access in code.
 Promotion decisions pass a **two-tier gate** — a predeclared adversarial battery (minimal-pair,
 source-near, KCL-style OOD panels authored before results are read) *then* held-out-family
 cross-validation as a stop rule — and frozen aggregate runs report a predeclared **gate status**
@@ -571,7 +573,7 @@ retained only as a high-complexity ceiling comparator, not the operational
 headline system.
 
 **On ExECTv2:** the format-layer component ablation (dev140 one-component-off replay
-and frozen full-200 aggregate replay) quantifies the LLM's marginal contribution by
+and development-inclusive full200 aggregate replay) quantifies the LLM's marginal contribution by
 staging. The `residual_semantic_lens` and `headline_projection` components —
 categorized `benchmark_format` — are the layers where LLM adjudication and
 normalization operate above the deterministic floor. Their combined delta on the
@@ -616,7 +618,7 @@ is globally necessary.
 
 **The ExECTv2 three-way comparison: the thesis's Target tier, measured as a negative
 result.** *Evidence validity: dev140 development-surface, non-paper-comparable diagnostics
-(GEPA workstream, not a frozen full-200/holdout result). Source: `PROJECT_STATUS.md`
+(GEPA workstream, not a development-inclusive full200 aggregate or holdout result). Source: `PROJECT_STATUS.md`
 ("GEPA workstream closed out," 2026-06-28 to 2026-06-30);
 `docs/plans/exectv2_gepa_ev_recall_consolidation_reexamination_plan_2026-06-30.md` and its
 four phase-result docs.* The reliability thesis's §7 "Target" tier requires beating the
@@ -663,7 +665,7 @@ paper — meaning the *true* architectural gap is smaller than the raw 0.18–0.
 are corrected for gold convention, though by how much is not yet quantified and is not
 estimated here.
 
-*This is GEPA development-track evidence, not a frozen full-200 or holdout result, and must
+*This is GEPA development-track evidence, not a development-inclusive full200 aggregate or holdout result, and must
 not be compared directly to Table R2/R3's frozen full-200 numbers without this dev140-vs-
 full200 caveat, consistent with how every other dev140-only figure is treated in this paper.*
 
@@ -717,7 +719,7 @@ its outputs. Score stability plus a non-development model leading is the joint
 evidence for model-agnostic architecture.
 
 **Qwen's shortfall, decomposed.** Qwen 3.6 35B (the local open-weight model) trails both
-closed models on the frozen full-200 aggregate (0.8197 vs. GPT 0.8356, DeepSeek 0.8566;
+closed models on the development-inclusive full200 aggregate (0.8197 vs. GPT 0.8356, DeepSeek 0.8566;
 Table R3), and this gap is neither uniform nor unexplained. *Evidence validity: frozen
 aggregate full-200, replay-only decomposition, no row-level inspection. Source:
 `exectv2_qwen_hybrid_swap_gap_decomposition_2026-07-01.md`.* Per-family, Qwen's deficit
@@ -963,9 +965,9 @@ particular large language model — is the primary carrier of clinical extractio
 Three pieces of evidence support this claim. First, swapping the generation LLM while
 holding the component graph, scoring surface, and evaluation protocol constant does not
 degrade performance: DeepSeek chat reaches **0.8566** overall clinical-headline F1 on the
-frozen full-200 aggregate versus GPT-4.1-mini's **0.8356**, a +0.021 lead distributed
+development-inclusive full200 aggregate versus GPT-4.1-mini's **0.8356**, a +0.021 lead distributed
 across Diagnosis (+0.031), SeizureFrequency (+0.008), and Investigations (+0.053), with
-Prescription tied at 0.8926 (evidence validity: frozen aggregate full-200, same-core
+Prescription tied at 0.8926 (evidence validity: development-inclusive full200 aggregate, same-core
 architecture, no row-level inspection). This is the predicted signature of a model-agnostic
 system: the component graph normalizes structured outputs from qualitatively different LLMs
 into consistent clinical-headline recovery, and the post-processing format layers contribute
@@ -1115,7 +1117,7 @@ publishable.
 This result generalizes, at minimum structurally. On the ExECTv2 clinical-letter corpus,
 SeizureFrequency is the persistently weakest extraction family under a frozen same-core
 architecture across all three tested LLMs: GPT-4.1-mini **0.7525**, DeepSeek chat
-**0.7602** (frozen full-200 aggregate). The other families are materially stronger
+**0.7602** (development-inclusive full200 aggregate). The other families are materially stronger
 (Diagnosis 0.8397–0.8708, Prescription 0.8926, Investigations 0.8563–0.9091). The gap is
 not model-specific (DeepSeek narrows it by only +0.008 vs GPT), not an evidence-failure
 (evidence rate is 1.0000 on all model-swap runs), and correctible by task-specific
@@ -1197,12 +1199,10 @@ evidence-validity gap (53.7% of hybrid exact-invalid strings; grounded rate 94.7
 74.8%) is a methodological result: the raw substring metric was misleading, and the audit
 corrected it without changing any numbers or conclusions.
 
-**Frozen aggregate-only inspection policies.** The standing protocol (no full-200 or holdout
-row-level inspection without a fresh predeclaration) protected the test set from
-contamination through seven experiment cycles, including structural-impossibility findings
-that would have been tempting to probe at row level. That the C7 finding (feature
-indistinguishability of no-correct residual from genuine-rate rows) was established without
-reading any test row is itself a protocol achievement.
+**Split inspection policies.** ExECTv2 full200 is a development-inclusive corpus audit, not a
+holdout. The author did not inspect Gan test450 rows or use them for tuning. Agent-generated
+row-level test reports were removed, and Observatory now rejects locked-test row access in
+code. Gan paper claims use aggregate test450 results only.
 
 These practices transfer. The ExECTv2 reliability scorecard adopts the same evaluation
 dimensions, the same evidence-groundedness metric, and the same predeclaration format. The
@@ -1241,7 +1241,8 @@ ExECTv2, +0.0293 Gan validation750) — normalization buys score on both tasks, 
 underlying mechanisms differ (CUI/dictionary matching vs. format-level Gan label
 normalization). The modularity thesis is now supported by structural evidence, the model-swap
 result, and a measured, positive cross-task shared-component dividend. What remains open is
-narrower than before: this dividend is validation-side only (no full-200/holdout cross-task
+narrower than before: this dividend is validation-side only (no development-inclusive full200
+or holdout cross-task
 ablation), and it does not by itself establish literal SF-machinery code sharing, which
 remains re-implemented per above.
 
@@ -1253,7 +1254,7 @@ closing paragraph): a GEPA-optimized LLM-only single pass reaches dev140 `clinic
 dev140) and short of the published-benchmark surface. The Target tier is therefore not met — the
 result is a negative one, consistent with C2/C4's direction that architecture, not model
 capability, carries the gain. Two caveats bound this claim: (i) it is dev140 development-surface
-evidence only, not a frozen full-200/holdout result; (ii) the root cause is not uniformly
+evidence only, not a development-inclusive full200 aggregate or holdout result; (ii) the root cause is not uniformly
 "evidence-recall limitation" — per-family re-examination shows this is genuine for
 Investigations and partially genuine for Prescription, but mostly a gold-consolidation-convention
 artifact for Diagnosis and SeizureFrequency (the same mechanism as §4.1.2's benchmark-gap
@@ -1396,8 +1397,8 @@ the primary model.**
 We demonstrate that the ExECTv2 architecture is model-agnostic through the strongest
 available test: a same-core model-swap experiment in which DeepSeek chat, running on the
 frozen component graph developed against GPT-4.1-mini, surpasses GPT-4.1-mini by **+0.021
-overall F1** on the frozen full-200 aggregate (0.8566 vs 0.8356; evidence validity: frozen
-aggregate full-200, same-core `exectv2_2call_no_sf_adjudicator` architecture, predeclared
+overall F1** on the development-inclusive full200 aggregate (0.8566 vs 0.8356; evidence validity:
+development-inclusive aggregate, same-core `exectv2_2call_no_sf_adjudicator` architecture, predeclared
 gate `pass_with_caveat` for one parse/schema failure within tolerance). The post-processing
 format layers contribute a stable **~+0.044–0.046** across all three models tested, confirming
 that the architecture normalizes idiosyncratic model output differences before they reach the
@@ -1438,17 +1439,17 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 | Contribution | Evidence level | Boundary |
 |---|---|---|
 | C1 — Benchmark reconciliation | dev140 validation-only, frozen aggregate; gold-quality magnitudes corroborated by a blinded independent re-adjudication (SF closely; Diagnosis revised to a range) | No full-200 published-benchmark surface computed; blind-replication check is internal (project-framework second-pass, not external clinical validation), n=20/family, wide CIs |
-| C2 — Component ablation (gate inert; SF norm matters) + cross-task dividend | dev140 replay-only, aggregate (ExECTv2 single-task); validation-side cross-task ablation (ExECTv2 dev140 + Gan validation750) | No model calls; cross-task ablation is validation-side/aggregate-only, no new freeze — not a full-200/holdout cross-task result |
-| C3 — Wall cross-dataset | Frozen aggregate full-200 (ExECTv2); validation-only probe (Gan P2.1); wall-transfers probe 6/9 | Ceiling and wall mechanism transfer (external-risk plateau + no gold-free separator); population-wide observability noisier than Gan; no holdout on ExECTv2 |
-| C4 — Model-agnostic architecture | Frozen aggregate full-200, predeclared gate | No holdout on non-primary models; row-level attribution excluded |
+| C2 — Component ablation (gate inert; SF norm matters) + cross-task dividend | dev140 replay-only, aggregate (ExECTv2 single-task); validation-side cross-task ablation (ExECTv2 dev140 + Gan validation750) | No model calls; cross-task ablation is validation-side/aggregate-only, not a development-inclusive full200 or holdout cross-task result |
+| C3 — Wall cross-dataset | Development-inclusive full200 aggregate (ExECTv2); validation-only probe (Gan P2.1); wall-transfers probe 6/9 | Ceiling and wall mechanism transfer (external-risk plateau + no gold-free separator); population-wide observability noisier than Gan; no holdout on ExECTv2 |
+| C4 — Model-agnostic architecture | Development-inclusive full200 aggregate, predeclared gate | No independent holdout on non-primary models; row-level attribution excluded |
 | C5 — Evaluation discipline | Validation-only + test450 aggregate (Gan); validation-only (ExECTv2) | No new experiments; retrospective characterization of completed work |
-| S2 — ExECTv2 three-way comparison (GEPA LLM-only vs. hybrid, thesis §7 Target tier) | dev140 development-surface, non-paper-comparable diagnostics | Not a frozen full-200/holdout result; per-family root-cause of the LLM-only-vs-hybrid gap corrected (H-inflated/gold-convention for Diagnosis+SF, genuine for Investigations, partial for Prescription) |
+| S2 — ExECTv2 three-way comparison (GEPA LLM-only vs. hybrid, thesis §7 Target tier) | dev140 development-surface, non-paper-comparable diagnostics | Not a development-inclusive full200 aggregate or holdout result; per-family root-cause of the LLM-only-vs-hybrid gap corrected (H-inflated/gold-convention for Diagnosis+SF, genuine for Investigations, partial for Prescription) |
 
 ---
 
 ## Do Not Use As Claims
 
-- Gan or ExECTv2 holdout/full-200 reliability is deployment-validated.
+- Gan test450 or ExECTv2 development-inclusive full200 reliability is deployment-validated.
 - ExECTv2 de-duplicated `clinical_headline` recovery is a strict benchmark win vs published 0.87/0.90.
 - Qwen is an operationally promoted same-core ExECTv2 candidate above GPT-4.1-mini or DeepSeek.
 - The ExECTv2 calibration rule is deployment-ready.
@@ -1462,5 +1463,5 @@ genuine ceiling and the mechanism behind it without holdout contamination).
 - Cross-model agreement is a validated ExECTv2 reliability signal (unused; available artifact).
 - ExECTv2 SF reproduces Gan's population-wide error magnitude. The wall *mechanism* transfers (6/9 checks: External Risk plateau + no gold-free separator on the binding gold-unknown slice, H0 retained), but ExECTv2's population-wide error cells are noisier than Gan's degenerate P2.1 panel (error entropy 0.287 vs correct 0.069; cross-model agreement 21.8% on errors vs 69.4% correct), so 3 of 9 checks — the population-magnitude ones — read `no`. Identical same-magnitude population-wide degeneracy is not claimed.
 - The shared SF machinery is literally identical across tasks (ExECTv2 re-implements projection; structural reuse is the accurate claim, not code identity).
-- The GEPA LLM-only ExECTv2 numbers (≈0.749 gpt-4.1-mini, ≈0.679 Qwen dev140 clinical_headline F1; the mini figure reflects the 2026-07-02 four-family scorer-correctness fixes, see §4.2 footnote) are a promoted full-200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's frozen full-200 numbers without the dev140-vs-full200 caveat.
+- The GEPA LLM-only ExECTv2 numbers (≈0.749 gpt-4.1-mini, ≈0.679 Qwen dev140 clinical_headline F1; the mini figure reflects the 2026-07-02 four-family scorer-correctness fixes, see §4.2 footnote) are a promoted full200 or holdout result. They are dev140 development-surface diagnostics only and must not be compared directly to Table R2/R3's development-inclusive full200 numbers without the dev140-vs-full200 caveat.
 - The C1 gold-quality blind replication (`exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md`) is external clinical validation. It is a second internal pass (an LLM-based sub-agent blind to the original verdicts and to this project's conclusions, not a human clinician) that corroborates the aggregate magnitude and revises the Diagnosis point estimate to a range; a blinded board-certified neurologist/epileptologist review remains open future work.

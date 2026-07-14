@@ -14,7 +14,7 @@ stubs at original paths.
 
 Procedure before any future move:
 
-1. Update [`docs/experiments/final_artifact_index_2026-06-22.md`](../experiments/final_artifact_index_2026-06-22.md) if paths are indexed.  
+1. Update [`docs/experiments/retained_evidence_manifest.json`](../experiments/retained_evidence_manifest.json) if a selected path is affected.
 2. Leave redirect stub at old path OR update all internal links in same PR.  
 3. Run `python3 scripts/check_doc_hygiene.py`.
 

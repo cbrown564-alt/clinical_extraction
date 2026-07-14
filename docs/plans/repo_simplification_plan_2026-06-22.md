@@ -1,14 +1,16 @@
-> **Status: DEFERRED** — not started until evidence spine and paper closeout stabilize. See [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) P2.
+> **Status: ACTIVE** — owner-authorized repository surgery began 2026-07-13. See
+> [`ACTIVE_ROADMAP.md`](ACTIVE_ROADMAP.md) P0. The earlier preserve-everything
+> assumptions below are historical; retained evidence must be rebuilt from verified
+> files and hashes before large artifacts leave primary Git.
 
 # Repo Simplification Plan
 
 Date: 2026-06-22
 
-Rationalisation status, 2026-06-25: deferred cleanup policy. Do not start
-archive/delete/refactor work from this plan until the current evidence spine,
-paper-facing ExECTv2 results scaffold, and run-surfacing work are stable. The
-active sequence is centralized in
-`docs/plans/recent_plan_rationalisation_2026-06-25.md`.
+Rationalisation update, 2026-07-13: cleanup is active. The previous frozen
+artifact index does not reproduce most indexed paths and hashes, so it cannot
+serve as the prerequisite evidence spine. Rebuild the retained evidence manifest,
+then delete or externalize material that does not support a surviving claim.
 
 Scope: non-destructive cleanup plan for the final closeout phase. This plan
 does not delete, move, or rename active evidence. It defines the policy and
@@ -36,7 +38,7 @@ original path in the artifact index.
 
 ## Keep As Canonical Evidence
 
-- `docs/experiments/final_artifact_index_2026-06-22.md`
+- `docs/experiments/retained_evidence_manifest.md` (2026-07-14 replacement)
 - `docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`
 - `docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md`
 - `docs/research/final_architecture_selection_2026-06-22.md`

@@ -10,11 +10,11 @@ It does not authorize deleting frozen evidence artifacts.
 | --- | --- | --- |
 | `experiments/registry.jsonl` | Machine-readable run registry (claim-of-record) | Appended by `register_run(...)` in experiment drivers; edit only through registered runs |
 | `experiments/RUN_INDEX.md` | Human scan of `registry.jsonl` | From repo root: `python -c "from pathlib import Path; from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_registry import load_run_registry, write_run_registry_markdown; write_run_registry_markdown(load_run_registry(Path('experiments/registry.jsonl')), Path('experiments/RUN_INDEX.md'))"` |
-| `docs/experiments/final_artifact_index_2026-06-22.md` | Frozen evidence spine with SHA-256 hashes | Manual update when canonical artifact paths or hashes change |
+| `docs/experiments/retained_evidence_manifest.json` | Selected paper-facing evidence with SHA-256 hashes | Update deliberately, then run `python scripts/check_retained_evidence_manifest.py` |
 
 See also `experiments/README.md`, `docs/runbooks/mlflow_local_tracking.md`,
 `docs/runbooks/documentation_lifecycle.md`, and
-`docs/experiments/final_artifact_index_2026-06-22.md`.
+`docs/experiments/retained_evidence_manifest.md`.
 
 ## Paper / LaTeX
 
@@ -31,8 +31,8 @@ an earlier commit; prefer not to refresh it in git—rebuild locally only.
 ## Experiment evidence (large JSONL / JSON)
 
 Registered full-run assemblies under `experiments/*.jsonl` (often 30–50 MB) are
-**intentionally tracked** when indexed in `registry.jsonl` or
-`final_artifact_index_2026-06-22.md`. They are not reproduced by a single
+**intentionally tracked** only when required by the retained manifest or a
+surviving registered replay closure. They are not reproduced by a single
 make target; rerun the named `experiments/build_*.py` driver or pipeline CLI
 listed in the companion `.md` report and registry row.
 
@@ -40,12 +40,17 @@ listed in the companion `.md` report and registry row.
 `experiments/**/traces/` stay untracked by default; add with `git add -f` only
 when deliberately publishing a row-level artifact.
 
-## Frontend derived mock data
+## Retained reference replay
 
-`frontend/public/mock-data/` JSON files derived from indexed ExECTv2/Gan runs are
-tracked for the observatory UI. Regenerate when the underlying registry row or
-artifact index entry changes (see
-`docs/plans/exectv2_frontend_dataset_integration_implementation_plan_2026-06-22.md`).
+The six paper-facing architecture cells are verified from current deterministic
+code or saved model outputs without new model calls:
+
+```sh
+python scripts/verify_reference_evidence.py
+```
+
+The manifest also names the entry point, implementation, scorer, data contract,
+configuration, and tests needed to regenerate each cell.
 
 ## Legacy tracked operational files (do not extend)
 
@@ -61,4 +66,4 @@ New runs should write under ignored `output/`, `logs/`, or `scratch/` instead.
 
 - `mlruns/`, `mlflow.db*`, `logs/`
 - `scratch/`, `output/` (new files)
-- Python/JS caches: `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`, `frontend/node_modules/`, `frontend/.next/`
+- Python caches: `__pycache__/`, `.pytest_cache/`, `.ruff_cache/`

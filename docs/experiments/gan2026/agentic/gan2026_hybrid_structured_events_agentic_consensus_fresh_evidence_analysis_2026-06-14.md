@@ -394,4 +394,4 @@ Purist on locked `test450`.
 - `experiments/gan2026_fresh_evidence_reasoner_validation250_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_hard50_live_gpt41_v0_4_2026-06-13.md`
 - `experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_4_2026-06-13.md`
-- `experiments/gan2026_v06_test450_hybrid_structured_events_deepseek_2026-06-14.md`
+- Row-level DeepSeek test report removed by split policy.

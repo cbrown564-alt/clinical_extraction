@@ -59,6 +59,15 @@ on it.
   Gan-specific bare `bimonthly` to `1 per 2 month`; the rationale and boundary
   cases live in `docs/research/gan2026/data_and_policy/gan2026_gold_normalization_policy_question_2026-06-01.md`.
 
+## ExECTv2 Split Names
+
+- `dev140` is the development surface.
+- `test60` is the held-out subset. It has not been used for row-level tuning.
+- `full200` is the complete corpus: `dev140` plus `test60`. Call it the
+  **development-inclusive full200 audit**, not a holdout. Aggregate full200 results
+  may describe whole-corpus behavior, but they are not an independent estimate of
+  generalisation and must not be used to tune from the held-out 60 rows.
+
 ## Known Open Questions
 
 - Whether later task-neutral schemas should reuse the Gan-specific `FrequencyLabelKind` names or map

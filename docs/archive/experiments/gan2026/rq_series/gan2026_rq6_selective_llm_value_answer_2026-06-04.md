@@ -35,7 +35,7 @@ Supporting artifacts:
 
 - `experiments/gan2026_selective_safety_floor_gate_v0_component_evidence_audit_2026-06-03.md`
 - `experiments/gan2026_selective_safety_floor_gate_v0_validation750_replay_2026-06-03.md`
-- `experiments/gan2026_selective_safety_floor_gate_v0_test450_frozen_audit_first_readout_2026-06-03.md`
+- Row-level test report removed by split policy.
 - ``
 - `docs/design/component_evidence_attribution_architecture.md`
 

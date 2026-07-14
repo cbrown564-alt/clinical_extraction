@@ -209,7 +209,8 @@ Goal: make it impossible to lose the final evidence trail during cleanup.
 
 Tasks:
 
-- Create `docs/experiments/final_artifact_index_2026-06-22.md`.
+- Create a hashed final artifact index (superseded by
+  `docs/experiments/retained_evidence_manifest.json` on 2026-07-14).
 - List canonical artifacts by task:
   - Gan 2026 reliability scorecard and source drivers.
   - ExECTv2 v08 control.
@@ -735,7 +736,7 @@ Finish:
 Completion note, 2026-06-24:
 
 - Canonical hashes are present in
-  `docs/experiments/final_artifact_index_2026-06-22.md`.
+  `docs/experiments/retained_evidence_manifest.json`.
 - The final artifact index, cross-model report, reliability scorecard,
   architecture selection memo, repo simplification plan, and `PROJECT_STATUS.md`
   are current with the completed DeepSeek/Qwen dev140 diagnostic disposition and
@@ -956,7 +957,7 @@ Safe to archive after indexing:
 
 Required:
 
-- `docs/experiments/final_artifact_index_2026-06-22.md`
+- `docs/experiments/retained_evidence_manifest.md` (current replacement)
 - `docs/experiments/exectv2/key_entities/exectv2_cross_model_closeout_2026-06-22.md`
 - `docs/experiments/exectv2/reliability/exectv2_cross_model_reliability_scorecard_2026-06-22.md`
 - `docs/research/final_architecture_selection_2026-06-22.md`

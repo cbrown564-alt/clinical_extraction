@@ -7,7 +7,7 @@ Last updated: 2026-07-01
 reliability same-core / component-off / simplification docs under [`../experiments/exectv2/reliability/`](../experiments/exectv2/reliability/),  
 v08/v09 reports under [`../experiments/exectv2/key_entities/`](../experiments/exectv2/key_entities/).
 
-**Frozen index:** [`final_artifact_index_2026-06-22.md`](../experiments/final_artifact_index_2026-06-22.md) — **do not rename paths**  
+**Retained evidence:** [`retained_evidence_manifest.md`](../experiments/retained_evidence_manifest.md) — update hashes whenever a selected path changes
 **Scoring vocabulary:** [`exectv2_evaluation_canon.md`](04_scoring.md)  
 **Paper claims:** [`PAPER_CANON.md`](10_paper_provenance.md)
 

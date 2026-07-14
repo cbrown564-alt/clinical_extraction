@@ -992,7 +992,7 @@ verification_decision) to produce its rendered/null/purist/routed numbers and ro
 appendix, following the same approach used for hybrid in the Phase 3 report. Built at
 `experiments/gan2026_test450_phase4_comparison_report_gpt41mini_2026-06-10.{jsonl,json,md}`
 via a new module,
-`src/clinical_extraction/tasks/seizure_frequency/gan2026/artifact_analysis/phase4_test450_frozen_audit_report.py`
+The row-level test report generator was removed by split policy.
 (a 4-architecture / `test` split adaptation of `three_way_comparison_report.py`, since
 `build_three_way_comparison_report` requires all six architectures).
 

@@ -91,8 +91,7 @@ gan2026-llm-experiment \
   --temperature 0 \
   --max-tokens 1800 \
   --disable-dspy-cache \
-  --jsonl experiments/gan2026_hybrid_multi_component_staged_assembly_v1_gpt41mini_test450_live_source_2026-06-05.jsonl \
-  --markdown experiments/gan2026_hybrid_multi_component_staged_assembly_v1_gpt41mini_test450_live_source_2026-06-05.md
+  --jsonl experiments/gan2026_hybrid_multi_component_staged_assembly_v1_gpt41mini_test450_live_source_2026-06-05.jsonl
 ```
 
 This command is a source-materialization step, not the public holdout report.

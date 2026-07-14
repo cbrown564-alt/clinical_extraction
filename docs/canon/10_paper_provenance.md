@@ -1,6 +1,6 @@
 # Paper Canon — Claims, Evidence & Provenance
 
-Last updated: 2026-07-01
+Last updated: 2026-07-14
 
 **Working manuscript:** [`../research/paper_manuscript_2026-06-26.md`](../research/paper_manuscript_2026-06-26.md)  
 **IEEE LaTeX:** [`literature/IEEE/IEEE-conference-template-062824/`](../../literature/IEEE/IEEE-conference-template-062824/) (lags markdown as of 2026-06-30)  
@@ -30,6 +30,38 @@ Two **ceiling mechanisms** on disjoint slices must not be conflated:
 
 See [`04_scoring.md`](04_scoring.md) and
 [`06_gan_clinical_policy.md`](06_gan_clinical_policy.md).
+
+---
+
+## Surgery acceptance matrix (the retained paper story)
+
+Repository surgery is complete only when every surviving statement below resolves
+to present, hashed evidence and the smallest source/config/test closure needed to
+reproduce it. A predeclared negative result may close an open study, but the claim
+must then be weakened or removed. The desired direction of a result is never a
+completion criterion.
+
+| ID | Required story | Current evidence | Completion gate | State |
+| --- | --- | --- | --- | --- |
+| **S1** | One modular architecture evaluated on Gan seizure frequency and ExECT broad phenotyping | Shared core, task modules, and paper results exist | One documented stage map plus reproducible reference runs/replays for both tasks | Partial |
+| **S2** | Deterministic, LLM-only, and hybrid forms with attributable strengths and weaknesses | Gan three-way table; ExECT deterministic/GEPA/hybrid evidence on development surfaces | Minimal two-task × three-family reference configurations, comparable score layers, and component-owner tables | Partial |
+| **S3** | Complex multi-trace Gan ceiling is only modestly better than the single-call operational path, at materially higher cost/latency | Frozen Gan quality comparison: 379/450 vs 364/450 Purist | Matched call-count, token, cost, latency, model, hardware, cache, split, and scorer table | Partial |
+| **S4** | Controlled six-model comparison across three hosted and three open/local models | Registered evidence for GPT-4.1-mini, DeepSeek, and Qwen 3.6:35b | Same frozen architecture/prompt/scorer over all six exact runtime identifiers; size/reasoning conclusion follows the data | Open |
+| **S5** | Overconfident rate emission on ambiguous evidence is a recurring cross-model failure | Strong Gan Wall evidence; bounded ExECT transfer (6/9 checks) | Per-model unknown-vs-rate, confidence/calibration, and permitted mechanism analysis across the frozen model panel; primary literature provenance | Partial |
+| **S6** | Evidence extraction, normalization, projection, schema validation, and evidence verification are explicit and ablatable | Normalization/projection deltas; evidence gate is score-inert on current representative replays | Every reference run emits the five stage records; each stage has a causal delta or an appropriate rejection/repair challenge test | Partial |
+| **S7** | ExECT primary scoring matches entity type, normalized phrase, and clinical attributes; deterministic phrase/CUI/full-attribute-bundle engineering reproduces the paper-comparable surface | Primary clinical-recovery surface exists; current like-for-like result remains below the published result | Source-backed IAA-method check, scorer contract tests, full deterministic bundle implementation, and paper-comparable evaluator/run | Open |
+| **S8** | Reliability is tested on both tasks: grounding, schema validity, calibration, abstention/review routing, consistency, and robustness | Both task scorecards exist; broad-task calibration remains weak and model confidence is unused | One matched scorecard plus out-of-sample model-confidence calibration and bounded routing verdict | Partial |
+| **S9** | Annotation flaws and conventions are completely and transparently handled | Family ledgers and `experiments/gold_data_issues.jsonl` exist | One generated taxonomy/ledger with source evidence, scoring effect, handling, sensitivity analysis, and internal-vs-external review status for every cited case | Partial |
+
+**Retention consequence:** keep one active control per task and the minimal
+reference configuration or replay contract for each of the six task/family cells.
+Do not retain the discarded candidates that led to those controls. The surgery
+assessment's earlier “one ExECT path + one Gan path” wording is insufficient on
+its own because it would not preserve S2.
+
+Every evidence row must name dataset, split manifest, row-inspection policy,
+scorer, model and role, prompt/program version, cache/replay mode, repair policy,
+artifact path, and hash before its state can become complete.
 
 ---
 
@@ -100,11 +132,15 @@ Full write-up: [`08_gepa.md`](08_gepa.md). **Do not** import blanket "producer e
 
 | Signal | Result | Paper language |
 | --- | --- | --- |
-| Calibration | Brier Δ 0.0142 vs base rate | Not deployment-ready |
+| Calibration | Full200 aggregate Brier 0.2225 vs base rate 0.2340 (Δ 0.0115), ECE 0.0587 after dev140-fit regularization repair | Promoted internal scoring rule; not deployment-ready probability calibration |
 | Review routing | ~97% burden, ~90% catch | Review-nearly-everything, not low-burden triage |
 | Binding unknown slice AUROC | 0.676 | Below 0.70 usefulness bar; H0 retained |
 
-Cross-model agreement exists in artifacts but is **unused** for ExECT triage except SF wall probe — see calibration plan for optional strengthening (framing-only in P0 closure plan).
+The 2026-07-07 signal probe tested the previously unused cross-model and
+self-consistency features on dev140. Cross-model agreement did not generalize
+(pooled AUROC 0.5958; no non-SF family above 0.70); self-consistency was
+orthogonal but weak. Model-reported confidence remains unused, and a low-burden
+review-routing operating point remains open.
 
 ---
 
@@ -130,23 +166,27 @@ Preserve manuscript "Do Not Use" list; canon adds:
 | Gan SF / Wall | [`06_gan_clinical_policy.md`](06_gan_clinical_policy.md) | reliability master scorecard |
 | Component impact | evaluation canon §Component layers | `exectv2_component_off_replay_full200_20260626.json` |
 | GEPA negative | [`08_gepa.md`](08_gepa.md) | GEPA dev140 scorecards |
-| Claim boundaries | [`final_artifact_index_2026-06-22.md`](../experiments/final_artifact_index_2026-06-22.md) | SHA-256 table |
+| Selected evidence | [`retained_evidence_manifest.md`](../experiments/retained_evidence_manifest.md) | Verified JSON paths, hashes, sizes, and claim boundaries |
 
-**Authority stack:** frozen artifact index > this canon > ADR > research synthesis > registry row.
+**Surgery authority rule:** the retained JSON manifest is now verified against
+present files and registry metadata. It owns selected evidence. The registry
+continues to own run lineage, and this claims register continues to own whether
+the evidence is sufficient for a paper statement.
 
 ---
 
-## Open gaps (P0 manuscript work)
+## Open gaps
 
-From [`manuscript_evidence_gaps_closure_plan_2026-07-01.md`](../plans/manuscript_evidence_gaps_closure_plan_2026-07-01.md):
+Execution order is owned by [`ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md).
+The claim gaps that must remain visible here are:
 
-1. Write GEPA three-way negative into §2.3 / Results (with per-family attribution).
-2. Propagate cross-task ablation (remove stale S1 limitation).
-3. Extend C1 to Dx in abstract/§1 (SF + Dx gold-quality).
-4. Explain Qwen asymmetry in model-agnostic section.
-5. Tighten calibration/abstention framing (no new runs unless calibration plan authorizes).
-
-**LaTeX sync:** Re-sync IEEE draft with 2026-06-29/30 markdown revisions before camera-ready.
+1. Rebuild the retained evidence manifest and name the two-task × three-family reference set.
+2. Produce the matched Gan quality/cost/latency comparison for S3.
+3. Implement and evaluate deterministic phrase/CUI/full-attribute-bundle reproduction for S7.
+4. Evaluate model-reported confidence for broad phenotyping and finish the bounded routing verdict for S8.
+5. Consolidate annotation defects, conventions, scorer artifacts, and adjudication limits for S9.
+6. After the reduced architecture is frozen, run the six-model S4 comparison and use it to close or revise S5.
+7. Regenerate manuscript tables from retained evidence and re-sync the IEEE LaTeX source.
 
 ---
 
