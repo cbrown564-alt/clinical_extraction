@@ -20,6 +20,7 @@ from ..rule_metadata import (
     Portability,
     RuleGroup,
 )
+from .extract_impl_types import ExtractRuleImpl
 
 # ---------------------------------------------------------------------------
 # Token fragments
@@ -567,8 +568,6 @@ def _build_article_count(match: re.Match[str], _ctx: ExtractionContext) -> Attri
         portability=Portability.SEIZURE_FREQUENCY,
     )
 
-
-from .extract_impl_types import ExtractRuleImpl
 
 RATE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "rate.range_per_n_periods": ExtractRuleImpl(

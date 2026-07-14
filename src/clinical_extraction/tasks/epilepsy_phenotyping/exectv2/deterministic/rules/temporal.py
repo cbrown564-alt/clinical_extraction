@@ -35,6 +35,7 @@ from ..rule_metadata import (
     Portability,
     RuleGroup,
 )
+from .extract_impl_types import ExtractRuleImpl
 
 # ---------------------------------------------------------------------------
 # Shared fragments
@@ -391,8 +392,6 @@ def _build_last_seizure_ago(match: re.Match[str], _ctx: ExtractionContext) -> At
 
 # RuleSpec metadata: sf_surface_registry/catalog/extract.yaml
 # Assembled via sf_surface_registry/adapters/extraction.py
-
-from .extract_impl_types import ExtractRuleImpl
 
 TEMPORAL_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "temporal.last_seizure_date": ExtractRuleImpl(
