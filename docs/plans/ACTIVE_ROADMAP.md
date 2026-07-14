@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -44,13 +44,30 @@ held-out rows, so it is not an independent holdout.
    or the fixed scorer. Shared deterministic fixes improved the rules-only and
    hybrid development scores; the one fixed LLM prompt candidate regressed and
    was rejected. Test60 was not inspected and no candidate was promoted.
+8. **ExECT family ownership audited.** Saved full200 outputs show that the
+   historical Prescription lane is deterministic-only and the Seizure
+   Frequency lane includes an independent extractor union.
+   [Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
+   records the corrected model-led family contract. Candidate corrected scores
+   exist, but no corrected configuration or result is promoted.
 
 ## Ordered evidence work
 
-1. Evaluate model confidence out of sample and test only review policies that
+1. Materialize
+   [decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
+   as durable model-swap configurations. Use each
+   named model's Prescription output and pre-union Seizure Frequency output;
+   reproduce the saved-output audit; add Seizure Frequency `state_profile`,
+   exact-evidence, attribution, regression, and schema/parse accounting; then
+   update the retained architecture freeze.
+2. Evaluate model confidence out of sample and test only review policies that
    were specified before the run.
-2. Specify the missing three runtime conditions, then run all six models with
-   the same pipeline and scorer.
+3. Predeclare and run the fixed six-model roster with the same corrected
+   model-led pipeline and scorer: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
+   hosted DeepSeek V4 Flash, local Qwen 3.6:35B, and local Gemma 4 26B. Resolve
+   whether the historical `deepseek/deepseek-chat` artifact proves that
+   thinking was enabled before counting it as complete. Otherwise rerun that
+   API model with thinking enabled and report it as DeepSeek V4 Flash.
 
 ## Limits
 

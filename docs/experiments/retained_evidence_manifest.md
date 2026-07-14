@@ -48,6 +48,13 @@ Freeze `reduced_reference_architecture_20260714` records:
 The freeze does not authorize model calls. New calls require a predeclaration;
 semantic changes require a new freeze ID and complete replay.
 
+Decision 0040 is the accepted target for the final ExECT model comparison, but
+it is not part of this retained freeze. The corrected saved-output audit and
+its machine-readable candidate remain unselected until durable configurations
+reproduce the family ownership, `state_profile`, attribution, regression,
+schema/parse, and exact-evidence records. The selected `v08` row remains a
+historical development control rather than proof of the final architecture.
+
 ## Reference matrix
 
 | Task | Family | Retained run | Split | Headline result | Boundary |
@@ -70,7 +77,7 @@ by its assembly config; those inputs are selected and hash-checked here.
 | --- | --- | --- | --- |
 | Gan holdout quality and efficiency | S2, S3, S8 | Single-pass `364/450` versus V12 `379/450` Purist; one versus three cold model passes per note | Tokens, cost, latency, hardware, retries, and cache use were not measured in a matched run and must not be claimed |
 | Gan reliability | S5, S8 | Existing grounding, calibration, routing, consistency, robustness, and operational analyses | Deployment validation and final matched cross-task scorecard |
-| ExECT model transfer | S4, S5, S8 | Same-core GPT-4.1-mini, DeepSeek, and Qwen evidence, with permitted dev140 cached outputs and configs retained | Three remaining exact models and cross-model overconfidence analysis |
+| ExECT model transfer | S4, S5, S8 | The historical component graph ran with GPT-4.1-mini, DeepSeek, and Qwen, with permitted dev140 cached outputs and configs retained | Corrected decision-0040 configurations; Prescription and SF ownership correction; `state_profile`; three remaining exact models; cross-model overconfidence analysis |
 | Cross-task ablation | S1, S6 | Normalization contributes on both tasks; current evidence gate is score-inert | Schema/evidence rejection and repair challenge fixtures; remaining stage isolation |
 | ExECT calibration | S5, S8 | Internal correctness rule: Brier `0.2225`, base-rate `0.2340`, ECE `0.0587` | Out-of-sample model-reported confidence and bounded routing verdict |
 | ExECT published metrics | S7 | Paper-derived normalized-phrase, CUI, and all-feature scorer plus a no-call all-nine-entity dev140 replay: macro item F1 `0.5687`, `0.7144`, and `0.6020` | Original system, annotation process, and reported `0.87`/`0.90` validation scores are not reproduced |

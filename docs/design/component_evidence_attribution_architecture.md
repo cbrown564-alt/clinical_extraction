@@ -88,3 +88,7 @@ the split, model, replay mode, scorer, repair policy, and method.
 
 Advance a method only when those records answer all three opening questions.
 Otherwise add instrumentation, replay saved outputs, or test named hard cases.
+
+For the family-specific application of this contract to the final ExECT model
+comparison, see
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).

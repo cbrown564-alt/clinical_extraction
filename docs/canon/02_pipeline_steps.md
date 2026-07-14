@@ -1,6 +1,6 @@
 # 02 — Processing steps
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 Exact source, configuration, scorer, test, and replay paths are in the
 [retained evidence index](../experiments/retained_evidence_manifest.md).
@@ -30,7 +30,17 @@ letter
 ```
 
 The selected comparison has a deterministic all-nine baseline, a GEPA LLM-only
-negative comparison, and the current LLM-with-rules system (`v08`).
+negative comparison, and the historical LLM-with-rules development control
+(`v08`). `v08` remains reproducible, but its deterministic Prescription
+producer and Seizure Frequency extractor union do not meet the final family
+ownership boundary.
+
+New final-comparison evidence must follow
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md):
+the named model supplies all four families, Prescription uses bounded
+post-model correction rather than deterministic substitution, and Seizure
+Frequency uses attributable projection and suppression without an independent
+extractor union.
 
 Retained evidence index v3 fixes source commit `46562134` and records the exact
 dependencies, prompts, scorers, split rules, repairs, model policy, and CI

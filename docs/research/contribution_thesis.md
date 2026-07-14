@@ -13,6 +13,13 @@ Deterministic rules and model reasoning are both explicit, testable components.
   validate or format them.
 - **LLM with rules:** model and deterministic code can both change clinical meaning.
 
+For the final ExECT model comparison, the named model must supply the candidate
+facts for Diagnosis, Seizure Frequency, Prescription, and Investigations.
+Deterministic clinical changes remain separately attributed; an independent
+rules-only extractor cannot silently replace or be unioned into the named
+model's result. See
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+
 Saved filenames retain older long identifiers. Current commands and prose use
 the plain names above; see the [naming guide](../reference/plain_language_glossary.md).
 

@@ -42,3 +42,8 @@ The completed review separates a large representation effect from a smaller extr
 - Reject the broad rules residual dictionary as a default because it adds 30 new residuals.
 - Reject the LLM-only v0.2 candidate because its fixed primary score regressed.
 - Do not inspect test60 or promote any candidate from this dev140 study.
+
+The final six-model comparison uses this evidence under the ownership boundary
+in
+[decision 0040](../../../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+That decision does not promote the Diagnosis candidate recorded here.

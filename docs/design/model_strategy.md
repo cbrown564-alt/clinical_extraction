@@ -1,7 +1,7 @@
 # LLM model and comparison policy
 
-Last updated: 2026-07-14
-Status: frozen for new evidence
+Last updated: 2026-07-15
+Status: retained reference frozen; corrected final-comparison target accepted
 
 The machine-readable freeze is `architecture_freeze` in
 `docs/experiments/retained_evidence_manifest.json`. It pins the reduced source
@@ -14,7 +14,7 @@ be added to the paper evidence set.
 | Identifier | Retained role | Boundary |
 | --- | --- | --- |
 | `openai/gpt-4.1-mini` | Gan and ExECT development/reference runtime | Development baseline, not a best-model claim |
-| `deepseek/deepseek-chat` | ExECT same-core model-transfer runtime | Retained three-model evidence |
+| `deepseek/deepseek-chat` | DeepSeek V4 Flash API runtime | Retained result has no recorded thinking state; not yet eligible as the final reported DeepSeek condition |
 | `ollama_chat/qwen3.6:35b` | ExECT local model-transfer runtime | Local transfer evidence; thinking disabled |
 | `deepseek/deepseek-reasoner` | GEPA reflection model | Optimizer provenance only |
 | `openai/gpt-4.1` | Gan V12 frozen holdout reviewer | Aggregate ceiling evidence only |
@@ -23,9 +23,9 @@ The exact Ollama route is part of the identity. Qwen must use the native
 `ollama_chat/qwen3.6:35b` route with thinking disabled; the OpenAI-compatible
 Ollama endpoint is not an equivalent runtime.
 
-## Frozen ExECT model-comparison core
+## Retained historical ExECT model-comparison core
 
-New same-core model evidence must inherit
+The retained GPT, DeepSeek, and Qwen artifacts used
 `exectv2_2call_no_sf_adjudicator_model_swap`:
 
 - split: ExECT `dev140` for row-inspectable development;
@@ -44,24 +44,70 @@ New same-core model evidence must inherit
   only. Any semantic prompt change, selected-evidence rewrite, deterministic
   clinical repair, or scorer change creates a new comparison condition.
 
-The earlier GPT, DeepSeek, and Qwen artifacts remain valid retained evidence,
-but they are asymmetric: the GPT config used temperature `0.3`, and Qwen used
-the compact prompt plus output-schema repair. They support a bounded
-same-core transfer statement, not a strict same-prompt six-model conclusion.
+These artifacts remain reproducible historical evidence, but they are not a
+consistent model-led comparison. Their Prescription lane is
+deterministic-only, and their Seizure Frequency lane unions model output with
+an independent deterministic extractor. They are also asymmetric: the GPT
+config used temperature `0.3`, and Qwen used the compact prompt plus
+output-schema repair.
+
+## Corrected final-comparison core
+
+All new six-model evidence must implement
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md):
+
+- the named model supplies the candidate facts and evidence for Diagnosis,
+  Seizure Frequency, Prescription, and Investigations;
+- Diagnosis may use recorded heading, boundary, normalization, and residual
+  recovery, with every deterministic addition or selection attributed;
+- Seizure Frequency uses the named model's pre-union output plus attributable
+  state projection and unsupported-state suppression; it must not union an
+  independent deterministic extractor;
+- Prescription uses the named model's regimen output plus bounded shared
+  normalization and repair; it must not substitute the deterministic
+  all-entity or Prescription extractor;
+- Investigations remains model output through evidence, normalization, and
+  deduplication adapters;
+- `clinical_headline` remains the declared overall compatibility scorer;
+  Seizure Frequency must additionally report the `state_profile` primary
+  family score required by decision 0037; and
+- output records preserve model origin, deterministic changes, exact-evidence
+  status, rule-added and rule-removed facts, and schema/parse failures.
+
+The corrected saved-output aggregate is a candidate until durable
+configurations reproduce it and a new architecture freeze selects it. New
+model calls may not use the rejected historical component graph as the final
+comparison condition.
 
 ## Six-model claim boundary
 
-The retained roster is three of six: GPT-4.1-mini, DeepSeek chat, and Qwen
-3.6:35b. The other three runtime identifiers were never predeclared in the
-governing evidence and are therefore not invented during cleanup. Before any
-new model call, a comparison predeclaration must name all remaining exact
-provider/API identifiers, hosted-versus-local route, model revision if exposed,
-temperature, token limits, cache mode, hardware/endpoint metadata, and the
-handling of model-specific format adapters.
+Decision 0039 fixes the final roster:
+
+| Model condition | Availability class | Route |
+| --- | --- | --- |
+| GPT-4.1-mini | Closed-weight | Hosted |
+| GPT-5.6 Luna | Closed-weight | Hosted |
+| GPT-5.6 Sol | Closed-weight | Hosted |
+| DeepSeek V4 Flash, thinking enabled | Open-weight | Hosted |
+| Qwen 3.6:35B | Open-weight | Local |
+| Gemma 4 26B | Open-weight | Local |
+
+Before any new model call, the comparison predeclaration must name each exact
+provider/API or local runtime identifier, hosted-versus-local route, model
+revision if exposed, temperature, token limits, cache mode, hardware/endpoint
+metadata, and the handling of model-specific format adapters.
+
+`deepseek/deepseek-chat` is the API identifier for DeepSeek V4 Flash. The final
+reported condition must run with thinking enabled and must be displayed as
+**DeepSeek V4 Flash**. The retained result does not record its thinking state,
+so it cannot satisfy the final condition unless durable metadata proves that
+thinking was enabled.
 
 No six-model ordering or size/reasoning conclusion is permitted until all six
-conditions run under the frozen core and the asymmetries are either removed or
-reported as explicit conditions.
+conditions run under the corrected final-comparison core and the runtime
+asymmetries are either removed or reported as explicit conditions.
+
+Roster owner: [decision 0039](../decisions/0039-final-exect-six-model-roster.md).
 
 ## Run metadata and change control
 

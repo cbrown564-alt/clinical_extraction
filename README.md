@@ -28,11 +28,11 @@ recovery (`clinical_headline`). The ExECT score is an internal research metric,
 not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
 full-attribute views are also available for explicit benchmark comparison.
 
-Current state, as of 2026-07-14:
+Current state, as of 2026-07-15:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- All 1,168 tests, Ruff, and mypy pass. CI runs all three checks. A separate
+- All 1,194 tests, Ruff, and mypy pass. CI runs all three checks. A separate
   Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
@@ -44,8 +44,14 @@ Current state, as of 2026-07-14:
 - The ExECT rules-only no-call dev140 replay reports macro item F1 of 0.5687 for
   normalized phrase, 0.7144 for CUI, and 0.6020 for all features. This is a
   development metric result, not reproduction of the original ExECT system.
-- Next work covers out-of-sample confidence, annotation evidence, and a strict
-  six-model comparison.
+- The historical ExECT `v08` and three-model rows do not meet the final
+  model-led family boundary: Prescription was deterministic-only and Seizure
+  Frequency included an independent extractor union. Decision 0040 defines the
+  corrected architecture; its saved-output scores are not yet promoted.
+- Next work materializes that architecture, then covers out-of-sample
+  confidence and the fixed six-model comparison: GPT-4.1-mini, GPT-5.6 Luna,
+  GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen 3.6:35B, and local Gemma 4
+  26B.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 

@@ -25,7 +25,7 @@ a better extraction system.
 | Rules `0.9344`; LLM only `0.8499`; LLM with rules `0.9789` | Same saved Diagnosis outputs under the conservative sensitivity interpretation | Diagnostic sensitivity analysis | Not a replacement benchmark result |
 | Rules `0.9520`; LLM only `0.9056`; LLM with rules `0.9950` | Same saved Diagnosis outputs under the widest reviewed interpretation | Diagnostic upper sensitivity view | Not a replacement benchmark result |
 | Rules `0.8926`; LLM only `0.6210`; LLM with rules `0.9034` | New candidate Diagnosis outputs against unchanged gold and scorer | Candidate implementation results | Candidates are not promoted into the paper reference table |
-| DeepSeek `0.8708`; GPT-4.1-mini `0.8397`; Qwen `0.8307` | Diagnosis within full200 model runs | Development-inclusive model comparison | Current three-model table |
+| Historical DeepSeek `0.8708`; GPT-4.1-mini `0.8397`; Qwen `0.8307` | Diagnosis within full200 model runs | Development-inclusive model comparison; DeepSeek thinking state was not recorded | DeepSeek result is audit-only; final paper row is pending |
 
 The rows in this table must not be collapsed into one ranking. In particular,
 the paper's rules-only `0.6020` and its LLM results `0.7393` and `0.9189` do not
@@ -191,4 +191,3 @@ replace the retained paper reference.
 - [Diagnosis resolution protocol](exectv2_diagnosis_resolution_protocol_2026-07-14.md)
 - [ExECT scoring and annotation evidence](../../../canon/04_scoring.md)
 - [Paper claim status](../../../canon/10_paper_provenance.md)
-

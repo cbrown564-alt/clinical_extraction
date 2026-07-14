@@ -20,6 +20,7 @@
 | ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
 | ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
 | Guide to the different ExECT Diagnosis F1 scores | [Diagnosis score guide](experiments/exectv2/diagnosis/exectv2_diagnosis_score_guide_2026-07-14.md) |
+| Three-model LLM-with-rules ownership and corrected aggregate | [LLM-with-rules component audit](experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md) |
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
 
@@ -30,7 +31,8 @@
 | Package boundaries | [software design](design/architecture.md) |
 | Data and split rules | [data rules](design/data_contract.md) and [Gan split rules](design/gan2026_split_protocol.md) |
 | Component attribution | [component attribution](design/component_evidence_attribution_architecture.md) |
-| Model policy | [model policy](design/model_strategy.md) |
+| Final ExECT family ownership | [decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md) |
+| Model policy and final six-model roster | [model policy](design/model_strategy.md) and [decision 0039](decisions/0039-final-exect-six-model-roster.md) |
 | Evidence metric | [evidence groundedness](reference/evidence_groundedness_metric.md) |
 | Procedures | [runbooks](runbooks/) |
 

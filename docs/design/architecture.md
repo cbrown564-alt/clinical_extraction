@@ -50,6 +50,22 @@ The first saved implementation,
 through these objects without changing behavior. Its identifier remains only
 for saved-evidence compatibility.
 
+## Final ExECT LLM-with-rules ownership
+
+The final model comparison is model-led at the input to each main family:
+
+| Family | Model supplies | Deterministic code may do | Deterministic code must not do |
+| --- | --- | --- | --- |
+| Diagnosis | Concepts, assertions, and evidence | Normalize and apply recorded heading, boundary, and residual recovery | Substitute a rules-only diagnosis result |
+| Seizure Frequency | Structured frequency facts and evidence | Project model-selected operands and suppress unsupported states | Union an independent deterministic extractor into the answer |
+| Prescription | Medication regimen facts and evidence | Normalize, split supported regimens, remove unsupported facts, and apply bounded repair | Substitute the deterministic all-entity or Prescription extractor |
+| Investigations | Findings and evidence | Validate, normalize, and deduplicate | Substitute an independent deterministic extractor |
+
+Rules that change a clinical fact remain prediction owners and make that fact
+hybrid. The attribution record must preserve those changes instead of crediting
+the final result entirely to the model. See
+[decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+
 ## Deterministic rule groups
 
 - `general`: dates, durations, intervals, sections, and evidence checks;

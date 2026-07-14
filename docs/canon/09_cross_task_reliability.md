@@ -1,6 +1,6 @@
 # 09 — Reliability across tasks
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 | Component removed | ExECT dev140 score change | Gan validation750 score change |
 | --- | ---: | ---: |
@@ -14,7 +14,9 @@ tests.
 Gan retains aggregate evidence for grounding, calibration, review routing,
 consistency, distribution shifts, and runtime behavior. ExECT retains the
 internal calibration probe and three-model results. No selected ExECT report
-tests the Gan unknown-versus-rate problem or broad self-consistency.
+tests the Gan unknown-versus-rate problem or broad self-consistency. The
+historical DeepSeek result has no recorded thinking state and is audit-only;
+the final paper will report only thinking-enabled DeepSeek V4 Flash.
 
 Cross-task overconfidence, out-of-sample confidence, and low-burden review
 policies remain open. Every final reliability result must state its dataset,

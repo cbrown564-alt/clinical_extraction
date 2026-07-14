@@ -1,6 +1,6 @@
 # Current research summaries
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 These files give the shortest maintained account of the software, evidence,
 scoring, and paper claims. Detailed experiment history remains in Git.

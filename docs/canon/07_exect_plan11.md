@@ -1,6 +1,6 @@
 # 07 — ExECT results
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 The main ExECT comparison covers diagnosis, seizure frequency, prescriptions,
 and investigations.
@@ -10,18 +10,52 @@ and investigations.
 | Rules only, all nine entities | dev140 | strict item F1 0.3548 | Rules baseline |
 | Rules only, all nine entities | dev140 | all-features macro item F1 0.6020 | Paper-derived metric development result |
 | GEPA LLM only | dev140 | clinical fact F1 0.7393 | Negative comparison |
-| LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Current development reference |
+| LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Historical development control; deterministic Prescription producer and SF union do not meet decision 0040 |
 
-## Three-model results using the same main pipeline
+## Historical three-model results
 
 | Model | Full200 clinical fact F1 | Limit |
 | --- | ---: | --- |
 | GPT-4.1-mini | 0.8356 | Development-inclusive aggregate |
-| DeepSeek chat | 0.8566 | Development-inclusive aggregate |
+| DeepSeek V4 Flash, historical run | 0.8566 | Development-inclusive aggregate; thinking state not recorded, so not final-report eligible |
 | Qwen 3.6:35b, repair v02 | 0.8197 | Diagnostic aggregate |
 
 This is not the planned six-model comparison. Full200 contains dev140 and
-held-out test60, so it is not an independent holdout.
+held-out test60, so it is not an independent holdout. The final roster is
+GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen
+3.6:35B, and local Gemma 4 26B. DeepSeek V4 Flash uses the
+`deepseek/deepseek-chat` API identifier, but only a thinking-enabled result will
+be reported for that model. The retained row does not record the thinking
+state, so it does not yet satisfy the final condition. See
+[decision 0039](../decisions/0039-final-exect-six-model-roster.md).
+
+The historical rows also do not measure one consistent model-led method.
+Prescription was supplied by the deterministic Prescription producer, and
+Seizure Frequency included a union with an independent deterministic
+extractor. The old Prescription and Seizure Frequency columns must not be used
+as model-to-model results.
+
+## Corrected model-led architecture candidates
+
+[Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
+requires the named model to supply the candidate facts for all four main
+families. It permits attributable deterministic correction but prohibits the
+Prescription substitution and Seizure Frequency extractor union.
+
+A no-call full200 aggregate audit produced these candidate compatibility
+scores from saved outputs:
+
+| Model | Overall | Diagnosis | Seizure frequency | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.8700 | 0.8614 |
+| DeepSeek V4 Flash API run, thinking state unrecorded | 0.8543 | 0.8789 | 0.7146 | 0.9057 | 0.9091 |
+| Qwen 3.6:35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.9220 | 0.8548 |
+
+These use the current `clinical_headline` scorer and are
+development-inclusive, aggregate-only, and unpromoted. They are not final
+six-model results. Seizure Frequency promotion additionally requires the
+`state_profile` score from decision 0037. See the
+[component audit](../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md).
 
 The selected internal calibration result reports full200 Brier 0.2225, base-rate
 Brier 0.2340, and ECE 0.0587. It does not validate model-reported confidence or
@@ -50,6 +84,8 @@ to 0.6210 and is rejected. These are inspected dev140 development results; none
 is promoted and test60 was not inspected. See the
 [component comparison](../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md).
 
-Remaining work: out-of-sample model-reported confidence and the strict
-six-model comparison. Independent clinical review is still required for
-clinical-validity claims about the Diagnosis interpretation decisions.
+Remaining work: materialize and verify the decision-0040 configurations, then
+run the strict six-model comparison using the roster in decision 0039 and
+evaluate model-reported confidence out of sample. Independent clinical review
+is still required for clinical-validity claims about the Diagnosis
+interpretation decisions.

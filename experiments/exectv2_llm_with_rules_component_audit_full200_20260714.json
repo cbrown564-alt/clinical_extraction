@@ -1,0 +1,75 @@
+{
+  "schema_version": "exectv2_llm_with_rules_component_audit_v1",
+  "date": "2026-07-14",
+  "source_commit": "14bce05632d3faae056427686e88c5fb71f55bc5",
+  "source_outputs_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+  "dataset": "ExECTv2",
+  "split": "full200",
+  "row_policy": "aggregate_only_no_test60_or_full200_row_inspection",
+  "call_mode": "saved_output_replay_only",
+  "new_model_calls": 0,
+  "gold_changed": false,
+  "scorer_changed": false,
+  "scorer": "clinical_headline current code at source_commit",
+  "intended_method": "Each named model supplies the clinical facts. Deterministic code may apply attributable post-extraction projection, normalization, suppression, repair, or bounded rescue, but may not substitute an independent rules-only extractor or another model.",
+  "recorded_table": {
+    "GPT-4.1-mini": {"overall": 0.8356, "diagnosis": 0.8397, "seizure_frequency": 0.7525, "prescription": 0.8926, "investigations": 0.8563},
+    "DeepSeek chat": {"overall": 0.8566, "diagnosis": 0.8708, "seizure_frequency": 0.7602, "prescription": 0.8926, "investigations": 0.9091},
+    "Qwen 3.6 35B repair v02": {"overall": 0.8197, "diagnosis": 0.8307, "seizure_frequency": 0.7020, "prescription": 0.8926, "investigations": 0.8503}
+  },
+  "intended_model_led_replay": {
+    "GPT-4.1-mini": {
+      "scores": {"overall": 0.8171, "diagnosis": 0.8583, "seizure_frequency": 0.6501, "prescription": 0.8700, "investigations": 0.8614},
+      "final_fact_origins": {
+        "diagnosis": {"model": 529, "deterministic_rescue": 68},
+        "seizure_frequency": {"model": 259, "deterministic_rescue": 0},
+        "prescription": {"model": 395, "deterministic_rescue": 10},
+        "investigations": {"model": 158, "deterministic_rescue": 0}
+      },
+      "seizure_frequency_post_model_actions": {"projection": 29, "suppression": 3}
+    },
+    "DeepSeek chat": {
+      "scores": {"overall": 0.8543, "diagnosis": 0.8789, "seizure_frequency": 0.7146, "prescription": 0.9057, "investigations": 0.9091},
+      "final_fact_origins": {
+        "diagnosis": {"model": 570, "deterministic_rescue": 50},
+        "seizure_frequency": {"model": 272, "deterministic_rescue": 0},
+        "prescription": {"model": 301, "deterministic_rescue": 12},
+        "investigations": {"model": 158, "deterministic_rescue": 0}
+      },
+      "seizure_frequency_post_model_actions": {"projection": 24, "suppression": 4}
+    },
+    "Qwen 3.6 35B repair v02": {
+      "scores": {"overall": 0.8234, "diagnosis": 0.8520, "seizure_frequency": 0.6343, "prescription": 0.9220, "investigations": 0.8548},
+      "final_fact_origins": {
+        "diagnosis": {"model": 557, "deterministic_rescue": 63},
+        "seizure_frequency": {"model": 261, "deterministic_rescue": 0},
+        "prescription": {"model": 294, "deterministic_rescue": 12},
+        "investigations": {"model": 166, "deterministic_rescue": 0}
+      },
+      "seizure_frequency_post_model_actions": {"projection": 25, "suppression": 2}
+    }
+  },
+  "prescription_model_only_f1": {
+    "GPT-4.1-mini": 0.8595,
+    "DeepSeek chat": 0.9043,
+    "Qwen 3.6 35B repair v02": 0.9213
+  },
+  "component_decisions": {
+    "diagnosis": "model_led_with_material_deterministic_rescue",
+    "seizure_frequency_recorded_table": "fails_intended_method_due_to_deterministic_extractor_union",
+    "seizure_frequency_intended_replay": "model_led_with_deterministic_projection_and_suppression",
+    "prescription_recorded_table": "fails_intended_method_due_to_deterministic_only_extractor",
+    "prescription_intended_replay": "model_led_with_shared_post_extraction_rules",
+    "investigations": "model_led_thin_adapter"
+  },
+  "scorer_dependency": {
+    "finding": "Per-family clinical_headline recall is entity-agnostic. Changing the SeizureFrequency lane changed Diagnosis recall while the serialized Diagnosis predictions were identical.",
+    "example_aggregate": {
+      "model": "DeepSeek chat",
+      "diagnosis_prediction_sha256_both_runs": "9298a0a106372b62bd0d6853092c3cc984daa149f9bbb260cbcd0325015ce07e",
+      "diagnosis_f1_with_deterministic_sf_union": 0.8801,
+      "diagnosis_f1_without_deterministic_sf_union": 0.8789
+    }
+  },
+  "claim_boundary": "Development-inclusive aggregate replay only. No test60 rows were inspected or used for tuning. Results do not establish an independent holdout or clinical validation."
+}

@@ -1,6 +1,6 @@
 # Inspectable Clinical Extraction from Epilepsy Letters
 
-Updated: 2026-07-14
+Updated: 2026-07-15
 Status: working manuscript
 
 The [paper claim status](../canon/10_paper_provenance.md) limits what this
@@ -19,9 +19,11 @@ Purist-correct predictions. Saved Gan holdout results are 364/450 for the
 single-pass system and 379/450 for a multi-model comparison. On ExECT dev140,
 rules only reached 0.6020 paper-derived all-features macro item F1 (0.3548 under
 the existing strict micro scorer), the GEPA LLM-only negative comparison
-reached 0.7393 clinical fact F1, and the LLM-with-rules method reached 0.9189.
-Three full200 model runs ranged from 0.8197 to 0.8566 clinical fact F1, but used
-different runtime conditions. Replays of saved outputs found normalization
+reached 0.7393 clinical fact F1, and the historical LLM-with-rules development
+control reached 0.9189. That control uses a deterministic Prescription producer
+and a Seizure Frequency extractor union, so it is not the final model-led
+architecture. The fixed six-model comparison is incomplete and its
+paper-facing results are pending. Replays of saved outputs found normalization
 gains on both tasks (+0.0389 ExECT; +0.0293 Gan); the exact-evidence check did
 not change those replay scores. The selected evidence supports a reproducible
 component comparison with explicit data limits and a tested implementation of
@@ -46,7 +48,8 @@ The paper contributes:
 
 1. selected rules-only, LLM-only, and LLM-with-rules results on both tasks;
 2. component-level ownership of clinical and formatting decisions;
-3. saved aggregate Gan holdout evidence and a three-model ExECT study; and
+3. saved aggregate Gan holdout evidence and partial ExECT model-transfer evidence;
+   and
 4. recorded prompts, scorers, splits, repairs, runtimes, dependencies, and hashes.
 
 ## 2. Related work
@@ -80,6 +83,12 @@ test60 and is therefore not an independent holdout.
 Gan's selected combined method uses one model call to extract structured events,
 then deterministic normalization and scoring. ExECT combines entity-specific
 extractors and deterministic transforms before scoring.
+
+For the final ExECT model comparison, the named model must supply the candidate
+facts for all four main families. Deterministic clinical changes remain
+attributed, but an independent Prescription or Seizure Frequency extractor
+cannot replace or be unioned into the named model's answer. The retained `v08`
+run predates and does not satisfy this final ownership boundary.
 
 ### 3.3 Scores
 
@@ -119,7 +128,7 @@ This rule does not authorize model calls.
 | --- | --- | --- | ---: | --- |
 | ExECTv2 | Rules only | dev140 | all-features macro item F1 0.6020 | Paper-derived metric development reference; strict micro item F1 0.3548 |
 | ExECTv2 | LLM only | dev140 | clinical fact F1 0.7393 | GEPA negative development comparison |
-| ExECTv2 | LLM with rules | dev140 | clinical fact F1 0.9189 | Current development reference |
+| ExECTv2 | Historical LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Reproducible development control; not the final model-led family architecture |
 | Gan 2026 | Rules only | validation750 | 697/750 Purist | Development comparison |
 | Gan 2026 | LLM only | validation750 | 581/750 Purist | Development comparison |
 | Gan 2026 | LLM with rules | validation750 | 661/748 rendered Purist | Development comparison |
@@ -128,7 +137,9 @@ All six runs replay from selected files without model calls. The ExECT combined
 method also returns evidence-valid F1 0.8913. Its legacy benchmark/CUI companion
 replays at 0.4791 versus 0.4729 in the saved run; that diagnostic does not define
 the new paper-derived rules-only result and does not affect the reproduced
-0.9189 clinical fact score.
+0.9189 clinical fact score. Its deterministic Prescription producer and
+Seizure Frequency extractor union are now disclosed architecture limits, not
+model contributions.
 
 ### 4.2 ExECT paper-derived metric replay
 
@@ -162,17 +173,27 @@ Matched prompt/completion tokens, cost, wall time, hardware, and cache telemetry
 were not retained. These runs therefore support a quality-versus-model-pass
 comparison, not measured token, dollar, energy, or latency efficiency.
 
-### 4.4 ExECT three-model results
+### 4.4 Planned final ExECT model comparison
 
 | Model condition | Overall | Diagnosis | Seizure frequency | Prescription | Investigations | Call / parse failures |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| DeepSeek chat | 0.8566 | 0.8708 | 0.7602 | 0.8926 | 0.9091 | 0 / 1 |
-| GPT-4.1-mini | 0.8356 | 0.8397 | 0.7525 | 0.8926 | 0.8563 | 0 / 0 |
-| Qwen 3.6 35B, repair v02 | 0.8197 | 0.8307 | 0.7020 | 0.8926 | 0.8503 | 0 / 0 |
+| GPT-4.1-mini | Pending | Pending | Pending | Pending | Pending | Pending |
+| GPT-5.6 Luna | Pending | Pending | Pending | Pending | Pending | Pending |
+| GPT-5.6 Sol | Pending | Pending | Pending | Pending | Pending | Pending |
+| DeepSeek V4 Flash, thinking enabled | Pending | Pending | Pending | Pending | Pending | Pending |
+| Qwen 3.6:35B, local | Pending | Pending | Pending | Pending | Pending | Pending |
+| Gemma 4 26B, local | Pending | Pending | Pending | Pending | Pending | Pending |
 
-These are full200 development-inclusive aggregates. They do not form a strict
-same-prompt comparison: GPT used temperature 0.3, and Qwen used a shorter prompt
-and output repair. Three further model conditions remain to be specified.
+Decision 0039 fixes the six model conditions. Decision 0040 requires each
+named model to supply Diagnosis, Seizure Frequency, Prescription, and
+Investigations facts, followed only by attributable deterministic correction.
+The historical GPT, DeepSeek, and Qwen rows are excluded: their Prescription
+column was deterministic-only and their Seizure Frequency column included an
+independent extractor union. Corrected saved-output aggregates remain
+unpromoted candidates until durable configurations reproduce them and pass the
+attribution, `state_profile`, regression, schema/evidence, and retained-evidence
+checks. DeepSeek uses `deepseek/deepseek-chat` with thinking enabled and is
+reported as DeepSeek V4 Flash.
 
 ### 4.5 Component replays
 
@@ -199,16 +220,21 @@ adopted. No selected report supports a cross-task over-reading claim.
 
 ## 5. Discussion
 
-The repository can replay six selected runs while preserving which component
-made each clinical decision. On ExECT's internal clinical fact score, the
-combined method exceeds the selected rules-only and LLM-only development
-references. Those three results do not share the paper-derived metric views, so
-they cannot establish strict benchmark superiority. The rules-only replay does
+The repository can replay six selected runs while preserving component
+provenance. On ExECT's internal clinical fact score, the historical `v08`
+control exceeds the selected rules-only and LLM-only development references,
+but its Prescription and Seizure Frequency ownership does not meet the final
+model-led architecture. Those three results also do not share the
+paper-derived metric views, so they cannot establish strict benchmark
+superiority. The rules-only replay does
 show that CUI matching recovers surface-form variation, but feature completion
 remains a larger limitation than identifier coverage.
 
-The ExECT pipeline ran with three different model providers. Runtime differences
-and the incomplete model set limit the conclusion to those named runs.
+Historical ExECT artifacts ran with three different model providers, but the
+DeepSeek run did not record its thinking state and is excluded from the
+paper-facing comparison. The historical Prescription and Seizure Frequency
+columns are also excluded from model comparison. Runtime differences and the
+incomplete corrected panel prevent a model-ordering conclusion.
 Normalization helped on both development replays. The exact-evidence result
 shows why a component cannot be judged by aggregate score alone: its rejection
 and repair behavior require direct tests.
@@ -222,16 +248,21 @@ and repair behavior require direct tests.
   not reproduce the original ExECT system, annotation process, or reported
   0.87/0.90 validation scores.
 - A legacy ExECT benchmark/CUI companion has a small unresolved scorer difference.
-- The model study covers three of six planned conditions and uses different runtimes.
+- The selected `v08` control does not meet the final model-led family ownership
+  boundary because Prescription is deterministic and Seizure Frequency uses an
+  independent extractor union.
+- The model study does not yet cover the fixed six-model roster and uses
+  different runtimes; the historical DeepSeek thinking state is also unresolved.
 - Model-reported confidence and low-burden review routing are not validated.
 - Annotation findings were reviewed internally, not by an independent clinical team.
 - The selected evidence does not support a cross-task over-reading claim.
 
 ## 7. Conclusion
 
-The selected results support an inspectable comparison of rules-only, LLM-only,
-and LLM-with-rules methods on two tasks, saved Gan holdout results, and three
-named ExECT model runs. They do not yet support strict ExECT benchmark
+The selected results support an inspectable historical comparison of
+rules-only, LLM-only, and LLM-with-rules methods on two tasks and saved Gan
+holdout results. They expose why the final ExECT model comparison requires a
+corrected family architecture. They do not yet support strict ExECT benchmark
 score reproduction, a six-model conclusion, or independent clinical validation.
 
 ## References
