@@ -237,6 +237,106 @@ def test_model_swap_parity_fails_when_component_graph_changes(tmp_path: Path) ->
     assert parity["mismatched_candidates"] == ["swap_changed"]
 
 
+def test_model_led_contract_accepts_model_owned_prescription_and_pre_union_sf(
+    tmp_path: Path,
+) -> None:
+    rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
+    path = _write_config(
+        tmp_path,
+        candidate_id="swap_model_led",
+        model="openai/gpt-4.1-mini",
+        model_label="GPT-4.1-mini",
+        artifact=rows,
+        model_led=True,
+    )
+
+    config = model_swap.load_model_swap_config(path)
+
+    assert model_swap.validate_model_led_architecture(config) == {
+        "contract": "decision_0040_model_led",
+        "status": "pass",
+        "violations": [],
+    }
+
+
+def test_model_led_contract_rejects_historical_family_substitutions(tmp_path: Path) -> None:
+    rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
+    path = _write_config(
+        tmp_path,
+        candidate_id="swap_historical",
+        model="openai/gpt-4.1-mini",
+        model_label="GPT-4.1-mini",
+        artifact=rows,
+    )
+
+    config = model_swap.load_model_swap_config(path)
+    result = model_swap.validate_model_led_architecture(config)
+
+    assert result["status"] == "fail"
+    assert result["violations"] == [
+        "SeizureFrequency must use producer 'sf_model_projection_suppression'.",
+        "Prescription must use the named model producer "
+        "'structured_key_family_event_ledger'.",
+        "Replayed component 'sf_union_arbitration' is prohibited by decision 0040.",
+        "Replayed component 'prescription_deterministic_repair' is prohibited by "
+        "decision 0040.",
+    ]
+
+
+def test_model_led_sf_chain_stops_before_independent_extractor_union(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    structured = tmp_path / "candidate_structured.jsonl"
+    output = tmp_path / "candidate_sf_unknown_suppression.jsonl"
+    calls: list[tuple[str, Path]] = []
+
+    monkeypatch.setattr(
+        runner,
+        "_write_sf_structured_direct_artifact",
+        lambda **kwargs: calls.append(("direct", kwargs["output"])),
+    )
+    monkeypatch.setattr(
+        runner.sf_projection,
+        "read_rows",
+        lambda path: calls.append(("projection_read", path)) or [],
+    )
+    monkeypatch.setattr(
+        runner.sf_projection,
+        "write_rows_and_report",
+        lambda rows, **kwargs: calls.append(("projection_write", kwargs["jsonl_path"])),
+    )
+    monkeypatch.setattr(
+        runner.sf_suppression,
+        "read_rows",
+        lambda path: calls.append(("suppression_read", path)) or [],
+    )
+    monkeypatch.setattr(
+        runner.sf_suppression,
+        "write_rows_and_report",
+        lambda rows, **kwargs: calls.append(("suppression_write", kwargs["jsonl_path"])),
+    )
+    monkeypatch.setattr(
+        runner.sf_union,
+        "write_rows_and_report",
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("union must not run")),
+    )
+
+    runner._run_model_led_sf_chain(
+        structured_jsonl=structured,
+        sf_output_jsonl=output,
+        letters=[],
+    )
+
+    assert calls == [
+        ("direct", tmp_path / "candidate_sf_structured_direct.jsonl"),
+        ("projection_read", tmp_path / "candidate_sf_structured_direct.jsonl"),
+        ("projection_write", tmp_path / "candidate_sf_state_projection_combined.jsonl"),
+        ("suppression_read", tmp_path / "candidate_sf_state_projection_combined.jsonl"),
+        ("suppression_write", output),
+    ]
+
+
 def test_model_swap_runner_passes_api_base_to_live_components(monkeypatch, tmp_path: Path) -> None:
     captured: dict[str, str | None] = {}
 
@@ -403,6 +503,7 @@ def _write_config(
     replayed_components: list[str] | None = None,
     split: str = "toy",
     row_count: int = 2,
+    model_led: bool = False,
 ) -> Path:
     payload = {
         "candidate_id": candidate_id,
@@ -421,15 +522,29 @@ def _write_config(
             "structured_key_family_event_ledger",
             "diagnosis_decomposer",
         ],
+        "architecture_contract": (
+            "decision_0040_model_led" if model_led else "historical_same_core"
+        ),
+        "diagnosis_resolution_candidate": model_led,
         "replayed_components": replayed_components
-        or [
-            "sf_structured_direct_adapter",
-            "sf_state_projection",
-            "sf_unknown_suppression",
-            "sf_union_arbitration",
-            "prescription_deterministic_repair",
-            "finding_assembly",
-        ],
+        or (
+            [
+                "sf_structured_direct_adapter",
+                "sf_state_projection",
+                "sf_unknown_suppression",
+                "prescription_dictionary_lens",
+                "finding_assembly",
+            ]
+            if model_led
+            else [
+                "sf_structured_direct_adapter",
+                "sf_state_projection",
+                "sf_unknown_suppression",
+                "sf_union_arbitration",
+                "prescription_deterministic_repair",
+                "finding_assembly",
+            ]
+        ),
         "claim_boundary": "toy model swap",
         "run_command": "python scripts/run_exectv2_2call_model_swap.py",
         "assembly": {
@@ -460,6 +575,12 @@ def _write_config(
                     "ownership_label": "toy_sf",
                     "source_lane": "toy_sf",
                 },
+                "sf_model_projection_suppression": {
+                    "kind": "saved_jsonl",
+                    "artifact": str(artifact),
+                    "ownership_label": "toy_model_sf_projection_suppression",
+                    "source_lane": "toy_model_sf_projection_suppression",
+                },
                 "prescription_deterministic_repair": {
                     "kind": "saved_jsonl",
                     "artifact": str(artifact),
@@ -475,16 +596,24 @@ def _write_config(
                     "ownership_label": "toy_dx",
                 },
                 "SeizureFrequency": {
-                    "producer": "sf_structured_union",
-                    "lens": "sf_state_direct_v01",
-                    "source_lane": "toy_sf",
-                    "ownership_label": "toy_sf",
+                    "producer": (
+                        "sf_model_projection_suppression" if model_led else "sf_structured_union"
+                    ),
+                    "lens": "sf_state_projection_suppression_v01",
+                    "source_lane": "toy_model_sf",
+                    "ownership_label": "toy_model_sf",
                 },
                 "Prescription": {
-                    "producer": "prescription_deterministic_repair",
-                    "lens": "prescription_regimen_v01",
-                    "source_lane": "toy_rx",
-                    "ownership_label": "toy_rx",
+                    "producer": (
+                        "structured_key_family_event_ledger"
+                        if model_led
+                        else "prescription_deterministic_repair"
+                    ),
+                    "lens": (
+                        "prescription_dictionary_v09" if model_led else "prescription_regimen_v01"
+                    ),
+                    "source_lane": "toy_model_rx" if model_led else "toy_rx",
+                    "ownership_label": "toy_model_rx" if model_led else "toy_rx",
                 },
                 "Investigations": {
                     "producer": "structured_key_family_event_ledger",
