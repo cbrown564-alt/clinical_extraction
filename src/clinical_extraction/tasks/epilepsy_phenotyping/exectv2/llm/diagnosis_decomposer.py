@@ -24,14 +24,16 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedMention,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     MentionRecord,
-    _has_blocking_parse_issue,
     check_evidence,
+    has_blocking_parse_issue,
     parse_extraction_json,
     raw_output_from_adapter_parse_error,
     repair_attributes,
-    write_jsonl,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.replay_rows import (
     reconstruct_gold_letters,
@@ -575,7 +577,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         "examples": n,
         "call_failures": sum(bool(row.get("call_error")) for row in rows),
         "parse_failures": sum(
-            _has_blocking_parse_issue(row.get("parse_errors")) for row in rows
+            has_blocking_parse_issue(row.get("parse_errors")) for row in rows
         ),
         "n_draft_mentions": sum(int(row.get("n_draft_mentions", 0)) for row in rows),
         "n_diagnosis_spans": sum(int(row.get("n_diagnosis_spans", 0)) for row in rows),

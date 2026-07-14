@@ -30,8 +30,9 @@ clinical_rules:
 - When a seizure-type/frequency line says 'seizures every ... possibly focal onset', emit 'focal onset
   epilepsy' with Certainty='3'.
 - Use the exact abbreviation as text when the source says JME; do not write 'possible JME' as text.
-- 'For discontinuous syndrome wording, render the normalized concept: ''epilepsy - probable focal'' ->
-  ''focal epilepsy''; ''probable temporal'' in an epilepsy diagnosis context -> ''temporal lobe epilepsy''.'
+- 'For discontinuous syndrome wording, render the normalized concept: write ''epilepsy - probable focal''
+  as ''focal epilepsy'', and write ''probable temporal'' in an epilepsy diagnosis context as ''temporal
+  lobe epilepsy''.'
 - 'Keep named seizure types when they are asserted as seizure diagnoses: focal seizures, focal seizures
   with altered awareness, focal to bilateral convulsive seizures, tonic clonic seizures, secondary generalised
   tonic clonic seizures, complex partial seizures, absence seizures, and bilateral convulsive seizure.'
@@ -42,8 +43,8 @@ clinical_rules:
   evidence strings.
 - 'Apply the same no-deduplication rule to other named seizure types: if two different source spans independently
   assert focal seizures or focal to bilateral convulsive seizures, return both mentions.'
-- 'Use normalized seizure-type text for scoring-facing Diagnosis mentions: ''generalised tonic clonic
-  seizures'' -> ''tonic clonic seizures''; ''single focal seizure'' -> ''focal seizure''. Use plural ''tonic
+- 'Use normalized seizure-type text for Diagnosis mentions: write ''generalised tonic clonic seizures''
+  as ''tonic clonic seizures'', and write ''single focal seizure'' as ''focal seizure''. Use plural ''tonic
   clonic seizures'' for recurring, plural, or frequency-context tonic-clonic events.'
 - Use singular seizure-type text when the source explicitly says one event, such as 'a generalised tonic
   clonic seizure' or 'a bilateral convulsive seizure'. Do not pluralize those one-off mentions.
@@ -87,7 +88,7 @@ clinical_rules:
   possible JME, emit JME with Certainty='3' and omit myoclonic jerks.
 - Do not emit dissociative, non-epileptic, or psychogenic events as an epileptic Diagnosis unless the
   evidence explicitly states they are epileptic seizures.
-- For this benchmark-facing Diagnosis target, omit dissociative seizures even when they appear in a Diagnosis
+- For this Diagnosis extraction task, omit dissociative seizures even when they appear in a Diagnosis
   list; they are not an epileptic Diagnosis mention.
 - Do not emit febrile seizures as a current epilepsy Diagnosis when they are described as remote childhood
   history or absence of history.

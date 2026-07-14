@@ -29,9 +29,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    _has_blocking_parse_issue,
-    write_jsonl,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    has_blocking_parse_issue,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
     KEY_ENTITY_ITEM_F1_TARGET,
@@ -70,6 +69,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     source_near_diagnostic,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
+)
 
 
 def run_split(
@@ -226,7 +228,7 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     return {
         "examples": n,
         "call_failures": sum(bool(r.get("call_error")) for r in rows),
-        "parse_failures": sum(_has_blocking_parse_issue(r.get("parse_errors")) for r in rows),
+        "parse_failures": sum(has_blocking_parse_issue(r.get("parse_errors")) for r in rows),
         "n_events_raw": sum(int(r.get("n_events_raw", 0)) for r in rows),
         "n_mentions_raw": n_mentions_raw,
         "n_mentions_scored": sum(int(r.get("n_mentions_scored", 0)) for r in rows),

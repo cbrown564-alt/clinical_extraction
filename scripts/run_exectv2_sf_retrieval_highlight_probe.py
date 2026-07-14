@@ -62,9 +62,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
     CHANGE_RULES,
     TEMPORAL_RULES,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.llm_only_single_pass import (
-    write_jsonl,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     extract_json_object,
 )
@@ -73,6 +70,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_frequency_state,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+    write_jsonl_rows as write_jsonl,
+)
 
 RUN_DATE = date.today().isoformat().replace("-", "")
 ROOT = Path(__file__).resolve().parents[1]

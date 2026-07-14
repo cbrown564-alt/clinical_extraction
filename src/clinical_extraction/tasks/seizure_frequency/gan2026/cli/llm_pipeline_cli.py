@@ -152,15 +152,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
             default=spec.default_structured_event_jsonl_path,
             help="Saved structured-event JSONL artifact to use as the V0 input substrate.",
         )
-    if pipeline_args.pipeline == "agentic_matched_budget":
-        parser.add_argument(
-            "--conditions",
-            default=None,
-            help=(
-                "Comma-separated agentic conditions to run. Defaults to all "
-                "predeclared matched-budget conditions."
-            ),
-        )
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
@@ -286,8 +277,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         run_kwargs["candidate_set_jsonl_path"] = args.candidate_set_jsonl
     if spec.default_structured_event_jsonl_path is not None:
         run_kwargs["structured_event_jsonl_path"] = args.structured_event_jsonl
-    if pipeline_args.pipeline == "agentic_matched_budget" and args.conditions:
-        run_kwargs["conditions"] = _parse_agentic_conditions(args.conditions, parser)
     rows, metadata = (
         spec.run_split(records_to_run, **run_kwargs) if records_to_run else ([], {"summary": {}})
     )
@@ -322,28 +311,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
     print(json.dumps(metadata["summary"], sort_keys=True))
-
-
-def _parse_agentic_conditions(
-    value: str,
-    parser: argparse.ArgumentParser,
-) -> list[str]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
-        DEFAULT_CONDITIONS,
-    )
-
-    conditions = [condition.strip() for condition in value.split(",") if condition.strip()]
-    invalid = [condition for condition in conditions if condition not in DEFAULT_CONDITIONS]
-    if invalid:
-        parser.error(
-            "unknown --conditions value(s): "
-            + ", ".join(invalid)
-            + "; valid values are: "
-            + ", ".join(DEFAULT_CONDITIONS)
-        )
-    if not conditions:
-        parser.error("--conditions must include at least one condition")
-    return conditions
 
 
 def _parse_requested_source_indices(

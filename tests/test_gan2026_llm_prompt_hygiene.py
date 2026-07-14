@@ -4,10 +4,10 @@ import pytest
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_per_entity as exectv2_per_entity,
+    diagnosis_decomposer as exectv2_diagnosis,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_only_single_pass as exectv2_single_pass,
+    llm_only_key_entities_structured as exectv2_structured,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -16,7 +16,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     hybrid_structured_events,
     llm_only_canonical_pipeline,
-    llm_only_direct_labeler,
 )
 
 INTERNAL_MODEL_FACING_PHRASES = (
@@ -80,11 +79,14 @@ def _payload_text(payload: str | dict[str, object]) -> str:
 @pytest.mark.parametrize(
     ("name", "builder", "arg"),
     [
-        ("llm_only_direct_labeler", llm_only_direct_labeler.build_prompt_input, "_record"),
         ("hybrid_structured_events", hybrid_structured_events.build_prompt_input, "_record"),
         ("llm_only_canonical_pipeline", llm_only_canonical_pipeline.build_prompt_input, "_record"),
-        ("exectv2_single_pass", exectv2_single_pass.build_prompt_input, "_letter"),
-        ("exectv2_per_entity", exectv2_per_entity.build_prompt_input, "_letter"),
+        ("exectv2_structured", exectv2_structured.build_prompt_input, "_letter"),
+        (
+            "exectv2_diagnosis",
+            lambda letter: exectv2_diagnosis.build_prompt_input(letter, []),
+            "_letter",
+        ),
     ],
 )
 def test_llm_model_facing_payloads_do_not_expose_internal_protocol_language(
