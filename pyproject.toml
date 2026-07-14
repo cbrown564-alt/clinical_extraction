@@ -12,33 +12,20 @@ license = { text = "Proprietary" }
 authors = [{ name = "Clinical Extraction Contributors" }]
 dependencies = [
   "dspy>=2.5.0",
-  "fastapi>=0.111.0",
   "pydantic>=2.7.0",
   "pandas>=2.2.0",
   "jupyter>=1.0.0",
-  "uvicorn>=0.30.0",
-  "mlflow>=3.14.0",
 ]
 
 [project.scripts]
 gan2026-llm-experiment = "clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli:main"
-gan2026-state-graph-diagnostics = "clinical_extraction.tasks.seizure_frequency.gan2026.experiments.state_graph_diagnostics:main"
-gan2026-atlas-hard-slice-diagnostic = "clinical_extraction.tasks.seizure_frequency.gan2026.artifact_analysis.atlas_hard_slice_diagnostic:main"
-clinical-extraction-observatory = "clinical_extraction.observatory.server:main"
-clinical-extraction-mlflow-sync = "clinical_extraction.core.mlflow_sync_cli:main"
-clinical-extraction-mlflow-doctor = "clinical_extraction.core.mlflow_doctor:main"
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0.0",
   "ruff>=0.5.0",
   "mypy>=1.10.0",
-  "httpx2>=2.0.0",
 ]
-mlops = [
-  "mlflow>=3.0.0",
-]
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/clinical_extraction"]
 
