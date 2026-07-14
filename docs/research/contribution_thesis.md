@@ -47,7 +47,7 @@ from disappearing into an undifferentiated method description.
 
 ## Paper outputs
 
-The final evidence should include method comparisons for both tasks, component
+The final evidence must include method comparisons for both tasks, component
 and rule-group ablations, error counts and examples, task-appropriate scores,
 evidence and schema validity, repair rates, confidence results, and worked
 examples of successful and failed temporal reasoning.

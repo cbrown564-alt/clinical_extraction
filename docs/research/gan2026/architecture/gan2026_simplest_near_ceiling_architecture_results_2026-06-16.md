@@ -6,7 +6,7 @@ Companion results report to the plan
 `gan2026_simplest_near_ceiling_architecture_plan_2026-06-16.md`, and follow-on to
 the night synthesis `gan2026_f1_dynamic_workflow_night_synthesis_2026-06-16.md`
 which accepted **379/450 = 0.842 Purist (test450)** as the honest accuracy ceiling
-for the V12 fresh-evidence hybrid and closed the chase for 0.90.
+for the V12 fresh-evidence LLM-with-rules method and closed the chase for 0.90.
 
 ## Headline
 
@@ -16,12 +16,12 @@ complexity/accuracy frontier and converged on a clear result:
 
 > **The single GPT structured-event pass — one model, no reasoner, no peer
 > ensemble, no guard layer — is the right production architecture. It scores
-> 364/450 = 0.809 on test450, just 3.3pp below the full three-model hybrid
+> 364/450 = 0.809 on test450, just 3.3pp below the full three-model LLM-with-rules method
 > (0.842), and on validation it actually *beats* both the one-model and two-model
 > reasoner variants. The entire reasoner + 3-model-ensemble + guard apparatus buys
 > only +15 test rows, and that value does not decompose into anything cheaper.**
 
-A material provenance caveat applies (see §6): every hybrid/reasoner run here was
+A material provenance caveat applies (see §6): every LLM-with-rules/reasoner run here was
 executed on **full `gpt-4.1`**, not `gpt-4.1-mini`. The architecture conclusions
 are model-invariant (all rungs used the same model), but the absolute numbers are
 full-gpt-4.1 figures and need mini re-validation for the chosen design.
@@ -34,7 +34,7 @@ of distinct model passes, since each upstream model is real operational and
 financial weight. Goal: find the knee of the complexity/accuracy frontier, not a
 single point.
 
-The V12 hybrid that scores 0.842 is concretely: **three upstream structured-event
+The V12 LLM-with-rules method that scores 0.842 is concretely: **three upstream structured-event
 extractions** (GPT, Qwen-3.6-35B, DeepSeek) + **a fourth fresh-evidence reasoner
 pass** that may keep or replace the GPT answer + **a ~6-rule deterministic guard
 layer**. The question was how much of that the score actually needs.
@@ -53,7 +53,7 @@ A complexity ladder was defined, each rung a strict superset of the one below:
 
 ## 3. Results
 
-### 3.1 Replay decomposition of the 3-model hybrid (validation750, no model calls)
+### 3.1 Replay decomposition of the 3-model LLM-with-rules method (validation750, no model calls)
 
 `gan2026_simplest_arch_decomposition_v1_validation750_2026-06-16.md`
 
@@ -102,7 +102,7 @@ row-level inspection):
 | Deterministic floor | 0 | 343/450 = 0.762 |
 | Naive direct labeler (`llm_only`) | 1 | ~323/450 = 0.71 |
 | **GPT structured-event pass** | **1** | **364/450 = 0.809** |
-| Full V12 hybrid (3 + reasoner + guards) | 3+reasoner | 379/450 = 0.842 |
+| Full V12 LLM-with-rules method (3 + reasoner + guards) | 3+reasoner | 379/450 = 0.842 |
 
 **The whole apparatus buys +15 rows (+3.3pp) over a single GPT pass on test** —
 far less than its 2.8pp validation footprint at a much higher base, and with the
@@ -110,7 +110,7 @@ guard layer contributing almost none of it.
 
 ## 4. Analysis
 
-**Where the value is, and is not.** The 0.842 hybrid's advantage over one model is
+**Where the value is, and is not.** The 0.842 LLM-with-rules method's advantage over one model is
 not in its deterministic guards (near-inert, +6/750 val) and not in the reasoner's
 raw cleverness. It is in **cross-model agreement disciplining the model's decision
 to overwrite its own answer.** The reasoner is a free-to-replace agent; given only
@@ -127,7 +127,7 @@ Complexity here is not a monotone ladder toward accuracy — intermediate rungs 
 single pass, and only by +3.3pp on test.
 
 **Validation vs test.** The single pass is 0.881 on val but 0.809 on test (a 7.2pp
-gap); the hybrid is 0.909 → 0.842 (6.7pp). The ensemble's validation edge (2.8pp)
+gap); the LLM-with-rules method is 0.909 → 0.842 (6.7pp). The ensemble's validation edge (2.8pp)
 shrinks to +3.3pp on test in absolute rows (+15). Validation under-samples the
 clinical-wall cases, so guard value and ensemble value can only be trusted from the
 locked split — which is exactly why the test anchor was the highest-information
@@ -168,7 +168,7 @@ trade; a single transparent extraction pass is far more portable to real letters
 ## 6. Model provenance and go-forward stack
 
 **What was actually run.** `build_dspy_lm` performs no model aliasing — it passes
-the model string straight to the API. Every fresh-evidence/hybrid run in this
+the model string straight to the API. Every fresh-evidence/LLM-with-rules run in this
 investigation, and the v0.4 artifacts behind the 0.842 ceiling and the 0.809
 anchor, record `model = openai/gpt-4.1` — i.e. **full gpt-4.1, not gpt-4.1-mini.**
 The "gpt-4.1 ≡ gpt-4.1-mini" equivalence is an unverified assumption inherited from
@@ -180,14 +180,14 @@ with all 750 calls rate-limited and was re-run after the account was refreshed).
 **Go-forward decision (operator directive, 2026-06-16).** The standard model stack
 is **`gpt-4.1-mini` as the main closed model** and **Qwen-3.6-35B as the main local
 model**; **full `gpt-4.1` is too expensive for routine use.** Consequently the
-chosen architecture (single GPT structured-event pass) should be re-validated on
+chosen architecture (single GPT structured-event pass) must be re-validated on
 `gpt-4.1-mini` before any production or benchmark claim, and future cost planning
-should assume mini + Qwen, not full gpt-4.1.
+must assume mini + Qwen, not full gpt-4.1.
 
 **Correction — the single GPT pass was already on mini (verified 2026-06-16, no new
 calls).** The §6 caveat above conflated two distinct passes. The full-`gpt-4.1`
 provenance applies to the **fourth fresh-evidence reasoner pass and the 3-model
-hybrid** — *not* to the GPT structured-event extraction that constitutes the chosen
+LLM-with-rules method** — *not* to the GPT structured-event extraction that constitutes the chosen
 single-pass architecture. Both the validation750 and test450 GPT structured-event
 artifacts that supply the `v0_reference` anchor record `model = openai/gpt-4.1-mini`,
 mode `live`, temperature 0, prompt `gan2026_hybrid_structured_events_v0.5`:
@@ -208,12 +208,12 @@ extraction's model.)
 - **Adopt the single GPT structured-event pass as the production seizure-frequency
   labeler.** One model, no reasoner, no peer ensemble, no guard layer. **364/450 =
   0.809 on the locked split, verified on `gpt-4.1-mini`** (see §6 correction), 3.3pp
-  below the hybrid ceiling, maximally simple and transportable to KCL letters.
+  below the LLM-with-rules ceiling, maximally simple and transportable to KCL letters.
 - **Mini re-validation: DONE.** The chosen pass is already a live `gpt-4.1-mini`
   result on both validation750 (0.881) and test450 (0.809); no new run required. The
   remaining optional item is the **Qwen-3.6-35B local pass** as a fully-local,
   zero-closed-model anchor for portability.
-- **Reserve the 3-model hybrid only if +3.3pp is essential to a specific claim** — it
+- **Reserve the 3-model LLM-with-rules method only if +3.3pp is essential to a specific claim** — it
   has no cheaper form; two models do not suffice.
 - Optional, to close the frontier: the **GPT+Qwen** two-model rung (stronger peer,
   one live cost, peer trace already saved) as the one-peer upper bound. Expected to

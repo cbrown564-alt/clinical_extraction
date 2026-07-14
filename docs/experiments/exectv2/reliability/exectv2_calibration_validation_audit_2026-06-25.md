@@ -6,7 +6,7 @@ Status: aggregate-only calibration validation and stop-rule readout.
 
 ## Preflight
 
-- Surface: rich-schema holistic assembly reliability scorecard
+- Evaluation set: rich-schema holistic assembly reliability scorecard
 - Scorer: `headline_target family-cell correctness`
 - Split: `full-200 aggregate-only validation requested`
 - Code hash: `76d26fae+dirty`
@@ -15,7 +15,7 @@ Status: aggregate-only calibration validation and stop-rule readout.
 ## Frozen Calibration Candidate
 
 - Model type: `grouped_logistic_scoring_rule`
-- Training surface: dev140 rich-schema holistic assembly reliability scorecard
+- Training set: dev140 rich-schema holistic assembly reliability scorecard
 - Development cells: 1719
 - Dev cross-validated ECE: 0.0229
 - Dev cross-validated Brier: 0.1761
@@ -24,9 +24,9 @@ Status: aggregate-only calibration validation and stop-rule readout.
 
 ## Validation Artifact Inventory
 
-| Artifact | Rows | Surface | Eligibility | Reason |
+| Artifact | Rows | Evaluation set | Eligibility | Reason |
 | --- | ---: | --- | --- | --- |
-| `experiments/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.jsonl` | 200 | current-code v08-shape rich-schema holistic assembly | eligible | Accepted for aggregate-only validation of the frozen dev140 grouped calibration scoring rule on the current-code v08-shaped rich-schema holistic assembly surface. |
+| `experiments/exectv2_holistic_finding_assembly_v08_full200_currentcode_gpt41mini_20260624.jsonl` | 200 | current-code v08-shape rich-schema holistic assembly | eligible | Accepted for aggregate-only validation of the fixed dev140 grouped calibration scoring rule on the current-code v08-shaped rich-schema holistic assembly evaluation set. |
 
 ## Aggregate Validation Readout
 
@@ -79,6 +79,6 @@ Status: aggregate-only calibration validation and stop-rule readout.
 
 ## Result
 
-The frozen dev140 calibration scoring rule is promoted as aggregate full-200 validation evidence. The claim is limited to improved calibration evidence on this surface: ECE 0.0587, Brier 0.2225, five populated bins, and per-family ECE reported for every scored family.
+The fixed dev140 calibration scoring rule is promoted as aggregate full-200 validation evidence. The claim is limited to improved calibration evidence on this evaluation set: ECE 0.0587, Brier 0.2225, five populated bins, and per-family ECE reported for every scored family.
 
 Next action: Upgrade scorecard calibration coverage above dev-only status while keeping the claim limited to aggregate full-200 validation, not deployment-ready probability or holdout calibration.

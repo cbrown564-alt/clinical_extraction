@@ -26,7 +26,7 @@ the holdout. The governing split rules are in
 
 ## ExECTv2
 
-`dev140` is the row-inspectable development surface. `test60` is held out from
+`dev140` is the row-inspectable development split. `test60` is held out from
 row-level development. `full200` combines the two and is therefore a
 development-inclusive aggregate audit, not an independent holdout.
 

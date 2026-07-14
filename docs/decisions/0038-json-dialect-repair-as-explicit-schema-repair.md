@@ -29,18 +29,18 @@ schema-validated after a format-only Python-literal parse, and 79 of those rows
 then scored purist-correct.
 
 This is a local-model serialization compliance issue, not a semantic extraction
-change. Closed-model runs may not need this repair, so its effect should remain
+change. Closed-model runs may not need this repair, so its effect must remain
 measurable rather than being absorbed into the headline score.
 
 ## Consequences
 
 - JSON dialect repair is allowed only when it preserves payload semantics and
   still passes the existing schema validators.
-- Reports should keep strict parse/schema/label failures separate from JSON
+- Reports must keep strict parse/schema/label failures separate from JSON
   dialect repairs.
 - Experiment interpretation can compare strict end-to-end results with
   format-repaired content results.
-- Future local-model runs should mention non-zero `json_dialect_repairs` when
+- Future local-model runs must mention non-zero `json_dialect_repairs` when
   discussing structured-output reliability.
 - If dialect repair grows beyond Python-literal recovery, add named repair
   notes for each dialect rather than broadening the existing note silently.

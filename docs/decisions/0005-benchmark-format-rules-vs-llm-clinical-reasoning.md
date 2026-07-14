@@ -7,7 +7,7 @@ Date: 2026-06-02
 Treat arbitrary or dataset-specific Gan 2026 gold-label conventions as
 benchmark-format policy, not necessarily as clinical reasoning failures.
 
-The project may test whether an LLM can learn these conventions, but it should
+The project may test whether an LLM can learn these conventions, but it must
 not assume that moving every benchmark convention into the prompt is the best
 architecture. Some conventions may remain better as explicit deterministic
 post-processing rules when they are arbitrary, stable, auditable, and clearly
@@ -19,7 +19,7 @@ This decision applies especially to conventions such as:
   even though the word can reasonably be interpreted either way in ordinary use;
 - cluster-rendering preferences, where `1 per 4 week cluster` may be clinically
   intelligible but not the exact representation chosen by the gold labels;
-- benchmark-compatible shorthand that rewards a particular surface form rather
+- benchmark-compatible shorthand that rewards a particular label format rather
   than a materially better clinical answer.
 
 ## Context
@@ -39,8 +39,8 @@ clinical interpretation, while the gold label encodes a narrower convention:
   than a flattened or prose-like label.
 
 These distinctions matter for attribution. If deterministic code converts an
-LLM-selected clinical answer into the benchmark's chosen surface form, the
-result should be described as a hybrid or benchmark-adapted development artifact
+LLM-selected clinical answer into the benchmark's chosen label format, the
+result must be described as an LLM-with-rules or benchmark-adapted development artifact
 unless the LLM itself produced the final benchmark-compatible label.
 
 They also matter for prompt design. Adding more rules and examples may improve
@@ -53,7 +53,7 @@ answers.
 
 - Do not call every mismatch with a Gan 2026 gold label a clinically important
   model failure.
-- Separate reports should distinguish:
+- Separate reports must distinguish:
   - clinically wrong selected fact;
   - right evidence but wrong arithmetic/rendering;
   - arbitrary benchmark-format mismatch;
@@ -72,10 +72,10 @@ answers.
 
 ## Evaluation Policy
 
-When testing whether the LLM should absorb a benchmark convention, use a paired
+When testing whether the LLM may absorb a benchmark convention, use a paired
 comparison rather than only aggregate F1:
 
-- same validation surface;
+- same validation set;
 - same saved/raw outputs when possible, or the smallest live validation smoke
   when prompt changes are required;
 - condition A: simpler clinical-reasoning prompt plus explicit deterministic

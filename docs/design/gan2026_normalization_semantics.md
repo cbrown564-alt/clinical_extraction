@@ -35,7 +35,7 @@ Raw labels are preserved unchanged in each record's `raw` field and exposed as
 - lowercase
 - collapse repeated whitespace
 
-This step should not change clinical meaning.
+This step must not change clinical meaning.
 
 ### Semantic Conversion
 
@@ -87,7 +87,7 @@ This project uses the evaluation-script policy for scoring. For example:
 
 is converted as `12 per month`, not `2 per month`.
 
-This is more clinically plausible for a total seizure-frequency target, but results should
+This is more clinically plausible for a total seizure-frequency target, but results must
 state that they use the evaluation-script cluster interpretation.
 
 ## Prediction Repair
@@ -103,7 +103,7 @@ seizure-free since 2020 -> seizure free for multiple year
 2 per 0 month -> unknown
 ```
 
-Prediction repair is benchmark-formatting behavior. It should be measured in experiments
+Prediction repair is benchmark-formatting behavior. It must be measured in experiments
 because heavy repair can hide model-output ambiguity.
 
 ## Clinical Validity
@@ -120,12 +120,12 @@ Clinical limitations:
 - monthly midpoint values are scoring conveniences, not exact clinical facts.
 - seizure-free duration is mostly lost after conversion to `0.0`.
 - vague `multiple` repairs are benchmark-specific heuristics, not clinically grounded counts.
-- `1000.0` should never be interpreted as a real seizure frequency.
-- repaired prediction labels should be reported separately from direct model outputs in paper-facing analysis.
+- `1000.0` must never be interpreted as a real seizure frequency.
+- Repaired prediction labels must be reported separately from direct model outputs in paper-facing analysis.
 
-## Logical Contract
+## Logical separation
 
-Downstream code should treat these as separate concepts:
+Downstream code must treat these as separate concepts:
 
 - semantic state: `FrequencyLabelKind`
 - numeric scoring value: `monthly_frequency`

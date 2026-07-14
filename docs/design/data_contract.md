@@ -41,5 +41,5 @@ See [Gan normalization](gan2026_normalization_semantics.md) for exact conversion
 
 ## Open design question
 
-Decide whether future shared schemas should keep Gan's
+Decide whether future shared schemas must keep Gan's
 `FrequencyLabelKind` names or map them to broader clinical terms.

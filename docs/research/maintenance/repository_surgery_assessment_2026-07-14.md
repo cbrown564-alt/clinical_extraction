@@ -28,8 +28,8 @@ consistently enforce them.
 The right response is deletion-led simplification. The target is:
 
 - one active ExECT control and one minimal Gan operational reproduction path;
-- the smallest deterministic, LLM-only, and hybrid reference configuration or
-  replay contract for each task, so the central three-family comparison remains
+- the smallest deterministic, LLM-only, and LLM-with-rules reference configuration or
+  replay requirements for each task, so the central three-family comparison remains
   reproducible without retaining discarded candidates;
 - the shared clinical, evidence, scoring, and data-contract code those paths use;
 - the evidence required for surviving paper claims, indexed by path and hash;
@@ -91,7 +91,7 @@ The closed Gan agentic modules are no longer installed source. Some large
 retained deterministic and LLM modules may still merit ordinary
 maintainability work, but the oversized retained tests now have invariant-based
 owners. Passing a line-count threshold does not by itself mean retained source
-is coherent; further splits should follow behavior boundaries.
+is coherent; further splits must follow behavior boundaries.
 
 ## High-level findings
 
@@ -112,7 +112,7 @@ paths: it also needs the six minimal family comparators required by the paper.
 
 ### 2. Experiment history has become installed application code
 
-Closed deterministic, LLM-only, hybrid, agentic, verifier, rescue, selector,
+Closed deterministic, LLM-only, LLM-with-rules, agentic, verifier, rescue, selector,
 and model-comparison candidates had remained under `src/clinical_extraction/`.
 The classified closed Gan and ExECT source families are now removed; their
 historical documents and artifacts still need reduction so they do not appear
@@ -225,7 +225,7 @@ A file remains in the primary repository only when at least one of these is
 true:
 
 1. It is required by the selected active ExECT or Gan operational control.
-2. It is required by a minimal deterministic, LLM-only, or hybrid reference
+2. It is required by a minimal deterministic, LLM-only, or LLM-with-rules reference
    configuration/replay for either task.
 3. It enforces a clinical, scoring, evidence, or split invariant used by those
    paths.
@@ -289,7 +289,7 @@ instructions in the retained manifest.
 
 1. Select one active ExECT control and one minimal Gan operational reproduction
    path; list each import, config, scorer, artifact, report, and test closure.
-2. Name the minimal deterministic, LLM-only, and hybrid reference configuration
+2. Name the minimal deterministic, LLM-only, and LLM-with-rules reference configuration
    or replay for each task. These six cells may share code and saved outputs;
    they must not preserve superseded candidate families merely for history.
 3. Map every surviving paper claim in `docs/canon/10_paper_provenance.md` to the
@@ -404,7 +404,7 @@ remain required surgery closeout commands, but are deliberately not duplicated
 in CI until they are added back after the reduced tree is stable.
 
 Running that complete suite exposed a separate artifact-prune defect: four
-producer outputs required by the selected ExECT hybrid replay config had been
+producer outputs required by the selected ExECT LLM-with-rules replay config had been
 deleted in `cdee88e9` after one had already been restored in `5ed75d59`. The four
 inputs are restored, hash-selected in the retained manifest, and covered by a
 config-to-manifest regression test. Four obsolete tests for deleted Gan gap
@@ -460,7 +460,7 @@ project interfaces.
 | Question | Current evidence | Recommended default | Owner document |
 | --- | --- | --- | --- |
 | Which ExECT path survives? | Holistic finding assembly v08 is the current control; the manifest names its replay closure | Keep v08, its direct replay dependencies, and the executable modules required by the frozen six-model comparison | `PROJECT_STATUS.md` |
-| Which Gan path survives? | The manifest names deterministic, LLM-only, and hybrid reference cells; holdout evidence remains aggregate-only | Keep those reference closures and the operational aggregate evidence; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
+| Which Gan path survives? | The manifest names deterministic, LLM-only, and LLM-with-rules reference cells; holdout evidence remains aggregate-only | Keep those reference closures and the operational aggregate evidence; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
 | Does the full-stack Observatory survive? | No required workflow or retained evidence cell depended on it | Removed | `ACTIVE_ROADMAP.md` |
 | Does the frontend survive? | It duplicated report/catalog scope without a required user workflow | Removed with Observatory | `ACTIVE_ROADMAP.md` |
 | Where do large evidence artifacts live? | Five selected replay files dominate the retained tracked payload | Git LFS objects; keep canonical hashes, LFS IDs, sizes, and retrieval metadata in the retained manifest | `docs/experiments/retained_evidence_manifest.json` |
@@ -508,7 +508,7 @@ file names or registry decisions:
 7. **Artifact storage is a separate decision.** The manifest proves canonical
    identity while Git LFS provides content-addressed storage for the five
    largest files; both hashes and retrieval instructions are retained.
-8. **CI should name retained behavior, not surgery history.** Separate frontend,
+8. **CI must name retained behavior, not surgery history.** Separate frontend,
    line-count, candidate-parity, and curated-subset jobs all became false alarms
    after their owners were deleted. During surgery, one full-suite job is easier
    to trust and harder to leave stale.

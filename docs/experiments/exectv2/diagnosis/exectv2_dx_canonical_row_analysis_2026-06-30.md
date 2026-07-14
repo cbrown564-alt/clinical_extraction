@@ -15,7 +15,7 @@ Companions:
   — the SF Phase 7 precedent this analysis mirrors method-for-method.
 - `docs/research/paper_drafts/benchmark_reconciliation_sf_gold_quality_revision_2026-06-29.md`
   — the manuscript revision that gave SF the "mechanism B" (gold-quality ceiling) treatment;
-  Diagnosis did not get the same treatment and this doc shows it should.
+  Diagnosis did not get the same treatment and this doc shows it must.
 
 ## 1. Question
 
@@ -120,7 +120,7 @@ in `_dx_canonical/_adjudication.csv`):
 
 ## 5. Conclusion and implications
 
-**The Diagnosis "0.66 GEPA ceiling, 0.18 below the hybrid" framing in the plateau synthesis
+**The Diagnosis "0.66 GEPA ceiling, 0.18 below the LLM-with-rules method" framing in the plateau synthesis
 overstates genuine model error in the same way the pre-Phase-7 SF framing did.** Counting only
 the 31 genuine errors among the 209 measured disagreements, the model is clinically correct on
 the overwhelming majority of what the official scorer counts against it. This is **not** a
@@ -151,14 +151,14 @@ larger, cleaner win (0.703 → 0.792).
 
 ## 6. Caveats
 
-- This is a **dev140, development-surface** analysis on one cached run
+- This is a **dev140 development-set** analysis on one cached run
   (`exectv2_gepa_multifamily_dedup_gpt41mini_h2mb8_20260628`); `test60` was never touched.
 - Adjudication used five independent reviewers with no cross-checking between batches (unlike
   SF Phase 6, which used a single coherent pass); the taxonomy and worked examples were held
   fixed across batches to bound reviewer drift, but inter-reviewer agreement was not separately
   measured. Spot-checking suggests strong internal consistency (the four mechanisms in §4 recur
   identically across all five independent batches without prompting).
-- Like SF, this number should be read as a band, not a precise decimal — the 85.2% defensible
+- Like SF, this number must be read as a band, not a precise decimal — the 85.2% defensible
   share is large enough that the qualitative conclusion is robust to a few reviewer judgment
   calls going the other way, but the exact percentage is not.
 - No deterministic projection or prompt change was made here; this is a pure measurement /

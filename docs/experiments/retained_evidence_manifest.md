@@ -54,14 +54,14 @@ semantic changes require a new freeze ID and complete replay.
 | --- | --- | --- | --- | --- | --- |
 | ExECTv2 | Rules only | `exectv2_deterministic_all9_dev_20260714` | dev140 | strict benchmark item F1 `0.3548`; evidence validity `1.0` | Incomplete development reference; not the operational control or benchmark reproduction |
 | ExECTv2 | LLM only | `exectv2_gepa_dedup_gpt41mini_h2mb8_20260628` | dev140 | clinical-headline F1 `0.7393` | Negative development comparator; optimizer-only development sub-split used |
-| ExECTv2 | Hybrid | `exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702` | dev140 | clinical-headline F1 `0.9189` | Current development performance control; primary score reproduces, companion CUI scorer currently replays at `0.4791` versus recorded `0.4729` |
+| ExECTv2 | LLM with rules | `exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702` | dev140 | clinical-headline F1 `0.9189` | Current development performance control; primary score reproduces, companion CUI scorer currently replays at `0.4791` versus recorded `0.4729` |
 | Gan 2026 | Rules only | `gan2026_three_way_comparison_validation750_deterministic_canonical_pipeline_gpt41mini_2026-06-07` | validation750 | `697/750` Purist overall; `688/741` among rendered rows | No-call validation comparator |
-| Gan 2026 | LLM only | `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07` | validation750 | `581/750` Purist | Single-pass validation comparator; grounding metric differs from hybrid |
-| Gan 2026 | Hybrid | `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07` | validation750 | `661/748` Purist among rendered rows | Single-call validation reference; frozen operational result is separate |
+| Gan 2026 | LLM only | `gan2026_three_way_comparison_validation750_llm_only_canonical_pipeline_gpt41mini_2026-06-07` | validation750 | `581/750` Purist | Single-pass validation comparator; grounding metric differs from LLM with rules |
+| Gan 2026 | LLM with rules | `gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07` | validation750 | `661/748` Purist among rendered rows | Single-call validation reference; fixed operational result is separate |
 
 These six cells are the minimum scientific comparison set. They do not require
 keeping every prompt, candidate, ablation, report, UI adapter, or runner that led
-to them. The ExECT hybrid cell does require the five saved producer outputs named
+to them. The ExECT LLM-with-rules cell does require the five saved producer outputs named
 by its assembly config; those inputs are selected and hash-checked here.
 
 ## Supporting evidence packages

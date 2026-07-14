@@ -2,7 +2,7 @@
 
 - Generated: `2026-06-25`
 - Architecture core: `exectv2_2call_no_sf_adjudicator_model_swap`
-- Primary surface: `clinical_headline`
+- Primary score: `clinical_headline`
 - Row inspection policy: `aggregate_only_no_full200_or_holdout_row_level_inspection`
 - Overall status: **ready_for_same_core_scorecard_review**
 - Claim boundary: Full-200 aggregate-only same-core validation is complete and accepted with an explicit schema-stability caveat: one Diagnosis parse/schema failure is tolerated, strict benchmark/CUI scores are diagnostic only, and no full-200 row-level failure analysis or tuning is authorized.

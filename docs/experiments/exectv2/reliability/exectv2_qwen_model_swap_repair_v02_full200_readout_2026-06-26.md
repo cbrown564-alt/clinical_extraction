@@ -34,7 +34,7 @@ Artifact:
 Report:
 `experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_structured.md`
 
-| Surface | Rows | Call failures | Blocking parse/schema failures | Evidence validity |
+| Evaluation set | Rows | Call failures | Blocking parse/schema failures | Evidence validity |
 | --- | ---: | ---: | ---: | ---: |
 | structured producer after shared evidence repair | 200 / 200 | 0 | 0 | 0.9950 |
 
@@ -53,7 +53,7 @@ Artifact:
 Report:
 `docs/experiments/exectv2/reliability/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_full200_2026-06-26.md`
 
-| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| Score view | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | clinical_headline | 0.8197 | 0.8307 | 0.7020 | 0.8926 | 0.8503 |
 | evidence_valid | 0.7895 | 0.8307 | 0.5799 | 0.8926 | 0.8503 |

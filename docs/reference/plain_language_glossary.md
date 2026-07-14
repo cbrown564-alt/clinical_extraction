@@ -51,11 +51,11 @@ Do not use a version code as if it explains the method.
 | Avoid as a default | Prefer | Keep only when… |
 | --- | --- | --- |
 | architecture family | method | Comparing rules-only, LLM-only, and LLM-with-rules as research categories |
-| surface | score, output format, data split, or view | It appears in a fixed code field that cannot be renamed safely |
+| surface | score, output format, data split, or view | Retain only in fixed code fields that cannot be renamed safely |
 | cell | run or selected result | Referring to a literal table cell |
-| spine | pipeline or processing steps | Never needed in current prose |
+| spine | pipeline or processing steps | Retired from current prose; the file is now `02_pipeline_steps.md` |
 | gate | check, restriction, or approval | A named decision truly depends on pass/fail evidence |
-| contract | schema, rule, interface, or requirement | Referring to a software interface or legal agreement |
+| contract | schema or software interface | Do not use it for a general rule or requirement |
 | frozen | fixed, locked, or saved | `--frozen` command flags and exact saved identifiers |
 | bounded | limited to the named data and method | A mathematical bound is meant |
 | canonical | current, selected, or authoritative | A code identifier or filename still contains it |

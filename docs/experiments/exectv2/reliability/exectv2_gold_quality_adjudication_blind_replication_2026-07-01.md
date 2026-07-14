@@ -3,7 +3,7 @@
 - Generated: `2026-07-01`
 - Follows from: `docs/plans/manuscript_evidence_gaps_closure_plan_2026-07-01.md` Phase 4
   (item 3 of `docs/research/paper_claims_evidence_review_2026-07-01.md`)
-- Claim boundary: robustness check over already-adjudicated dev140 development-surface
+- Claim boundary: robustness check over already-adjudicated dev140 development set
   disagreement sets (`_dx_canonical/`, `_sf_canonical/`); no new model calls, no full-200 or
   holdout access, no row-level frozen-split inspection
 - Row inspection policy: reads already-published dev140 disagreement case files only
@@ -138,10 +138,10 @@ within verdict, so a uniform scaling is applied to both `missed_defensible` and
 
 Both revised point estimates remain dramatically above the respective official/raw scores
 (Diagnosis official F1 0.6617; SF metric-credited 62.1%) — **the core C1 finding survives**:
-most of the benchmark-surface gap on these two families is gold-quality artifact, not model
+most of the benchmark-score gap on these two families is gold-quality artifact, not model
 deficit. What changes is the claimed magnitude, most for Diagnosis: the manuscript's single
-point estimate (0.9501) should be reported as a **range** (approximately 0.85–0.99, point
-estimate ≈0.92) rather than a bare point figure, and the wording should credit this blinded
+point estimate (0.9501) must be reported as a **range** (approximately 0.85–0.99, point
+estimate ≈0.92) rather than a bare point figure, and the wording must credit this blinded
 check rather than resting solely on the original five-reviewer pass's stated 0.9501.
 SeizureFrequency's number is materially corroborated and can keep its existing framing with a
 pointer to this check.
@@ -178,7 +178,7 @@ blind reviewer here is itself an LLM-based sub-agent, not a human clinician; its
 a useful second opinion under the same taxonomy, not a ground-truth arbiter.
 
 n=20 per family is small; the reweighted-estimate confidence intervals are wide (up to ±20
-percentage points), and this check should not be read as more statistically decisive than it
+percentage points), and this check must not be read as more statistically decisive than it
 is. The Diagnosis point-estimate shift (14.8%→22.5%) is directionally informative and
 consistent with the manuscript's own pre-existing weaker-provenance caveat, but is not, on
 its own, a tight re-estimate.
@@ -192,7 +192,7 @@ its own, a tight re-estimate.
 - SeizureFrequency's 89.3% figure can retain its existing framing with a forward pointer to
   this check as corroborating evidence (reweighted point estimate 88.5%, CI 82.4–94.6%,
   comfortably overlapping the original).
-- The core C1 argument (most of the SF and Diagnosis benchmark-surface gap is gold-quality
+- The core C1 argument (most of the SF and Diagnosis benchmark-score gap is gold-quality
   artifact, not model deficit) is unchanged in direction and remains strongly supported; only
   the Diagnosis magnitude is narrowed from a single point estimate to a bounded range.
 - Add an explicit note that item-level verdict reproducibility (κ≈0.33–0.40) is weaker than

@@ -13,11 +13,11 @@ ownership before they affect a reported score.
   are not specific to epilepsy.
 - `clinical_epilepsy`: epilepsy-note conventions, rescue/PRN medication wording,
   anti-seizure-medication context, seizure terminology, and current-regimen
-  wording that should transfer beyond one benchmark.
+  wording intended to transfer beyond one benchmark.
 - `seizure_frequency`: seizure-rate/state operations such as active-rate,
   seizure-free, unknown, cluster, and change-state rendering.
 - `gan2026_specific`: synthetic-letter or Gan-label quirks.
-- `benchmark_format`: target-surface conventions such as CUI attachment,
+- `benchmark_format`: target-output conventions such as CUI attachment,
   phrase-scope rendering, and accepted benchmark label spelling.
 
 ## Score Lines
@@ -47,6 +47,6 @@ ownership before they affect a reported score.
 | `prescription_duplicate_regimen_collapse` | `verifier_filtered` | `benchmark_format` | no |
 | `prescription_unsupported_medication_rejection` | `verifier_filtered` | `clinical_epilepsy` | no |
 
-The Phase 5 pilot applies only the LLM-only-compatible rules. Hybrid rescue and
+The Phase 5 pilot applies only the rules compatible with LLM-only scoring. LLM-with-rules rescue and
 verifier-filtered rules are counted as separated boundary candidates and are not
 blended into the LLM-only score line.

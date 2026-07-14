@@ -1,4 +1,4 @@
-# 0009. Gan 2026 Staged Hybrid Assembly
+# 0009. Gan 2026 Staged LLM-with-Rules Assembly
 
 Date: 2026-06-04
 
@@ -14,13 +14,13 @@ normalization, benchmark-format repair, and scoring. Subsequent RQ1-RQ10
 component studies showed that broad LLM replacement, broad graph projection,
 and all-in-one prompting are not the reliable path for this task.
 
-The strongest evidence now supports a staged hybrid architecture where each
+The strongest evidence now supports a staged LLM-with-rules architecture where each
 component owns a narrow clinical subproblem and every label-changing action is
 gated by exact evidence, source ids, and regression accounting.
 
 ## Decision
 
-Use a staged hybrid architecture for the next Gan 2026 assembled candidate:
+Use a staged LLM-with-rules architecture for the next Gan 2026 assembled candidate:
 
 ```text
 deterministic/state-graph substrate
@@ -33,7 +33,7 @@ deterministic/state-graph substrate
   + abstain/review/monitoring policy
 ```
 
-The assembled candidate must be described as hybrid. It must not be described
+The assembled candidate must be described as LLM with rules. It must not be described
 as LLM-first, because deterministic candidate generation, state graph nodes,
 projection policies, rendering, abstention/review policy, and safety-floor
 fallback remain prediction-bearing.
@@ -44,7 +44,7 @@ fallback remain prediction-bearing.
 - Broad state-graph projection is not a promotion candidate.
 - `typed_operations_v0` and similarly deep schemas remain negative controls
   unless redesigned with a single decision owner and a clean ablation.
-- New implementation should first materialize source ids for rich selected
+- New implementation must first materialize source ids for rich selected
   states and add deterministic suspicious-state checks.
 - Any future holdout-facing use requires a frozen predeclared audit protocol.
 

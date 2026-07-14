@@ -8,7 +8,7 @@ Companion: `exectv2_calibration_signal_probe_2026-07-07.md` (Phase-0 signal prob
 ## 1. Why this exists
 
 After the four-family clinical-headline scorer-scope fixes (`7949a9d4`, 2026-07-02)
-re-scored the dev140 surface, the frozen dev140 calibration scoring rule no longer
+re-scored the dev140 evaluation set, the fixed dev140 calibration scoring rule no longer
 passed its own predeclared aggregate validation gate on the full-200 artifact. The
 reliability curve became non-monotone — the maximum adjacent-bin reversal rose to
 `0.1105` (bin q4 accuracy `0.8145` → bin q5 accuracy `0.7040`), breaching the
@@ -113,7 +113,7 @@ This is a minimal, honest fix. It does not claim the redesign "solved" calibrati
 — Brier improvement vs the constant base rate is still small (`0.0115`), and
 calibration remains dev-developed + aggregate-validated, not deployment-ready. It
 restores the promotion the rule earned before the scorer-fix re-scoring shifted
-the surface underneath it.
+the evaluation set underneath it.
 
 ## 5. Fresh full-200 aggregate validation readout (Phase 5 of the plan)
 
@@ -128,7 +128,7 @@ full-200):
 - Populated reliability bins: `5` (gate `>= 4`: pass)
 - Per-family ECE reported for all four families: pass
 
-Dev140 cross-validated (the development surface): ECE `0.0229`, Brier `0.1761`,
+Dev140 cross-validated (the development set): ECE `0.0229`, Brier `0.1761`,
 reversal `0.0`. Five monotone bins.
 
 The committed audit report
@@ -162,7 +162,7 @@ was regenerated and reflects this readout.
   state with the post-redesign aggregate numbers.
 - Regenerated: `exectv2_calibration_validation_audit_2026-06-25.md`.
 
-No production scoring path, prompt, or assembly lens was touched. No new LLM calls.
+No production scoring path, prompt, or assembly reconciliation was touched. No new LLM calls.
 
 ## 8. Limitations and honest framing
 
@@ -173,6 +173,6 @@ No production scoring path, prompt, or assembly lens was touched. No new LLM cal
   deployment-ready probability claim and not holdout calibration.
 - The H1/H2 negative result is real and reportable: the three "obvious" external
   reliability signals do not separate ExECTv2 errors on dev140, and Prescription
-  is model-invariant by construction. This bounds what calibration on this surface
+  is model-invariant by construction. This bounds what calibration on this evaluation set
   can be expected to achieve without new information (e.g., a full-coverage
   evidence-support audit, which is explicitly out of scope here).

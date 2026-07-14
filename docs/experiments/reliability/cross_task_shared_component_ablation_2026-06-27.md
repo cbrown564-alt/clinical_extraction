@@ -12,7 +12,7 @@
 
 **Primary subject: `evidence_validation`** (from existing `definitions.yaml` `component_off`; M2 evidence-unification not required for this read). Turning off the exact-substring evidence gate is **structurally inert on both tasks** on the representative validation surfaces: contribution Δ = **0.0000** on ExECTv2 dev140 (v08 control) and Gan2026 validation750 (deterministic `evidence_trace_check`). Producers already emit verbatim-grounded mentions / rule outputs already pass the gate — the guard is present but does not move the declared score on these splits.
 
-Secondary (SF-normalization structure): `standard_dictionary` / Gan `normalize` shows **positive** contribution on both tasks (+0.0389 ExECTv2, +0.0293 Gan hybrid GPT-4.1-mini) — normalization buys score, but the mechanisms differ (CUI/dictionary vs format-level Gan label normalization).
+Secondary (SF-normalization structure): `standard_dictionary` / Gan `normalize` shows **positive** contribution on both tasks (+0.0389 ExECTv2, +0.0293 Gan LLM-with-rules GPT-4.1-mini) — normalization buys score, but the mechanisms differ (CUI/dictionary vs format-level Gan label normalization).
 
 **Deferred:** date-arithmetic policy has no clean cross-task ladder rung; isolating it requires Gan one-family-off replays (`seizure_free_duration_date_instrumentation`, etc.) outside this harness.
 
@@ -38,13 +38,13 @@ Contribution Δ = baseline − component-off (positive means removing the compon
 
 - ExECTv2 (exectv2_holistic_finding_assembly_v08_dev140): `evidence_valid` → `source_scored`
 - Gan2026 (deterministic_canonical_pipeline): `evidence_trace_check` → `benchmark_repair`
-- Gan mapping note: Exact-substring evidence gate on the deterministic stack; hybrid/LLM architectures embed evidence logic in evidence_projection / label_repair instead of a separate gate.
+- Gan mapping note: Exact-substring evidence gate on the deterministic stack; LLM-with-rules and LLM-only architectures embed evidence logic in evidence_projection / label_repair instead of a separate gate.
 
 ### `standard_dictionary`
 
 - ExECTv2 (exectv2_holistic_finding_assembly_v08_dev140): `dictionary_normalized` → `evidence_valid`
 - Gan2026 (gan2026_three_way_comparison_validation750_hybrid_structured_events_gpt41mini_2026-06-07): `normalize` → `llm_selection`
-- Gan mapping note: Format-level SF label normalization on hybrid structured-events; not identical to ExECTv2 CUI/dictionary normalization but the closest SF-normalization rung on the Gan ladder.
+- Gan mapping note: Format-level SF label normalization on LLM-with-rules structured-events; not identical to ExECTv2 CUI/dictionary normalization but the closest SF-normalization rung on the Gan ladder.
 
 ## Source Artifacts
 

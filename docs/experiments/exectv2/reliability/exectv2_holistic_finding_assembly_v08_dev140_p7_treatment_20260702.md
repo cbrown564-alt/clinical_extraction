@@ -10,9 +10,9 @@
 
 ## Finding Assembly
 
-This replay builds a per-letter clinical finding store, applies entity-specific lenses, and renders scoring views from the same final findings. It is a structural replay over frozen artifacts; it introduces no live model calls.
+This replay builds a per-letter clinical finding store, applies entity-specific processing, and renders scoring views from the same final findings. It is a structural replay over fixed artifacts; it introduces no live model calls.
 
-| Entity | Producer | Lens | Ownership |
+| Entity | Producer | Processing | Ownership |
 | --- | --- | --- | --- |
 | Diagnosis | `experiments/exectv2_hybrid_diagnosis_reconciler_v01_dev140_gpt41mini_20260618.jsonl` | `diagnosis_heading_recovery_residual_benchmark_v05` | `hybrid_diagnosis_route` |
 | SeizureFrequency | `experiments/exectv2_hybrid_sf_union_arbitration_v08_dev140_20260621.jsonl` | `sf_state_union_arbitration_v08` | `hybrid_sf_route+deterministic_union_arbitration` |
@@ -21,7 +21,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 ## Score Views
 
-| View | Legacy surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| View | Legacy output | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | raw_candidate | `raw_lane_score` | 0.8475 | 0.7790 | 0.7836 | 0.9615 | 0.9132 |
 | evidence_valid | `evidence_valid_score` | 0.8913 | 0.8984 | 0.7836 | 0.9615 | 0.9132 |
@@ -30,7 +30,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 ## Materialized Intermediate Surfaces
 
-| Surface | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
+| Score view | Overall F1 | Diagnosis | SeizureFrequency | Prescription | Investigations |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | `source_scored` | 0.8468 | 0.7770 | 0.7836 | 0.9615 | 0.9132 |
 | `evidence_valid` | 0.8468 | 0.7770 | 0.7836 | 0.9615 | 0.9132 |
@@ -40,7 +40,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 ## Fact-Origin Accounting
 
-| Surface | post_model_rescue | target_model_generated |
+| Score view | post_model_rescue | target_model_generated |
 | --- | ---: | ---: |
 | `source_scored` | 0 | 1045 |
 | `evidence_valid` | 0 | 1045 |
@@ -50,7 +50,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 
 ## Benchmark And Fidelity Views
 
-| Surface | Value |
+| Score view | Value |
 | --- | ---: |
 | Benchmark raw | 0.3555 |
 | Benchmark after CUI/projection | 0.4729 |
@@ -70,7 +70,7 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 | Prescription changed-row control | fail | 102 changed rows |
 | Investigations changed-row control | fail | 72 changed rows |
 
-## Lens Diagnostics
+## Processing Diagnostics
 
 | Entity | Call failures | Parse/schema failures | Evidence-invalid dropped | Exact evidence rate |
 | --- | ---: | ---: | ---: | ---: |
@@ -88,4 +88,4 @@ This replay builds a per-letter clinical finding store, applies entity-specific 
 | versus_v042_default_quarantine | Prescription | 102 | model_output=102 |
 | versus_v042_default_quarantine | Investigations | 72 | model_output=72 |
 
-Every row-level mention carries source artifact, source lane, ownership, producer provenance, lens provenance, evidence-valid status, and the rendered scoring view can be reconstructed from the JSONL.
+Every row-level mention carries source artifact, source lane, ownership, producer provenance, processing provenance, evidence-valid status, and the rendered scoring view can be reconstructed from the JSONL.

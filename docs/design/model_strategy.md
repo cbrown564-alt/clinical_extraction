@@ -39,14 +39,14 @@ New same-core model evidence must inherit
 - primary comparison scorer: the current ExECT `clinical_headline` owner, with
   strict phrase/CUI/attribute companions reported separately;
 - standard prompt profile: `full`, temperature `0`, with the committed prompt
-  snapshots as the semantic contract;
+  snapshots as the required semantic schema;
 - model-specific adapters may repair transport, JSON dialect, or output shape
   only. Any semantic prompt change, selected-evidence rewrite, deterministic
   clinical repair, or scorer change creates a new comparison condition.
 
 The earlier GPT, DeepSeek, and Qwen artifacts remain valid retained evidence,
 but they are asymmetric: the GPT config used temperature `0.3`, and Qwen used
-the compact prompt plus output-contract repair. They support a bounded
+the compact prompt plus output-schema repair. They support a bounded
 same-core transfer statement, not a strict same-prompt six-model conclusion.
 
 ## Six-model claim boundary

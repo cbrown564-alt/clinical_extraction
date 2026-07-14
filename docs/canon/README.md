@@ -8,7 +8,7 @@ scoring, and paper claims. Detailed experiment history remains in Git.
 | # | Topic |
 | --- | --- |
 | [01](01_system_architecture.md) | Software structure and three comparison methods |
-| [02](02_pipeline_spine.md) | Processing steps and ownership |
+| [02](02_pipeline_steps.md) | Processing steps and ownership |
 | [03](03_evidence_claims_frozen.md) | Evidence priority, data splits, and retention |
 | [04](04_scoring.md) | ExECT scoring and annotation evidence |
 | [05](05_ceilings_wall.md) | Limits observed on Gan and ExECT |

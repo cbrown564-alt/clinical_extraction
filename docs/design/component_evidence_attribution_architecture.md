@@ -65,7 +65,7 @@ after a model call, classify that decision as LLM with rules.
   selected evidence.
 
 Rows that fail these requirements may help debugging but cannot support a claim
-that the model is better or that a method should become the new reference.
+that the model is better or that a method may become the new reference.
 
 ## Data scale and claim strength
 

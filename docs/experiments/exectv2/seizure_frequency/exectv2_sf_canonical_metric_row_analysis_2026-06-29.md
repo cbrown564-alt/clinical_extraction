@@ -249,7 +249,7 @@ headline is mildly optimistic, but the error *structure* is the same across both
   active-rate precision leak:
   1. **Temporal discipline** (7 letters: EA0038, EA0135, EA0143, EA0006, EA0182, EA0046, EA0123): a
      historical/superseded/last-event frequency is not the *current* state. This is exactly what the
-     hybrid's deterministic `_last_event_duration` / change-reject rules encode (Phase 3b), and it is
+     LLM-with-rules deterministic `_last_event_duration` / change-reject rules encode (Phase 3b), and it is
      the dominant genuine error.
   2. **State-evidence discipline** (6 letters: EA0087, EA0096, EA0010, EA0158, EA0014, EA0160): a
      clinic-exam observation, an inter-event gap, a "stable"/"continues" phrase, or a non-epileptic
@@ -265,7 +265,7 @@ headline is mildly optimistic, but the error *structure* is the same across both
   changed-only slice never saw. The changed class is the *worst* slice (F1 0.63), not the representative
   one.
 - **"SF is a representation/recall plateau" is half-right.** The half that is right: the gap to the
-  hybrid is not feedback/determinism. The half that is wrong: it is not primarily *the model's*
+  LLM-with-rules behavior is not feedback/determinism. The half that is wrong: it is not primarily *the model's*
   representation — it is **the gold's** (under-annotation + redundant multiplicity + IAA-0.47), which the
   type-agnostic state-set metric cannot launder away.
 - **The "confirmed epilepsy diagnosis gate" is mis-targeted.** The gold=[] letters are overwhelmingly
