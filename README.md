@@ -2,7 +2,7 @@
 
 Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
 
-The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. Repository reduction, engineering cleanup, and the reduced architecture freeze are complete; the active phase is fresh-checkout closeout before the final paper experiments. Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
+The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. Repository reduction, engineering cleanup, architecture freeze, and fresh-checkout closeout are complete. The active phase is the final paper evidence work on that frozen base. Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
 
 This is also a research codebase. The intended paper contribution combines
 benchmark performance with an account of how modular hybrid systems work: what
@@ -28,10 +28,13 @@ Active work (2026-07-14):
 - **Surgery:** source, document, and artifact reduction are complete. The
   retained manifest selects the six no-call reference cells; the five largest
   replay artifacts are content-addressed Git LFS objects.
-- **Quality:** all 1,153 tests, Ruff, and mypy pass on the reduced backend. CI
-  enforces all three gates; fresh-checkout verification is still outstanding.
+- **Quality:** all 1,157 tests, Ruff, and mypy pass on the reduced backend. CI
+  enforces all three gates; a separate Python 3.11 checkout reproduced the
+  hashes, split barriers, and six no-call reference cells.
 - **Freeze:** manifest v3 pins the source commit and exact dependency, prompt,
   scorer, split, repair, model, runbook, and CI policies for new evidence.
+- **Paper:** the surviving Markdown and IEEE sources are synchronized to the
+  retained manifest; the compiled IEEE PDF has been visually checked.
 - **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
   reproduction, broad-phenotyping confidence calibration, annotation-evidence
   consolidation, and a predeclared six-model comparison follow the cleanup.
