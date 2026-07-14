@@ -101,12 +101,15 @@ Implemented in the current working tree:
 - the closed Prescription/Investigations verifier runtime, prompt corpus,
   candidate reports, unused full200 output, two registry records, and broken
   hybrid-overall report builder have been removed. Retained Diagnosis and SF
-  scoring now reconstruct replay rows through a model-independent helper.
+  scoring now reconstruct replay rows through a model-independent helper;
+- the rejected Gan event-completion reasoner, its nine saved validation runs,
+  test, and registry record have been removed. The surviving fresh-evidence
+  comparator now owns the two generic original-answer fallback helpers it uses.
 
 Verification on the current deletion batch:
 
-- `python -m pytest`: 1,339 passed;
-- `python -m mypy src`: clean across 298 source files;
+- `python -m pytest`: 1,336 passed;
+- `python -m mypy src`: clean across 297 source files;
 - retained manifest, hash, and all six no-call reference replay tests pass as
   part of the full suite;
 - repository-wide Ruff has 139 remaining `E501` findings and no other rule

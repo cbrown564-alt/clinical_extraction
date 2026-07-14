@@ -28,7 +28,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     cross_model_structured_event_adjudicator as cross_model_base,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
-    event_completion_reasoner,
     family_cv_promotion,
     family_transitions,
     llm_event_reasoner,
@@ -1468,7 +1467,7 @@ def _repair_fresh_shape(payload: Any) -> tuple[Any, list[str]]:
         "boundary_profile",
     ):
         value = repaired.get(field_name)
-        normalized = event_completion_reasoner._string_tuple(value)
+        normalized = _string_tuple(value)
         if normalized != value:
             repaired[field_name] = normalized
             notes.append(f"decision_field_shape_repaired:{field_name}")
@@ -1553,7 +1552,7 @@ def _render_fresh_action(
     structured_event_row: Mapping[str, Any] | None,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision | None, list[str], list[str]]:
     if raw_fresh.action == "keep_original_structured_event_final":
-        decision, error = event_completion_reasoner._render_keep_original_action(
+        decision, error = _render_keep_original_action(
             format_decision,
             structured_event_row,
         )
@@ -1647,7 +1646,7 @@ def _fallback_to_original(
     structured_event_row: Mapping[str, Any] | None,
     reason: str,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision | None, list[str], list[str]]:
-    decision, error = event_completion_reasoner._render_keep_original_action(
+    decision, error = _render_keep_original_action(
         format_decision,
         structured_event_row,
     )
@@ -1658,6 +1657,60 @@ def _fallback_to_original(
         [reason, "fresh_evidence_action_rendered:fallback_original_structured_event_final"],
         [reason],
     )
+
+
+def _render_keep_original_action(
+    format_decision: llm_event_reasoner.ReasonedFrequencyDecision,
+    structured_event_row: Mapping[str, Any] | None,
+) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision | None, str | None]:
+    selection = _structured_selection(structured_event_row)
+    label = _as_optional_str(selection.get("final_label"))
+    if label is None:
+        return None, "action_render_error: missing_original_final_label"
+    try:
+        label_record = label_to_frequency_record(label)
+    except ValueError as exc:
+        return None, f"action_render_error: original_final_label_unscorable: {exc}"
+    selected_ids = _string_tuple(selection.get("selected_event_ids"))
+    evidence = _evidence_tuple(selection.get("evidence")) or format_decision.evidence
+    return (
+        format_decision.model_copy(
+            update={
+                "final_label": label_record.normalized_label,
+                "final_kind": str(label_record.kind),
+                "selected_event_ids": selected_ids,
+                "evidence": evidence,
+                "attribution": "llm_original_structured_event_kept",
+            }
+        ),
+        None,
+    )
+
+
+def _structured_selection(structured_event_row: Mapping[str, Any] | None) -> dict[str, Any]:
+    if structured_event_row is None:
+        return {}
+    record = dict(structured_event_row.get("structured_record") or {})
+    return dict(record.get("selection") or {})
+
+
+def _evidence_tuple(value: Any) -> tuple[str, ...]:
+    return tuple(item for item in _string_tuple(value) if item)
+
+
+def _string_tuple(value: Any) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, (list, tuple)):
+        return tuple(str(item) for item in value)
+    return (str(value),)
+
+
+def _as_optional_str(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value)
+    return text if text else None
 
 
 def _fresh_evidence_safety_gate_reason(
