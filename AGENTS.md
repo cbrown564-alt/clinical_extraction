@@ -4,7 +4,7 @@ Global guidance in `~/.codex/AGENTS.md` applies here. The rules below protect cl
 
 ## Product and research mandate
 
-Build modular deterministic, LLM, and hybrid pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful if the source of the improvement cannot be explained.
+Build modular deterministic, LLM-only, and LLM-with-rules pipelines for structured extraction from clinical notes. Preserve component attribution, evidence, reproducibility, and conservative claims. A higher score is not useful if the source of the improvement cannot be explained.
 
 The repository contains two research tracks with different data and claim boundaries. Read `PROJECT_STATUS.md` before assuming which track is active. Gan 2026 holdout evidence may be frozen while ExECTv2 remains active; never transfer tuning or claim permissions between them.
 
