@@ -2,7 +2,7 @@
 
 Hybrid deterministic-LLM pipelines for extracting structured data from unstructured clinical notes.
 
-The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The active research phase is ExECTv2 reliability and paper closeout on capability-first claims; Gan 2026 holdout evidence is frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
+The long-term goal is a Python package for modular clinical extraction tasks: data loading, clinical extraction/reasoning, normalization, structured schemas, scoring, evaluation, and error analysis. The active phase is deletion-led repository surgery and evidence repair before the final paper experiments; Gan 2026 holdout evidence remains frozen. See [`PROJECT_STATUS.md`](PROJECT_STATUS.md) for the live objective and evidence stack.
 
 This is also a research codebase. The intended paper contribution combines
 benchmark performance with an account of how modular hybrid systems work: what
@@ -23,17 +23,17 @@ frequency, prescriptions, investigations) from de-identified letters; this track
 still active. Primary scoreboards: **Purist** on Gan `test450`; **`clinical_headline`**
 composite on ExECT.
 
-Active work (2026-07-01):
+Active work (2026-07-14):
 
-- **ExECTv2:** `clinical_headline` de-duplicated clinical recovery as the headline
-  scorer; strict benchmark/CUI stays diagnostic. Production control is holistic
-  finding assembly v08 on dev140/full-200.
-- **Paper:** capability-first claims (C1–C5) in
-  [`docs/research/paper_manuscript_2026-06-26.md`](docs/research/paper_manuscript_2026-06-26.md);
-  IEEE LaTeX re-sync pending after 2026-06-30 Diagnosis gold-quality revision.
-- **Gan 2026:** holdout frozen (test450 aggregate-only); reliability closeout and
-  confident over-reading limit (The Wall) documented in research synthesis — not
-  an active tuning target.
+- **Surgery:** rebuild the retained artifact manifest from present files and
+  hashes; keep one operational control per task plus the minimal deterministic,
+  LLM-only, and hybrid reference configuration for both tasks; delete closed
+  vertical slices and restore full quality gates on the reduced tree.
+- **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
+  reproduction, broad-phenotyping confidence calibration, annotation-evidence
+  consolidation, and the frozen six-model comparison follow the cleanup.
+- **Split boundary:** Gan test450 remains aggregate-only; ExECT full200 is a
+  development-inclusive aggregate audit, not an independent holdout.
 
 **Reading by thread:** [`docs/THREAD_MAP.md`](docs/THREAD_MAP.md) (five paths, ≤8
 hops each).
