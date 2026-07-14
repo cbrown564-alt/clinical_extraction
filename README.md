@@ -26,12 +26,12 @@ composite on ExECT.
 Active work (2026-07-14):
 
 - **Surgery:** the retained evidence manifest and six no-call reference replays
-  are in place. Continue deleting closed candidates as complete source,
-  prompt, artifact, registry, document, and test units; then reduce the
-  remaining document and artifact estate.
-- **Quality:** pytest and mypy pass on the reduced backend. Ruff has 139
-  line-length findings and no other rule failures; fresh-checkout verification
-  is still outstanding.
+  are in place, and the classified closed Gan and ExECT source candidates are
+  removed. The next deletion phase is the remaining historical document and
+  artifact estate.
+- **Quality:** pytest and mypy pass on the reduced backend. Ruff has 120
+  line-length and two import-order findings; fresh-checkout verification is
+  still outstanding.
 - **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
   reproduction, broad-phenotyping confidence calibration, annotation-evidence
   consolidation, and the frozen six-model comparison follow the cleanup.

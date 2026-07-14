@@ -46,8 +46,6 @@ class PipelineRunFn(Protocol):
         progress_every: int | None,
         checkpoint_jsonl_path: Path | None,
         checkpoint_report_path: Path | None,
-        candidate_set_jsonl_path: Path | None = None,
-        structured_event_jsonl_path: Path | None = None,
     ) -> tuple[list[dict[str, Any]], dict[str, Any]]: ...
 
 
@@ -80,32 +78,6 @@ class GanLlmPipelineCliSpec:
     summarize_rows: PipelineSummarizer | None = None
     default_model: str = "openai/gpt-4.1-mini"
     default_max_tokens: int = 900
-    default_candidate_set_jsonl_path: Path | None = None
-    default_structured_event_jsonl_path: Path | None = None
-
-
-@dataclass(frozen=True)
-class FrozenTestLaunchSpec:
-    """Exact launch tuple for a frozen locked-test audit."""
-
-    model: str
-    max_tokens: int
-    jsonl_path: Path
-    report_path: Path
-
-
-FROZEN_TEST_PIPELINE_LAUNCH_SPECS: Mapping[str, FrozenTestLaunchSpec] = {
-    "fresh_evidence_reasoner": FrozenTestLaunchSpec(
-        model="openai/gpt-4.1",
-        max_tokens=2800,
-        jsonl_path=Path(
-            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.jsonl"
-        ),
-        report_path=Path(
-            "experiments/gan2026_fresh_evidence_reasoner_test450_live_gpt41_v0_6_safety_v0_9_2026-06-15.md"
-        ),
-    ),
-}
 
 
 def pipeline_specs() -> dict[str, GanLlmPipelineCliSpec]:
@@ -138,20 +110,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=spec.default_max_tokens)
-    if spec.default_candidate_set_jsonl_path is not None:
-        parser.add_argument(
-            "--candidate-set-jsonl",
-            type=Path,
-            default=spec.default_candidate_set_jsonl_path,
-            help="CandidateSet JSONL artifact to use for CandidateSet-backed probes.",
-        )
-    if spec.default_structured_event_jsonl_path is not None:
-        parser.add_argument(
-            "--structured-event-jsonl",
-            type=Path,
-            default=spec.default_structured_event_jsonl_path,
-            help="Saved structured-event JSONL artifact to use as the V0 input substrate.",
-        )
     parser.add_argument("--mode", choices=("live", "prompt-only"), default="live")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument(
@@ -182,14 +140,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         help="Reason for a rare broader validation run; recorded in the report.",
     )
     parser.add_argument(
-        "--confirm-test-audit",
-        action="store_true",
-        help=(
-            "Required with --split test to confirm this is an explicitly authorized "
-            "frozen aggregate holdout audit. Test runs must cover the full split."
-        ),
-    )
-    parser.add_argument(
         "--progress-every",
         type=int,
         default=10,
@@ -214,6 +164,11 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     args = parser.parse_args(raw_argv)
     spec = specs[args.pipeline]
+    if args.split == "test":
+        parser.error(
+            "Gan test runs are not exposed by the retained CLI; a new frozen protocol "
+            "and explicit authorization are required before adding a locked-test launch"
+        )
     requested_source_indices = _parse_requested_source_indices(args, parser)
 
     records = load_records_for_split(args.split)
@@ -225,15 +180,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         )
     if args.limit is not None:
         records = records[: args.limit]
-    # Frozen-path / audit / ladder policy violations are reported before the
-    # generic output-overwrite guard: using the wrong artifact path is a more
-    # fundamental error than the correct path already existing.
-    _validate_test_audit_policy(
-        args,
-        parser,
-        row_count=len(records),
-        explicit_source_override_options=_explicit_source_override_options(raw_argv),
-    )
     _validate_validation_ladder(args, parser, row_count=len(records))
     _validate_output_overwrite_policy(args, parser)
 
@@ -273,10 +219,6 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
         "checkpoint_jsonl_path": resume_checkpoint_jsonl_path,
         "checkpoint_report_path": resume_checkpoint_report_path,
     }
-    if spec.default_candidate_set_jsonl_path is not None:
-        run_kwargs["candidate_set_jsonl_path"] = args.candidate_set_jsonl
-    if spec.default_structured_event_jsonl_path is not None:
-        run_kwargs["structured_event_jsonl_path"] = args.structured_event_jsonl
     rows, metadata = (
         spec.run_split(records_to_run, **run_kwargs) if records_to_run else ([], {"summary": {}})
     )
@@ -408,97 +350,6 @@ def _summarize_rows_for_split(
     if accepts_split:
         return summarize_rows(rows, split=split)  # type: ignore[call-arg]
     return summarize_rows(rows)
-
-
-def _validate_test_audit_policy(
-    args: argparse.Namespace,
-    parser: argparse.ArgumentParser,
-    *,
-    row_count: int,
-    explicit_source_override_options: Sequence[str] = (),
-) -> None:
-    if args.split != "test":
-        if args.confirm_test_audit:
-            parser.error("--confirm-test-audit may only be used with --split test")
-        return
-    if not args.confirm_test_audit:
-        parser.error(
-            "test split runs require --confirm-test-audit after explicit "
-            "frozen-protocol authorization"
-        )
-    if not args.escalation_reason:
-        parser.error("test split runs require --escalation-reason naming the frozen audit")
-    if args.limit is not None:
-        parser.error("test split runs must cover the full locked split; do not use --limit")
-    if args.source_row_indices or args.source_row_index_file:
-        parser.error("test split runs must not use --source-row-indices or --source-row-index-file")
-    if explicit_source_override_options:
-        parser.error(
-            "test split runs must not use source-artifact override option(s): "
-            + ", ".join(explicit_source_override_options)
-            + "; use the frozen pipeline defaults"
-        )
-    if args.overwrite_existing:
-        parser.error(
-            "test split runs must not use --overwrite-existing; use --resume-existing "
-            "only for documented technical recovery"
-        )
-    if args.resume_existing:
-        if not args.jsonl.exists():
-            parser.error(
-                "test split --resume-existing requires an existing JSONL artifact "
-                "for documented technical recovery"
-            )
-        if "technical recovery" not in args.escalation_reason.lower():
-            parser.error(
-                "test split --resume-existing requires --escalation-reason to "
-                "describe technical recovery"
-            )
-    if args.progress_every != 0:
-        parser.error("test split runs must use --progress-every 0")
-    if args.mode != "live":
-        parser.error("test split runs must use --mode live")
-    if args.temperature != 0.0:
-        parser.error("test split runs must use --temperature 0.0")
-    if args.api_base is not None:
-        parser.error("test split runs must not use --api-base")
-    if args.disable_dspy_cache:
-        parser.error("test split runs must not use --disable-dspy-cache")
-    frozen_launch_spec = FROZEN_TEST_PIPELINE_LAUNCH_SPECS.get(args.pipeline)
-    if frozen_launch_spec is not None:
-        if args.model != frozen_launch_spec.model:
-            parser.error(
-                f"{args.pipeline} test split runs must use --model {frozen_launch_spec.model}"
-            )
-        if args.max_tokens != frozen_launch_spec.max_tokens:
-            parser.error(
-                f"{args.pipeline} test split runs must use --max-tokens "
-                f"{frozen_launch_spec.max_tokens}"
-            )
-        if not _same_cli_path(args.jsonl, frozen_launch_spec.jsonl_path):
-            parser.error(
-                f"{args.pipeline} test split runs must use --jsonl {frozen_launch_spec.jsonl_path}"
-            )
-        if not _same_cli_path(args.markdown, frozen_launch_spec.report_path):
-            parser.error(
-                f"{args.pipeline} test split runs must use --markdown "
-                f"{frozen_launch_spec.report_path}"
-            )
-    if row_count == 0:
-        parser.error("test split run selected zero rows")
-
-
-def _same_cli_path(path: Path, expected_path: Path) -> bool:
-    return path.resolve(strict=False) == expected_path.resolve(strict=False)
-
-
-def _explicit_source_override_options(argv: Sequence[str]) -> tuple[str, ...]:
-    source_options = ("--candidate-set-jsonl", "--structured-event-jsonl")
-    return tuple(
-        option
-        for option in source_options
-        if any(arg == option or arg.startswith(f"{option}=") for arg in argv)
-    )
 
 
 def _validate_output_overwrite_policy(
