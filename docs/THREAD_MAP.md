@@ -98,21 +98,21 @@ checking whether a number can support a paper claim.
 
 ## T5 — Engineering integrity & experiment governance
 
-**Question:** How do runs get registered, frozen, and retired?
+**Question:** What survives, how is evidence protected, and how is closed work retired?
 
 | Hop | Document | Why |
 | --- | --- | --- |
-| 1 | [`docs/NAVIGATION.md`](NAVIGATION.md) | Tier model and two-tree rule |
-| 2 | [`docs/runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md) | Where new docs go; archive policy |
-| 3 | [`experiments/README.md`](../experiments/README.md) | Validation ladder and scan order |
-| 4 | [`experiments/registry.jsonl`](../experiments/registry.jsonl) | Machine run registry |
-| 5 | [`docs/REGENERATION.md`](REGENERATION.md) | Regenerating tracked artifacts |
-| 6 | [`docs/reference/evidence_groundedness_metric.md`](reference/evidence_groundedness_metric.md) | Canonical evidence metric |
-| 7 | [`docs/runbooks/gated_blockers_2026-06-18.md`](runbooks/gated_blockers_2026-06-18.md) | Holdout and full-200 gates |
-| 8 | [`docs/plans/repo_simplification_plan_2026-06-22.md`](plans/repo_simplification_plan_2026-06-22.md) | Deferred cleanup policy |
+| 1 | [`PROJECT_STATUS.md`](../PROJECT_STATUS.md) | Current retained system, checks, findings, and next work |
+| 2 | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) | Ordered surgery and evidence work packages |
+| 3 | [`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](research/maintenance/repository_surgery_assessment_2026-07-14.md) | Deletion rules, baseline, progress, and inspection lessons |
+| 4 | [`docs/experiments/retained_evidence_manifest.md`](experiments/retained_evidence_manifest.md) | Human view of the six retained reference cells |
+| 5 | [`experiments/registry.jsonl`](../experiments/registry.jsonl) | Machine run registry; validate paths before relying on a row |
+| 6 | [`docs/runbooks/documentation_lifecycle.md`](runbooks/documentation_lifecycle.md) | Document ownership and archive policy |
+| 7 | [`docs/runbooks/gated_blockers_2026-06-18.md`](runbooks/gated_blockers_2026-06-18.md) | Holdout and full200 restrictions |
+| 8 | [`docs/REGENERATION.md`](REGENERATION.md) | Regenerating tracked artifacts |
 
-**Start here if:** you are adding a predeclaration, fixing registry paths, or
-planning archive/cleanup without breaking frozen evidence.
+**Start here if:** you are deleting a candidate, adding a predeclaration,
+fixing registry paths, or changing artifacts without breaking retained evidence.
 
 ---
 

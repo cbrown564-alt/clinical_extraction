@@ -55,6 +55,26 @@ they are not Git payload measurements.
 | Repository-wide Ruff baseline, 2026-07-13 | 1,224 errors | The repository does not meet its declared static-quality gate |
 | Mypy baseline, 2026-07-13 | 341 errors | Types do not currently protect the full installed package |
 
+### Progress since the snapshot
+
+The table above is historical baseline evidence, not the current tree.
+Subsequent surgery has:
+
+- rebuilt and verified the retained two-task × three-family evidence manifest;
+- made all six reference cells replay without model calls;
+- removed the frontend, Observatory, broken ExECT report/catalog machinery,
+  completed migration tools, and orphaned supervisor runtime;
+- removed closed ExECT generation-selection and verifier families as complete
+  source, prompt, artifact, registry, report, and test slices;
+- begun leaf-first Gan deletion with the rejected event-completion reasoner;
+- reduced the backend to 297 typed source files with 1,336 passing tests;
+- reduced Ruff from 1,224 total findings to 139 line-length findings, with no
+  other rule failures; and
+- made mypy clean on the installed source tree.
+
+Current counts and next work live in `PROJECT_STATUS.md`; commit history retains
+the exact deletion sequence.
+
 The largest remaining runtime modules include a 2,040-line Gan agentic
 reasoner, a 1,547-line boundary-rescue candidate, several 1,200–1,450-line LLM
 and deterministic modules, and tests above 2,000 lines. The line-count gate
@@ -63,13 +83,14 @@ small or coherent.
 
 ## High-level findings
 
-### 1. The repository has no small, explicit active product
+### 1. The repository did not have a small, explicit active product
 
 The project describes two research tracks, many pipeline families, a backend
 Observatory, a frontend workbench, MLflow mirroring, report builders, artifact
-registries, paper-generation paths, and extensive experiment history. It does
-not yet identify the exact files that constitute the active controls and the
-minimal two-task × three-family reference set.
+registries, paper-generation paths, and extensive experiment history. The
+retained manifest now identifies the active controls and minimal two-task ×
+three-family reference set. Closed code and documents still surround that set,
+so the repository is not yet reduced to it.
 
 This is the central problem. Without an explicit retained set, every historical
 component appears important and every deletion looks risky. The retained set
@@ -94,16 +115,15 @@ manifest or external artifact storage.
 
 The existing frozen artifact index was treated as a prerequisite for cleanup,
 but the 2026-07-13 audit found that it could not reproduce much of the file and
-hash graph it claimed to govern. The first surgery pass repaired the run
-registry so its current artifact paths exist, but the broader evidence manifest
-still needs to be rebuilt from actual files and hashes.
+hash graph it claimed to govern. The retained manifest has since been rebuilt
+from present files and hashes. The wider registry still contains historical
+rows and lineage references that must be classified during candidate deletion.
 
-The remaining 18 backend failures are concentrated in calibration,
+The initial 18 backend failures were concentrated in calibration,
 component-ablation, cross-model reliability, final-consolidation, and
-review-routing reports. They depend on missing archived ExECT iteration
-artifacts or on Observatory/static frontend projections of those reports. A
-test that requires a file the repository does not contain is not protecting a
-working feature.
+review-routing reports. They depended on missing archived ExECT iteration
+artifacts or on Observatory/static frontend projections. Those broken features
+and tests have been removed; the full backend suite now passes.
 
 ### 4. Research rules were clearer in prose than in code
 
@@ -153,7 +173,7 @@ Tests must be removed with the behavior they protect. Retained tests must
 concentrate on clinical semantics, split barriers, scorer correctness, evidence
 validity, active pipeline replay, and a small number of end-to-end commands.
 
-### 7. The frontend and Observatory may be separate products
+### 7. The frontend and Observatory were separate products
 
 The Next.js frontend and FastAPI Observatory have their own adapters, static
 artifacts, registries, report projections, tests, build system, and data-access
@@ -161,10 +181,10 @@ rules. They can be useful, but they are not free research documentation. If the
 paper and reproducible extraction package are the deliverables, keeping a
 full-stack review product creates a second product scope.
 
-The default surgery decision is to remove them unless the owner names a
-specific user, required workflow, and retained evidence source. If retained,
-they must serve only the surviving pipelines and must not require historical
-catalogs or locked row access.
+No required user workflow or retained evidence dependency justified that second
+product scope. Both products and their connected report/catalog machinery have
+been removed. The retained deliverables are the Python package, evidence, and
+paper.
 
 ### 8. Previous cleanup optimized structure before deciding scope
 
@@ -250,6 +270,8 @@ same claim language.
 
 ### Phase 1 — Name the retained system and rebuild its evidence manifest
 
+Status: implemented except for external storage of large retained artifacts.
+
 1. Select one active ExECT control and one minimal Gan operational reproduction
    path; list each import, config, scorer, artifact, report, and test closure.
 2. Name the minimal deterministic, LLM-only, and hybrid reference configuration
@@ -267,6 +289,8 @@ exist; all six task/family cells are reproducible or replayable; every surviving
 claim resolves to present, hashed evidence.
 
 ### Phase 2 — Remove broken report and catalog machinery
+
+Status: implemented and verified by the passing full backend suite.
 
 Start with the 18 failing ExECT report/catalog tests because they identify a
 coherent dead or incomplete feature set:
@@ -287,6 +311,9 @@ artifacts, and no retained registry or report names a missing path.
 
 ### Phase 3 — Cut closed source-code families
 
+Status: in progress. ExECT generation-selection and verifier families are
+removed; Gan leaf deletion has begun.
+
 Work from the leaves toward shared code:
 
 1. Remove closed Gan agentic, rescue, selector, probe, alternate-reasoner, and
@@ -306,6 +333,9 @@ Exit condition: `src/clinical_extraction/` contains the shared core and the two
 named retained paths, not the project's complete experiment history.
 
 ### Phase 4 — Reduce the document estate
+
+Status: started. The core reading path and status documents are current, but
+the historical document and artifact estate remains large.
 
 Keep the shortest authoritative route:
 
@@ -334,23 +364,17 @@ evidence, commands, and claim limits without reading historical plans.
 
 ### Phase 5 — Decide the fate of Observatory and the frontend
 
-The owner must make an explicit product-scope decision.
-
-Default: delete both if the deliverable is the package plus paper.
-
-If retained:
-
-- name the user and the one complete workflow the UI must support;
-- serve only the selected ExECT and Gan paths;
-- use the retained evidence manifest, not historical report catalogs;
-- keep locked-test barriers at the backend regardless of frontend behavior;
-- remove galleries, comparisons, and adapters for deleted candidates;
-- keep frontend tests and build checks only for retained routes.
+Status: implemented. Both products were removed because the deliverables are
+the package, retained evidence, and paper, and no required review workflow
+depended on them.
 
 Exit condition: the UI is either gone or is a bounded product with no dependency
 on deleted research history.
 
 ### Phase 6 — Rebuild tests and quality gates around the retained tree
+
+Status: in progress. Pytest and mypy pass, the line-count allowlist is gone,
+and Ruff has 139 line-length findings remaining.
 
 1. Delete tests with deleted behavior.
 2. Split remaining megatests by invariant or user-facing command.
@@ -375,6 +399,9 @@ model calls.
 
 ### Phase 7 — Verify reproducibility and close the surgery
 
+Status: pending until source, document, artifact, and quality-gate reduction is
+complete.
+
 From a fresh checkout:
 
 1. install the package;
@@ -394,10 +421,10 @@ project interfaces.
 
 | Question | Current evidence | Recommended default | Owner document |
 | --- | --- | --- | --- |
-| Which ExECT path survives? | `PROJECT_STATUS.md` identifies holistic finding assembly v08 as the current control, while later simplification candidates are closed or diagnostic | Keep v08 plus its direct shared dependencies unless the owner selects a smaller promoted candidate before Phase 2 | `PROJECT_STATUS.md` |
-| Which Gan path survives? | Gan research is closed and holdout evidence is aggregate-only; many candidate families remain | Keep the smallest development-data reproduction path for the canonical aggregate claim; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
-| Does the full-stack Observatory survive? | It creates separate API, artifact, and data-policy obligations and currently carries broken ExECT report endpoints | Delete unless a concrete retained review workflow is an explicit deliverable | `ACTIVE_ROADMAP.md` |
-| Does the frontend survive? | It duplicates report/catalog scope and requires its own adapters and static artifacts | Delete with Observatory unless a named user workflow justifies both | `ACTIVE_ROADMAP.md` |
+| Which ExECT path survives? | Holistic finding assembly v08 is the current control; the manifest names its replay closure | Keep v08, its direct replay dependencies, and the executable modules required by the frozen six-model comparison | `PROJECT_STATUS.md` |
+| Which Gan path survives? | The manifest names deterministic, LLM-only, and hybrid reference cells; holdout evidence remains aggregate-only | Keep those reference closures and the operational aggregate evidence; delete other candidate families | `PROJECT_STATUS.md` and Gan canon |
+| Does the full-stack Observatory survive? | No required workflow or retained evidence cell depended on it | Removed | `ACTIVE_ROADMAP.md` |
+| Does the frontend survive? | It duplicated report/catalog scope without a required user workflow | Removed with Observatory | `ACTIVE_ROADMAP.md` |
 | Where do large evidence artifacts live? | `experiments/` is 3.8 GB in the working copy and the old index is unreliable | External immutable artifact storage; keep hashes and retrieval metadata in Git | `repo_simplification_plan_2026-06-22.md` |
 | How much generated documentation survives? | Generated documents greatly outnumber canonical owners and have already created false authority | Keep only direct evidence records needed by surviving claims; delete the rest | `docs/NAVIGATION.md` and relevant canon |
 
@@ -414,17 +441,40 @@ project interfaces.
 - Record exact verification after each batch; use *implemented*, *verified*,
   *validated*, and *promoted* precisely.
 
-## Immediate next batch
+## Inspection lessons
 
-1. Build the retained-claim and retained-artifact manifest from present files
-   and hashes.
-2. Confirm the exact ExECT v08 closure and the minimal Gan reproduction closure.
-3. Classify the 18 failing ExECT report/catalog tests as retain-and-repair or
-   delete-with-feature.
-4. Remove the first complete dead feature, including source, artifacts,
-   registry entries, UI adapters, documents, and tests.
-5. Run the full backend suite and recount Ruff and mypy errors on the reduced
-   tree before choosing the next batch.
+The first deletion batches exposed several traps that were not obvious from
+file names or registry decisions:
 
-This order prevents another cleanup campaign from spending effort preserving
-the wrong system.
+1. **Rejected candidates can own retained helpers accidentally.** Diagnosis,
+   SF replay, fresh-evidence, and GEPA code imported small private functions
+   from packages scheduled for deletion. Import analysis and focused tests must
+   precede every removal.
+2. **Replay closure is narrower than future execution closure.** Saved artifacts
+   reproduce the six reference cells, but future model-comparison work still
+   needs selected ExECT runtime modules. Classify both needs explicitly.
+3. **A textual reference has several meanings.** An import is executable; an
+   artifact path must resolve; a producer label or `supersedes` value may be
+   historical provenance. Treating all matches alike either breaks code or
+   erases truthful history.
+4. **Registry presence is not proof of reproducibility.** Some rows named
+   missing archive reports, and some report builders defaulted to absent inputs.
+   Present files, hashes, and no-call replay are the stronger evidence.
+5. **Prompt-bearing packages have a wide blast radius.** Deleting a prompt
+   corpus or shared runner requires rendered prompt snapshots, not only the
+   removed candidate's tests.
+6. **Cleanup metrics need context.** Source and test counts must fall when dead
+   behavior is deleted. A lower passing-test count is not a regression when the
+   removed tests covered removed code and the retained replay suite remains
+   green.
+7. **Artifact storage is a separate decision.** The manifest now proves file
+   identity, but large retained artifacts cannot leave Git safely until an
+   immutable location, checksum, schema, and retrieval procedure exist.
+
+## Current handoff
+
+The initial batch is complete. Continue with the major work packages in
+`ACTIVE_ROADMAP.md`. The next source batch is the isolated, rejected Gan
+structured-event verifier. After the remaining closed Gan leaves are removed,
+re-run import analysis before deciding whether their shared agentic package can
+be collapsed or deleted.

@@ -17,11 +17,11 @@ how to archive them.
 | Plain-language glossary (display names, Gan vs ExECT) | [`docs/reference/plain_language_glossary.md`](reference/plain_language_glossary.md) |
 | Active experiment scan order | [`experiments/README.md`](../experiments/README.md) |
 | Machine run registry | [`experiments/registry.jsonl`](../experiments/registry.jsonl) |
-| Human scan of registry | [`experiments/RUN_INDEX.md`](../experiments/RUN_INDEX.md) |
 | Retained evidence manifest (selected paths + hashes) | [`docs/experiments/retained_evidence_manifest.md`](experiments/retained_evidence_manifest.md) |
 | Regenerating tracked artifacts | [`docs/REGENERATION.md`](REGENERATION.md) |
 | Older status entries (rolling archive) | [`docs/research/maintenance/project_status_digest_2026-06.md`](research/maintenance/project_status_digest_2026-06.md) |
 | Active roadmap (open work only) | [`docs/plans/ACTIVE_ROADMAP.md`](plans/ACTIVE_ROADMAP.md) |
+| Repository surgery findings and deletion rules | [`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](research/maintenance/repository_surgery_assessment_2026-07-14.md) |
 | Narrative thread map (reading paths) | [`docs/THREAD_MAP.md`](THREAD_MAP.md) |
 
 ## Tier 1.5 — Reading by thread
@@ -77,7 +77,8 @@ see [`THREAD_MAP.md`](THREAD_MAP.md) for full tables.
 | Job | Path |
 | --- | --- |
 | Runnable scripts, JSON/JSONL, scorecards | [`experiments/`](../experiments/) |
-| Superseded iteration notes | [`experiments/archive/`](../experiments/archive/) + [`ARCHIVE_INDEX.md`](../experiments/archive/ARCHIVE_INDEX.md) |
+| Superseded machine artifacts | [`experiments/archive/`](../experiments/archive/) |
+| Archived narratives | [`docs/archive/ARCHIVE_INDEX.md`](archive/ARCHIVE_INDEX.md) |
 | External papers | [`literature/`](../literature/) and [`docs/literature/`](literature/) |
 
 ## Two-tree rule (experiments vs docs/experiments)

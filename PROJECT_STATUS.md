@@ -73,38 +73,17 @@ closures, and replay expectations live in
 
 ## Surgery state
 
-Implemented in the current working tree:
+Implemented and pushed to `main`:
 
-- row-level Gan locked-test reports and connected generators have been removed;
-- the separate frontend and Observatory products have been removed; the
-  repository now targets the extraction package, evidence, and paper;
-- ExECT full200 terminology has been corrected to development-inclusive audit;
-- the run registry no longer points at the removed locked-row reports;
-- the retained paper story has an exact two-task × three-family evidence matrix;
-- every reference cell has a validated artifact hash, source/config/scorer/test
-  closure, and passing no-call replay;
-- broken report/catalog builders tied to missing historical artifacts have been
-  removed with their scripts and tests;
-- the frontend residue, line-count allowlist gate, one-shot migration scripts,
-  and orphaned supervisor runtime have been removed;
-- the closed hand-tuned ExECT generation-selection family has been removed as a
-  vertical slice; GEPA now owns the small de-duplicated-fact adapter required by
-  the retained LLM-only comparator;
-- the closed ExECT Diagnosis verifier runtime, pilot reports, unused full200
-  output, and nine verifier-dependent registry records have been removed. The
-  retained model-transfer Diagnosis decomposer is now one direct module with
-  an unchanged rendered prompt contract;
-- the closed ExECT SeizureFrequency verifier and state-adjudicator runtimes,
-  their prompt corpus, reports, residual ledgers, unused full200 output, and 13
-  registry records have been removed. Retained SF projection, suppression, and
-  union replay now share a model-independent row-scoring module;
-- the closed Prescription/Investigations verifier runtime, prompt corpus,
-  candidate reports, unused full200 output, two registry records, and broken
-  hybrid-overall report builder have been removed. Retained Diagnosis and SF
-  scoring now reconstruct replay rows through a model-independent helper;
-- the rejected Gan event-completion reasoner, its nine saved validation runs,
-  test, and registry record have been removed. The surviving fresh-evidence
-  comparator now owns the two generic original-answer fallback helpers it uses.
+| Area | Current result |
+| --- | --- |
+| Evidence boundaries | Removed row-level Gan locked-test reports and generators; corrected ExECT full200 to development-inclusive audit; retained split barriers and aggregate-only claim rules |
+| Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays |
+| Product scope | Removed the frontend and Observatory; the repository now targets the Python extraction package, retained evidence, and paper |
+| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, and orphaned supervisor runtime |
+| Closed ExECT candidates | Removed generation-selection and the Diagnosis, SF, Prescription, and Investigations verifier families with their prompts, artifacts, registry rows, reports, and candidate tests |
+| First closed Gan candidate | Removed the rejected event-completion reasoner, its nine saved runs, registry row, and test |
+| Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
 
 Verification on the current deletion batch:
 
@@ -117,6 +96,37 @@ Verification on the current deletion batch:
 
 These checks verify the current reduced working tree. They do not complete the
 fresh-checkout reproducibility closeout.
+
+## Findings and pitfalls
+
+- **Dependency closure decides deletion.** A rejected registry decision or a
+  candidate-like filename is not enough. Retained modules imported private
+  helpers from closed verifier and Gan candidates. Those helpers had to move
+  before their former owners could be deleted.
+- **Saved replay and executable research are different needs.** The six
+  reference cells can replay without model calls, but the planned ExECT
+  six-model comparison still needs the structured extractor, Diagnosis
+  decomposer, and SF union runtime. Do not delete those modules merely because
+  the retained v08 score replays from saved lane artifacts.
+- **Historical text is not always a live dependency.** Producer labels and
+  `supersedes` fields may accurately describe how a retained artifact was made.
+  Preserve truthful provenance strings while removing executable imports,
+  broken paths, and registry records for closed candidates.
+- **Registries are evidence leads, not authorities.** Initial inspection found
+  records that named absent archive files and builders whose defaults pointed
+  to missing artifacts. Validate every path before treating a registry row as
+  retained evidence.
+- **Prompt removal can affect unrelated paths.** Generic prompt and runner
+  packages were shared by retained code. Every prompt-bearing deletion must run
+  retained prompt snapshots as well as focused tests.
+- **Test counts fall during valid deletion.** The suite decreased because tests
+  for removed behavior were deleted. Completion evidence is the passing full
+  suite plus retained manifest/replay checks, not preservation of the old test
+  count.
+- **Large artifacts remain unresolved.** Hashing retained files makes the
+  evidence graph trustworthy, but it does not solve the repository-size
+  problem. Immutable external storage with retrieval instructions is still
+  required before broad artifact deletion.
 
 ## In progress
 
@@ -154,11 +164,17 @@ fresh-checkout reproducibility closeout.
 
 ## Next
 
-1. Continue vertical deletion until no closed candidate remains installed.
-2. Make repository-wide Ruff green without allowlists.
-3. Complete the four research follow-ups on the frozen reduced architecture.
-4. Verify a fresh checkout can install, replay both tasks, rebuild every
-   surviving paper table, verify hashes, and enforce split barriers.
+1. Remove closed Gan candidates leaf-first, beginning with the now-isolated
+   structured-event verifier, and rerun import analysis after every batch.
+2. Classify remaining ExECT model-swap, simplification, and diagnostic code
+   against both retained replay and the future frozen six-model executable
+   path; delete only complete candidates outside both.
+3. Reduce documents, registries, and artifacts to canonical owners and retained
+   proof, after the external retained-artifact location is defined.
+4. Make repository-wide Ruff green, simplify oversized retained tests, and run
+   the full suite without allowlists.
+5. Complete the paper evidence studies on the frozen reduced architecture,
+   then perform the fresh-checkout closeout.
 
 ## Guardrails
 

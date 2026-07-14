@@ -25,15 +25,22 @@ composite on ExECT.
 
 Active work (2026-07-14):
 
-- **Surgery:** rebuild the retained artifact manifest from present files and
-  hashes; keep one operational control per task plus the minimal deterministic,
-  LLM-only, and hybrid reference configuration for both tasks; delete closed
-  vertical slices and restore full quality gates on the reduced tree.
+- **Surgery:** the retained evidence manifest and six no-call reference replays
+  are in place. Continue deleting closed candidates as complete source,
+  prompt, artifact, registry, document, and test units; then reduce the
+  remaining document and artifact estate.
+- **Quality:** pytest and mypy pass on the reduced backend. Ruff has 139
+  line-length findings and no other rule failures; fresh-checkout verification
+  is still outstanding.
 - **Follow-up evidence:** deterministic phrase/CUI/full-attribute-bundle
   reproduction, broad-phenotyping confidence calibration, annotation-evidence
   consolidation, and the frozen six-model comparison follow the cleanup.
 - **Split boundary:** Gan test450 remains aggregate-only; ExECT full200 is a
   development-inclusive aggregate audit, not an independent holdout.
+
+The surgery assessment, completed batches, inspection findings, and deletion
+pitfalls are recorded in
+[`docs/research/maintenance/repository_surgery_assessment_2026-07-14.md`](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
 
 **Reading by thread:** [`docs/THREAD_MAP.md`](docs/THREAD_MAP.md) (five paths, ≤8
 hops each).
@@ -105,7 +112,7 @@ tests/                          Focused tests for data contracts and determinist
 - **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)
 - **Live control board:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
 - Active experiments index: [experiments/README.md](experiments/README.md)
-- Superseded notes archive: [experiments/archive/ARCHIVE_INDEX.md](experiments/archive/ARCHIVE_INDEX.md)
+- Archived narratives: [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md)
 - Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)
 
 ## Getting Started

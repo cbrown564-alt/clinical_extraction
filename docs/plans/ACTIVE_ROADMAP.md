@@ -28,6 +28,33 @@ closed; its LLM-only result remains a reference comparator.
 
 ---
 
+## Major work packages and order
+
+1. **Finish source deletion.** Remove closed Gan candidates from leaf modules
+   toward shared agentic code. Then classify remaining ExECT model-swap,
+   simplification, and diagnostic modules against both retained replay and the
+   planned frozen six-model run.
+2. **Reduce evidence and documentation.** Keep canonical owners and direct
+   paper proof. Define immutable external storage before deleting large retained
+   artifacts from Git. Remove broken registry paths and historical narratives
+   that no longer own a claim or decision.
+3. **Restore engineering gates.** Close the 139 Ruff line-length findings,
+   simplify oversized retained tests where it improves ownership, and keep
+   pytest, mypy, manifest validation, prompt snapshots, and six reference
+   replays green.
+4. **Run the open evidence studies.** Complete Gan efficiency, ExECT strict
+   paper-surface reproduction, broad confidence calibration, annotation
+   evidence consolidation, and the frozen six-model comparison.
+5. **Close from a fresh checkout.** Install, enforce split barriers, replay both
+   tasks, rebuild surviving paper tables, verify artifact hashes, and update the
+   manuscript and claim register.
+
+Do not overlap fresh model experiments with source deletion. The architecture,
+prompt, scorer, split, and repair policy must be frozen after the retained
+runtime is small enough to audit.
+
+---
+
 ## P0 — Do now (repository surgery)
 
 | Item | Owner doc | Action |
@@ -71,6 +98,23 @@ closed; its LLM-only result remains a reference comparator.
 - **Making the consensus/fresh selector the default** — CUT (`docs/research/consensus_fresh_selector_fate_2026-06-27.md`)
 - **MLflow expansion** — optional mirror, not part of the retained contribution
 - **Dissertation document** — out of scope; IEEE paper is deliverable (`supervisor_brief_gap_closure_plan` Phase D)
+
+## Known execution risks
+
+- Private imports can make a rejected candidate the accidental owner of a
+  retained helper. Move only the proven shared behavior; do not preserve the
+  candidate package as a compatibility layer.
+- Saved-output replay does not prove the executable path needed for a future
+  model comparison still exists. Check both closures before deleting ExECT
+  runtime code.
+- Registry lineage fields can mention deleted candidates legitimately, while
+  artifact paths must resolve. Do not erase provenance merely to make text
+  searches empty.
+- The retained artifact manifest solves identity and hash verification, not
+  long-term storage. Large-file deletion must wait for an immutable retrieval
+  location.
+- Do not spend time wrapping or linting a candidate until its retention status
+  is known. Delete first, then repair quality on the smaller tree.
 
 ---
 
