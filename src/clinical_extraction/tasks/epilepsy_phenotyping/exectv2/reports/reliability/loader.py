@@ -57,13 +57,3 @@ def load_rich_schema_runs(
     path = catalog_path or DEFAULT_CATALOG_PATH
     catalog = _load_catalog(path)
     return tuple(_record_to_run(record) for record in catalog.rich_schema_runs)
-
-
-def load_active_llm_only_runs(
-    catalog_path: Path | None = None,
-) -> tuple[ReliabilityRun, ...]:
-    """Load active LLM-only de-duplicated clinical-fact runs from the catalog."""
-
-    path = catalog_path or DEFAULT_CATALOG_PATH
-    catalog = _load_catalog(path)
-    return tuple(_record_to_run(record) for record in catalog.active_llm_only_runs)

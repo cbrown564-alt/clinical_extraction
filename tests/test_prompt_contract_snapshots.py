@@ -37,9 +37,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_single_pass as exectv2_single_pass,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_generation_selection.prompt_builders_dedup import (
-    build_single_call_dedup_facts_prompt_payload,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -101,20 +98,6 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     # ExECTv2 broad-phenotyping surfaces.
     "exectv2__single_pass": lambda: exectv2_single_pass.build_prompt_input(_exect_letter()),
     "exectv2__per_entity_default": lambda: exectv2_per_entity.build_prompt_input(_exect_letter()),
-    # Primary clinical_headline de-duplicated surface (PROJECT_STATUS headline).
-    # The payload carries output_schema + adapter_contract, which is exactly the
-    # kind of contract whose silent drift FM4 warns about.
-    "exectv2__dedup_facts_compact": lambda: build_single_call_dedup_facts_prompt_payload(
-        _exect_letter(), prompt_profile="compact"
-    ),
-    "exectv2__dedup_facts_decision_table": lambda: build_single_call_dedup_facts_prompt_payload(
-        _exect_letter(), prompt_profile="decision_table"
-    ),
-    "exectv2__dedup_facts_per_family_diagnosis": lambda: (
-        build_single_call_dedup_facts_prompt_payload(
-            _exect_letter(), prompt_profile="compact", target_family="diagnosis"
-        )
-    ),
 }
 
 

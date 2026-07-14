@@ -7,7 +7,6 @@ from collections import defaultdict
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.constants import (
-    ACTIVE_LLM_ONLY_RUNS,
     FAMILIES,
     RICH_SCHEMA_RUNS,
 )
@@ -41,19 +40,6 @@ def latest_run_check() -> dict[str, Any]:
                 "rationale": (
                     "These are the final dev140 non-GPT diagnostics for the "
                     "2026-06-22 scorecard surface."
-                ),
-            },
-            {
-                "surface_id": "active_llm_only",
-                "surface_label": "Active de-duplicated clinical-fact LLM-only workstream",
-                "latest_runs": [
-                    run_ref(run) for run in ACTIVE_LLM_ONLY_RUNS if not _is_control(run)
-                ],
-                "replacement_policy": "reported separately; different claim surface",
-                "rationale": (
-                    "Phase 6 uses model-emitted de-duplicated clinical facts, "
-                    "not rich-schema holistic assembly, so it should not replace "
-                    "the archived scorecard comparators."
                 ),
             },
         ]

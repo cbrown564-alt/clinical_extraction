@@ -5,7 +5,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.loader import (
     DEFAULT_CATALOG_PATH,
-    load_active_llm_only_runs,
     load_rich_schema_runs,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.types import (
@@ -16,6 +15,5 @@ __all__ = (
     "DEFAULT_CATALOG_PATH",
     "REPO_ROOT",
     "ReliabilityRun",
-    "load_active_llm_only_runs",
     "load_rich_schema_runs",
 )

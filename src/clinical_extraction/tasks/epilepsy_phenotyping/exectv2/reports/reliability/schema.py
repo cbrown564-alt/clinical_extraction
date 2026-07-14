@@ -20,9 +20,8 @@ class ReliabilityRunRecord(BaseModel):
 
 
 class ReliabilityCatalog(BaseModel):
-    """Top-level catalog with rich-schema and active LLM-only run sections."""
+    """Top-level catalog for retained rich-schema reliability runs."""
 
     model_config = ConfigDict(extra="forbid")
 
     rich_schema_runs: tuple[ReliabilityRunRecord, ...]
-    active_llm_only_runs: tuple[ReliabilityRunRecord, ...]
