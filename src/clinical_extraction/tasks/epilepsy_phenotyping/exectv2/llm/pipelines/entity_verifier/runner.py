@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import dspy
 
@@ -43,6 +43,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_p
     repair_attributes,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+
+
+def _confidence(value: object) -> Literal["low", "medium", "high"]:
+    normalized = str(value)
+    if normalized not in {"low", "medium", "high"}:
+        return "medium"
+    return cast(Literal["low", "medium", "high"], normalized)
 
 
 def make_dspy_module(config: VerifierConfig) -> dspy.Module:
@@ -159,7 +166,7 @@ def reconstruct_pred_letters(
                     text=str(m["text"]),
                     attributes={str(k): str(v) for k, v in dict(m.get("attributes") or {}).items()},
                     evidence=str(m.get("evidence", "")),
-                    confidence=str(m.get("confidence", "medium")),
+                    confidence=_confidence(m.get("confidence", "medium")),
                     rationale=str(m.get("rationale", "")),
                 )
                 for m in row.get("predicted_mentions", [])

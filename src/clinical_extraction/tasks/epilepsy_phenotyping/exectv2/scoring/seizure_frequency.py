@@ -452,9 +452,7 @@ def _frequency_state_profile_direction_deconf_keys(
 ) -> list[Hashable]:
     """Per-letter presence set of direction-only states (deduplicated)."""
 
-    return list(
-        dict.fromkeys(frequency_state_direction_deconf(a.attributes) for a in annotations)
-    )
+    return list(dict.fromkeys(frequency_state_direction_deconf(a.attributes) for a in annotations))
 
 
 def _score_frequency_state_profile_magnitude(

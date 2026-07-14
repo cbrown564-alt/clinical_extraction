@@ -411,7 +411,7 @@ def _single_primary_priority(
     candidate: ExtractedCandidate,
     *,
     disabled_ablation_switches: frozenset[str] = frozenset(),
-) -> tuple[int, int, int, int]:
+) -> tuple[int, int, int, int, int]:
     phrase = candidate_source_phrase(candidate) or candidate.evidence_span.text
     major_relapse_enabled = (
         "project_major_recent_relapse_over_background_frequency" not in disabled_ablation_switches

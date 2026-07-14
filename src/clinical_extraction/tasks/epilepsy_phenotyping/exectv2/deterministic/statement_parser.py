@@ -16,6 +16,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_sur
 
 from ..contract.entities import SEIZURE_FREQUENCY
 from ..contract.prediction import PredictedMention
+from .candidates import AnchorCandidate
 from .frequency_section import _last_event_date_attrs, _rate_attrs
 from .lexicon import assign_cui
 from .normalizer import MONTH_NAME_PATTERN, normalize_count, normalize_month, normalize_unit
@@ -209,7 +210,7 @@ def _anchors(sentence: str) -> list[tuple[str, tuple[int, int]]]:
     return [
         (c.text, c.span)
         for c in SEIZURE_TYPE_ANCHOR_RULE.apply(ctx, DEFAULT_ABLATION)
-        if c.evidence and c.evidence in sentence
+        if isinstance(c, AnchorCandidate) and c.evidence and c.evidence in sentence
     ]
 
 

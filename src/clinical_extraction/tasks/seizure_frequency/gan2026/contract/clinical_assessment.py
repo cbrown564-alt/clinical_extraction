@@ -112,7 +112,7 @@ class ClinicalAssessment(BaseModel):
     normalization_issues: list[str] = Field(default_factory=list)
     assessment_summary: str = ""
     uncertainty_flags: list[str] = Field(default_factory=list)
-    schema_version: Literal["gan2026_clinical_assessment_v0"] = SCHEMA_VERSION
+    schema_version: Literal["gan2026_clinical_assessment_v0"] = "gan2026_clinical_assessment_v0"
 
     @model_validator(mode="after")
     def validate_candidate_id_roles(self) -> ClinicalAssessment:

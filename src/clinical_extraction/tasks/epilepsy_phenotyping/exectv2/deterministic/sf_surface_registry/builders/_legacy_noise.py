@@ -86,13 +86,13 @@ def is_sf_convention_noise(
     if (
         cui == "C1299590"
         and attrs.get("NumberOfSeizures") == "0"
-        and _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
+        and re.search(_SF_CONTEXTUAL_RATE_NOISE_RE, evidence)
     ):
         return True
     if cui == "C1299590" and attrs.get("NumberOfSeizures") == "0":
         return False
-    if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and (
-        _SF_CONTEXTUAL_RATE_NOISE_RE.search(evidence)
+    if phrase in {"seizure", "seizures", "seizure free", "seizure freedom"} and re.search(
+        _SF_CONTEXTUAL_RATE_NOISE_RE, evidence
     ):
         return True
     if phrase in {"seizure", "seizures", "seizure free"} and _SF_CONTEXTUAL_SEIZURE_FREE_RE.search(

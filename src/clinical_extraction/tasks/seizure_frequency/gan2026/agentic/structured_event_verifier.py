@@ -470,7 +470,7 @@ def parse_verifier_decision_json(
 def summarize_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Summarize verifier rows across raw, format-only, final, and V0 layers."""
 
-    summary = {
+    summary: dict[str, Any] = {
         "rows": len(rows),
         "prediction_bearing_rows": 0,
         "model_calls_attempted": 0,
@@ -951,7 +951,7 @@ def _render_keep_original_action(
     if label is None:
         return None, "action_render_error: missing_original_final_label"
     label_record, error = _label_record(label)
-    if error:
+    if error or label_record is None:
         return None, f"action_render_error: original_final_label_unscorable: {error}"
     selected_ids = _string_tuple(selection.get("selected_event_ids"))
     evidence = _evidence_tuple(selection.get("evidence")) or raw_verifier_decision.evidence
@@ -990,7 +990,7 @@ def _render_existing_event_action(
     if label is None:
         return None, event_id, f"action_render_error: selected_event_missing_label:{event_id}"
     label_record, error = _label_record(label)
-    if error:
+    if error or label_record is None:
         return (
             None,
             event_id,
@@ -1020,7 +1020,7 @@ def _render_recomputed_action(
     format_decision: llm_event_reasoner.ReasonedFrequencyDecision,
 ) -> tuple[llm_event_reasoner.ReasonedFrequencyDecision | None, str | None]:
     label_record, error = _label_record(format_decision.final_label)
-    if error:
+    if error or label_record is None:
         return None, f"action_render_error: recomputed_label_unscorable: {error}"
     attribution = (
         "llm_selected_format_repaired"

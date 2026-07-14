@@ -30,7 +30,10 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_pars
 
 
 def _family_schema_json(family: str) -> str:
-    fact = next(f for f in OUTPUT_SCHEMA["clinical_facts"] if f["family"] == family)
+    facts = OUTPUT_SCHEMA.get("clinical_facts")
+    if not isinstance(facts, list):
+        raise TypeError("OUTPUT_SCHEMA clinical_facts must be a list")
+    fact = next(item for item in facts if isinstance(item, dict) and item.get("family") == family)
     return json.dumps({"clinical_facts": [fact]}, ensure_ascii=False, sort_keys=True)
 
 

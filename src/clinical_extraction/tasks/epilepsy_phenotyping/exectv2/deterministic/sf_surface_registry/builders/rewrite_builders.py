@@ -31,7 +31,7 @@ def builder_rewrite_every_range_phrase_to_generic_seizures(
 ) -> RewriteResult | None:
     attrs = dict(ctx.attrs)
     surface = ctx.surface
-    match = _SF_GENERIC_EVERY_RANGE_RE.search(surface)
+    match = re.search(_SF_GENERIC_EVERY_RANGE_RE, surface)
     if not (match is not None):
         return None
     attrs["CUI"] = "C0036572"
@@ -444,7 +444,9 @@ def builder_rewrite_gtcs_active_without_count_to_active_rate(
     attrs = dict(ctx.attrs)
     text = ctx.text
     evidence = ctx.evidence
-    if not (attrs.get("CUI") == "C0494475" and _SF_GTCS_ACTIVE_WITHOUT_COUNT_RE.search(evidence)):
+    if not (
+        attrs.get("CUI") == "C0494475" and re.search(_SF_GTCS_ACTIVE_WITHOUT_COUNT_RE, evidence)
+    ):
         return None
     attrs["NumberOfSeizures"] = "1"
     attrs.pop("FrequencyChange", None)
@@ -534,7 +536,7 @@ def builder_rewrite_selected_no_further_gtc_to_named_seizure_free(
 ) -> RewriteResult | None:
     attrs = dict(ctx.attrs)
     evidence = ctx.evidence
-    if not (attrs.get("CUI") == "C0036572" and _SF_NO_FURTHER_GTC_SINCE_RE.search(evidence)):
+    if not (attrs.get("CUI") == "C0036572" and re.search(_SF_NO_FURTHER_GTC_SINCE_RE, evidence)):
         return None
     attrs["CUI"] = "C0494475"
     attrs["CUIPhrase"] = "generalised tonic clonic seizures"

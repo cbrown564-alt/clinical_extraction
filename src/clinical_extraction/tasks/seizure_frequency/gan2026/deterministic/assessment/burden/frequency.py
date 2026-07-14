@@ -293,6 +293,7 @@ def _frequency_burden_from_multi_month_bucket_phrase(
         )
     count_low = sum(match["count_low"] for match in bucket_matches)
     count_high = sum(match["count_high"] for match in bucket_matches)
+    denominator_months: int | None
     if explicit_window_months is not None:
         denominator_months = explicit_window_months
         denominator_issue = "frequency_rate_multi_month_window_from_source_phrase"

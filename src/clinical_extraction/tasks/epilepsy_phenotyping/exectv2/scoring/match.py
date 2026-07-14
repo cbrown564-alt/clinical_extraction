@@ -494,7 +494,13 @@ def _concept_overlap_count(
                 break
             if pred_count <= 0:
                 continue
-            if concepts_hierarchically_related(gold_key[1], pred_key[1]):
+            if (
+                isinstance(gold_key, tuple)
+                and len(gold_key) > 1
+                and isinstance(pred_key, tuple)
+                and len(pred_key) > 1
+                and concepts_hierarchically_related(gold_key[1], pred_key[1])
+            ):
                 take = min(needed, pred_count)
                 matched += take
                 needed -= take

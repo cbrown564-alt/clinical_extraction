@@ -29,20 +29,21 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
     deterministic_candidate_set_from_raw,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
+    AssessmentKind,
     ClinicalAssessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind,
     RawCandidate,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
+    assemble_clinical_assessment,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.deterministic_selection import (
     FinalSelection,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.rule_metadata import (
     AblationConfig,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.clinical_assessment_assembly import (
-    assemble_clinical_assessment,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline_v1 import (
     CandidateEvent,
@@ -152,8 +153,13 @@ def evidence_trace_check_stage(
     should not, as part of this staging pass) implement.
     """
     selected_candidate = candidate_set.candidates[selected_index]
+    assessment_kind: AssessmentKind = (
+        "unknown_frequency"
+        if selected_candidate.candidate_kind == "last_event_only"
+        else selected_candidate.candidate_kind
+    )
     draft = AssessmentDraft(
-        assessment_kind=selected_candidate.candidate_kind,
+        assessment_kind=assessment_kind,
         primary_candidate_ids=[selected_candidate.candidate_id],
         supporting_candidate_ids=[
             candidate.candidate_id
@@ -167,6 +173,7 @@ def evidence_trace_check_stage(
         clinical_assessment, _ = assemble_clinical_assessment(
             draft,
             candidate_set=candidate_set,
+            component_owner="deterministic_canonical_diagnostic",
             disabled_ablation_switches=disabled_ablation_switches,
         )
     except Exception:

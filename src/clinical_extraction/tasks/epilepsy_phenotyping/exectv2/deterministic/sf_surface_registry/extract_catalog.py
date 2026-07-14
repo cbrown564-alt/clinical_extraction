@@ -44,16 +44,26 @@ def _parse_example(entry: dict[str, object]) -> RuleExample:
 
 def _parse_entry(entry: dict[str, object]) -> ExtractCatalogEntry:
     exclude_raw = entry.get("exclude") or []
+    examples_raw = entry.get("examples") or []
+    order_raw = entry["order"]
+    if not isinstance(order_raw, (str, int)):
+        raise TypeError("extract catalog order must be an integer")
+    if not isinstance(examples_raw, list) or not all(
+        isinstance(example, dict) for example in examples_raw
+    ):
+        raise TypeError("extract catalog examples must be mappings")
+    if not isinstance(exclude_raw, list):
+        raise TypeError("extract catalog exclude must be a list")
     return ExtractCatalogEntry(
         rule_id=str(entry["rule_id"]),
         rule_set=str(entry["rule_set"]),
-        order=int(entry["order"]),
+        order=int(order_raw),
         group=RuleGroup(str(entry["group"])),
         portability=Portability(str(entry["portability"])),
         description=str(entry["description"]),
         builder=str(entry["builder"]),
         source_stack=str(entry["source_stack"]),
-        examples=tuple(_parse_example(ex) for ex in entry.get("examples") or []),
+        examples=tuple(_parse_example(ex) for ex in examples_raw),
         provenance=str(entry["provenance"]) if entry.get("provenance") is not None else None,
         exclude=tuple(str(name) for name in exclude_raw),
         pattern_id=str(entry["pattern_id"]) if entry.get("pattern_id") is not None else None,

@@ -46,7 +46,7 @@ def canonicalize_attribute_value(key: str, value: str) -> str:
 
 def resolve_point_range(
     attributes: Mapping[str, str], triple: PointRangeTriple
-) -> tuple[str, ...] | None:
+) -> tuple[str | None, ...] | None:
     """Collapse a ``(bare, lower, upper)`` attribute triple to one canonical value.
 
     Several ExECTv2 entities (SeizureFrequency's seizure/period counts, Onset and
@@ -78,6 +78,7 @@ def resolve_point_range(
     lower = canonicalize_attribute_value(lower_key, lower_raw) if lower_raw is not None else None
     upper = canonicalize_attribute_value(upper_key, upper_raw) if upper_raw is not None else None
 
+    bound: str | None
     if lower is not None and upper is not None:
         if lower != upper:
             return ("conflict", bare, lower, upper) if bare is not None else ("range", lower, upper)
@@ -114,9 +115,11 @@ def canonicalize_point_range_attributes(
         bare_key, lower_key, upper_key = triple
         resolved = resolve_point_range(attributes, triple)
         if resolved is not None and resolved[0] == "point":
+            point_value = resolved[1]
+            assert point_value is not None
             result.pop(lower_key, None)
             result.pop(upper_key, None)
-            result[bare_key] = resolved[1]
+            result[bare_key] = point_value
     return result
 
 

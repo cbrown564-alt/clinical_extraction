@@ -828,6 +828,7 @@ def _adjudicator_hints(
         ):
             profiles.append("boundary_peer_rescue")
         if profiles:
+            gpt_row = agent_rows.get("gpt")
             peer_profiles.append(
                 {
                     "peer_agent_id": peer_id,
@@ -835,9 +836,7 @@ def _adjudicator_hints(
                     "gpt_final_label": _selection_label(agent_rows.get("gpt")),
                     "peer_final_label": _selection_label(row),
                     "gpt_selected_event_flags": sorted(
-                        _selected_event_flags(agent_rows["gpt"])
-                        if agent_rows.get("gpt") is not None
-                        else ()
+                        _selected_event_flags(gpt_row) if gpt_row is not None else ()
                     ),
                     "peer_selected_event_flags": sorted(_selected_event_flags(row)),
                 }
@@ -1302,7 +1301,7 @@ def _render_agent_final(
         f"{agent_id}:{event_id}" for event_id in selection.get("selected_event_ids") or ()
     )
     evidence = _best_evidence(note_text, row, raw_decision)
-    attribution = (
+    attribution: llm_event_reasoner.DecisionAttribution = (
         "llm_original_structured_event_kept" if agent_id == "gpt" else "llm_selected_tool_rendered"
     )
     if rendered_label != final_label:

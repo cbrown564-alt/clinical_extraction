@@ -120,20 +120,20 @@ def split_daily_dose_regimen(
         slash_match = _SLASH_DAILY_DOSE_SEQUENCE_RE.search(text)
         if slash_match is None:
             return []
-        split_rows: list[tuple[str, dict[str, Any], str]] = []
+        slash_rows: list[tuple[str, dict[str, Any], str]] = []
         for match in _DOSE_UNIT_RE.finditer(slash_match.group(0)):
             attrs = dict(attributes)
             attrs["DrugDose"] = normalize_dose_value(match.group(1))
             attrs["DoseUnit"] = normalize_dose_unit(match.group(2))
             attrs["Frequency"] = "1"
-            split_rows.append(
+            slash_rows.append(
                 (
                     match.group(0),
                     attrs,
                     "split_slash_delimited_daily_dose_regimen",
                 )
             )
-        return split_rows
+        return slash_rows
 
     surface = evidence or text
     matches = tuple(_DOSE_UNIT_RE.finditer(surface))

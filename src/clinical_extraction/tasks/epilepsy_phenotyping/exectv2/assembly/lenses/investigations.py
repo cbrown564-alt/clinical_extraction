@@ -104,7 +104,7 @@ class InvestigationsDictionaryLens(ThinArtifactLens):
             key = _investigation_recovery_key_from_parts(attrs)
             if key in existing_keys:
                 continue
-            finding = _investigation_added_finding(
+            new_finding = _investigation_added_finding(
                 store,
                 text=text,
                 evidence=evidence,
@@ -113,10 +113,10 @@ class InvestigationsDictionaryLens(ThinArtifactLens):
                 policy=policy,
                 lens_id=self.lens_id,
             )
-            if finding is None:
+            if new_finding is None:
                 continue
             existing_keys.add(key)
-            added.append(finding)
+            added.append(new_finding)
 
         event = ProvenanceEvent(
             stage="entity_lens",

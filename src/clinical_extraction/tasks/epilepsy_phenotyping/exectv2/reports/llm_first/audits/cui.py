@@ -201,7 +201,7 @@ def cui_projection_coverage(
 
 def cui_projection_audit(
     gold_letters: Sequence[ExectLetter],
-    pred_letters: Sequence[ExectLetter],
+    pred_letters: Sequence[Any],
     entities: Sequence[str] = ARTIFACT_LAYER_ENTITIES,
 ) -> dict[str, Any]:
     """Full CUI audit: buckets, deterministic coverage, and CUI-only benchmark loss."""

@@ -169,7 +169,7 @@ def changed_row_accounting(
     baseline_by_id = {letter.letter_id: letter for letter in baseline}
     candidate_by_id = {letter.letter_id: letter for letter in candidate}
     details: list[dict[str, Any]] = []
-    by_indicator = {
+    by_indicator: dict[str, dict[str, Any]] = {
         indicator: {"changed_rows": 0, "categories": Counter()} for indicator in TARGET_INDICATORS
     }
     for row in rows:

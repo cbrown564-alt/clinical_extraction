@@ -135,7 +135,9 @@ def build_scorecard(
         "headline_entities": list(HEADLINE_ENTITIES),
         "coverage_diagnostic_entities": [PATIENT_HISTORY.name],
         "active_entities": list(ACTIVE_DETERMINISTIC_ENTITIES),
-        "overall_clinical_recovery": recovery_to_dict(aggregate_recovery(headline_scores.values())),
+        "overall_clinical_recovery": recovery_to_dict(
+            aggregate_recovery(list(headline_scores.values()))
+        ),
         "headline_scores": {
             entity: _headline_score_to_dict(score) for entity, score in headline_scores.items()
         },

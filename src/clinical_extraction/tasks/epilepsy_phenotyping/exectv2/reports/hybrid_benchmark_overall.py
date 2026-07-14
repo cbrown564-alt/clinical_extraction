@@ -321,7 +321,7 @@ def _registry_entry(
             "Like-for-like benchmark-surface overall for the synthesis hybrid "
             "key-family architecture. Dev140, analysis-only, no full-200 audit."
         ),
-        artifact_paths=[str(json_path), str(md_path)],
+        artifact_paths=(str(json_path), str(md_path)),
     )
 
 

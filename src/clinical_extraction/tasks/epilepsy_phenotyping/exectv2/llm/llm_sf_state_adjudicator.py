@@ -7,7 +7,7 @@ import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import dspy
 
@@ -48,6 +48,14 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     source_near_diagnostic,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+
+
+def _confidence(value: object) -> Literal["low", "medium", "high"]:
+    normalized = str(value)
+    if normalized not in {"low", "medium", "high"}:
+        return "medium"
+    return cast(Literal["low", "medium", "high"], normalized)
+
 
 PROMPT_VERSION = "exectv2_hybrid_sf_state_adjudicator_v0.5"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_state_adjudicator"
@@ -1164,7 +1172,7 @@ def _reconstruct_pred_letters(rows: Sequence[dict[str, Any]]) -> list[ExectLette
                     text=str(m["text"]),
                     attributes={str(k): str(v) for k, v in dict(m.get("attributes") or {}).items()},
                     evidence=str(m.get("evidence", "")),
-                    confidence=str(m.get("confidence", "medium")),
+                    confidence=_confidence(m.get("confidence", "medium")),
                     rationale=str(m.get("rationale", "")),
                 )
                 for m in row.get("predicted_mentions", [])
@@ -1197,7 +1205,8 @@ def _emit_checkpoint(
     }
     if report_path:
         write_report(rows, metadata, report_path, jsonl_path=jsonl_path or Path(""))
-    summary = metadata["summary"]
+    summary_value = metadata["summary"]
+    summary = summary_value if isinstance(summary_value, Mapping) else {}
     print(
         json.dumps(
             {

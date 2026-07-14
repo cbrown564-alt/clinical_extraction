@@ -191,7 +191,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 selected_texts=selected_texts,
             ):
                 continue
-            finding = diagnosis_added_finding(
+            new_finding = diagnosis_added_finding(
                 store,
                 text=text,
                 evidence=evidence,
@@ -199,8 +199,8 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 policy=policy,
                 lens_id=self.lens_id,
             )
-            if finding is not None:
-                added.append(finding)
+            if new_finding is not None:
+                added.append(new_finding)
 
         companion_added: list[ClinicalFinding] = []
         for finding in [*kept, *added]:
