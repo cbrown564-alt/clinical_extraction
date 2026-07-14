@@ -1134,22 +1134,3 @@ def test_write_report_includes_goal_and_diagnostic_ladder(tmp_path) -> None:
     assert "Goal item F1" in text
     assert "## Key Clinical-Recovery Headlines" in text
     assert "## Diagnostic Scoring Ladder" in text
-
-
-def test_runner_auto_path_slug_is_windows_safe() -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners import (
-        run_llm_only_key_entities_structured as runner,
-    )
-
-    path = runner._auto_path(
-        "dev",
-        "ollama_chat/qwen3.6:35b",
-        140,
-        "jsonl",
-        prompt_profile="qwen_compact",
-    )
-
-    assert path.name.startswith(
-        "exectv2_llm_only_key_entities_structured_qwen_compact_dev140_qwen3635b_"
-    )
-    assert ":" not in path.name

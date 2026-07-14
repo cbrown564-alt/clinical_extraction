@@ -90,7 +90,8 @@ class Gan2026PipelineV1:
         from .runner import Gan2026PipelineRunner, PipelineConfiguration
 
         config = PipelineConfiguration(
-            architecture="deterministic", ablation_config=self.ablation_config
+            architecture="deterministic_canonical_pipeline",
+            ablation_config=self.ablation_config,
         )
         self._runner = Gan2026PipelineRunner(config)
 

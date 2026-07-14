@@ -6,21 +6,10 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     llm_event_reasoner,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
-    pipeline_specs,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-
-
-def test_llm_event_reasoner_is_registered_on_shared_cli_surface() -> None:
-    spec = pipeline_specs()["llm_event_reasoner"]
-
-    assert "structured-event" in spec.description
-    assert spec.default_max_tokens == 1600
-    assert spec.default_structured_event_jsonl_path is not None
 
 
 def test_prompt_input_uses_structured_events_without_forbidden_labels() -> None:

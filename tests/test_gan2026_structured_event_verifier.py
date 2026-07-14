@@ -6,21 +6,10 @@ from pathlib import Path
 from clinical_extraction.tasks.seizure_frequency.gan2026.agentic import (
     structured_event_verifier,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
-    pipeline_specs,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-
-
-def test_structured_event_verifier_is_registered_on_shared_cli_surface() -> None:
-    spec = pipeline_specs()["structured_event_verifier"]
-
-    assert "verifier" in spec.description
-    assert spec.default_max_tokens == 1800
-    assert spec.default_structured_event_jsonl_path is not None
 
 
 def test_verifier_prompt_uses_action_contract_without_forbidden_labels() -> None:

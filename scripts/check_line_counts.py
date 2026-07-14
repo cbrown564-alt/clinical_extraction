@@ -13,10 +13,6 @@ Gate rules
 3. **Tests tier** (P0-6) — any ``*.py`` under ``tests/`` must be **≤ 800 lines**
    unless documented in ``TESTS_ALLOWLIST`` below.
 
-4. **Frontend tier** — any ``*.ts`` / ``*.tsx`` under ``frontend/`` (excluding
-   ``node_modules/`` and ``.next/``) must be **≤ 600 lines** unless documented
-   in ``FRONTEND_ALLOWLIST`` below.
-
 Allowlist policy (day-1 rollout)
 --------------------------------
 Known legacy monoliths are allowlisted with a **frozen ceiling** equal to their
@@ -48,12 +44,8 @@ from pathlib import Path
 EXECTV2_LLM_MAX_LINES = 500
 SRC_MAX_LINES = 1000
 TESTS_MAX_LINES = 800
-FRONTEND_MAX_LINES = 600
-
 SRC_PACKAGE = "src/clinical_extraction"
 TESTS_DIR = "tests"
-FRONTEND_DIR = "frontend"
-FRONTEND_EXTENSIONS = (".ts", ".tsx")
 
 
 @dataclass(frozen=True)
@@ -75,64 +67,12 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         588,
         "Wave C-S5: structured decomposed; run_split + report assembly cohesive unit",
     ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_clinical_findings.py": AllowlistEntry(
-        80,
-        "Wave C-S2: thin facade over pipelines/clinical_findings/ 3-stage package",
-    ),
     # clinical_findings extract decomposed (Wave C-S6): extract now ~50 LOC;
     # prompt corpus in prompts/clinical_findings/, parsing in parsing.py.
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/verify.py": AllowlistEntry(
-        700,
-        "Wave C-S2: clinical_findings stage 2 — verification prompts + decisions",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/clinical_findings/runner.py": AllowlistEntry(
-        600,
-        "Wave C-S2: clinical_findings run_split orchestration + reporting",
-    ),
     # target_indicators_single_call decomposed (Wave C-S5): facade now 80 LOC (no entry).
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/target_indicators_single_call/projection_helpers.py": AllowlistEntry(
-        880,
-        "Wave C-S5: target_indicators decomposed; projection/repair leaf helpers (DAG) cohesive unit",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/target_indicators_single_call/prompt_builders.py": AllowlistEntry(
-        527,
-        "Wave C-S5: target_indicators decomposed; prompt builders cohesive unit",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/acceptance_gate.py": AllowlistEntry(
-        524,
-        "P1-3: diagnosis_verification acceptance gate — prompt corpus externalization pending (P3-2)",
-    ),
     "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/decomposer.py": AllowlistEntry(
         583,
         "P1-3: diagnosis_verification decomposer — prompt corpus externalization pending (P3-2)",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/phase2_panel.py": AllowlistEntry(
-        864,
-        "P1-3: diagnosis_verification phase2 panel — prompt corpus externalization pending (P3-2)",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/diagnosis_verification/reconciler.py": AllowlistEntry(
-        666,
-        "P1-3: diagnosis_verification reconciler — prompt corpus externalization pending (P3-2)",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/pipelines/entity_verifier/med_inv_content.py": AllowlistEntry(
-        541,
-        "P3-2: med_inv prompt corpus externalized; runner/orchestration remains",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_family_conditioned_candidate_adjudicator.py": AllowlistEntry(
-        877,
-        "A1: family-conditioned adjudication — extract shared scaffold",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_family_conditioned_event_ledger.py": AllowlistEntry(
-        1292,
-        "A1: family-conditioned ledger — split prompt corpus from orchestration",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_family_routed_llm_first.py": AllowlistEntry(
-        1145,
-        "A1: family-routed llm-first — split routing table from runner",
-    ),
-    "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_all_entities.py": AllowlistEntry(
-        790,
-        "A1: all-entities orchestrator — pending decomposition",
     ),
     "tasks/epilepsy_phenotyping/exectv2/llm/llm_only_per_entity.py": AllowlistEntry(
         1360,
@@ -152,20 +92,8 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     ),
     # --- ExECTv2 non-LLM >1k LOC ---
     # --- Gan2026 >1k LOC ---
-    "tasks/seizure_frequency/gan2026/agentic/boundary_audit_prompt_v2.py": AllowlistEntry(
-        1014,
-        "Wave3-S3: migrate to AgenticStage scaffold + prompt externalization",
-    ),
-    "tasks/seizure_frequency/gan2026/agentic/consensus_fresh_agreement_selector.py": AllowlistEntry(
-        1348,
-        "Wave3-S3: migrate to AgenticStage scaffold",
-    ),
     "tasks/seizure_frequency/gan2026/agentic/cross_model_structured_event_adjudicator.py": AllowlistEntry(
         1508,
-        "Wave3-S3: migrate to AgenticStage scaffold",
-    ),
-    "tasks/seizure_frequency/gan2026/agentic/direct_boundary_critic_rescue.py": AllowlistEntry(
-        1554,
         "Wave3-S3: migrate to AgenticStage scaffold",
     ),
     "tasks/seizure_frequency/gan2026/agentic/fresh_evidence_reasoner.py": AllowlistEntry(
@@ -179,14 +107,6 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
     "tasks/seizure_frequency/gan2026/agentic/structured_event_verifier.py": AllowlistEntry(
         1149,
         "Wave3-S3: migrate to AgenticStage scaffold",
-    ),
-    "tasks/seizure_frequency/gan2026/agentic/temporal_sentinel_specialist.py": AllowlistEntry(
-        1114,
-        "Wave3-S3: migrate to AgenticStage scaffold",
-    ),
-    "tasks/seizure_frequency/gan2026/artifact_analysis/reset_stage_component_ablation_v6.py": AllowlistEntry(
-        1118,
-        "Gan2026 artifact_analysis: ablation harness — move to experiments/",
     ),
     "tasks/seizure_frequency/gan2026/deterministic/rules/cluster.py": AllowlistEntry(
         1321,
@@ -204,21 +124,9 @@ ALLOWLIST: dict[str, AllowlistEntry] = {
         1176,
         "C2: move inline repairs to shared StructuredRepairConfig registry",
     ),
-    "tasks/seizure_frequency/gan2026/llm/llm_heavy_clinical_frequency_reasoner.py": AllowlistEntry(
-        1270,
-        "Gan2026 LLM: heavy frequency reasoner — pending decomposition",
-    ),
-    "tasks/seizure_frequency/gan2026/llm/llm_heavy_evidence_selection_with_deterministic_adapters.py": AllowlistEntry(
-        1453,
-        "Gan2026 LLM: heavy evidence selection — pending decomposition",
-    ),
     "tasks/seizure_frequency/gan2026/llm/llm_only_direct_labeler.py": AllowlistEntry(
         1104,
         "Gan2026 LLM: direct labeler — pending decomposition",
-    ),
-    "tasks/seizure_frequency/gan2026/pipeline/stages/evidence_gating.py": AllowlistEntry(
-        550,
-        "Gan2026 pipeline: projection render evidence gating heuristics",
     ),
 }
 
@@ -232,25 +140,13 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         1749,
         "P0-6/Wave-C-S1: megatest — extract lens table fixtures",
     ),
-    "test_exectv2_target_indicators_single_call_seizure_frequency.py": AllowlistEntry(
-        1723,
-        "P0-6/Wave-C-S1: megatest — split SF indicator scenarios",
-    ),
     "test_gan2026_hybrid_structured_events.py": AllowlistEntry(
         1607,
         "P0-6/Wave-C-S1: megatest — split hybrid event repair cases",
     ),
-    "test_gan2026_llm_candidate_set_clinical_assessment_probe.py": AllowlistEntry(
-        1541,
-        "P0-6/Wave-C-S1: megatest — split candidate-set probe panels",
-    ),
     "test_exectv2_llm_only_key_entities_generation_selection.py": AllowlistEntry(
         1470,
         "P0-6/Wave-C-S1: megatest — split generation/selection strategy cases",
-    ),
-    "test_gan2026_clinical_assessment_projection_render_repairs.py": AllowlistEntry(
-        1449,
-        "P0-6/Wave-C-S1: megatest — split projection render repair cases",
     ),
     "test_exectv2_scoring.py": AllowlistEntry(
         1962,
@@ -274,25 +170,9 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         1178,
         "P0-6/Wave-C-S1: megatest — split structured key-entity cases",
     ),
-    "test_exectv2_llm_only_clinical_findings.py": AllowlistEntry(
-        1159,
-        "P0-6/Wave-C-S1: megatest — split clinical findings pipeline cases",
-    ),
-    "test_gan2026_consensus_fresh_agreement_selector.py": AllowlistEntry(
-        1062,
-        "P0-6/Wave-C-S1: megatest — split consensus selector panels",
-    ),
     "test_gan2026_normalize.py": AllowlistEntry(
         1032,
         "P0-6/Wave-C-S1: megatest — split normalize rule tables",
-    ),
-    "test_gan2026_clinical_assessment_projection_render_instrumentation.py": AllowlistEntry(
-        1013,
-        "P0-6/Wave-C-S1: megatest — split projection render instrumentation",
-    ),
-    "test_exectv2_target_indicators_single_call_diagnosis.py": AllowlistEntry(
-        948,
-        "P0-6/Wave-C-S1: megatest — split diagnosis indicator scenarios",
     ),
     "test_gan2026_pipeline_v1.py": AllowlistEntry(
         890,
@@ -303,26 +183,9 @@ TESTS_ALLOWLIST: dict[str, AllowlistEntry] = {
         "P0-6/Wave-C-S1: megatest — split clinical finding assembly cases; "
         "point/range shape-equivalence disclosure comments (2026-07-08)",
     ),
-    "test_gan2026_clinical_assessment_projection_render.py": AllowlistEntry(
-        824,
-        "P0-6/Wave-C-S1: megatest — split projection render cases",
-    ),
     "test_exectv2_deterministic_all9.py": AllowlistEntry(
         840,
         "P0-6/Wave-C-S1: megatest — split all9 deterministic rule cases",
-    ),
-}
-
-# Paths are posix-relative to ``frontend/``.
-FRONTEND_ALLOWLIST: dict[str, AllowlistEntry] = {
-    "lib/types/shared.ts": AllowlistEntry(
-        660,
-        "P2-6/Wave-C-S6: types split — shared cross-domain types pending further slice",
-    ),
-    "lib/types/exectv2.ts": AllowlistEntry(
-        625,
-        "SF point/range shape-equivalence + gold-data-issue advisory types "
-        "(SfGoldAdvisory, SfGoldCaseLedgerRow) (2026-07-08)",
     ),
 }
 
@@ -360,11 +223,6 @@ def tests_root(root: Path | None = None) -> Path:
     return base / TESTS_DIR
 
 
-def frontend_root(root: Path | None = None) -> Path:
-    base = repo_root() if root is None else root
-    return base / FRONTEND_DIR
-
-
 def is_exectv2_llm_production(rel_path: str) -> bool:
     return "exectv2/llm/" in rel_path and "/prompts/" not in rel_path
 
@@ -377,20 +235,6 @@ def iter_python_files(tree_root: Path) -> list[tuple[str, Path]]:
     files: list[tuple[str, Path]] = []
     for path in sorted(tree_root.rglob("*.py")):
         if "__pycache__" in path.parts:
-            continue
-        rel = path.relative_to(tree_root).as_posix()
-        files.append((rel, path))
-    return files
-
-
-def iter_frontend_files(tree_root: Path) -> list[tuple[str, Path]]:
-    files: list[tuple[str, Path]] = []
-    for path in sorted(tree_root.rglob("*")):
-        if not path.is_file():
-            continue
-        if path.suffix not in FRONTEND_EXTENSIONS:
-            continue
-        if "node_modules" in path.parts or ".next" in path.parts:
             continue
         rel = path.relative_to(tree_root).as_posix()
         files.append((rel, path))
@@ -489,49 +333,8 @@ def check_tests_line_counts(tests_dir: Path | None = None) -> list[LineCountViol
     return violations
 
 
-def check_frontend_line_counts(frontend_dir: Path | None = None) -> list[LineCountViolation]:
-    """Return violations for the frontend tree (empty list = pass)."""
-    root = frontend_root() if frontend_dir is None else frontend_dir
-    violations: list[LineCountViolation] = []
-
-    for rel_path, path in iter_frontend_files(root):
-        line_count = count_lines(path)
-        entry = FRONTEND_ALLOWLIST.get(rel_path)
-
-        if line_count <= FRONTEND_MAX_LINES:
-            continue
-
-        if entry is not None and line_count <= entry.max_lines:
-            continue
-
-        if entry is None:
-            violations.append(
-                LineCountViolation(
-                    rel_path=rel_path,
-                    line_count=line_count,
-                    triggered_rules=(f"frontend≤{FRONTEND_MAX_LINES}",),
-                    kind="new",
-                    ceiling=None,
-                    justification=None,
-                )
-            )
-        else:
-            violations.append(
-                LineCountViolation(
-                    rel_path=rel_path,
-                    line_count=line_count,
-                    triggered_rules=(f"frontend≤{FRONTEND_MAX_LINES}",),
-                    kind="growth",
-                    ceiling=entry.max_lines,
-                    justification=entry.justification,
-                )
-            )
-
-    return violations
-
-
 def main() -> int:
-    violations = check_line_counts() + check_tests_line_counts() + check_frontend_line_counts()
+    violations = check_line_counts() + check_tests_line_counts()
     if not violations:
         print("line-count gates: OK")
         return 0

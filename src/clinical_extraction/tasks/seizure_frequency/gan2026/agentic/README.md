@@ -1,49 +1,19 @@
-# Gan 2026 agentic stages
+# Gan V12 efficiency ceiling
 
-DSPy-backed stage runners for validation-development experiments. Shared scaffolding
-lives in `stage_protocol.py`; migrated stages implement `AgenticStage` with:
+This package retains only the multi-model fresh-evidence reasoner used as the
+quality ceiling in the Gan comparison. It is not the operational hybrid.
 
-1. **Prompt builder** — serializes one model-facing JSON payload per row
-2. **Decision schema** — Pydantic record validated after `contract.schema_repair`
-3. **Postprocess policy** — format-only or evidence-guided label repair, substring checks
-4. **Thin `run_split`** — row loop, metadata, JSONL, and markdown report via shared helpers
+`fresh_evidence_reasoner.py` combines saved GPT, Qwen, and DeepSeek
+structured-event traces with one GPT-4.1 judgment. Its direct imports are
+implementation stages of that one retained pipeline, not separately supported
+candidate families.
 
-## Migrated (AgenticStage / run_driver)
+Run it through the single Gan CLI:
 
-| Module | Notes |
-| --- | --- |
-| `confidence_reviewer.py` | Shadow stage; no split runner (single-row `review()` only) |
-| `boundary_audit_prompt_v2.py` | D1 panel/hard50 runner |
-| `direct_boundary_critic_rescue.py` | D2 direct + boundary critic panel/hard50 runner |
-| `structured_event_verifier.py` | V4 verifier-first structured-event correction |
-| `fresh_evidence_reasoner.py` | V12 fresh-evidence reasoner; `run_split` on `run_driver` |
-| `cross_model_challenge_adjudicator.py` | V11 open peer-challenge; `run_split` via `dispatch_registered_split` |
-| `represented_event_normalizer.py` | V8 represented-event normalizer; `run_split` via `dispatch_registered_split` |
-| `event_completion_reasoner.py` | V7 event-completion reasoner; `run_split` via `dispatch_registered_split` |
-| `temporal_sentinel_specialist.py` | V9 temporal/sentinel specialist; `run_split` via `dispatch_registered_split` |
-| `targeted_boundary_router.py` | V3 targeted boundary router; `run_split` via `dispatch_registered_split` |
-| `cross_model_structured_event_adjudicator.py` | V10 base cross-model adjudicator; `run_split` via `dispatch_registered_split` |
-| `tool_context_ablation.py` | E1 one-call tool-context ablation; `run_split` via `dispatch_registered_split` |
-| `tool_self_consistency.py` | E2 boundary-guide self-consistency; `run_split` via `dispatch_registered_split` |
+```sh
+gan2026-llm-experiment --pipeline fresh_evidence_reasoner --split validation
+```
 
-## Legacy pattern (inline runner)
-
-These modules still duplicate parse/metadata/report boilerplate and are candidates
-for incremental migration. Do **not** rewrite monoliths wholesale — migrate one stage at a time.
-
-- `structured_event_consensus.py`
-- `structured_event_patches.py`
-- `precision_gated_selector.py`
-- `consensus_fresh_agreement_selector.py`
-- `boundary_guide_rescue_replay.py`
-- `selective_fallback_replay.py`
-- `llm_reasoning_stage0.py`
-
-## Shared helpers (`stage_protocol.py`)
-
-- `parse_response` — JSON extract + `schema_repair` + optional label repair
-- `build_stage_metadata` — wraps `experiments.run_metadata.build_run_metadata`
-- `write_stage_jsonl` / `load_stage_jsonl`
-- `build_markdown_report_skeleton` — standard experiment report sections
-- `configure_dspy_for_stage` / `build_isolated_dspy_lm`
-- `emit_progress_checkpoint`
+The locked test result is aggregate-only. Development must not inspect or tune
+from locked test rows. The retained evidence manifest records the exact result
+and claim boundary.

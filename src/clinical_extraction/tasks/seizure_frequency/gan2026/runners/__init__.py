@@ -1,19 +1,9 @@
-"""Per-architecture Gan 2026 pipeline runner modules.
-
-Pure relocation of ``runner.py`` into cohesive submodules. The legacy module
-path remains a thin facade re-exporting this API.
-"""
+"""Retained Gan 2026 pipeline runners."""
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
-    deterministic,
     deterministic_canonical,
-    hybrid,
     hybrid_structured_events,
     llm_only_canonical,
-    llm_only_direct_labeler,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.artifact import (
-    build_unified_pipeline_artifact,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.cli_specs import (
     get_cli_specs,
@@ -34,14 +24,10 @@ __all__ = [
     "PipelineArchitecture",
     "PipelineConfiguration",
     "PipelineOutputArtifact",
-    "build_unified_pipeline_artifact",
-    "deterministic",
     "deterministic_canonical",
     "get_cli_specs",
-    "hybrid",
     "hybrid_structured_events",
     "llm_only_canonical",
-    "llm_only_direct_labeler",
     "run_split",
     "write_deterministic_report",
 ]

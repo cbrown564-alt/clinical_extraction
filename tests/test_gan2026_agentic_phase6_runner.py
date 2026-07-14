@@ -10,9 +10,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.agentic.runner import (
     summarize_rows,
     write_report,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli import (
-    pipeline_specs,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     FrequencyLabelKind,
 )
@@ -20,14 +17,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows,
 )
-
-
-def test_agentic_pipeline_is_registered_on_shared_cli_surface() -> None:
-    spec = pipeline_specs()["agentic_matched_budget"]
-
-    assert "matched-budget" in spec.description
-    assert spec.default_jsonl_path.name == "gan2026_agentic_matched_budget_validation.jsonl"
-    assert spec.default_max_tokens == 900
 
 
 def test_prompt_only_runner_emits_matched_budget_traces_without_predictions() -> None:

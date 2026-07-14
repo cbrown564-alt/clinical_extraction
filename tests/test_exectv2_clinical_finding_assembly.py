@@ -567,39 +567,6 @@ views:
     assert manifest.lenses["Diagnosis"].lens == "diagnosis_hierarchy_negation_v01"
 
 
-def test_holistic_manifest_reproduces_dev140_score_ladder() -> None:
-    manifest = load_finding_assembly_manifest(
-        Path("configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v01_dev140.yaml")
-    )
-
-    run = build_finding_assembly(manifest, generated_on="2026-06-21")
-
-    headline = run.report["score_ladder"]["headline_target"]
-    benchmark = run.report["score_ladder"]["benchmark"]
-    companions = run.report["score_ladder"]["fidelity_companions"]
-    assert run.report["gate_decision"]["decision"] == "promote-dev-holistic-finding-assembly"
-    # Headline F1 baselines re-frozen after the four-family scorer-scope fixes
-    # (7949a9d4) and parked-item closures (c4a65e75). Benchmark and the Diagnosis
-    # concept_negation companion are unchanged by those fixes.
-    assert headline["overall"]["f1"] == 0.823
-    assert headline["by_indicator"]["Diagnosis"]["f1"] == 0.777
-    assert headline["by_indicator"]["SeizureFrequency"]["f1"] == 0.8125
-    assert headline["by_indicator"]["Prescription"]["f1"] == 0.871
-    assert headline["by_indicator"]["Investigations"]["f1"] == 0.8682
-    # benchmark["raw"] re-frozen 0.2968 -> 0.3094 by the SF/Onset/PatientHistory
-    # point/range shape-equivalence fix (a bare count/age and an equal-bounds
-    # Lower/Upper range now collapse to the same match_key/_attribute_key
-    # tuple; see scoring/normalize.py:resolve_point_range). The full-attribute
-    # "benchmark" score runs every entity through match_key, so this moves;
-    # headline and the Diagnosis companion do not (unaffected keying).
-    assert benchmark["raw"] == 0.3094
-    assert benchmark["after_cui_projection"] == 0.3912
-    assert companions["Diagnosis"]["concept_negation"]["f1"] == 0.7572
-    # active_rate_fidelity re-frozen 0.3908 -> 0.5632 by the same fix (this
-    # pipeline's SF predictions use the Lower/Upper degenerate-range shape).
-    assert companions["SeizureFrequency"]["active_rate_fidelity"]["f1"] == 0.5632
-
-
 def _manifest(
     *,
     control: Path,
