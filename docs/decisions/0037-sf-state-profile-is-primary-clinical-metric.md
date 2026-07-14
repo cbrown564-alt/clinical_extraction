@@ -33,10 +33,9 @@ recall-additive `changed` facts across 15 letters, lifting state_profile
 the projection's effect by ~50%. A metric that silently zeroes an entire clinical
 state cannot be the one experiments are optimized or concluded against.
 
-This was already flagged in
-`docs/research/exectv2_sf_representation_not_recall_2026-06-28.md` (P1, §1) which
-showed the strict key under-credits SF by ~0.12 overall and the 0.592 "plateau"
-was partly a measurement artifact. Phase 3b confirms the live cost.
+The retained row analysis
+`docs/experiments/exectv2/seizure_frequency/exectv2_sf_canonical_metric_row_analysis_2026-06-29.md`
+records the scoring distinction and its row-level development evidence.
 
 ## What this changes
 

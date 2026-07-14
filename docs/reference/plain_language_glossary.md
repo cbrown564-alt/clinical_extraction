@@ -96,7 +96,7 @@ Last updated: 2026-07-06
 | --- | --- | --- | --- |
 | **C1** | ExECT benchmark gap on SF/Dx is mostly gold noise and format mismatch, not model failure. | **gold-quality reconciliation claim** (C1) | Manuscript abstract/Methods; cite dev140 adjudication caveat. |
 | **C2** | Shared format layers help both tasks; evidence gate is structurally inert. | **cross-task component dividend** (C2) | Ablation markdown, aggregate full-200 component-off. |
-| **C3** | Gan wall mechanism partially transfers to ExECT SF binding slice (bounded, 6/9 checks). | **bounded wall transfer** (C3) | `exectv2_sf_wall_transfer_probe` artifacts; not definitive abstention product. |
+| **C3** | Whether the Gan confident-over-reading mechanism transfers to ExECT remains unanswered. | **cross-task over-reading question** (C3) | Only after a selected ExECT transfer artifact is added to the evidence manifest. |
 | **C4** | Frozen same-core architecture reaches headline parity across models (DeepSeek ≥ GPT; Qwen diagnostic). | **model-agnostic architecture claim** (C4) | `exectv2_same_core_model_swap_full200` JSON; per-family table required. |
 | **C5** | Project demonstrates evaluation discipline (panels, CV, regression catches, frozen audits). | **evaluation discipline claim** (C5) | Gan v0.7 regression, Gate 4 protocols — instances, not hypotheticals. |
 
@@ -133,7 +133,7 @@ Last updated: 2026-07-06
 | Document | Role |
 | --- | --- |
 | [`CONTEXT.md`](../../CONTEXT.md) | Extended vocabulary and wikilink graph |
-| [`docs/collaborator_onboarding.md`](../collaborator_onboarding.md) | New-collaborator entry point |
-| [`docs/THREAD_MAP.md`](../THREAD_MAP.md) | Five narrative reading paths |
+| [`docs/NAVIGATION.md`](../NAVIGATION.md) | New-collaborator entry point |
+| [`docs/THREAD_MAP.md`](../THREAD_MAP.md) | Short task-based reading paths |
 | [`docs/canon/05_ceilings_wall.md`](../canon/05_ceilings_wall.md) | Two-ceiling structural canon |
 | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | C1–C5 claims register |

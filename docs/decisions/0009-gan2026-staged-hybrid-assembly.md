@@ -48,17 +48,8 @@ fallback remain prediction-bearing.
   states and add deterministic suspicious-state checks.
 - Any future holdout-facing use requires a frozen predeclared audit protocol.
 
-## Evidence
+## Retained Evidence
 
-Primary readiness report:
-
-- `docs/research/gan2026/architecture/gan2026_architecture_assembly_readiness_decision_2026-06-04.md`
-
-Supporting RQ answers:
-
-- `docs/experiments/gan2026/COMPONENT_MECHANICS_CANON.md`
-- `docs/experiments/gan2026/rq_series/gan2026_rq1_candidate_discovery_answer_2026-06-04.md`
-- `docs/experiments/gan2026/rq_series/gan2026_rq2_evidence_selection_answer_2026-06-04.md`
-- `docs/experiments/gan2026/rq_series/gan2026_rq3_rich_selected_state_hard_panel_answer_2026-06-04.md`
-- `docs/experiments/gan2026/rq_series/gan2026_rq4_projection_answer_2026-06-04.md`
-- `docs/experiments/gan2026/rq_series/gan2026_rq5_deterministic_compilation_rendering_answer_2026-06-04.md`
+The selected Gan architecture artifacts, hashes, and no-call replay closure live
+in `docs/experiments/retained_evidence_manifest.json`. Historical RQ reports are
+recoverable from Git but are not active evidence owners.

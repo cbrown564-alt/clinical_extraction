@@ -52,12 +52,9 @@ on it.
   `multiple per day`, and preserves cluster frequency content when cluster
   context is present.
 - Prefer the author evaluation-script scoring policy where it conflicts with the CSV-preparation parser.
-- Keep clean scorer-facing gold-normalization policy separate from strict
-  benchmark-format repair and from named deterministic semantic modules. The
-  first adopted validation-only policy slice is cluster-name stripping for
-  cadence-only cluster labels, vague weekday cadence to `multiple per week`, and
-  Gan-specific bare `bimonthly` to `1 per 2 month`; the rationale and boundary
-  cases live in `docs/research/gan2026/data_and_policy/gan2026_gold_normalization_policy_question_2026-06-01.md`.
+- Keep scorer-facing gold normalization separate from strict benchmark-format
+  repair and named deterministic semantic modules. Adopted conversions must be
+  tested and described in `docs/design/gan2026_normalization_semantics.md`.
 
 ## ExECTv2 Split Names
 

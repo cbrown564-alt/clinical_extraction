@@ -1,67 +1,53 @@
-# 02 — Pipeline Spine
+# 02 — Pipeline stages
 
-Last updated: 2026-07-01
+Last updated: 2026-07-14
 
-**Structural canon slot:** end-to-end flow from letter text to scored clinical findings.
+This document names the stages shared by the retained Gan and ExECT reference
+systems. Exact source, configuration, scorer, test, and replay paths live in the
+[retained evidence manifest](../experiments/retained_evidence_manifest.md).
 
----
+## Gan 2026
 
-## Gan 2026 spine (frozen)
-
-```
-letter → clinical assessment → structured events → projection/render → Purist score
-```
-
-Promoted path: **LLM structured-event extraction + deterministic render** (not
-direct labeler, not multi-agent consensus). See [`06_gan_clinical_policy.md`](06_gan_clinical_policy.md).
-
-Deterministic fourth stage: **Evidence Trace Check** (ADR 0014) — distinct from
-hybrid `Verify` vocabulary.
-
----
-
-## ExECTv2 Plan 11 spine (production control)
-
-```
-letter → per-family producers (JSONL) → family lenses (Dx/SF/Rx/Inv) → clinical finding store → headline projection
+```text
+letter
+  → clinical assessment or structured event extraction
+  → deterministic selection and normalization
+  → Gan label rendering
+  → Purist and Pragmatic scoring
 ```
 
-Frozen performance control: **holistic finding assembly v08** — all four key
-families >0.900 on dev140 `clinical_headline`. Replay-only evidence ladder in
-[`workstreams/HOLISTIC_ASSEMBLY_LADDER_CANON.md`](workstreams/HOLISTIC_ASSEMBLY_LADDER_CANON.md)
-(absorbs v01–v07 iteration).
+The retained comparison contains rules-only, single-pass LLM-only, and
+single-pass hybrid cells. The multi-trace V12 result is saved aggregate ceiling
+evidence, not an executable reference cell.
 
-ADR anchor: [`0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md`](../decisions/0032-clinical-finding-assembly-is-the-exectv2-plan11-spine.md).
+## ExECTv2
 
----
+```text
+letter
+  → family producers
+  → Diagnosis, SeizureFrequency, Prescription, and Investigations transforms
+  → clinical finding assembly
+  → clinical_headline and companion scoring
+```
 
-## Shared cross-task layers
+The retained comparison contains the deterministic all-nine baseline, the GEPA
+LLM-only negative comparator, and holistic finding assembly v08.
 
-From cross-task ablation (2026-06-27):
+## Stage ownership
 
-| Component | ExECTv2 dev140 | Gan validation750 |
-| --- | ---: | ---: |
-| `evidence_validation` gate | Δ=0 (inert) | Δ=0 (inert) |
-| `standard_dictionary` / normalize | +0.0389 | +0.0293 |
-
-Evidence gate is structurally present but **does not move headline scores** on
-current stacks.
-
----
-
-## Primary sources
-
-| Topic | Document |
+| Stage | Owner |
 | --- | --- |
-| ExECT key-family synthesis | [`docs/research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md`](../research/exectv2_final_key_family_architecture_synthesis_2026-06-18.md) |
-| Gan rule register | [`docs/design/gan2026_rule_register.md`](../design/gan2026_rule_register.md) |
-| Experiment registry | [`experiments/registry.jsonl`](../../experiments/registry.jsonl) |
-| Run validation ladder | [`experiments/README.md`](../../experiments/README.md) |
+| Data and split policy | Task data modules and checked split manifests |
+| Extraction | Deterministic or LLM task modules |
+| Clinical selection | Task-specific deterministic or hybrid modules |
+| Normalization and projection | Task deterministic modules |
+| Evidence and schema checks | Shared core plus task contracts |
+| Scoring | Gan or ExECT scorer packages |
+| Artifact identity | Retained evidence manifest |
+| Claim strength | [Paper claims register](10_paper_provenance.md) |
 
----
+The retained cross-task ablation found normalization gains of +0.0389 on ExECT
+dev140 and +0.0293 on Gan validation750. The evidence check changed neither
+headline score on those replays. That score result does not make the evidence
+check unnecessary; rejection and repair behavior still needs direct tests.
 
-## Related structural canons
-
-- [`01_system_architecture.md`](01_system_architecture.md) — package boundaries  
-- [`04_scoring.md`](04_scoring.md) — what gets scored at each stage  
-- [`07_exect_plan11.md`](07_exect_plan11.md) — frozen closeout evidence  

@@ -169,7 +169,6 @@ support <excluded_claim>.
 After a meaningful audit:
 
 - write or link the report in `experiments/` or `docs/research/`;
-- update `experiments/RUN_INDEX.md` or the run registry if the run is
-  registry-backed;
+- update `experiments/registry.jsonl` if the run is retained and registry-backed;
 - update `PROJECT_STATUS.md` with the next action and claim caveat;
 - avoid locked-test language unless the frozen-test protocol was followed.

@@ -1,65 +1,31 @@
-# Documentation Lifecycle
+# Documentation lifecycle
 
-Operational rules for creating, locating, and retiring documents. Complements
-the routing map in [`docs/NAVIGATION.md`](../NAVIGATION.md).
+Keep one maintained owner for each concern.
 
-## Where new documents go
+| Concern | Owner |
+| --- | --- |
+| Current state | `PROJECT_STATUS.md` |
+| Work order | `docs/plans/ACTIVE_ROADMAP.md` |
+| Claim strength | `docs/canon/10_paper_provenance.md` |
+| Selected evidence and hashes | `docs/experiments/retained_evidence_manifest.json` |
+| Run lineage | `experiments/registry.jsonl` |
+| Architecture and data rules | `docs/design/` and `docs/decisions/` |
+| Repeatable procedure | `docs/runbooks/` |
 
-| Document type | Create in | Retire to | Notes |
-| --- | --- | --- | --- |
-| ADR | `docs/decisions/` | Never delete; supersede in place | Use next sequential number; one decision per file |
-| Run narrative | `docs/experiments/` | `experiments/archive/` when registry marks superseded | Answers "what did this run do?" |
-| Research synthesis | `docs/research/` | Keep; add successor doc if reframed | Answers "what did we learn?" |
-| Plan | `docs/plans/` | `docs/research/maintenance/` when complete | Mark status at top of file |
-| Runbook | `docs/runbooks/` | Update in place | Repeatable procedures |
-| Machine artifact | `experiments/` | `experiments/archive/` notes only; JSONL stays for replay | Register in `registry.jsonl` when decision-bearing |
-| Row case file | `docs/research/error_analysis/` | Keep with parent analysis doc | Never at repo root |
-| Control board | `PROJECT_STATUS.md` | Monthly digest under `docs/research/maintenance/` | Rolling ~30-day "Done Recently" window |
+## Add a document only when needed
 
-## Two-tree rule
+- Update an owner instead of creating a second status, roadmap, or claim log.
+- Add a decision record when the reason must outlive the implementation diff.
+- Add an experiment report only when it is selected evidence or a predeclared
+  study that is currently running.
+- Add machine artifacts only through the registry and evidence process.
 
-**Narrative in `docs/experiments/`. Machine artifacts in `experiments/`.**
+## Retire documents
 
-Exceptions allowed at `experiments/` root only for registry-linked artifacts
-that must sit beside JSON/JSONL siblings (scorecards, error ledgers, frozen
-holdout audit reports). The CI allowlist in
-`scripts/doc_hygiene_experiments_root_allowlist.txt` freezes the current set;
-adding a new root-level `.md` requires updating that allowlist deliberately.
+Delete superseded plans, candidate narratives, generated dossiers, and redirect
+stubs from the active tree. Git history is the archive. Do not create another
+tracked archive directory.
 
-## Filename convention
+Never delete or rename a manifest-selected path without updating hashes,
+registry metadata, replay checks, and claim status.
 
-New files: `topic_descriptor_YYYY-MM-DD.md`.
-
-Do not rename paths referenced by `retained_evidence_manifest.json`,
-`registry.jsonl`, or frozen holdout evidence without updating those owners and
-re-running their checks.
-
-## PROJECT_STATUS hygiene
-
-- **Now / Next / Blocked** — current steering only.
-- **Done Recently** — last ~30 days; older entries move to a monthly digest
-  under `docs/research/maintenance/project_status_digest_YYYY-MM.md`.
-- **Current Read** — evidence stack snapshot; rewrite when headline numbers
-  change, not on every small experiment.
-
-## Archive policy
-
-Follow `docs/plans/repo_simplification_plan_2026-06-22.md`:
-
-1. Freeze and index before deleting or moving evidence.
-2. Move superseded iteration **notes** to `experiments/archive/`; keep JSON/JSONL
-   in place for replay.
-3. Update `experiments/archive/ARCHIVE_INDEX.md` when adding buckets.
-
-## CI gate
-
-`scripts/check_doc_hygiene.py` runs in CI and fails when:
-
-- A new `.md` appears at the repository root (except `README.md`,
-  `CONTEXT.md`, `PROJECT_STATUS.md`).
-- A directory at the repository root starts with `_`.
-- A new `.md` appears under `experiments/` root outside the frozen allowlist.
-
-To intentionally add a root-level experiment markdown file, append its basename
-to `scripts/doc_hygiene_experiments_root_allowlist.txt` in the same PR and
-state why it must co-locate with machine artifacts.

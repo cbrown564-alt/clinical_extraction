@@ -79,11 +79,10 @@ move to synthetic hard cases, validation hard slices, adversarial/paraphrase
 robustness, component-stress ablations, selective-action analysis, or a frozen
 test generalization audit.
 
-Use `docs/design/gan2026_saturated_validation_protocol.md` before spending
-another run on a saturated validation surface. The written reason for any 250-row
-escalation must name the failure mode, comparator, surface, inspection policy,
-and stop rule. "Measure whether the aggregate improves" is not enough when the
-comparator is already near ceiling or known to be validation-overfit.
+Before spending another run on a saturated validation surface, write a dated
+predeclaration. It must name the failure mode, comparator, surface, inspection
+policy, and stop rule. "Measure whether the aggregate improves" is not enough
+when the comparator is already near ceiling or known to be validation-overfit.
 
 ### Test
 

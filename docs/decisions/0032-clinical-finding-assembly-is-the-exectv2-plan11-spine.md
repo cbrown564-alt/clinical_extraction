@@ -4,7 +4,7 @@ Date: 2026-06-21
 
 ## Status
 
-Accepted for the dev140 Plan 11 structural replay.
+Accepted. The retained control is v08.
 
 ## Context
 
@@ -28,18 +28,12 @@ ExECTv2 Plan 11 assembly is now expressed as:
 3. first-class scoring views rendered from those final findings;
 4. an attribution sidecar through `FindingSource` and `ProvenanceEvent`.
 
-The v01 implementation is behavior-preserving. Lenses are thin saved-artifact
-adapters, and no clinical logic was rewritten. The manifest
-`configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v01_dev140.yaml`
-selects the same frozen source artifacts as the focused-lane replay.
+The assembly is implemented by the retained v08 control. Historical v01-v07
+artifacts documented the path to that control but are no longer active evidence.
 
 ## Consequences
 
-- The focused-lane report remains available as a compatibility wrapper.
-- The holistic candidate
-  `exectv2_holistic_finding_assembly_v01_dev140` reproduces the focused-lane
-  dev140 score ladder while explaining the system as findings, lenses, and
-  views.
+- The holistic v08 candidate is the retained ExECT hybrid control.
 - Source provenance and deterministic ownership stay row-level and
   prediction-bearing. Semantic lens behavior must be represented as provenance,
   not hidden as normalization.
@@ -50,8 +44,6 @@ selects the same frozen source artifacts as the focused-lane replay.
 The implementation is covered by:
 
 - `tests/test_exectv2_clinical_finding_assembly.py`
-- `tests/test_exectv2_focused_lane_component_evidence.py`
 
-The generated replay artifact is:
-
-`docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v01_dev140_20260621.md`
+The selected report, saved inputs, hashes, and no-call replay command live in
+`docs/experiments/retained_evidence_manifest.json`.

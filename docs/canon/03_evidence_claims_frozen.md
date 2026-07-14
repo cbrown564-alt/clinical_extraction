@@ -1,80 +1,50 @@
-# 03 — Evidence, Claims & Frozen Artifacts
+# 03 — Evidence and frozen artifacts
 
 Last updated: 2026-07-14
 
-**Structural canon slot:** authority stack, frozen paths, and claim boundaries.
+## Authority
 
----
+Use this order when records disagree:
 
-## Authority stack (highest wins)
+1. present artifact plus recomputed hash;
+2. [retained evidence manifest](../experiments/retained_evidence_manifest.md);
+3. the claims register and scoring canon;
+4. current source and tests;
+5. the retained run registry.
 
-The 2026-07-13 surgery audit found that the legacy frozen artifact index did
-not reproduce much of its claimed path/hash graph. The replacement manifest
-was rebuilt and verified on 2026-07-14. Use this authority order:
+Deleted experiment history remains available in Git. It is not active evidence.
 
-1. **Present file plus recomputed hash** — direct evidence that the artifact exists
-2. **Verified retained-evidence manifest** — selected evidence, current hashes, and byte sizes
-3. **Structural / workstream canons** — this folder
-4. **ADRs** — `docs/decisions/`
-5. **Registry rows** — claim-of-record metadata for runs, but not proof that an artifact exists
-6. **Research syntheses** — dated interpretation under `docs/research/`
+## Split boundaries
 
-The deleted legacy indexes remain available in Git history only. Do not use an
-old path reference alone to block deletion or support a paper claim.
-
----
-
-## Frozen paths (never rename or move)
-
-| Path | Role |
-| --- | --- |
-| [`docs/experiments/retained_evidence_manifest.md`](../experiments/retained_evidence_manifest.md) | Verified selected evidence; JSON companion owns hashes and byte sizes |
-| [`docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md`](../experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md) | v08 performance control report |
-| `experiments/*.md` at repo root | CI allowlist — extend only deliberately |
-
-Machine replay artifacts are retained only when a surviving claim or reference
-configuration needs them. Large retained artifacts may live outside primary Git
-when the verified manifest records immutable location, checksum, size, schema,
-and retrieval instructions.
-
----
-
-## Claim boundaries by split
-
-| Split | Row inspection | Typical use |
+| Split | Row inspection | Permitted use |
 | --- | --- | --- |
-| **dev140** | Allowed | v08, GEPA, ablations, family ladders |
-| **validation750** | Allowed | Gan component ladder |
-| **ExECTv2 full200** | Aggregate only | Development-inclusive full-corpus audit; contains dev140 + held-out test60 |
-| **Gan test450** | **Forbidden** (aggregate only) | Author-untouched locked holdout |
-| **fixture / smoke** | Panel rules | Hard panels, self-consistency smoke |
+| ExECT dev140 | Allowed | Development, replay, and permitted error analysis |
+| Gan validation750 | Allowed | Development comparison and component analysis |
+| ExECT full200 | Aggregate only | Development-inclusive audit; not independent holdout evidence |
+| Gan test450 | Forbidden | Frozen aggregate citation only |
 
-From `claim_policy.py` — see [`04_scoring.md`](04_scoring.md) § Claim boundaries.
+Normal project commands must not expose Gan test450 or ExECT test60 rows for
+development.
 
----
+## Retention rule
 
-## What may be claimed in the paper
+A machine artifact remains only when the manifest selects it or an executable
+reference closure needs it. A document remains when it is:
 
-Register: [`10_paper_provenance.md`](10_paper_provenance.md) (C1–C5).
+- a canonical owner;
+- a current design, decision, or runbook;
+- a manuscript source; or
+- a manifest-selected evidence report.
 
-**Do not claim without boundary language:**
+Do not keep redirect stubs, duplicate syntheses, generated row dossiers, or
+candidate narratives. Do not rename manifest-selected paths without updating
+their hashes and rerunning both evidence checks.
 
-- Row-level Gan test450 beyond predeclared aggregates
-- ExECTv2 full200 described as an independent holdout rather than a development-inclusive audit
-- Benchmark 0.87/0.90 dominance (pivot to capability-first)  
-- LLM-only as production control (~0.73 vs hybrid ~0.92)  
-- Consensus/fresh selector (CUT)
+## Verification
 
----
+```sh
+source .venv/bin/activate
+python scripts/check_retained_evidence_manifest.py
+python scripts/verify_reference_evidence.py
+```
 
-## Archive policy
-
-Wave 4 moves stubbed iteration narratives to [`docs/archive/`](../archive/README.md)
-with redirect stubs at original paths. Canon summaries remain the navigation entry.
-
----
-
-## Related structural canons
-
-- [`10_paper_provenance.md`](10_paper_provenance.md) — claims register  
-- [`07_exect_plan11.md`](07_exect_plan11.md) — selected architecture evidence tables  

@@ -73,5 +73,4 @@ Promotion reports must include:
 - `docs/runbooks/gan2026_component_evidence_audit.md`
 - `docs/research/contribution_thesis.md`
 - `docs/design/gan2026_split_protocol.md`
-- `docs/design/gan2026_saturated_validation_protocol.md`
-- `docs/decisions/0007-llm-heavy-clinical-selection-deterministic-adapters.md`
+- `docs/experiments/retained_evidence_manifest.json`

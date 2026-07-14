@@ -93,26 +93,24 @@ docs/
   design/                       Architecture and pipeline design notes.
   decisions/                    Lightweight architecture decision records.
   experiments/                  Human-readable experiment reports and predeclarations.
-  NAVIGATION.md                 Reading guide for core documents and detailed records.
-  plans/                        Forward implementation plans by workstream.
-  research/                     Thesis, synthesis, error analysis, and paper-facing notes.
+  NAVIGATION.md                 Short guide to current documents and retained evidence.
+  plans/                        The active roadmap.
+  research/                     Thesis, manuscript, annotation source, and surgery owner.
   runbooks/                     Repeatable development/evaluation workflows.
   literature/                   Literature reviews and source PDFs.
-experiments/                    Run outputs and experiment records.
+experiments/                    Manifest-selected outputs and the retained registry.
 notebooks/                      Living notebooks for loading, extraction, evaluation, errors.
 tests/                          Focused tests for data contracts and deterministic behavior.
 ```
 
 ## Resuming Work
 
-- **Collaborator onboarding:** [docs/collaborator_onboarding.html](docs/collaborator_onboarding.html) (markdown: [docs/collaborator_onboarding.md](docs/collaborator_onboarding.md))
 - **Plain-language glossary:** [docs/reference/plain_language_glossary.md](docs/reference/plain_language_glossary.md)
 - **Documentation map:** [docs/NAVIGATION.md](docs/NAVIGATION.md)
-- **Thread map (pick your narrative):** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
+- **Short reading paths:** [docs/THREAD_MAP.md](docs/THREAD_MAP.md)
 - **Active roadmap:** [docs/plans/ACTIVE_ROADMAP.md](docs/plans/ACTIVE_ROADMAP.md)
 - **Live control board:** [PROJECT_STATUS.md](PROJECT_STATUS.md)
 - Active experiments index: [experiments/README.md](experiments/README.md)
-- Archived narratives: [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md)
 - Regenerating tracked artifacts: [docs/REGENERATION.md](docs/REGENERATION.md)
 
 ## Getting Started

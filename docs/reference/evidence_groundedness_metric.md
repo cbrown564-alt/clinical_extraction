@@ -62,7 +62,9 @@ The repair cascade only returns spans that exist verbatim in the source after ne
 | Old exact-substring (`evidence_valid` / `evidence_text_contained`) | **invalid** |
 | Unified `grade_evidence` | `REPAIRED_ARTIFACT` → **grounded** |
 
-On validation750 surfaced Qwen rows, this artifact class explains most of the gap between ~75% exact-valid and ~91–95% grounded (replay recompute 2026-06-27; see [evidence groundedness reconciliation](../experiments/reliability/evidence_groundedness_reconciliation_2026-06-27.md)).
+On validation750 surfaced Qwen rows, this artifact class explained most of the
+gap between roughly 75% exact-valid and 91–95% grounded in the 2026-06-27
+replay. The retained Gan reliability scorecard preserves the bounded result.
 
 ---
 
@@ -74,14 +76,14 @@ On validation750 surfaced Qwen rows, this artifact class explains most of the ga
 
 3. **Repaired spans are source-exact by construction.** Each repair function returns only when the result is found verbatim in `note_text`. Phase 0 taxonomy audit + unit fixtures lock the boundary between recoverable quirk and genuine absence.
 
-4. **Gates are separate.** Widening functional evidence gates (e.g. `fresh_evidence_reasoner.py:1634`) to accept `REPAIRED_*` spans can move predictions and requires frozen-holdout protocol — not part of metric unification.
+4. **Prediction filters are separate.** Widening a filter to accept
+   `REPAIRED_*` spans can move predictions and requires a new protocol. The
+   groundedness metric alone does not authorize that change.
 
 ---
 
 ## Related documents
 
-- Unification plan: [evidence_validity_unification_plan_2026-06-27.md](../plans/evidence_validity_unification_plan_2026-06-27.md)
-- Phase 0 before picture: [evidence_validity_audit_2026-06-27.md](../experiments/reliability/evidence_validity_audit_2026-06-27.md)
-- Phase 3 replay table: [evidence_groundedness_reconciliation_2026-06-27.md](../experiments/reliability/evidence_groundedness_reconciliation_2026-06-27.md)
-- ExECTv2 evaluation protocol: [06_evaluation_and_benchmark_protocol.md](../plans/exectv2/06_evaluation_and_benchmark_protocol.md)
-- gan2026 reliability scorecard: [gan2026_reliability_scorecard_and_phased_plan_2026-06-17.md](../experiments/gan2026/reliability/gan2026_reliability_scorecard_and_phased_plan_2026-06-17.md)
+- [Evidence authority and retention](../canon/03_evidence_claims_frozen.md)
+- [Cross-task reliability](../canon/09_cross_task_reliability.md)
+- [Retained evidence manifest](../experiments/retained_evidence_manifest.md)
