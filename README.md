@@ -25,10 +25,9 @@ composite on ExECT.
 
 Active work (2026-07-14):
 
-- **Surgery:** the retained evidence manifest and six no-call reference replays
-  are in place, and the classified closed Gan and ExECT source candidates are
-  removed. The next deletion phase is the remaining historical document and
-  artifact estate.
+- **Surgery:** source, document, and artifact reduction are complete. The
+  retained manifest selects the six no-call reference cells; the five largest
+  replay artifacts are content-addressed Git LFS objects.
 - **Quality:** pytest and mypy pass on the reduced backend. Ruff has 120
   line-length and two import-order findings; fresh-checkout verification is
   still outstanding.
@@ -56,7 +55,7 @@ covers broad epilepsy phenotyping on de-identified letters.
 - Separate extraction from clinical selection so error analysis can localize failures.
 - Keep deterministic label policy compatible with the author-provided evaluation code.
 - Preserve auditable evidence spans and rationale in schemas alongside final labels.
-- Use notebooks to support reproducible analysis, not as untracked side artifacts.
+- Keep reproducible analysis in tested scripts and manifest-selected artifacts.
 - Treat deterministic rules as explicit, categorized, testable, and ablatable components.
 - Separate general clinical/date rules from seizure-frequency rules, dataset-specific rules, and benchmark-formatting rules.
 - Use GPT-4.1 mini for most early LLM experiments; reserve Qwen 3.6:35b for later local strong-reasoning comparisons once a pipeline exceeds 0.8 Purist (strict Gan scorer) F1; keep DSPy GEPA with GPT-5.4 as a backlog optimizer option.
@@ -99,7 +98,6 @@ docs/
   runbooks/                     Repeatable development/evaluation workflows.
   literature/                   Literature reviews and source PDFs.
 experiments/                    Manifest-selected outputs and the retained registry.
-notebooks/                      Living notebooks for loading, extraction, evaluation, errors.
 tests/                          Focused tests for data contracts and deterministic behavior.
 ```
 

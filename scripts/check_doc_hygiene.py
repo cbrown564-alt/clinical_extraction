@@ -14,13 +14,16 @@ Run: python scripts/check_doc_hygiene.py
 
 from __future__ import annotations
 
+import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 ROOT_MARKDOWN_ALLOWED = frozenset(
     {"AGENTS.md", "README.md", "CONTEXT.md", "PROJECT_STATUS.md"}
 )
 ALLOWLIST_PATH = Path(__file__).resolve().parent / "doc_hygiene_experiments_root_allowlist.txt"
+FORBIDDEN_TOOL_STATE = (".claude", ".playwright-cli", ".zcode")
 
 
 def repo_root() -> Path:
@@ -54,6 +57,32 @@ def check_root_underscore_dirs(root: Path) -> list[str]:
     return violations
 
 
+def check_forbidden_tool_state(
+    root: Path, *, tracked_paths: Sequence[str] | None = None
+) -> list[str]:
+    """Reject checked-in state produced by local coding and browser tools."""
+
+    if tracked_paths is None:
+        result = subprocess.run(
+            ["git", "ls-files", "--cached"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        tracked_paths = [
+            path
+            for path in result.stdout.splitlines()
+            if (root / Path(path)).is_file()
+        ]
+    return [
+        f"tool-generated state directory: {name}/ "
+        "(keep agent configuration outside the repository)"
+        for name in FORBIDDEN_TOOL_STATE
+        if any(path == name or path.startswith(f"{name}/") for path in tracked_paths)
+    ]
+
+
 def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> list[str]:
     experiments = root / "experiments"
     if not experiments.is_dir():
@@ -83,6 +112,7 @@ def check_doc_hygiene(root: Path | None = None) -> list[str]:
     return (
         check_root_markdown(base)
         + check_root_underscore_dirs(base)
+        + check_forbidden_tool_state(base)
         + check_experiments_root_allowlist(base, allowlist)
     )
 

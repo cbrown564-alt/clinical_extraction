@@ -123,6 +123,34 @@ def test_retained_evidence_manifest_detects_hash_drift(tmp_path: Path) -> None:
         )
 
 
+def test_retained_evidence_manifest_accepts_content_addressed_git_lfs_artifact(
+) -> None:
+    manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
+    artifact = manifest["reference_cells"][0]["artifacts"][0]
+    artifact["retrieval"] = "git_lfs"
+    artifact["lfs_oid"] = f"sha256:{'0' * 64}"
+
+    validate_retained_evidence_manifest(
+        manifest,
+        repo_root=ROOT,
+        registry_path=REGISTRY,
+    )
+
+
+def test_git_lfs_artifact_requires_valid_content_oid() -> None:
+    manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
+    artifact = manifest["reference_cells"][0]["artifacts"][0]
+    artifact["retrieval"] = "git_lfs"
+    artifact["lfs_oid"] = "sha256:not-a-digest"
+
+    with pytest.raises(ValueError, match="invalid LFS object id"):
+        validate_retained_evidence_manifest(
+            manifest,
+            repo_root=ROOT,
+            registry_path=REGISTRY,
+        )
+
+
 def test_retained_reference_cell_requires_source_closure() -> None:
     manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
     del manifest["reference_cells"][0]["closure"]
