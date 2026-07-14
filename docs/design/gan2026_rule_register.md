@@ -137,8 +137,9 @@ the seed of contradiction **C2**.
 
 ## §6 — Agentic selection (consensus + fresh)
 
-Home: `gan2026/agentic/consensus_fresh_agreement_selector.py`,
-safety gate in `agentic/fresh_evidence_reasoner.py`.
+Historical implementation only. The closed agentic source was removed during
+repository surgery on 2026-07-14. Its frozen aggregate ceiling evidence remains
+in the retained evidence manifest; it is not an executable reference cell.
 
 | # | Rule | Prov. |
 |---|---|---|
@@ -146,7 +147,7 @@ safety gate in `agentic/fresh_evidence_reasoner.py`.
 | 6.2 | Nine versions (v0.1→v0.9) of conservative micro-gates: cluster-cadence precision, boundary rescue, count-window support, parseable denominator refinement, semantic-equivalent unknown handling. | **[T]** |
 | 6.3 | Safety gate v0.4→v0.9 blocks named overreach: nonselective unknown replacement, bare seizure-free, open-ended treatment-start denominators, historical-frequency→seizure-free, vague-`multiple` exactification, same-day cluster downgrade; plus scorer-neutral `no_reference`→`unknown`. | **[A] policy / [T] thresholds** |
 
-Status: the selector line is a **converged honest null** — oracle ceiling
+Historical result: the selector line was a **converged honest null** — oracle ceiling
 `739/750`; `11/750` rows have no correct component; bottleneck is now component
 generation, not selection.
 

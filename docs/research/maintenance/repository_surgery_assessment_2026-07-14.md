@@ -66,20 +66,23 @@ Subsequent surgery has:
   completed migration tools, and orphaned supervisor runtime;
 - removed closed ExECT generation-selection and verifier families as complete
   source, prompt, artifact, registry, report, and test slices;
-- begun leaf-first Gan deletion with the rejected event-completion reasoner;
-- reduced the backend to 297 typed source files with 1,336 passing tests;
-- reduced Ruff from 1,224 total findings to 139 line-length findings, with no
-  other rule failures; and
+- removed the remaining closed Gan agentic package while preserving its saved
+  aggregate ceiling evidence outside the executable reference system;
+- removed closed ExECT GEPA variants, stale launchers, superseded model-swap
+  configs, and completed SF diagnostic drivers outside the retained replay and
+  frozen six-model execution closures;
+- reduced the backend to 270 typed source files;
+- reduced Ruff from 1,224 total findings to 122 findings (120 line-length and
+  two import-order findings); and
 - made mypy clean on the installed source tree.
 
 Current counts and next work live in `PROJECT_STATUS.md`; commit history retains
 the exact deletion sequence.
 
-The largest remaining runtime modules include a 2,040-line Gan agentic
-reasoner, a 1,547-line boundary-rescue candidate, several 1,200–1,450-line LLM
-and deterministic modules, and tests above 2,000 lines. The line-count gate
-contains broad exemptions, so passing it does not mean the retained source is
-small or coherent.
+The closed Gan agentic modules are no longer installed source. Large retained
+deterministic and LLM modules and oversized tests still need ordinary
+maintainability work after deletion has settled. Passing the line-count gate
+does not by itself mean the retained source is small or coherent.
 
 ## High-level findings
 
@@ -89,8 +92,9 @@ The project describes two research tracks, many pipeline families, a backend
 Observatory, a frontend workbench, MLflow mirroring, report builders, artifact
 registries, paper-generation paths, and extensive experiment history. The
 retained manifest now identifies the active controls and minimal two-task ×
-three-family reference set. Closed code and documents still surround that set,
-so the repository is not yet reduced to it.
+three-family reference set. Historical documents and artifacts still surround
+that set, but the live Gan and ExECT source paths are now reduced to the
+retained reference and execution closures.
 
 This is the central problem. Without an explicit retained set, every historical
 component appears important and every deletion looks risky. The retained set
@@ -100,10 +104,10 @@ paths: it also needs the six minimal family comparators required by the paper.
 ### 2. Experiment history has become installed application code
 
 Closed deterministic, LLM-only, hybrid, agentic, verifier, rescue, selector,
-and model-comparison candidates remain under `src/clinical_extraction/`.
-Several are large, architecture-specific modules stored in the installed
-package. Their tests, reports, registries, CLI hooks, and frontend adapters make
-them look supported even after the research question has closed.
+and model-comparison candidates had remained under `src/clinical_extraction/`.
+The classified closed Gan and ExECT source families are now removed; their
+historical documents and artifacts still need reduction so they do not appear
+to be supported runtime paths.
 
 An archive directory inside the repository does not solve this problem if the
 archive remains indexed, tested, rendered, or imported. Closed code must leave
@@ -311,8 +315,9 @@ artifacts, and no retained registry or report names a missing path.
 
 ### Phase 3 — Cut closed source-code families
 
-Status: in progress. ExECT generation-selection and verifier families are
-removed; Gan leaf deletion has begun.
+Status: implemented in the current working tree. Closed Gan agentic source and
+closed ExECT generation-selection, verifier, GEPA-variant, model-swap-config,
+and SF-diagnostic code outside the retained closures are removed.
 
 Work from the leaves toward shared code:
 
@@ -329,8 +334,10 @@ Work from the leaves toward shared code:
 Do not preserve package layout for hypothetical future candidates. New research
 can add a new module when it begins.
 
-Exit condition: `src/clinical_extraction/` contains the shared core and the two
-named retained paths, not the project's complete experiment history.
+Exit condition met for the classified source set: `src/clinical_extraction/`
+contains the shared core, the six reference cells, and the ExECT runtime needed
+for the planned frozen model comparison. Saved historical evidence may still
+name deleted producers; it does not keep those producers installed.
 
 ### Phase 4 — Reduce the document estate
 
@@ -374,7 +381,7 @@ on deleted research history.
 ### Phase 6 — Rebuild tests and quality gates around the retained tree
 
 Status: in progress. Pytest and mypy pass, the line-count allowlist is gone,
-and Ruff has 139 line-length findings remaining.
+and Ruff has 120 line-length and two import-order findings remaining.
 
 1. Delete tests with deleted behavior.
 2. Split remaining megatests by invariant or user-facing command.
@@ -473,8 +480,9 @@ file names or registry decisions:
 
 ## Current handoff
 
-The initial batch is complete. Continue with the major work packages in
-`ACTIVE_ROADMAP.md`. The next source batch is the isolated, rejected Gan
-structured-event verifier. After the remaining closed Gan leaves are removed,
-re-run import analysis before deciding whether their shared agentic package can
-be collapsed or deleted.
+The classified closed Gan and ExECT source candidates are removed in the current
+working tree. Continue with the major work packages in `ACTIVE_ROADMAP.md`: the
+next deletion work is the historical document and artifact estate, followed by
+the remaining Ruff findings and fresh-checkout closeout. Re-open source
+classification only when a specific retained closure or new predeclared study
+requires it.

@@ -30,22 +30,19 @@ closed; its LLM-only result remains a reference comparator.
 
 ## Major work packages and order
 
-1. **Finish source deletion.** Remove closed Gan candidates from leaf modules
-   toward shared agentic code. Then classify remaining ExECT model-swap,
-   simplification, and diagnostic modules against both retained replay and the
-   planned frozen six-model run.
-2. **Reduce evidence and documentation.** Keep canonical owners and direct
+1. **Reduce evidence and documentation.** Keep canonical owners and direct
    paper proof. Define immutable external storage before deleting large retained
    artifacts from Git. Remove broken registry paths and historical narratives
    that no longer own a claim or decision.
-3. **Restore engineering gates.** Close the 139 Ruff line-length findings,
+2. **Restore engineering gates.** Close the 120 Ruff line-length and two import
+   ordering findings,
    simplify oversized retained tests where it improves ownership, and keep
    pytest, mypy, manifest validation, prompt snapshots, and six reference
    replays green.
-4. **Run the open evidence studies.** Complete Gan efficiency, ExECT strict
+3. **Run the open evidence studies.** Complete Gan efficiency, ExECT strict
    paper-surface reproduction, broad confidence calibration, annotation
    evidence consolidation, and the frozen six-model comparison.
-5. **Close from a fresh checkout.** Install, enforce split barriers, replay both
+4. **Close from a fresh checkout.** Install, enforce split barriers, replay both
    tasks, rebuild surviving paper tables, verify artifact hashes, and update the
    manuscript and claim register.
 
@@ -62,9 +59,9 @@ runtime is small enough to audit.
 | **Freeze retained paper story** | [`docs/canon/10_paper_provenance.md`](../canon/10_paper_provenance.md) | Keep the S1–S9 acceptance matrix current; no deletion may remove required proof |
 | **Evidence manifest repair** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Manifest rebuilt with present hashes; external large-artifact storage remains open |
 | **Minimal reference system** | [`PROJECT_STATUS.md`](../../PROJECT_STATUS.md) | Six cells now have exact source/config/scorer/test closure and passing no-call replay |
-| **Delete closed work** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | ExECT generation-selection and verifier slices are removed; the first rejected Gan agentic leaf is removed; continue leaf-first through closed Gan candidates |
+| **Delete closed work** | [`repo_simplification_plan_2026-06-22.md`](repo_simplification_plan_2026-06-22.md) | Classified closed Gan and ExECT source candidates are removed; the next reduction phase covers historical documents and artifacts |
 | **Frontend / Observatory scope** | [`repository_surgery_assessment_2026-07-14.md`](../research/maintenance/repository_surgery_assessment_2026-07-14.md) | Removed: neither product was required by the retained contribution or evidence closure |
-| **Restore real quality gates** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Pytest and mypy are green; line-count allowlists are gone; close the remaining 139 Ruff `E501` findings |
+| **Restore real quality gates** | [`thermo_nuclear_code_quality_audit_plan_2026-06-26.md`](thermo_nuclear_code_quality_audit_plan_2026-06-26.md) | Pytest and mypy are green; line-count allowlists are gone; close the remaining 120 Ruff `E501` and two `I001` findings |
 
 ---
 

@@ -4,9 +4,10 @@ Last updated: 2026-07-14
 
 ## Current outcome
 
-The repository contains a defensible modular clinical-extraction contribution,
-but the active tree is not yet a maintainable or fully reproducible expression
-of it. Repository surgery is in progress before new model experiments.
+The repository contains a defensible modular clinical-extraction contribution.
+The classified closed Gan and ExECT source candidates are now removed, but the
+document, artifact, quality-gate, and fresh-checkout phases of repository
+surgery remain open before new model experiments.
 
 The retained contribution must show:
 
@@ -73,7 +74,8 @@ closures, and replay expectations live in
 
 ## Surgery state
 
-Implemented and pushed to `main`:
+Earlier batches are on `main`; the latest source-candidate removal is
+implemented and verified in the current working tree:
 
 | Area | Current result |
 | --- | --- |
@@ -81,18 +83,19 @@ Implemented and pushed to `main`:
 | Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays |
 | Product scope | Removed the frontend and Observatory; the repository now targets the Python extraction package, retained evidence, and paper |
 | Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, and orphaned supervisor runtime |
-| Closed ExECT candidates | Removed generation-selection and the Diagnosis, SF, Prescription, and Investigations verifier families with their prompts, artifacts, registry rows, reports, and candidate tests |
-| First closed Gan candidate | Removed the rejected event-completion reasoner, its nine saved runs, registry row, and test |
+| Closed ExECT candidates | Removed generation-selection, all four verifier families, closed GEPA variants and launchers, completed SF diagnostic drivers, one-shot analysis tools, and superseded model-swap configs outside the retained closures |
+| Closed Gan candidates | Removed the entire closed agentic runtime and candidate tests; retained only the saved aggregate V12 ceiling evidence named by the evidence manifest |
 | Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
 
 Verification on the current deletion batch:
 
-- `python -m pytest`: 1,336 passed;
-- `python -m mypy src`: clean across 297 source files;
+- `python -m pytest -q`: 1,145 passed;
+- `python -m mypy src`: clean across 270 source files;
 - retained manifest, hash, and all six no-call reference replay tests pass as
   part of the full suite;
-- repository-wide Ruff has 139 remaining `E501` findings and no other rule
-  failures.
+- `git diff --check`: clean;
+- registry audit: all path-bearing fields resolve across 15 rows;
+- repository-wide Ruff still fails with 120 `E501` and two `I001` findings.
 
 These checks verify the current reduced working tree. They do not complete the
 fresh-checkout reproducibility closeout.
@@ -130,11 +133,9 @@ fresh-checkout reproducibility closeout.
 
 ## In progress
 
-1. Remove the next closed candidate as a complete vertical slice before
-   mechanically wrapping retained code.
-2. Close the 139 remaining Ruff line-length findings on the reduced tree.
-3. Reduce the document and artifact estate to canonical owners plus retained proof.
-4. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
+1. Reduce the document and artifact estate to canonical owners plus retained proof.
+2. Close the 122 remaining Ruff findings on the reduced tree.
+3. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
 ## Open research and validation work
 
@@ -164,16 +165,11 @@ fresh-checkout reproducibility closeout.
 
 ## Next
 
-1. Remove closed Gan candidates leaf-first, beginning with the now-isolated
-   structured-event verifier, and rerun import analysis after every batch.
-2. Classify remaining ExECT model-swap, simplification, and diagnostic code
-   against both retained replay and the future frozen six-model executable
-   path; delete only complete candidates outside both.
-3. Reduce documents, registries, and artifacts to canonical owners and retained
+1. Reduce documents, registries, and artifacts to canonical owners and retained
    proof, after the external retained-artifact location is defined.
-4. Make repository-wide Ruff green, simplify oversized retained tests, and run
+2. Make repository-wide Ruff green, simplify oversized retained tests, and run
    the full suite without allowlists.
-5. Complete the paper evidence studies on the frozen reduced architecture,
+3. Complete the paper evidence studies on the frozen reduced architecture,
    then perform the fresh-checkout closeout.
 
 ## Guardrails

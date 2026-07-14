@@ -180,13 +180,12 @@ the evidence is sufficient for a paper statement.
 Execution order is owned by [`ACTIVE_ROADMAP.md`](../plans/ACTIVE_ROADMAP.md).
 The claim gaps that must remain visible here are:
 
-1. Rebuild the retained evidence manifest and name the two-task × three-family reference set.
-2. Produce the matched Gan quality/cost/latency comparison for S3.
-3. Implement and evaluate deterministic phrase/CUI/full-attribute-bundle reproduction for S7.
-4. Evaluate model-reported confidence for broad phenotyping and finish the bounded routing verdict for S8.
-5. Consolidate annotation defects, conventions, scorer artifacts, and adjudication limits for S9.
-6. After the reduced architecture is frozen, run the six-model S4 comparison and use it to close or revise S5.
-7. Regenerate manuscript tables from retained evidence and re-sync the IEEE LaTeX source.
+1. Produce the matched Gan quality/cost/latency comparison for S3.
+2. Implement and evaluate deterministic phrase/CUI/full-attribute-bundle reproduction for S7.
+3. Evaluate model-reported confidence for broad phenotyping and finish the bounded routing verdict for S8.
+4. Consolidate annotation defects, conventions, scorer artifacts, and adjudication limits for S9.
+5. After the reduced architecture is frozen, run the six-model S4 comparison and use it to close or revise S5.
+6. Regenerate manuscript tables from retained evidence and re-sync the IEEE LaTeX source.
 
 ---
 

@@ -3,12 +3,11 @@ from __future__ import annotations
 from clinical_extraction.tasks.seizure_frequency.gan2026 import runner
 
 
-def test_gan2026_cli_exposes_only_retained_architectures_and_efficiency_ceiling() -> None:
+def test_gan2026_cli_exposes_only_retained_architectures() -> None:
     assert set(runner.get_cli_specs()) == {
         "deterministic_canonical_pipeline",
         "llm_only_canonical_pipeline",
         "hybrid_structured_events",
-        "fresh_evidence_reasoner",
     }
 
 

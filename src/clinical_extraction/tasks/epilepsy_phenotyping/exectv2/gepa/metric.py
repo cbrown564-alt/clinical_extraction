@@ -36,8 +36,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter i
     to_predicted_letter_from_dedup_facts,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program import approx_tokens
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.program_multifamily import (
-    _facts_of,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
+    extract_json_object,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     concept_keys,
@@ -59,6 +59,21 @@ KEY_FAMILIES: tuple[str, ...] = (
     "Prescription",
     "Investigations",
 )
+
+
+def _facts_of(raw_output: str) -> list[dict[str, Any]]:
+    """Return raw clinical-fact objects from one model response."""
+
+    if not raw_output:
+        return []
+    try:
+        payload = json.loads(extract_json_object(raw_output))
+    except (TypeError, ValueError):
+        return []
+    if not isinstance(payload, dict):
+        return []
+    facts = payload.get("clinical_facts") or payload.get("facts") or []
+    return [fact for fact in facts if isinstance(fact, dict)]
 
 
 @dataclass(frozen=True)
