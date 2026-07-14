@@ -16,11 +16,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     ClinicalAssessment,
     SeizureFreeInstrumentation,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden_normalization import (
-    _frequency_burden_from_multi_month_bucket_phrase,
-    _is_unrenderable_seizure_free_burden,
-    normalize_assessment_burden,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
     DISABLED_SWITCH_ISSUE_PREFIX,
     NORMALIZATION_POLICY_ID,
@@ -29,13 +24,19 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _validate_candidate_references,
     _validation_error_messages,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.draft_repair import (
+
+from .assessment.burden_normalization import (
+    _frequency_burden_from_multi_month_bucket_phrase,
+    _is_unrenderable_seizure_free_burden,
+    normalize_assessment_burden,
+)
+from .assessment.draft_repair import (
     _apply_deterministic_assessment_overrides,
     _apply_deterministic_assessment_repairs,
     _repair_candidate_role_ids,
     _repair_multi_primary_nonadditive_policy,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.seizure_free import (
+from .assessment.seizure_free import (
     _instrument_seizure_free_duration,
 )
 

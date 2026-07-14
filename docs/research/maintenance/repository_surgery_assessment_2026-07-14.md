@@ -72,17 +72,20 @@ Subsequent surgery has:
   configs, and completed SF diagnostic drivers outside the retained replay and
   frozen six-model execution closures;
 - reduced the backend to 270 typed source files;
-- reduced Ruff from 1,224 total findings to 122 findings (120 line-length and
-  two import-order findings); and
-- made mypy clean on the installed source tree.
+- reduced Ruff from 1,224 findings to zero and restored it as a CI gate;
+- made mypy clean on the installed source tree and restored it as a CI gate;
+  and
+- split seven oversized test modules by invariant while retaining the exact
+  1,150-test collection.
 
 Current counts and next work live in `PROJECT_STATUS.md`; commit history retains
 the exact deletion sequence.
 
-The closed Gan agentic modules are no longer installed source. Large retained
-deterministic and LLM modules and oversized tests still need ordinary
-maintainability work after deletion has settled. Passing the line-count gate
-does not by itself mean the retained source is small or coherent.
+The closed Gan agentic modules are no longer installed source. Some large
+retained deterministic and LLM modules may still merit ordinary
+maintainability work, but the oversized retained tests now have invariant-based
+owners. Passing a line-count threshold does not by itself mean retained source
+is coherent; further splits should follow behavior boundaries.
 
 ## High-level findings
 

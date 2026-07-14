@@ -11,17 +11,18 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     NormalizedBurden,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.frequency import (
-    _deterministic_label_from_source_phrase,
-    _has_cluster_label,
-    _parse_label_range,
-    _rate_burden_from_label,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
     _cluster_phrases,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
     CandidateKind as DeterministicCandidateKind,
+)
+
+from .frequency import (
+    _deterministic_label_from_source_phrase,
+    _has_cluster_label,
+    _parse_label_range,
+    _rate_burden_from_label,
 )
 
 

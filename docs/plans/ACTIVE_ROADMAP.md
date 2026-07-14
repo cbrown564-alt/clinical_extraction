@@ -15,9 +15,9 @@ development-inclusive aggregate audit.
 
 ## Order
 
-1. **Restore engineering checks.** Close the remaining Ruff findings while
-   keeping pytest, mypy, prompt snapshots, manifest validation, and all six
-   reference replays green.
+1. **Engineering checks restored (complete).** Ruff, mypy, all 1,150 tests,
+   prompt snapshots, manifest validation, and all six reference replays are
+   green. CI enforces Ruff, mypy, and the full suite.
 2. **Freeze the architecture.** Record the exact prompt, scorer, split, repair,
    and model policies before new calls.
 3. **Run open evidence work.**

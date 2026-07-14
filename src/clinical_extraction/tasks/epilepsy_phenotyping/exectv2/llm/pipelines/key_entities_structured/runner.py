@@ -31,30 +31,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     has_blocking_parse_issue,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
-    KEY_ENTITY_ITEM_F1_TARGET,
-    KEY_ENTITY_NAMES,
-    PIPELINE_FAMILY,
-    PROMPT_VERSION,
-    PUBLISHED_PER_ENTITY_ITEM_F1,
-    PromptProfile,
-    prompt_version_for,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing import (
-    flatten_events,
-    parse_structured_events_json,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection import (
-    to_predicted_letter,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders import (
-    build_prompt_input,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures import (
-    DspyKeyEntitiesStructuredExtractor,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     raw_output_from_adapter_parse_error,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
@@ -68,9 +44,32 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     semantic_config_for,
     source_near_diagnostic,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows as write_jsonl,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+
+from .constants import (
+    KEY_ENTITY_ITEM_F1_TARGET,
+    KEY_ENTITY_NAMES,
+    PIPELINE_FAMILY,
+    PROMPT_VERSION,
+    PUBLISHED_PER_ENTITY_ITEM_F1,
+    PromptProfile,
+    prompt_version_for,
+)
+from .parsing import (
+    flatten_events,
+    parse_structured_events_json,
+)
+from .projection import (
+    to_predicted_letter,
+)
+from .prompt_builders import (
+    build_prompt_input,
+)
+from .signatures import (
+    DspyKeyEntitiesStructuredExtractor,
 )
 
 

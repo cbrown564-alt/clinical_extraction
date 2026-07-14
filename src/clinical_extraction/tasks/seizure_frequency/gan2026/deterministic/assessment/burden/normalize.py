@@ -15,10 +15,21 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.candidate_set 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_assessment import (
     NormalizedBurden,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.cluster import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
+    _candidate_parse_phrases,
+    _candidates_by_ids,
+    _duration_unit,
+    _normalization_source_phrase,
+    _small_number_to_float,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
+    CandidateKind as DeterministicCandidateKind,
+)
+
+from .cluster import (
     _cluster_burden,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.frequency import (
+from .frequency import (
     _additive_frequency_burden,
     _burden_from_label,
     _deterministic_label_from_source_phrase,
@@ -29,16 +40,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _frequency_burden_from_primary_candidates,
     _has_seizure_free_label,
     _is_unrenderable_frequency_burden,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
-    _candidate_parse_phrases,
-    _candidates_by_ids,
-    _duration_unit,
-    _normalization_source_phrase,
-    _small_number_to_float,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
-    CandidateKind as DeterministicCandidateKind,
 )
 
 

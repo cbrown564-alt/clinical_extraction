@@ -22,12 +22,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.clinical_recovery_scorecard import (
-    ARTIFACT_LAYER_ENTITIES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cui_projection_diagnostic import (
-    cui_projection_diagnostic,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.llm_first.constants import (
     CUI,
     CUI_PHRASE,
@@ -41,6 +35,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     benchmark_config_for,
     score_overall,
     semantic_config_for,
+)
+
+from ...clinical_recovery_scorecard import (
+    ARTIFACT_LAYER_ENTITIES,
+)
+from ...cui_projection_diagnostic import (
+    cui_projection_diagnostic,
 )
 
 

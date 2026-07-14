@@ -48,7 +48,10 @@
         ],
         "tests": [
           "tests/test_exectv2_deterministic_all9.py",
-          "tests/test_exectv2_scoring.py",
+          "tests/test_exectv2_scoring_concept_identity.py",
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py",
+          "tests/test_exectv2_scoring_state_profiles.py",
           "tests/test_exectv2_data.py"
         ]
       },
@@ -122,7 +125,10 @@
         "tests": [
           "tests/test_exectv2_gepa_metric.py",
           "tests/test_exectv2_gepa_dedup_adapter.py",
-          "tests/test_exectv2_scoring.py"
+          "tests/test_exectv2_scoring_concept_identity.py",
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py",
+          "tests/test_exectv2_scoring_state_profiles.py"
         ]
       },
       "verification": {
@@ -211,7 +217,10 @@
         ],
         "tests": [
           "tests/test_exectv2_clinical_finding_assembly.py",
-          "tests/test_exectv2_scoring.py",
+          "tests/test_exectv2_scoring_concept_identity.py",
+          "tests/test_exectv2_scoring_headlines.py",
+          "tests/test_exectv2_scoring_match_fidelity.py",
+          "tests/test_exectv2_scoring_state_profiles.py",
           "tests/test_exectv2_data.py"
         ]
       },
@@ -487,7 +496,10 @@
           "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events.txt"
         ],
         "tests": [
-          "tests/test_gan2026_hybrid_structured_events.py",
+          "tests/test_gan2026_hybrid_structured_events_contract.py",
+          "tests/test_gan2026_hybrid_structured_events_diaries.py",
+          "tests/test_gan2026_hybrid_structured_events_repair.py",
+          "tests/test_gan2026_hybrid_structured_events_temporal.py",
           "tests/test_gan2026_llm_prompt_hygiene.py",
           "tests/test_gan2026_labels.py"
         ]

@@ -74,28 +74,29 @@ closures, and replay expectations live in
 
 ## Surgery state
 
-Earlier surgery batches are on `main`. The CI reduction and retained ExECT
-replay-closure repair are implemented and verified in the current working tree:
+Earlier surgery batches are on `main`. Document/artifact reduction and the
+engineering cleanup are implemented and verified in the current working tree:
 
 | Area | Current result |
 | --- | --- |
 | Evidence boundaries | Removed row-level Gan locked-test reports and generators; corrected ExECT full200 to development-inclusive audit; retained split barriers and aggregate-only claim rules |
 | Retained evidence | Rebuilt the two-task × three-family manifest with present paths, hashes, closure, and six passing no-call replays; restored and selected the four hybrid producer outputs accidentally removed by the broad artifact prune |
 | Product scope | Removed the frontend and Observatory; the repository now targets the Python extraction package, retained evidence, and paper |
-| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, orphaned supervisor runtime, and stale six-job CI; CI is now one install plus full-pytest job |
+| Broken support machinery | Removed report/catalog builders tied to absent artifacts, the line-count allowlist, one-shot migration tools, orphaned supervisor runtime, and stale six-job CI; CI is now one install plus Ruff, mypy, and full-pytest job |
 | Closed ExECT candidates | Removed generation-selection, all four verifier families, closed GEPA variants and launchers, completed SF diagnostic drivers, one-shot analysis tools, and superseded model-swap configs outside the retained closures |
 | Closed Gan candidates | Removed the entire closed agentic runtime and candidate tests; retained only the saved aggregate V12 ceiling evidence named by the evidence manifest |
 | Retained helper cleanup | Moved the few still-used helper functions out of deleted candidate packages and into their actual retained owners |
+| Engineering cleanup | Made repository-wide Ruff green and split seven oversized test modules into invariant-focused modules without changing the 1,150-test collection |
 
 Verification on the current deletion batch:
 
-- `python -m pytest -q`: 1,145 passed in the repository environment;
+- `python -m pytest -q`: 1,150 passed in the repository environment;
 - `python -m mypy src`: clean across 270 source files;
+- `python -m ruff check .`: clean;
 - retained manifest and hashes pass; all six no-call reference cells replay at
   their recorded metrics;
 - `git diff --check`: clean;
-- registry audit: all path-bearing fields resolve across 15 rows;
-- repository-wide Ruff still fails with 120 `E501` and two `I001` findings.
+- registry audit: all path-bearing fields resolve across 15 rows.
 
 These checks verify the current reduced working tree. The simplified workflow
 has not run on GitHub yet, and these checks do not complete the fresh-checkout
@@ -112,9 +113,8 @@ reproducibility closeout.
   records their paths, hashes, and sizes, and a test compares the config inputs
   with the selected artifact set.
 - **CI job lists rot with deleted scope.** The failing workflow still built the
-  removed frontend and named deleted gates and candidate tests. One full-suite
-  job is the temporary surgery contract; lint and typing remain local gates
-  until the reduced tree is ready to add them back.
+  removed frontend and named deleted gates and candidate tests. One reduced
+  job now installs the package and enforces Ruff, mypy, and the full suite.
 - **Saved replay and executable research are different needs.** The six
   reference cells can replay without model calls, but the planned ExECT
   six-model comparison still needs the structured extractor, Diagnosis
@@ -142,9 +142,8 @@ reproducibility closeout.
 
 ## In progress
 
-1. Close the remaining Ruff findings on the reduced tree.
-2. Freeze the exact retained architecture and execution policies.
-3. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
+1. Freeze the exact retained architecture and execution policies.
+2. Run the fresh-checkout install, replay, hash, path, and split-barrier closeout.
 
 ## Open research and validation work
 
@@ -174,11 +173,8 @@ reproducibility closeout.
 
 ## Next
 
-1. Make repository-wide Ruff green, simplify oversized retained tests, and run
-   the full suite without allowlists.
-2. Freeze the architecture and complete fresh-checkout reproducibility.
-3. Complete the paper evidence studies on the frozen reduced architecture,
-   then perform the fresh-checkout closeout.
+1. Freeze the architecture and complete fresh-checkout reproducibility.
+2. Complete the paper evidence studies on the frozen reduced architecture.
 
 ## Guardrails
 

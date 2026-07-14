@@ -235,7 +235,7 @@ def clinical_headline_unit_keys(
     (de-duplicated for Diagnosis/SeizureFrequency, per-occurrence for
     Investigations/Prescription). Non-target families have no headline unit."""
     if entity == "SeizureFrequency":
-        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.seizure_frequency import (
+        from .seizure_frequency import (
             _frequency_state_keys,
         )
 

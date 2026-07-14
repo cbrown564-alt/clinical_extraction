@@ -50,8 +50,7 @@ def test_no_tool_generated_state_in_repository_root(tmp_path: Path) -> None:
         "(keep agent configuration outside the repository)",
         "tool-generated state directory: .playwright-cli/ "
         "(keep agent configuration outside the repository)",
-        "tool-generated state directory: .zcode/ "
-        "(keep agent configuration outside the repository)",
+        "tool-generated state directory: .zcode/ (keep agent configuration outside the repository)",
     ]
 
 

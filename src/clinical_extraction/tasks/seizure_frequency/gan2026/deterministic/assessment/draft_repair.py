@@ -17,13 +17,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     AggregationPolicy,
     NormalizedBurden,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden_normalization import (
-    _cluster_burden,
-    _frequency_burden,
-    _frequency_burden_specificity_score,
-    _is_renderable_cluster_burden,
-    _is_renderable_frequency_burden,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
     _candidate_lookup,
     _candidates_by_ids,
@@ -31,6 +24,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _dedupe,
     _disabled_switch_issue,
     _normalization_source_phrase,
+)
+
+from .burden_normalization import (
+    _cluster_burden,
+    _frequency_burden,
+    _frequency_burden_specificity_score,
+    _is_renderable_cluster_burden,
+    _is_renderable_frequency_burden,
 )
 
 

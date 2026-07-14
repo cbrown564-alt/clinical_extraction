@@ -6,9 +6,8 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.cui_projection_diagnostic import (
-    cui_projection_diagnostic,
-    render_markdown,
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
+    cui_projection_diagnostic as cui_report,
 )
 
 
@@ -43,7 +42,7 @@ def test_coverage_and_agreement() -> None:
             ],
         )
     ]
-    diag = cui_projection_diagnostic(gold, pred, ["Diagnosis"])
+    diag = cui_report.cui_projection_diagnostic(gold, pred, ["Diagnosis"])
     d = diag.per_entity["Diagnosis"]
     assert d.predicted_mentions == 2
     assert d.predicted_with_cui == 1
@@ -58,7 +57,7 @@ def test_coverage_and_agreement() -> None:
 def test_disagreement_counted() -> None:
     gold = [_letter("EA1", [ExectAnnotation("Onset", "epilepsy", {"CUI": "C0014544"})])]
     pred = [_letter("EA1", [ExectAnnotation("Onset", "epilepsy", {"CUI": "C9999999"})])]
-    diag = cui_projection_diagnostic(gold, pred, ["Onset"])
+    diag = cui_report.cui_projection_diagnostic(gold, pred, ["Onset"])
     d = diag.per_entity["Onset"]
     assert d.cui_both_present == 1
     assert d.cui_agree == 0
@@ -74,7 +73,7 @@ def test_overall_micro_average() -> None:
         _letter("EA1", [ExectAnnotation("Diagnosis", "epilepsy", {"CUI": "C0014544"})]),
         _letter("EA2", [ExectAnnotation("Prescription", "lamotrigine", {})]),
     ]
-    diag = cui_projection_diagnostic(gold, pred, ["Diagnosis", "Prescription"])
+    diag = cui_report.cui_projection_diagnostic(gold, pred, ["Diagnosis", "Prescription"])
     assert diag.overall.predicted_mentions == 2
     assert diag.overall.predicted_with_cui == 1
     assert diag.overall.coverage == 0.5
@@ -83,7 +82,7 @@ def test_overall_micro_average() -> None:
 def test_render_markdown_has_overall_row() -> None:
     gold = [_letter("EA1", [ExectAnnotation("Diagnosis", "epilepsy", {"CUI": "C0014544"})])]
     pred = [_letter("EA1", [ExectAnnotation("Diagnosis", "epilepsy", {"CUI": "C0014544"})])]
-    diag = cui_projection_diagnostic(gold, pred, ["Diagnosis"])
-    md = render_markdown(diag, entities=["Diagnosis"])
+    diag = cui_report.cui_projection_diagnostic(gold, pred, ["Diagnosis"])
+    md = cui_report.render_markdown(diag, entities=["Diagnosis"])
     assert "| overall |" in md
     assert "CUI projection is a deterministic post-step" in md

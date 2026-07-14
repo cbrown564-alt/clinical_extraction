@@ -17,19 +17,20 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     standard_dictionary as sd,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.convention import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
+    load_qwen_compact_worked_examples,
+    load_worked_examples,
+)
+
+from ....deterministic.sf_surface_registry.adapters.convention import (
     residual_candidates_adapter,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
+from .constants import (
     _DIAGNOSIS_RE,
     _INVESTIGATION_RE,
     _MEDICATION_RE,
     _SEIZURE_STATE_RE,
     KEY_ENTITY_NAMES,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.prompts.key_entities.loader import (
-    load_qwen_compact_worked_examples,
-    load_worked_examples,
 )
 
 

@@ -4,16 +4,14 @@
 from __future__ import annotations
 
 import re
+from importlib import import_module
 from pathlib import Path
 
 import yaml
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_surface_registry.adapters.extraction import (
-    ANCHOR_RULES,
-    CHANGE_RULES,
-    RATE_RULES,
-    SEIZURE_FREE_RULES,
-    TEMPORAL_RULES,
+sf_rules = import_module(
+    "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic."
+    "sf_surface_registry.adapters.extraction"
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -59,11 +57,11 @@ _ENTITY_NAME = {
     "INVESTIGATIONS": "Investigations",
 }
 _EXTRACT_RULE_SETS = (
-    ANCHOR_RULES,
-    RATE_RULES,
-    SEIZURE_FREE_RULES,
-    CHANGE_RULES,
-    TEMPORAL_RULES,
+    sf_rules.ANCHOR_RULES,
+    sf_rules.RATE_RULES,
+    sf_rules.SEIZURE_FREE_RULES,
+    sf_rules.CHANGE_RULES,
+    sf_rules.TEMPORAL_RULES,
 )
 
 

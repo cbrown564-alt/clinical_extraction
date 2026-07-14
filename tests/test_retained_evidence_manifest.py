@@ -80,9 +80,7 @@ def test_hybrid_reference_manifest_keeps_all_finding_assembly_inputs() -> None:
     artifact_paths = {artifact["path"] for artifact in reference["artifacts"]}
     config_path = ROOT / reference["verification"]["inputs"]["path"]
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    replay_inputs = {
-        producer["artifact"] for producer in config["producers"].values()
-    }
+    replay_inputs = {producer["artifact"] for producer in config["producers"].values()}
 
     assert replay_inputs <= artifact_paths
 
@@ -123,8 +121,7 @@ def test_retained_evidence_manifest_detects_hash_drift(tmp_path: Path) -> None:
         )
 
 
-def test_retained_evidence_manifest_accepts_content_addressed_git_lfs_artifact(
-) -> None:
+def test_retained_evidence_manifest_accepts_content_addressed_git_lfs_artifact() -> None:
     manifest = deepcopy(load_retained_evidence_manifest(MANIFEST))
     artifact = manifest["reference_cells"][0]["artifacts"][0]
     artifact["retrieval"] = "git_lfs"

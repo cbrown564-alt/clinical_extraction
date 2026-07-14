@@ -20,18 +20,19 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction 
     PredictedLetter,
     PredictedMention,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.constants import (
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    check_evidence,
+    repair_attributes,
+)
+
+from .constants import (
     COMPONENT_OWNER,
     KEY_ENTITY_NAMES,
     PIPELINE_FAMILY,
     PROMPT_VERSION,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.records import (
+from .records import (
     MentionForEvidence,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
-    check_evidence,
-    repair_attributes,
 )
 
 

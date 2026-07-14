@@ -8,7 +8,7 @@ pass-throughs are also re-exported because other modules import this module as
 """
 # ruff: noqa: F401 — thin re-export facade; all symbols are intentionally re-exported.
 
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (
+from .pipelines.key_entities_structured import (
     _DIAGNOSIS_RE,
     _INVESTIGATION_RE,
     _MEDICATION_RE,

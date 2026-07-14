@@ -22,7 +22,14 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _normalize_phrase_for_parse,
     _small_number_to_float,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.date_anchor_parsing import (
+from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
+    CandidateKind as DeterministicCandidateKind,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
+    selected_evidence_derivation,
+)
+
+from ..date_anchor_parsing import (
     _extract_explicit_multi_month_window_months,
     _extract_frequency_anchor_window_date,
     _extract_frequency_article_month_bucket_matches,
@@ -31,12 +38,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _extract_frequency_summary_count_with_month_list,
     _inclusive_month_span,
     _whole_months_between,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.candidates import (
-    CandidateKind as DeterministicCandidateKind,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.selected_evidence import (
-    selected_evidence_derivation,
 )
 
 
@@ -607,7 +608,7 @@ def _burden_from_label(
     if _has_seizure_free_label(normalized):
         return _seizure_free_burden_from_label(normalized, source_phrase=source_phrase)
     if _has_cluster_label(normalized):
-        from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden.cluster import (  # noqa: PLC0415
+        from .cluster import (  # noqa: PLC0415
             _cluster_burden_from_label,
         )
 

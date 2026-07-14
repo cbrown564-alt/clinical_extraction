@@ -19,9 +19,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.clinical_asses
     NormalizedBurden,
     SeizureFreeInstrumentation,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.burden_normalization import (
-    _is_unrenderable_seizure_free_burden,
-)
 from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.common import (
     _candidate_parse_phrases,
     _candidates_by_ids,
@@ -31,7 +28,11 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessmen
     _normalization_source_phrase,
     _source_ids_from_candidates,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.deterministic.assessment.date_anchor_parsing import (
+
+from .burden_normalization import (
+    _is_unrenderable_seizure_free_burden,
+)
+from .date_anchor_parsing import (
     _extract_seizure_free_anchor_date,
     _mentions_since_anchor,
     _whole_months_between,

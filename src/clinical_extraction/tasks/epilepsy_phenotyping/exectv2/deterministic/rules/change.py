@@ -91,35 +91,78 @@ def _build_frequent(match: re.Match[str], _ctx: ExtractionContext) -> AttributeE
 CHANGE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "change.decreased": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?|episodes?|events?)\\s+(?:(?:has|have)\\s+)?(?:decreased|reduced|improved|declined|lessened)|(?:decreased|reduced|improvement\\s+in)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|burden)|seizures?)|(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:are|is)\\s+(?:decreased|reduced|better\\s+controlled|less\\s+frequent))\\b",
+            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?"
+            "|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?|episodes?|events?)\\s+(?:"
+            "(?:has|have)\\s+)?(?:decreased|reduced|improved|declined|lessened)|(?:decreased|reduce"
+            "d|improvement\\s+in)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|co"
+            "nvulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|burden)|sei"
+            "zures?)|(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasm"
+            "s?|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:are|is)\\s+(?:dec"
+            "reased|reduced|better\\s+controlled|less\\s+frequent))\\b",
             re.IGNORECASE,
         ),
         _build_decreased,
     ),
     "change.increased": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?|episodes?|events?)\\s+(?:(?:has|have)\\s+)?(?:increased|worsened|escalated|risen)|(?:increased|increase\\s+in|worsening\\s+of)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)|(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:are|is)\\s+(?:increased|more\\s+frequent|worse))\\b",
+            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?"
+            "|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?|episodes?|events?)\\s+(?:"
+            "(?:has|have)\\s+)?(?:increased|worsened|escalated|risen)|(?:increased|increase\\s+in|w"
+            "orsening\\s+of)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convuls"
+            "ions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)|(?:(?:seizure|seizures?|"
+            "episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|a"
+            "uras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:are|is)\\s+(?:inc"
+            "reased|more\\s+frequent|worse))\\b",
             re.IGNORECASE,
         ),
         _build_increased,
     ),
     "change.same": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:(?:remain(?:s)?|are|is)\\s+)?(?:unchanged|stable|the\\s+same)|no\\s+change\\s+in\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|pattern))|(?:unchanged|stable)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|pattern)))\\b",
+            "\\b(?:(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?"
+            "|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizures?)\\s+(?:(?:remain(?:s)?|ar"
+            "e|is)\\s+)?(?:unchanged|stable|the\\s+same)|no\\s+change\\s+in\\s+(?:(?:seizure|seizur"
+            "es?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerk"
+            "s?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|pattern))|("
+            "?:unchanged|stable)\\s+(?:(?:seizure|seizures?|episodes?|events?|spells?|absences?|con"
+            "vulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status"
+            " epilepticus)\\s+(?:frequency|rate|burden|control)|seizure\\s+(?:frequency|pattern)))"
+            "\\b",
             re.IGNORECASE,
         ),
         _build_same,
     ),
     "change.infrequent": ExtractRuleImpl(
         re.compile(
-            "\\b(?:infrequent|infrequently|rare)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|seizures?|episodes?)\\b|\\b(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|seizures?|episodes?)\\s+(?:are\\s+)?(?:infrequent|rare)\\b",
+            "\\b(?:infrequent|infrequently|rare)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|e"
+            "pisodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|au"
+            "ras?|status"
+            " epilepticus)|seizures?|episodes?)\\b|\\b(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?"
+            "|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|"
+            "auras?|status"
+            " epilepticus)|seizures?|episodes?)\\s+(?:are\\s+)?(?:infrequent|rare)\\b",
             re.IGNORECASE,
         ),
         _build_infrequent,
     ),
     "change.frequent": ExtractRuleImpl(
         re.compile(
-            "\\b(?:frequent|frequently|high.?frequency)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|seizures?|episodes?)\\b|\\b(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|seizures?|episodes?)\\s+(?:are\\s+)?(?:frequent|occurring\\s+frequently)\\b",
+            "\\b(?:frequent|frequently|high.?frequency)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seiz"
+            "ures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|je"
+            "rks?|auras?|status"
+            " epilepticus)|seizures?|episodes?)\\b|\\b(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?"
+            "|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|"
+            "auras?|status"
+            " epilepticus)|seizures?|episodes?)\\s+(?:are\\s+)?(?:frequent|occurring\\s+frequently"
+            ")\\b",
             re.IGNORECASE,
         ),
         _build_frequent,

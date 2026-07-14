@@ -239,7 +239,16 @@ def _build_zero_count(match: re.Match[str], _ctx: ExtractionContext) -> Attribut
 SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     "sf.duration": ExtractRuleImpl(
         re.compile(
-            "\\bseizure(?:[-‐-―\\s])free\\s+(?:for\\s+)?(?:(?:over|more\\s+than|at\\s+least|nearly|almost|around|about|approximately|the\\s+past)\\s+)*(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\bseizure(?:[-‐-―\\s])free\\s+(?:for\\s+)?(?:(?:over|more\\s+than|at\\s+least|nearly"
+            "|almost|around|about|approximately|the\\s+past)\\s+)*(?P<count>(?:(?:multiple|\\d+|on"
+            "e|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fiftee"
+            "n|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:"
+            "to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|tw"
+            "elve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|"
+            "thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|e"
+            "ight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nine"
+            "teen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|w"
+            "eeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_sf_with_duration,
@@ -247,14 +256,26 @@ SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "sf.zero_count": ExtractRuleImpl(
         re.compile(
-            "\\b(?:0|zero)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\b",
+            "\\b(?:0|zero)\\s+(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spel"
+            "ls?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepti"
+            "cus))\\b",
             re.IGNORECASE,
         ),
         _build_zero_count,
     ),
     "sf.no_seizures_duration": ExtractRuleImpl(
         re.compile(
-            "\\bno\\s+(?:further\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))(?:\\s+for\\s+(?:over\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years))?\\b",
+            "\\bno\\s+(?:further\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|even"
+            "ts?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status "
+            "epilepticus))(?:\\s+for\\s+(?:over\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|f"
+            "our|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|sev"
+            "enteen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:"
+            "multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen"
+            "|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|severa"
+            "l|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten"
+            "|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|o"
+            "nce|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|y"
+            "ears))?\\b",
             re.IGNORECASE,
         ),
         _build_no_seizures_duration,
@@ -262,14 +283,42 @@ SEIZURE_FREE_EXTRACT_IMPLS: dict[str, ExtractRuleImpl] = {
     ),
     "sf.no_had_duration": ExtractRuleImpl(
         re.compile(
-            "\\b(?:(?:has|have|had)\\s+not\\s+had\\s+(?:any\\s+|any\\s+more\\s+|one\\s+of\\s+(?:his|her|their)\\s+(?:bigger|larger|major)\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:hasn't|haven't|hadn't)\\s+(?:had\\s+)?(?:any\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))|(?:they|these)\\s+(?:have\\s+|has\\s+)?(?:not\\s+happen(?:ed)?|haven't\\s+happened|hasn't\\s+happened))\\s+(?:now\\s+)?for\\s+(?:around\\s+|about\\s+|at\\s+least\\s+|over\\s+|more\\s+than\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
+            "\\b(?:(?:has|have|had)\\s+not\\s+had\\s+(?:any\\s+|any\\s+more\\s+|one\\s+of\\s+(?:hi"
+            "s|her|their)\\s+(?:bigger|larger|major)\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}("
+            "?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclon"
+            "ics?|jerks?|auras?|status epilepticus))|(?:hasn't|haven't|hadn't)\\s+(?:had\\s+)?(?:a"
+            "ny\\s+|a\\s+)?(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?"
+            "|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus"
+            "))|(?:they|these)\\s+(?:have\\s+|has\\s+)?(?:not\\s+happen(?:ed)?|haven't\\s+happened"
+            "|hasn't\\s+happened))\\s+(?:now\\s+)?for\\s+(?:around\\s+|about\\s+|at\\s+least\\s+|o"
+            "ver\\s+|more\\s+than\\s+)?(?P<count>(?:(?:multiple|\\d+|one|two|three|four|five|six|s"
+            "even|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eightee"
+            "n|nineteen|single|once|twice|thrice|several|few)(?:\\s+(?:to|or)\\s+(?:multiple|\\d+|"
+            "one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fift"
+            "een|sixteen|seventeen|eighteen|nineteen|single|once|twice|thrice|several|few)|\\s*[-–"
+            "—]\\s*(?:multiple|\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+            "|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|single|once|twice|thri"
+            "ce|several|few))?))\\s+(?P<unit>day|week|month|year|days|weeks|months|years)\\b",
             re.IGNORECASE,
         ),
         _build_no_had_duration,
     ),
     "sf.control_phrase": ExtractRuleImpl(
         re.compile(
-            "\\b(?:complete\\s+seizure\\s+control|seizure\\s+freedom(?:\\s+(?:continues|maintained|achieved))?|free\\s+of\\s+(?:his|her|their|all)?\\s*(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+clinical\\s+seizures|no\\s+recorded\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|no\\s+events\\s+of\\s+concern|no\\s+breakthrough\\s+(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|interval\\s+history\\s+negative\\s+for\\s+seizures|has\\s+not\\s+(?:experienced|reported|had)\\s+any\\s+(?:further\\s+)?(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus)|(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?:are|is|seem|seems|remain|remains)\\s+(?:completely\\s+)?(?:well\\s+)?under\\s+control)\\b",
+            "\\b(?:complete\\s+seizure\\s+control|seizure\\s+freedom(?:\\s+(?:continues|maintained"
+            "|achieved))?|free\\s+of\\s+(?:his|her|their|all)?\\s*(?:seizures?|episodes?|events?|s"
+            "pells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epile"
+            "pticus)|no\\s+clinical\\s+seizures|no\\s+recorded\\s+(?:seizures?|episodes?|events?|s"
+            "pells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epile"
+            "pticus)|no\\s+events\\s+of\\s+concern|no\\s+breakthrough\\s+(?:seizures?|episodes?|ev"
+            "ents?|spells?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|statu"
+            "s epilepticus)|interval\\s+history\\s+negative\\s+for\\s+seizures|has\\s+not\\s+(?:ex"
+            "perienced|reported|had)\\s+any\\s+(?:further\\s+)?(?:seizures?|episodes?|events?|spel"
+            "ls?|absences?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepti"
+            "cus)|(?:(?:[a-z][a-z\\-‑–—]*\\s+){0,4}(?:seizures?|episodes?|events?|spells?|absences"
+            "?|convulsions?|spasms?|attacks?|myoclonics?|jerks?|auras?|status epilepticus))\\s+(?:"
+            "are|is|seem|seems|remain|remains)\\s+(?:completely\\s+)?(?:well\\s+)?under\\s+control"
+            ")\\b",
             re.IGNORECASE,
         ),
         _build_control_phrase,

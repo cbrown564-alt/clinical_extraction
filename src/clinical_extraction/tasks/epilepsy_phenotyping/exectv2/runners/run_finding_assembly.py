@@ -8,7 +8,8 @@ Usage::
 
     uv run python -m clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.\
         run_finding_assembly \
-        --manifest configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_p7_dev140.yaml
+        --manifest configs/exectv2/finding_assembly/\
+exectv2_holistic_finding_assembly_v08_p7_dev140.yaml
 """
 
 from __future__ import annotations
