@@ -34,8 +34,8 @@
       {
         "role": "model",
         "path": "docs/design/model_strategy.md",
-        "sha256": "322ee983dbff3ade6b7bbd5a6fe15a617fc51e58928e938446ac591a741862e7",
-        "bytes": 3989
+        "sha256": "eda5353d3f95004e25d65131bb905a09b7cb8c2a24f48ada44b4cad1e2cafe61",
+        "bytes": 6311
       },
       {
         "role": "prompt",
@@ -220,8 +220,8 @@
       {
         "role": "split_runbook",
         "path": "docs/runbooks/gated_blockers_2026-06-18.md",
-        "sha256": "853960e09861156755388d238f48f9120dc409e0d9045dc00bd4e419b927512e",
-        "bytes": 1944
+        "sha256": "4a211f616e3d48ed5a9ed3e7649790f688e77534fdab82db77bcdde856db3415",
+        "bytes": 1992
       }
     ],
     "model_policy": {
@@ -239,8 +239,9 @@
     "execution_policy": {
       "model_calls": "Predeclaration required; this architecture freeze does not authorize new model calls.",
       "required_commands": [
-        "python scripts/check_retained_evidence_manifest.py",
-        "python scripts/verify_reference_evidence.py",
+      "python scripts/check_retained_evidence_manifest.py",
+      "python scripts/verify_reference_evidence.py",
+      "python scripts/check_exectv2_model_led_audit.py",
         "python scripts/check_doc_hygiene.py",
         "python -m pytest",
         "python -m ruff check .",
@@ -898,18 +899,18 @@
       "row_inspection_policy": "dev140 rows permitted; full200 aggregate only",
       "scorer": "ExECTv2 finalized clinical_headline aggregate scorer",
       "model": "openai/gpt-4.1-mini; deepseek/deepseek-chat; ollama_chat/qwen3.6:35b",
-      "model_role": "Same-core diagnostic model transfer",
-      "prompt_program_version": "exectv2_2call_no_sf_adjudicator_model_swap core",
-      "cache_replay_mode": "live producers plus saved deterministic replay; aggregate-only full200 scoring",
-      "repair_policy": "Shared evidence repair is format/source-exact; deterministic SF/Rx assembly remains attributable.",
-      "claim_boundary": "Current three-model evidence only. Dev140 cached outputs are retained for permitted error analysis and extension; full200 remains aggregate-only. This does not establish the requested six-model result.",
+      "model_role": "Historical model transfer plus corrected decision-0040 architecture audit",
+      "prompt_program_version": "historical exectv2_2call_no_sf_adjudicator graph plus decision-0040 model-led replay",
+      "cache_replay_mode": "retained dev140 outputs plus no-call full200 aggregate replay from recorded historical Git blobs",
+      "repair_policy": "Named-model Prescription and pre-union Seizure Frequency inputs with separately attributable deterministic corrections.",
+      "claim_boundary": "Three historical model conditions only. The corrected architecture replay is development-inclusive and aggregate-only, exposes nonzero deterministic regressions, and does not establish the final six-model result.",
       "story_ids": ["S4", "S5", "S8"],
-      "result_summary": {"panel_status": "3/6 requested models complete"},
+      "result_summary": {"panel_status": "2/6 final conditions confirmed", "architecture_status": "decision-0040 implemented and aggregate-replay verified; historical rows unpromoted"},
       "artifacts": [
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_same_core_model_swap_full200_2026-06-25.md",
-          "sha256": "ae1762906cbc1a49fd5b9fe087ea9424f3f1222c282ff6ecebb915d4b25f2923",
-          "bytes": 2706,
+          "sha256": "03efca1ef732a1878525dafb4375e0f211c933e90fc35130acb65bd344561d6f",
+          "bytes": 3116,
           "retrieval": "git_path"
         },
         {
@@ -932,8 +933,68 @@
         },
         {
           "path": "scripts/run_exectv2_2call_model_swap.py",
-          "sha256": "a68b8ab8cfa8a1066117bc0b292b414599314ad380b716d70aa5d915c7c29682",
-          "bytes": 12670,
+          "sha256": "0307b951247870279572be657e61fba1ee81c886e09579cd2b1f202d60da7e0b",
+          "bytes": 10534,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/model_swap.py",
+          "sha256": "ee950c855173b495c120a61c979de4275df87829a2bfa07ab5acd9a92aed6118",
+          "bytes": 35611,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_exectv2_same_core_model_swap.py",
+          "sha256": "984a4cbe65211bf6b9041a84fb868089dcebb80010b36864c397105102ad9269",
+          "bytes": 24767,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
+          "sha256": "b052587df2e929a39883e3cd249dd6c8b5d0370dd8824584a13064f04182461b",
+          "bytes": 5507,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md",
+          "sha256": "1b3b69bb6443d1a5733366b126b2c2f7110c43ab8df7a15cedd173a6495525c7",
+          "bytes": 12551,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_llm_with_rules_component_audit_full200_20260714.json",
+          "sha256": "53fa1004ddbf976e12688f7a7c13964c62c61510674078228cb1df33c6980234",
+          "bytes": 5358,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/model_led_audit/gpt41mini_full200.json",
+          "sha256": "51647265459f6764d1fd40584afa2242e9ebac5eaee7ea9bdd763e9e833d82ec",
+          "bytes": 4178,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/model_led_audit/deepseek_full200.json",
+          "sha256": "7f0f4a0737252b86ced3cdbebdf4eb22d7c5cd722362ae6f680d4dab2ad989bf",
+          "bytes": 4124,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "configs/exectv2/model_led_audit/qwen36_full200.json",
+          "sha256": "913c4a4f5f562252ab1e4c0eef053f262beb94f63b1a860a21059cd88ab09db9",
+          "bytes": 4256,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/check_exectv2_model_led_audit.py",
+          "sha256": "294315b624e9ee33445ee7aa63dceeb7ecda306d9c0d369946f2631b61148a27",
+          "bytes": 12305,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_model_led_architecture_replay_full200_20260715.json",
+          "sha256": "4b5fff861a55c7745052753f0d6f51d8283cd49f7ade1f9ef2e32b91cbe814ad",
+          "bytes": 17261,
           "retrieval": "git_path"
         },
         {
@@ -1072,7 +1133,7 @@
         "brier": 0.2225,
         "base_rate_brier": 0.234,
         "ece": 0.0587,
-        "model_confidence_status": "unused/open"
+        "model_confidence_status": "separate frozen negative study completed"
       },
       "artifacts": [
         {
@@ -1091,6 +1152,137 @@
           "path": "experiments/exectv2_calibration_signal_probe_2026-07-07.json",
           "sha256": "d94dadf2aac39c2264b11732508685d9c2ab854e67addd68cdc15c892cd5e2c0",
           "bytes": 2952,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_model_led_dev140_regression_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v2.json",
+      "split": "dev140",
+      "row_count": 140,
+      "row_inspection_policy": "development_rows_permitted; test60 rows excluded before assembly",
+      "scorer": "Primary family-local clinical_headline key equality; secondary entity-agnostic compatibility view",
+      "model": "GPT-4.1-mini; historical DeepSeek chat; Qwen 3.6 35B repair v02",
+      "model_role": "Saved historical model-owned family outputs before and after attributable deterministic clinical changes",
+      "prompt_program_version": "Recorded per producer in the retained row artifact",
+      "cache_replay_mode": "Historical Git-blob replay filtered to dev140; no model calls",
+      "repair_policy": "Decision-0040 current policy analyzed without changing rules, gold, prompts, or scorer",
+      "claim_boundary": "Inspected dev140 mechanism evidence only; not test60 transfer, clinical validity, a promoted policy, or final six-model evidence.",
+      "story_ids": ["S4", "S8"],
+      "result_summary": {
+        "changed_model_family_rows": 319,
+        "family_local_wrong_to_correct": 160,
+        "family_local_correct_to_wrong": 41,
+        "family_local_changed_still_wrong": 118,
+        "sf_family_local_correct_to_wrong": 0,
+        "diagnosis_family_local_correct_to_wrong": 18,
+        "prescription_family_local_correct_to_wrong": 23,
+        "minimum_exact_evidence_rate": 1.0,
+        "new_model_calls": 0
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_protocol_2026-07-15.md",
+          "sha256": "17be05437b3fa089cf05cdf29fbe621474c7fe19f3252d38fc4b765b6e22f701",
+          "bytes": 4798,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md",
+          "sha256": "d691916c2c810307e7c20ca5680bb5d36f5558a0aec7c0ba349a613effdf44dc",
+          "bytes": 9277,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_model_led_dev140_regression_analysis_20260715.json",
+          "sha256": "d59cfcdc52ea8abc2079e414ec42497b9694b64039cac909f2fa70b5cc1bcd76",
+          "bytes": 1542633,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/analyze_exectv2_model_led_dev140_regressions.py",
+          "sha256": "330c0bd4bf37f1758187ccd4d4a00a77a1255cf6cc941091ff6820b3c8fcc673",
+          "bytes": 24390,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/model_led_dev_regressions.py",
+          "sha256": "11904581caf36e5343e0fac3756f8d6c2174c1fb7f0cc214753e47de2a9a39bf",
+          "bytes": 1851,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_exectv2_model_led_dev_regressions.py",
+          "sha256": "05ca643febfa5471971f0728fcb45e566c70127fcc0152b048d6aad79b10b3fd",
+          "bytes": 3060,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "exectv2_model_reported_confidence_subject",
+      "task": "exectv2",
+      "architecture_family": "hybrid",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140+test60_aggregate",
+      "row_count": 200,
+      "row_inspection_policy": "dev140 permitted; test60 aggregate only with no row identifiers, text, predictions, or failures emitted",
+      "scorer": "Exact family-cell clinical_headline correctness",
+      "model": "GPT-4.1-mini; historical DeepSeek chat; Qwen 3.6 35B repair v02",
+      "model_role": "Saved historical model-source confidence labels evaluated against corrected final outputs",
+      "prompt_program_version": "Recorded per producer in the retained aggregate artifact",
+      "cache_replay_mode": "Historical Git-blob replay; no model calls",
+      "repair_policy": "Fixed decision-0040 replay; source and final correctness reported separately",
+      "claim_boundary": "Aggregate out-of-sample negative evidence for three saved historical outputs; not deployment calibration, independent clinical validation, a six-model conclusion, or thinking-enabled DeepSeek V4 Flash evidence.",
+      "story_ids": ["S5", "S8"],
+      "result_summary": {
+        "gpt41mini_failure_auroc_test60": 0.5394,
+        "historical_deepseek_failure_auroc_test60": 0.5503,
+        "qwen_failure_auroc_test60": 0.4895,
+        "review_policy_adopted": false,
+        "test60_rows_emitted": 0,
+        "new_model_calls": 0
+      },
+      "artifacts": [
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_reported_confidence_protocol_2026-07-15.md",
+          "sha256": "bc7b793d5f82ff6a6d1fe42958e34695f08a17afc1db37c401a351576971a46e",
+          "bytes": 3602,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_model_reported_confidence_out_of_sample_2026-07-15.md",
+          "sha256": "337391459d0e4ca832eb62d01aa221a78dbb68455342680db731a05dcc2ee045",
+          "bytes": 2761,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json",
+          "sha256": "9230651dd75db9954a7a749c1e9a286134574294cbf0c6732e40de763fc028d0",
+          "bytes": 79798,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/check_exectv2_model_reported_confidence.py",
+          "sha256": "784ca6eca7955792ed383e93540af3d6c703de33cd3685f079a373c7c466ff94",
+          "bytes": 15014,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/reports/model_reported_confidence.py",
+          "sha256": "89a9a24a8785d056590519914f75db55ccdc8f60b59529b874f3401474c1844f",
+          "bytes": 5965,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_exectv2_model_reported_confidence.py",
+          "sha256": "5dbcca0970acfb982b365afc45a4f3fcb1f3d3aa6c605f5985e0ef7512233846",
+          "bytes": 2351,
           "retrieval": "git_path"
         }
       ]
@@ -1146,22 +1338,33 @@
     },
     {
       "id": "annotation_quality_subject",
-      "task": "cross_task",
+      "task": "exectv2",
       "architecture_family": "cross_family",
-      "dataset": "ExECTv2 2025 and Gan 2026 permitted development evidence",
-      "split_manifest": "ExECTv2 split v1/v2 + Gan split v1 as stated per source",
-      "split": "mixed_permitted_development_evidence",
-      "row_count": 0,
+      "dataset": "ExECTv2 2025 permitted development evidence",
+      "split_manifest": "ExECTv2 split v1/v2 as stated per source",
+      "split": "dev140_retained_annotation_records",
+      "row_count": 584,
       "row_inspection_policy": "development_rows_permitted",
       "scorer": "Original scorers plus explicitly separate sensitivity/adjudication views",
       "model": "none; human/mechanical adjudication records",
-      "model_role": "Annotation defect, convention, ambiguity, and scorer-artifact evidence",
-      "prompt_program_version": "generated family ledgers + canonical row analyses",
+      "model_role": "Generated annotation defect, convention, ambiguity, multiplicity, scoring, handling, sensitivity, and review-status evidence",
+      "prompt_program_version": "exectv2_annotation_evidence_synthesis_v1 + retained source ledgers and reviews",
       "cache_replay_mode": "analysis only; permitted development rows",
       "repair_policy": "Original benchmark scores remain primary; adjustments and sensitivity views stay separate.",
-      "claim_boundary": "Internal adjudication and blind-replication evidence; independent clinical validation remains bounded and every cited case still needs consolidation.",
+      "claim_boundary": "Internal adjudication, pattern-assisted review, mechanical defect, and blind-replication evidence. Original scores remain primary, superseded Diagnosis adjustments remain historical, and independent clinical review is still required for clinical-validity claims.",
       "story_ids": ["S7", "S9"],
-      "result_summary": {"consolidation_status": "open"},
+      "result_summary": {
+        "consolidation_status": "complete_with_explicit_legacy_row_gap",
+        "taxonomy_entries": 584,
+        "retained_sources_hash_checked": 13,
+        "explicitly_cited_letters_mapped": 57,
+        "explicitly_cited_letters_unmapped": 0,
+        "current_diagnosis_review_rows": 246,
+        "direct_gold_issues_open": 3,
+        "direct_gold_issues_fixed": 1,
+        "historical_diagnosis_rows_aggregate_only": 10,
+        "independent_clinical_review": "open"
+      },
       "artifacts": [
         {
           "path": "experiments/gold_case_ledger_diagnosis.jsonl",
@@ -1209,6 +1412,60 @@
           "path": "docs/experiments/exectv2/reliability/exectv2_gold_quality_adjudication_blind_replication_2026-07-01.md",
           "sha256": "3d032be36687e67dc8c654858a2ab5a2e0d363cf7b4a1a02bb13550a5937d33e",
           "bytes": 14583,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/exectv2_annotation_guidelines_v9_extracted.md",
+          "sha256": "7836f109cdcb7be9ca315747e0d15b29739f2c0e1b5baf83871ec2bdffb6a9fb",
+          "bytes": 39986,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_diagnosis_resolution_ledger_dev140_20260714.jsonl",
+          "sha256": "2a021d4d618d9389e065e198b64e886294e816b33fdaa341eeda1e8e7e8b18eb",
+          "bytes": 1455855,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_diagnosis_sensitivity_dev140_20260714.json",
+          "sha256": "2a77b39a9dd466303f8fdc86939e5b35d05a4911deae3541be5eeb01b3f8dae4",
+          "bytes": 5584,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_diagnosis_review_completed_dev140_20260714.json",
+          "sha256": "464d5840bd76cf29d85c50a39dc40f60113627a36e0b102e569b0b24531e3a31",
+          "bytes": 54983,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_diagnosis_component_comparison_dev140_20260714.json",
+          "sha256": "185ab14f562d9b1fec58640b777359e1468e1d7ee6a2e4a3ac2bd4d538ca28ed",
+          "bytes": 119183,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_annotation_evidence_synthesis_20260715.json",
+          "sha256": "19cf2cbd547016fd0dd2c598bae8d84e88f703be09d9a09d129107fc9f5a7962",
+          "bytes": 882571,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_exectv2_annotation_evidence_synthesis.py",
+          "sha256": "803f7cace0190c99e71ae06af93a1886f0711508c301d11ddee53e1942fa8035",
+          "bytes": 32993,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_protocol_2026-07-15.md",
+          "sha256": "ad9aad51cfc5357a2cc62f2c7a8b01322a8d4242faeeaf964b5a2d48dbb4b55b",
+          "bytes": 4941,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md",
+          "sha256": "42ebb5d50d32ae14c3a9e9723c9dac2db2528fcbc49a033d913b9d8da114d17f",
+          "bytes": 7456,
           "retrieval": "git_path"
         }
       ]

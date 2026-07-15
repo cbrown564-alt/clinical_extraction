@@ -173,11 +173,17 @@ def prescription_convention_attribute_repairs(
     *,
     evidence: str,
     attributes: Mapping[str, Any],
+    rescue_scope_candidate: bool = False,
 ) -> dict[str, str]:
     """Return benchmark-format prescription repairs for an emitted regimen."""
 
     repaired = {str(key): str(value) for key, value in attributes.items()}
-    frequency = frequency_code(" ".join(part for part in (text, evidence) if part))
+    text_frequency = frequency_code(text)
+    frequency = (
+        text_frequency
+        if rescue_scope_candidate and text_frequency is not None
+        else frequency_code(" ".join(part for part in (text, evidence) if part))
+    )
     if frequency == "As_Required":
         repaired["Frequency"] = frequency
     elif not repaired.get("Frequency") and frequency is not None:
@@ -203,6 +209,43 @@ _PLANNED_OR_HISTORICAL_PRESCRIPTION_EVIDENCE = re.compile(
     r")\b",
     re.IGNORECASE,
 )
+
+_EXPLICIT_CURRENT_PRESCRIPTION_CUE = re.compile(
+    r"\b(?:"
+    r"current(?:ly)?\s+(?:(?:anti[- ]?epileptic|regular)\s+)?medications?\s*:|"
+    r"current\s+treatment\s+(?:is|includes?)\b|"
+    r"currently\s+taking\b|(?:he|she|patient)\s+is\s+taking\b|"
+    r"medications?\s*:"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def is_explicit_current_prescription(
+    note_text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """True for a complete regimen explicitly introduced as current.
+
+    Only the evidence and its immediately preceding note context are considered;
+    a later taper or stop instruction therefore cannot erase the current regimen.
+    """
+
+    required = ("DrugName", "DrugDose", "DoseUnit", "Frequency")
+    if any(not str(attributes.get(key, "")).strip() for key in required):
+        return False
+    if _EXPLICIT_CURRENT_PRESCRIPTION_CUE.search(evidence):
+        return True
+    if not evidence:
+        return False
+    evidence_start = note_text.find(evidence)
+    if evidence_start < 0:
+        return False
+    prefix = note_text[max(0, evidence_start - 120) : evidence_start]
+    prefix = re.split(r"[.;\n]", prefix)[-1]
+    return bool(_EXPLICIT_CURRENT_PRESCRIPTION_CUE.search(prefix))
 
 
 def is_prescription_convention_noise(

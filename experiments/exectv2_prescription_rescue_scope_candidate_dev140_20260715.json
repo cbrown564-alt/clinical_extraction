@@ -1,0 +1,4732 @@
+{
+  "call_mode": "historical_git_blob_replay_no_model_calls",
+  "candidate_id": "decision_0040_rx_rescue_scope_no_residual_dev140_v1",
+  "candidate_summary": {
+    "changed_rows": 309,
+    "compatibility_audit": {
+      "by_family": {
+        "Diagnosis": {
+          "changed_still_wrong": 92,
+          "correct_to_wrong": 16,
+          "wrong_to_correct": 73
+        },
+        "Prescription": {
+          "changed_still_wrong": 11,
+          "correct_to_wrong": 17,
+          "wrong_to_correct": 42
+        },
+        "SeizureFrequency": {
+          "changed_still_wrong": 56,
+          "correct_to_wrong": 2
+        }
+      },
+      "by_mechanism": {
+        "diagnosis_attribute_or_concept_rewrite": {
+          "changed_still_wrong": 14,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 3
+        },
+        "diagnosis_drop": {
+          "changed_still_wrong": 38,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 46
+        },
+        "diagnosis_heading_recovery": {
+          "changed_still_wrong": 3
+        },
+        "diagnosis_residual_addition": {
+          "changed_still_wrong": 59,
+          "correct_to_wrong": 14,
+          "wrong_to_correct": 30
+        },
+        "diagnosis_unresolved": {
+          "changed_still_wrong": 60,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 20
+        },
+        "ownership.generic_active_to_named": {
+          "changed_still_wrong": 2
+        },
+        "prescription_drop": {
+          "changed_still_wrong": 8,
+          "correct_to_wrong": 17,
+          "wrong_to_correct": 40
+        },
+        "prescription_normalization": {
+          "changed_still_wrong": 5,
+          "correct_to_wrong": 2,
+          "wrong_to_correct": 7
+        },
+        "prescription_regimen_split": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 1
+        },
+        "state.drop_historical_active_rate": {
+          "changed_still_wrong": 1
+        },
+        "state.drop_historical_or_advice_seizure_free": {
+          "changed_still_wrong": 8
+        },
+        "state.drop_preceded_by_current_seizure_free": {
+          "changed_still_wrong": 4
+        },
+        "state.drop_unlabelled_active_rate": {
+          "changed_still_wrong": 31
+        },
+        "state.last_event_active_to_seizure_free": {
+          "changed_still_wrong": 7
+        },
+        "unknown_suppression.contextual_or_historical_change": {
+          "changed_still_wrong": 4,
+          "correct_to_wrong": 2
+        },
+        "unknown_suppression.drug_response_scope": {
+          "changed_still_wrong": 2
+        }
+      },
+      "directions": {
+        "changed_still_wrong": 159,
+        "correct_to_wrong": 35,
+        "wrong_to_correct": 115
+      }
+    },
+    "evidence_status": {
+      "exact": 309
+    },
+    "primary_family_local": {
+      "by_family": {
+        "Diagnosis": {
+          "changed_still_wrong": 82,
+          "correct_to_wrong": 18,
+          "wrong_to_correct": 81
+        },
+        "Prescription": {
+          "changed_still_wrong": 11,
+          "correct_to_wrong": 17,
+          "wrong_to_correct": 42
+        },
+        "SeizureFrequency": {
+          "changed_still_wrong": 20,
+          "wrong_to_correct": 38
+        }
+      },
+      "by_mechanism": {
+        "diagnosis_attribute_or_concept_rewrite": {
+          "changed_still_wrong": 14,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 3
+        },
+        "diagnosis_drop": {
+          "changed_still_wrong": 32,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 52
+        },
+        "diagnosis_heading_recovery": {
+          "changed_still_wrong": 3
+        },
+        "diagnosis_residual_addition": {
+          "changed_still_wrong": 53,
+          "correct_to_wrong": 16,
+          "wrong_to_correct": 34
+        },
+        "diagnosis_unresolved": {
+          "changed_still_wrong": 52,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 28
+        },
+        "ownership.generic_active_to_named": {
+          "changed_still_wrong": 2
+        },
+        "prescription_drop": {
+          "changed_still_wrong": 8,
+          "correct_to_wrong": 17,
+          "wrong_to_correct": 40
+        },
+        "prescription_normalization": {
+          "changed_still_wrong": 5,
+          "correct_to_wrong": 2,
+          "wrong_to_correct": 7
+        },
+        "prescription_regimen_split": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 1
+        },
+        "state.drop_historical_active_rate": {
+          "wrong_to_correct": 1
+        },
+        "state.drop_historical_or_advice_seizure_free": {
+          "changed_still_wrong": 5,
+          "wrong_to_correct": 3
+        },
+        "state.drop_preceded_by_current_seizure_free": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 3
+        },
+        "state.drop_unlabelled_active_rate": {
+          "changed_still_wrong": 11,
+          "wrong_to_correct": 20
+        },
+        "state.last_event_active_to_seizure_free": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 6
+        },
+        "unknown_suppression.contextual_or_historical_change": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 5
+        },
+        "unknown_suppression.drug_response_scope": {
+          "changed_still_wrong": 2
+        }
+      },
+      "directions": {
+        "changed_still_wrong": 113,
+        "correct_to_wrong": 35,
+        "wrong_to_correct": 161
+      }
+    }
+  },
+  "claim_boundary": "Inspected dev140 development evidence for three saved model outputs only. No test60 row was assembled, scored, serialized, or inspected; no model was called; this is not holdout evidence or clinical validation.",
+  "comparator": "decision_0040_model_led_current_policy",
+  "comparator_summary": {
+    "changed_rows": 319,
+    "compatibility_audit": {
+      "by_family": {
+        "Diagnosis": {
+          "changed_still_wrong": 92,
+          "correct_to_wrong": 16,
+          "wrong_to_correct": 73
+        },
+        "Prescription": {
+          "changed_still_wrong": 16,
+          "correct_to_wrong": 23,
+          "wrong_to_correct": 41
+        },
+        "SeizureFrequency": {
+          "changed_still_wrong": 56,
+          "correct_to_wrong": 2
+        }
+      },
+      "by_mechanism": {
+        "diagnosis_attribute_or_concept_rewrite": {
+          "changed_still_wrong": 14,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 3
+        },
+        "diagnosis_drop": {
+          "changed_still_wrong": 38,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 46
+        },
+        "diagnosis_heading_recovery": {
+          "changed_still_wrong": 3
+        },
+        "diagnosis_residual_addition": {
+          "changed_still_wrong": 59,
+          "correct_to_wrong": 14,
+          "wrong_to_correct": 30
+        },
+        "diagnosis_unresolved": {
+          "changed_still_wrong": 60,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 20
+        },
+        "ownership.generic_active_to_named": {
+          "changed_still_wrong": 2
+        },
+        "prescription_drop": {
+          "changed_still_wrong": 11,
+          "correct_to_wrong": 18,
+          "wrong_to_correct": 35
+        },
+        "prescription_normalization": {
+          "changed_still_wrong": 7,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 11
+        },
+        "prescription_regimen_split": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 1
+        },
+        "prescription_residual_addition": {
+          "changed_still_wrong": 6,
+          "correct_to_wrong": 6,
+          "wrong_to_correct": 4
+        },
+        "state.drop_historical_active_rate": {
+          "changed_still_wrong": 1
+        },
+        "state.drop_historical_or_advice_seizure_free": {
+          "changed_still_wrong": 8
+        },
+        "state.drop_preceded_by_current_seizure_free": {
+          "changed_still_wrong": 4
+        },
+        "state.drop_unlabelled_active_rate": {
+          "changed_still_wrong": 31
+        },
+        "state.last_event_active_to_seizure_free": {
+          "changed_still_wrong": 7
+        },
+        "unknown_suppression.contextual_or_historical_change": {
+          "changed_still_wrong": 4,
+          "correct_to_wrong": 2
+        },
+        "unknown_suppression.drug_response_scope": {
+          "changed_still_wrong": 2
+        }
+      },
+      "directions": {
+        "changed_still_wrong": 164,
+        "correct_to_wrong": 41,
+        "wrong_to_correct": 114
+      }
+    },
+    "evidence_status": {
+      "exact": 319
+    },
+    "primary_family_local": {
+      "by_family": {
+        "Diagnosis": {
+          "changed_still_wrong": 82,
+          "correct_to_wrong": 18,
+          "wrong_to_correct": 81
+        },
+        "Prescription": {
+          "changed_still_wrong": 16,
+          "correct_to_wrong": 23,
+          "wrong_to_correct": 41
+        },
+        "SeizureFrequency": {
+          "changed_still_wrong": 20,
+          "wrong_to_correct": 38
+        }
+      },
+      "by_mechanism": {
+        "diagnosis_attribute_or_concept_rewrite": {
+          "changed_still_wrong": 14,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 3
+        },
+        "diagnosis_drop": {
+          "changed_still_wrong": 32,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 52
+        },
+        "diagnosis_heading_recovery": {
+          "changed_still_wrong": 3
+        },
+        "diagnosis_residual_addition": {
+          "changed_still_wrong": 53,
+          "correct_to_wrong": 16,
+          "wrong_to_correct": 34
+        },
+        "diagnosis_unresolved": {
+          "changed_still_wrong": 52,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 28
+        },
+        "ownership.generic_active_to_named": {
+          "changed_still_wrong": 2
+        },
+        "prescription_drop": {
+          "changed_still_wrong": 11,
+          "correct_to_wrong": 18,
+          "wrong_to_correct": 35
+        },
+        "prescription_normalization": {
+          "changed_still_wrong": 7,
+          "correct_to_wrong": 3,
+          "wrong_to_correct": 11
+        },
+        "prescription_regimen_split": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 1
+        },
+        "prescription_residual_addition": {
+          "changed_still_wrong": 6,
+          "correct_to_wrong": 6,
+          "wrong_to_correct": 4
+        },
+        "state.drop_historical_active_rate": {
+          "wrong_to_correct": 1
+        },
+        "state.drop_historical_or_advice_seizure_free": {
+          "changed_still_wrong": 5,
+          "wrong_to_correct": 3
+        },
+        "state.drop_preceded_by_current_seizure_free": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 3
+        },
+        "state.drop_unlabelled_active_rate": {
+          "changed_still_wrong": 11,
+          "wrong_to_correct": 20
+        },
+        "state.last_event_active_to_seizure_free": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 6
+        },
+        "unknown_suppression.contextual_or_historical_change": {
+          "changed_still_wrong": 1,
+          "wrong_to_correct": 5
+        },
+        "unknown_suppression.drug_response_scope": {
+          "changed_still_wrong": 2
+        }
+      },
+      "directions": {
+        "changed_still_wrong": 118,
+        "correct_to_wrong": 41,
+        "wrong_to_correct": 160
+      }
+    }
+  },
+  "dataset": "ExECTv2",
+  "decision": "reject",
+  "environment": {
+    "python": "3.13.5",
+    "replay_source_revisions": [
+      "8d808656ce99c029272aaa996b8f6be36043a0c6^"
+    ],
+    "repository_head": "a52e62ef7dc14b47e2b1799bb23849d1e8c69936",
+    "working_tree_changed_path_count": 72,
+    "working_tree_dirty": true
+  },
+  "gates": {
+    "candidate_prescription_directions": {
+      "changed_still_wrong": 11,
+      "correct_to_wrong": 17,
+      "wrong_to_correct": 42
+    },
+    "checks": {
+      "all_comparator_candidate_changes_exact_evidence": true,
+      "no_new_schema_parse_call_or_fallback_failure": true,
+      "other_families_identical": true,
+      "prescription_correct_to_wrong_below_23": true,
+      "prescription_wrong_to_correct_at_least_36": true,
+      "retain_at_least_36_of_41_comparator_prescription_rescues": true,
+      "zero_newly_wrong_from_comparator_correct": false
+    },
+    "comparator_rescue_retention": {
+      "comparator_rescues": 41,
+      "lost": 4,
+      "retained": 37
+    },
+    "newly_wrong_from_comparator_correct": 4,
+    "non_prescription_changed_rows": 0,
+    "status": "fail"
+  },
+  "generated_on": "2026-07-15",
+  "models": {
+    "DeepSeek chat": {
+      "candidate": {
+        "changed_rows": 99,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 27,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 23
+            },
+            "Prescription": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 16
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 17,
+              "correct_to_wrong": 1
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 10,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 14
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 17,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 9
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 18,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 5
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 4
+            },
+            "prescription_regimen_split": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 8
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 48,
+            "correct_to_wrong": 12,
+            "wrong_to_correct": 39
+          }
+        },
+        "evidence_status": {
+          "exact": 99
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 21,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 28
+            },
+            "Prescription": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 16
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 7,
+              "wrong_to_correct": 11
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 7,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 17
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 15,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 10
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 14,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 9
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 4
+            },
+            "prescription_regimen_split": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 3,
+              "wrong_to_correct": 5
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "wrong_to_correct": 3
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 32,
+            "correct_to_wrong": 12,
+            "wrong_to_correct": 55
+          }
+        }
+      },
+      "candidate_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 1
+      },
+      "candidate_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8892,
+          "Investigations": 0.9091,
+          "Prescription": 0.933,
+          "SeizureFrequency": 0.7635,
+          "overall": 0.8761
+        },
+        "model_owned": {
+          "Diagnosis": 0.7906,
+          "Investigations": 0.9091,
+          "Prescription": 0.904,
+          "SeizureFrequency": 0.7228,
+          "overall": 0.8229
+        }
+      },
+      "comparator": {
+        "changed_rows": 104,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 27,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 23
+            },
+            "Prescription": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 9,
+              "wrong_to_correct": 17
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 17,
+              "correct_to_wrong": 1
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 10,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 14
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 17,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 9
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 18,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 5
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 13
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 2,
+              "wrong_to_correct": 6
+            },
+            "prescription_regimen_split": {
+              "wrong_to_correct": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 3,
+              "wrong_to_correct": 2
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 8
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 49,
+            "correct_to_wrong": 15,
+            "wrong_to_correct": 40
+          }
+        },
+        "evidence_status": {
+          "exact": 104
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 21,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 28
+            },
+            "Prescription": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 9,
+              "wrong_to_correct": 17
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 7,
+              "wrong_to_correct": 11
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 7,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 17
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 15,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 10
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 14,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 9
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 13
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 2,
+              "wrong_to_correct": 6
+            },
+            "prescription_regimen_split": {
+              "wrong_to_correct": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 3,
+              "wrong_to_correct": 2
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 3,
+              "wrong_to_correct": 5
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "wrong_to_correct": 3
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 33,
+            "correct_to_wrong": 15,
+            "wrong_to_correct": 56
+          }
+        }
+      },
+      "comparator_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 1
+      },
+      "comparator_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8892,
+          "Investigations": 0.9091,
+          "Prescription": 0.9268,
+          "SeizureFrequency": 0.7635,
+          "overall": 0.8747
+        },
+        "model_owned": {
+          "Diagnosis": 0.7906,
+          "Investigations": 0.9091,
+          "Prescription": 0.904,
+          "SeizureFrequency": 0.7228,
+          "overall": 0.8229
+        }
+      }
+    },
+    "GPT-4.1-mini": {
+      "candidate": {
+        "changed_rows": 111,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 33,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 24
+            },
+            "Prescription": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 21,
+              "correct_to_wrong": 1
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 16,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 16
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 2
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 19,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 10
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 19,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 7
+            },
+            "ownership.generic_active_to_named": {
+              "changed_still_wrong": 2
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "prescription_regimen_split": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_historical_active_rate": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 5
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 9
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 59,
+            "correct_to_wrong": 14,
+            "wrong_to_correct": 38
+          }
+        },
+        "evidence_status": {
+          "exact": 111
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 31,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 26
+            },
+            "Prescription": {
+              "changed_still_wrong": 5,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 9,
+              "wrong_to_correct": 13
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 14,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 18
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 2
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 18,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 11
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 16,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 10
+            },
+            "ownership.generic_active_to_named": {
+              "changed_still_wrong": 2
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 6,
+              "wrong_to_correct": 14
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "prescription_regimen_split": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_historical_active_rate": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 2,
+              "wrong_to_correct": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 5
+            },
+            "state.last_event_active_to_seizure_free": {
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 45,
+            "correct_to_wrong": 13,
+            "wrong_to_correct": 53
+          }
+        }
+      },
+      "candidate_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 0
+      },
+      "candidate_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8727,
+          "Investigations": 0.8583,
+          "Prescription": 0.8922,
+          "SeizureFrequency": 0.7018,
+          "overall": 0.8389
+        },
+        "model_owned": {
+          "Diagnosis": 0.7702,
+          "Investigations": 0.8583,
+          "Prescription": 0.8558,
+          "SeizureFrequency": 0.6519,
+          "overall": 0.7798
+        }
+      },
+      "comparator": {
+        "changed_rows": 114,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 33,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 24
+            },
+            "Prescription": {
+              "changed_still_wrong": 8,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 13
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 21,
+              "correct_to_wrong": 1
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 16,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 16
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 2
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 19,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 10
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 19,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 7
+            },
+            "ownership.generic_active_to_named": {
+              "changed_still_wrong": 2
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 12
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 4
+            },
+            "prescription_regimen_split": {
+              "changed_still_wrong": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_active_rate": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 5
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 9
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1,
+              "correct_to_wrong": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 62,
+            "correct_to_wrong": 15,
+            "wrong_to_correct": 37
+          }
+        },
+        "evidence_status": {
+          "exact": 114
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 31,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 26
+            },
+            "Prescription": {
+              "changed_still_wrong": 8,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 13
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 9,
+              "wrong_to_correct": 13
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 3
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 14,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 18
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 2
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 18,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 11
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 16,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 10
+            },
+            "ownership.generic_active_to_named": {
+              "changed_still_wrong": 2
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 4,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 12
+            },
+            "prescription_normalization": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 4
+            },
+            "prescription_regimen_split": {
+              "changed_still_wrong": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_active_rate": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_historical_or_advice_seizure_free": {
+              "changed_still_wrong": 2,
+              "wrong_to_correct": 3
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 5
+            },
+            "state.last_event_active_to_seizure_free": {
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1,
+              "wrong_to_correct": 1
+            },
+            "unknown_suppression.drug_response_scope": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 48,
+            "correct_to_wrong": 14,
+            "wrong_to_correct": 52
+          }
+        }
+      },
+      "comparator_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 0
+      },
+      "comparator_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8727,
+          "Investigations": 0.8583,
+          "Prescription": 0.8867,
+          "SeizureFrequency": 0.7018,
+          "overall": 0.8378
+        },
+        "model_owned": {
+          "Diagnosis": 0.7702,
+          "Investigations": 0.8583,
+          "Prescription": 0.8558,
+          "SeizureFrequency": 0.6519,
+          "overall": 0.7798
+        }
+      }
+    },
+    "Qwen 3.6 35B repair v02": {
+      "candidate": {
+        "changed_rows": 99,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 32,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 26
+            },
+            "Prescription": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 12
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 18
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 12,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 16
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 1
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 23,
+              "correct_to_wrong": 3,
+              "wrong_to_correct": 11
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 23,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 8
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 12
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 14
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 52,
+            "correct_to_wrong": 9,
+            "wrong_to_correct": 38
+          }
+        },
+        "evidence_status": {
+          "exact": 99
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 30,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 27
+            },
+            "Prescription": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 12
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 14
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 11,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 17
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 1
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 20,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 13
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 22,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 9
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 12
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 10
+            },
+            "state.last_event_active_to_seizure_free": {
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "wrong_to_correct": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 36,
+            "correct_to_wrong": 10,
+            "wrong_to_correct": 53
+          }
+        }
+      },
+      "candidate_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 0
+      },
+      "candidate_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8653,
+          "Investigations": 0.8718,
+          "Prescription": 0.9497,
+          "SeizureFrequency": 0.7193,
+          "overall": 0.8565
+        },
+        "model_owned": {
+          "Diagnosis": 0.748,
+          "Investigations": 0.8718,
+          "Prescription": 0.933,
+          "SeizureFrequency": 0.676,
+          "overall": 0.7997
+        }
+      },
+      "comparator": {
+        "changed_rows": 101,
+        "compatibility_audit": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 32,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 26
+            },
+            "Prescription": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 11
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 18
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 12,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 16
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 1
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 23,
+              "correct_to_wrong": 3,
+              "wrong_to_correct": 11
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 23,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 8
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 10
+            },
+            "prescription_normalization": {
+              "wrong_to_correct": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 2,
+              "wrong_to_correct": 1
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "changed_still_wrong": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 14
+            },
+            "state.last_event_active_to_seizure_free": {
+              "changed_still_wrong": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "changed_still_wrong": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 53,
+            "correct_to_wrong": 11,
+            "wrong_to_correct": 37
+          }
+        },
+        "evidence_status": {
+          "exact": 101
+        },
+        "primary_family_local": {
+          "by_family": {
+            "Diagnosis": {
+              "changed_still_wrong": 30,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 27
+            },
+            "Prescription": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 7,
+              "wrong_to_correct": 11
+            },
+            "SeizureFrequency": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 14
+            }
+          },
+          "by_mechanism": {
+            "diagnosis_attribute_or_concept_rewrite": {
+              "changed_still_wrong": 6,
+              "correct_to_wrong": 1
+            },
+            "diagnosis_drop": {
+              "changed_still_wrong": 11,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 17
+            },
+            "diagnosis_heading_recovery": {
+              "changed_still_wrong": 1
+            },
+            "diagnosis_residual_addition": {
+              "changed_still_wrong": 20,
+              "correct_to_wrong": 4,
+              "wrong_to_correct": 13
+            },
+            "diagnosis_unresolved": {
+              "changed_still_wrong": 22,
+              "correct_to_wrong": 1,
+              "wrong_to_correct": 9
+            },
+            "prescription_drop": {
+              "changed_still_wrong": 3,
+              "correct_to_wrong": 5,
+              "wrong_to_correct": 10
+            },
+            "prescription_normalization": {
+              "wrong_to_correct": 1
+            },
+            "prescription_residual_addition": {
+              "changed_still_wrong": 2,
+              "correct_to_wrong": 2,
+              "wrong_to_correct": 1
+            },
+            "state.drop_preceded_by_current_seizure_free": {
+              "wrong_to_correct": 1
+            },
+            "state.drop_unlabelled_active_rate": {
+              "changed_still_wrong": 4,
+              "wrong_to_correct": 10
+            },
+            "state.last_event_active_to_seizure_free": {
+              "wrong_to_correct": 2
+            },
+            "unknown_suppression.contextual_or_historical_change": {
+              "wrong_to_correct": 1
+            }
+          },
+          "directions": {
+            "changed_still_wrong": 37,
+            "correct_to_wrong": 12,
+            "wrong_to_correct": 52
+          }
+        }
+      },
+      "comparator_failure_counts": {
+        "call_failures": 0,
+        "parse_schema_failures": 0
+      },
+      "comparator_stage_scores": {
+        "final_post_rule": {
+          "Diagnosis": 0.8653,
+          "Investigations": 0.8718,
+          "Prescription": 0.9481,
+          "SeizureFrequency": 0.7193,
+          "overall": 0.8565
+        },
+        "model_owned": {
+          "Diagnosis": 0.748,
+          "Investigations": 0.8718,
+          "Prescription": 0.933,
+          "SeizureFrequency": 0.676,
+          "overall": 0.7997
+        }
+      }
+    }
+  },
+  "new_model_calls": 0,
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_prescription_rescue_scope_candidate_protocol_2026-07-15.md",
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "rows": [
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "wrong_to_correct",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Clobazam to take on an as required basis for seizure clusters.\u00a0 He can take 10 mg at night increasing to",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Clobazam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0011",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "I suggest adding in some Clobazam to take on an as required basis for seizure clusters.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Sodium Valproate 200mg BD\n\nKind regards",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Sodium Valproate"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0074",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": true,
+      "model_owned_keys": [],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Sodium Valproate 200mg BD\n\nKind regards",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": true,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Topiramate 60mg am, 75mg pm (",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Topiramate"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 1,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "wrong_to_correct",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0096",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": true,
+      "selected_evidence": [
+        {
+          "evidence": "Medication:\tSodium Valproate 440mg bd (30mg/kg/day)",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Topiramate 60mg am",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Phenytoin 120mg bd",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Medication:\tSodium Valproate 440mg bd (30mg/kg/day)",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Topiramate 60mg am",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Phenytoin 120mg bd",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Topiramate 60mg am, 75mg pm (",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "400",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": true,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Lamotrigine 100mg twice\u00a0 aday\n\u00a0\nIt was nice to see Julian in clinic today. I am happy t",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Lamotrigine"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 1,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "wrong_to_correct",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "400",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "400",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "400",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0127",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "400",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": true,
+      "selected_evidence": [
+        {
+          "evidence": "Sodium valproate 400mg twice a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Sodium valproate 400mg twice a day",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Lamotrigine 100mg twice\u00a0 aday\n\u00a0\nIt was nice to see Julian in clinic today. I am happy t",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "eplim chrono"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "500",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0148",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": true,
+      "model_owned_keys": [],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 2,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "lamotrigine 200mg bd and",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "lamotrigine"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "levetiracetam 1500mg bd as well as",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "levetiracetam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 2,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "lamotrigine",
+            "as_required"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "levetiracetam",
+            "as_required"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0150",
+      "model": "deepseek/deepseek-chat",
+      "model_label": "DeepSeek chat",
+      "model_owned_correct": true,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "levetiracetam 1500mg bd as well as",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "lamotrigine 200mg bd and",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "wrong_to_correct",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Clobazam to take on an as required basis for seizure clusters.\u00a0 He can take 10 mg at night increasing to",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Clobazam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0011",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Current antiepileptic medication:\u00a0 eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "I suggest adding in some Clobazam to take on an as required basis for seizure clusters.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Current antiepileptic medication:\u00a0 eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "wrong_to_correct",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [],
+      "comparator_family_local_direction": "unchanged",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0074",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "If diagnosis is confirmed to start treatment with Sodium Valproate 200mg BD",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": true,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Topiramate 60mg am, 75mg pm (",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Topiramate"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 2,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "wrong_to_correct",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "75",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0096",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "phenytoin",
+            "120",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "440",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "topiramate",
+            "60",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": true,
+      "selected_evidence": [
+        {
+          "evidence": "Medication:\tSodium Valproate 440mg bd (30mg/kg/day)",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Topiramate 60mg am",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Phenytoin 120mg bd",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "His control had deteriorated prior to increasing the valproate but had then improved to the odd stare only.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "We have arranged for him to have a Phenytoin level done and will get in contact with mother with the result.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "We agreed to continue reducing his Topiramte as previously arranged and will then consider reducing his Phenytoin.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Medication:\tSodium Valproate 440mg bd (30mg/kg/day)",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Topiramate 60mg am",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Phenytoin 120mg bd",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "His control had deteriorated prior to increasing the valproate but had then improved to the odd stare only.",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "We have arranged for him to have a Phenytoin level done and will get in contact with mother with the result.",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "We agreed to continue reducing his Topiramte as previously arranged and will then consider reducing his Phenytoin.",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Topiramate 60mg am, 75mg pm (",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Clobazam 10mg od\n\t\t\tCitalopram",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Clobazam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 1,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1750",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1750",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0135",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": false,
+      "model_owned_keys": [],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "We had a discussion about various treatment options and we decided on increasing the eslicarbazepine, I would be grateful if you could increase it to 1200mg od immediately.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "We had a discussion about various treatment options and we decided on increasing the eslicarbazepine, I would be grateful if you could increase it to 1200mg od immediately.",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Clobazam 10mg od\n\t\t\tCitalopram",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "eplim chrono"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "500",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0148",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": true,
+      "model_owned_keys": [],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Please can you start sodium valproate as detailed above.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "brivaracetam",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 2,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "lamotrigine 200mg bd and",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "lamotrigine"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "levetiracetam 1500mg bd as well as",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "levetiracetam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 3,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "brivaracetam",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "lamotrigine",
+            "as_required"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "levetiracetam",
+            "as_required"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0150",
+      "model": "openai/gpt-4.1-mini",
+      "model_label": "GPT-4.1-mini",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "brivaracetam",
+            "100",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "I would also suggest changing the levetiracetam to brivetiracetam 100mg bd.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "I would also suggest changing the levetiracetam to brivetiracetam 100mg bd.",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "levetiracetam 1500mg bd as well as",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "lamotrigine 200mg bd and",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "wrong_to_correct",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Clobazam to take on an as required basis for seizure clusters.\u00a0 He can take 10 mg at night increasing to",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Clobazam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0011",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "eslicarbazepine",
+            "800",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "zonisamide",
+            "75",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "I suggest adding in some Clobazam to take on an as required basis for seizure clusters.",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "eslicarbazepine, 800 mg once a day",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Zonisamide 75 mg twice a day",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "changed_still_wrong",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [],
+      "comparator_family_local_direction": "unchanged",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 2,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 2,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 2,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 2,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0047",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "clobazam",
+            "10",
+            "mg",
+            "1"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Current medication: Clobazam 10mg on",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Sodium Valproate 200 mg twice a day (to be increased to 300 mg BD in steps of 100 mg every two weeks)",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Current medication: Clobazam 10mg on",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Sodium Valproate 200mg BD\n\nKind regards",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Sodium Valproate"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "200",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0074",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": true,
+      "model_owned_keys": [],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Sodium Valproate 200mg BD\n\nKind regards",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "candidate_family_local_direction": "wrong_to_correct",
+      "candidate_keys": [],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "eplim chrono"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "dropped_dictionary",
+          "count": 1,
+          "mechanism": "dropped_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        }
+      ],
+      "comparator_family_local_direction": "changed_still_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate",
+            "500",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [],
+      "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+      "letter_id": "EA0148",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "sodium-valproate-(eplim-chrono)",
+            "300",
+            "mg",
+            "1"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Medication: to start sodium valproate (eplim chrono) 300mgs once a day, increasing after 2 weeks to 300mgs bd and after 2 more weeks to 200mgs am, 500mgs pm and then 500mgs pm",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": false,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": true,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 2,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "lamotrigine 200mg bd and",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "lamotrigine"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "levetiracetam 1500mg bd as well as",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "levetiracetam"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        },
+        {
+          "action": "normalized_dictionary",
+          "count": 2,
+          "mechanism": "normalized_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "normalized_prescription_from_dictionary",
+          "detail": {
+            "lens_id": "prescription_dictionary_v09"
+          },
+          "mechanism": "normalized_prescription_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "wrong_to_correct",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "200",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "levetiracetam",
+            "1500",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0150",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": false,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "rescue",
+            "clobazam",
+            "as_required"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": true,
+      "selected_evidence": [
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "and clobazam for seizure clusters (he takes this infrequently).",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "levetiracetam 1500mg bd as well as",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "lamotrigine 200mg bd and",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    },
+    {
+      "candidate_correct": true,
+      "candidate_deterministic_actions": [],
+      "candidate_family_local_direction": "unchanged",
+      "candidate_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "125",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "case_tags": [
+        "prescription",
+        "rescue_scope",
+        "residual_removal"
+      ],
+      "clinical_subproblem": "temporal_selection",
+      "comparator_correct": false,
+      "comparator_deterministic_actions": [
+        {
+          "action": "added_dictionary",
+          "count": 1,
+          "mechanism": "added_dictionary",
+          "owner": "standard_dictionary",
+          "stage": "entity_lens_summary"
+        },
+        {
+          "action": "added_prescription_residual_from_dictionary",
+          "detail": {
+            "evidence": "Lamotrigine 150mg twice daily\n\nWe have had continued contact from Anna in our open acce",
+            "lens_id": "prescription_dictionary_v09",
+            "producer_id": "structured_key_family_event_ledger",
+            "rule_category": "prescription_current_regimen",
+            "source_lane": "model_structured_prescription",
+            "target_text": "Lamotrigine"
+          },
+          "mechanism": "added_prescription_residual_from_dictionary",
+          "owner": "standard_dictionary",
+          "portability": "clinical_epilepsy",
+          "stage": "entity_lens"
+        }
+      ],
+      "comparator_family_local_direction": "correct_to_wrong",
+      "comparator_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "125",
+            "mg",
+            "2"
+          ]
+        },
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "150",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "compatibility_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "125",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "dataset": "ExECTv2",
+      "evidence_status": "exact",
+      "family": "Prescription",
+      "family_local_gold_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "125",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "first_prediction_changing_owner": "prescription_rescue_scope_candidate:restored_model_owned_output",
+      "letter_id": "EA0166",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_label": "Qwen 3.6 35B repair v02",
+      "model_owned_correct": true,
+      "model_owned_keys": [
+        {
+          "count": 1,
+          "key": [
+            "ordinary",
+            "lamotrigine",
+            "125",
+            "mg",
+            "2"
+          ]
+        }
+      ],
+      "newly_wrong_from_comparator_correct": false,
+      "selected_evidence": [
+        {
+          "evidence": "Medication:\tLamotrigine 125mg twice daily",
+          "grade": "EXACT",
+          "stage": "model_owned"
+        },
+        {
+          "evidence": "Medication:\tLamotrigine 125mg twice daily",
+          "grade": "EXACT",
+          "stage": "final"
+        },
+        {
+          "evidence": "Lamotrigine 150mg twice daily\n\nWe have had continued contact from Anna in our open acce",
+          "grade": "EXACT",
+          "stage": "final"
+        }
+      ],
+      "source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+      "split": "dev140"
+    }
+  ],
+  "schema_version": "exectv2_prescription_rescue_scope_candidate_dev140_v1",
+  "split": "dev140"
+}

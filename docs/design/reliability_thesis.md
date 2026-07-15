@@ -1,6 +1,6 @@
 # Reliability questions
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 The paper asks whether one modular package can produce reliable, inspectable
 clinical extraction results on two epilepsy-letter tasks.
@@ -34,13 +34,18 @@ reasoning in both datasets.
 
 The selected Gan package includes aggregate grounding, calibration, review
 routing, consistency, distribution-shift, and runtime analyses. The selected
-ExECT package includes internal full200 calibration and three model runs using
-the same main pipeline. These results are not deployment calibration, an
-independent holdout, or proof that one component caused the score difference.
+ExECT package includes internal full200 calibration and three historical model
+runs using the same component graph. The graph used a deterministic
+Prescription producer and an independent Seizure Frequency extractor union,
+so those family columns are not a consistent model-led comparison. These
+results are not deployment calibration, an independent holdout, or proof that
+one component caused the score difference.
 
-The low-burden review policy was tested and not adopted. Out-of-sample
-model-reported confidence, cross-task unknown-versus-rate behavior, published
-ExECT metric reproduction, and a strict six-model comparison remain open.
+The frozen aggregate-only test60 replay found that model-reported confidence
+did not meet the predeclared informativeness and review-routing gates for any
+of the three historical model outputs. No confidence-based review policy was
+adopted. Cross-task unknown-versus-rate behavior, the decision-0040
+architecture promotion, and a strict six-model comparison remain open.
 
 ## Required final outputs
 

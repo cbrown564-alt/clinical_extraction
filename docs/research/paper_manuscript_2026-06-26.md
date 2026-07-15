@@ -190,10 +190,11 @@ Investigations facts, followed only by attributable deterministic correction.
 The historical GPT, DeepSeek, and Qwen rows are excluded: their Prescription
 column was deterministic-only and their Seizure Frequency column included an
 independent extractor union. Corrected saved-output aggregates remain
-unpromoted candidates until durable configurations reproduce them and pass the
-attribution, `state_profile`, regression, schema/evidence, and retained-evidence
-checks. DeepSeek uses `deepseek/deepseek-chat` with thinking enabled and is
-reported as DeepSeek V4 Flash.
+unpromoted candidates. Durable configurations now reproduce their attribution,
+`state_profile`, schema/evidence, and regression records, but nonzero
+deterministic correct-to-wrong counts prevent promotion as final model rows.
+DeepSeek uses `deepseek/deepseek-chat` with thinking enabled and is reported as
+DeepSeek V4 Flash.
 
 ### 4.5 Component replays
 
@@ -212,11 +213,13 @@ selected replay rows.
 | --- | --- | --- |
 | ExECT evidence | Minimum exact-evidence rate 1.0000 for the combined dev140 run | Development result |
 | ExECT internal calibration | Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 | Full200 aggregate scoring-rule result |
+| ExECT model confidence | Test60 failure AUROC 0.5394 GPT-4.1-mini; 0.5503 historical DeepSeek; 0.4895 Qwen | Aggregate negative result for saved outputs |
 | Gan grounding | Validation evidence exists for each selected method | Metrics differ by method |
 | Clean-checkout reproducibility | 1,157 tests, Ruff, mypy, hashes, split restrictions, and six replays passed on Python 3.11 | Engineering verification, not clinical validation |
 
-Model-reported confidence is not used, and no low-burden review policy has been
-adopted. No selected report supports a cross-task over-reading claim.
+Neither predeclared model-confidence review rule met its test60 catch-rate and
+burden gates, so no confidence-based review policy was adopted. No selected
+report supports a cross-task over-reading claim.
 
 ## 5. Discussion
 
@@ -253,7 +256,9 @@ and repair behavior require direct tests.
   independent extractor union.
 - The model study does not yet cover the fixed six-model roster and uses
   different runtimes; the historical DeepSeek thinking state is also unresolved.
-- Model-reported confidence and low-burden review routing are not validated.
+- Model-reported confidence was uninformative for the three saved historical
+  outputs under the frozen test60 analysis; this is not deployment calibration
+  or a six-model result.
 - Annotation findings were reviewed internally, not by an independent clinical team.
 - The selected evidence does not support a cross-task over-reading claim.
 

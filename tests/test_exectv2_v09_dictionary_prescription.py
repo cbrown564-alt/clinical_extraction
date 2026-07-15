@@ -52,12 +52,18 @@ def _store(note_text: str, mentions: list[dict[str, Any]]) -> ClinicalFindingSto
     return store
 
 
-def _policy() -> LensPolicy:
+def _policy(
+    *,
+    model_preserving_policy_candidate: bool = False,
+    prescription_rescue_scope_candidate: bool = False,
+) -> LensPolicy:
     return LensPolicy(
         producer_id=_PRODUCER,
         source_lane="single_gpt_structured_v09",
         ownership_label="single_gpt",
         portability="benchmark_format",
+        model_preserving_policy_candidate=model_preserving_policy_candidate,
+        prescription_rescue_scope_candidate=prescription_rescue_scope_candidate,
     )
 
 
@@ -354,6 +360,173 @@ def test_prescription_dictionary_lens_adds_current_regimen_residuals() -> None:
     assert ("levetiracetam", "1500", "mg", "2") in keys
     assert ("lamotrigine", "200", "mg", "2") in keys
     assert ("brivaracetam", "100", "mg", "2") not in keys
+
+
+def test_model_preserving_candidate_keeps_explicit_current_regimen_before_future_plan() -> None:
+    note = (
+        "Current anti-epileptic medication: lamotrigine 75mg bd "
+        "(to reduce and stop as detailed below)."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "lamotrigine 75mg bd",
+                "attributes": {
+                    "DrugName": "lamotrigine",
+                    "DrugDose": "75",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                },
+                "evidence": "lamotrigine 75mg bd (to reduce and stop as detailed below)",
+            }
+        ],
+    )
+
+    default = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    candidate = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(model_preserving_policy_candidate=True))
+
+    assert default.findings == ()
+    assert [finding.text for finding in candidate.findings] == ["lamotrigine 75mg bd"]
+
+
+def test_model_preserving_candidate_still_drops_planned_only_regimen() -> None:
+    note = "Please start lamotrigine 25mg once a day."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "lamotrigine 25mg once a day",
+                "attributes": {
+                    "DrugName": "lamotrigine",
+                    "DrugDose": "25",
+                    "DoseUnit": "mg",
+                    "Frequency": "1",
+                },
+                "evidence": note,
+            }
+        ],
+    )
+
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(model_preserving_policy_candidate=True))
+
+    assert result.findings == ()
+
+
+def test_model_preserving_candidate_disables_prescription_residual_additions() -> None:
+    note = "Current medication: lamotrigine 100mg bd."
+    store = ClinicalFindingStore("L1", note)
+    store.register_source(_source())
+
+    default = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    candidate = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(model_preserving_policy_candidate=True))
+    rescue_scope_candidate = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(prescription_rescue_scope_candidate=True))
+
+    assert [finding.attributes["DrugName"] for finding in default.findings] == [
+        "lamotrigine"
+    ]
+    assert candidate.findings == ()
+    assert rescue_scope_candidate.findings == ()
+
+
+def test_rescue_scope_candidate_does_not_spread_shared_rescue_cue() -> None:
+    evidence = (
+        "He is taking levetiracetam 1500mg bd as well as lamotrigine 200mg bd "
+        "and clobazam for seizure clusters."
+    )
+    store = _store(
+        evidence,
+        [
+            {
+                "entity": "Prescription",
+                "text": "levetiracetam 1500mg bd",
+                "attributes": {
+                    "DrugName": "levetiracetam",
+                    "DrugDose": "1500",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                },
+                "evidence": evidence,
+            },
+            {
+                "entity": "Prescription",
+                "text": "lamotrigine 200mg bd",
+                "attributes": {
+                    "DrugName": "lamotrigine",
+                    "DrugDose": "200",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                },
+                "evidence": evidence,
+            },
+            {
+                "entity": "Prescription",
+                "text": "clobazam for seizure clusters",
+                "attributes": {
+                    "DrugName": "clobazam",
+                    "Frequency": "1",
+                },
+                "evidence": evidence,
+            },
+        ],
+    )
+
+    default = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    candidate = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(prescription_rescue_scope_candidate=True))
+
+    assert [finding.attributes["Frequency"] for finding in default.findings[:3]] == [
+        "As_Required",
+        "As_Required",
+        "As_Required",
+    ]
+    assert [finding.attributes["Frequency"] for finding in candidate.findings] == [
+        "2",
+        "2",
+        "As_Required",
+    ]
+
+
+def test_rescue_scope_candidate_keeps_evidence_fill_when_text_has_no_frequency() -> None:
+    note = "Current medication: lamotrigine 100mg bd."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Prescription",
+                "text": "lamotrigine",
+                "attributes": {
+                    "DrugName": "lamotrigine",
+                    "DrugDose": "100",
+                    "DoseUnit": "mg",
+                },
+                "evidence": "lamotrigine 100mg bd",
+            }
+        ],
+    )
+
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(prescription_rescue_scope_candidate=True))
+
+    assert result.findings[0].attributes["Frequency"] == "2"
 
 
 def test_investigations_dictionary_lens_adds_completed_result_residuals() -> None:

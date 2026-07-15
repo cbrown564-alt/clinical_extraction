@@ -51,6 +51,7 @@ source .venv/bin/activate
 python -m pytest
 python scripts/check_retained_evidence_manifest.py
 python scripts/verify_reference_evidence.py
+python scripts/check_exectv2_model_led_audit.py
 ```
 
 Current verified results belong in `PROJECT_STATUS.md`, not in this runbook.

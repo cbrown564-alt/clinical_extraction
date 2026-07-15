@@ -1,0 +1,507 @@
+{
+  "architecture_contract": "decision_0040_model_led",
+  "call_mode": "historical_git_blob_replay_no_model_calls",
+  "claim_boundary": "Development-inclusive aggregate-only architecture replay. It does not establish an independent holdout, clinical validation, or the final six-model comparison.",
+  "component_graph_identical": true,
+  "config_paths": [
+    "configs/exectv2/model_led_audit/deepseek_full200.json",
+    "configs/exectv2/model_led_audit/gpt41mini_full200.json",
+    "configs/exectv2/model_led_audit/qwen36_full200.json"
+  ],
+  "dataset": "ExECTv2",
+  "generated_on": "2026-07-15",
+  "models": {
+    "DeepSeek chat": {
+      "deterministic_regression_accounting": {
+        "diagnosis": {
+          "changed_rows": 68,
+          "correct_to_wrong": 6,
+          "wrong_to_correct": 26
+        },
+        "investigations": {
+          "changed_rows": 0,
+          "correct_to_wrong": 0,
+          "wrong_to_correct": 0
+        },
+        "prescription": {
+          "changed_rows": 43,
+          "correct_to_wrong": 16,
+          "wrong_to_correct": 19
+        },
+        "seizure_frequency": {
+          "changed_rows": 23,
+          "correct_to_wrong": 1,
+          "wrong_to_correct": 0
+        }
+      },
+      "diagnosis_resolution_candidate": true,
+      "diagnostics": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "minimum_exact_evidence_rate": 1.0,
+        "parse_schema_failures": 1
+      },
+      "fact_origin_accounting": {
+        "by_lane": {
+          "Diagnosis": {
+            "dictionary_normalized": {
+              "target_model_generated": 570
+            },
+            "evidence_valid": {
+              "target_model_generated": 630
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 630
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 50,
+              "target_model_generated": 570
+            },
+            "source_scored": {
+              "target_model_generated": 630
+            }
+          },
+          "Investigations": {
+            "dictionary_normalized": {
+              "target_model_generated": 158
+            },
+            "evidence_valid": {
+              "target_model_generated": 158
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 158
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 158
+            },
+            "source_scored": {
+              "target_model_generated": 158
+            }
+          },
+          "Prescription": {
+            "dictionary_normalized": {
+              "target_model_generated": 301
+            },
+            "evidence_valid": {
+              "target_model_generated": 340
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 340
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 12,
+              "target_model_generated": 301
+            },
+            "source_scored": {
+              "target_model_generated": 340
+            }
+          },
+          "SeizureFrequency": {
+            "dictionary_normalized": {
+              "target_model_generated": 272
+            },
+            "evidence_valid": {
+              "target_model_generated": 272
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 272
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 272
+            },
+            "source_scored": {
+              "target_model_generated": 272
+            }
+          }
+        },
+        "by_surface": {
+          "dictionary_normalized": {
+            "target_model_generated": 1301
+          },
+          "evidence_valid": {
+            "target_model_generated": 1400
+          },
+          "protocol_model_preserving_canonical": {
+            "target_model_generated": 1400
+          },
+          "residual_benchmark_added": {
+            "post_model_rescue": 62,
+            "target_model_generated": 1301
+          },
+          "source_scored": {
+            "target_model_generated": 1400
+          }
+        }
+      },
+      "lane_sources": {
+        "Diagnosis": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_deepseek_full200_20260625_diagnosis_decomposer.jsonl",
+          "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+          "ownership_label": "named_model_diagnosis_plus_rules",
+          "source_lane": "model_diagnosis"
+        },
+        "Investigations": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_deepseek_full200_20260625_structured.jsonl",
+          "lens": "investigations_result_v01",
+          "ownership_label": "named_model_investigations",
+          "source_lane": "model_structured_investigations"
+        },
+        "Prescription": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_deepseek_full200_20260625_structured.jsonl",
+          "lens": "prescription_dictionary_v09",
+          "ownership_label": "named_model_prescription_plus_shared_rules",
+          "source_lane": "model_structured_prescription"
+        },
+        "SeizureFrequency": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_deepseek_full200_20260625_sf_unknown_suppression.jsonl",
+          "lens": "sf_state_projection_suppression_v01",
+          "ownership_label": "named_model_sf_plus_projection_suppression",
+          "source_lane": "model_sf_projection_suppression"
+        }
+      },
+      "model": "deepseek/deepseek-chat",
+      "post_model_actions": {
+        "seizure_frequency_projection": 24,
+        "seizure_frequency_suppression": 4
+      },
+      "scores": {
+        "diagnosis": 0.8789,
+        "investigations": 0.9091,
+        "overall": 0.8543,
+        "prescription": 0.9057,
+        "seizure_frequency": 0.7146,
+        "seizure_frequency_state_profile": 0.8085
+      }
+    },
+    "GPT-4.1-mini": {
+      "deterministic_regression_accounting": {
+        "diagnosis": {
+          "changed_rows": 75,
+          "correct_to_wrong": 8,
+          "wrong_to_correct": 25
+        },
+        "investigations": {
+          "changed_rows": 0,
+          "correct_to_wrong": 0,
+          "wrong_to_correct": 0
+        },
+        "prescription": {
+          "changed_rows": 39,
+          "correct_to_wrong": 11,
+          "wrong_to_correct": 16
+        },
+        "seizure_frequency": {
+          "changed_rows": 27,
+          "correct_to_wrong": 1,
+          "wrong_to_correct": 0
+        }
+      },
+      "diagnosis_resolution_candidate": true,
+      "diagnostics": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "minimum_exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0
+      },
+      "fact_origin_accounting": {
+        "by_lane": {
+          "Diagnosis": {
+            "dictionary_normalized": {
+              "target_model_generated": 529
+            },
+            "evidence_valid": {
+              "target_model_generated": 610
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 610
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 68,
+              "target_model_generated": 529
+            },
+            "source_scored": {
+              "target_model_generated": 610
+            }
+          },
+          "Investigations": {
+            "dictionary_normalized": {
+              "target_model_generated": 158
+            },
+            "evidence_valid": {
+              "target_model_generated": 158
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 158
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 158
+            },
+            "source_scored": {
+              "target_model_generated": 158
+            }
+          },
+          "Prescription": {
+            "dictionary_normalized": {
+              "target_model_generated": 395
+            },
+            "evidence_valid": {
+              "target_model_generated": 465
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 465
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 10,
+              "target_model_generated": 395
+            },
+            "source_scored": {
+              "target_model_generated": 465
+            }
+          },
+          "SeizureFrequency": {
+            "dictionary_normalized": {
+              "target_model_generated": 259
+            },
+            "evidence_valid": {
+              "target_model_generated": 259
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 259
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 259
+            },
+            "source_scored": {
+              "target_model_generated": 259
+            }
+          }
+        },
+        "by_surface": {
+          "dictionary_normalized": {
+            "target_model_generated": 1341
+          },
+          "evidence_valid": {
+            "target_model_generated": 1492
+          },
+          "protocol_model_preserving_canonical": {
+            "target_model_generated": 1492
+          },
+          "residual_benchmark_added": {
+            "post_model_rescue": 78,
+            "target_model_generated": 1341
+          },
+          "source_scored": {
+            "target_model_generated": 1492
+          }
+        }
+      },
+      "lane_sources": {
+        "Diagnosis": {
+          "artifact": "experiments/exectv2_v08_full200_currentcode_diagnosis_decomposer_gpt41mini_20260624.jsonl",
+          "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+          "ownership_label": "named_model_diagnosis_plus_rules",
+          "source_lane": "model_diagnosis"
+        },
+        "Investigations": {
+          "artifact": "experiments/exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+          "lens": "investigations_result_v01",
+          "ownership_label": "named_model_investigations",
+          "source_lane": "model_structured_investigations"
+        },
+        "Prescription": {
+          "artifact": "experiments/exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+          "lens": "prescription_dictionary_v09",
+          "ownership_label": "named_model_prescription_plus_shared_rules",
+          "source_lane": "model_structured_prescription"
+        },
+        "SeizureFrequency": {
+          "artifact": "experiments/exectv2_v08_full200_currentcode_sf_structured_direct_unknown_suppression_20260624.jsonl",
+          "lens": "sf_state_projection_suppression_v01",
+          "ownership_label": "named_model_sf_plus_projection_suppression",
+          "source_lane": "model_sf_projection_suppression"
+        }
+      },
+      "model": "openai/gpt-4.1-mini",
+      "post_model_actions": {
+        "seizure_frequency_projection": 29,
+        "seizure_frequency_suppression": 3
+      },
+      "scores": {
+        "diagnosis": 0.8583,
+        "investigations": 0.8614,
+        "overall": 0.8171,
+        "prescription": 0.87,
+        "seizure_frequency": 0.6501,
+        "seizure_frequency_state_profile": 0.7813
+      }
+    },
+    "Qwen 3.6 35B repair v02": {
+      "deterministic_regression_accounting": {
+        "diagnosis": {
+          "changed_rows": 77,
+          "correct_to_wrong": 4,
+          "wrong_to_correct": 30
+        },
+        "investigations": {
+          "changed_rows": 0,
+          "correct_to_wrong": 0,
+          "wrong_to_correct": 0
+        },
+        "prescription": {
+          "changed_rows": 33,
+          "correct_to_wrong": 13,
+          "wrong_to_correct": 13
+        },
+        "seizure_frequency": {
+          "changed_rows": 23,
+          "correct_to_wrong": 0,
+          "wrong_to_correct": 0
+        }
+      },
+      "diagnosis_resolution_candidate": true,
+      "diagnostics": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "minimum_exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0
+      },
+      "fact_origin_accounting": {
+        "by_lane": {
+          "Diagnosis": {
+            "dictionary_normalized": {
+              "target_model_generated": 557
+            },
+            "evidence_valid": {
+              "target_model_generated": 621
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 621
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 63,
+              "target_model_generated": 557
+            },
+            "source_scored": {
+              "target_model_generated": 621
+            }
+          },
+          "Investigations": {
+            "dictionary_normalized": {
+              "target_model_generated": 166
+            },
+            "evidence_valid": {
+              "target_model_generated": 166
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 166
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 166
+            },
+            "source_scored": {
+              "target_model_generated": 166
+            }
+          },
+          "Prescription": {
+            "dictionary_normalized": {
+              "target_model_generated": 294
+            },
+            "evidence_valid": {
+              "target_model_generated": 326
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 326
+            },
+            "residual_benchmark_added": {
+              "post_model_rescue": 12,
+              "target_model_generated": 294
+            },
+            "source_scored": {
+              "target_model_generated": 326
+            }
+          },
+          "SeizureFrequency": {
+            "dictionary_normalized": {
+              "target_model_generated": 261
+            },
+            "evidence_valid": {
+              "target_model_generated": 261
+            },
+            "protocol_model_preserving_canonical": {
+              "target_model_generated": 261
+            },
+            "residual_benchmark_added": {
+              "target_model_generated": 261
+            },
+            "source_scored": {
+              "target_model_generated": 261
+            }
+          }
+        },
+        "by_surface": {
+          "dictionary_normalized": {
+            "target_model_generated": 1278
+          },
+          "evidence_valid": {
+            "target_model_generated": 1374
+          },
+          "protocol_model_preserving_canonical": {
+            "target_model_generated": 1374
+          },
+          "residual_benchmark_added": {
+            "post_model_rescue": 75,
+            "target_model_generated": 1278
+          },
+          "source_scored": {
+            "target_model_generated": 1374
+          }
+        }
+      },
+      "lane_sources": {
+        "Diagnosis": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_diagnosis_decomposer.jsonl",
+          "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+          "ownership_label": "named_model_diagnosis_plus_rules",
+          "source_lane": "model_diagnosis"
+        },
+        "Investigations": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_structured.jsonl",
+          "lens": "investigations_result_v01",
+          "ownership_label": "named_model_investigations",
+          "source_lane": "model_structured_investigations"
+        },
+        "Prescription": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_structured.jsonl",
+          "lens": "prescription_dictionary_v09",
+          "ownership_label": "named_model_prescription_plus_shared_rules",
+          "source_lane": "model_structured_prescription"
+        },
+        "SeizureFrequency": {
+          "artifact": "experiments/exectv2_2call_no_sf_model_swap_qwen36_repair_v02_full200_20260626_sf_unknown_suppression.jsonl",
+          "lens": "sf_state_projection_suppression_v01",
+          "ownership_label": "named_model_sf_plus_projection_suppression",
+          "source_lane": "model_sf_projection_suppression"
+        }
+      },
+      "model": "ollama_chat/qwen3.6:35b",
+      "post_model_actions": {
+        "seizure_frequency_projection": 25,
+        "seizure_frequency_suppression": 2
+      },
+      "scores": {
+        "diagnosis": 0.852,
+        "investigations": 0.8548,
+        "overall": 0.8234,
+        "prescription": 0.922,
+        "seizure_frequency": 0.6343,
+        "seizure_frequency_state_profile": 0.7812
+      }
+    }
+  },
+  "new_model_calls": 0,
+  "row_policy": "aggregate_only_no_test60_or_full200_row_inspection",
+  "schema_version": "exectv2_model_led_architecture_replay_v1",
+  "scorer": "current clinical_headline plus seizure-frequency state_profile",
+  "source_output_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+  "split": "full200"
+}

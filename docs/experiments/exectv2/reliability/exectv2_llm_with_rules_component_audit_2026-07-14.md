@@ -1,7 +1,7 @@
 # ExECTv2 LLM-with-rules component audit
 
 Date: 2026-07-14  
-Status: completed architecture audit; corrected results not yet promoted
+Status: corrected architecture implemented and replay-verified; final model rows not promoted
 
 ## Question
 
@@ -84,17 +84,29 @@ Seizure Frequency extractor union.
 Machine-readable result:
 `experiments/exectv2_llm_with_rules_component_audit_full200_20260714.json`.
 
+The durable decision-0040 configurations are in
+`configs/exectv2/model_led_audit/`. The no-call check rehydrates their recorded
+historical producer blobs in a temporary directory and reproduced all scores,
+origin counts, and post-model SF action counts:
+
+```powershell
+.venv\Scripts\python.exe scripts/check_exectv2_model_led_audit.py
+```
+
+Its retained aggregate-only output is
+`experiments/exectv2_model_led_architecture_replay_full200_20260715.json`.
+
 ## Corrected three-model results
 
 These are the candidate results that match the intended method going forward.
 They use the current `clinical_headline` scorer, unchanged gold, saved full200
 model outputs, and no new calls.
 
-| Model | Overall | Diagnosis | Seizure frequency | Prescription | Investigations |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.8700 | 0.8614 |
-| DeepSeek V4 Flash API run (thinking state unrecorded) | 0.8543 | 0.8789 | 0.7146 | 0.9057 | 0.9091 |
-| Qwen 3.6 35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.9220 | 0.8548 |
+| Model | Overall | Diagnosis | SF headline | SF `state_profile` | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.7813 | 0.8700 | 0.8614 |
+| DeepSeek V4 Flash API run (thinking state unrecorded) | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
+| Qwen 3.6 35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.7812 | 0.9220 | 0.8548 |
 
 Within these historical saved outputs, the best corrected Diagnosis score is
 `0.8789` for DeepSeek. It is audit-only and will not be the paper's DeepSeek
@@ -169,13 +181,38 @@ scorer. It should not be used alone to claim that a named family extractor made
 the credited decision. Component claims require the origin counts and
 prediction-changing rule accounting above.
 
+## Regression accounting
+
+The durable replay compares each model-owned family output with the final
+post-rule family output using per-letter clinical-headline key equality. These
+are aggregate counts over full200; no test60 row was inspected.
+
+| Model | Family | Changed rows | Wrong → correct | Correct → wrong |
+| --- | --- | ---: | ---: | ---: |
+| GPT-4.1-mini | Diagnosis | 75 | 25 | 8 |
+| GPT-4.1-mini | Seizure Frequency | 27 | 0 | 1 |
+| GPT-4.1-mini | Prescription | 39 | 16 | 11 |
+| DeepSeek historical API run | Diagnosis | 68 | 26 | 6 |
+| DeepSeek historical API run | Seizure Frequency | 23 | 0 | 1 |
+| DeepSeek historical API run | Prescription | 43 | 19 | 16 |
+| Qwen 3.6 35B repair v02 | Diagnosis | 77 | 30 | 4 |
+| Qwen 3.6 35B repair v02 | Seizure Frequency | 23 | 0 | 0 |
+| Qwen 3.6 35B repair v02 | Prescription | 33 | 13 | 13 |
+
+Investigations has zero changed rows for all three models. The replay reports a
+minimum exact-evidence rate of `1.0`; DeepSeek retains its one historical parse
+or schema failure, and the other two conditions have zero. The nonzero
+correct-to-wrong counts mean the component graph now has the right owners, but
+the deterministic corrections are not yet safe enough to promote as final
+model rows. Any rule change must be developed on dev140 without inspecting
+test60 failures.
+
 ## Decision
 
 - Adopt the family ownership boundary in
   [decision 0040](../../../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
-- Replace the manuscript's three-model table only after the intended model-led
-  configurations and aggregate artifact are retained in the active evidence
-  set.
+- Retain the corrected configurations and aggregate replay as architecture
+  evidence, not as the final six-model comparison.
 - Do not describe the old Prescription or Seizure Frequency columns as a
   model-to-model comparison.
 - Use `0.8789` as the best corrected full200 Diagnosis aggregate for the
@@ -183,11 +220,21 @@ prediction-changing rule accounting above.
   combined candidate.
 - Keep the corrected results development-inclusive and aggregate-only.
 
-## Next implementation action
+## Next action
 
-Create durable model-swap configurations that select each model's structured
-Prescription lane and pre-union Seizure Frequency lane, then reproduce this
-aggregate artifact through the normal runbook and retained-evidence checks.
-Add Seizure Frequency `state_profile`, exact-evidence accounting,
-schema/parse failures, fact-origin counts, and deterministic-correct regression
-counts before promotion.
+The permitted dev140 analysis is complete. Across 319 changed model/family
+rows, the family-local view has 160 wrong-to-correct, 41 correct-to-wrong, and
+118 changed-still-wrong outcomes; every changed row has exact evidence.
+Seizure Frequency has 38 rescues and no component-local regression, while
+Diagnosis has 18 regressions and Prescription has 23. Prescription residual
+addition is net harmful and its four uniquely attributable rows are all
+correct-to-wrong. See the
+[dev140 regression analysis](exectv2_model_led_dev140_regression_analysis_2026-07-15.md).
+
+Predeclare one bounded no-call candidate that keeps Seizure Frequency,
+Investigations, Prescription normalization, and supported regimen splitting;
+disables Prescription residual addition; and adds general model-preserving
+guards for Diagnosis subsumption and Prescription current-versus-future
+selection. The final six-model protocol must use decision-0040 family bindings
+and rerun the same aggregate checks; it must not reuse the historical DeepSeek
+result unless thinking-enabled execution is proved.

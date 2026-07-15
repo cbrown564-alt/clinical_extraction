@@ -635,12 +635,17 @@ def is_redundant_diagnosis_residual_addition(
     evidence: str,
     selected_texts: Sequence[str],
     include_resolution_candidate: bool = False,
+    model_preserving_policy_candidate: bool = False,
 ) -> bool:
     """True when a dev residual fragment is already covered by a specific concept."""
 
     del evidence
     concept = canonicalize_diagnosis_concept(text)
     selected = {canonicalize_diagnosis_concept(item) for item in selected_texts}
+    if model_preserving_policy_candidate and _seizure_concept_is_subsumed(
+        concept, selected
+    ):
+        return True
     if include_resolution_candidate and concept == "generalised epilepsy":
         return any(
             item != concept and item.endswith("generalised epilepsy") for item in selected
@@ -654,3 +659,21 @@ def is_redundant_diagnosis_residual_addition(
     if concept == "focal seizures with altered awareness" and "dyscognitive seizures" in selected:
         return True
     return False
+
+
+def _seizure_concept_is_subsumed(concept: str, selected: set[str]) -> bool:
+    """Return whether a model-owned seizure phenotype covers a residual concept."""
+
+    target_tokens = _seizure_concept_tokens(concept)
+    if not target_tokens:
+        return False
+    return any(
+        target_tokens <= selected_tokens
+        for item in selected
+        if (selected_tokens := _seizure_concept_tokens(item))
+    )
+
+
+def _seizure_concept_tokens(concept: str) -> set[str]:
+    tokens = {"seizure" if token == "seizures" else token for token in concept.split()}
+    return tokens if "seizure" in tokens else set()

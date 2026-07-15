@@ -1,7 +1,7 @@
 """Run one frozen ExECTv2 2-call same-core model-swap config.
 
 This script executes the two live model-owned components in a model-swap config
-and rebuilds the deterministic SF, Prescription, and finding-assembly surfaces.
+and rebuilds model-led SF, Prescription, and finding-assembly surfaces.
 It is intended for dev140 runs only unless a separate aggregate-only full-200
 predeclaration exists.
 """
@@ -14,7 +14,6 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
-    PRESCRIPTION,
     SEIZURE_FREQUENCY,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
@@ -24,17 +23,11 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_unknown_suppression as sf_suppression,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-    run_all9_on_letters,
-)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     diagnosis_decomposer as dx_decomposer,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
-    llm_sf_union_arbitration as sf_union,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -45,6 +38,12 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io
 def main() -> None:
     args = _parse_args()
     config = model_swap.load_model_swap_config(args.config)
+    architecture = model_swap.validate_model_led_architecture(config)
+    if architecture["status"] != "pass":
+        details = "\n- ".join(str(item) for item in architecture["violations"])
+        raise SystemExit(
+            "Refusing a model-swap run that violates decision 0040:\n- " + details
+        )
     if config.assembly.row_count > 140 and not args.allow_non_dev140:
         raise SystemExit(
             "Refusing non-dev140 model-swap run without --allow-non-dev140. "
@@ -58,18 +57,16 @@ def main() -> None:
     }
     structured_jsonl = producer_paths["structured_key_family_event_ledger"]
     diagnosis_jsonl = producer_paths["diagnosis_decomposer"]
-    sf_union_jsonl = producer_paths["sf_structured_union"]
-    prescription_jsonl = producer_paths["prescription_deterministic_repair"]
+    sf_producer = config.assembly.lenses[SEIZURE_FREQUENCY.name].producer
+    sf_output_jsonl = producer_paths[sf_producer]
 
     structured_rows = _run_structured(config, letters, structured_jsonl, args)
     _run_diagnosis(config, letters, structured_rows, diagnosis_jsonl, args)
-    _run_sf_chain(
+    _run_model_led_sf_chain(
         structured_jsonl=structured_jsonl,
-        sf_union_jsonl=sf_union_jsonl,
+        sf_output_jsonl=sf_output_jsonl,
         letters=letters,
-        split=config.assembly.split,
     )
-    _run_prescription_deterministic(letters, prescription_jsonl)
     run = model_swap.write_model_swap_candidate_artifacts(
         config,
         generated_on=args.generated_on,
@@ -149,23 +146,29 @@ def _run_diagnosis(
     dx_decomposer.write_report(rows, meta, jsonl_path.with_suffix(".md"), jsonl_path=jsonl_path)
 
 
-def _run_sf_chain(
+def _run_model_led_sf_chain(
     *,
     structured_jsonl: Path,
-    sf_union_jsonl: Path,
+    sf_output_jsonl: Path,
     letters: list,
-    split: str,
 ) -> None:
-    sf_direct_jsonl = sf_union_jsonl.with_name(
-        sf_union_jsonl.name.replace("_sf_union_arbitration", "_sf_structured_direct")
-    )
+    """Project and suppress model SF facts without an independent extractor union."""
+
+    suffix = "_sf_unknown_suppression.jsonl"
+    if not sf_output_jsonl.name.endswith(suffix):
+        raise ValueError(
+            "model-led Seizure Frequency output must end with "
+            f"{suffix!r}: {sf_output_jsonl}"
+        )
+    prefix = sf_output_jsonl.name[: -len(suffix)]
+    sf_direct_jsonl = sf_output_jsonl.with_name(f"{prefix}_sf_structured_direct.jsonl")
     _write_sf_structured_direct_artifact(
         source=structured_jsonl,
         output=sf_direct_jsonl,
         letters=letters,
     )
-    sf_projection_jsonl = sf_union_jsonl.with_name(
-        sf_union_jsonl.name.replace("_sf_union_arbitration", "_sf_state_projection_combined")
+    sf_projection_jsonl = sf_output_jsonl.with_name(
+        f"{prefix}_sf_state_projection_combined.jsonl"
     )
     sf_projection.write_rows_and_report(
         sf_projection.read_rows(sf_direct_jsonl),
@@ -173,19 +176,10 @@ def _run_sf_chain(
         jsonl_path=sf_projection_jsonl,
         report_path=sf_projection_jsonl.with_suffix(".md"),
     )
-    sf_suppression_jsonl = sf_union_jsonl.with_name(
-        sf_union_jsonl.name.replace("_sf_union_arbitration", "_sf_unknown_suppression")
-    )
     sf_suppression.write_rows_and_report(
         sf_suppression.read_rows(sf_projection_jsonl),
-        jsonl_path=sf_suppression_jsonl,
-        report_path=sf_suppression_jsonl.with_suffix(".md"),
-    )
-    sf_union.write_rows_and_report(
-        sf_union.read_rows(sf_suppression_jsonl),
-        sf_union.deterministic_rows_from_letters(letters, split=split),
-        jsonl_path=sf_union_jsonl,
-        report_path=sf_union_jsonl.with_suffix(".md"),
+        jsonl_path=sf_output_jsonl,
+        report_path=sf_output_jsonl.with_suffix(".md"),
     )
 
 
@@ -262,53 +256,6 @@ def _read_jsonl(path: Path) -> list[dict]:
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-
-
-def _run_prescription_deterministic(letters: list, jsonl_path: Path) -> None:
-    """Write the deterministic Prescription producer used by every model arm."""
-
-    predictions = run_all9_on_letters(letters)
-    rows = []
-    for letter, prediction in zip(letters, predictions, strict=True):
-        mentions = [
-            mention.model_dump()
-            for mention in prediction.mentions
-            if mention.entity == PRESCRIPTION.name
-        ]
-        for mention in mentions:
-            mention["component_owner"] = (
-                mention.get("component_owner")
-                or "deterministic:prescription_regimen:current_code"
-            )
-        rows.append(
-            {
-                "letter_id": letter.letter_id,
-                "split": "full_200_authorized",
-                "pipeline_family": "exectv2_deterministic_prescription_repair_v03",
-                "prompt_version": "deterministic_prescription_repair_v03_current_code",
-                "model": "none",
-                "mode": "no-call",
-                "component_owner": "deterministic_prescription_repair_v03_current_code",
-                "call_error": None,
-                "parse_errors": [],
-                "gate_warnings": [],
-                "n_mentions_raw": len(mentions),
-                "n_mentions_scored": len(mentions),
-                "n_evidence_invalid": 0,
-                "predicted_mentions": mentions,
-                "raw_output": json.dumps({"mentions": mentions}, ensure_ascii=False),
-                "gold_mentions": [
-                    {
-                        "entity": annotation.entity,
-                        "text": annotation.text,
-                        "attributes": dict(annotation.attributes),
-                    }
-                    for annotation in letter.annotations
-                    if annotation.entity == PRESCRIPTION.name
-                ],
-            }
-        )
-    write_jsonl(rows, jsonl_path)
 
 
 def _parse_args() -> argparse.Namespace:

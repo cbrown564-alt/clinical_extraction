@@ -20,6 +20,7 @@ index records each object ID, content hash, and byte size.
 ```sh
 python scripts/check_retained_evidence_manifest.py
 python scripts/verify_reference_evidence.py
+python scripts/check_exectv2_model_led_audit.py
 ```
 
 The first command checks files, hashes, sizes, run metadata, and the six selected

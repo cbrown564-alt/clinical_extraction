@@ -45,21 +45,36 @@ Prescription substitution and Seizure Frequency extractor union.
 A no-call full200 aggregate audit produced these candidate compatibility
 scores from saved outputs:
 
-| Model | Overall | Diagnosis | Seizure frequency | Prescription | Investigations |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.8700 | 0.8614 |
-| DeepSeek V4 Flash API run, thinking state unrecorded | 0.8543 | 0.8789 | 0.7146 | 0.9057 | 0.9091 |
-| Qwen 3.6:35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.9220 | 0.8548 |
+| Model | Overall | Diagnosis | SF headline | SF `state_profile` | Prescription | Investigations |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.7813 | 0.8700 | 0.8614 |
+| DeepSeek V4 Flash API run, thinking state unrecorded | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
+| Qwen 3.6:35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.7812 | 0.9220 | 0.8548 |
 
-These use the current `clinical_headline` scorer and are
-development-inclusive, aggregate-only, and unpromoted. They are not final
-six-model results. Seizure Frequency promotion additionally requires the
-`state_profile` score from decision 0037. See the
+Durable decision-0040 configurations and a no-call Git-blob replay reproduce
+these results, including the decision-0037 `state_profile`, exact-evidence,
+schema/parse, fact-origin, and deterministic-regression records. They are
+development-inclusive, aggregate-only, and unpromoted. Nonzero deterministic
+correct-to-wrong counts prevent treating them as final model rows. See the
 [component audit](../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md).
 
+The permitted dev140 mechanism analysis is now complete. Its family-local view
+finds 160 wrong-to-correct, 41 correct-to-wrong, and 118 changed-still-wrong
+model/family rows, all with exact evidence. Seizure Frequency has 38 rescues
+and zero local regressions; Diagnosis has 18 regressions and Prescription has
+23. The next candidate should retain Seizure Frequency and the Investigations
+adapter, disable Prescription residual additions, and revise the Diagnosis
+subsumption and Prescription current-versus-future boundaries. These are
+development recommendations, not implemented or promoted rules. See the
+[dev140 regression analysis](../experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md).
+
 The selected internal calibration result reports full200 Brier 0.2225, base-rate
-Brier 0.2340, and ECE 0.0587. It does not validate model-reported confidence or
-a low-burden review policy.
+Brier 0.2340, and ECE 0.0587. A separate frozen no-call replay evaluated
+model-reported confidence on aggregate-only test60. Failure AUROC was 0.5394
+for GPT-4.1-mini, 0.5503 for historical DeepSeek, and 0.4895 for Qwen. Neither
+predeclared routing rule passed, so no confidence-based review policy was
+adopted. This is negative evidence for the three saved outputs, not deployment
+calibration or a final DeepSeek V4 Flash result.
 
 ## Published metric development replay
 
@@ -84,8 +99,8 @@ to 0.6210 and is rejected. These are inspected dev140 development results; none
 is promoted and test60 was not inspected. See the
 [component comparison](../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md).
 
-Remaining work: materialize and verify the decision-0040 configurations, then
-run the strict six-model comparison using the roster in decision 0039 and
-evaluate model-reported confidence out of sample. Independent clinical review
+Remaining work: predeclare and run the bounded no-call deterministic-policy
+candidate, freeze the accepted policy, then run the strict six-model comparison
+using decision 0039. Independent clinical review
 is still required for clinical-validity claims about the Diagnosis
 interpretation decisions.

@@ -1,7 +1,7 @@
 # 0040: Final ExECT LLM-with-rules family ownership
 
 Date: 2026-07-15  
-Status: accepted architecture target; corrected evidence not yet promoted
+Status: accepted and implemented; architecture replay verified, final model rows not promoted
 
 ## Decision
 
@@ -36,10 +36,11 @@ a reproducible historical development control, but it does not satisfy the
 final model-led family contract in this decision.
 
 The same audit produced corrected aggregate candidates from saved full200
-outputs. They are development-inclusive, aggregate-only, and unpromoted. They
-do not become final evidence until durable configurations reproduce the model
-origin, permitted corrections, scores, and attribution records through the
-retained-evidence checks.
+outputs. Durable configurations now reproduce the model origin, permitted
+corrections, scores, `state_profile`, exact-evidence rate, schema/parse counts,
+fact-origin counts, and deterministic regression counts through the no-call
+architecture check. They remain development-inclusive, aggregate-only
+architecture evidence rather than final model results.
 
 Diagnosis development candidates remain governed by the completed dev140
 component comparison. Decision 0040 defines ownership; it does not promote the
@@ -60,6 +61,16 @@ comparison scorer and must disclose its entity-agnostic recall behavior.
 - Promotion requires reproducible configurations, machine-readable aggregate
   results, exact-evidence accounting, schema/parse failures, rule-added and
   rule-removed fact counts, and regression accounting on permitted data.
+- The verified replay has nonzero deterministic correct-to-wrong counts in
+  Diagnosis and Prescription for all three historical conditions, and one in
+  Seizure Frequency for GPT-4.1-mini and DeepSeek. Those rules are not promoted
+  as a safe final policy without a permitted dev140 decision and a frozen rerun.
+- The permitted dev140 decision retains Seizure Frequency projection and
+  suppression plus the Investigations adapter. It does not promote the current
+  Diagnosis or Prescription policies: the next predeclared candidate should
+  disable Prescription residual additions and revise the Diagnosis subsumption
+  and Prescription current-versus-future boundaries. See the linked component
+  audit for the row-level evidence.
 - The historical three-model scores remain audit evidence only. They must not
   be presented as the final model comparison.
 - Decision 0032 continues to govern finding assembly, decision 0037 governs

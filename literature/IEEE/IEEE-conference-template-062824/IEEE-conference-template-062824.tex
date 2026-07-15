@@ -30,11 +30,9 @@ compare rules only, LLM only, and LLM with rules. Saved Gan holdout results are
 364/450 Purist for the single-pass system and 379/450 for a multi-model
 comparison. On ExECT dev140, rules only reached 0.6020 paper-derived all-features
 macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
-method reached 0.7393 clinical fact F1, and the historical combined control
-reached 0.9189. That control uses a deterministic Prescription producer and a
-Seizure Frequency extractor union, so it is not the final model-led
-architecture. The fixed six-model comparison is incomplete and its results are
-pending.
+method reached 0.7393 clinical fact F1. The historical combined control reached
+0.9189 but used deterministic Prescription and SF-union paths; final six-model
+results are pending.
 Saved-output ablations show positive normalization contributions on both tasks,
 while the evidence check is score-inert on those representative replays. The
 selected evidence supports a reproducible component comparison with explicit
@@ -104,11 +102,9 @@ not an independent holdout.
 For each task, the retained evidence index selects one rules-only, LLM-only, and
 LLM-with-rules run. Rules-only runs use no model calls. LLM-only runs put the
 clinical decision in one model program. The ExECT GEPA run is a negative
-development comparison. Combined runs keep model extraction distinct from
-deterministic selection, normalization, evidence checks, and scoring. For the
-final ExECT model comparison, the named model must supply all four main
-families; an independent Prescription or Seizure Frequency extractor cannot
-replace or be unioned into the named model's answer.
+development comparison. The final ExECT comparison requires model-origin facts
+in all four families and prohibits independent Prescription or Seizure
+Frequency substitution or union.
 
 \begin{figure}[tbp]
 \centering
@@ -270,13 +266,11 @@ Gemma 4 26B (local) & Pending & Pending & Pending & Pending & Pending & Pending 
 }
 \end{table}
 
-The historical GPT, DeepSeek, and Qwen rows are excluded because Prescription
-was deterministic-only and Seizure Frequency included an independent extractor
-union. Corrected saved-output aggregates remain unpromoted until durable
-configurations reproduce them and pass attribution, SF state-profile,
-regression, schema/evidence, and retained-evidence checks. DeepSeek uses
-\code{deepseek/deepseek-chat} with thinking enabled and is reported as DeepSeek
-V4 Flash.
+Historical rows are excluded because Prescription was deterministic-only and SF
+included an independent extractor union. Corrected candidates remain
+unpromoted: durable configurations reproduce the attribution and aggregate
+gates, but deterministic correct-to-wrong counts remain nonzero. DeepSeek uses
+\code{deepseek/deepseek-chat} with thinking enabled and is reported as DeepSeek V4 Flash.
 
 \subsection{Cross-Task Components and Reliability}
 
@@ -312,15 +306,16 @@ Subject & Retained result & Boundary \\
 \midrule
 ExECT evidence & Hybrid dev140 minimum exact evidence rate 1.0000 & Development reference. \\
 ExECT calibration & Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 & Full200 aggregate internal scoring-rule result. \\
+ExECT confidence & Test60 failure AUROC 0.5394 GPT; 0.5503 historical DeepSeek; 0.4895 Qwen & Aggregate negative result for saved outputs. \\
 Gan grounding & Architecture-specific validation grounding packages retained & Metrics are not uniform across families. \\
 Reproducibility & 1,157 tests, Ruff, mypy, hashes, split restrictions, and six-run replay pass on Python 3.11 & Engineering verification, not clinical validation. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Model-reported confidence remains unused, and no low-burden review-routing
-policy is adopted. The retained evidence index does not include evidence for a
-cross-task over-reading claim.
+Neither predeclared model-confidence review rule met its test60 catch-rate and
+burden gates, so no confidence-based review policy is adopted. The retained
+evidence index does not include evidence for a cross-task over-reading claim.
 
 \section{Discussion}
 
@@ -334,12 +329,9 @@ strict benchmark superiority. The rules-only
 replay shows that CUI matching recovers surface variation, while feature
 completion remains the larger limitation.
 
-The historical model-transfer artifacts show that the component graph ran with
-three qualitatively different runtime models. Their deterministic Prescription
-and Seizure Frequency union columns are excluded from model comparison. The old
-DeepSeek aggregate is also excluded because its thinking state was not
-recorded. The corrected six-model panel is incomplete, so these results do not
-support a universal model claim.
+Historical model-transfer artifacts ran with three runtime models, but their
+Prescription/SF columns and unrecorded DeepSeek thinking state exclude them
+from the final model comparison. The corrected panel remains incomplete.
 
 The cross-task ablation suggests that normalization is useful in both tasks.
 The exact-evidence check's zero F1 delta shows why aggregate score changes are
@@ -353,11 +345,11 @@ ExECT full200 includes dev140 and is not an independent holdout.
 strict benchmark. The paper-derived replay uses development data and does not
 reproduce the original system, annotation process, or 0.87/0.90 scores. A
 legacy benchmark/CUI companion has small current-code replay drift. The fixed
-six-model panel is incomplete. The selected historical combined control uses a
-deterministic Prescription producer and an independent Seizure Frequency
-extractor union, so it does not satisfy the final model-led family boundary.
-Model-reported confidence and low-burden review routing are not
-validated. Annotation-quality findings are internally adjudicated; unqualified
+six-model panel is incomplete, and the historical combined control does not
+satisfy the final model-led family boundary.
+Model-reported confidence was uninformative for the three saved historical
+outputs under the frozen test60 analysis; this is not deployment calibration
+or a six-model result. Annotation-quality findings are internally adjudicated; unqualified
 clinical validity would require independent domain review. The current retained
 evidence does not support a cross-task over-reading claim.
 
@@ -379,6 +371,7 @@ Markdown manuscript and this IEEE source use only selected evidence and claims
 permitted by the paper claim status.
 
 \begin{thebibliography}{00}
+\scriptsize
 \bibitem{fonferko2019exect} B. Fonferko-Shadrach, A. S. Lacey, A. Roberts,
 S. Thompson, D. V. Ford, R. A. Lyons, M. I. Rees, and W. O. Pickrell, ``Using
 natural language processing to extract structured epilepsy data from

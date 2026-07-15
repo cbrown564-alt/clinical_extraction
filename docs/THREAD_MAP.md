@@ -25,6 +25,9 @@ the selected report or data file
 [data rules](design/data_contract.md) →
 the relevant decision record and tests
 
+For the final ExECT family routes, the relevant record is
+[decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md).
+
 ## Change evidence or split policy
 
 [evidence rules](canon/03_evidence_claims_frozen.md) →

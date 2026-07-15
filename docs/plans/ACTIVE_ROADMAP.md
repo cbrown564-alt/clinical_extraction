@@ -44,25 +44,50 @@ held-out rows, so it is not an independent holdout.
    or the fixed scorer. Shared deterministic fixes improved the rules-only and
    hybrid development scores; the one fixed LLM prompt candidate regressed and
    was rejected. Test60 was not inspected and no candidate was promoted.
-8. **ExECT family ownership audited.** Saved full200 outputs show that the
-   historical Prescription lane is deterministic-only and the Seizure
-   Frequency lane includes an independent extractor union.
+8. **ExECT comparison architecture corrected.** Saved full200 outputs showed
+   that the historical Prescription lane was deterministic-only and the
+   Seizure Frequency lane included an independent extractor union.
    [Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
-   records the corrected model-led family contract. Candidate corrected scores
-   exist, but no corrected configuration or result is promoted.
+   records the corrected model-led family contract. Durable configurations and
+   a no-call Git-blob replay now reproduce the corrected aggregates and add SF
+   `state_profile`, exact-evidence, attribution, schema/parse, fact-origin, and
+   deterministic-regression accounting. Nonzero correct-to-wrong counts keep
+   the historical model rows unpromoted.
+9. **Model-reported confidence closed with a negative result.** A protocol was
+   frozen before a no-call replay separated dev140 from aggregate-only test60.
+   Test60 failure AUROC was 0.5394 for GPT-4.1-mini, 0.5503 for historical
+   DeepSeek, and 0.4895 for Qwen. Neither fixed review rule met the catch-rate
+   and burden gates, so no confidence-based review policy was adopted.
+10. **Model-led deterministic regressions characterized on dev140.** A
+    predeclared no-call study filtered saved producer blobs to the permitted 140
+    development identifiers before assembly. Across 319 changed model/family
+    rows, the family-local view records 160 rescues, 41 regressions, and 118
+    changed-still-wrong outcomes, all with exact evidence. Seizure Frequency is
+    retained; Diagnosis and Prescription need a bounded policy candidate.
+11. **Annotation evidence consolidated.** A generated 584-record taxonomy
+    hash-checks 13 retained sources, maps all 57 explicitly cited letters, and
+    links direct defects, conventions, ambiguity, multiplicity, scorer effects,
+    handling, sensitivity, and review status. Ten historical Diagnosis concept
+    rows remain aggregate-only, and independent clinical review remains open.
+12. **First model-preserving policy bundle rejected.** The predeclared dev140
+    replay reduced correct-to-wrong changes from 41 to 9 but retained only 143
+    of 160 comparator rescues. The 17 lost rescues exceeded the allowed ten;
+    aggregate F1 improvement did not override the row-retention gate.
+13. **Prescription residual-removal candidate rejected.** Local selected-text
+    frequency precedence fixed the shared-evidence rescue-scope defect, but
+    removing all Prescription residual additions made four comparator-correct
+    exact-evidence rows wrong. The residual group contains demonstrated
+    missing-regimen recovery and cannot be removed wholesale.
 
 ## Ordered evidence work
 
-1. Materialize
-   [decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
-   as durable model-swap configurations. Use each
-   named model's Prescription output and pre-union Seizure Frequency output;
-   reproduce the saved-output audit; add Seizure Frequency `state_profile`,
-   exact-evidence, attribution, regression, and schema/parse accounting; then
-   update the retained architecture freeze.
-2. Evaluate model confidence out of sample and test only review policies that
-   were specified before the run.
-3. Predeclare and run the fixed six-model roster with the same corrected
+1. Predeclare a Prescription candidate that retains demonstrated
+   missing-regimen rescues, applies local rescue scope and the explicit-current
+   guard, and ablates residual additions by rule group rather than wholesale.
+2. Predeclare a separate Diagnosis candidate for residual subsumption and
+   absence-phenotype preservation with row-identity rescue retention.
+3. Freeze the accepted decision-0040 policy, then predeclare and run the fixed
+   six-model roster with the same corrected
    model-led pipeline and scorer: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
    hosted DeepSeek V4 Flash, local Qwen 3.6:35B, and local Gemma 4 26B. Resolve
    whether the historical `deepseek/deepseek-chat` artifact proves that
@@ -81,6 +106,8 @@ held-out rows, so it is not an independent holdout.
 - The five largest selected ExECT replay files are immutable Git LFS objects;
   the retained evidence index records their identities and retrieval details.
 - Fixing the pipeline does not authorize model calls or locked-row inspection.
+- Internal annotation review does not establish clinical validity; that claim
+  still requires independent clinical review.
 
 ## Verification commands
 
@@ -88,6 +115,8 @@ held-out rows, so it is not an independent holdout.
 uv sync --python 3.11 --frozen --extra dev
 python scripts/check_retained_evidence_manifest.py
 python scripts/verify_reference_evidence.py
+python scripts/check_exectv2_model_led_audit.py
+python scripts/analyze_exectv2_model_led_dev140_regressions.py
 python -m pytest
 python -m ruff check .
 python -m mypy src

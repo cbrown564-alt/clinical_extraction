@@ -13,11 +13,24 @@ ExECT Diagnosis review and development implementation are complete. A full200
 component audit found that the recorded three-model Prescription lane is
 deterministic-only and the Seizure Frequency lane unions model output with an
 independent deterministic extractor. Corrected model-led aggregate candidates
-exist, but their configurations have not been retained or promoted.
+exist. Their decision-0040 configurations and no-call replay are now retained
+and verified; the replay adds `state_profile`, exact-evidence, schema/parse,
+fact-origin, and deterministic-regression accounting.
 [Decision 0040](docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md)
-now owns the final family architecture. The next executable work is to
-materialize that architecture correction, followed by out-of-sample confidence
-and selective-action testing.
+owns the final family architecture. Nonzero deterministic correct-to-wrong
+counts keep the historical rows unpromoted. A frozen no-call test60 replay now
+shows that model-reported confidence is not informative enough to route review
+for any of the three historical model outputs. The permitted dev140 mechanism
+analysis now retains Seizure Frequency and Investigations but finds that
+Diagnosis and Prescription need bounded policy candidates. A bundled
+model-preserving candidate and a Prescription-only rescue-scope candidate were
+both rejected under predeclared row-retention gates. Prescription residual
+additions cannot be disabled unconditionally because four exact-evidence rows
+depend on deterministic missing-regimen recovery. The next work separates safe
+Prescription selection guards from residual rule groups and evaluates the
+Diagnosis guards independently, before the fixed six-model comparison. The
+annotation evidence is now consolidated into a generated taxonomy with
+explicit score, handling, sensitivity, review, and clinical-validity limits.
 
 [Paper claim status](docs/canon/10_paper_provenance.md) records what the paper
 may say. [The active roadmap](docs/plans/ACTIVE_ROADMAP.md) gives the work order.
@@ -74,11 +87,34 @@ Other paper evidence:
   `0.9057` / `0.8700` / `0.9220`. These are unpromoted full200
   development-inclusive candidates, not independent holdout results. The
   DeepSeek candidate is audit-only because its thinking state was not recorded.
+- The durable replay reproduces those aggregates exactly. SF `state_profile`
+  F1 is `0.7813` / `0.8085` / `0.7812` for GPT-4.1-mini, historical DeepSeek,
+  and Qwen. Minimum exact-evidence rate is `1.0`; the replay retains one
+  DeepSeek parse/schema failure. Deterministic corrections still produce
+  correct-to-wrong rows, so these are architecture evidence rather than
+  promoted final model conditions.
 - Normalizing saved outputs improved ExECT dev140 by `0.0389` and Gan
   validation750 by `0.0293`. The exact-evidence check did not change these
   replay scores; rejection and repair tests provide its separate evidence.
 - ExECT full200 internal calibration: Brier `0.2225`, base-rate Brier `0.2340`,
   ECE `0.0587`. No review policy has been adopted from this result.
+- ExECT aggregate-only test60 model-reported-confidence failure AUROC is
+  `0.5503` for historical DeepSeek, `0.5394` for GPT-4.1-mini, and `0.4895`
+  for Qwen. Neither predeclared review rule met the frozen catch-rate and
+  burden requirements, so no confidence-based review policy was adopted.
+- The dev140 deterministic-regression analysis records 319 changed model/family
+  rows with exact evidence. The family-local view has 160 wrong-to-correct, 41
+  correct-to-wrong, and 118 changed-still-wrong outcomes. Seizure Frequency has
+  38 rescues and no local regression; Diagnosis has 18 regressions and
+  Prescription has 23.
+- The [annotation-evidence synthesis](docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
+  hash-checks 13 retained sources and combines
+  584 overlapping evidence records. It maps all 57 explicitly cited letters,
+  separates three open and one fixed mechanical gold issue from conventions,
+  ambiguity, multiplicity, scorer effects, and model-error controls, and leaves
+  ten historical Diagnosis concept rows aggregate-only. This is internal
+  development evidence; independent clinical review remains required for
+  clinical-validity claims.
 
 Exact files, hashes, versions, and replay expectations are in the
 [retained evidence index](docs/experiments/retained_evidence_manifest.json).
@@ -95,8 +131,13 @@ Exact files, hashes, versions, and replay expectations are in the
 | ExECT published metrics | Added and tested paper-derived normalized-phrase, CUI, and full-attribute scoring; a no-call all-nine-entity dev140 replay reports macro item F1 `0.5687` / `0.7144` / `0.6020` and leaves the existing strict micro replay unchanged at `0.3548` |
 | ExECT Diagnosis resolution | Completed all 246 dev140 review decisions: 173 representation issues, 72 extraction errors, and one uncertain row. Diagnostic sensitivity raises fixed F1 to `0.9344`/`0.8499`/`0.9789` for rules/LLM/hybrid under the conservative view. Shared deterministic fixes improve rules from `0.8599` to `0.8926` and hybrid from `0.8984` to `0.9034`; the fixed LLM prompt candidate regresses from `0.6861` to `0.6210` and is rejected. Gold and the fixed scorer are unchanged; test60 was not inspected. |
 | ExECT LLM-with-rules ownership audit | Replayed saved full200 outputs without new calls or test60 failure inspection. Diagnosis is model-led with material deterministic rescue; Investigations is model-led; the recorded Prescription and Seizure Frequency paths fail the intended method definition. The corrected aggregate candidate uses each named model's facts plus attributable post-extraction corrections. Per-family recall is entity-agnostic, so family scores are final-output metrics rather than pure component scores. |
+| ExECT architecture correction | Added decision-0040 model-led configs, made the runner reject deterministic Prescription substitution and SF extractor union, and added a no-call Git-blob replay. It exactly reproduces the three corrected aggregates plus `state_profile`, attribution, exact-evidence, schema/parse, and deterministic-regression counts. Implemented and verified; the historical model rows are not promoted. |
+| ExECT model-reported confidence | Froze the analysis before replay, separated dev140 from aggregate-only test60, and evaluated the historical GPT-4.1-mini, DeepSeek, and Qwen source labels against final family-cell correctness. Test60 AUROC was `0.5394` / `0.5503` / `0.4895`; neither fixed routing rule passed. This is a retained negative result, not deployment calibration. |
+| ExECT dev140 deterministic regressions | Filtered historical producer blobs to the declared 140 development IDs before assembly and retained 319 changed-row mechanism records. SF projection/suppression has 38 local rescues and zero regressions; current Diagnosis and Prescription policies remain unpromoted. No model call or test60 inspection occurred. |
+| ExECT model-preserving policy candidates | Replayed two predeclared opt-in candidates on saved dev140 outputs. The bundled candidate reduced correct-to-wrong rows from 41 to 9 but lost 17 of 160 comparator rescues and was rejected. The Prescription rescue-scope candidate fixed local frequency scope and retained 37 of 41 Prescription rescues, but made four comparator-correct rows wrong when all residual additions were removed, so it was also rejected. All comparator-candidate changes had exact evidence; no model call or test60 inspection occurred. |
+| ExECT annotation evidence | Generated a 584-record taxonomy from 13 hash-checked retained sources, mapped all 57 explicitly cited letters, linked issue class to original scoring, handling, sensitivity, and review status, and retained the independent-clinical-review boundary. Ten historical Diagnosis concept rows remain aggregate-only rather than reconstructed. |
 
-The current suite contains 1,194 tests. On 2026-07-14, all tests, Ruff, mypy,
+The current suite contains 1,227 tests. On 2026-07-15, all tests, Ruff, mypy,
 the retained-evidence check, all six no-call reference replays, and a two-pass
 IEEE build passed. All three PDF pages were rendered and visually checked. The
 cleanup history is in the
@@ -104,22 +145,17 @@ cleanup history is in the
 
 ## Open research and validation work
 
-1. **Architecture correction:** implement
-   [decision 0040](docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md)
-   in durable model-swap configurations that use each named model's
-   Prescription output and pre-union Seizure Frequency output. Reproduce the
-   aggregate audit, add Seizure Frequency `state_profile`, and pass attribution,
-   regression, schema/evidence, and retained-evidence checks.
-2. **Confidence:** evaluate model-reported confidence out of sample and keep a
-   negative result if the values remain uninformative.
-3. **Annotation evidence:** combine the cited defect, convention, ambiguity,
-   multiplicity, scoring, handling, and sensitivity evidence. Claims of
-   clinical validity still require independent clinical review.
-4. **Six-model comparison:** run the decision-0039 roster through the same
+1. **Bounded deterministic policy separation:** retain the demonstrated
+   Prescription missing-regimen rescues, isolate harmful residual rule groups,
+   and evaluate local rescue scope plus current-versus-future selection without
+   changing candidate generation. Evaluate Diagnosis subsumption and
+   absence-phenotype preservation as a separate candidate with rescue-identity
+   accounting.
+2. **Six-model comparison:** run the decision-0039 roster through the same
    corrected model-led pipeline and scorer. Record exact hosted identifiers and
    local model revisions, quantization, hardware, endpoint, and adapter policy;
-   require DeepSeek V4 Flash to use `deepseek/deepseek-chat` with thinking
-   enabled and record how thinking was requested.
+   require DeepSeek V4 Flash to use `deepseek/deepseek-v4-flash` i.e. with thinking
+   enabled.
 
 ## Rules that protect the evidence
 

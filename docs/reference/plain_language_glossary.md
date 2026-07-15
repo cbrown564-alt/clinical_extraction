@@ -1,6 +1,6 @@
 # Naming guide
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 Use the plain name in prose and commands. Give an internal identifier once only
 when linking to saved evidence or code that still uses it.
@@ -21,7 +21,7 @@ Current Gan commands use `rules`, `llm`, and `llm_with_rules`.
 | --- | --- | --- |
 | `V12` | Gan multi-model comparison, 379/450 Purist on locked test450 | Linking to its saved aggregate report |
 | `v0_reference` | Gan single-pass event extractor, 364/450 Purist on locked test450 | Joining saved runs or citing its lineage |
-| `v08` | Current ExECT LLM-with-rules development reference, 0.9189 clinical fact F1 on dev140 | Replaying its selected files or discussing its exact version |
+| `v08` | Historical ExECT LLM-with-rules development control, 0.9189 clinical fact F1 on dev140; not the final decision-0040 architecture | Replaying its selected files or discussing its exact version |
 | `GEPA` | Optimizer used for the selected ExECT LLM-only negative comparison | Describing the optimization method |
 
 Do not use a version code as if it explains the method.

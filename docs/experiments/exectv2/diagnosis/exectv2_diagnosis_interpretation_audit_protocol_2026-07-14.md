@@ -1,7 +1,7 @@
 # ExECTv2 Diagnosis interpretation audit protocol
 
 Date: 2026-07-14  
-Status: predeclared; substrate implemented; adjudication not yet complete  
+Status: completed; results owned by the component comparison
 Track: ExECTv2 development evidence
 
 ## Primary question
@@ -36,11 +36,17 @@ clinical validation.
 | --- | --- | --- |
 | Rules only | current deterministic all-nine extractor, regenerated on dev140 with no calls | Retained architecture comparator |
 | LLM only | `experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.jsonl` | Retained negative development comparator |
-| LLM with rules | `experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl` | Current development performance control |
+| LLM with rules | `experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl` | Historical development performance control |
 
 The audit compares interpretations of fixed outputs. It must not tune, repair,
 or rerun a model. The GEPA method used an optimizer-only development sub-split;
 its result remains a development comparator, not benchmark-cleared evidence.
+
+The completed result is recorded in the
+[component comparison](exectv2_diagnosis_component_comparison_2026-07-14.md).
+The `v08` input remains valid for this fixed-output Diagnosis audit, but its
+other family paths do not satisfy the final model-led contract in
+[decision 0040](../../../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
 
 ## Scoring and study component
 

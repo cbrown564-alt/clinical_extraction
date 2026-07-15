@@ -75,6 +75,9 @@ class ModelSwapConfig:
     model: str
     model_label: str
     architecture_core_id: str
+    architecture_contract: str
+    diagnosis_resolution_candidate: bool
+    replay_source_revision: str
     calls_per_letter: float
     runtime: str
     prompt_profile: str
@@ -110,6 +113,11 @@ def load_model_swap_config(path: Path) -> ModelSwapConfig:
         model=str(payload["model"]),
         model_label=str(payload.get("model_label", payload["model"])),
         architecture_core_id=str(payload["architecture_core_id"]),
+        architecture_contract=str(payload.get("architecture_contract", "historical_same_core")),
+        diagnosis_resolution_candidate=bool(
+            payload.get("diagnosis_resolution_candidate", False)
+        ),
+        replay_source_revision=str(payload.get("replay_source_revision", "")),
         calls_per_letter=float(payload.get("calls_per_letter", 2)),
         runtime=str(payload.get("runtime", "")),
         prompt_profile=str(payload.get("prompt_profile", "full")),
@@ -124,6 +132,51 @@ def load_model_swap_config(path: Path) -> ModelSwapConfig:
         output_jsonl=Path(str(outputs["jsonl"])),
         output_markdown=Path(str(outputs["markdown"])),
     )
+
+
+def validate_model_led_architecture(config: ModelSwapConfig) -> dict[str, Any]:
+    """Check the decision-0040 family ownership boundary before model calls."""
+
+    violations: list[str] = []
+    lenses = config.assembly.lenses
+    if config.architecture_contract != "decision_0040_model_led":
+        violations.append("architecture_contract must be 'decision_0040_model_led'.")
+    diagnosis_lens = lenses.get(DIAGNOSIS.name)
+    sf_lens = lenses.get(SEIZURE_FREQUENCY.name)
+    prescription_lens = lenses.get(PRESCRIPTION.name)
+    investigations_lens = lenses.get(INVESTIGATIONS.name)
+    if diagnosis_lens is None or diagnosis_lens.producer != "diagnosis_decomposer":
+        violations.append("Diagnosis must use producer 'diagnosis_decomposer'.")
+    if sf_lens is None or sf_lens.producer != "sf_model_projection_suppression":
+        violations.append(
+            "SeizureFrequency must use producer 'sf_model_projection_suppression'."
+        )
+    if (
+        prescription_lens is None
+        or prescription_lens.producer != "structured_key_family_event_ledger"
+    ):
+        violations.append(
+            "Prescription must use the named model producer "
+            "'structured_key_family_event_ledger'."
+        )
+    if (
+        investigations_lens is None
+        or investigations_lens.producer != "structured_key_family_event_ledger"
+    ):
+        violations.append(
+            "Investigations must use the named model producer "
+            "'structured_key_family_event_ledger'."
+        )
+    for prohibited in ("sf_union_arbitration", "prescription_deterministic_repair"):
+        if prohibited in config.replayed_components:
+            violations.append(
+                f"Replayed component '{prohibited}' is prohibited by decision 0040."
+            )
+    return {
+        "contract": config.architecture_contract,
+        "status": "pass" if not violations else "fail",
+        "violations": violations,
+    }
 
 
 def validate_same_core_configs(
@@ -213,6 +266,7 @@ def write_model_swap_candidate_artifacts(
         config.assembly,
         generated_on=generated_on,
         gold_loader=loader,
+        diagnosis_resolution_candidate=config.diagnosis_resolution_candidate,
     )
     report = _annotated_candidate_report(config, run.report)
     config.output_jsonl.parent.mkdir(parents=True, exist_ok=True)
@@ -415,6 +469,9 @@ def _annotated_candidate_report(
         "model": config.model,
         "model_label": config.model_label,
         "architecture_core_id": config.architecture_core_id,
+        "architecture_contract": config.architecture_contract,
+        "diagnosis_resolution_candidate": config.diagnosis_resolution_candidate,
+        "replay_source_revision": config.replay_source_revision,
         "calls_per_letter": config.calls_per_letter,
         "runtime": config.runtime,
         "prompt_profile": config.prompt_profile,
@@ -449,6 +506,8 @@ def _completed_model_row(
         "model_label": config.model_label,
         "status": "complete",
         "architecture_core_id": config.architecture_core_id,
+        "architecture_contract": config.architecture_contract,
+        "diagnosis_resolution_candidate": config.diagnosis_resolution_candidate,
         "surface": PRIMARY_SURFACE,
         "split": report["split"],
         "row_count": report["row_count"],
@@ -704,6 +763,8 @@ def _component_signature(config: ModelSwapConfig) -> dict[str, Any]:
     producer_ids = sorted(assembly.producers)
     return {
         "architecture_core_id": config.architecture_core_id,
+        "architecture_contract": config.architecture_contract,
+        "diagnosis_resolution_candidate": config.diagnosis_resolution_candidate,
         "calls_per_letter": config.calls_per_letter,
         "live_call_components": list(config.live_call_components),
         "replayed_components": list(config.replayed_components),

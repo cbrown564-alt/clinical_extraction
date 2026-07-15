@@ -21,7 +21,9 @@
 | ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
 | Guide to the different ExECT Diagnosis F1 scores | [Diagnosis score guide](experiments/exectv2/diagnosis/exectv2_diagnosis_score_guide_2026-07-14.md) |
 | Three-model LLM-with-rules ownership and corrected aggregate | [LLM-with-rules component audit](experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md) |
+| Dev140 deterministic benefit and regression mechanisms | [model-led regression analysis](experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md) |
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
+| Combined annotation defects, conventions, ambiguity, scoring, sensitivity, and review status | [annotation-evidence synthesis](experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
 
 ## Implementation
