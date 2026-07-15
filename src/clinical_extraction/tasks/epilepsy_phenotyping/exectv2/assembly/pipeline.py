@@ -94,6 +94,8 @@ def build_finding_assembly(
     generated_on: str | None = None,
     gold_loader: GoldLoader = load_letters_for_split,
     diagnosis_resolution_candidate: bool = False,
+    model_preserving_policy_candidate: bool = False,
+    prescription_rescue_scope_candidate: bool = False,
 ) -> AssemblyRun:
     """Build a no-call finding assembly from saved producer artifacts."""
 
@@ -122,6 +124,8 @@ def build_finding_assembly(
             producers=producers,
             source_rows=source_rows,
             diagnosis_resolution_candidate=diagnosis_resolution_candidate,
+            model_preserving_policy_candidate=model_preserving_policy_candidate,
+            prescription_rescue_scope_candidate=prescription_rescue_scope_candidate,
         )
         stores[letter.letter_id] = store
         rows.append(row)
@@ -175,6 +179,8 @@ def build_finding_assembly(
         changed=changed,
     )
     report["diagnosis_resolution_candidate"] = diagnosis_resolution_candidate
+    report["model_preserving_policy_candidate"] = model_preserving_policy_candidate
+    report["prescription_rescue_scope_candidate"] = prescription_rescue_scope_candidate
     return AssemblyRun(
         manifest=manifest,
         rows=rows,
@@ -375,6 +381,8 @@ def _assemble_letter(
     producers: Mapping[str, SavedJsonlProducer],
     source_rows: Mapping[str, Mapping[str, Mapping[str, Any]]],
     diagnosis_resolution_candidate: bool,
+    model_preserving_policy_candidate: bool,
+    prescription_rescue_scope_candidate: bool,
 ) -> tuple[ClinicalFindingStore, dict[str, Any]]:
     store = ClinicalFindingStore(letter.letter_id, letter.note_text)
     lane_blocks: dict[str, Any] = {}
@@ -428,6 +436,10 @@ def _assemble_letter(
                 ownership_label=lens_config.ownership_label or producer.ownership_label,
                 portability=lens_config.portability,
                 diagnosis_resolution_candidate=diagnosis_resolution_candidate,
+                model_preserving_policy_candidate=model_preserving_policy_candidate,
+                prescription_rescue_scope_candidate=(
+                    prescription_rescue_scope_candidate
+                ),
             ),
         )
         lane_scored = [finding.to_row() for finding in lens_result.findings]

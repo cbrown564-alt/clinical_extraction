@@ -53,13 +53,18 @@ def _store(note_text: str, mentions: list[dict[str, Any]]) -> ClinicalFindingSto
     return store
 
 
-def _policy(*, diagnosis_resolution_candidate: bool = False) -> LensPolicy:
+def _policy(
+    *,
+    diagnosis_resolution_candidate: bool = False,
+    model_preserving_policy_candidate: bool = False,
+) -> LensPolicy:
     return LensPolicy(
         producer_id=_PRODUCER,
         source_lane="single_gpt_structured_v09",
         ownership_label="single_gpt",
         portability="benchmark_format",
         diagnosis_resolution_candidate=diagnosis_resolution_candidate,
+        model_preserving_policy_candidate=model_preserving_policy_candidate,
     )
 
 
@@ -790,3 +795,111 @@ def test_diagnosis_dictionary_lens_avoids_generic_generalised_subtype_duplicate(
     texts = [finding.text for finding in result.findings]
     assert "genetic generalised epilepsy" in texts
     assert "generalised epilepsy" not in texts
+
+
+def test_model_preserving_candidate_suppresses_broader_seizure_residual() -> None:
+    note = "Seizure type and frequency: focal seizures with altered awareness."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures with altered awareness",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal seizures with altered awareness",
+            }
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(
+        store,
+        policy=_policy(
+            diagnosis_resolution_candidate=True,
+            model_preserving_policy_candidate=True,
+        ),
+    )
+    texts = [finding.text for finding in result.findings]
+
+    assert "focal seizures with altered awareness" in texts
+    assert "focal seizures" not in texts
+
+
+def test_model_preserving_candidate_preserves_model_owned_absence_phenotype() -> None:
+    note = (
+        "Diagnosis: Juvenile Absence Epilepsy. "
+        "EEG showed absence seizures captured during hyperventilation."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "juvenile absence epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Juvenile Absence Epilepsy",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "absence seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence seizures",
+            },
+        ],
+    )
+
+    default = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy())
+    candidate = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(store, policy=_policy(model_preserving_policy_candidate=True))
+
+    assert "absence seizures" not in [finding.text for finding in default.findings]
+    assert "absence seizures" in [finding.text for finding in candidate.findings]
+
+
+def test_model_preserving_candidate_keeps_syndrome_and_seizure_phenotype_distinct() -> None:
+    note = "Diagnosis: focal epilepsy with focal seizures."
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "focal epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal epilepsy",
+            }
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(
+        store,
+        policy=_policy(
+            diagnosis_resolution_candidate=True,
+            model_preserving_policy_candidate=True,
+        ),
+    )
+    texts = [finding.text for finding in result.findings]
+
+    assert "focal epilepsy" in texts
+    assert "focal seizures" in texts

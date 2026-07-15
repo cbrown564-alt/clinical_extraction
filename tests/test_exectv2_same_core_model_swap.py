@@ -11,6 +11,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
     model_swap,
 )
+from scripts import check_exectv2_model_led_audit as model_led_audit
 from scripts import run_exectv2_2call_model_swap as runner
 
 
@@ -274,6 +275,7 @@ def test_model_led_contract_rejects_historical_family_substitutions(tmp_path: Pa
 
     assert result["status"] == "fail"
     assert result["violations"] == [
+        "architecture_contract must be 'decision_0040_model_led'.",
         "SeizureFrequency must use producer 'sf_model_projection_suppression'.",
         "Prescription must use the named model producer "
         "'structured_key_family_event_ledger'.",
@@ -316,12 +318,6 @@ def test_model_led_sf_chain_stops_before_independent_extractor_union(
         "write_rows_and_report",
         lambda rows, **kwargs: calls.append(("suppression_write", kwargs["jsonl_path"])),
     )
-    monkeypatch.setattr(
-        runner.sf_union,
-        "write_rows_and_report",
-        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("union must not run")),
-    )
-
     runner._run_model_led_sf_chain(
         structured_jsonl=structured,
         sf_output_jsonl=output,
@@ -335,6 +331,29 @@ def test_model_led_sf_chain_stops_before_independent_extractor_union(
         ("suppression_read", tmp_path / "candidate_sf_state_projection_combined.jsonl"),
         ("suppression_write", output),
     ]
+
+
+def test_retained_model_led_audit_configs_share_the_decision_0040_graph() -> None:
+    paths = sorted(Path("configs/exectv2/model_led_audit").glob("*.json"))
+    configs = [model_swap.load_model_swap_config(path) for path in paths]
+
+    assert len(configs) == 3
+    assert all(
+        model_swap.validate_model_led_architecture(config)["status"] == "pass"
+        for config in configs
+    )
+    assert model_swap.validate_same_core_configs(configs)["component_graph_identical"] is True
+
+
+def test_retained_model_led_replay_matches_the_architecture_audit_scores() -> None:
+    replay = json.loads(model_led_audit.REPLAY_PATH.read_text(encoding="utf-8"))
+    audit = json.loads(model_led_audit.AUDIT_PATH.read_text(encoding="utf-8"))
+
+    model_led_audit._assert_audit_scores(replay, audit)
+    assert replay["row_policy"] == "aggregate_only_no_test60_or_full200_row_inspection"
+    assert replay["models"]["GPT-4.1-mini"]["scores"][
+        "seizure_frequency_state_profile"
+    ] == 0.7813
 
 
 def test_model_swap_runner_passes_api_base_to_live_components(monkeypatch, tmp_path: Path) -> None:

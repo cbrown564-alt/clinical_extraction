@@ -1,0 +1,42 @@
+{
+  "candidate_id": "exectv2_model_led_gpt41mini_full200_audit",
+  "model": "openai/gpt-4.1-mini",
+  "model_label": "GPT-4.1-mini",
+  "architecture_core_id": "exectv2_decision_0040_model_led_v1",
+  "architecture_contract": "decision_0040_model_led",
+  "diagnosis_resolution_candidate": true,
+  "replay_source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
+  "calls_per_letter": 2,
+  "runtime": "openai_chat_historical",
+  "prompt_profile": "full",
+  "temperature": 0,
+  "max_tokens": {"structured_key_family_event_ledger": 6000, "diagnosis_decomposer": 2600},
+  "live_call_components": ["structured_key_family_event_ledger", "diagnosis_decomposer"],
+  "replayed_components": ["sf_structured_direct_adapter", "sf_state_projection", "sf_unknown_suppression", "prescription_dictionary_lens", "finding_assembly"],
+  "claim_boundary": "Saved-output full200 aggregate-only architecture audit. Development-inclusive; no test60 row inspection, holdout, clinical-validation, or final six-model claim.",
+  "run_command": ".venv\\Scripts\\python.exe scripts/check_exectv2_model_led_audit.py",
+  "assembly": {
+    "candidate_id": "exectv2_model_led_gpt41mini_full200_audit",
+    "pipeline_family": "exectv2_decision_0040_model_led",
+    "ownership": "component_attributed_model_led_saved_output_replay",
+    "split": "full200",
+    "row_count": 200,
+    "claim_boundary": "Saved-output full200 aggregate-only architecture audit. Development-inclusive; no test60 row inspection, holdout, clinical-validation, or final six-model claim.",
+    "baseline_producer": "structured_key_family_event_ledger",
+    "promotion_decision": "retain-architecture-audit-not-final-model-row",
+    "producers": {
+      "structured_key_family_event_ledger": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl", "ownership_label": "gpt41mini_structured_model_facts", "source_lane": "model_structured_key_families"},
+      "diagnosis_decomposer": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_v08_full200_currentcode_diagnosis_decomposer_gpt41mini_20260624.jsonl", "ownership_label": "gpt41mini_diagnosis_model_facts", "source_lane": "model_diagnosis"},
+      "sf_model_direct": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_v08_full200_currentcode_sf_structured_direct_no_adjudicator_gpt41mini_20260624.jsonl", "ownership_label": "gpt41mini_sf_model_facts", "source_lane": "model_sf_direct"},
+      "sf_model_projection_suppression": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_v08_full200_currentcode_sf_structured_direct_unknown_suppression_20260624.jsonl", "ownership_label": "gpt41mini_sf_model_plus_projection_suppression", "source_lane": "model_sf_projection_suppression"}
+    },
+    "lenses": {
+      "Diagnosis": {"producer": "diagnosis_decomposer", "lens": "diagnosis_heading_recovery_residual_benchmark_v05", "source_lane": "model_diagnosis", "ownership_label": "named_model_diagnosis_plus_rules", "portability": "benchmark_format"},
+      "SeizureFrequency": {"producer": "sf_model_projection_suppression", "lens": "sf_state_projection_suppression_v01", "source_lane": "model_sf_projection_suppression", "ownership_label": "named_model_sf_plus_projection_suppression", "portability": "seizure_frequency"},
+      "Prescription": {"producer": "structured_key_family_event_ledger", "lens": "prescription_dictionary_v09", "source_lane": "model_structured_prescription", "ownership_label": "named_model_prescription_plus_shared_rules", "portability": "clinical_epilepsy"},
+      "Investigations": {"producer": "structured_key_family_event_ledger", "lens": "investigations_result_v01", "source_lane": "model_structured_investigations", "ownership_label": "named_model_investigations", "portability": "clinical_epilepsy"}
+    },
+    "views": ["raw_candidate", "evidence_valid", "clinical_headline", "fidelity_companion", "benchmark_cui"]
+  },
+  "outputs": {"json": "experiments/exectv2_model_led_gpt41mini_full200_audit.json", "jsonl": "experiments/exectv2_model_led_gpt41mini_full200_audit.jsonl", "markdown": "docs/experiments/exectv2/reliability/exectv2_model_led_gpt41mini_full200_audit.md"}
+}

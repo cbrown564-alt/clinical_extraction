@@ -32,6 +32,8 @@ class LensPolicy:
     ownership_label: str
     portability: str | None
     diagnosis_resolution_candidate: bool = False
+    model_preserving_policy_candidate: bool = False
+    prescription_rescue_scope_candidate: bool = False
 
 
 @dataclass(frozen=True)

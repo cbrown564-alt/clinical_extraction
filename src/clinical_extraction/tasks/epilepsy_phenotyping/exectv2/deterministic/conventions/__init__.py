@@ -28,6 +28,7 @@ from .investigations import (
     is_investigation_convention_noise,
 )
 from .prescription import (
+    is_explicit_current_prescription,
     is_prescription_convention_noise,
     prescription_convention_attribute_repairs,
     prescription_residual_additions,
@@ -60,6 +61,7 @@ __all__ = [
     "investigation_residual_additions",
     "is_diagnosis_convention_noise",
     "is_investigation_convention_noise",
+    "is_explicit_current_prescription",
     "is_prescription_convention_noise",
     "is_redundant_diagnosis_residual_addition",
     "is_sf_convention_noise",

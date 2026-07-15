@@ -76,6 +76,7 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 finding.text,
                 evidence=finding.evidence,
                 attributes=attrs,
+                rescue_scope_candidate=policy.prescription_rescue_scope_candidate,
             )
             if repaired_attrs != attrs:
                 attrs = repaired_attrs
@@ -98,11 +99,20 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 if normalized_dose != dose:
                     attrs["DrugDose"] = normalized_dose
                     changed = True
-            if sd.is_prescription_convention_noise(
+            is_noise = sd.is_prescription_convention_noise(
                 finding.text,
                 evidence=finding.evidence,
                 attributes=attrs,
-            ):
+            )
+            preserve_current = (
+                policy.model_preserving_policy_candidate
+                and sd.is_explicit_current_prescription(
+                    store.note_text,
+                    evidence=finding.evidence,
+                    attributes=attrs,
+                )
+            )
+            if is_noise and not preserve_current:
                 dropped.append(finding)
                 continue
             split_rows = sd.split_daily_dose_regimen(
@@ -148,7 +158,15 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
 
         added: list[ClinicalFinding] = []
         existing_keys = {_prescription_recovery_key(finding) for finding in out}
-        for text, evidence, attrs in sd.prescription_residual_additions(store.note_text):
+        residual_additions = (
+            []
+            if (
+                policy.model_preserving_policy_candidate
+                or policy.prescription_rescue_scope_candidate
+            )
+            else sd.prescription_residual_additions(store.note_text)
+        )
+        for text, evidence, attrs in residual_additions:
             key = _prescription_recovery_key_from_parts(attrs)
             if key in existing_keys:
                 continue

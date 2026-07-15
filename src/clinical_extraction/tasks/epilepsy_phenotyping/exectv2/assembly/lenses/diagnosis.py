@@ -148,11 +148,15 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                     ),
                 )
                 rewritten.append(current)
+            preserve_absence_phenotype = (
+                policy.model_preserving_policy_candidate
+                and _is_model_owned_absence_phenotype(current, recovered.findings)
+            )
             if sd.is_diagnosis_convention_noise(
                 current.text,
                 evidence=current.evidence or current.text,
                 diag_category=current.attributes.get("DiagCategory"),
-            ):
+            ) and not preserve_absence_phenotype:
                 dropped.append(current)
                 continue
             repaired_attributes = sd.diagnosis_convention_attribute_repairs(
@@ -198,6 +202,9 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 evidence=evidence,
                 selected_texts=selected_texts,
                 include_resolution_candidate=policy.diagnosis_resolution_candidate,
+                model_preserving_policy_candidate=(
+                    policy.model_preserving_policy_candidate
+                ),
             ):
                 continue
             new_finding = diagnosis_added_finding(
@@ -298,6 +305,25 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
             findings=final_findings,
             diagnostics=diagnostics,
         )
+
+
+def _is_model_owned_absence_phenotype(
+    finding: ClinicalFinding,
+    recovered: tuple[ClinicalFinding, ...],
+) -> bool:
+    if canonicalize_diagnosis_concept(finding.text) != "absence seizures":
+        return False
+    if finding.source.fact_origin != "target_model_generated":
+        return False
+    if finding.attributes.get("Negation") != "Affirmed":
+        return False
+    return any(
+        other.finding_id != finding.finding_id
+        and other.source.fact_origin == "target_model_generated"
+        and other.attributes.get("Negation") == "Affirmed"
+        and "absence epilepsy" in canonicalize_diagnosis_concept(other.text)
+        for other in recovered
+    )
 
 
 def _focal_epilepsy_heading_findings(

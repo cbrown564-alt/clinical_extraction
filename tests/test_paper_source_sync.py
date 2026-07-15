@@ -25,9 +25,6 @@ def test_surviving_paper_sources_use_retained_results(source_path: Path) -> None
         "0.7393",
         "364/450",
         "379/450",
-        "0.8566",
-        "0.8356",
-        "0.8197",
         "0.2225",
         "0.2340",
         "0.0587",
@@ -44,6 +41,9 @@ def test_surviving_paper_sources_use_retained_results(source_path: Path) -> None
         "0.3877",
         "0.6972",
         "0.8680",
+        "0.8566",
+        "0.8356",
+        "0.8197",
         "6 of 9",
     ):
         assert retired_value not in source
@@ -54,5 +54,6 @@ def test_surviving_paper_sources_preserve_claim_boundaries(source_path: Path) ->
     source = source_path.read_text(encoding="utf-8").lower()
 
     assert "not an independent holdout" in source
-    assert "three of six" in source
+    assert "six-model" in source
+    assert "incomplete" in source
     assert "does not support a cross-task over-reading claim" in source
