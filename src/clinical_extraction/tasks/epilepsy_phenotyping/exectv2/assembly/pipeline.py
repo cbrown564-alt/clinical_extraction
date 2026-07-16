@@ -96,6 +96,8 @@ def build_finding_assembly(
     diagnosis_resolution_candidate: bool = False,
     model_preserving_policy_candidate: bool = False,
     prescription_rescue_scope_candidate: bool = False,
+    prescription_policy_variant: str = "default",
+    diagnosis_policy_variant: str = "default",
 ) -> AssemblyRun:
     """Build a no-call finding assembly from saved producer artifacts."""
 
@@ -126,6 +128,8 @@ def build_finding_assembly(
             diagnosis_resolution_candidate=diagnosis_resolution_candidate,
             model_preserving_policy_candidate=model_preserving_policy_candidate,
             prescription_rescue_scope_candidate=prescription_rescue_scope_candidate,
+            prescription_policy_variant=prescription_policy_variant,
+            diagnosis_policy_variant=diagnosis_policy_variant,
         )
         stores[letter.letter_id] = store
         rows.append(row)
@@ -181,6 +185,8 @@ def build_finding_assembly(
     report["diagnosis_resolution_candidate"] = diagnosis_resolution_candidate
     report["model_preserving_policy_candidate"] = model_preserving_policy_candidate
     report["prescription_rescue_scope_candidate"] = prescription_rescue_scope_candidate
+    report["prescription_policy_variant"] = prescription_policy_variant
+    report["diagnosis_policy_variant"] = diagnosis_policy_variant
     return AssemblyRun(
         manifest=manifest,
         rows=rows,
@@ -383,6 +389,8 @@ def _assemble_letter(
     diagnosis_resolution_candidate: bool,
     model_preserving_policy_candidate: bool,
     prescription_rescue_scope_candidate: bool,
+    prescription_policy_variant: str,
+    diagnosis_policy_variant: str,
 ) -> tuple[ClinicalFindingStore, dict[str, Any]]:
     store = ClinicalFindingStore(letter.letter_id, letter.note_text)
     lane_blocks: dict[str, Any] = {}
@@ -440,6 +448,8 @@ def _assemble_letter(
                 prescription_rescue_scope_candidate=(
                     prescription_rescue_scope_candidate
                 ),
+                prescription_policy_variant=prescription_policy_variant,
+                diagnosis_policy_variant=diagnosis_policy_variant,
             ),
         )
         lane_scored = [finding.to_row() for finding in lens_result.findings]

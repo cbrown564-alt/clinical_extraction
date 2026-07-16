@@ -26,13 +26,26 @@ def write_report(
         f"`{key}={value}`" for key, value in sorted(repair_config.items())
     )
     repair_policy = _repair_policy_description(repair_mode)
+    is_holdout = metadata.get("split") == "test"
+    title = (
+        "# Gan 2026 LLM-Structured Holdout Aggregate"
+        if is_holdout
+        else "# Gan 2026 LLM-Structured Validation Run"
+    )
+    boundary = (
+        "This is an aggregate-only locked-holdout result on `gan2026_split_v1`. "
+        "No row-level result is included in this report."
+        if is_holdout
+        else "This is a validation development result on `gan2026_split_v1`. It is not a "
+        "final holdout or benchmark result."
+    )
+    score_scope = "holdout" if is_holdout else "validation"
     lines = [
-        "# Gan 2026 LLM-Structured Validation Run",
+        title,
         "",
         f"Date: {metadata['date']}",
         "",
-        "This is a validation development result on `gan2026_split_v1`. It is not a final "
-        "holdout or benchmark result.",
+        boundary,
         "",
         "## Experiment Unit",
         "",
@@ -84,16 +97,23 @@ def write_report(
         f"- Deterministic repair notes: {summary['repair_notes']}",
         f"- Exact selection evidence substrings: {summary['evidence_valid']} / "
         f"{summary['examples']}",
-        f"- Purist validation accuracy/micro F1 proxy: {summary['purist_accuracy']:.4f} "
+        f"- Purist {score_scope} accuracy/micro F1 proxy: {summary['purist_accuracy']:.4f} "
         f"({summary['purist_correct']} / {summary['examples']})",
-        f"- Pragmatic validation accuracy/micro F1 proxy: {summary['pragmatic_accuracy']:.4f} "
+        f"- Pragmatic {score_scope} accuracy/micro F1 proxy: {summary['pragmatic_accuracy']:.4f} "
         f"({summary['pragmatic_correct']} / {summary['examples']})",
-        "",
-        "## Rows",
-        "",
-        "| Row | Final | Gold | Purist | Notes |",
-        "| ---: | --- | --- | --- | --- |",
     ]
+    if is_holdout:
+        write_markdown_report(path, lines)
+        return
+    lines.extend(
+        [
+            "",
+            "## Rows",
+            "",
+            "| Row | Final | Gold | Purist | Notes |",
+            "| ---: | --- | --- | --- | --- |",
+        ]
+    )
     for row in rows:
         record = row.get("structured_record") or {}
         selection = record.get("selection") or {}

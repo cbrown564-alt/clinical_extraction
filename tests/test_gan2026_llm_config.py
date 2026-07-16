@@ -6,6 +6,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_config
 
 
 def test_build_dspy_lm_routes_ollama_chat_with_thinking_disabled(monkeypatch) -> None:
+    monkeypatch.delenv("CLINICAL_EXTRACTION_OLLAMA_NUM_CTX", raising=False)
+    monkeypatch.delenv("CLINICAL_EXTRACTION_OLLAMA_NUM_GPU", raising=False)
     calls: dict[str, Any] = {}
 
     def fake_lm(model: str, **kwargs):

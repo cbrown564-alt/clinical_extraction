@@ -137,6 +137,37 @@ def test_general_llm_pipeline_cli_rejects_test_before_loading_rows(
     assert "cannot run the Gan holdout" in capsys.readouterr().err
 
 
+def test_general_llm_pipeline_cli_allows_test_with_frozen_protocol(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    spec = _dummy_spec(tmp_path, calls)
+    records = [SimpleNamespace(source_row_index=101)]
+    protocol = tmp_path / "frozen_test_protocol.md"
+    protocol.write_text("# Frozen Gan test protocol\n", encoding="utf-8")
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: records)
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "gan2026_split_v1"},
+    )
+
+    llm_pipeline_cli.run_cli(
+        [
+            "--pipeline",
+            "dummy",
+            "--split",
+            "test",
+            "--frozen-test-protocol",
+            str(protocol),
+        ]
+    )
+
+    assert calls["kwargs"]["split"] == "test"
+    assert calls["records"] == records
+
+
 def test_general_llm_pipeline_cli_filters_source_row_indices_in_requested_order(
     tmp_path: Path, monkeypatch
 ) -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Mapping
 from typing import Any
 
@@ -42,6 +43,15 @@ _PRESCRIPTION_NAME_ALIASES = {
     "sodiumvalproate": "sodium-valproate",
     "tegretol-retard": "carbamazepine",
 }
+_PRESCRIPTION_POLICY_VARIANTS = frozenset(
+    {
+        "default",
+        "local_scope_only",
+        "current_guard_only",
+        "residual_explicit_current_only",
+        "combined",
+    }
+)
 
 
 class PrescriptionDictionaryLens(ThinArtifactLens):
@@ -58,6 +68,12 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
         *,
         policy: LensPolicy,
     ) -> LensResult:
+        variant = policy.prescription_policy_variant
+        if variant not in _PRESCRIPTION_POLICY_VARIANTS:
+            raise ValueError(f"unknown Prescription policy variant: {variant}")
+        local_frequency_scope = variant in {"local_scope_only", "combined"}
+        current_selection_guard = variant in {"current_guard_only", "combined"}
+        bounded_residuals = variant in {"residual_explicit_current_only", "combined"}
         selected = list(
             store.findings(
                 entity=self.entity,
@@ -76,7 +92,9 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 finding.text,
                 evidence=finding.evidence,
                 attributes=attrs,
-                rescue_scope_candidate=policy.prescription_rescue_scope_candidate,
+                rescue_scope_candidate=(
+                    policy.prescription_rescue_scope_candidate or local_frequency_scope
+                ),
             )
             if repaired_attrs != attrs:
                 attrs = repaired_attrs
@@ -105,11 +123,21 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 attributes=attrs,
             )
             preserve_current = (
-                policy.model_preserving_policy_candidate
-                and sd.is_explicit_current_prescription(
-                    store.note_text,
-                    evidence=finding.evidence,
-                    attributes=attrs,
+                (
+                    policy.model_preserving_policy_candidate
+                    and sd.is_explicit_current_prescription(
+                        store.note_text,
+                        evidence=finding.evidence,
+                        attributes=attrs,
+                    )
+                )
+                or (
+                    current_selection_guard
+                    and sd.is_bounded_explicit_current_prescription(
+                        store.note_text,
+                        evidence=finding.evidence,
+                        attributes=attrs,
+                    )
                 )
             )
             if is_noise and not preserve_current:
@@ -158,14 +186,31 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
 
         added: list[ClinicalFinding] = []
         existing_keys = {_prescription_recovery_key(finding) for finding in out}
-        residual_additions = (
-            []
-            if (
-                policy.model_preserving_policy_candidate
-                or policy.prescription_rescue_scope_candidate
+        available_residual_additions = sd.prescription_residual_additions(store.note_text)
+        available_residual_groups = Counter(
+            sd.prescription_residual_rule_group(
+                store.note_text,
+                evidence=evidence,
+                attributes=attrs,
             )
-            else sd.prescription_residual_additions(store.note_text)
+            for _text, evidence, attrs in available_residual_additions
         )
+        if policy.model_preserving_policy_candidate or policy.prescription_rescue_scope_candidate:
+            residual_additions = []
+        elif bounded_residuals:
+            residual_additions = [
+                row
+                for row in available_residual_additions
+                if sd.prescription_residual_rule_group(
+                    store.note_text,
+                    evidence=row[1],
+                    attributes=row[2],
+                )
+                == "explicit_current_regimen_recovery"
+            ]
+        else:
+            residual_additions = available_residual_additions
+        added_residual_groups: Counter[str] = Counter()
         for text, evidence, attrs in residual_additions:
             key = _prescription_recovery_key_from_parts(attrs)
             if key in existing_keys:
@@ -178,11 +223,23 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 selected=selected,
                 policy=policy,
                 lens_id=self.lens_id,
+                residual_rule_group=sd.prescription_residual_rule_group(
+                    store.note_text,
+                    evidence=evidence,
+                    attributes=attrs,
+                ),
             )
             if new_finding is None:
                 continue
             existing_keys.add(key)
             added.append(new_finding)
+            added_residual_groups[
+                sd.prescription_residual_rule_group(
+                    store.note_text,
+                    evidence=evidence,
+                    attributes=attrs,
+                )
+            ] += 1
 
         event = ProvenanceEvent(
             stage="entity_lens",
@@ -199,6 +256,9 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 "added_text_counts": text_counts(added),
                 "dropped_count": len(dropped),
                 "dropped_text_counts": text_counts(dropped),
+                "prescription_policy_variant": variant,
+                "available_residual_rule_groups": dict(sorted(available_residual_groups.items())),
+                "added_residual_rule_groups": dict(sorted(added_residual_groups.items())),
             },
         )
         final_findings = tuple(
@@ -216,6 +276,9 @@ class PrescriptionDictionaryLens(ThinArtifactLens):
                 "added_dictionary_findings": len(added),
                 "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
+                "prescription_policy_variant": variant,
+                "available_residual_rule_groups": dict(sorted(available_residual_groups.items())),
+                "added_residual_rule_groups": dict(sorted(added_residual_groups.items())),
             },
         )
 
@@ -256,6 +319,7 @@ def _prescription_added_finding(
     selected: list[ClinicalFinding],
     policy: LensPolicy,
     lens_id: str,
+    residual_rule_group: str,
 ) -> ClinicalFinding | None:
     source = source_for_residual(
         store,
@@ -293,6 +357,7 @@ def _prescription_added_finding(
                     "producer_id": policy.producer_id,
                     "source_lane": policy.source_lane,
                     "rule_category": "prescription_current_regimen",
+                    "residual_rule_group": residual_rule_group,
                     "target_text": text,
                     "evidence": evidence,
                 },

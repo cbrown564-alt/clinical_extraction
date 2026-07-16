@@ -34,6 +34,8 @@ class LensPolicy:
     diagnosis_resolution_candidate: bool = False
     model_preserving_policy_candidate: bool = False
     prescription_rescue_scope_candidate: bool = False
+    prescription_policy_variant: str = "default"
+    diagnosis_policy_variant: str = "default"
 
 
 @dataclass(frozen=True)

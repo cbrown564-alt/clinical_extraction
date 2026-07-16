@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
     FindingSource,
@@ -56,6 +58,7 @@ def _policy(
     *,
     model_preserving_policy_candidate: bool = False,
     prescription_rescue_scope_candidate: bool = False,
+    prescription_policy_variant: str = "default",
 ) -> LensPolicy:
     return LensPolicy(
         producer_id=_PRODUCER,
@@ -64,6 +67,7 @@ def _policy(
         portability="benchmark_format",
         model_preserving_policy_candidate=model_preserving_policy_candidate,
         prescription_rescue_scope_candidate=prescription_rescue_scope_candidate,
+        prescription_policy_variant=prescription_policy_variant,
     )
 
 
@@ -527,6 +531,104 @@ def test_rescue_scope_candidate_keeps_evidence_fill_when_text_has_no_frequency()
     ).reconcile(store, policy=_policy(prescription_rescue_scope_candidate=True))
 
     assert result.findings[0].attributes["Frequency"] == "2"
+
+
+def test_bounded_policy_combines_local_rescue_scope_and_current_selection() -> None:
+    evidence = (
+        "Current medications: levetiracetam 1500mg bd and clobazam for seizure "
+        "clusters. Levetiracetam is to reduce and stop next month."
+    )
+    store = _store(
+        evidence,
+        [
+            {
+                "entity": "Prescription",
+                "text": "levetiracetam 1500mg bd",
+                "attributes": {
+                    "DrugName": "levetiracetam",
+                    "DrugDose": "1500",
+                    "DoseUnit": "mg",
+                    "Frequency": "2",
+                },
+                "evidence": evidence,
+            }
+        ],
+    )
+
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(prescription_policy_variant="combined"))
+
+    assert len(result.findings) == 1
+    assert result.findings[0].attributes["Frequency"] == "2"
+
+
+def test_explicit_current_residual_group_recovers_multiline_regimens() -> None:
+    note = (
+        "Medications:\n"
+        "Sodium valproate 400mg twice a day\n"
+        "Lamotrigine 100mg twice a day\n\n"
+        "It was nice to see the patient in clinic today."
+    )
+    store = ClinicalFindingStore("L1", note)
+    store.register_source(_source())
+
+    result = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(
+        store,
+        policy=_policy(prescription_policy_variant="residual_explicit_current_only"),
+    )
+
+    keys = {
+        (
+            finding.attributes["DrugName"],
+            finding.attributes["DrugDose"],
+            finding.attributes["Frequency"],
+        )
+        for finding in result.findings
+    }
+    assert keys == {
+        ("sodium-valproate", "400", "2"),
+        ("lamotrigine", "100", "2"),
+    }
+    assert result.diagnostics["added_residual_rule_groups"] == {
+        "explicit_current_regimen_recovery": 2
+    }
+
+
+def test_bounded_policy_ablates_unanchored_future_rescue_and_conditional_residuals() -> None:
+    note = (
+        "Plan: if diagnosis is confirmed start Sodium Valproate 200mg BD. "
+        "Clobazam 10mg at night as required for seizure clusters. "
+        "Medication: increase Lamotrigine to 150mg twice daily."
+    )
+    store = ClinicalFindingStore("L1", note)
+    store.register_source(_source())
+
+    default = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy())
+    bounded = PrescriptionDictionaryLens(
+        lens_id="prescription_dictionary_v09", entity="Prescription"
+    ).reconcile(store, policy=_policy(prescription_policy_variant="combined"))
+
+    assert default.findings
+    assert bounded.findings == ()
+    assert bounded.diagnostics["available_residual_rule_groups"] == {
+        "unanchored_target_regimen_recovery": len(default.findings)
+    }
+
+
+def test_prescription_policy_variant_rejects_unknown_value() -> None:
+    note = "Current medication: lamotrigine 100mg bd."
+    store = ClinicalFindingStore("L1", note)
+    store.register_source(_source())
+
+    with pytest.raises(ValueError, match="unknown Prescription policy variant"):
+        PrescriptionDictionaryLens(
+            lens_id="prescription_dictionary_v09", entity="Prescription"
+        ).reconcile(store, policy=_policy(prescription_policy_variant="invented"))
 
 
 def test_investigations_dictionary_lens_adds_completed_result_residuals() -> None:

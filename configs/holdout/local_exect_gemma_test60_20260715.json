@@ -1,0 +1,15 @@
+{
+  "models": [{
+    "slug": "gemma4_26b",
+    "model": "ollama_chat/gemma4:26b",
+    "exect_base_config": "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json"
+  }],
+  "exectv2": {
+    "protocol": "docs/experiments/local_six_model_queue_protocol_2026-07-15.md",
+    "split": "test60",
+    "row_count": 59,
+    "model_slugs": ["gemma4_26b"],
+    "scratch_root": "scratch/local_queue/gemma4_26b_exect/test60",
+    "runner": "scripts/run_exectv2_six_model_comparison.py"
+  }
+}

@@ -1,31 +1,24 @@
 {
-  "candidate_id": "exectv2_six_model_single_call_deepseek_v4_flash_dev140",
-  "model": "deepseek/deepseek-v4-flash",
-  "model_label": "DeepSeek V4 Flash",
-  "architecture_core_id": "exectv2_decision_0041_six_model_single_call_dev140_v1",
+  "candidate_id": "exectv2_gpt41mini_single_call_diagnosis_dev140",
+  "model": "openai/gpt-4.1-mini",
+  "model_label": "GPT-4.1-mini",
+  "architecture_core_id": "exectv2_decision_0040_gpt41mini_single_call_diagnosis_dev140_v1",
   "architecture_contract": "decision_0040_model_led",
   "diagnosis_resolution_candidate": true,
-  "replay_source_revision": "working_tree_2026-07-15_pre_run",
+  "replay_source_revision": "8d808656ce99c029272aaa996b8f6be36043a0c6^",
   "calls_per_letter": 1,
-  "runtime": "official_deepseek_v4_flash_default_thinking",
+  "runtime": "retained_openai_chat_output_no_call_replay",
   "runtime_metadata": {
-    "provider": "DeepSeek",
-    "endpoint": "https://api.deepseek.com",
-    "api_model": "deepseek-v4-flash",
-    "cache_mode": "disabled",
-    "thinking": "enabled_by_api_default",
-    "thinking_request": "model deepseek-v4-flash with no thinking override",
-    "route_probe": {
-      "date": "2026-07-15",
-      "reasoning_content_present": true,
-      "final_content_present": true,
-      "finish_reason": "stop"
-    }
+    "provider": "OpenAI",
+    "original_endpoint": "https://api.openai.com",
+    "cache_mode": "disabled_in_original_run",
+    "thinking": "provider_default",
+    "model_revision": "record_from_retained_output_if_exposed"
   },
   "prompt_profile": "full",
   "temperature": 0,
   "max_tokens": {
-    "structured_key_family_event_ledger": 16000
+    "structured_key_family_event_ledger": 10000
   },
   "live_call_components": [
     "structured_key_family_event_ledger"
@@ -37,28 +30,28 @@
     "prescription_dictionary_lens",
     "finding_assembly"
   ],
-  "claim_boundary": "ExECTv2 dev140 single-call development comparison under decisions 0040 and 0041; not holdout, published-benchmark reproduction, clinical validation, or a general open-versus-closed model claim.",
-  "run_command": ".venv\\Scripts\\python.exe scripts/run_exectv2_six_model_comparison.py --config configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json --no-dspy-cache",
+  "claim_boundary": "ExECTv2 dev140 no-call GPT-4.1-mini single-call Diagnosis ablation under decision 0040; not holdout, published-benchmark reproduction, clinical validation, or evidence for other models.",
+  "run_command": ".venv\\Scripts\\python.exe scripts/check_exectv2_gpt41mini_single_call_diagnosis_ablation.py",
   "assembly": {
-    "candidate_id": "exectv2_six_model_single_call_deepseek_v4_flash_dev140",
-    "pipeline_family": "exectv2_decision_0041_six_model_single_call_dev140",
-    "ownership": "component_attributed_model_led_single_call_live",
+    "candidate_id": "exectv2_gpt41mini_single_call_diagnosis_dev140",
+    "pipeline_family": "exectv2_decision_0040_gpt41mini_single_call_diagnosis_dev140",
+    "ownership": "component_attributed_model_led_no_call_ablation",
     "split": "dev140",
     "row_count": 140,
-    "claim_boundary": "ExECTv2 dev140 single-call development comparison only.",
+    "claim_boundary": "ExECTv2 dev140 GPT-4.1-mini no-call single-call Diagnosis ablation only.",
     "baseline_producer": "structured_key_family_event_ledger",
-    "promotion_decision": "six-model-single-call-dev140-readout",
+    "promotion_decision": "single-call-diagnosis-ablation-readout",
     "producers": {
       "structured_key_family_event_ledger": {
         "kind": "saved_jsonl",
-        "artifact": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715_structured.jsonl",
-        "ownership_label": "deepseek_v4_flash_structured_model_facts",
+        "artifact": "experiments/exectv2_v08_full200_currentcode_structured_gpt41mini_20260624.jsonl",
+        "ownership_label": "gpt41mini_structured_model_facts",
         "source_lane": "model_structured_key_families"
       },
       "sf_model_projection_suppression": {
         "kind": "saved_jsonl",
-        "artifact": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715_sf_unknown_suppression.jsonl",
-        "ownership_label": "deepseek_v4_flash_sf_model_plus_projection_suppression",
+        "artifact": "experiments/exectv2_v08_full200_currentcode_sf_structured_direct_unknown_suppression_20260624.jsonl",
+        "ownership_label": "gpt41mini_sf_model_plus_projection_suppression",
         "source_lane": "model_sf_projection_suppression"
       }
     },
@@ -101,8 +94,8 @@
     ]
   },
   "outputs": {
-    "json": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
-    "jsonl": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.jsonl",
-    "markdown": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_deepseek_v4_flash_dev140_2026-07-15.md"
+    "json": "experiments/exectv2_gpt41mini_single_call_diagnosis_dev140_20260715.json",
+    "jsonl": "experiments/exectv2_gpt41mini_single_call_diagnosis_dev140_20260715.jsonl",
+    "markdown": "docs/experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_candidate_2026-07-15.md"
   }
 }

@@ -145,8 +145,18 @@ def validate_model_led_architecture(config: ModelSwapConfig) -> dict[str, Any]:
     sf_lens = lenses.get(SEIZURE_FREQUENCY.name)
     prescription_lens = lenses.get(PRESCRIPTION.name)
     investigations_lens = lenses.get(INVESTIGATIONS.name)
-    if diagnosis_lens is None or diagnosis_lens.producer != "diagnosis_decomposer":
-        violations.append("Diagnosis must use producer 'diagnosis_decomposer'.")
+    model_owned_diagnosis_producers = {
+        "diagnosis_decomposer",
+        "structured_key_family_event_ledger",
+    }
+    if (
+        diagnosis_lens is None
+        or diagnosis_lens.producer not in model_owned_diagnosis_producers
+    ):
+        violations.append(
+            "Diagnosis must use the named model producer "
+            "'diagnosis_decomposer' or 'structured_key_family_event_ledger'."
+        )
     if sf_lens is None or sf_lens.producer != "sf_model_projection_suppression":
         violations.append(
             "SeizureFrequency must use producer 'sf_model_projection_suppression'."

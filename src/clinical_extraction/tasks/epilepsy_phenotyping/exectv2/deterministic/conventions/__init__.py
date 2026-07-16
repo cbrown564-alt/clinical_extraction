@@ -28,10 +28,12 @@ from .investigations import (
     is_investigation_convention_noise,
 )
 from .prescription import (
+    is_bounded_explicit_current_prescription,
     is_explicit_current_prescription,
     is_prescription_convention_noise,
     prescription_convention_attribute_repairs,
     prescription_residual_additions,
+    prescription_residual_rule_group,
     split_daily_dose_regimen,
 )
 from .shared import (
@@ -61,6 +63,7 @@ __all__ = [
     "investigation_residual_additions",
     "is_diagnosis_convention_noise",
     "is_investigation_convention_noise",
+    "is_bounded_explicit_current_prescription",
     "is_explicit_current_prescription",
     "is_prescription_convention_noise",
     "is_redundant_diagnosis_residual_addition",
@@ -70,6 +73,7 @@ __all__ = [
     "normalize_drug_name",
     "prescription_convention_attribute_repairs",
     "prescription_residual_additions",
+    "prescription_residual_rule_group",
     "sf_convention_rewrite",
     "sf_residual_additions",
     "should_add_generic_epilepsy_companion",

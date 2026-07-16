@@ -1,18 +1,107 @@
 {
-  "candidate_id": "exectv2_six_model_gemma4_26b_dev140", "model": "ollama_chat/gemma4:26b", "model_label": "Gemma 4 26B",
-  "architecture_core_id": "exectv2_decision_0040_six_model_dev140_v1", "architecture_contract": "decision_0040_model_led", "diagnosis_resolution_candidate": true, "replay_source_revision": "working_tree_2026-07-15_pre_run", "calls_per_letter": 2,
-  "runtime": "ollama_native_chat_think_false", "runtime_metadata": {"provider": "Ollama", "endpoint": "http://localhost:11434", "ollama_version": "0.30.10", "tag": "gemma4:26b", "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251", "parameter_size": "25.8B", "quantization": "Q4_K_M", "thinking": "disabled_with_think_false", "num_ctx": 32768, "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM", "cache_mode": "disabled"},
-  "prompt_profile": "full", "temperature": 0, "max_tokens": {"structured_key_family_event_ledger": 16000, "diagnosis_decomposer": 16000},
-  "live_call_components": ["structured_key_family_event_ledger", "diagnosis_decomposer"], "replayed_components": ["sf_structured_direct_adapter", "sf_state_projection", "sf_unknown_suppression", "prescription_dictionary_lens", "finding_assembly"],
-  "claim_boundary": "ExECTv2 dev140 development comparison under decision 0040; not holdout, published-benchmark reproduction, clinical validation, or a general open-versus-closed model claim.",
-  "run_command": ".venv\\Scripts\\python.exe scripts/run_exectv2_2call_model_swap.py --config configs/exectv2/six_model_comparison/gemma4_26b_dev140.json --no-dspy-cache",
-  "assembly": {"candidate_id": "exectv2_six_model_gemma4_26b_dev140", "pipeline_family": "exectv2_decision_0040_six_model_dev140", "ownership": "component_attributed_model_led_live", "split": "dev140", "row_count": 140, "claim_boundary": "ExECTv2 dev140 development comparison only.", "baseline_producer": "structured_key_family_event_ledger", "promotion_decision": "six-model-dev140-readout",
+  "candidate_id": "exectv2_six_model_single_call_gemma4_26b_dev140",
+  "model": "ollama_chat/gemma4:26b",
+  "model_label": "Gemma 4 26B",
+  "architecture_core_id": "exectv2_decision_0041_six_model_single_call_dev140_v1",
+  "architecture_contract": "decision_0040_model_led",
+  "diagnosis_resolution_candidate": true,
+  "replay_source_revision": "working_tree_2026-07-15_pre_run",
+  "calls_per_letter": 1,
+  "runtime": "ollama_native_chat_think_false",
+  "runtime_metadata": {
+    "provider": "Ollama",
+    "endpoint": "http://localhost:11434",
+    "ollama_version": "0.30.10",
+    "tag": "gemma4:26b",
+    "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+    "parameter_size": "25.8B",
+    "quantization": "Q4_K_M",
+    "thinking": "disabled_with_think_false",
+    "num_ctx": 32768,
+    "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+    "cache_mode": "disabled"
+  },
+  "prompt_profile": "full",
+  "temperature": 0,
+  "max_tokens": {
+    "structured_key_family_event_ledger": 16000
+  },
+  "live_call_components": [
+    "structured_key_family_event_ledger"
+  ],
+  "replayed_components": [
+    "sf_structured_direct_adapter",
+    "sf_state_projection",
+    "sf_unknown_suppression",
+    "prescription_dictionary_lens",
+    "finding_assembly"
+  ],
+  "claim_boundary": "ExECTv2 dev140 single-call development comparison under decisions 0040 and 0041; not holdout, published-benchmark reproduction, clinical validation, or a general open-versus-closed model claim.",
+  "run_command": ".venv\\Scripts\\python.exe scripts/run_exectv2_six_model_comparison.py --config configs/exectv2/six_model_comparison/gemma4_26b_dev140.json --no-dspy-cache",
+  "assembly": {
+    "candidate_id": "exectv2_six_model_single_call_gemma4_26b_dev140",
+    "pipeline_family": "exectv2_decision_0041_six_model_single_call_dev140",
+    "ownership": "component_attributed_model_led_single_call_live",
+    "split": "dev140",
+    "row_count": 140,
+    "claim_boundary": "ExECTv2 dev140 single-call development comparison only.",
+    "baseline_producer": "structured_key_family_event_ledger",
+    "promotion_decision": "six-model-single-call-dev140-readout",
     "producers": {
-      "structured_key_family_event_ledger": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715_structured.jsonl", "ownership_label": "gemma4_26b_structured_model_facts", "source_lane": "model_structured_key_families"},
-      "diagnosis_decomposer": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715_diagnosis_decomposer.jsonl", "ownership_label": "gemma4_26b_diagnosis_model_facts", "source_lane": "model_diagnosis"},
-      "sf_model_direct": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715_sf_structured_direct.jsonl", "ownership_label": "gemma4_26b_sf_model_facts", "source_lane": "model_sf_direct"},
-      "sf_model_projection_suppression": {"kind": "saved_jsonl", "artifact": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715_sf_unknown_suppression.jsonl", "ownership_label": "gemma4_26b_sf_model_plus_projection_suppression", "source_lane": "model_sf_projection_suppression"}},
-    "lenses": {"Diagnosis": {"producer": "diagnosis_decomposer", "lens": "diagnosis_heading_recovery_residual_benchmark_v05", "source_lane": "model_diagnosis", "ownership_label": "named_model_diagnosis_plus_rules", "portability": "benchmark_format"}, "SeizureFrequency": {"producer": "sf_model_projection_suppression", "lens": "sf_state_projection_suppression_v01", "source_lane": "model_sf_projection_suppression", "ownership_label": "named_model_sf_plus_projection_suppression", "portability": "seizure_frequency"}, "Prescription": {"producer": "structured_key_family_event_ledger", "lens": "prescription_dictionary_v09", "source_lane": "model_structured_prescription", "ownership_label": "named_model_prescription_plus_shared_rules", "portability": "clinical_epilepsy"}, "Investigations": {"producer": "structured_key_family_event_ledger", "lens": "investigations_result_v01", "source_lane": "model_structured_investigations", "ownership_label": "named_model_investigations", "portability": "clinical_epilepsy"}},
-    "views": ["raw_candidate", "evidence_valid", "clinical_headline", "fidelity_companion", "benchmark_cui"]},
-  "outputs": {"json": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715.json", "jsonl": "experiments/exectv2_six_model_gemma4_26b_dev140_20260715.jsonl", "markdown": "docs/experiments/exectv2/reliability/exectv2_six_model_gemma4_26b_dev140_2026-07-15.md"}
+      "structured_key_family_event_ledger": {
+        "kind": "saved_jsonl",
+        "artifact": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
+        "ownership_label": "gemma4_26b_structured_model_facts",
+        "source_lane": "model_structured_key_families"
+      },
+      "sf_model_projection_suppression": {
+        "kind": "saved_jsonl",
+        "artifact": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_sf_unknown_suppression.jsonl",
+        "ownership_label": "gemma4_26b_sf_model_plus_projection_suppression",
+        "source_lane": "model_sf_projection_suppression"
+      }
+    },
+    "lenses": {
+      "Diagnosis": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "diagnosis_heading_recovery_residual_benchmark_v05",
+        "source_lane": "model_structured_diagnosis",
+        "ownership_label": "named_model_structured_diagnosis_plus_rules",
+        "portability": "benchmark_format"
+      },
+      "SeizureFrequency": {
+        "producer": "sf_model_projection_suppression",
+        "lens": "sf_state_projection_suppression_v01",
+        "source_lane": "model_sf_projection_suppression",
+        "ownership_label": "named_model_sf_plus_projection_suppression",
+        "portability": "seizure_frequency"
+      },
+      "Prescription": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "prescription_dictionary_v09",
+        "source_lane": "model_structured_prescription",
+        "ownership_label": "named_model_prescription_plus_shared_rules",
+        "portability": "clinical_epilepsy"
+      },
+      "Investigations": {
+        "producer": "structured_key_family_event_ledger",
+        "lens": "investigations_result_v01",
+        "source_lane": "model_structured_investigations",
+        "ownership_label": "named_model_investigations",
+        "portability": "clinical_epilepsy"
+      }
+    },
+    "views": [
+      "raw_candidate",
+      "evidence_valid",
+      "clinical_headline",
+      "fidelity_companion",
+      "benchmark_cui"
+    ]
+  },
+  "outputs": {
+    "json": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+    "jsonl": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.jsonl",
+    "markdown": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gemma4_26b_dev140_2026-07-15.md"
+  }
 }
