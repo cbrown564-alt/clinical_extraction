@@ -16,7 +16,10 @@ from pathlib import Path
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import load_letters
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+    load_letters,
+    load_letters_for_split,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
     sf_state_projection as sf_projection,
 )
@@ -28,6 +31,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm import (
     llm_only_key_entities_structured as structured,
+)
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
+    has_blocking_parse_issue,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
@@ -44,24 +50,38 @@ def main() -> None:
         raise SystemExit(
             "Refusing a model-swap run that violates decision 0040:\n- " + details
         )
-    if config.assembly.row_count > 140 and not args.allow_non_dev140:
-        raise SystemExit(
-            "Refusing non-dev140 model-swap run without --allow-non-dev140. "
-            "Full-200 needs a fresh aggregate-only predeclaration."
-        )
-
-    letters = load_letters()[args.offset : args.offset + config.assembly.row_count]
+    letters = _letters_for_config(
+        config,
+        offset=args.offset,
+        allow_non_dev140=args.allow_non_dev140,
+    )
     producer_paths = {
         producer_id: producer.artifact
         for producer_id, producer in config.assembly.producers.items()
     }
     structured_jsonl = producer_paths["structured_key_family_event_ledger"]
-    diagnosis_jsonl = producer_paths["diagnosis_decomposer"]
+    diagnosis_jsonl = _diagnosis_artifact_path(config)
     sf_producer = config.assembly.lenses[SEIZURE_FREQUENCY.name].producer
     sf_output_jsonl = producer_paths[sf_producer]
 
+    if args.resume:
+        expected_ids = {letter.letter_id for letter in letters}
+        _validate_resume_artifact(
+            structured_jsonl,
+            expected_ids=expected_ids,
+            component="structured_key_family_event_ledger",
+        )
+        if diagnosis_jsonl is not None:
+            _validate_resume_artifact(
+                diagnosis_jsonl,
+                expected_ids=expected_ids,
+                component="diagnosis_decomposer",
+            )
+
     structured_rows = _run_structured(config, letters, structured_jsonl, args)
-    _run_diagnosis(config, letters, structured_rows, diagnosis_jsonl, args)
+    _require_clean_complete_rows(structured_rows, expected_count=len(letters))
+    if diagnosis_jsonl is not None:
+        _run_diagnosis(config, letters, structured_rows, diagnosis_jsonl, args)
     _run_model_led_sf_chain(
         structured_jsonl=structured_jsonl,
         sf_output_jsonl=sf_output_jsonl,
@@ -87,6 +107,71 @@ def main() -> None:
             sort_keys=True,
         )
     )
+
+
+def _diagnosis_artifact_path(config: model_swap.ModelSwapConfig) -> Path | None:
+    """Return the sidecar path only when Diagnosis has a separate producer."""
+
+    producer_id = config.assembly.lenses["Diagnosis"].producer
+    if producer_id == "structured_key_family_event_ledger":
+        return None
+    if producer_id == "diagnosis_decomposer":
+        return config.assembly.producers[producer_id].artifact
+    raise ValueError(f"Unsupported Diagnosis producer: {producer_id}")
+
+
+def _letters_for_config(
+    config: model_swap.ModelSwapConfig,
+    *,
+    offset: int,
+    allow_non_dev140: bool,
+) -> list:
+    split = config.assembly.split.lower()
+    if split in {"dev", "dev140"}:
+        source = load_letters_for_split("dev")
+    elif not allow_non_dev140:
+        raise SystemExit(
+            "Refusing non-dev140 model-swap run without --allow-non-dev140. "
+            "Full-200 needs a fresh aggregate-only predeclaration."
+        )
+    elif split in {"test", "test60"}:
+        source = load_letters_for_split("test")
+    elif split in {"full", "full200"}:
+        source = load_letters()
+    else:
+        raise ValueError(f"unknown ExECTv2 split: {config.assembly.split!r}")
+    selected = source[offset : offset + config.assembly.row_count]
+    if len(selected) != config.assembly.row_count:
+        raise ValueError(
+            f"split {config.assembly.split!r} returned {len(selected)} rows; "
+            f"expected {config.assembly.row_count}"
+        )
+    return selected
+
+
+def _validate_resume_artifact(
+    path: Path,
+    *,
+    expected_ids: set[str],
+    component: str,
+) -> None:
+    if not path.exists():
+        return
+    rows = _read_jsonl(path)
+    ids = [str(row.get("letter_id", "")) for row in rows]
+    duplicate_ids = sorted(
+        letter_id for letter_id in set(ids) if ids.count(letter_id) > 1
+    )
+    outside = sorted(set(ids) - expected_ids)
+    if outside:
+        raise ValueError(
+            f"{component} resume artifact contains rows outside the frozen row set: "
+            f"{outside}"
+        )
+    if duplicate_ids:
+        raise ValueError(
+            f"{component} resume artifact contains duplicate row ids: {duplicate_ids}"
+        )
 
 
 def _run_structured(
@@ -115,6 +200,22 @@ def _run_structured(
     write_jsonl(rows, jsonl_path)
     structured.write_report(rows, meta, jsonl_path.with_suffix(".md"), jsonl_path=jsonl_path)
     return rows
+
+
+def _require_clean_complete_rows(rows: list[dict], *, expected_count: int) -> None:
+    """Prevent incomplete or failed model calls from reaching scoring and assembly."""
+
+    if len(rows) != expected_count:
+        raise RuntimeError(
+            f"Refusing model artifact with {len(rows)} rows; expected {expected_count}."
+        )
+    call_failures = sum(bool(row.get("call_error")) for row in rows)
+    parse_failures = sum(has_blocking_parse_issue(row.get("parse_errors")) for row in rows)
+    if call_failures or parse_failures:
+        raise RuntimeError(
+            "Refusing model artifact before scoring: "
+            f"{call_failures} call failure(s), {parse_failures} parse/schema failure(s)."
+        )
 
 
 def _run_diagnosis(

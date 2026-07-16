@@ -4,168 +4,176 @@ Last updated: 2026-07-15
 
 ## Current outcome
 
-The cleanup, verification, and Gan efficiency phases are complete. The
-repository has three deliverables: the Python package, selected
-machine-readable evidence, and the paper. The Gan result supports a saved
-quality-versus-model-pass comparison, not measured token, cost, or latency
-efficiency. The ExECT published-metric development phase is also complete. The
-ExECT Diagnosis review and development implementation are complete. A full200
-component audit found that the recorded three-model Prescription lane is
-deterministic-only and the Seizure Frequency lane unions model output with an
-independent deterministic extractor. Corrected model-led aggregate candidates
-exist. Their decision-0040 configurations and no-call replay are now retained
-and verified; the replay adds `state_profile`, exact-evidence, schema/parse,
-fact-origin, and deterministic-regression accounting.
+The repository cleanup, engineering repair, selected-evidence replay, paper
+build, Gan efficiency audit, ExECT published-metric development, and ExECT
+component-policy studies are complete. The active work is the fixed ExECTv2
+six-model comparison on the permitted `dev140` split.
+
 [Decision 0040](docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md)
-owns the final family architecture. Nonzero deterministic correct-to-wrong
-counts keep the historical rows unpromoted. A frozen no-call test60 replay now
-shows that model-reported confidence is not informative enough to route review
-for any of the three historical model outputs. The permitted dev140 mechanism
-analysis now retains Seizure Frequency and Investigations but finds that
-Diagnosis and Prescription need bounded policy candidates. A bundled
-model-preserving candidate and a Prescription-only rescue-scope candidate were
-both rejected under predeclared row-retention gates. Prescription residual
-additions cannot be disabled unconditionally because four exact-evidence rows
-depend on deterministic missing-regimen recovery. The next work separates safe
-Prescription selection guards from residual rule groups and evaluates the
-Diagnosis guards independently, before the fixed six-model comparison. The
-annotation evidence is now consolidated into a generated taxonomy with
-explicit score, handling, sensitivity, review, and clinical-validity limits.
+owns the final model-led family boundary and selected joint bounded policy.
+[Decision 0041](docs/decisions/0041-single-call-exect-model-comparison.md)
+owns the single structured call per letter. This is an accepted quality and
+resource-policy tradeoff, not measured cost or latency evidence.
 
-[Paper claim status](docs/canon/10_paper_provenance.md) records what the paper
-may say. [The active roadmap](docs/plans/ACTIVE_ROADMAP.md) gives the work order.
+The clean decision-0041 hosted ExECT panel is complete on dev140 and frozen
+aggregate-only test60 for GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, and
+thinking-enabled DeepSeek V4 Flash. All four test60 conditions completed 59/59
+letters with zero call or blocking parse failures. Qwen 3.6:35B and Gemma 4
+26B have not started. The missing Gan test450 Luna and Sol conditions are also
+complete. The final Gan comparison will retain those two runs and add four
+fresh conditions under prompt v0.7 and the same current pipeline.
 
-The final ExECT comparison roster is fixed by
-[decision 0039](docs/decisions/0039-final-exect-six-model-roster.md):
-GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen
-3.6:35B, and local Gemma 4 26B. This is three closed-weight and three
-open-weight conditions; two open-weight conditions are local. DeepSeek V4
-Flash uses the `deepseek/deepseek-chat` API identifier, but the final reported
-condition must have thinking enabled. The retained DeepSeek run does not record
-that setting, so it does not yet count toward the final panel.
+## Fresh evidence
 
-## Data and scoring limits
+- The four completed hosted ExECT runs use prompt
+  `exectv2_hybrid_key_family_event_ledger_v0.9.24`, split `dev140`, one live
+  structured call per letter, and the same downstream family lenses and scorer.
+- Their `clinical_headline` F1 scores are `0.8202` for GPT-4.1-mini, `0.8832`
+  for GPT-5.6 Luna, and `0.8920` for GPT-5.6 Sol. Exact evidence rate is `1.0`
+  after assembly for every family in all three final readouts.
+- The completed DeepSeek condition uses `deepseek/deepseek-v4-flash` with
+  thinking enabled and has a clean 140/140 final artifact.
+- On frozen ExECT test60, `clinical_headline` F1 is `0.7572` for GPT-4.1-mini,
+  `0.7950` for Luna, `0.8047` for Sol, and `0.7881` for thinking DeepSeek. These
+  are aggregate-only internal-scorer results, not published benchmark scores.
+- On locked Gan test450 under current prompt v0.7, Luna scored `352/450`
+  Purist and `365/450` Pragmatic with three parse/schema/label issues; Sol
+  scored `358/450` Purist and `376/450` Pragmatic with zero call or parse
+  failures. The source artifact for the retained GPT-4.1-mini `364/450` Purist
+  result identifies prompt v0.5, not v0.6 as previously recorded. Thinking
+  DeepSeek scored `346/450` on v0.7, but that run used the older
+  `deepseek-reasoner` route and pre-refactor pipeline.
+- A no-call GPT-4.1-mini ablation found that the one-call Diagnosis architecture
+  reduced final Diagnosis F1 from `0.8727` to `0.8542`, with 3 rescues and 11
+  regressions. Decision 0041 accepts that loss to avoid a second model pass.
+- The selected joint bounded policy produced 172 rescues, 3 regressions, and
+  retained 153/160 current-policy rescues on saved dev140 outputs. EA0117 and
+  EA0141 remain known development failures. Its component studies and replay
+  are owned by the linked reports in [documentation navigation](docs/NAVIGATION.md).
 
-- **Gan 2026:** `test450` is a locked holdout whose rows have not been inspected
-  by the authors. Only the saved aggregate results may be cited or reviewed.
-- **ExECTv2:** `dev140` permits row review. `full200` combines dev140 with the
-  held-out test60 rows, so it is not an independent holdout. Test60 rows must
-  not be inspected during development.
-- **Scoring:** Gan uses Purist and Pragmatic label accuracy. ExECT's primary
+## Verification state
+
+- Last clean broad verification before the current policy and runner changes:
+  1,227 tests, Ruff, mypy, the retained-evidence check, all six no-call reference
+  replays, and a two-pass IEEE build passed on 2026-07-15. All three PDF pages
+  were rendered and visually checked.
+- The joint-policy change subsequently passed 21 focused tests, Ruff, its
+  no-call replay, and the retained-evidence check.
+- The single-call Diagnosis and split-control change passed 18 focused tests,
+  Ruff, mypy across 288 source files, and its no-call replay.
+- The hosted-run timeout and clean-completion safeguards passed 23 focused
+  tests after the Sol transport diagnosis.
+- The later 1,246-test run had 1,240 passes and six evidence-bookkeeping
+  failures: three contaminated checkpoint documents were outside the allowlist,
+  and the retained-evidence freeze still named pre-correction runner hashes.
+  That run is not a clean broad pass for the current working tree.
+- Current model runs and many associated artifacts are uncommitted. Earlier
+  verification does not cover later changes or the final six-model panel.
+
+## Data and claim boundaries
+
+- **Gan 2026 `test450`:** locked holdout. During the 2026-07-15 documentation
+  consolidation, a command unintentionally printed part of a sealed aggregate
+  Markdown row table. No row was analyzed or used to change the model, prompt,
+  repair policy, or scorer, but the stronger claim that no test row was ever
+  exposed is no longer available. Only aggregate results may be cited.
+- **ExECTv2 `dev140`:** row review is permitted for development.
+- **ExECTv2 `test60`:** held out; do not inspect rows during development.
+  `full200` mixes development and held-out rows and is not an independent
+  holdout.
+- **Scores:** Gan uses Purist and Pragmatic label accuracy. ExECT's primary
   internal score is de-duplicated clinical fact recovery (`clinical_headline`).
-  Phrase, CUI, evidence-valid, and full-attribute scores remain separate. The
-  internal score is not the published ExECT benchmark.
+  It is not the published ExECT benchmark; phrase, CUI, evidence-valid, and
+  full-attribute views remain separate.
+- Independent clinical review remains required before making clinical-validity
+  claims from the internal annotation review.
 
-## Selected results
+## Selected established results
 
-| Task | Rules only | LLM only | LLM with rules | Scope |
-| --- | ---: | ---: | ---: | --- |
-| ExECT dev140 | 0.3548 strict item F1 | 0.7393 clinical fact F1 | 0.9189 clinical fact F1 | Historical development results; the first score uses a stricter metric, and `v08` does not meet the final decision-0040 family ownership contract |
-| Gan validation750 | 697/750 Purist | 581/750 Purist | 661/748 rendered Purist | Development and replay results |
-
-Other paper evidence:
-
-- The ExECT rules-only no-call dev140 replay reports paper-derived macro item F1
-  of `0.5687` for normalized phrase, `0.7144` for CUI, and `0.6020` for all
-  features across all nine entity types. These are development results, not a
-  reproduction of the paper's original system or its `0.87`/`0.90` scores.
 - Gan locked test450: the single-pass event extractor scored `364/450` Purist;
-  the saved multi-model comparator scored `379/450`.
-- The multi-model comparator gains 15 rows (3.33 percentage points) but needs
-  three cold model passes per note rather than one. Its final audit replayed
-  two upstream traces, so token, cost, latency, hardware, and cache claims
-  remain unsupported rather than estimated.
-- The recorded ExECT full200 rows report historical DeepSeek `0.8566`, GPT-4.1-mini
-  `0.8356`, and Qwen 3.6:35B `0.8197` clinical fact F1, but they are not a
-  consistent model comparison: Prescription is deterministic-only and Seizure
-  Frequency includes a deterministic-extractor union. The DeepSeek thinking
-  state was not recorded, so `0.8566` is not the final reportable DeepSeek V4
-  Flash result.
-- An aggregate-only saved-output audit of the intended model-led architecture
-  reports historical DeepSeek `0.8543`, GPT-4.1-mini `0.8171`, and Qwen
-  `0.8234`. Diagnosis is `0.8789` / `0.8583` / `0.8520`; Prescription is
-  `0.9057` / `0.8700` / `0.9220`. These are unpromoted full200
-  development-inclusive candidates, not independent holdout results. The
-  DeepSeek candidate is audit-only because its thinking state was not recorded.
-- The durable replay reproduces those aggregates exactly. SF `state_profile`
-  F1 is `0.7813` / `0.8085` / `0.7812` for GPT-4.1-mini, historical DeepSeek,
-  and Qwen. Minimum exact-evidence rate is `1.0`; the replay retains one
-  DeepSeek parse/schema failure. Deterministic corrections still produce
-  correct-to-wrong rows, so these are architecture evidence rather than
-  promoted final model conditions.
-- Normalizing saved outputs improved ExECT dev140 by `0.0389` and Gan
-  validation750 by `0.0293`. The exact-evidence check did not change these
-  replay scores; rejection and repair tests provide its separate evidence.
-- ExECT full200 internal calibration: Brier `0.2225`, base-rate Brier `0.2340`,
-  ECE `0.0587`. No review policy has been adopted from this result.
-- ExECT aggregate-only test60 model-reported-confidence failure AUROC is
-  `0.5503` for historical DeepSeek, `0.5394` for GPT-4.1-mini, and `0.4895`
-  for Qwen. Neither predeclared review rule met the frozen catch-rate and
-  burden requirements, so no confidence-based review policy was adopted.
-- The dev140 deterministic-regression analysis records 319 changed model/family
-  rows with exact evidence. The family-local view has 160 wrong-to-correct, 41
-  correct-to-wrong, and 118 changed-still-wrong outcomes. Seizure Frequency has
-  38 rescues and no local regression; Diagnosis has 18 regressions and
-  Prescription has 23.
-- The [annotation-evidence synthesis](docs/experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
-  hash-checks 13 retained sources and combines
-  584 overlapping evidence records. It maps all 57 explicitly cited letters,
-  separates three open and one fixed mechanical gold issue from conventions,
-  ambiguity, multiplicity, scorer effects, and model-error controls, and leaves
-  ten historical Diagnosis concept rows aggregate-only. This is internal
-  development evidence; independent clinical review remains required for
-  clinical-validity claims.
+  the saved three-pass comparator scored `379/450`. The 15-row gain is a
+  quality-versus-model-pass result. Matched token, cost, latency, hardware, and
+  cache telemetry was not retained.
+- ExECT rules-only no-call dev140: macro item F1 is `0.5687` for normalized
+  phrase, `0.7144` for CUI, and `0.6020` for all features across nine entity
+  types. This is development evidence, not reproduction of the original ExECT
+  system or its reported validation scores.
+- Historical ExECT full200 model rows do not meet the final family boundary:
+  Prescription was deterministic-only and Seizure Frequency included an
+  independent extractor union. They remain audit evidence, not final model
+  comparison results.
+- Frozen aggregate-only test60 replay found model-reported confidence
+  uninformative for review routing across the three historical outputs; no
+  confidence-based review policy was adopted.
 
-Exact files, hashes, versions, and replay expectations are in the
-[retained evidence index](docs/experiments/retained_evidence_manifest.json).
+Exact selected files, hashes, versions, and replay requirements are in the
+[retained evidence index](docs/experiments/retained_evidence_manifest.md).
+[Paper claim status](docs/canon/10_paper_provenance.md) owns what the manuscript
+may say.
 
-## Completed work
+## Active work
 
-| Work | Verified result |
-| --- | --- |
-| Repository reduction | Removed stale documents, notebooks, reports, candidates, the frontend, and Observatory; large selected replay files use Git LFS |
-| Engineering checks | Ruff and mypy pass; seven oversized tests were split by invariant; CI runs Ruff, mypy, and full pytest |
-| Fixed reference pipeline | Retained evidence index v3 records the source commit, six reference runs, Python and dependency versions, prompts, scorers, splits, repairs, models, runbooks, and CI policy |
-| Clean-checkout and paper check | A separate Python 3.11 checkout retrieved Git LFS files, checked hashes and split restrictions, replayed six runs, passed all checks, reproduced the tables, and produced a visually checked three-page IEEE PDF |
-| Gan efficiency | Aggregate-only audit reproduced `364/450` versus `379/450`, one versus three cold model passes, the V12 cache asymmetry, and the absence of matched telemetry; it also corrected an earlier validation-to-test provenance transfer |
-| ExECT published metrics | Added and tested paper-derived normalized-phrase, CUI, and full-attribute scoring; a no-call all-nine-entity dev140 replay reports macro item F1 `0.5687` / `0.7144` / `0.6020` and leaves the existing strict micro replay unchanged at `0.3548` |
-| ExECT Diagnosis resolution | Completed all 246 dev140 review decisions: 173 representation issues, 72 extraction errors, and one uncertain row. Diagnostic sensitivity raises fixed F1 to `0.9344`/`0.8499`/`0.9789` for rules/LLM/hybrid under the conservative view. Shared deterministic fixes improve rules from `0.8599` to `0.8926` and hybrid from `0.8984` to `0.9034`; the fixed LLM prompt candidate regresses from `0.6861` to `0.6210` and is rejected. Gold and the fixed scorer are unchanged; test60 was not inspected. |
-| ExECT LLM-with-rules ownership audit | Replayed saved full200 outputs without new calls or test60 failure inspection. Diagnosis is model-led with material deterministic rescue; Investigations is model-led; the recorded Prescription and Seizure Frequency paths fail the intended method definition. The corrected aggregate candidate uses each named model's facts plus attributable post-extraction corrections. Per-family recall is entity-agnostic, so family scores are final-output metrics rather than pure component scores. |
-| ExECT architecture correction | Added decision-0040 model-led configs, made the runner reject deterministic Prescription substitution and SF extractor union, and added a no-call Git-blob replay. It exactly reproduces the three corrected aggregates plus `state_profile`, attribution, exact-evidence, schema/parse, and deterministic-regression counts. Implemented and verified; the historical model rows are not promoted. |
-| ExECT model-reported confidence | Froze the analysis before replay, separated dev140 from aggregate-only test60, and evaluated the historical GPT-4.1-mini, DeepSeek, and Qwen source labels against final family-cell correctness. Test60 AUROC was `0.5394` / `0.5503` / `0.4895`; neither fixed routing rule passed. This is a retained negative result, not deployment calibration. |
-| ExECT dev140 deterministic regressions | Filtered historical producer blobs to the declared 140 development IDs before assembly and retained 319 changed-row mechanism records. SF projection/suppression has 38 local rescues and zero regressions; current Diagnosis and Prescription policies remain unpromoted. No model call or test60 inspection occurred. |
-| ExECT model-preserving policy candidates | Replayed two predeclared opt-in candidates on saved dev140 outputs. The bundled candidate reduced correct-to-wrong rows from 41 to 9 but lost 17 of 160 comparator rescues and was rejected. The Prescription rescue-scope candidate fixed local frequency scope and retained 37 of 41 Prescription rescues, but made four comparator-correct rows wrong when all residual additions were removed, so it was also rejected. All comparator-candidate changes had exact evidence; no model call or test60 inspection occurred. |
-| ExECT annotation evidence | Generated a 584-record taxonomy from 13 hash-checked retained sources, mapped all 57 explicitly cited letters, linked issue class to original scoring, handling, sensitivity, and review status, and retained the independent-clinical-review boundary. Ten historical Diagnosis concept rows remain aggregate-only rather than reconstructed. |
+1. Freeze the completed hosted ExECT and Gan panels in the retained-evidence
+   index without inspecting held-out rows.
+2. Predeclare one matched Gan test450 protocol that pins prompt
+   `gan2026_hybrid_structured_events_v0.7`, its rendered snapshot hash, the
+   current pipeline and repair/scoring hashes, one call per note, disabled
+   cache, aggregate-only readout, model routes, token limits, and permitted
+   format-only adapters. Make prompt selection explicit in the runner before
+   any call.
+3. Retain the completed Luna and Sol v0.7 runs. Run fresh v0.7 conditions for
+   GPT-4.1-mini and thinking-enabled DeepSeek V4 Flash on the final hosted
+   routes and current pipeline after model-specific validation pilots pass.
+4. Run Qwen 3.6:35B and Gemma 4 26B on the same Gan v0.7 condition, alongside
+   their ExECTv2 work, sequentially through native Ollama. Record exact tag
+   digests, Q4_K_M quantization, context, thinking policy, endpoint, hardware
+   and observed partial-offload state. Qwen uses `think=false`; Gemma's adapter
+   policy must be confirmed before its frozen pilot.
+5. Freeze and verify the six-model Gan panel before making a matched comparison
+   claim. Keep provider-required temperature and transport differences visible.
 
-The current suite contains 1,227 tests. On 2026-07-15, all tests, Ruff, mypy,
-the retained-evidence check, all six no-call reference replays, and a two-pass
-IEEE build passed. All three PDF pages were rendered and visually checked. The
-cleanup history is in the
-[repository cleanup record](docs/research/maintenance/repository_surgery_assessment_2026-07-14.md).
+The [active roadmap](docs/plans/ACTIVE_ROADMAP.md) owns the detailed work order.
 
-## Open research and validation work
+## Blocked or unvalidated
 
-1. **Bounded deterministic policy separation:** retain the demonstrated
-   Prescription missing-regimen rescues, isolate harmful residual rule groups,
-   and evaluate local rescue scope plus current-versus-future selection without
-   changing candidate generation. Evaluate Diagnosis subsumption and
-   absence-phenotype preservation as a separate candidate with rescue-identity
-   accounting.
-2. **Six-model comparison:** run the decision-0039 roster through the same
-   corrected model-led pipeline and scorer. Record exact hosted identifiers and
-   local model revisions, quantization, hardware, endpoint, and adapter policy;
-   require DeepSeek V4 Flash to use `deepseek/deepseek-v4-flash` i.e. with thinking
-   enabled.
+- The six-model development comparison remains incomplete until DeepSeek, Qwen,
+  and Gemma have final artifacts and the common-panel checks pass. This blocks
+  a complete six-model comparison, not the already frozen hosted test60 and Gan
+  test450 runs.
+- Hosted ExECT test60 and Gan Luna/Sol test450 calls are complete. The long
+  local ExECT Qwen and Gemma conditions remain unstarted.
+- The matched Gan panel remains incomplete until fresh GPT-4.1-mini, DeepSeek,
+  Qwen and Gemma v0.7 conditions complete under the current pipeline. The
+  protocol decision is made, but the dated predeclaration and runner freeze
+  must exist before new holdout calls.
+- The retained-evidence freeze and clean broad verification remain stale until
+  the completed hosted artifacts are indexed and contaminated artifacts are
+  excluded.
 
-## Rules that protect the evidence
+## Known defects and risks
 
-- Never inspect Gan test450 or ExECT test60 row-level failures during development.
-- Never describe ExECT full200 as an independent holdout.
-- Never describe `clinical_headline` as the published strict benchmark.
-- Never translate the Gan one-versus-three model-pass comparison into measured
-  token, dollar, energy, hardware, or latency efficiency.
-- Keep raw model output, format repair, clinical repair, final formatting,
-  evidence checking, and scoring separately attributable.
-- A fixed pipeline does not authorize a model call. Live work still needs a
-  stated question, runtime condition, and permitted data split.
-- Use *implemented*, *verified*, *validated*, and *promoted* precisely.
+- Existing Gan reports describe test450 output as a validation development
+  result. Correct the report wording and regenerate aggregate summaries without
+  exposing rows; this reporting defect does not require repeating Luna or Sol.
+- Gan prompt v0.7 was developed from DeepSeek-reasoner validation failures. A
+  matched v0.7 panel removes prompt and pipeline mismatch but is not a
+  model-neutral capability ranking. Test450 has also supported sequential
+  aggregate evaluations, and part of one row report was accidentally exposed;
+  report the result as a matched aggregate-only panel, not a pristine one-shot
+  holdout comparison.
+- The rejected first six-model attempt used the first 140 sorted letters; only
+  94 were manifest dev IDs. Its outputs are contaminated development artifacts:
+  never resume, score as panel evidence, or add them to the retained-evidence
+  index. Replacement `single_call` paths and resume validation prevent reuse.
+- The working tree contains active source, configuration, document, and
+  experiment changes. Do not describe these changes as committed, released, or
+  covered by the earlier clean-checkout verification.
+- The selected joint policy retains three deterministic regressions, and the
+  one-call Diagnosis decision accepts a measured development-quality loss.
+  Keep both limitations visible in comparisons and paper claims.
+- Gan test450 row text was unintentionally exposed while reading a generated
+  aggregate Markdown report during documentation consolidation. Treat the
+  hosted results as frozen aggregate evidence only; do not perform follow-up
+  row analysis or tuning from the exposure.
+
+Use *implemented*, *verified*, *validated*, and *promoted* precisely.

@@ -14,7 +14,7 @@ must not make a stronger claim than either source supports.
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
 | S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control, while a separate decision-0040 aggregate replay verifies corrected family ownership and regression counts | Partial |
 | S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved holdout quality, run metadata, and aggregate input availability | Bounded |
-| S4 | Six exact models run on one fixed ExECT pipeline | Roster fixed by decision 0039; GPT-4.1-mini and Qwen have directly named retained evidence; DeepSeek V4 Flash maps to `deepseek/deepseek-chat`, but the retained run does not record whether thinking was enabled | 2/6 confirmed |
+| S4 | Six exact models run on one fixed ExECT pipeline | The four hosted models completed matched dev140 and aggregate-only test60 conditions; local Qwen and Gemma remain | 4/6 confirmed |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; no selected ExECT transfer study exists | Open |
 | S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests and cross-task replay exist | Partial |
 | S7 | ExECT reports paper-derived normalized-phrase, CUI, and full-attribute metrics | No-call rules-only dev140 replay covers all nine entities; original 0.87/0.90 scores are not reproduced | Development answer |
@@ -34,6 +34,8 @@ must not make a stronger claim than either source supports.
 | C7 | The ExECT rules-only system scores 0.5687 phrase, 0.7144 CUI, and 0.6020 all-features macro item F1 | Strong for the named no-call dev140 replay | Paper-derived metric implementation on development data; not reproduction of the original system or reported scores |
 | C8 | The recorded ExECT model rows do not implement one consistent model-led method across all four families | Strong for the saved-output ownership audit and verified corrected architecture replay | Full200 aggregate-only evidence; corrected scores remain unpromoted because deterministic correct-to-wrong counts are nonzero |
 | C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs, unrecorded DeepSeek thinking state, and no deployment or six-model claim |
+| C10 | On the fixed hosted ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, thinking DeepSeek 0.7881, and GPT-4.1-mini 0.7572 clinical-headline F1 | Holdout aggregate evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or a complete six-model result |
+| C11 | On Gan test450, current v0.7 Luna scored 352/450 and Sol 358/450 Purist | Frozen aggregate evidence | GPT-4.1-mini's retained 364/450 result used v0.6; a post-run documentation command exposed part of a row table, no row was analyzed or used for tuning, and no claim that rows were never exposed is permitted |
 
 ## Selected headline results
 
@@ -45,6 +47,8 @@ must not make a stronger claim than either source supports.
 | ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393 |
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
+| ExECT fixed hosted panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; thinking DeepSeek 0.7881 clinical-headline F1 |
+| Gan current hosted additions, test450 | Luna 352/450; Sol 358/450 Purist |
 
 The historical DeepSeek full200 aggregate is `0.8566`, but its thinking state
 was not recorded. It is retained for audit only and is excluded from the
@@ -71,10 +75,7 @@ paper-facing model table unless thinking-enabled execution can be proved.
 
 ## Open work
 
-1. Decide on permitted dev140 evidence whether the deterministic regression
-   risk can be reduced without validation-shaped rules.
-2. Run the decision-0039 roster with the same corrected model-led pipeline:
-   GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen
-   3.6:35B, and local Gemma 4 26B. For DeepSeek, use
-   `deepseek/deepseek-chat` with thinking enabled, report the display name
-   **DeepSeek V4 Flash**, and retain the thinking-setting metadata.
+1. Complete local Qwen 3.6:35B and Gemma 4 26B on the fixed ExECT pipeline.
+2. Resolve whether Gan's historical GPT-4.1-mini, DeepSeek, and Qwen rows need
+   exact v0.7 reruns before any same-prompt cross-model claim.
+3. Freeze hashes and verification records for the completed hosted panels.

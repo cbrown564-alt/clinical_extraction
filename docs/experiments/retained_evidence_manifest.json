@@ -951,8 +951,8 @@
         },
         {
           "path": "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
-          "sha256": "b052587df2e929a39883e3cd249dd6c8b5d0370dd8824584a13064f04182461b",
-          "bytes": 5507,
+          "sha256": "8fb587432f1af2a12b432dccd577dc30144b2acba52ff98a852a96a1ef178e8a",
+          "bytes": 6829,
           "retrieval": "git_path"
         },
         {

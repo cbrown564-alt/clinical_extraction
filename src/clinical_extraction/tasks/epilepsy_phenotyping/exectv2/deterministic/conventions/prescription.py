@@ -219,6 +219,12 @@ _EXPLICIT_CURRENT_PRESCRIPTION_CUE = re.compile(
     r")",
     re.IGNORECASE,
 )
+_PRESCRIPTION_RESCUE_CUE = re.compile(
+    r"\b(?:as\s+required|p\.?r\.?n\.?|rescue|seizure\s+clusters?)\b",
+    re.IGNORECASE,
+)
+EXPLICIT_CURRENT_REGIMEN_RECOVERY = "explicit_current_regimen_recovery"
+UNANCHORED_TARGET_REGIMEN_RECOVERY = "unanchored_target_regimen_recovery"
 
 
 def is_explicit_current_prescription(
@@ -246,6 +252,68 @@ def is_explicit_current_prescription(
     prefix = note_text[max(0, evidence_start - 120) : evidence_start]
     prefix = re.split(r"[.;\n]", prefix)[-1]
     return bool(_EXPLICIT_CURRENT_PRESCRIPTION_CUE.search(prefix))
+
+
+def is_bounded_explicit_current_prescription(
+    note_text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> bool:
+    """Return whether a complete regimen is governed by a current-medication cue.
+
+    Planning, historical, and rescue cues before the regimen's dose invalidate
+    a generic medication heading. Cues after the dose do not erase an explicitly
+    current regimen.
+    """
+
+    return (
+        prescription_residual_rule_group(
+            note_text,
+            evidence=evidence,
+            attributes=attributes,
+        )
+        == EXPLICIT_CURRENT_REGIMEN_RECOVERY
+    )
+
+
+def prescription_residual_rule_group(
+    note_text: str,
+    *,
+    evidence: str,
+    attributes: Mapping[str, Any],
+) -> str:
+    """Classify a residual regimen by the evidence that makes it current."""
+
+    required = ("DrugName", "DrugDose", "DoseUnit", "Frequency")
+    if any(not str(attributes.get(key, "")).strip() for key in required):
+        return UNANCHORED_TARGET_REGIMEN_RECOVERY
+    evidence_start = note_text.find(evidence)
+    if evidence_start < 0:
+        return UNANCHORED_TARGET_REGIMEN_RECOVERY
+    dose = normalize_dose_value(str(attributes.get("DrugDose", "")))
+    dose_match = re.search(rf"(?<![\d.]){re.escape(dose)}(?![\d.])", evidence)
+    target_offset = dose_match.start() if dose_match is not None else len(evidence)
+    context_start = max(0, evidence_start - 360)
+    context = note_text[context_start : evidence_start + target_offset]
+    current_matches = list(_EXPLICIT_CURRENT_PRESCRIPTION_CUE.finditer(context))
+    for current in reversed(current_matches):
+        preceding = context[max(0, current.start() - 50) : current.start()]
+        if (
+            _PRESCRIPTION_RESIDUAL_HISTORICAL_CUE_RE.search(preceding)
+            or _PRESCRIPTION_RESCUE_CUE.search(preceding)
+        ):
+            continue
+        governed = context[current.end() :]
+        if (
+            _PRESCRIPTION_RESIDUAL_HISTORICAL_CUE_RE.search(governed)
+            or _PRESCRIPTION_RESIDUAL_FUTURE_CUE_RE.search(governed)
+            or _PLANNED_OR_HISTORICAL_PRESCRIPTION_EVIDENCE.search(governed)
+            or _PRESCRIPTION_RESCUE_CUE.search(governed)
+        ):
+            return UNANCHORED_TARGET_REGIMEN_RECOVERY
+        return EXPLICIT_CURRENT_REGIMEN_RECOVERY
+    return UNANCHORED_TARGET_REGIMEN_RECOVERY
 
 
 def is_prescription_convention_noise(

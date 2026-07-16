@@ -49,6 +49,14 @@ _CERTAINTY_4_CUE = re.compile(
     r"\b(?:probable|likely|suggestive|suspected|possible|possibly|query|\?)\b",
     re.IGNORECASE,
 )
+_DIAGNOSIS_POLICY_VARIANTS = frozenset(
+    {
+        "default",
+        "residual_subsumption_only",
+        "absence_preservation_only",
+        "combined",
+    }
+)
 
 
 class DiagnosisHeadingRecoveryLens(ThinArtifactLens):
@@ -122,6 +130,14 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
         *,
         policy: LensPolicy,
     ) -> LensResult:
+        variant = policy.diagnosis_policy_variant
+        if variant not in _DIAGNOSIS_POLICY_VARIANTS:
+            raise ValueError(f"unknown Diagnosis policy variant: {variant}")
+        preserve_absence = variant in {"absence_preservation_only", "combined"}
+        suppress_subsumed_residual = variant in {
+            "residual_subsumption_only",
+            "combined",
+        }
         recovered = super().reconcile(store, policy=policy)
         kept: list[ClinicalFinding] = []
         rewritten: list[ClinicalFinding] = []
@@ -149,7 +165,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 )
                 rewritten.append(current)
             preserve_absence_phenotype = (
-                policy.model_preserving_policy_candidate
+                (policy.model_preserving_policy_candidate or preserve_absence)
                 and _is_model_owned_absence_phenotype(current, recovered.findings)
             )
             if sd.is_diagnosis_convention_noise(
@@ -204,6 +220,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 include_resolution_candidate=policy.diagnosis_resolution_candidate,
                 model_preserving_policy_candidate=(
                     policy.model_preserving_policy_candidate
+                    or suppress_subsumed_residual
                 ),
             ):
                 continue
@@ -281,6 +298,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 "companion_added_text_counts": text_counts(list(companion_added)),
                 "dropped_count": len(dropped),
                 "dropped_text_counts": text_counts(dropped),
+                "diagnosis_policy_variant": variant,
             },
         )
         final_findings = tuple(
@@ -297,6 +315,7 @@ class DiagnosisDictionaryLens(DiagnosisHeadingRecoveryLens):
                 "companion_dictionary_findings": len(companion_added),
                 "dropped_dictionary_findings": len(dropped),
                 "selected_findings": len(final_findings),
+                "diagnosis_policy_variant": variant,
             }
         )
         return LensResult(

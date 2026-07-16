@@ -96,6 +96,12 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
 
     parser = argparse.ArgumentParser(description=spec.description, parents=[pipeline_parser])
     parser.add_argument("--split", choices=("train", "validation", "test"), default="validation")
+    parser.add_argument(
+        "--frozen-test-protocol",
+        type=Path,
+        default=None,
+        help="Required existing dated protocol file for an authorized frozen test run.",
+    )
     parser.add_argument("--jsonl", type=Path, default=spec.default_jsonl_path)
     parser.add_argument("--markdown", type=Path, default=spec.default_report_path)
     parser.add_argument("--model", default=spec.default_model)
@@ -163,10 +169,15 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     args = parser.parse_args(raw_argv)
     spec = specs[args.pipeline]
-    if args.split == "test":
+    if args.split == "test" and args.frozen_test_protocol is None:
         parser.error(
             "This command cannot run the Gan holdout. Write and approve a fixed test "
             "protocol before adding a holdout command."
+        )
+    if args.split == "test" and not args.frozen_test_protocol.is_file():
+        parser.error(
+            "--frozen-test-protocol must name an existing protocol file: "
+            f"{args.frozen_test_protocol}"
         )
     requested_source_indices = _parse_requested_source_indices(args, parser)
 

@@ -1,0 +1,134 @@
+{
+  "schema_version": "hosted-holdout-panels-v1",
+  "generated_date": "2026-07-15",
+  "row_content_included": false,
+  "inspection_policy": "Aggregate fields and sealed-artifact fingerprints only. No held-out row was inspected to build this record.",
+  "panels": {
+    "exectv2_test60": {
+      "protocol": "docs/experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md",
+      "split_manifest": "exectv2_split_v1",
+      "split": "test60",
+      "row_count": 59,
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "calls_per_note": 1,
+      "cache": "disabled",
+      "scorer": "ExECTv2 clinical_headline aggregate scorer",
+      "claim_boundary": "Aggregate-only internal holdout evidence; not the published ExECT benchmark.",
+      "conditions": [
+        {
+          "model": "openai/gpt-4.1-mini",
+          "clinical_headline": {"f1": 0.7572, "precision": 0.7742, "recall": 0.7409},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_sealed_rows.jsonl",
+            "sha256": "894c1fe9a24ec8f9605e9979ae14a96f1d4229c8600c1059f12c13cc6fdb8448",
+            "bytes": 13502249
+          },
+          "aggregate_source": {
+            "local_path": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_aggregate.json",
+            "sha256": "8bb21fd5ae3fe16145a631bd321990e148ac44eb31e2866eb31ba13b0fb6b6c0",
+            "bytes": 247828
+          }
+        },
+        {
+          "model": "openai/gpt-5.6-luna",
+          "clinical_headline": {"f1": 0.7950, "precision": 0.8272, "recall": 0.7652},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_sealed_rows.jsonl",
+            "sha256": "d97f90b33d6c83686dfff1602110394e0390e99c7ec480729c45f337a4841616",
+            "bytes": 10814379
+          },
+          "aggregate_source": {
+            "local_path": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_aggregate.json",
+            "sha256": "2e6f3ae017234bca5fd3298087eb9e90fa4d8de8a8427cdf67123e7cc4d6b9db",
+            "bytes": 154457
+          }
+        },
+        {
+          "model": "openai/gpt-5.6-sol",
+          "clinical_headline": {"f1": 0.8047, "precision": 0.8237, "recall": 0.7866},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_sealed_rows.jsonl",
+            "sha256": "bb0f283cd661c003d9683b39dddccfb2979b47091b2d9c0fe71c65aa39430272",
+            "bytes": 11142214
+          },
+          "aggregate_source": {
+            "local_path": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_aggregate.json",
+            "sha256": "66a89d15c38c9759029b99ee8c46e7a8981d80af19dc06386acb23793a02997c",
+            "bytes": 156182
+          }
+        },
+        {
+          "model": "deepseek/deepseek-v4-flash",
+          "thinking": "enabled by final hosted route",
+          "clinical_headline": {"f1": 0.7881, "precision": 0.8158, "recall": 0.7622},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_sealed_rows.jsonl",
+            "sha256": "649e3be5122ae500093a5fe7ab036c3c597a92850802b9522055ba30159111b2",
+            "bytes": 10924965
+          },
+          "aggregate_source": {
+            "local_path": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_aggregate.json",
+            "sha256": "c060b4fc9e752c21b8d8b68b4cc433e9248ea59100f729ea4aae7985fb2d6de1",
+            "bytes": 158561
+          }
+        }
+      ]
+    },
+    "gan2026_matched_v07_test450": {
+      "protocol": "docs/experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md",
+      "split_manifest": "gan2026_split_v1",
+      "split": "test",
+      "row_count": 450,
+      "prompt_version": "gan2026_hybrid_structured_events_v0.7",
+      "calls_per_note": 1,
+      "cache": "disabled",
+      "repair_mode": "hybrid_full_stack",
+      "scorer": "Gan 2026 Purist and Pragmatic label accuracy",
+      "claim_boundary": "Matched aggregate-only panel on a previously used holdout; not a pristine one-shot or model-neutral ranking.",
+      "conditions": [
+        {
+          "model": "openai/gpt-5.6-luna",
+          "route": "OpenAI chat; provider-required temperature 1",
+          "status": "retained_completed_v07",
+          "structured_records": 447,
+          "call_failures": 0,
+          "parse_schema_label_issues": 3,
+          "exact_evidence": 446,
+          "repair_notes": 305,
+          "purist": {"correct": 352, "total": 450, "accuracy": 0.7822},
+          "pragmatic": {"correct": 365, "total": 450, "accuracy": 0.8111},
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/gan_test450_tempfix_v2/gpt56luna/gpt56luna_sealed_rows.jsonl",
+            "sha256": "312eadcb57cac018f7b857719dac928360e978a9be2ad19e4ea4ce55979f4a17",
+            "bytes": 5780183
+          }
+        },
+        {
+          "model": "openai/gpt-5.6-sol",
+          "route": "OpenAI Responses; temperature omitted",
+          "status": "retained_completed_v07",
+          "structured_records": 450,
+          "call_failures": 0,
+          "parse_schema_label_issues": 0,
+          "exact_evidence": 449,
+          "repair_notes": 366,
+          "purist": {"correct": 358, "total": 450, "accuracy": 0.7956},
+          "pragmatic": {"correct": 376, "total": 450, "accuracy": 0.8356},
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/gan_test450_sol_credit_v4/gpt56sol/gpt56sol_sealed_rows.jsonl",
+            "sha256": "eaa89506602eb99098a0c15dfa391fd9fe7da32bf90a04c8ca83a57bb56c23e4",
+            "bytes": 5895545
+          }
+        }
+      ]
+    }
+  }
+}

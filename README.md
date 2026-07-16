@@ -53,9 +53,23 @@ Current state, as of 2026-07-15:
 - A frozen aggregate-only test60 replay found model-reported confidence
   uninformative for routing review across the three historical model outputs;
   no confidence-based review policy was adopted.
-- Next work is the fixed six-model comparison: GPT-4.1-mini, GPT-5.6 Luna,
-  GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen 3.6:35B, and local Gemma 4
-  26B.
+- One bounded Prescription study and one separate Diagnosis-guard study both
+  improved dev140 aggregates but failed their predeclared mechanism gates. No
+  further rule iteration is planned. A frozen joint replay composes those
+  implemented components without interaction and is now the disclosed fallback:
+  172 rescues, 3 regressions, and 153/160 current-policy rescues retained,
+  compared with 161, 9, and 143/160 for the previous fallback.
+- A no-call GPT-4.1-mini ablation found that the one-call Diagnosis
+  architecture lowers final Diagnosis F1 from 0.8727 to 0.8542, with 3 rescues
+  and 11 regressions. The same study exposed a first-140 versus manifest-dev140
+  runner defect. Affected runs were stopped, and resume validation now prevents
+  their partial artifacts from being reused. Decision 0041 accepts this
+  quality tradeoff and selects one structured call per letter.
+- The fixed hosted ExECT panel is complete on dev140 and aggregate-only test60.
+  Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for GPT-5.6
+  Luna, 0.8047 for GPT-5.6 Sol, and 0.7881 for thinking DeepSeek V4 Flash.
+  Next work is the local Qwen 3.6:35B and Gemma 4 26B conditions and evidence
+  freeze.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 

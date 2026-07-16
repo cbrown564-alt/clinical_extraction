@@ -35,6 +35,25 @@ Seizure Frequency included a union with an independent deterministic
 extractor. The old Prescription and Seizure Frequency columns must not be used
 as model-to-model results.
 
+## Fixed hosted-model results
+
+The four hosted models completed the same decision-0041 one-call pipeline with
+prompt `exectv2_hybrid_key_family_event_ledger_v0.9.24`, the selected joint
+bounded policy, and the internal `clinical_headline` scorer.
+
+| Model | dev140 F1 | test60 F1 | Test operational result |
+| --- | ---: | ---: | --- |
+| GPT-4.1-mini | 0.8202 | 0.7572 | 59/59; 0 call or blocking parse failures |
+| GPT-5.6 Luna | 0.8832 | 0.7950 | 59/59; 0 call or blocking parse failures |
+| GPT-5.6 Sol | 0.8920 | 0.8047 | 59/59; 0 call or blocking parse failures |
+| DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | 59/59; 0 call or blocking parse failures |
+
+Dev140 permits development inspection; test60 is frozen aggregate-only. The
+test result is holdout evidence for this internal scorer, not the published
+ExECT benchmark or clinical validation. It completes the hosted portion of the
+six-model roster, not the local Qwen and Gemma conditions. See the
+[hosted protocol and result](../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md).
+
 ## Corrected model-led architecture candidates
 
 [Decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md)
@@ -58,15 +77,24 @@ development-inclusive, aggregate-only, and unpromoted. Nonzero deterministic
 correct-to-wrong counts prevent treating them as final model rows. See the
 [component audit](../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md).
 
-The permitted dev140 mechanism analysis is now complete. Its family-local view
-finds 160 wrong-to-correct, 41 correct-to-wrong, and 118 changed-still-wrong
-model/family rows, all with exact evidence. Seizure Frequency has 38 rescues
-and zero local regressions; Diagnosis has 18 regressions and Prescription has
-23. The next candidate should retain Seizure Frequency and the Investigations
-adapter, disable Prescription residual additions, and revise the Diagnosis
-subsumption and Prescription current-versus-future boundaries. These are
-development recommendations, not implemented or promoted rules. See the
-[dev140 regression analysis](../experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md).
+The permitted dev140 mechanism analysis finds 160 wrong-to-correct, 41
+correct-to-wrong, and 118 changed-still-wrong model/family rows, all with exact
+evidence. Seizure Frequency has 38 rescues and zero local regressions;
+Diagnosis has 18 regressions and Prescription has 23. Two bounded follow-up
+studies are also complete. The Prescription candidate produced 46 rescues,
+zero model-correct regressions, and 40/41 comparator-rescue retention, but made
+EA0141/Qwen wrong from a comparator-correct result. The separate Diagnosis
+guards produced 88 rescues and three regressions with 75/81 rescue retention,
+but left the EA0117 synonym residual under all three models. Both failed their
+predeclared mechanism gates. Further rule iteration is closed. A frozen joint
+replay composes both implemented components exactly and is now the disclosed
+fallback for the fixed comparison: 172 rescues, 3 regressions, and 153/160
+current-policy rescues retained, compared with 161, 9, and 143/160 for the
+previous fallback. The known component failures remain explicit caveats.
+See the [dev140 regression analysis](../experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md),
+[Prescription result](../experiments/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md),
+the [Diagnosis result](../experiments/exectv2/reliability/exectv2_diagnosis_guard_ablation_2026-07-15.md),
+and the [joint replay](../experiments/exectv2/reliability/exectv2_joint_bounded_policy_replay_2026-07-15.md).
 
 The selected internal calibration result reports full200 Brier 0.2225, base-rate
 Brier 0.2340, and ECE 0.0587. A separate frozen no-call replay evaluated
@@ -99,8 +127,20 @@ to 0.6210 and is rejected. These are inspected dev140 development results; none
 is promoted and test60 was not inspected. See the
 [component comparison](../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md).
 
-Remaining work: predeclare and run the bounded no-call deterministic-policy
-candidate, freeze the accepted policy, then run the strict six-model comparison
-using decision 0039. Independent clinical review
-is still required for clinical-validity claims about the Diagnosis
-interpretation decisions.
+A later predeclared no-call GPT-4.1-mini ablation tested the structured
+four-family output as the final Diagnosis producer under the same deterministic
+policy. Diagnosis F1 fell from `0.8727` to `0.8542`; 3 letters were rescued and
+11 comparator-correct letters regressed. Exact evidence remained `1.0`, but the
+candidate missed named seizure diagnoses and added non-target concepts. The
+candidate failed its experimental gate. Decision 0041 nevertheless selects it
+for the final comparison because the small final-F1 gain does not justify a
+second model pass. During pre-score validation, the study
+also found that the initial six-model runner selected the first 140 sorted
+letters rather than manifest dev140. Affected partial runs are excluded, and
+the corrected runner now enforces manifest IDs before starting or resuming.
+See the [single-call Diagnosis ablation](../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md).
+
+Remaining work: complete the local Qwen 3.6:35B and Gemma 4 26B conditions,
+freeze the common six-model panel, and complete the retained-evidence update.
+Independent clinical review is still required for clinical-validity claims
+about the Diagnosis interpretation decisions.

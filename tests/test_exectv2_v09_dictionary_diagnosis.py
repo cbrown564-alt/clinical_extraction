@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.clinical_finding import (
     ClinicalFinding,
     FindingSource,
@@ -57,6 +59,7 @@ def _policy(
     *,
     diagnosis_resolution_candidate: bool = False,
     model_preserving_policy_candidate: bool = False,
+    diagnosis_policy_variant: str = "default",
 ) -> LensPolicy:
     return LensPolicy(
         producer_id=_PRODUCER,
@@ -65,6 +68,7 @@ def _policy(
         portability="benchmark_format",
         diagnosis_resolution_candidate=diagnosis_resolution_candidate,
         model_preserving_policy_candidate=model_preserving_policy_candidate,
+        diagnosis_policy_variant=diagnosis_policy_variant,
     )
 
 
@@ -903,3 +907,180 @@ def test_model_preserving_candidate_keeps_syndrome_and_seizure_phenotype_distinc
 
     assert "focal epilepsy" in texts
     assert "focal seizures" in texts
+
+
+def test_diagnosis_subsumption_only_variant_does_not_enable_absence_guard() -> None:
+    note = (
+        "Diagnosis: Juvenile Absence Epilepsy. "
+        "Seizure type: absence seizures and focal seizures with altered awareness."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "juvenile absence epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Juvenile Absence Epilepsy",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "absence seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence seizures",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures with altered awareness",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal seizures with altered awareness",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(
+        store,
+        policy=_policy(
+            diagnosis_resolution_candidate=True,
+            diagnosis_policy_variant="residual_subsumption_only",
+        ),
+    )
+    texts = [finding.text for finding in result.findings]
+
+    assert "focal seizures" not in texts
+    assert "absence seizures" not in texts
+
+
+def test_diagnosis_absence_only_variant_does_not_enable_subsumption_guard() -> None:
+    note = (
+        "Diagnosis: Juvenile Absence Epilepsy. "
+        "Seizure type: absence seizures and focal seizures with altered awareness."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "juvenile absence epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Juvenile Absence Epilepsy",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "absence seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence seizures",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures with altered awareness",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal seizures with altered awareness",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(
+        store,
+        policy=_policy(
+            diagnosis_resolution_candidate=True,
+            diagnosis_policy_variant="absence_preservation_only",
+        ),
+    )
+    texts = [finding.text for finding in result.findings]
+
+    assert "absence seizures" in texts
+    assert "focal seizures" in texts
+
+
+def test_diagnosis_combined_variant_applies_both_guards() -> None:
+    note = (
+        "Diagnosis: Juvenile Absence Epilepsy. "
+        "Seizure type: absence seizures and focal seizures with altered awareness."
+    )
+    store = _store(
+        note,
+        [
+            {
+                "entity": "Diagnosis",
+                "text": "juvenile absence epilepsy",
+                "attributes": {
+                    "DiagCategory": "Epilepsy",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "Juvenile Absence Epilepsy",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "absence seizures",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "absence seizures",
+            },
+            {
+                "entity": "Diagnosis",
+                "text": "focal seizures with altered awareness",
+                "attributes": {
+                    "DiagCategory": "MultipleSeizures",
+                    "Certainty": "5",
+                    "Negation": "Affirmed",
+                },
+                "evidence": "focal seizures with altered awareness",
+            },
+        ],
+    )
+
+    result = DiagnosisDictionaryLens(
+        lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+    ).reconcile(
+        store,
+        policy=_policy(
+            diagnosis_resolution_candidate=True,
+            diagnosis_policy_variant="combined",
+        ),
+    )
+    texts = [finding.text for finding in result.findings]
+
+    assert "absence seizures" in texts
+    assert "focal seizures" not in texts
+
+
+def test_diagnosis_policy_variant_rejects_unknown_value() -> None:
+    store = _store("Diagnosis: epilepsy.", [])
+
+    with pytest.raises(ValueError, match="unknown Diagnosis policy variant"):
+        DiagnosisDictionaryLens(
+            lens_id="diagnosis_convention_dictionary_v09", entity="Diagnosis"
+        ).reconcile(store, policy=_policy(diagnosis_policy_variant="invented"))

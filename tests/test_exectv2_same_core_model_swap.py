@@ -15,6 +15,22 @@ from scripts import check_exectv2_model_led_audit as model_led_audit
 from scripts import run_exectv2_2call_model_swap as runner
 
 
+def test_single_call_config_has_no_diagnosis_sidecar_path(tmp_path: Path) -> None:
+    artifact = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1")])
+    config_path = _write_config(
+        tmp_path,
+        candidate_id="single_call",
+        model="openai/gpt-4.1-mini",
+        model_label="GPT-4.1-mini",
+        artifact=artifact,
+        model_led=True,
+        single_call_diagnosis=True,
+    )
+    config = model_swap.load_model_swap_config(config_path)
+
+    assert runner._diagnosis_artifact_path(config) is None
+
+
 def test_model_swap_config_parity_allows_only_model_adapter_differences(
     tmp_path: Path,
 ) -> None:
@@ -260,6 +276,31 @@ def test_model_led_contract_accepts_model_owned_prescription_and_pre_union_sf(
     }
 
 
+def test_model_led_contract_accepts_single_structured_call_as_diagnosis_producer(
+    tmp_path: Path,
+) -> None:
+    rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
+    path = _write_config(
+        tmp_path,
+        candidate_id="swap_model_led_single_call",
+        model="openai/gpt-4.1-mini",
+        model_label="GPT-4.1-mini",
+        artifact=rows,
+        model_led=True,
+        single_call_diagnosis=True,
+    )
+
+    config = model_swap.load_model_swap_config(path)
+
+    assert model_swap.validate_model_led_architecture(config) == {
+        "contract": "decision_0040_model_led",
+        "status": "pass",
+        "violations": [],
+    }
+    assert config.calls_per_letter == 1
+    assert config.live_call_components == ("structured_key_family_event_ledger",)
+
+
 def test_model_led_contract_rejects_historical_family_substitutions(tmp_path: Path) -> None:
     rows = _write_jsonl(tmp_path / "rows.jsonl", [_row("EA1"), _row("EA2")])
     path = _write_config(
@@ -400,6 +441,34 @@ def test_model_swap_runner_passes_api_base_to_live_components(monkeypatch, tmp_p
     }
 
 
+def test_model_swap_runner_uses_manifest_dev140_rows(monkeypatch) -> None:
+    dev_letters = _letters()
+    monkeypatch.setattr(runner, "load_letters_for_split", lambda split: dev_letters)
+    config = SimpleNamespace(assembly=SimpleNamespace(split="dev140", row_count=2))
+
+    selected = runner._letters_for_config(config, offset=0, allow_non_dev140=False)
+
+    assert selected == dev_letters
+
+
+def test_model_swap_runner_rejects_resume_rows_outside_manifest_split(
+    tmp_path: Path,
+) -> None:
+    artifact = _write_jsonl(tmp_path / "contaminated.jsonl", [_row("EA_TEST")])
+
+    try:
+        runner._validate_resume_artifact(
+            artifact,
+            expected_ids={"EA1", "EA2"},
+            component="structured_key_family_event_ledger",
+        )
+    except ValueError as exc:
+        assert "outside the frozen row set" in str(exc)
+        assert "EA_TEST" in str(exc)
+    else:
+        raise AssertionError("contaminated resume artifact was accepted")
+
+
 def _letters() -> list[ExectLetter]:
     note = (
         "Diagnosis: focal epilepsy. Current medication: lamotrigine 100 mg bd. "
@@ -523,13 +592,14 @@ def _write_config(
     split: str = "toy",
     row_count: int = 2,
     model_led: bool = False,
+    single_call_diagnosis: bool = False,
 ) -> Path:
     payload = {
         "candidate_id": candidate_id,
         "model": model,
         "model_label": model_label,
         "architecture_core_id": "same_core_test",
-        "calls_per_letter": 2,
+        "calls_per_letter": 1 if single_call_diagnosis else 2,
         "runtime": "openai_chat",
         "prompt_profile": prompt_profile,
         "temperature": 0,
@@ -537,10 +607,14 @@ def _write_config(
             "structured_key_family_event_ledger": 6000,
             "diagnosis_decomposer": 2600,
         },
-        "live_call_components": [
-            "structured_key_family_event_ledger",
-            "diagnosis_decomposer",
-        ],
+        "live_call_components": (
+            ["structured_key_family_event_ledger"]
+            if single_call_diagnosis
+            else [
+                "structured_key_family_event_ledger",
+                "diagnosis_decomposer",
+            ]
+        ),
         "architecture_contract": (
             "decision_0040_model_led" if model_led else "historical_same_core"
         ),
@@ -609,10 +683,18 @@ def _write_config(
             },
             "lenses": {
                 "Diagnosis": {
-                    "producer": "diagnosis_decomposer",
+                    "producer": (
+                        "structured_key_family_event_ledger"
+                        if single_call_diagnosis
+                        else "diagnosis_decomposer"
+                    ),
                     "lens": "diagnosis_hierarchy_negation_v01",
-                    "source_lane": "toy_dx",
-                    "ownership_label": "toy_dx",
+                    "source_lane": (
+                        "toy_structured" if single_call_diagnosis else "toy_dx"
+                    ),
+                    "ownership_label": (
+                        "toy_structured_dx" if single_call_diagnosis else "toy_dx"
+                    ),
                 },
                 "SeizureFrequency": {
                     "producer": (

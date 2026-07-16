@@ -1,7 +1,7 @@
 # ExECTv2 fixed six-model comparison protocol
 
 Date: 2026-07-15  
-Status: predeclared before clinical-row model calls
+Status: redeclared for decision 0041 before the clean rerun
 
 ## Question
 
@@ -17,14 +17,20 @@ substitutions and preserving every prediction-changing deterministic action.
 ## Data and row policy
 
 - Dataset: ExECTv2.
-- Split: `dev140`, the 140 development letters returned first by the retained
-  loader and identified by the repository split definition.
+- Split: manifest-defined `dev140`, loaded through the repository split
+  definition. Positional `load_letters()[:140]` selection is forbidden.
 - Inspection: row-level inspection is permitted only for dev140.
 - Excluded: test60 and full200 row-level predictions, annotations, errors, and
   differences. This study makes no test60 calls and does not inspect test60.
-- Calls: two model calls per letter: the structured four-family event ledger
-  and the Diagnosis decomposer. Calls resume only from the same condition's
-  retained checkpoint.
+- Calls: one structured four-family event-ledger call per letter. Diagnosis is
+  read from that structured response; there is no Diagnosis decomposer call.
+- Resume: only from the same condition's decision-0041 checkpoint after the
+  runner verifies that every saved ID belongs to manifest dev140.
+
+The first attempted panel used positional first-140 selection. Only 94 IDs
+overlapped manifest dev140. The GPT-4.1-mini output and partial Luna, Sol, and
+DeepSeek outputs from that attempt are contaminated, excluded from evidence,
+and must not be resumed. The active processes were stopped.
 
 ## Frozen conditions
 
@@ -68,9 +74,9 @@ Local runtime identities are frozen to Ollama 0.30.10 at
   into the result.
 - Required model inputs: the named model's Diagnosis, Seizure Frequency,
   Prescription, and Investigations facts and exact evidence.
-- Diagnosis: retained model decomposer plus the already accepted resolution
-  candidate and attributable heading, boundary, normalization, and residual
-  recovery.
+- Diagnosis: the named model's structured event-ledger Diagnosis output plus
+  the selected attributable heading, boundary, normalization, and residual
+  recovery. The dedicated decomposer is removed under decision 0041.
 - Seizure Frequency: model structured output, direct adapter, state
   projection, and unsupported-state suppression. No independent extractor
   union.
@@ -83,18 +89,15 @@ Local runtime identities are frozen to Ollama 0.30.10 at
   models. Transport or output-shape repair may vary only when it preserves the
   selected clinical facts. A semantic prompt change would be a separate
   condition and does not count toward this panel.
-- Temperature and output limit: `0` with 10,000/3,200 component limits for
-  GPT-4.1-mini. The first Qwen and Gemma clinical smokes completed Diagnosis
+- Temperature and output limit: `0` with a 10,000-token structured-call limit
+  for GPT-4.1-mini. The first Qwen and Gemma clinical smokes completed Diagnosis
   but their structured calls exceeded the inconsistent 10,000-output/8,192-
   context setup and produced parse failures. Before any panel run, both local
-  conditions were revised to a 32,768 context and 16,000-token limits for both
-  calls. The first DeepSeek clinical smoke completed
-  the structured call but exhausted the 3,200-token Diagnosis limit in
-  reasoning and returned no scored Diagnosis mention; before any panel run,
-  both DeepSeek calls were therefore raised to 16,000 as a runtime-only limit
-  correction. DSPy requires GPT-5-family reasoning
+  conditions were revised to a 32,768 context and a 16,000-token structured
+  limit. The earlier DeepSeek Diagnosis-sidecar smoke is not part of the
+  selected architecture. DSPy requires GPT-5-family reasoning
   routes to use temperature `1` and at least 16,000 output tokens, so Luna and
-  Sol use temperature `1` and a 16,000-token limit for both calls. DeepSeek
+  Sol use temperature `1` and a 16,000-token structured limit. DeepSeek
   thinking mode documents that temperature is ignored. These runtime
   asymmetries are reported as conditions rather than described as identical
   sampling.

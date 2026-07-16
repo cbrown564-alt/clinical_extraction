@@ -122,6 +122,11 @@ def run_split(
                 raw_output = str(prediction.extraction_json)
             except Exception as exc:  # pragma: no cover
                 call_error = f"{type(exc).__name__}: {exc}"
+                if _is_terminal_provider_error(call_error):
+                    raise RuntimeError(
+                        "Terminal model-provider error; stopping before recording "
+                        "placeholder rows: " + call_error
+                    ) from exc
                 recovered = raw_output_from_adapter_parse_error(call_error)
                 if recovered:
                     raw_output = recovered
@@ -201,6 +206,21 @@ def run_split(
     }
     metadata["summary"] = summarize_rows(rows)
     return rows, metadata
+
+
+def _is_terminal_provider_error(message: str) -> bool:
+    """Identify provider failures that retries or later rows cannot repair."""
+
+    normalized = message.lower()
+    return any(
+        marker in normalized
+        for marker in (
+            "insufficient_quota",
+            "invalid_api_key",
+            "authenticationerror",
+            "permissiondenied",
+        )
+    )
 
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:

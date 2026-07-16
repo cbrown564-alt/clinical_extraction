@@ -1,7 +1,7 @@
 # 0040: Final ExECT LLM-with-rules family ownership
 
 Date: 2026-07-15  
-Status: accepted and implemented; architecture replay verified, final model rows not promoted
+Status: accepted and implemented; disclosed fallback selected, final model rows not promoted
 
 ## Decision
 
@@ -67,12 +67,37 @@ comparison scorer and must disclose its entity-agnostic recall behavior.
   as a safe final policy without a permitted dev140 decision and a frozen rerun.
 - The permitted dev140 decision retains Seizure Frequency projection and
   suppression plus the Investigations adapter. It does not promote the current
-  Diagnosis or Prescription policies: the next predeclared candidate should
-  disable Prescription residual additions and revise the Diagnosis subsumption
-  and Prescription current-versus-future boundaries. See the linked component
-  audit for the row-level evidence.
+  Diagnosis or Prescription policies. Two bounded follow-up studies are now
+  complete. The Prescription candidate removed all 23 model-correct regressions,
+  produced 46 rescues, and retained 40/41 comparator rescues, but made one
+  comparator-correct row wrong. The separate Diagnosis guards produced 88
+  rescues with three regressions and retained 75/81 comparator rescues, but left
+  the EA0117 synonym-residual regression under all three saved models. Both
+  candidates failed their predeclared gates and were not independently promoted.
+- A frozen joint replay then composed the already implemented bounded
+  Prescription and combined Diagnosis components. The joint result reproduces
+  both separate component maps exactly, produces 172 rescues with 3 regressions,
+  and retains 153/160 current-policy rescues. It dominates the previous
+  `decision_0040_model_preserving_dev140_v1` fallback at 161, 9, and 143/160,
+  makes no fallback-correct row wrong, and improves all three saved model scores.
+  `decision_0040_joint_bounded_dev140_v1` is therefore the disclosed fallback
+  for the next fixed comparison. The known EA0117 Diagnosis and EA0141/Qwen
+  Prescription failures remain explicit development caveats.
 - The historical three-model scores remain audit evidence only. They must not
   be presented as the final model comparison.
+- A predeclared GPT-4.1-mini dev140 replay tested whether the structured
+  four-family output could also own final Diagnosis. The one-call candidate
+  reduced final Diagnosis F1 from `0.8727` to `0.8542`, with 3 letter-level
+  rescues and 11 regressions, so it failed its experimental gate. Subsequent
+  [decision 0041](0041-single-call-exect-model-comparison.md) nevertheless
+  selects the structured producer for the final comparison because the small
+  final-F1 gain does not justify a second model pass. The negative ablation
+  remains the evidence for the accepted quality tradeoff.
+- The same study found that the initial six-model runner used the first 140
+  alphabetically ordered letters rather than the manifest dev140 split. Only
+  94 IDs overlapped. Affected live runs were stopped, their partial artifacts
+  are not evidence, and the runner now selects manifest rows and rejects
+  contaminated resume artifacts.
 - Decision 0032 continues to govern finding assembly, decision 0037 governs
   the primary Seizure Frequency metric, and decision 0039 governs the final
   six-model roster.
@@ -81,3 +106,7 @@ Evidence owners:
 
 - [Diagnosis component comparison](../experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md)
 - [LLM-with-rules component audit](../experiments/exectv2/reliability/exectv2_llm_with_rules_component_audit_2026-07-14.md)
+- [Bounded Prescription policy result](../experiments/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md)
+- [Diagnosis guard ablation result](../experiments/exectv2/reliability/exectv2_diagnosis_guard_ablation_2026-07-15.md)
+- [Joint bounded-policy result](../experiments/exectv2/reliability/exectv2_joint_bounded_policy_replay_2026-07-15.md)
+- [GPT-4.1-mini single-call Diagnosis ablation](../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md)

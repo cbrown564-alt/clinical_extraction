@@ -78,21 +78,54 @@ held-out rows, so it is not an independent holdout.
     removing all Prescription residual additions made four comparator-correct
     exact-evidence rows wrong. The residual group contains demonstrated
     missing-regimen recovery and cannot be removed wholesale.
+14. **Bounded Prescription policy stopped after one candidate.** The combined
+    dev140 candidate removed all 23 model-correct regressions, produced 46
+    rescues, retained 40/41 comparator rescues and all four demonstrated
+    missing-regimen rows, but made EA0141/Qwen wrong from a comparator-correct
+    result. Its zero-regression gate failed; no second Prescription candidate
+    will be tuned.
+15. **Diagnosis guards evaluated separately.** The combined subsumption and
+    absence-preservation guards produced 88 rescues, three regressions, and
+    retained 75/81 comparator rescues. They preserved EA0156 and confined lost
+    rescues to EA0082/EA0126, but left the EA0117 synonym-residual regression
+    under all three models. The predeclared mechanism gate failed.
+16. **Implemented fallback selected with its limitation visible.** Further rule
+    iteration is closed. The user selected the implemented model-preserving
+    bundle for the next comparison despite its original 143/160 rescue-retention
+    failure. This policy choice does not convert either negative study into
+    promotion evidence.
+17. **Joint bounded policy selected over the previous fallback.** A frozen
+    dev140 replay composed the bounded Prescription and combined Diagnosis
+    components with exact row-level identity and no SF or Investigations change.
+    It produces 172 rescues, 3 regressions, and 153/160 rescue retention versus
+    161, 9, and 143/160 for the previous fallback. All three saved model scores
+    improve and no fallback-correct row becomes wrong. The joint policy is now
+    the disclosed policy for the fixed comparison; the known EA0117 and EA0141
+    failures remain visible.
+18. **Single-call tradeoff selected and split defect contained.** A
+    predeclared no-call GPT-4.1-mini replay filtered retained
+    full200 blobs to the manifest dev140 IDs before assembly. Replacing the
+    dedicated Diagnosis decomposer with the structured four-family output
+    reduced final Diagnosis F1 from `0.8727` to `0.8542`, with 3 rescues and 11
+    regressions. The study also found that the first six-model runner selected
+    the first 140 sorted letters, only 94 of which were manifest dev rows.
+    Affected runs were stopped; the runner now uses the manifest and rejects
+    contaminated resume artifacts. The candidate failed its experimental gate,
+    but decision 0041 selects it for the final comparison because the small
+    final-F1 difference does not justify a second model pass.
 
 ## Ordered evidence work
 
-1. Predeclare a Prescription candidate that retains demonstrated
-   missing-regimen rescues, applies local rescue scope and the explicit-current
-   guard, and ablates residual additions by rule group rather than wholesale.
-2. Predeclare a separate Diagnosis candidate for residual subsumption and
-   absence-phenotype preservation with row-identity rescue retention.
-3. Freeze the accepted decision-0040 policy, then predeclare and run the fixed
-   six-model roster with the same corrected
-   model-led pipeline and scorer: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
-   hosted DeepSeek V4 Flash, local Qwen 3.6:35B, and local Gemma 4 26B. Resolve
-   whether the historical `deepseek/deepseek-chat` artifact proves that
-   thinking was enabled before counting it as complete. Otherwise rerun that
-   API model with thinking enabled and report it as DeepSeek V4 Flash.
+1. Freeze the completed four-model hosted ExECT test60 panel and the completed
+   Luna/Sol Gan test450 additions in the retained-evidence index. Preserve the
+   aggregate-only boundaries.
+2. Schedule the long local conditions independently in this order: Qwen
+   3.6:35B for ExECTv2 and Gan, then Gemma 4 26B for ExECTv2 and Gan. Record
+   exact revisions, quantization, hardware, endpoint, and adapter policy. These
+   local runs do not block the hosted evaluations or their evidence work.
+3. Decide whether to rerun historical Gan GPT-4.1-mini, thinking DeepSeek, and
+   Qwen on v0.7 before making a same-prompt comparison.
+4. Verify and freeze the complete panels before reporting six-model results.
 
 ## Limits
 
