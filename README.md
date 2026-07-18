@@ -28,11 +28,12 @@ recovery (`clinical_headline`). The ExECT score is an internal research metric,
 not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
 full-attribute views are also available for explicit benchmark comparison.
 
-Current state, as of 2026-07-15:
+Current state, as of 2026-07-18:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- All 1,209 tests, Ruff, and mypy pass. CI runs all three checks. A separate
+- All 1,285 tests and Ruff pass on the current working tree; the latest mypy
+  run passed across 290 source files. CI runs all three checks. A separate
   Python 3.11 checkout reproduced the hashes, split restrictions, and six runs.
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
@@ -65,11 +66,16 @@ Current state, as of 2026-07-15:
   runner defect. Affected runs were stopped, and resume validation now prevents
   their partial artifacts from being reused. Decision 0041 accepts this
   quality tradeoff and selects one structured call per letter.
-- The fixed hosted ExECT panel is complete on dev140 and aggregate-only test60.
-  Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for GPT-5.6
-  Luna, 0.8047 for GPT-5.6 Sol, and 0.7881 for thinking DeepSeek V4 Flash.
-  Next work is the local Qwen 3.6:35B and Gemma 4 26B conditions and evidence
-  freeze.
+- The fixed six-model ExECT panel is retained on dev140 and aggregate-only
+  test60. Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for
+  GPT-5.6 Luna, 0.8047 for GPT-5.6 Sol, 0.7881 for thinking DeepSeek V4 Flash,
+  0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The matched Gan v0.7
+  aggregate-only test450 panel retains the same six models, with the hosted and
+  local route differences disclosed.
+- The retained six-model comparison report keeps the task-specific scores
+  separate. A predeclared no-call ExECT SF reliability replay improves the
+  state-profile result for every model, but its unknown-only gold denominator
+  is zero; Gan-to-ExECT over-reading transfer therefore remains unsupported.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 

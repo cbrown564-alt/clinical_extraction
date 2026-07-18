@@ -1,0 +1,3 @@
+# fixed hard slice
+103
+101

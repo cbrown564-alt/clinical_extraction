@@ -1,8 +1,31 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from scripts.run_hosted_holdout_panel import _prepare_gan_command
+
+ROOT = Path(__file__).resolve().parents[1]
+PANEL = ROOT / "experiments" / "hosted_holdout_panels_20260715.json"
+
+
+def test_retained_holdout_panels_include_all_six_models_at_equal_status() -> None:
+    payload = json.loads(PANEL.read_text(encoding="utf-8"))
+    assert payload["panel_status"] == "retained_six_model_aggregate_only"
+    expected = {
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b",
+    }
+    for panel in payload["panels"].values():
+        assert {condition["model"] for condition in panel["conditions"]} == expected
+
+    serialized = PANEL.read_text(encoding="utf-8")
+    for forbidden in ("row_id", "letter_id", "source_text", "prediction"):
+        assert forbidden not in serialized
 
 
 def test_gan_command_uses_model_specific_temperature(tmp_path: Path) -> None:

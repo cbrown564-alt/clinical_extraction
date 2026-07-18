@@ -55,5 +55,6 @@ def test_surviving_paper_sources_preserve_claim_boundaries(source_path: Path) ->
 
     assert "not an independent holdout" in source
     assert "six-model" in source
-    assert "incomplete" in source
+    assert "incomplete" not in source
+    assert "general model superiority" in source
     assert "does not support a cross-task over-reading claim" in source
