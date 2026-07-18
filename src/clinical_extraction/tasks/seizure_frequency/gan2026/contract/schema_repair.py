@@ -2,42 +2,17 @@
 
 from __future__ import annotations
 
-import ast
-import json
 from typing import Any
 
+from clinical_extraction.core.json_schema_repair import (
+    parse_json_payload_with_schema_repair,
+)
 
-def parse_json_payload_with_schema_repair(
-    raw_payload: str,
-    *,
-    python_literal_dialect_repair: bool = True,
-) -> tuple[Any, list[str]]:
-    """Parse model JSON, allowing explicit non-semantic JSON dialect repair.
-
-    Some local models emit Python literal syntax for otherwise valid structured
-    objects, for example single-quoted keys and `None`. Some also emit literal
-    control characters (e.g. raw newlines) inside string values instead of the
-    escaped `\\n` JSON requires, typically when a verbose rationale field spans
-    multiple paragraphs. Treating these as schema repairs keeps the clinical
-    payload unchanged while making their impact visible in run artifacts.
-    """
-
-    try:
-        return json.loads(raw_payload), []
-    except json.JSONDecodeError as json_error:
-        try:
-            return (
-                json.loads(raw_payload, strict=False),
-                ["json_dialect_repaired: literal_control_characters"],
-            )
-        except json.JSONDecodeError:
-            pass
-        if not python_literal_dialect_repair:
-            raise json_error from None
-        try:
-            return ast.literal_eval(raw_payload), ["json_dialect_repaired: python_literal"]
-        except (SyntaxError, ValueError):
-            raise json_error from None
+__all__ = [
+    "parse_json_payload_with_schema_repair",
+    "repair_decision_payload",
+    "repair_structured_extraction_payload",
+]
 
 
 def repair_decision_payload(payload: Any) -> Any:
@@ -77,13 +52,51 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
     repaired = dict(payload)
     events = repaired.get("events")
     if isinstance(events, list):
-        repaired["events"] = [repair_decision_payload(event) for event in events]
+        repaired_events: list[Any] = []
+        has_any_event_id = any(
+            isinstance(event, dict) and (event.get("event_id") or event.get("pevent_id"))
+            for event in events
+        )
+        used_event_ids = {
+            str(event.get("event_id"))
+            for event in events
+            if isinstance(event, dict) and event.get("event_id")
+        }
+        for index, event in enumerate(events):
+            repaired_event = repair_decision_payload(event)
+            if isinstance(repaired_event, dict):
+                _move_key_alias(repaired_event, "pevent_id", "event_id")
+                _move_key_alias(repaired_event, "temporlagity", "temporality")
+                if has_any_event_id and not repaired_event.get("event_id"):
+                    repaired_event["event_id"] = _next_event_id(index, used_event_ids)
+                if repaired_event.get("event_id"):
+                    used_event_ids.add(str(repaired_event["event_id"]))
+                if repaired_event.get("kind") == "no_reference" and repaired_event.get(
+                    "evidence"
+                ) is None:
+                    repaired_event["evidence"] = ""
+            repaired_events.append(repaired_event)
+        repaired["events"] = repaired_events
     selection = repaired.get("selection")
     if isinstance(selection, dict):
         repaired_selection = repair_decision_payload(selection)
+        _move_key_alias(repaired_selection, "rationality", "rationale")
         repaired_selection.setdefault("confidence", "medium")
         repaired["selection"] = repaired_selection
     return repaired
+
+
+def _move_key_alias(payload: dict[str, Any], alias: str, canonical: str) -> None:
+    if canonical not in payload and alias in payload:
+        payload[canonical] = payload[alias]
+    payload.pop(alias, None)
+
+
+def _next_event_id(index: int, used: set[str]) -> str:
+    candidate_number = index + 1
+    while f"e{candidate_number}" in used:
+        candidate_number += 1
+    return f"e{candidate_number}"
 
 
 def _repair_string_alias(payload: dict[str, Any], key: str, aliases: dict[str, str]) -> None:

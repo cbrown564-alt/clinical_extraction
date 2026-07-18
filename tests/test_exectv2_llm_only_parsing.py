@@ -127,6 +127,54 @@ def test_parse_structured_events_repairs_python_literal_dialect() -> None:
     assert "json_dialect_repaired: python_literal" in errors
 
 
+def test_parse_structured_events_repairs_anchor_key_typo_without_changing_value() -> None:
+    raw = json.dumps(
+        {
+            "clinical_events": [
+                {
+                    "family": "medication",
+                    "anchor:s_text": "Clobazam 10 mg",
+                    "evidence": "Clobazam 10 mg bd",
+                    "mentions": [],
+                    "confidence": "high",
+                }
+            ]
+        }
+    )
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert record.clinical_events[0].anchor_text == "Clobazam 10 mg"
+    assert "schema_repaired: anchor:s_text_to_anchor_text" in errors
+
+
+def test_parse_structured_events_repairs_missing_mention_object_close() -> None:
+    raw = """{
+      "clinical_events": [{
+        "family": "diagnosis",
+        "anchor_text": "focal seizures",
+        "evidence": "focal seizures last month",
+        "mentions": [{
+          "entity": "Diagnosis",
+          "text": "focal seizures",
+          "attributes": {"DiagCategory": "MultipleSeizures"},
+          {"entity": "SeizureFrequency", "text": "focal seizures", "attributes": {}}
+        }],
+        "confidence": "high"
+      }]
+    }"""
+
+    record, errors = structured.parse_structured_events_json(raw)
+
+    assert record is not None
+    assert [mention.entity for mention in record.clinical_events[0].mentions] == [
+        "Diagnosis",
+        "SeizureFrequency",
+    ]
+    assert "json_dialect_repaired: missing_array_object_close" in errors
+
+
 def test_parse_structured_events_drops_no_mention_reject_events() -> None:
     raw = json.dumps(
         {

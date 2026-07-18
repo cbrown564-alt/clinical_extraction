@@ -290,6 +290,56 @@ def test_general_llm_pipeline_cli_resume_existing_skips_completed_rows(
     assert calls["report"][1]["resume"]["rows_run"] == 2
 
 
+def test_resume_existing_recovers_newer_resume_part_rows(
+    tmp_path: Path, monkeypatch
+) -> None:
+    calls: dict[str, Any] = {}
+    jsonl_path = tmp_path / "rows.jsonl"
+    markdown_path = tmp_path / "report.md"
+    jsonl_path.write_text('{"source_row_index": 101, "value": "existing"}\n')
+    (tmp_path / "rows.resume-part.jsonl").write_text(
+        '{"source_row_index": 102, "value": "checkpoint"}\n'
+    )
+    records = [
+        SimpleNamespace(source_row_index=101),
+        SimpleNamespace(source_row_index=102),
+        SimpleNamespace(source_row_index=103),
+    ]
+    monkeypatch.setattr(llm_pipeline_cli, "load_records_for_split", lambda split: records)
+    monkeypatch.setattr(
+        llm_pipeline_cli,
+        "load_split_manifest",
+        lambda: {"manifest_version": "test_manifest_v1"},
+    )
+
+    def run_split(records_to_run, **kwargs):
+        calls["records"] = records_to_run
+        return [{"source_row_index": 103, "value": "new"}], {
+            "summary": {"examples": 1}
+        }
+
+    spec = _dummy_spec(
+        tmp_path,
+        calls,
+        run_split=run_split,
+        summarize_rows=lambda rows: {"examples": len(rows)},
+        default_jsonl_path=jsonl_path,
+        default_report_path=markdown_path,
+    )
+    monkeypatch.setattr(llm_pipeline_cli, "pipeline_specs", lambda: {"dummy": spec})
+
+    llm_pipeline_cli.run_cli(
+        ["--pipeline", "dummy", "--limit", "3", "--mode", "prompt-only", "--resume-existing"]
+    )
+
+    assert [record.source_row_index for record in calls["records"]] == [103]
+    assert calls["jsonl"][0] == [
+        {"source_row_index": 101, "value": "existing"},
+        {"source_row_index": 102, "value": "checkpoint"},
+        {"source_row_index": 103, "value": "new"},
+    ]
+
+
 def test_general_llm_pipeline_cli_rejects_existing_outputs_without_resume_or_overwrite(
     tmp_path: Path, monkeypatch, capsys
 ) -> None:

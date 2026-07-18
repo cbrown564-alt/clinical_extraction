@@ -20,6 +20,13 @@ import dspy
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from clinical_extraction.core.evidence import evidence_is_substring
+from clinical_extraction.core.local_structured_output import (
+    FormatOnlyJsonRetry,
+    assess_structured_output,
+    build_format_only_retry_input,
+    raw_output_from_adapter_error,
+    validate_format_retry,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
 )
@@ -97,13 +104,16 @@ _nearest_event_date = llm_structured_temporal.nearest_event_date
 _nearest_event_month_year = llm_structured_temporal.nearest_event_month_year
 _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_digits
 
+PROMPT_VERSION_V0_5 = "gan2026_hybrid_structured_events_v0.5"
 PROMPT_VERSION_V0_6 = "gan2026_hybrid_structured_events_v0.6"
 PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
 # Active prompt version. v0.7 is the DeepSeek Reasoner-oriented iteration after
 # v0.6 reasoner/chat validation error analysis; v0.6 remains selectable for
 # comparator and replay scripts.
 PROMPT_VERSION = PROMPT_VERSION_V0_7
-_SUPPORTED_PROMPT_VERSIONS = frozenset({PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7})
+_SUPPORTED_PROMPT_VERSIONS = frozenset(
+    {PROMPT_VERSION_V0_5, PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}
+)
 
 
 def set_active_prompt_version(version: str) -> None:
@@ -449,11 +459,22 @@ class DspyStructuredExtractor(dspy.Module):
         return self.predict(prompt_input_json=prompt_input_json)
 
 
-def build_prompt_input(record: GanFrequencyRecord) -> str:
+def build_prompt_input(
+    record: GanFrequencyRecord,
+    *,
+    prompt_version: str | None = None,
+) -> str:
     """Build the LLM-only structured-events prompt payload, excluding gold labels."""
 
+    selected_prompt_version = prompt_version or PROMPT_VERSION
+    if selected_prompt_version not in _SUPPORTED_PROMPT_VERSIONS:
+        raise ValueError(
+            f"unsupported prompt version {selected_prompt_version!r}; "
+            f"expected one of {sorted(_SUPPORTED_PROMPT_VERSIONS)}"
+        )
+
     payload = {
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": selected_prompt_version,
         "task": "Gan 2026 LLM-only structured-events extraction and clinical selection",
         "source_row_index": record.source_row_index,
         "instructions": [
@@ -476,17 +497,6 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
                 "Keep seizure-free statements separate from unknown or last-event-only "
                 "statements. Do not select seizure-free if other current seizure-like events "
                 "remain active."
-            ),
-            (
-                "When both a frequency_rate or cluster_frequency event and a seizure_free "
-                "event have overlapping or adjacent recent/current windows (e.g. a recent "
-                "burst or monthly/weekly count alongside a 'seizure-free since [date]' or "
-                "'no events so far this month' claim), select the frequency_rate or "
-                "cluster_frequency event, not seizure_free. Only select seizure_free over a "
-                "co-reported recent-window frequency event when the seizure-free interval "
-                "clearly supersedes the entire frequency history — sustained remission of a "
-                "year or more, or an independent 'now well controlled' framing that is not "
-                "merely date arithmetic on the last counted event."
             ),
             (
                 "Selection must choose the highest current or recent seizure burden across "
@@ -559,7 +569,24 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
         },
         "note_text": record.note_text,
     }
-    if PROMPT_VERSION == PROMPT_VERSION_V0_7:
+    if selected_prompt_version in {PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}:
+        instructions = payload["instructions"]
+        assert isinstance(instructions, list)
+        instructions.insert(
+            5,
+            (
+                "When both a frequency_rate or cluster_frequency event and a seizure_free "
+                "event have overlapping or adjacent recent/current windows (e.g. a recent "
+                "burst or monthly/weekly count alongside a 'seizure-free since [date]' or "
+                "'no events so far this month' claim), select the frequency_rate or "
+                "cluster_frequency event, not seizure_free. Only select seizure_free over a "
+                "co-reported recent-window frequency event when the seizure-free interval "
+                "clearly supersedes the entire frequency history — sustained remission of a "
+                "year or more, or an independent 'now well controlled' framing that is not "
+                "merely date arithmetic on the last counted event."
+            ),
+        )
+    if selected_prompt_version == PROMPT_VERSION_V0_7:
         instructions = payload["instructions"]
         assert isinstance(instructions, list)
         instructions[-1:-1] = [
@@ -839,6 +866,7 @@ def run_split(
     metadata["repair_mode_metadata"] = repair_mode_metadata(repair_config.resolved_repair_mode)
     metadata["repair_config"] = asdict(repair_config)
     program = DspyStructuredExtractor()
+    format_retry_program = FormatOnlyJsonRetry()
     if mode == "live":
         dspy.configure(
             lm=build_dspy_lm(
@@ -855,6 +883,7 @@ def run_split(
         prompt_input_json = build_prompt_input(record)
         raw_output = reuse_raw_outputs.get(record.source_row_index, "")
         call_error: str | None = None
+        adapter_repair_notes: list[str] = []
         reused_raw_output = raw_output != ""
         if mode == "live" and not reused_raw_output:
             try:
@@ -862,6 +891,13 @@ def run_split(
                 raw_output = str(prediction.structured_json)
             except Exception as exc:  # pragma: no cover - exercised only with live APIs.
                 call_error = f"{type(exc).__name__}: {exc}"
+                recovered = raw_output_from_adapter_error(call_error)
+                if recovered:
+                    raw_output = recovered
+                    call_error = None
+                    adapter_repair_notes.append(
+                        "adapter_output_field_repaired: structured_json_missing"
+                    )
 
         extraction, normalized_events, parse_errors = (
             parse_structured_json(
@@ -872,6 +908,45 @@ def run_split(
             if raw_output
             else (None, [], ["not_run"])
         )
+        initial_parse_errors = list(parse_errors)
+        assessment = assess_structured_output(
+            raw_output, initial_parse_errors, call_error=call_error
+        )
+        format_retry_output = ""
+        format_retry_notes: list[str] = []
+        if mode == "live" and model.startswith("ollama_chat/") and assessment.retry_eligible:
+            try:
+                retry_prediction = format_retry_program(
+                    retry_input_json=build_format_only_retry_input(
+                        malformed_output=raw_output,
+                        schema=StructuredExtractionRecord.model_json_schema(),
+                    )
+                )
+                format_retry_output = str(retry_prediction.repaired_json)
+                retry_validation = validate_format_retry(
+                    raw_output, initial_parse_errors, format_retry_output
+                )
+                retry_extraction, retry_events, retry_errors = parse_structured_json(
+                    format_retry_output,
+                    note_text=record.note_text,
+                    repair_config=repair_config,
+                )
+                format_retry_notes = list(retry_validation.notes)
+                if retry_validation.accepted and retry_extraction is not None:
+                    extraction = retry_extraction
+                    normalized_events = retry_events
+                    parse_errors = [*retry_errors, *format_retry_notes]
+                elif retry_validation.accepted:
+                    format_retry_notes = ["format_retry_rejected: schema_validation"]
+                    parse_errors = [*initial_parse_errors, *format_retry_notes]
+                else:
+                    parse_errors = [*initial_parse_errors, *format_retry_notes]
+            except Exception as exc:  # pragma: no cover - live provider behavior.
+                format_retry_notes = [
+                    f"format_retry_rejected: provider_error:{type(exc).__name__}"
+                ]
+                parse_errors = [*initial_parse_errors, *format_retry_notes]
+        parse_errors = [*adapter_repair_notes, *parse_errors]
         evidence_valid = (
             evidence_is_substring(record.note_text, extraction.selection.evidence)
             if extraction and extraction.selection.evidence
@@ -887,7 +962,11 @@ def run_split(
             "raw_output": raw_output,
             "reused_raw_output": reused_raw_output,
             "call_error": call_error,
+            "initial_parse_errors": initial_parse_errors,
             "parse_errors": parse_errors,
+            "structured_output_failure_codes": list(assessment.failure_codes),
+            "format_retry_output": format_retry_output,
+            "format_retry_notes": format_retry_notes,
             "structured_record": extraction.model_dump() if extraction else None,
             "normalized_events": [event.model_dump() for event in normalized_events],
             "evidence_valid": evidence_valid,
@@ -919,6 +998,9 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     call_failures = sum(bool(row.get("call_error")) for row in rows)
     reused_raw_outputs = sum(bool(row.get("reused_raw_output")) for row in rows)
     parse_failures = sum(_has_blocking_parse_issue(row.get("parse_errors")) for row in rows)
+    initial_parse_failures = sum(
+        _has_blocking_parse_issue(row.get("initial_parse_errors")) for row in rows
+    )
     json_dialect_repairs = sum(_has_json_dialect_repair(row.get("parse_errors")) for row in rows)
     repair_notes = sum(_has_repair_note(row.get("parse_errors")) for row in rows)
     purist_correct = sum(bool((row.get("comparison") or {}).get("purist_correct")) for row in rows)
@@ -939,6 +1021,17 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         "call_failures": call_failures,
         "reused_raw_outputs": reused_raw_outputs,
         "parse_or_validation_failures": parse_failures,
+        "initial_parse_or_validation_failures": initial_parse_failures,
+        "format_retries_applied": sum(
+            "format_retry_applied" in (row.get("format_retry_notes") or []) for row in rows
+        ),
+        "format_retries_rejected": sum(
+            any(
+                str(note).startswith("format_retry_rejected:")
+                for note in (row.get("format_retry_notes") or [])
+            )
+            for row in rows
+        ),
         "json_dialect_repairs": json_dialect_repairs,
         "repair_notes": repair_notes,
         "evidence_valid": evidence_valid,

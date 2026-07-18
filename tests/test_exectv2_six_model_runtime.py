@@ -107,6 +107,22 @@ def test_completion_gate_rejects_missing_rows() -> None:
         raise AssertionError("expected incomplete model rows to be rejected")
 
 
+def test_no_gate_mode_allows_row_failures_but_not_missing_rows() -> None:
+    rows = [{"letter_id": "EA1", "call_error": None, "parse_errors": ["invalid_json:x"]}]
+
+    retained_runner._require_complete_rows(
+        rows, expected_count=1, allow_row_failures=True
+    )
+    try:
+        retained_runner._require_complete_rows(
+            [], expected_count=1, allow_row_failures=True
+        )
+    except RuntimeError as exc:
+        assert "expected 1" in str(exc)
+    else:
+        raise AssertionError("expected missing rows to remain an error")
+
+
 def test_terminal_provider_errors_are_fail_fast() -> None:
     assert structured_runner._is_terminal_provider_error(
         'RateLimitError: {"code":"insufficient_quota"}'

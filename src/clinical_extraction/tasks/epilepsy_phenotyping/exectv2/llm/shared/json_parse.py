@@ -7,7 +7,7 @@ import json
 import re
 from typing import Any
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
+from clinical_extraction.core.json_schema_repair import (
     parse_json_payload_with_schema_repair,
 )
 

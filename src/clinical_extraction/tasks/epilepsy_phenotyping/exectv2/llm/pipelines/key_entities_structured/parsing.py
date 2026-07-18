@@ -9,11 +9,11 @@ import json
 import re
 from typing import Any
 
+from clinical_extraction.core.json_schema_repair import (
+    parse_json_payload_with_schema_repair,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.json_parse import (
     extract_json_object,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
-    parse_json_payload_with_schema_repair,
 )
 
 from .constants import (
@@ -29,6 +29,7 @@ def parse_structured_events_json(
     raw_output: str,
 ) -> tuple[StructuredExtractionRecord | None, list[str]]:
     extracted = extract_json_object(raw_output)
+    extracted, structural_notes = _repair_missing_mention_object_close(extracted)
     try:
         payload, dialect_notes = parse_json_payload_with_schema_repair(extracted)
     except json.JSONDecodeError as exc:
@@ -46,7 +47,23 @@ def parse_structured_events_json(
         record = StructuredExtractionRecord.model_validate(payload)
     except Exception as exc:
         return None, [f"schema_validation_error: {exc}"]
-    return record, [*dialect_notes, *coerce_notes]
+    return record, [*structural_notes, *dialect_notes, *coerce_notes]
+
+
+def _repair_missing_mention_object_close(raw_payload: str) -> tuple[str, list[str]]:
+    """Close one mention before a second mention accidentally nested beside it."""
+
+    repaired, count = re.subn(
+        r'("attributes"\s*:\s*\{[^{}]*\})\s*,\s*'
+        r'(\{\s*"entity"\s*:.*?"attributes"\s*:\s*\{[^{}]*\}\s*\})'
+        r'\s*}\s*(\])',
+        r'\1}, \2\3',
+        raw_payload,
+        flags=re.DOTALL,
+    )
+    if not count:
+        return raw_payload, []
+    return repaired, ["json_dialect_repaired: missing_array_object_close"]
 
 
 def _strip_non_scored_rationale_fields(raw_payload: str) -> tuple[str, list[str]]:
@@ -85,6 +102,9 @@ def _coerce_structured_payload(payload: Any) -> tuple[Any, list[str]]:
             coerced_events.append(event)
             continue
         event = dict(event)
+        if "anchor_text" not in event and "anchor:s_text" in event:
+            event["anchor_text"] = event.pop("anchor:s_text")
+            notes.append("schema_repaired: anchor:s_text_to_anchor_text")
         family = str(event.get("family", ""))
         mentions = event.get("mentions")
         if family == "reject" and (not isinstance(mentions, list) or not mentions):

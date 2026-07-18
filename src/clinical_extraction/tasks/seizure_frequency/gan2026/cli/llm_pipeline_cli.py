@@ -204,8 +204,7 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     resume_checkpoint_jsonl_path = args.jsonl
     resume_checkpoint_report_path = args.markdown
     if args.resume_existing:
-        if args.jsonl.exists():
-            existing_rows = load_jsonl_rows(args.jsonl)
+        existing_rows = _load_resume_rows(args.jsonl)
         completed_indices = _source_indices_from_rows(existing_rows)
         records_to_run = [
             record
@@ -262,6 +261,9 @@ def run_cli(argv: Sequence[str] | None = None) -> None:
     )
     spec.write_jsonl(rows, args.jsonl)
     spec.write_report(rows, metadata, args.markdown, jsonl_path=args.jsonl)
+    if args.resume_existing:
+        _resume_part_path(args.jsonl).unlink(missing_ok=True)
+        _resume_part_path(args.markdown).unlink(missing_ok=True)
     print(json.dumps(metadata["summary"], sort_keys=True))
 
 
@@ -415,6 +417,25 @@ def _source_indices_from_rows(rows: Sequence[Mapping[str, Any]]) -> set[int]:
 
 def _resume_part_path(path: Path) -> Path:
     return path.with_name(f"{path.stem}.resume-part{path.suffix}")
+
+
+def _load_resume_rows(path: Path) -> list[dict[str, Any]]:
+    """Load the durable target plus any newer interrupted-resume checkpoint."""
+
+    rows_by_index: dict[int, dict[str, Any]] = {}
+    order: list[int] = []
+    for candidate in (path, _resume_part_path(path)):
+        if not candidate.exists():
+            continue
+        for row in load_jsonl_rows(candidate):
+            source_row_index = row.get("source_row_index")
+            if source_row_index is None:
+                continue
+            index = int(source_row_index)
+            if index not in rows_by_index:
+                order.append(index)
+            rows_by_index[index] = dict(row)
+    return [rows_by_index[index] for index in order]
 
 
 def _combine_resume_rows(
