@@ -210,6 +210,16 @@ selected replay rows.
 
 ### 4.6 Reliability evidence
 
+The paper-facing framework applies the same eight reliability criteria to both
+tasks: clinical correctness and generalization; clinical selection and
+unsupported inference; evidence support and faithfulness; uncertainty and
+selective action; robustness and stability; component attribution and
+correction safety; coverage and clinical-slice behavior; and operational
+reliability. Measures, denominators, stages, and evidence limits remain
+task-specific. Construct-only and not-comparable results do not produce a
+cross-task numerical difference, and no composite reliability score is
+reported.
+
 | Subject | Selected result | Limit |
 | --- | --- | --- |
 | ExECT evidence | Minimum exact-evidence rate 1.0000 for the combined dev140 run | Development result |
@@ -223,7 +233,10 @@ Neither predeclared model-confidence review rule met its test60 catch-rate and
 burden gates, so no confidence-based review policy was adopted. No selected
 result supports a cross-task over-reading claim. The predeclared ExECT analogue
 has zero gold unknown-only letters; empty-gold letters remain diagnostic rather
-than being substituted after the result.
+than being substituted after the result. A 48-item ExECT dev140 semantic-support
+sample is prepared across six models and four families, but independent review
+has not started; exact source presence is therefore not presented as semantic
+or clinical faithfulness.
 
 ## 5. Discussion
 
@@ -264,6 +277,10 @@ and repair behavior require direct tests.
   outputs under the frozen test60 analysis; this is not deployment calibration
   or a six-model result.
 - Annotation findings were reviewed internally, not by an independent clinical team.
+- The stratified ExECT semantic-support sample is an unreviewed substrate, not
+  independent validation.
+- Matched latency, token, cost, hardware, and retry telemetry is unavailable;
+  hosted and local conditions cannot support an efficiency ranking.
 - The selected evidence does not support a cross-task over-reading claim; the
   current ExECT gold has zero unknown-only letters under the predeclared metric.
 
@@ -271,10 +288,12 @@ and repair behavior require direct tests.
 
 The selected results support an inspectable comparison of rules-only, LLM-only,
 and LLM-with-rules methods on two tasks plus fixed six-model panels under each
-task's named scorer. They expose the effect and regression risk of deterministic
-components without assigning their gains to the model. They do not support
-strict ExECT benchmark score reproduction, general model superiority,
-cross-task reliability transfer, or independent clinical validation.
+task's named scorer. The same eight reliability questions organize both tasks
+without implying one metric or a composite score. The results expose the effect
+and regression risk of deterministic components without assigning their gains
+to the model. They do not support strict ExECT benchmark score reproduction,
+general model superiority, cross-task reliability transfer, or independent
+clinical validation.
 
 ## References
 

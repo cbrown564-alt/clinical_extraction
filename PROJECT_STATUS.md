@@ -24,6 +24,12 @@ ExECT Seizure Frequency reliability replay also covers all six models on
 cross-task question as unmeasurable from current ExECT gold rather than
 substituting empty-gold rows.
 
+The shared paper-facing reliability framework is implemented in the working
+tree. Gan and ExECT now have explicit results for the same eight questions,
+with task-specific measures, assurance metadata, evidence states,
+comparability labels, and gap decisions. The generated machine and human
+scorecards do not pool incompatible values or calculate a composite score.
+
 ## Fresh evidence
 
 ### ExECTv2 fixed one-call comparison
@@ -100,22 +106,32 @@ letters remain diagnostic because ExECT annotation omission cannot be treated
 as proof that a model prediction is false. Gan-to-ExECT over-reading transfer
 therefore remains unsupported and is not measurable from the current gold.
 
+The [shared reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
+maps all 16 task-by-criterion cells to retained evidence or an explicit gap.
+The companion
+[ExECT semantic-support protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
+selects 48 evidence-valid dev140 findings across six models and four families.
+All review fields remain unset; this is a prepared substrate, not semantic-
+support evidence or independent clinical validation. No model call or locked
+row inspection was used.
+
 ## Verification state
 
-Fresh checks on the current working tree on 2026-07-18:
+Repository-wide checks pass on the current shared-framework working tree:
 
-- **Verified:** all 1,285 pytest tests passed under the repository `.venv`
-  (Python 3.13.5).
-- **Verified:** repository-wide Ruff passed.
-- **Verified:** the retained-evidence validator and documentation-hygiene gate
-  passed.
-- **Verified:** all six no-call reference cells replayed their expected scores.
-- **Verified before these documentation-only changes:** mypy passed across 290
-  source files.
+- **Verified:** all 1,305 pytest tests pass under the repository `.venv`.
+- **Verified:** repository-wide Ruff passes.
+- **Verified:** mypy passes across 294 source files.
+- **Verified:** both deterministic builders reproduce their selected outputs,
+  the retained-evidence manifest validates, and all six no-call reference cells
+  replay their expected scores.
+- **Verified:** the IEEE PDF builds in two passes as a four-page letter-size
+  paper. Every rendered page was inspected; no clipping, unreadable table,
+  undefined reference, overfull box, or LaTeX warning remains.
 
 This verifies the current implementation, retained hashes, common-panel
-invariants, and reference replays. It is not independent clinical validation
-or a new clean-checkout reproduction.
+invariants, source synchronization, reference replays, and paper render. It is
+not independent clinical validation or a new clean-checkout reproduction.
 
 ## In progress
 
@@ -128,13 +144,15 @@ or a new clean-checkout reproduction.
 ## Next
 
 1. Finish or explicitly stop and record the Qwen/Gemma validation750 queue.
-2. Complete independent clinical review before strengthening any
-   clinical-validity claim.
+2. Complete independent review of the frozen semantic-support substrate before
+   strengthening any faithfulness or clinical-validity claim.
 
 ## Blocked or unvalidated
 
 - Independent clinical review remains required before any clinical-validity
   claim. Internal annotation review is not that validation.
+- Exact evidence is measured, but semantic support remains unmeasured. The
+  48-item ExECT substrate is unreviewed and cannot clear that dependency.
 - The selected ExECT joint policy retains three known deterministic
   regressions. The one-call Diagnosis decision also accepts a measured dev140
   quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the two-call ablation.
@@ -167,6 +185,8 @@ or a new clean-checkout reproduction.
 - Decisions and run protocols: [documentation navigation](docs/NAVIGATION.md)
 - Cross-task six-model synthesis:
   [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+- Shared eight-criterion synthesis:
+  [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Detailed work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)
 
 Use *implemented*, *verified*, *validated*, and *promoted* precisely.

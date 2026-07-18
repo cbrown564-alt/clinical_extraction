@@ -1,6 +1,10 @@
 # Reliability questions
 
-Last updated: 2026-07-15
+Last updated: 2026-07-18
+
+The paper-facing definitions are owned by the
+[reliability evaluation framework](reliability_evaluation_framework.md). This
+document keeps the research motivation and implementation constraints.
 
 The paper asks whether one modular package can produce reliable, inspectable
 clinical extraction results on two epilepsy-letter tasks.
@@ -33,26 +37,24 @@ reasoning in both datasets.
 ## Evidence currently available
 
 The selected Gan package includes aggregate grounding, calibration, review
-routing, consistency, distribution-shift, and runtime analyses. The selected
-ExECT package includes internal full200 calibration and three historical model
-runs using the same component graph. The graph used a deterministic
-Prescription producer and an independent Seizure Frequency extractor union,
-so those family columns are not a consistent model-led comparison. These
-results are not deployment calibration, an independent holdout, or proof that
-one component caused the score difference.
+routing, consistency, distribution-shift, component, and runtime analyses. The
+fixed ExECT package includes six-model dev140 and aggregate-only test60 results,
+family and stage scores, component regressions, internal calibration, and the
+historical three-model negative confidence result.
 
-The frozen aggregate-only test60 replay found that model-reported confidence
-did not meet the predeclared informativeness and review-routing gates for any
-of the three historical model outputs. No confidence-based review policy was
-adopted. Cross-task unknown-versus-rate behavior, the decision-0040
-architecture promotion, and a strict six-model comparison remain open.
+The predeclared six-model ExECT unsupported-selection analogue has a zero
+unknown-only denominator, so cross-task over-reading transfer is not measurable
+from current gold. Exact evidence is measured; semantic support remains open.
+A stratified 48-item dev140 sample is prepared for independent review but has
+no review conclusions.
 
 ## Required final outputs
 
-For both tasks, report the three methods, component and rule-group ablations,
-error types and examples, evidence and schema validity, repair rates, confidence
-results, and the source of each reported number. Keep component effects separate
-from general reliability evidence.
+For both tasks, report the eight shared criteria with task-specific measures,
+component and rule-group ablations, evidence and schema validity, repair rates,
+confidence results, and the source of each reported number. Keep component
+effects separate from general reliability evidence and never calculate a
+composite reliability score.
 
 The paper is complete only when its stated claims match the selected evidence
 and every open limitation is either answered or reported as unresolved.

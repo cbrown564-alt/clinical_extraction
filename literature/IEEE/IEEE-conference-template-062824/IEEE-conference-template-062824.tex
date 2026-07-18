@@ -277,6 +277,15 @@ capability ranking.
 
 \subsection{Cross-Task Components and Reliability}
 
+The paper-facing framework applies the same eight reliability criteria to both
+tasks: correctness/generalization, clinical selection/unsupported inference,
+evidence support/faithfulness, uncertainty/selective action,
+robustness/stability, component attribution/correction safety, clinical-slice
+coverage, and operational reliability. Measures, denominators, stages, and
+evidence limits remain task-specific. Construct-only and non-comparable results
+produce no cross-task numerical difference, and no composite reliability score
+is reported.
+
 \begin{table}[tbp]
 \caption{Saved-Output Component Ablation}
 \label{tab:components}
@@ -321,7 +330,10 @@ Neither predeclared model-confidence review rule met its test60 catch-rate and
 burden gates, so no confidence-based review policy is adopted. The retained
 evidence does not support a cross-task over-reading claim. The predeclared
 ExECT analogue has zero gold unknown-only letters; empty-gold letters remain
-diagnostic rather than being substituted after the result.
+diagnostic rather than being substituted after the result. A 48-item ExECT
+dev140 semantic-support sample spans six models and four families, but
+independent review has not started; exact source presence is not presented as
+semantic or clinical faithfulness.
 
 \section{Discussion}
 
@@ -361,18 +373,21 @@ outputs under the frozen test60 analysis; this is not deployment calibration
 or a six-model result. Annotation-quality findings are internally adjudicated; unqualified
 clinical validity would require independent domain review. The current retained
 evidence does not support a cross-task over-reading claim; ExECT has zero gold
-unknown-only letters under the predeclared measure.
+unknown-only letters under the predeclared measure. The semantic-support sample
+is unreviewed, and unmatched hosted/local telemetry cannot support an efficiency
+ranking.
 
 \section{Conclusion}
 
 An inspectable clinical extraction system can preserve performance evidence
 and the source needed to interpret it. The selected results support a
 three-method comparison on two tasks and fixed six-model panels under each
-task's named scorer. They expose the effect and regression risk of deterministic
-components without assigning their gains to the model. They do not support
-strict ExECT score reproduction, general model superiority, cross-task
-reliability transfer, or independent clinical validation. Those boundaries are
-part of the result, not footnotes to it.
+task's named scorer. The same eight reliability questions organize both tasks
+without implying one metric or a composite score. They expose the effect and
+regression risk of deterministic components without assigning their gains to
+the model. They do not support strict ExECT score reproduction, general model
+superiority, cross-task reliability transfer, or independent clinical
+validation. Those boundaries are part of the result, not footnotes to it.
 
 \section*{Reproducibility Statement}
 
@@ -381,6 +396,7 @@ files and hashes, policy versions, and no-call replay expectations. The
 Markdown manuscript and this IEEE source use only selected evidence and claims
 permitted by the paper claim status.
 
+\IEEEtriggeratref{3}
 \begin{thebibliography}{00}
 \scriptsize
 \bibitem{fonferko2019exect} B. Fonferko-Shadrach, A. S. Lacey, A. Roberts,

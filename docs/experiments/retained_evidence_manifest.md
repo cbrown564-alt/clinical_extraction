@@ -19,6 +19,8 @@ python scripts/check_retained_evidence_manifest.py
 python scripts/verify_reference_evidence.py
 python scripts/check_exectv2_model_led_audit.py
 python scripts/analyze_exectv2_model_led_dev140_regressions.py
+python scripts/build_exectv2_semantic_support_review_substrate.py --check
+python scripts/build_shared_reliability_scorecard.py --check
 ```
 
 The structural check fails if a frozen policy or selected file is missing or
@@ -82,7 +84,7 @@ by its assembly config; those inputs are selected and hash-checked here.
 | Package | Story support | What is proven | What remains open |
 | --- | --- | --- | --- |
 | Gan holdout quality and efficiency | S2, S3, S8 | Single-pass `364/450` versus V12 `379/450` Purist; one versus three cold model passes per note | Tokens, cost, latency, hardware, retries, and cache use were not measured in a matched run and must not be claimed |
-| Gan reliability | S5, S8 | Existing grounding, calibration, routing, consistency, robustness, and operational analyses | Deployment validation and final matched cross-task scorecard |
+| Gan reliability | S5, S8 | Existing grounding, calibration, routing, consistency, robustness, and operational analyses | Deployment validation and independently reviewed semantic support |
 | ExECT model transfer | S4, S5, S8 | The historical graph and corrected decision-0040 architecture replay run with GPT-4.1-mini, DeepSeek, and Qwen; the replay reproduces corrected aggregates, `state_profile`, attribution, regression, schema/parse, and exact-evidence accounting | Three remaining exact models; cross-task unknown-versus-rate analysis |
 | ExECT model-led dev140 regressions | S4, S8 | On 319 changed model/family rows, the family-local view records 160 rescues, 41 regressions, and 118 changed-still-wrong outcomes with exact evidence; SF is retained, while Diagnosis and Prescription require a bounded candidate | Frozen candidate replay, test60 transfer, and the final six-model comparison |
 | Cross-task ablation | S1, S6 | Normalization contributes on both tasks; current evidence gate is score-inert | Schema/evidence rejection and repair challenge fixtures; remaining stage isolation |
@@ -93,6 +95,8 @@ by its assembly config; those inputs are selected and hash-checked here.
 | Gan matched six-model panel | S4, S8 | All six prompt-v0.7 test450 aggregate results are hash-selected with Purist, Pragmatic, operational, evidence, and sealed-source fingerprints | The panel is not a pristine one-shot or model-neutral ranking; local no-call-reparse and provider-route differences must remain visible |
 | ExECT six-model SF over-inference | S5, S8 | A predeclared no-call dev140 replay compares model-structured and final projected/suppressed state sets for all six models; the final stage improves state F1 for every model, with 54 wrong-to-correct and one correct-to-wrong transition | The gold unknown-only denominator is zero, so the study is diagnostic and does not establish Gan-to-ExECT transfer or factuality prevalence |
 | Cross-task six-model report | S4, S5, S8 | The two retained panels are synthesized without pooling their task-specific scores; Sol leads ExECT, Qwen leads Gan, and cross-task rank correlation is 0.20 | Not a shared-metric capability ranking, pristine one-shot comparison, published ExECT benchmark, or clinical validation |
+| ExECT semantic-support review substrate | S8 | A deterministic dev140 sample contains two evidence-valid final findings per model-family stratum: 48 items across six models and four fixed families; source hashes and test60 exclusion are checked | Review has not started; the substrate is not semantic-support evidence, a comparative result, or independent clinical validation |
+| Shared reliability framework | S8 | All eight criteria and all 16 task-by-criterion cells have explicit states, assurance metadata, retained sources, comparability labels, gap decisions, and synchronized machine/human outputs | Measures remain task-specific; evidence strength is uneven; no composite score, pooled numerical comparison, or clinical-validity claim |
 
 ## Authority and deletion rule
 

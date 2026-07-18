@@ -128,8 +128,19 @@ held-out rows, so it is not an independent holdout.
     wrong-to-correct and one correct-to-wrong transition, but the gold
     unknown-only denominator is zero. Empty-gold letters were not substituted,
     so Gan-to-ExECT over-reading transfer remains unsupported.
+22. **Shared reliability framework implemented and verified.** Decision 0044 and the
+    canonical design define eight shared questions with task-specific measures,
+    assurance gates, evidence states, and comparability rules. Generated machine
+    and human scorecards map all 16 task-by-criterion cells without numerical
+    pooling or a composite score. A 48-item ExECT dev140 semantic-support sample
+    is prepared but remains unreviewed.
 
 ## Ordered evidence work
+
+The completed eight-criterion cross-task reliability framework is specified in the
+[shared reliability framework plan](reliability_framework_implementation_plan_2026-07-18.md).
+Its remaining semantic-support dependency requires independent review; the
+framework did not authorize model calls or locked-row inspection.
 
 1. Decision 0043 setup and the authorized call attempt are recorded. The exact
    v0.5 payload matches all 450 retained GPT prompt payloads; the retained

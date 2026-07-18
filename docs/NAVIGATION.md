@@ -34,6 +34,8 @@
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
 | Combined annotation defects, conventions, ambiguity, scoring, sensitivity, and review status | [annotation-evidence synthesis](experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
+| Detailed eight-criterion reliability result | [shared reliability scorecard](research/shared_reliability_scorecard_2026-07-18.md) |
+| Pending ExECT semantic-support review sample | [review protocol](experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md) |
 
 ## Implementation
 
@@ -48,6 +50,7 @@
 | Model policy and final six-model roster | [model policy](design/model_strategy.md) and [decision 0039](decisions/0039-final-exect-six-model-roster.md) |
 | Shared hosted Gan prompt | [decision 0043](decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) |
 | Evidence metric | [evidence groundedness](reference/evidence_groundedness_metric.md) |
+| Shared reliability definitions | [reliability evaluation framework](design/reliability_evaluation_framework.md) and [decision 0044](decisions/0044-shared-reliability-criteria-use-task-specific-measures.md) |
 | Procedures | [runbooks](runbooks/) |
 
 Detailed experiment history is intentionally absent from the active tree. Use

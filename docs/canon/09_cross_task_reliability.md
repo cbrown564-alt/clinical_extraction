@@ -2,48 +2,73 @@
 
 Last updated: 2026-07-18
 
-| Component removed | ExECT dev140 score change | Gan validation750 score change |
-| --- | ---: | ---: |
-| Exact-evidence check | 0.0000 | 0.0000 |
-| Normalization and shared dictionary | +0.0389 | +0.0293 |
+Gan 2026 and ExECTv2 now use the same eight paper-facing reliability questions:
 
-These are development replays of saved outputs. No score change does not make
-the evidence check unnecessary; rejection and repair still require direct
-tests.
+1. clinical correctness and generalization;
+2. clinical selection and unsupported inference;
+3. evidence support and faithfulness;
+4. uncertainty and selective action;
+5. robustness and stability;
+6. component attribution and correction safety;
+7. coverage and clinical-slice behavior; and
+8. operational reliability.
 
-Gan retains aggregate evidence for grounding, calibration, review routing,
-consistency, distribution shifts, and runtime behavior. ExECT retains the
-internal calibration probe and historical three-model results. Their
-Prescription and Seizure Frequency columns do not form a consistent model-led
-comparison. No selected ExECT report tests broad self-consistency. The
-historical DeepSeek result has no recorded thinking state and is audit-only;
-the final paper will report only thinking-enabled DeepSeek V4 Flash.
+The [canonical framework](../design/reliability_evaluation_framework.md)
+defines the criteria, assurance gates, evidence states, row scopes, and
+comparability rules. The
+[machine scorecard](../../experiments/shared_reliability_scorecard_20260718.json)
+and [generated report](../research/shared_reliability_scorecard_2026-07-18.md)
+own the detailed results.
 
-The predeclared six-model ExECT `dev140` over-inference replay found that the
-Gan unknown-only denominator has no ExECT counterpart under the fixed
-change-aware state transform: zero gold letters have the state set
-`{unknown}`. The 41 empty-gold letters remain a separate diagnostic because
-the ExECT annotation synthesis documents omission and representation effects.
-They cannot be relabelled as unknown after observing the result.
+The tasks do not share one reliability metric. Gan is an exhaustive
+single-label task; ExECT is a multi-mention extraction task. Their current
+measurements are therefore `construct_only` except clinical selection and
+unsupported inference, which is `not_comparable`. No cross-task numerical
+delta or composite reliability score is reported.
 
-The same replay supplies bounded component evidence. Deterministic SF
-projection and suppression improve state-profile F1 for all six models, with
-54 wrong-to-correct and one correct-to-wrong transition across the six
-model-letter panels. These pooled transition counts are descriptive because
-each model is evaluated on the same 140 letters. See the
-[protocol](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
-and [result](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md).
+## Maintained conclusion
 
-The frozen ExECT confidence replay evaluated the three historical model outputs
-on aggregate-only test60. Failure AUROC was 0.5394 for GPT-4.1-mini, 0.5503 for
-historical DeepSeek, and 0.4895 for Qwen. Neither predeclared routing rule met
-the catch-rate and burden gates, so the result is retained as negative evidence
-and no confidence-based review policy is adopted. It does not establish a
-cross-task confidence mechanism, deployment calibration, or a final DeepSeek
-V4 Flash result.
+Both tasks have retained evidence for all eight questions, but the evidence is
+not equally complete:
 
-Cross-task unknown-versus-rate overconfidence remains unsupported and is not
-measurable from the current ExECT gold under the predeclared primary metric.
-Answering it would require a separately governed annotation or clinical-review
-substrate, not reuse of empty-gold rows. Every final reliability result must
-state its dataset, split, model, scorer, repair policy, and row-inspection rule.
+- The fixed six-model panels provide task-specific correctness and aggregate
+  holdout evidence. Sol leads ExECT test60 at `0.8047` clinical-headline F1;
+  Qwen leads Gan test450 at `367/450` Purist.
+- Exact source presence is measured separately from semantic support. The
+  48-item ExECT dev140 semantic-support sample is prepared across six models
+  and four families, but independent review has not started.
+- Gan retains external-signal calibration and risk-coverage results for its
+  named subject. ExECT retains an internal scoring-rule result and a historical
+  three-model negative routing result; neither is a final six-model deployment
+  policy.
+- Existing robustness results cover named subdimensions. ExECT dev-to-test
+  changes are not perturbation robustness, and Gan's repeated-temperature
+  result remains a one-model study.
+- Component results stay task-specific. The shared normalization ablation is
+  `+0.0389` ExECT clinical-headline F1 and `+0.0293` Gan Purist accuracy. The
+  ExECT six-model SF replay records 54 wrong-to-correct and one
+  correct-to-wrong transition across 840 model-letter rows, representing 140
+  unique letters.
+- Clinical-family and seizure-band results are coverage evidence, not
+  demographic fairness.
+- Operational event counts are retained, but hosted and local conditions do
+  not have matched latency, token, cost, hardware, or retry telemetry.
+
+## Unsupported-selection boundary
+
+The predeclared six-model ExECT `dev140` analogue has zero gold letters with the
+unknown-only state set. The 41 empty-gold letters remain a separate diagnostic
+because annotation omission, multiplicity, and accepted representation
+differences prevent treating them as unknown after seeing the result.
+
+Gan-to-ExECT over-reading transfer is therefore unsupported and not measurable
+from the current ExECT gold. A future rate requires an independently governed,
+exhaustively reviewed development substrate, not new model calls or reuse of
+empty-gold rows.
+
+## Claim boundary
+
+The framework supports a bounded comparison of evidence about the same eight
+questions. It does not establish a shared metric, a pooled capability ranking,
+demographic fairness, deployment reliability, cross-task transfer, or
+independent clinical validation.

@@ -1655,6 +1655,188 @@
           "retrieval": "git_path"
         }
       ]
+    },
+    {
+      "id": "exectv2_semantic_support_review_subject",
+      "task": "exectv2",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "split": "dev140_stratified_review_sample",
+      "row_count": 48,
+      "row_inspection_policy": "dev140 rows permitted; test60 excluded by source path and validator",
+      "scorer": "Independent semantic-support review fields; review not started",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; thinking DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Two final evidence-valid findings per model and fixed clinical family, selected without outcome labels",
+      "prompt_program_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24 final assembled findings",
+      "cache_replay_mode": "no-call deterministic sampling from retained dev140 outputs",
+      "repair_policy": "Review the retained final conclusion without changing it",
+      "claim_boundary": "Unreviewed development sampling substrate only. It is not semantic-support evidence, independent clinical validation, or a six-model comparative result.",
+      "story_ids": ["S8"],
+      "result_summary": {
+        "review_status": "pending_independent_clinical_review",
+        "models": 6,
+        "families": 4,
+        "sample_per_model_family": 2,
+        "review_items": 48,
+        "test60_rows": 0,
+        "review_conclusions": 0
+      },
+      "artifacts": [
+        {
+          "path": "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json",
+          "sha256": "582cc4a15ab084c650afc4d0f33ee8e5b55afad486462aa844a1f79a896311bb",
+          "bytes": 77714,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
+          "sha256": "19420afdd0c11049a265a7252da166a4072c9ebc393311383d90d1f501960422",
+          "bytes": 3083,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_exectv2_semantic_support_review_substrate.py",
+          "sha256": "d80fa27f0b98462187ec525b0d8c300c2600a38de9daa9603d24384faed08165",
+          "bytes": 11346,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.jsonl",
+          "sha256": "4a418b396d1f50dc53d5ed96bab2aafb97465428f5a0b4b651a4fbf8d3ee5cdb",
+          "bytes": 32982451,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.jsonl",
+          "sha256": "2d3b9509a24988eb21e0d0a23c57550097defaa514436f361ba4412e4184abed",
+          "bytes": 27988981,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.jsonl",
+          "sha256": "db2c2a84c681908cbf8865ba1b2bbb420b7e901559f5af9fdadb8bc20a97d50a",
+          "bytes": 28675509,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.jsonl",
+          "sha256": "e3883c66750c9cc5030f54da1ab6d7e90ce96f1ff22ebc33a9f19dce29ba011b",
+          "bytes": 28762101,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.jsonl",
+          "sha256": "5fbce07a825c5a6cb780fdb2c2d1777a661ac54a9aac8843e2529edb463e74d2",
+          "bytes": 30591521,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.jsonl",
+          "sha256": "f199dcc05b0b0aaaf2e5941c942d9385c8398294338286ef8a9d78d8ed2f4640",
+          "bytes": 33132336,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "shared_reliability_framework_subject",
+      "task": "cross_task",
+      "architecture_family": "cross_family",
+      "dataset": "ExECTv2 2025 + Gan 2026 retained evidence",
+      "split_manifest": "ExECTv2 split v1 + Gan split v1",
+      "split": "retained_development_and_aggregate_holdout_evidence",
+      "row_count": 16,
+      "row_inspection_policy": "No new row inspection; locked evidence remains aggregate-only",
+      "scorer": "Eight shared criteria with task-specific measurement objects; no pooled score",
+      "model": "none; deterministic no-call evidence synthesis",
+      "model_role": "Cross-task reliability evaluation and claim-boundary framework",
+      "prompt_program_version": "shared reliability framework 2026-07-18",
+      "cache_replay_mode": "retained-artifact replay; no model calls",
+      "repair_policy": "Preserve task scorers, score stages, repair boundaries, and denominators",
+      "claim_boundary": "Framework implementation evidence only. The scorecard is not a shared metric, composite score, clinical validation result, or cross-task model ranking.",
+      "story_ids": ["S8"],
+      "result_summary": {
+        "criteria": 8,
+        "task_cells": 16,
+        "shared_metric": false,
+        "composite_score": false,
+        "independent_clinical_review": "not_completed"
+      },
+      "artifacts": [
+        {
+          "path": "docs/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md",
+          "sha256": "148a7d4d049ec002ca6024bdb974426298fc2fde3c5c4bb9ce980a710038885e",
+          "bytes": 3970,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/design/reliability_evaluation_framework.md",
+          "sha256": "845fe30119bb34457e02de622313b9905ce54bf649663cf30bae81f3c3d26899",
+          "bytes": 9928,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/shared_reliability_scorecard_20260718.json",
+          "sha256": "39e65694d2ce8bdd6758a8ccb16f3f03e8fcaa97350add84497efce44a3ce3f1",
+          "bytes": 166276,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/research/shared_reliability_scorecard_2026-07-18.md",
+          "sha256": "121f2bd072b1b2b0bfe655f47f39df9378486c74d51ca13eb8e7ffe25c3bae70",
+          "bytes": 16010,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/build_shared_reliability_scorecard.py",
+          "sha256": "105321154708ff7fc79d91b20b5ff5c25e8f1e0b42c4928189a5295ac8a1f765",
+          "bytes": 26701,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_schema.py",
+          "sha256": "f370cd99b2d9f4c47d7f2b56cf004fc27641637bf0a123d81ad52529f2d78169",
+          "bytes": 21428,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_gan_measurements.py",
+          "sha256": "c11c72a10d2b195178cd11d4f5a8f8c31eb49814b147006030c3ee02bee83e5b",
+          "bytes": 27715,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_exect_measurements.py",
+          "sha256": "2dddd91570ebc1d6ccee0598ab84ad1ca057ca6db25524bf5f7367fea4cac9f1",
+          "bytes": 25962,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/core/shared_reliability_report.py",
+          "sha256": "943aaf599c51fd3632d9647fb7f0d50ea82c02d652138cbf776cfccb3f8f5806",
+          "bytes": 8545,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_shared_reliability_scorecard.py",
+          "sha256": "3992fff80cbf5e732208358b6c81040065d08b393fc60828ccc6e79492162be0",
+          "bytes": 9087,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/canon/09_cross_task_reliability.md",
+          "sha256": "67c6e21d96865caf9e1964b61c810696570a48f67125f1a5087586cd46537c9e",
+          "bytes": 3555,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/canon/10_paper_provenance.md",
+          "sha256": "86dcb07a9a1524dd6b06081a14728106bea83244d690b7f14254f7446ef42c03",
+          "bytes": 9419,
+          "retrieval": "git_path"
+        }
+      ]
     }
   ]
 }

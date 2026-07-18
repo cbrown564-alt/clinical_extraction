@@ -1,0 +1,3790 @@
+{
+  "assurance_gates": [
+    "dataset_split_row_policy",
+    "model_route_runtime_temperature_token_cache",
+    "prompt_scorer_stage_repair",
+    "source_hash_and_reproducibility",
+    "split_barriers_canaries_failure_handling",
+    "independent_clinical_review_status",
+    "claim_boundary"
+  ],
+  "claim_boundary": "Shared questions with task-specific retained measures. The artifact does not establish a shared metric, cross-task transfer, demographic fairness, deployment reliability, or independent clinical validation.",
+  "criteria": [
+    {
+      "id": "clinical_correctness_generalization",
+      "name": "Clinical correctness and generalization",
+      "question": "Does the final system recover the intended clinical result, and what changes outside development?"
+    },
+    {
+      "id": "clinical_selection_unsupported_inference",
+      "name": "Clinical selection and unsupported inference",
+      "question": "Does the system select a warranted current fact rather than an unsupported, historical, planned, or ambiguous one?"
+    },
+    {
+      "id": "evidence_support_faithfulness",
+      "name": "Evidence support and faithfulness",
+      "question": "Is cited text present, and does it semantically support the selected conclusion?"
+    },
+    {
+      "id": "uncertainty_selective_action",
+      "name": "Uncertainty and selective action",
+      "question": "Do uncertainty signals identify failures, and can they support abstention or review at acceptable burden?"
+    },
+    {
+      "id": "robustness_stability",
+      "name": "Robustness and stability",
+      "question": "Does the decision persist across relevant data, sampling, wording, prompt, parser, or runtime changes?"
+    },
+    {
+      "id": "component_attribution_correction_safety",
+      "name": "Component attribution and correction safety",
+      "question": "Which component changes the answer, and does deterministic correction help without damaging correct model output?"
+    },
+    {
+      "id": "coverage_clinical_slice_behavior",
+      "name": "Coverage and clinical-slice behavior",
+      "question": "Which clinical families and hard cases are covered, missing, or materially weaker?"
+    },
+    {
+      "id": "operational_reliability",
+      "name": "Operational reliability",
+      "question": "Does the named runtime complete predictably, with failures, repairs, retries, latency, and usage reported at their measured scope?"
+    }
+  ],
+  "cross_task_matrix": [
+    {
+      "comparability": "construct_only",
+      "criterion": "Clinical correctness and generalization",
+      "criterion_id": "clinical_correctness_generalization",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "not_comparable",
+      "criterion": "Clinical selection and unsupported inference",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "numeric_delta": null,
+      "reason": "ExECT has no valid unknown-only denominator."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Evidence support and faithfulness",
+      "criterion_id": "evidence_support_faithfulness",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Uncertainty and selective action",
+      "criterion_id": "uncertainty_selective_action",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Robustness and stability",
+      "criterion_id": "robustness_stability",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Component attribution and correction safety",
+      "criterion_id": "component_attribution_correction_safety",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Coverage and clinical-slice behavior",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    },
+    {
+      "comparability": "construct_only",
+      "criterion": "Operational reliability",
+      "criterion_id": "operational_reliability",
+      "numeric_delta": null,
+      "reason": "The tasks answer the same criterion with task-specific measurement objects or units."
+    }
+  ],
+  "decision": "docs/decisions/0044-shared-reliability-criteria-use-task-specific-measures.md",
+  "evidence_state_matrix": [
+    {
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "exectv2": "aggregate_holdout_evidence",
+      "gan2026": "aggregate_holdout_evidence"
+    },
+    {
+      "comparability": "not_comparable",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "exectv2": "diagnostic",
+      "gan2026": "aggregate_holdout_evidence"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "exectv2": "aggregate_holdout_evidence",
+      "gan2026": "aggregate_holdout_evidence"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "exectv2": "aggregate_holdout_evidence",
+      "gan2026": "development_answer"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "exectv2": "aggregate_holdout_evidence",
+      "gan2026": "development_answer"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "exectv2": "development_answer",
+      "gan2026": "development_answer"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "exectv2": "development_answer",
+      "gan2026": "development_answer"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "exectv2": "aggregate_holdout_evidence",
+      "gan2026": "aggregate_holdout_evidence"
+    }
+  ],
+  "framework": "docs/design/reliability_evaluation_framework.md",
+  "gaps": [
+    {
+      "claim_effect": "The rate is reportable at its retained scope but the criterion remains incomplete.",
+      "class": "documentation_instrumentation_gap",
+      "decision": "Keep the retained rates and mark their selected denominator counts unavailable.",
+      "id": "gan_selection_denominator_metadata",
+      "owner": "Gan reliability evidence package",
+      "unblock_condition": "Select a hash-verified machine artifact containing the original unknown-gold counts."
+    },
+    {
+      "claim_effect": "No ExECT unsupported-selection rate or Gan-to-ExECT over-reading transfer claim is permitted.",
+      "class": "independent_clinical_review_dependency",
+      "decision": "Keep the zero-denominator study as a closed diagnostic result.",
+      "id": "exect_unsupported_selection_denominator",
+      "owner": "Future independently governed ExECT annotation review",
+      "unblock_condition": "Exhaustive independent review distinguishes unsupported predictions from omission, multiplicity, and accepted representation differences."
+    },
+    {
+      "claim_effect": "Gan evidence is described as textual grounding, not externally validated faithfulness.",
+      "class": "independent_clinical_review_dependency",
+      "decision": "Do not equate exact source presence with semantic support.",
+      "id": "gan_semantic_support_review",
+      "owner": "Independent clinical reviewers",
+      "unblock_condition": "A governed representative sample is independently reviewed at the reported decision stage."
+    },
+    {
+      "claim_effect": "Exact evidence remains separate from semantic support and clinical validation.",
+      "class": "independent_clinical_review_dependency",
+      "decision": "Retain the stratified sample as an unreviewed substrate only.",
+      "id": "exect_semantic_support_review",
+      "owner": "Independent clinical reviewers",
+      "unblock_condition": "Independent reviewers complete the frozen fields with provenance and adjudication."
+    },
+    {
+      "claim_effect": "No six-model or deployment-calibration conclusion is permitted.",
+      "class": "optional_new_experiment",
+      "decision": "Keep the historical three-model negative result bounded.",
+      "id": "exect_six_model_uncertainty",
+      "owner": "Future dated clinical research protocol",
+      "unblock_condition": "Adopt a named six-model routing claim before writing and running a separate protocol."
+    },
+    {
+      "claim_effect": "Robustness wording remains limited to the recorded prompt and sampling subdimensions.",
+      "class": "optional_new_experiment",
+      "decision": "Do not commission perturbation calls merely to fill the framework.",
+      "id": "gan_broad_robustness",
+      "owner": "Future dated clinical research protocol",
+      "unblock_condition": "A named paper claim requires a predeclared perturbation result."
+    },
+    {
+      "claim_effect": "The six-model split change is not called perturbation robustness or self-consistency.",
+      "class": "optional_new_experiment",
+      "decision": "Treat dev-to-test and parser/runtime behavior as separate subdimensions.",
+      "id": "exect_broad_robustness",
+      "owner": "Future dated clinical research protocol",
+      "unblock_condition": "A claim-changing protocol predeclares clinically equivalent wording or prompt perturbations."
+    },
+    {
+      "claim_effect": "No new stage-specific correction-safety count is claimed.",
+      "class": "documentation_instrumentation_gap",
+      "decision": "Report the selected normalization ablation and preserve the stage boundary without reconstructing missing row transitions.",
+      "id": "gan_full_stage_transition_inventory",
+      "owner": "Gan component evidence package",
+      "unblock_condition": "A no-call retained artifact exposes all stage transitions under the locked-row policy."
+    },
+    {
+      "claim_effect": "Demographic fairness is not measured.",
+      "class": "outside_project_boundary",
+      "decision": "Do not relabel seizure-band variation as demographic fairness.",
+      "id": "gan_demographic_fairness",
+      "owner": "Future dataset and fairness protocol",
+      "unblock_condition": "Suitable attributes, sample sizes, and a clinically meaningful fairness question exist."
+    },
+    {
+      "claim_effect": "Demographic fairness is not measured.",
+      "class": "outside_project_boundary",
+      "decision": "Do not relabel entity-family variation as demographic fairness.",
+      "id": "exect_demographic_fairness",
+      "owner": "Future dataset and fairness protocol",
+      "unblock_condition": "Suitable attributes, sample sizes, and a clinically meaningful fairness question exist."
+    },
+    {
+      "claim_effect": "Only observed failures, repairs, pass counts, and the bounded offline estimate are reportable.",
+      "class": "outside_project_boundary",
+      "decision": "Do not reconstruct unmatched token, cost, latency, hardware, or retry values.",
+      "id": "gan_matched_efficiency_telemetry",
+      "owner": "Future matched runtime protocol",
+      "unblock_condition": "A matched protocol measures the selected conditions prospectively."
+    },
+    {
+      "claim_effect": "No cross-route efficiency ranking is permitted.",
+      "class": "outside_project_boundary",
+      "decision": "Keep hosted and local runtime conditions separate and do not rank efficiency.",
+      "id": "exect_matched_efficiency_telemetry",
+      "owner": "Future matched runtime protocol",
+      "unblock_condition": "A matched protocol records latency, usage, hardware, retries, and cache state."
+    }
+  ],
+  "generated_date": "2026-07-18",
+  "measurements": [
+    {
+      "cache_replay_mode": "cache disabled; aggregate-only retained readout",
+      "claim_boundary": "Matched aggregate-only v0.7 panel; not a pristine one-shot or model-neutral ranking.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 450,
+      "denominator_status": "defined",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed; aggregate values only",
+      "measurement_id": "gan2026_six_model_test450_purist_accuracy",
+      "model_row_count": 2700,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "repair_policy": "hybrid_full_stack",
+      "reproducibility_command": "python scripts/verify_reference_evidence.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
+        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
+        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
+        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
+        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
+        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+      },
+      "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan 2026 Purist label accuracy",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "recorded_by_condition_in_route_runtime",
+      "token_limit": "not_recorded_in_compact_aggregate",
+      "unique_rows": 450,
+      "unit": "correct_labels_and_accuracy",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "accuracy": 0.76,
+          "correct": 342
+        },
+        "ollama_chat/gemma4:26b": {
+          "accuracy": 0.7622,
+          "correct": 343
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "accuracy": 0.8156,
+          "correct": 367
+        },
+        "openai/gpt-4.1-mini": {
+          "accuracy": 0.7844,
+          "correct": 353
+        },
+        "openai/gpt-5.6-luna": {
+          "accuracy": 0.7822,
+          "correct": 352
+        },
+        "openai/gpt-5.6-sol": {
+          "accuracy": 0.7956,
+          "correct": 358
+        }
+      }
+    },
+    {
+      "cache_replay_mode": "cache disabled; aggregate-only retained readout",
+      "claim_boundary": "Secondary aggregate-only v0.7 score; task-specific and not pooled with ExECT F1.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 450,
+      "denominator_status": "defined",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed; aggregate values only",
+      "measurement_id": "gan2026_six_model_test450_pragmatic_accuracy",
+      "model_row_count": 2700,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "repair_policy": "hybrid_full_stack",
+      "reproducibility_command": "python scripts/verify_reference_evidence.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
+        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
+        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
+        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
+        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
+        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+      },
+      "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan 2026 Pragmatic label accuracy",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "recorded_by_condition_in_route_runtime",
+      "token_limit": "not_recorded_in_compact_aggregate",
+      "unique_rows": 450,
+      "unit": "correct_labels_and_accuracy",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "accuracy": 0.8044,
+          "correct": 362
+        },
+        "ollama_chat/gemma4:26b": {
+          "accuracy": 0.8156,
+          "correct": 367
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "accuracy": 0.8444,
+          "correct": 380
+        },
+        "openai/gpt-4.1-mini": {
+          "accuracy": 0.8244,
+          "correct": 371
+        },
+        "openai/gpt-5.6-luna": {
+          "accuracy": 0.8111,
+          "correct": 365
+        },
+        "openai/gpt-5.6-sol": {
+          "accuracy": 0.8356,
+          "correct": 376
+        }
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Named historical subject only; not the matched six-model validation panel.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 750,
+      "denominator_status": "defined",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "not a locked split",
+      "measurement_id": "gan2026_subject_validation750_purist_accuracy",
+      "model_row_count": 750,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation750 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "Gan 2026 Purist label accuracy",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 750,
+      "unit": "accuracy",
+      "value": 0.881
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Named historical subject aggregate only; not the matched six-model v0.7 row.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 450,
+      "denominator_status": "defined",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed; aggregate values only",
+      "measurement_id": "gan2026_subject_test450_purist_accuracy",
+      "model_row_count": 450,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan 2026 Purist label accuracy",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 450,
+      "unit": "accuracy",
+      "value": 0.809
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Development internal scorer; not the published ExECT benchmark or clinical validation.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 140,
+      "denominator_status": "defined_letters; F1 uses model-specific fact counts",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_dev140_clinical_headline_f1",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/run_exectv2_six_model_comparison.py --help",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 row inspection permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "ExECTv2 de-duplicated clinical_headline scorer",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
+      ],
+      "source_hashes": {
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json": "c7e48d7b858587a3ec7352e37b9dec6857146823122bc964a94e1cc3dbf4344a",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "clinical_headline_f1",
+      "value": {
+        "deepseek/deepseek-v4-flash": 0.8767,
+        "ollama_chat/gemma4:26b": 0.8016,
+        "ollama_chat/qwen3.6:35b": 0.8571,
+        "openai/gpt-4.1-mini": 0.8202,
+        "openai/gpt-5.6-luna": 0.8832,
+        "openai/gpt-5.6-sol": 0.892
+      }
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Aggregate-only internal holdout; not the published ExECT benchmark or clinical validation.",
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 59,
+      "denominator_status": "defined_loadable_letters",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_test60_clinical_headline_f1",
+      "model_row_count": 354,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "aggregate-only test60; sealed row artifacts excluded",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "ExECTv2 de-duplicated clinical_headline scorer",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "test60",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 59,
+      "unit": "clinical_headline_f1",
+      "value": {
+        "deepseek/deepseek-v4-flash": 0.7881,
+        "ollama_chat/gemma4:26b": 0.7169,
+        "ollama_chat/qwen3.6:35b": 0.7872,
+        "openai/gpt-4.1-mini": 0.7572,
+        "openai/gpt-5.6-luna": 0.795,
+        "openai/gpt-5.6-sol": 0.8047
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Retained subject rates; selected compact artifact lacks denominator counts.",
+      "comparability": "not_comparable",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": null,
+      "denominator_status": "unknown-gold counts not retained in selected compact scorecard",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed; no failure analysis",
+      "measurement_id": "gan2026_unknown_gold_active_rate_overread_rate",
+      "model_row_count": null,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "unknown_gold_letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation rows permitted; test450 aggregate only",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan unknown-gold active-rate over-read transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750+test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": null,
+      "unit": "rate",
+      "value": {
+        "test450": 0.127,
+        "validation750": 0.094
+      }
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "No unsupported-selection rate or Gan-to-ExECT transfer claim; empty-gold rows are diagnostic only.",
+      "comparability": "not_comparable",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 0,
+      "denominator_status": "predeclared_unknown_only_gold_denominator_is_zero",
+      "empty_gold_substitution_allowed": false,
+      "evidence_state": "diagnostic",
+      "independence_claim": false,
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_sf_unknown_only_active_rate_overread_rate",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": "The unknown-only denominator is zero, and annotation omission prevents treating empty-gold letters as unknown.",
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "deterministic SF state projection and unknown suppression",
+      "reproducibility_command": "python scripts/build_exectv2_six_model_sf_overinference.py --check",
+      "result_state": "not_measurable_current_data",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 rows permitted; no test60 row accessed",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "projected",
+      "scorer": "change-aware frequency_state_faithful state set",
+      "source_artifacts": [
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
+      ],
+      "source_hashes": {
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "rate",
+      "value": null
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Textual grounding at the retained final stage; not independent semantic support.",
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": {
+        "test450": 450,
+        "validation750": 750
+      },
+      "denominator_status": "defined",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed",
+      "measurement_id": "gan2026_textual_grounding_rate",
+      "model_row_count": 1200,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation rows permitted; test450 aggregate only",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan retained faithfulness transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750+test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 1200,
+      "unit": "exact_grounding_rate",
+      "value": {
+        "test450": 0.929,
+        "validation750": 0.921
+      }
+    },
+    {
+      "cache_replay_mode": "not_applicable",
+      "claim_boundary": "No independent semantic-support result is claimed.",
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": null,
+      "denominator_status": "not_measured",
+      "evidence_state": "not_measured",
+      "independent_clinical_review": "not_started",
+      "locked_row_controls": "test450 rows remain sealed",
+      "measurement_id": "gan2026_semantic_support_review",
+      "model_row_count": null,
+      "model_scope": [
+        "not_selected"
+      ],
+      "not_measured_reason": "No independently reviewed semantic-support substrate is selected for Gan.",
+      "pooling_unit": "review_item",
+      "prompt_program": "not_applicable",
+      "repair_policy": "not_applicable",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "not_measured",
+      "route_runtime": "not_applicable",
+      "row_inspection_rule": "no review rows selected",
+      "row_scope": "synthetic_fixture",
+      "score_stage": "final",
+      "scorer": "independent clinical review",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "not_measured",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_applicable",
+      "token_limit": "not_applicable",
+      "unique_rows": null,
+      "unit": "semantic_support_rate",
+      "value": null
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Textual source presence only; not semantic support or clinical faithfulness.",
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": {
+        "deepseek/deepseek-v4-flash": 851,
+        "ollama_chat/gemma4:26b": 974,
+        "ollama_chat/qwen3.6:35b": 864,
+        "openai/gpt-4.1-mini": 932,
+        "openai/gpt-5.6-luna": 840,
+        "openai/gpt-5.6-sol": 862
+      },
+      "denominator_status": "defined_final_scored_mentions_by_model",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_final_exact_evidence_rate",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 row inspection permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "exact evidence substring check after assembly",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
+      ],
+      "source_hashes": {
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json": "c7e48d7b858587a3ec7352e37b9dec6857146823122bc964a94e1cc3dbf4344a",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "exact_evidence_rate",
+      "value": {
+        "deepseek/deepseek-v4-flash": 1.0,
+        "ollama_chat/gemma4:26b": 1.0,
+        "ollama_chat/qwen3.6:35b": 1.0,
+        "openai/gpt-4.1-mini": 1.0,
+        "openai/gpt-5.6-luna": 1.0,
+        "openai/gpt-5.6-sol": 1.0
+      }
+    },
+    {
+      "cache_replay_mode": "no-call deterministic sample from retained dev140 outputs",
+      "claim_boundary": "Unreviewed sample only; not semantic-support evidence or independent clinical validation.",
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 48,
+      "denominator_status": "sample_prepared_review_not_started",
+      "evidence_state": "not_measured",
+      "independent_clinical_review": "pending",
+      "locked_row_controls": "test60 excluded by source and validator",
+      "measurement_id": "exectv2_semantic_support_review",
+      "model_row_count": 48,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": "The substrate is prepared but independent clinical review has not started.",
+      "pooling_unit": "review_item",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "review the retained final conclusion without changing it",
+      "reproducibility_command": "python scripts/build_exectv2_semantic_support_review_substrate.py --check",
+      "result_state": "not_measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 only; two evidence-valid findings per model-family stratum",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "independent clinical review protocol",
+      "source_artifacts": [
+        "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json",
+        "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md"
+      ],
+      "source_hashes": {
+        "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md": "19420afdd0c11049a265a7252da166a4072c9ebc393311383d90d1f501960422",
+        "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json": "582cc4a15ab084c650afc4d0f33ee8e5b55afad486462aa844a1f79a896311bb"
+      },
+      "split": "dev140_sample",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": null,
+      "unit": "semantic_support_review_items",
+      "value": null
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "External-signal result for the named subject; not model self-confidence or deployment calibration.",
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 750,
+      "denominator_status": "defined_subject_rows",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "not a locked split",
+      "measurement_id": "gan2026_external_signal_calibration",
+      "model_row_count": 750,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation750 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "Gan external-confidence calibration transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 750,
+      "unit": "calibration_and_failure_detection",
+      "value": {
+        "brier": 0.102,
+        "ece": 0.08,
+        "failure_auroc": 0.781
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Named validation subject only; no deployment review policy is implied.",
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 750,
+      "denominator_status": "defined_subject_rows",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "not a locked split",
+      "measurement_id": "gan2026_risk_coverage",
+      "model_row_count": 750,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation750 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "Gan retained risk-coverage transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 750,
+      "unit": "risk_coverage",
+      "value": {
+        "auc": 0.0404,
+        "oracle_auc": 0.0073,
+        "risk_at_50pct_coverage": 0.03,
+        "risk_at_80pct_coverage": 0.078
+      }
+    },
+    {
+      "cache_replay_mode": "no-call aggregate replay",
+      "claim_boundary": "Internal scoring-rule calibration; not model-reported confidence or deployment calibration.",
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 200,
+      "denominator_status": "defined_letters; aggregate-only full200 result",
+      "evidence_state": "diagnostic",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test60 contribution retained as aggregate only",
+      "measurement_id": "exectv2_internal_scoring_rule_calibration",
+      "model_row_count": 200,
+      "model_scope": [
+        "internal grouped logistic scoring rule"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "internal grouped logistic scoring rule",
+      "repair_policy": "not_applicable_internal_scoring_rule",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "saved-output scoring rule",
+      "row_inspection_rule": "full200 aggregate only; test60 rows not emitted",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "ExECT grouped logistic correctness scoring rule",
+      "source_artifacts": [
+        "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md",
+        "docs/experiments/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md"
+      ],
+      "source_hashes": {
+        "docs/experiments/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md": "5059cb5d31cdd74d76850df5ce291d3e94246892304ee5884249f782755564bd",
+        "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md": "f88402959a151b305d7015026e705b586cbb4bf6fcfab2da1cf1f9c64d305f53"
+      },
+      "split": "full200_aggregate",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": "not_applicable",
+      "token_limit": "not_applicable",
+      "unique_rows": 200,
+      "unit": "calibration",
+      "value": {
+        "base_rate_brier": 0.234,
+        "brier": 0.2225,
+        "ece": 0.0587
+      }
+    },
+    {
+      "cache_replay_mode": "no-call split replay; test60 aggregate only",
+      "claim_boundary": "Historical three-model negative result; not a six-model, thinking-enabled DeepSeek V4 Flash, or deployment conclusion.",
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 240,
+      "denominator_status": "60 letters x four family cells per historical model",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test60 rows sealed and excluded from output",
+      "measurement_id": "exectv2_historical_model_reported_confidence_failure_auroc",
+      "model_row_count": 720,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "deepseek/deepseek-chat",
+        "ollama_chat/qwen3.6:35b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "family_cell",
+      "prompt_program": "historical fixed family outputs",
+      "repair_policy": "historical decision-0040 audit replay",
+      "reproducibility_command": "python scripts/check_exectv2_model_reported_confidence.py",
+      "result_state": "measured",
+      "review_policy_adopted": false,
+      "route_runtime": "historical saved outputs; DeepSeek thinking state unrecorded",
+      "row_inspection_rule": "aggregate-only test60; rows not emitted",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "exact family-cell clinical_headline correctness",
+      "source_artifacts": [
+        "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json": "9230651dd75db9954a7a749c1e9a286134574294cbf0c6732e40de763fc028d0"
+      },
+      "split": "test60",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-chat": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0
+      },
+      "token_limit": "recorded in source configuration",
+      "unique_rows": 60,
+      "unit": "failure_auroc",
+      "value": {
+        "deepseek/deepseek-chat": 0.5503,
+        "ollama_chat/qwen3.6:35b": 0.4895,
+        "openai/gpt-4.1-mini": 0.5394
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Prompt-version subdimension only; overfit-gap is diagnostic and not broad robustness.",
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": null,
+      "denominator_status": "index_transform_not_a_rate_denominator",
+      "evidence_state": "diagnostic",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no test row analysis",
+      "measurement_id": "gan2026_prompt_version_robustness_index",
+      "model_row_count": null,
+      "model_scope": [
+        "openai/gpt-4.1-mini retained prompt subjects"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "prompt_condition",
+      "prompt_program": "direct_labeler_v0_5; evidence_v0_6; evidence_v0_7",
+      "repair_policy": "version-specific retained policies",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "retained GPT-4.1-mini subjects",
+      "row_inspection_rule": "validation permitted; test aggregate only",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "Gan retained prompt-version robustness transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750+test450_aggregate",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": null,
+      "unit": "robustness_index",
+      "value": {
+        "direct_labeler_v0_5": 0.547,
+        "evidence_v0_6": 0.694,
+        "evidence_v0_7": 1.0
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "One-model repeated-temperature result; raw prose varies while named semantic decisions are stable.",
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 150,
+      "denominator_status": "defined_preflight_rows",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no locked rows used",
+      "measurement_id": "gan2026_repeated_temperature_semantic_entropy",
+      "model_row_count": 600,
+      "model_scope": [
+        "one retained Gan model subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter_temperature_panel",
+      "prompt_program": "P2.1 semantic entropy",
+      "repair_policy": "retained P2.1 policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "one retained Gan model subject",
+      "row_inspection_rule": "development preflight rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "Gan semantic label entropy across temperatures 0.3, 0.5, 0.7, 1.0",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "preflight150",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": [
+        0.3,
+        0.5,
+        0.7,
+        1.0
+      ],
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 150,
+      "unit": "label_entropy",
+      "value": {
+        "mean_label_entropy": 0.012,
+        "residual_label_entropy": 0.018,
+        "residual_rows": 23
+      }
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Development-to-holdout aggregate change only; not perturbation robustness or self-consistency.",
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": {
+        "dev140": 140,
+        "test60": 59
+      },
+      "denominator_status": "defined_letters; F1 uses fact counts",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_dev_to_test_f1_change",
+      "model_row_count": 1194,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 rows permitted; test60 aggregate only",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "ExECTv2 de-duplicated clinical_headline scorer",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json": "c7e48d7b858587a3ec7352e37b9dec6857146823122bc964a94e1cc3dbf4344a",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb",
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "dev140_to_test60",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 199,
+      "unit": "clinical_headline_f1_change",
+      "value": {
+        "deepseek/deepseek-v4-flash": -0.0886,
+        "ollama_chat/gemma4:26b": -0.0847,
+        "ollama_chat/qwen3.6:35b": -0.0699,
+        "openai/gpt-4.1-mini": -0.063,
+        "openai/gpt-5.6-luna": -0.0882,
+        "openai/gpt-5.6-sol": -0.0873
+      }
+    },
+    {
+      "cache_replay_mode": "saved-output no-call replay",
+      "claim_boundary": "Saved-output development ablation; score-inert evidence checks are not proved unnecessary.",
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 750,
+      "denominator_status": "defined_letters",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no locked rows used",
+      "measurement_id": "gan2026_validation750_normalization_component_delta",
+      "model_row_count": 750,
+      "model_scope": [
+        "saved-output Gan validation subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "retained component ablation",
+      "repair_policy": "normalization/shared dictionary ablation",
+      "reproducibility_command": "python scripts/cross_task_shared_component_ablation.py",
+      "result_state": "measured",
+      "route_runtime": "no-call saved-output replay",
+      "row_inspection_rule": "validation750 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "normalized",
+      "scorer": "Gan Purist accuracy",
+      "source_artifacts": [
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json"
+      ],
+      "source_hashes": {
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json": "79e22c9b688d45e8e06d250727a8ca2412d350a0ed12b5a82904029c337bfa47"
+      },
+      "split": "validation750",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_applicable_no_call_replay",
+      "token_limit": "not_applicable_no_call_replay",
+      "unique_rows": 750,
+      "unit": "Purist_accuracy_delta",
+      "value": 0.0293
+    },
+    {
+      "cache_replay_mode": "saved-output no-call replay",
+      "claim_boundary": "Saved-output development ablation; the numerical delta is not pooled with Gan.",
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 140,
+      "denominator_status": "defined_letters",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no locked rows used",
+      "measurement_id": "exectv2_dev140_normalization_component_delta",
+      "model_row_count": 140,
+      "model_scope": [
+        "saved-output ExECT development subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "letter",
+      "prompt_program": "retained component ablation",
+      "repair_policy": "normalization/shared dictionary ablation",
+      "reproducibility_command": "python scripts/cross_task_shared_component_ablation.py",
+      "result_state": "measured",
+      "route_runtime": "no-call saved-output replay",
+      "row_inspection_rule": "dev140 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "normalized",
+      "scorer": "ExECT clinical_headline scorer",
+      "source_artifacts": [
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json"
+      ],
+      "source_hashes": {
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json": "79e22c9b688d45e8e06d250727a8ca2412d350a0ed12b5a82904029c337bfa47"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": "not_applicable_no_call_replay",
+      "token_limit": "not_applicable_no_call_replay",
+      "unique_rows": 140,
+      "unit": "clinical_headline_f1_delta",
+      "value": 0.0389
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Development stage attribution; projected companion and final clinical scores remain distinct.",
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 140,
+      "denominator_status": "defined_letters; stage F1 uses model-specific fact counts",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_score_stage_f1",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "raw_to_final",
+      "scorer": "ExECT clinical_headline and named companion stage scorers",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
+      ],
+      "source_hashes": {
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json": "c7e48d7b858587a3ec7352e37b9dec6857146823122bc964a94e1cc3dbf4344a",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "clinical_headline_f1_by_stage",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "dictionary_normalized": 0.8308,
+          "evidence_valid": 0.7967,
+          "final": 0.8767,
+          "projected": 0.8444,
+          "raw": 0.7915
+        },
+        "ollama_chat/gemma4:26b": {
+          "dictionary_normalized": 0.7404,
+          "evidence_valid": 0.7095,
+          "final": 0.8016,
+          "projected": 0.7645,
+          "raw": 0.701
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "dictionary_normalized": 0.8042,
+          "evidence_valid": 0.7579,
+          "final": 0.8571,
+          "projected": 0.8204,
+          "raw": 0.7488
+        },
+        "openai/gpt-4.1-mini": {
+          "dictionary_normalized": 0.7662,
+          "evidence_valid": 0.7228,
+          "final": 0.8202,
+          "projected": 0.7849,
+          "raw": 0.7128
+        },
+        "openai/gpt-5.6-luna": {
+          "dictionary_normalized": 0.8347,
+          "evidence_valid": 0.808,
+          "final": 0.8832,
+          "projected": 0.8473,
+          "raw": 0.8059
+        },
+        "openai/gpt-5.6-sol": {
+          "dictionary_normalized": 0.8478,
+          "evidence_valid": 0.8119,
+          "final": 0.892,
+          "projected": 0.8578,
+          "raw": 0.8097
+        }
+      }
+    },
+    {
+      "cache_replay_mode": "no-call dev140 replay",
+      "claim_boundary": "Three historical dev140 model conditions; not final six-model or holdout evidence.",
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 319,
+      "denominator_status": "defined_changed_model_family_rows",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no test60 rows used",
+      "measurement_id": "exectv2_historical_deterministic_correction_transitions",
+      "model_row_count": 420,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "deepseek/deepseek-chat",
+        "ollama_chat/qwen3.6:35b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_family_letter",
+      "prompt_program": "historical family programs",
+      "repair_policy": "decision-0040 historical model-led replay",
+      "reproducibility_command": "python scripts/analyze_exectv2_model_led_dev140_regressions.py --check",
+      "result_state": "measured",
+      "route_runtime": "historical saved-output replay",
+      "row_inspection_rule": "dev140 rows permitted; exact evidence required on changed rows",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "family-local clinical_headline key equality",
+      "source_artifacts": [
+        "experiments/exectv2_model_led_dev140_regression_analysis_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/exectv2_model_led_dev140_regression_analysis_20260715.json": "d59cfcdc52ea8abc2079e414ec42497b9694b64039cac909f2fa70b5cc1bcd76"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": "recorded by historical source",
+      "token_limit": "recorded by historical source",
+      "unique_rows": 140,
+      "unit": "transition_counts",
+      "value": {
+        "changed_still_wrong": 118,
+        "correct_to_wrong": 41,
+        "wrong_to_correct": 160
+      }
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Descriptive six-panel counts; the same 140 letters repeat across models and are not independent rows.",
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 840,
+      "denominator_status": "six_model_letter_panels",
+      "evidence_state": "development_answer",
+      "independence_claim": false,
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_sf_correction_transitions",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "deterministic SF state projection and unknown suppression",
+      "reproducibility_command": "python scripts/build_exectv2_six_model_sf_overinference.py --check",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 rows permitted; no test60 row accessed",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "projected_to_final",
+      "scorer": "change-aware frequency_state_faithful state set",
+      "source_artifacts": [
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
+      ],
+      "source_hashes": {
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "transition_counts",
+      "value": {
+        "correct_to_wrong": 1,
+        "final_exact_evidence_rate": 1.0,
+        "wrong_to_correct": 54
+      }
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Clinical seizure-band variation only; not demographic fairness.",
+      "comparability": "construct_only",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 750,
+      "denominator_status": "defined_subject_rows",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "no locked rows used",
+      "measurement_id": "gan2026_seizure_band_error_variation",
+      "model_row_count": 750,
+      "model_scope": [
+        "openai/gpt-4.1-mini v0_reference subject"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "clinical_slice",
+      "prompt_program": "v0_reference",
+      "repair_policy": "retained v0_reference policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "openai/gpt-4.1-mini retained subject",
+      "row_inspection_rule": "validation750 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "Gan seizure-band error parity transform",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_recorded_in_compact_scorecard",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 750,
+      "unit": "error_spread_and_coefficient_of_variation",
+      "value": {
+        "coefficient_of_variation": 0.032,
+        "error_spread": 0.078,
+        "worst_slice": "seizure_free_duration"
+      }
+    },
+    {
+      "cache_replay_mode": "not_applicable",
+      "claim_boundary": "No demographic fairness claim.",
+      "comparability": "not_comparable",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": null,
+      "denominator_status": "not_measured",
+      "evidence_state": "not_measured",
+      "independent_clinical_review": "not_started",
+      "locked_row_controls": "test450 remains sealed",
+      "measurement_id": "gan2026_demographic_fairness",
+      "model_row_count": null,
+      "model_scope": [
+        "not_applicable_current_data"
+      ],
+      "not_measured_reason": "Suitable demographic attributes, sample sizes, and a clinically meaningful fairness question are absent.",
+      "pooling_unit": "not_applicable",
+      "prompt_program": "not_applicable",
+      "repair_policy": "not_applicable",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "not_measured",
+      "route_runtime": "not_applicable",
+      "row_inspection_rule": "no demographic substrate",
+      "row_scope": "synthetic_fixture",
+      "score_stage": "final",
+      "scorer": "not_defined",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "not_measured",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "not_applicable",
+      "token_limit": "not_applicable",
+      "unique_rows": null,
+      "unit": "fairness_measure",
+      "value": null
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Four clinical families on dev140; not demographic fairness or clinical validation.",
+      "comparability": "construct_only",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 140,
+      "denominator_status": "defined_letters; family F1 uses model-specific fact counts",
+      "evidence_state": "development_answer",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_dev140_family_f1",
+      "model_row_count": 840,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "dev140 development rows permitted",
+      "row_scope": "development_rows_permitted",
+      "score_stage": "final",
+      "scorer": "ExECT clinical_headline family scorers",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json"
+      ],
+      "source_hashes": {
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json": "2d07f1dbd0ee797d3612d6dedc8d36a8e32c1209bc1ba2fe483ad6fc0700647e",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json": "1ef9afb79009b4db9e412b0d1d6080930f3c218fabea05044ee89ab1944f77e9",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json": "3cd1ef2d0d8064cd61c5c885b603207700ce43db543e6f2fcf5a26696a696eeb",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json": "afe7fb1ee5214ffc46adca5ea7ce49bb056c8cabe4707344ea4204cc36321e13",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json": "c7e48d7b858587a3ec7352e37b9dec6857146823122bc964a94e1cc3dbf4344a",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json": "3e55d102ea104b8a25ae4bed7e86b7469f7cbfc6bc5c3c675ce565efc7ef19e7",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb"
+      },
+      "split": "dev140",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 140,
+      "unit": "clinical_headline_f1_by_family",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "Diagnosis": 0.8764,
+          "Investigations": 0.9389,
+          "Prescription": 0.928,
+          "SeizureFrequency": 0.761
+        },
+        "ollama_chat/gemma4:26b": {
+          "Diagnosis": 0.8378,
+          "Investigations": 0.8047,
+          "Prescription": 0.9046,
+          "SeizureFrequency": 0.6226
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "Diagnosis": 0.872,
+          "Investigations": 0.9105,
+          "Prescription": 0.9249,
+          "SeizureFrequency": 0.7062
+        },
+        "openai/gpt-4.1-mini": {
+          "Diagnosis": 0.847,
+          "Investigations": 0.8538,
+          "Prescription": 0.8672,
+          "SeizureFrequency": 0.6936
+        },
+        "openai/gpt-5.6-luna": {
+          "Diagnosis": 0.891,
+          "Investigations": 0.9202,
+          "Prescription": 0.925,
+          "SeizureFrequency": 0.7892
+        },
+        "openai/gpt-5.6-sol": {
+          "Diagnosis": 0.8882,
+          "Investigations": 0.9358,
+          "Prescription": 0.9432,
+          "SeizureFrequency": 0.8012
+        }
+      }
+    },
+    {
+      "cache_replay_mode": "not_applicable",
+      "claim_boundary": "No demographic fairness claim.",
+      "comparability": "not_comparable",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": null,
+      "denominator_status": "not_measured",
+      "evidence_state": "not_measured",
+      "independent_clinical_review": "not_started",
+      "locked_row_controls": "test60 remains sealed",
+      "measurement_id": "exectv2_demographic_fairness",
+      "model_row_count": null,
+      "model_scope": [
+        "not_applicable_current_data"
+      ],
+      "not_measured_reason": "Suitable demographic attributes, sample sizes, and a clinically meaningful fairness question are absent.",
+      "pooling_unit": "not_applicable",
+      "prompt_program": "not_applicable",
+      "repair_policy": "not_applicable",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "not_measured",
+      "route_runtime": "not_applicable",
+      "row_inspection_rule": "no demographic substrate",
+      "row_scope": "synthetic_fixture",
+      "score_stage": "final",
+      "scorer": "not_defined",
+      "source_artifacts": [
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
+      ],
+      "source_hashes": {
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+      },
+      "split": "not_measured",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": "not_applicable",
+      "token_limit": "not_applicable",
+      "unique_rows": null,
+      "unit": "fairness_measure",
+      "value": null
+    },
+    {
+      "cache_replay_mode": "retained no-call summary",
+      "claim_boundary": "Historical aggregate operations and bounded offline estimate; matched latency and retry telemetry unavailable.",
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 1950,
+      "denominator_status": "defined_processed_rows",
+      "evidence_state": "diagnostic",
+      "independent_clinical_review": "not_applicable_operational_measure",
+      "locked_row_controls": "test450 rows sealed",
+      "measurement_id": "gan2026_historical_operational_summary",
+      "model_row_count": 1950,
+      "model_scope": [
+        "retained Gan reliability subjects"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "processed_row",
+      "prompt_program": "mixed retained Gan subjects",
+      "repair_policy": "retained Gan repair stack",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": "mixed retained Gan subjects",
+      "row_inspection_rule": "validation permitted; test aggregate only",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "operational event accounting",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "source_hashes": {
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
+      },
+      "split": "validation750+test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "mixed retained conditions",
+      "token_limit": "not_recorded_in_compact_scorecard",
+      "unique_rows": 1950,
+      "unit": "failures_repairs_and_bounded_cost",
+      "value": {
+        "model_render_failures": 0,
+        "offline_estimated_usd_per_1000_notes": 1.16,
+        "recoverable_repairs": 5483
+      }
+    },
+    {
+      "cache_replay_mode": "cache disabled; aggregate-only retained readout",
+      "claim_boundary": "Observed aggregate events for six unmatched provider/runtime conditions; no efficiency ranking.",
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
+      "denominator": 450,
+      "denominator_status": "defined_per_model_letters",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "test450 rows sealed; aggregate values only",
+      "measurement_id": "gan2026_six_model_test450_operational_events",
+      "model_row_count": 2700,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "repair_policy": "hybrid_full_stack",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
+        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
+        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
+        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
+        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
+        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+      },
+      "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "aggregate run event accounting",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "test450",
+      "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "task": "gan2026",
+      "temperature": "recorded_by_condition_in_route_runtime",
+      "token_limit": "not_recorded_in_compact_aggregate",
+      "unique_rows": 450,
+      "unit": "event_counts",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "call_failures": 0,
+          "exact_evidence": 434,
+          "parse_schema_label_issues": 4,
+          "repair_notes": 259,
+          "structured_records": 446
+        },
+        "ollama_chat/gemma4:26b": {
+          "call_failures": 0,
+          "exact_evidence": 437,
+          "parse_schema_label_issues": 0,
+          "repair_notes": 291,
+          "structured_records": 450
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "call_failures": 0,
+          "exact_evidence": 363,
+          "parse_schema_label_issues": 0,
+          "repair_notes": 316,
+          "structured_records": 450
+        },
+        "openai/gpt-4.1-mini": {
+          "call_failures": 0,
+          "exact_evidence": 419,
+          "parse_schema_label_issues": 2,
+          "repair_notes": 317,
+          "structured_records": 448
+        },
+        "openai/gpt-5.6-luna": {
+          "call_failures": 0,
+          "exact_evidence": 446,
+          "parse_schema_label_issues": 3,
+          "repair_notes": 305,
+          "structured_records": 447
+        },
+        "openai/gpt-5.6-sol": {
+          "call_failures": 0,
+          "exact_evidence": 449,
+          "parse_schema_label_issues": 0,
+          "repair_notes": 366,
+          "structured_records": 450
+        }
+      }
+    },
+    {
+      "cache_replay_mode": "live retained calls with cache disabled; no-call scorecard replay",
+      "claim_boundary": "Observed aggregate events with hosted/local routes separate; no matched latency, token, cost, or efficiency ranking.",
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
+      "denominator": 59,
+      "denominator_status": "defined_loadable_letters_per_model",
+      "evidence_state": "aggregate_holdout_evidence",
+      "independent_clinical_review": "not_completed",
+      "locked_row_controls": "dev140 only for row analysis; test60 aggregate rows sealed",
+      "measurement_id": "exectv2_six_model_test60_operational_events",
+      "model_row_count": 354,
+      "model_scope": [
+        "openai/gpt-4.1-mini",
+        "openai/gpt-5.6-luna",
+        "openai/gpt-5.6-sol",
+        "deepseek/deepseek-v4-flash",
+        "ollama_chat/qwen3.6:35b",
+        "ollama_chat/gemma4:26b"
+      ],
+      "not_measured_reason": null,
+      "pooling_unit": "model_letter",
+      "prompt_program": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "repair_policy": "decision-0040 family boundary with selected joint bounded policy",
+      "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
+      "result_state": "measured",
+      "route_runtime": {
+        "deepseek/deepseek-v4-flash": {
+          "metadata": {
+            "api_model": "deepseek-v4-flash",
+            "cache_mode": "disabled",
+            "endpoint": "https://api.deepseek.com",
+            "provider": "DeepSeek",
+            "route_probe": {
+              "date": "2026-07-15",
+              "final_content_present": true,
+              "finish_reason": "stop",
+              "reasoning_content_present": true
+            },
+            "thinking": "enabled_by_api_default",
+            "thinking_request": "model deepseek-v4-flash with no thinking override"
+          },
+          "runtime": "official_deepseek_v4_flash_default_thinking"
+        },
+        "ollama_chat/gemma4:26b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
+            "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+            "digest": "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "enforced",
+            "num_ctx": 65536,
+            "ollama_version": "0.30.10",
+            "parameter_size": "25.8B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "native_schema_constraint",
+            "structured_probe_date": "2026-07-16",
+            "tag": "gemma4:26b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+            "endpoint": "http://localhost:11434",
+            "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
+            "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+            "num_ctx": 32768,
+            "ollama_version": "0.30.10",
+            "parameter_size": "36.0B",
+            "provider": "Ollama",
+            "quantization": "Q4_K_M",
+            "structured_output_mode": "prompt_plus_shared_parser",
+            "structured_probe_date": "2026-07-16",
+            "tag": "qwen3.6:35b",
+            "thinking": "disabled_with_think_false"
+          },
+          "runtime": "ollama_native_chat_think_false"
+        },
+        "openai/gpt-4.1-mini": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-luna": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "endpoint": "https://api.openai.com",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_chat"
+        },
+        "openai/gpt-5.6-sol": {
+          "metadata": {
+            "cache_mode": "disabled",
+            "chat_completions_probe": "401_unauthorized",
+            "endpoint": "https://api.openai.com/v1/responses",
+            "model_revision": "record_from_response_if_exposed",
+            "provider": "OpenAI",
+            "responses_probe": "completed",
+            "thinking": "provider_default"
+          },
+          "runtime": "openai_responses"
+        }
+      },
+      "row_inspection_rule": "aggregate-only test60; sealed row artifacts excluded",
+      "row_scope": "aggregate_only_rows_sealed",
+      "score_stage": "final",
+      "scorer": "aggregate run event accounting",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "source_hashes": {
+        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+      },
+      "split": "test60",
+      "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
+      "task": "exectv2",
+      "temperature": {
+        "deepseek/deepseek-v4-flash": 0,
+        "ollama_chat/gemma4:26b": 0,
+        "ollama_chat/qwen3.6:35b": 0,
+        "openai/gpt-4.1-mini": 0,
+        "openai/gpt-5.6-luna": 1,
+        "openai/gpt-5.6-sol": 1
+      },
+      "token_limit": {
+        "deepseek/deepseek-v4-flash": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/gemma4:26b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-4.1-mini": {
+          "structured_key_family_event_ledger": 10000
+        },
+        "openai/gpt-5.6-luna": {
+          "structured_key_family_event_ledger": 16000
+        },
+        "openai/gpt-5.6-sol": {
+          "structured_key_family_event_ledger": 16000
+        }
+      },
+      "unique_rows": 59,
+      "unit": "event_counts",
+      "value": {
+        "deepseek/deepseek-v4-flash": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        },
+        "ollama_chat/gemma4:26b": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 6
+        },
+        "ollama_chat/qwen3.6:35b": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        },
+        "openai/gpt-4.1-mini": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        },
+        "openai/gpt-5.6-luna": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        },
+        "openai/gpt-5.6-sol": {
+          "blocking_parse_failures": 0,
+          "call_failures": 0,
+          "parse_schema_failures": 0
+        }
+      }
+    }
+  ],
+  "no_composite_rule": "No overall reliability number, average criterion coverage, weighted index, or pooled cross-task model ranking is calculated.",
+  "retained_evidence_manifest": "docs/experiments/retained_evidence_manifest.json",
+  "schema_version": "shared-reliability-scorecard-v1",
+  "source_inventory": [
+    {
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "gap_ids": [],
+      "measurement_ids": [
+        "gan2026_six_model_test450_purist_accuracy",
+        "gan2026_six_model_test450_pragmatic_accuracy",
+        "gan2026_subject_validation750_purist_accuracy",
+        "gan2026_subject_test450_purist_accuracy"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json",
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "not_comparable",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "gap_ids": [
+        "gan_selection_denominator_metadata"
+      ],
+      "measurement_ids": [
+        "gan2026_unknown_gold_active_rate_overread_rate"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "gap_ids": [
+        "gan_semantic_support_review"
+      ],
+      "measurement_ids": [
+        "gan2026_textual_grounding_rate",
+        "gan2026_semantic_support_review"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "gap_ids": [],
+      "measurement_ids": [
+        "gan2026_external_signal_calibration",
+        "gan2026_risk_coverage"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "gap_ids": [
+        "gan_broad_robustness"
+      ],
+      "measurement_ids": [
+        "gan2026_prompt_version_robustness_index",
+        "gan2026_repeated_temperature_semantic_entropy"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "gap_ids": [
+        "gan_full_stage_transition_inventory"
+      ],
+      "measurement_ids": [
+        "gan2026_validation750_normalization_component_delta"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "gap_ids": [
+        "gan_demographic_fairness"
+      ],
+      "measurement_ids": [
+        "gan2026_seizure_band_error_variation",
+        "gan2026_demographic_fairness"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "gap_ids": [
+        "gan_matched_efficiency_telemetry"
+      ],
+      "measurement_ids": [
+        "gan2026_historical_operational_summary",
+        "gan2026_six_model_test450_operational_events"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json",
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "task": "gan2026"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "clinical_correctness_generalization",
+      "gap_ids": [],
+      "measurement_ids": [
+        "exectv2_six_model_dev140_clinical_headline_f1",
+        "exectv2_six_model_test60_clinical_headline_f1"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "not_comparable",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "gap_ids": [
+        "exect_unsupported_selection_denominator"
+      ],
+      "measurement_ids": [
+        "exectv2_sf_unknown_only_active_rate_overread_rate"
+      ],
+      "result_state": "not_measurable_current_data",
+      "source_artifacts": [
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "evidence_support_faithfulness",
+      "gap_ids": [
+        "exect_semantic_support_review"
+      ],
+      "measurement_ids": [
+        "exectv2_final_exact_evidence_rate",
+        "exectv2_semantic_support_review"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
+        "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "uncertainty_selective_action",
+      "gap_ids": [
+        "exect_six_model_uncertainty"
+      ],
+      "measurement_ids": [
+        "exectv2_internal_scoring_rule_calibration",
+        "exectv2_historical_model_reported_confidence_failure_auroc"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "docs/experiments/exectv2/reliability/exectv2_calibration_redesign_2026-07-07.md",
+        "docs/experiments/exectv2/reliability/exectv2_calibration_validation_audit_2026-06-25.md",
+        "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "robustness_stability",
+      "gap_ids": [
+        "exect_broad_robustness"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_dev_to_test_f1_change"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "component_attribution_correction_safety",
+      "gap_ids": [],
+      "measurement_ids": [
+        "exectv2_dev140_normalization_component_delta",
+        "exectv2_six_model_score_stage_f1",
+        "exectv2_historical_deterministic_correction_transitions",
+        "exectv2_six_model_sf_correction_transitions"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/cross_task_shared_component_ablation_2026-06-27.json",
+        "experiments/exectv2_model_led_dev140_regression_analysis_20260715.json",
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "gap_ids": [
+        "exect_demographic_fairness"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_dev140_family_f1",
+        "exectv2_demographic_fairness"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json",
+        "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt41mini_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+        "configs/exectv2/six_model_comparison/gpt56sol_dev140.json",
+        "configs/exectv2/six_model_comparison/qwen36_35b_dev140.json",
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json",
+        "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
+        "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json"
+      ],
+      "task": "exectv2"
+    },
+    {
+      "comparability": "construct_only",
+      "criterion_id": "operational_reliability",
+      "gap_ids": [
+        "exect_matched_efficiency_telemetry"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_test60_operational_events"
+      ],
+      "result_state": "measured",
+      "source_artifacts": [
+        "experiments/hosted_holdout_panels_20260715.json"
+      ],
+      "task": "exectv2"
+    }
+  ],
+  "task_criteria": [
+    {
+      "completion_status": "complete_for_recorded_scope",
+      "criterion_id": "clinical_correctness_generalization",
+      "gap_ids": [],
+      "measurement_ids": [
+        "gan2026_six_model_test450_purist_accuracy",
+        "gan2026_six_model_test450_pragmatic_accuracy",
+        "gan2026_subject_validation750_purist_accuracy",
+        "gan2026_subject_test450_purist_accuracy"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Six-model test450 Purist and Pragmatic accuracy plus the retained subject validation/test comparison.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "gap_ids": [
+        "gan_selection_denominator_metadata"
+      ],
+      "measurement_ids": [
+        "gan2026_unknown_gold_active_rate_overread_rate"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Unknown-gold active-rate over-read is retained; selected denominator counts are absent from the compact source.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "evidence_support_faithfulness",
+      "gap_ids": [
+        "gan_semantic_support_review"
+      ],
+      "measurement_ids": [
+        "gan2026_textual_grounding_rate",
+        "gan2026_semantic_support_review"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Textual grounding is measured; independent semantic-support review is not selected.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "complete_for_recorded_scope",
+      "criterion_id": "uncertainty_selective_action",
+      "gap_ids": [],
+      "measurement_ids": [
+        "gan2026_external_signal_calibration",
+        "gan2026_risk_coverage"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "External-signal calibration and full risk-coverage results are retained for the named subject.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "robustness_stability",
+      "gap_ids": [
+        "gan_broad_robustness"
+      ],
+      "measurement_ids": [
+        "gan2026_prompt_version_robustness_index",
+        "gan2026_repeated_temperature_semantic_entropy"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "Prompt-version and one-model repeated-temperature results cover named subdimensions only.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "component_attribution_correction_safety",
+      "gap_ids": [
+        "gan_full_stage_transition_inventory"
+      ],
+      "measurement_ids": [
+        "gan2026_validation750_normalization_component_delta"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "The shared normalization ablation is measured; the retained compact package does not reproduce every stage transition count.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "gap_ids": [
+        "gan_demographic_fairness"
+      ],
+      "measurement_ids": [
+        "gan2026_seizure_band_error_variation",
+        "gan2026_demographic_fairness"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "Seizure-band variation is measured; demographic fairness is not measured.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "operational_reliability",
+      "gap_ids": [
+        "gan_matched_efficiency_telemetry"
+      ],
+      "measurement_ids": [
+        "gan2026_historical_operational_summary",
+        "gan2026_six_model_test450_operational_events"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Six-model failures and repairs plus a bounded historical cost estimate are measured; efficiency telemetry is unmatched.",
+      "task": "gan2026"
+    },
+    {
+      "completion_status": "complete_for_recorded_scope",
+      "criterion_id": "clinical_correctness_generalization",
+      "gap_ids": [],
+      "measurement_ids": [
+        "exectv2_six_model_dev140_clinical_headline_f1",
+        "exectv2_six_model_test60_clinical_headline_f1"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Six-model dev140 and aggregate-only test60 clinical-headline F1.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "blocked_by_data",
+      "criterion_id": "clinical_selection_unsupported_inference",
+      "gap_ids": [
+        "exect_unsupported_selection_denominator"
+      ],
+      "measurement_ids": [
+        "exectv2_sf_unknown_only_active_rate_overread_rate"
+      ],
+      "result_state": "not_measurable_current_data",
+      "strongest_evidence_state": "diagnostic",
+      "summary": "The predeclared unknown-only denominator is zero; empty-gold letters are not substitutes.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "evidence_support_faithfulness",
+      "gap_ids": [
+        "exect_semantic_support_review"
+      ],
+      "measurement_ids": [
+        "exectv2_final_exact_evidence_rate",
+        "exectv2_semantic_support_review"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Final exact evidence is measured; a stratified semantic-support sample awaits independent review.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "uncertainty_selective_action",
+      "gap_ids": [
+        "exect_six_model_uncertainty"
+      ],
+      "measurement_ids": [
+        "exectv2_internal_scoring_rule_calibration",
+        "exectv2_historical_model_reported_confidence_failure_auroc"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Internal scoring-rule calibration and a historical three-model negative routing result are retained.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "robustness_stability",
+      "gap_ids": [
+        "exect_broad_robustness"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_dev_to_test_f1_change"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Six-model development-to-holdout changes are measured; perturbation robustness is not.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "complete_for_recorded_scope",
+      "criterion_id": "component_attribution_correction_safety",
+      "gap_ids": [],
+      "measurement_ids": [
+        "exectv2_dev140_normalization_component_delta",
+        "exectv2_six_model_score_stage_f1",
+        "exectv2_historical_deterministic_correction_transitions",
+        "exectv2_six_model_sf_correction_transitions"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "Six-model score stages, historical family regressions, and SF correction transitions remain separate.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "coverage_clinical_slice_behavior",
+      "gap_ids": [
+        "exect_demographic_fairness"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_dev140_family_f1",
+        "exectv2_demographic_fairness"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "development_answer",
+      "summary": "All four fixed families are reported for six models; demographic fairness is not measured.",
+      "task": "exectv2"
+    },
+    {
+      "completion_status": "partial",
+      "criterion_id": "operational_reliability",
+      "gap_ids": [
+        "exect_matched_efficiency_telemetry"
+      ],
+      "measurement_ids": [
+        "exectv2_six_model_test60_operational_events"
+      ],
+      "result_state": "measured",
+      "strongest_evidence_state": "aggregate_holdout_evidence",
+      "summary": "Six-model test60 completion and parse/schema behavior are retained with hosted/local routes separate.",
+      "task": "exectv2"
+    }
+  ]
+}

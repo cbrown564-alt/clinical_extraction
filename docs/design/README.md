@@ -11,5 +11,6 @@
 | [model-output repair](llm_repair_attribution_protocol_2026-06-22.md) | Repair categories and reporting |
 | [model policy](model_strategy.md) | Runtime model policy |
 | [reliability questions](reliability_thesis.md) | Reliability claims and limits |
+| [reliability evaluation framework](reliability_evaluation_framework.md) | Eight shared criteria, assurance gates, evidence states, and comparability rules |
 
 Completed candidate designs and old plans remain available from Git history.
