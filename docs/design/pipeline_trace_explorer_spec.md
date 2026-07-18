@@ -2,7 +2,7 @@
 
 Status: proposed; implementation is not part of the retained deliverables  
 Prototype: [`experiments/pipeline_flow_prototypes_20260716.html`](../../experiments/pipeline_flow_prototypes_20260716.html)  
-Last updated: 2026-07-16
+Last updated: 2026-07-18
 
 ## Purpose
 
@@ -12,9 +12,12 @@ application must show source evidence, model output, deterministic changes,
 component ownership, and score projections without changing the pipeline or
 weakening split restrictions.
 
-The first release is a read-only projection of existing artifacts. It is not a
-new experiment runner, annotation tool, model playground, or replacement for
-the retained evidence reports.
+The first release is a read-only projection of existing artifacts. A later,
+bounded review feature may collect independent judgments for the frozen ExECT
+semantic-support sample. That feature is not a general annotation tool: it
+must preserve the source substrate, write a separate review artifact, and obey
+the review protocol below. The application is not a new experiment runner,
+model playground, or replacement for the retained evidence reports.
 
 ## Product boundary
 
@@ -39,15 +42,18 @@ A researcher or technical reviewer who needs to answer:
 4. Follow a highlighted evidence span back to the source text.
 5. Switch to the pipeline map or transformation ledger without losing the
    selected run, record, or stage.
-6. Copy a stable trace link or trace identifier for another local collaborator.
-7. If a row is not inspectable, see an aggregate-only explanation rather than
+6. When working from the governed semantic-support sample, assess whether the
+   cited text supports the conclusion and save or export the bounded review.
+7. Copy a stable trace link or trace identifier for another local collaborator.
+8. If a row is not inspectable, see an aggregate-only explanation rather than
    an empty or partially redacted record.
 
 ### Explicit exclusions from version 1
 
 - live model calls or provider credentials;
 - prompt editing or prompt comparison;
-- annotation or gold-label editing;
+- general annotation, gold-label editing, or review outside an explicitly
+  indexed and frozen review sample;
 - record-level access to Gan `test450`, ExECT `test60`, or the test portion of
   `full200`;
 - broad filesystem discovery or automatic ingestion of every experiment file;
@@ -75,6 +81,8 @@ The explorer is subordinate to these owners:
   owns the selected one-call ExECT graph.
 - [`evidence_groundedness_metric.md`](../reference/evidence_groundedness_metric.md)
   owns evidence grades.
+- [`exectv2_semantic_support_review_substrate_protocol_2026-07-18.md`](../experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
+  owns the 48-item sample, review question, required fields, and claim boundary.
 
 The UI must use the score and evidence names from these documents. It must not
 collapse `clinical_headline`, entity-specific scores, phrase, CUI, attributes,
@@ -91,6 +99,7 @@ accuracy value.
 | Are schema repair and semantic repair the same stage? | Never. | Gan rules require raw model selection, format repair, semantic deterministic repair, and scoring to remain separable. | Each operation gets its own category and trace event. | Gan contracts and scoring canon |
 | Is the application a new retained deliverable? | Not yet. | The active roadmap removed the prior frontend and Observatory because no required workflow justified them. | This document is proposed; promotion requires an explicit scope decision. | Active roadmap |
 | What deployment is assumed? | Single-user, local-only, bound to loopback. | It avoids inventing a security model before a remote user need exists. | No authentication in v1; remote binding must fail closed. | This specification |
+| Is semantic-support review part of ordinary trace inspection? | No. It is a protocol-bound queue over the frozen 48-item ExECT sample. | Exact evidence is only an eligibility condition; semantic support requires independent review. | The explorer may collect judgments but cannot alter findings, gold, sample membership, or claim status. | Review protocol and this specification |
 
 ## Information architecture
 
@@ -103,6 +112,7 @@ The URL owns the current selection:
 /runs/{run_id}/records/{source_id}/map?stage={stage_id}
 /compare?left={trace_id}&right={trace_id}&stage={stage_id}
 /runs/{run_id}/records/{source_id}/ledger?category={category}
+/reviews/{review_set_id}/items/{review_item_id}
 ```
 
 Refreshing or sharing a local URL must restore the same run, record, stage, and
@@ -120,7 +130,9 @@ The header contains:
 - an access label: `ROW INSPECTION ALLOWED`, `SYNTHETIC EXAMPLE`, or
   `AGGREGATE ONLY`;
 - primary views: **Evidence workbench**, **Pipeline map**, **Compare**, and
-  **Transformation ledger**.
+  **Transformation ledger**;
+- **Semantic support review** appears only when a governed review set is
+  indexed and the current item is permitted for review.
 
 The run and record selection stays fixed when changing views. The pipeline
 selector in the prototype becomes part of the run selector so the UI cannot
@@ -303,6 +315,86 @@ and text match within displayed operation metadata. Expand a row to show its
 payload and provenance. The table preserves source order unless the user
 explicitly sorts it; an active sort is always visible.
 
+### 6. Semantic support review
+
+This view is an optional, post-v1 feature for the frozen 48-item ExECTv2
+semantic-support sample. It answers one question: does the cited text
+sufficiently and decisively support the final clinical conclusion, including
+its assertion and temporal status? It must not be reused for correctness
+scoring, gold editing, model ranking, or unrestricted record annotation.
+
+#### Review-set admission
+
+The importer accepts a review set only when it:
+
+- matches the retained substrate hash and contains exactly the 24 expected
+  model-family strata with two distinct `dev140` letters per stratum;
+- contains no `test60` or mixed-split identifiers;
+- preserves all substrate review fields as null;
+- names a frozen review schema with allowed values, reviewer instructions, and
+  an adjudication rule; and
+- has a server-derived `development_row_level` policy for every source.
+
+Until the allowed values and adjudication rule are frozen, the catalog may show
+the sample as `prepared`, but the review controls remain disabled and explain
+the missing prerequisite. The UI never invents those values.
+
+#### Reviewer loop
+
+1. Select the semantic-support review set and enter the reviewer identity that
+   will be recorded in the exported artifact.
+2. Open the next unreviewed item. The screen shows model, family, selected
+   conclusion, assertion, attributes, rationale, component owner, fact origin,
+   exact evidence text, and stable source identity.
+3. Inspect the evidence in the source panel. Full `dev140` context is loaded
+   only on request and is never copied into the review artifact.
+4. Record all protocol fields: `semantic_support`, `evidence_decisive`,
+   `current_fact_warranted`, `unsupported_inference`, and optional notes.
+5. Save a draft, mark the item complete, or skip it with a required reason.
+6. Move to the next item without revealing automated correctness, confidence,
+   another reviewer's judgment, aggregate model performance, or future
+   adjudication outcome.
+7. Review completion counts by family and model, validate the set, and export a
+   separate machine-readable review artifact.
+
+The layout reuses the evidence workbench rather than creating a second source
+viewer. On desktop, the source and evidence occupy the main area and the five
+review fields form one stable side panel. On narrow screens, source, conclusion,
+and evidence precede the form. A sticky item navigator may show position and
+completion state, but not performance summaries.
+
+#### Bias controls and review states
+
+- Item order is the frozen sample order or a deterministic blinded order
+  declared in the review schema; users cannot sort by model score or outcome.
+- Model identity and family remain available for provenance, but the default
+  review presentation may mask model identity when the frozen instructions
+  require blinding.
+- Evidence exactness is shown as an eligibility fact, never as a positive
+  semantic-support cue.
+- Required item states are `unreviewed`, `draft`, `complete`, `skipped`, and
+  `conflict`. Only an adjudication import may resolve `conflict`.
+- Completion progress is descriptive. It must not display a semantic-support
+  rate, model comparison, or clinical-validity claim before the governed
+  analysis is separately defined and run.
+
+#### Review persistence and export
+
+Review responses are stored in a separate local SQLite database beneath
+`.trace_explorer/reviews/`; they never modify the content-addressed trace
+projection or frozen substrate. Every save records review-set ID, review-item
+ID, reviewer identity, schema version, response revision, timestamp, and a hash
+of the source substrate item. Edits append a revision rather than overwriting
+history.
+
+Export produces a new JSON artifact containing the frozen item identifiers,
+review fields, reviewer metadata, revision history, completion state, substrate
+hash, review-schema hash, and export hash. It excludes full source text. The
+export validator refuses incomplete required fields, changed sample membership,
+source-hash mismatch, or an item whose current response does not match the
+frozen schema. Importing another reviewer's artifact is explicit and preserves
+reviewer separation; it never silently merges or adjudicates disagreements.
+
 ### Responsive behavior
 
 - `>= 1280px`: three-area workbench.
@@ -386,6 +478,7 @@ src/clinical_extraction/trace_explorer/
     exectv2.py              # current ExECT artifact adapter
     gan2026.py              # current Gan artifact adapter
     illustrative.py         # SYN-014 fixture only
+    semantic_review.py      # frozen substrate and review-schema adapter
   api/
     app.py
     dependencies.py
@@ -393,6 +486,7 @@ src/clinical_extraction/trace_explorer/
     routes_catalog.py
     routes_runs.py
     routes_traces.py
+    routes_reviews.py
 frontend/trace-explorer/
   src/
     api/
@@ -402,6 +496,7 @@ frontend/trace-explorer/
     features/map/
     features/compare/
     features/ledger/
+    features/semantic-review/
     routes/
 ```
 
@@ -416,6 +511,8 @@ The explorer directory defaults to `.trace_explorer/` and remains untracked:
 .trace_explorer/
   index.sqlite3
   objects/{sha256}.json
+  reviews/reviews.sqlite3
+  reviews/exports/{sha256}.json
   build-manifest.json
 ```
 
@@ -438,6 +535,11 @@ checked against the retained evidence index or an explicitly supplied
 development-artifact allowlist, hashed before parsing, and assigned one schema
 version. Imports are atomic: build a temporary index, validate it, then replace
 the previous index.
+
+Review responses are the only mutable application data. They use the separate
+review database and export directory described above and never modify a trace
+projection or the frozen substrate. Rebuilding the trace index must neither
+delete nor rewrite them.
 
 ### Access policy
 
@@ -589,9 +691,20 @@ envelope with `code`, `message`, `request_id`, and safe details.
 | `GET /runs/{run_id}/records/{source_id}/graph` | Derived nodes and edges. |
 | `GET /runs/{run_id}/aggregates` | Named score views and run diagnostics. |
 | `POST /comparisons/resolve` | Validate and align two already permitted trace IDs. |
+| `GET /review-sets` | Governed review sets, readiness, schema, and safe progress counts. |
+| `GET /review-sets/{review_set_id}/items` | Permitted item identifiers and completion states. |
+| `GET /review-sets/{review_set_id}/items/{review_item_id}` | Review item, evidence, conclusion, and optional permitted source context. |
+| `PUT /review-sets/{review_set_id}/items/{review_item_id}/response` | Append a schema-valid draft or completed response revision. |
+| `POST /review-sets/{review_set_id}/validate` | Check readiness, membership, hashes, and response completeness. |
+| `POST /review-sets/{review_set_id}/export` | Write and return metadata for a validated review artifact. |
 
 `POST /comparisons/resolve` is a read computation: it stores nothing and never
 accepts source text or raw payloads from the client.
+
+Review writes require an exact current response revision and substrate-item
+hash. A stale revision returns `409 review_conflict` without discarding either
+response. Review routes reject a set whose frozen schema, substrate hash, or
+row policy no longer matches the indexed metadata.
 
 Pagination uses opaque cursors and stable ordering by source identifier. API
 responses set `Cache-Control: no-store`. ETags may use projection hashes for
@@ -612,6 +725,8 @@ The importer must:
 8. verify that stage sequence and graph edges are acyclic and complete;
 9. write content-addressed projections and the index atomically;
 10. emit a machine-readable build manifest with counts and diagnostics.
+11. validate review-set membership, null substrate labels, review-schema hash,
+    and `dev140` source hashes before enabling review writes.
 
 Hash mismatch, unknown schema, mixed split, duplicated source ID, invalid
 offsets, or an adapter exception quarantines the affected run. No partial row
@@ -632,6 +747,8 @@ resources are exposed from a quarantined run.
   exhausting the browser.
 - Do not expose arbitrary file reads or user-supplied filesystem paths through
   HTTP.
+- Treat reviewer identity and notes as sensitive local data. Do not place them
+  in URLs, application logs, catalog search fields, or browser storage.
 
 ### Performance budgets
 
@@ -680,6 +797,22 @@ never edits the old content-addressed object. Contract compatibility tests must
 show that unchanged source artifacts retain stable trace and finding identities
 or explicitly record the migration.
 
+### Review substrate or schema mismatch
+
+If the substrate, review schema, or source hash differs from the indexed value,
+the review set becomes read-only and export is blocked. Existing response
+revisions remain available for explicit recovery, but the application does not
+reattach them to changed items. Re-enabling review requires a newly indexed,
+versioned review set and an explicit migration whose output preserves both old
+and new identifiers.
+
+### Interrupted or conflicting review
+
+Drafts are recoverable after restart. A stale browser write creates a conflict
+rather than replacing the current revision. The reviewer can inspect both
+revisions and save a new response; only a separately governed adjudication
+artifact may resolve disagreement between independent reviewers.
+
 ## Testing and verification
 
 ### Backend
@@ -696,6 +829,10 @@ or explicitly record the migration.
   schemas;
 - API tests that aggregate-only runs have no enumerable record endpoint;
 - OpenAPI compatibility test for the generated TypeScript client.
+- review-set admission tests for all 24 strata, distinct-letter sampling, null
+  substrate labels, frozen schema, `dev140` membership, and source hashes;
+- response revision, conflict, restart recovery, validation, and export tests;
+- tests proving review writes cannot mutate traces, substrate rows, or gold.
 
 ### Frontend
 
@@ -711,6 +848,10 @@ or explicitly record the migration.
 - tests that no note text or raw payload enters URL, local storage, logs, or
   client error reporting;
 - production build, type check, lint, and bundle-size check.
+- keyboard and screen-reader tests for the reviewer loop, required fields,
+  draft recovery, skip reasons, conflicts, and export validation;
+- tests that review screens do not expose performance summaries or another
+  reviewer's judgments before the governing instructions allow it.
 
 ### End-to-end acceptance slice
 
@@ -746,9 +887,12 @@ development artifacts.
 5. **Gan adapter:** project one permitted validation artifact and prove the
    separation of event extraction, format repair, semantic repair, selection,
    and Purist/Pragmatic scoring.
-6. **Hardening:** add quarantine behavior, performance checks, contract
+6. **Semantic-support review slice:** after the review values and adjudication
+   rule are frozen, index the 48-item substrate, complete one synthetic review
+   set end to end, then verify the real `dev140` sample and export contract.
+7. **Hardening:** add quarantine behavior, performance checks, contract
    compatibility, and production builds.
-7. **Promotion decision:** decide whether the verified application becomes a
+8. **Promotion decision:** decide whether the verified application becomes a
    retained deliverable. Only then update the active roadmap, CI, packaging,
    and maintenance ownership.
 
@@ -765,6 +909,12 @@ The application is implemented when:
 - format-only and semantic changes are visibly and structurally distinct;
 - aggregate-only runs cannot reveal source IDs, notes, gold, row failures, or
   row payloads through the UI, API, logs, index, or error messages;
+- the frozen semantic-support sample can be reviewed without changing sample
+  membership, traces, source artifacts, findings, or gold;
+- review responses retain identity, schema, hashes, and revision history and
+  export to a separately validated artifact without full source text;
+- the review UI does not convert exact evidence, completion, or reviewer input
+  into a clinical-validity or model-ranking claim;
 - the representative backend and frontend test suites pass;
 - the UI production build is visually checked at the three responsive widths;
 - the repository's Python tests, Ruff, and mypy checks remain clean.
@@ -786,4 +936,7 @@ deliverable boundary are changed explicitly.
   indexing; keep model calls out of that decision.
 - Whether future shared schemas rename Gan `FrequencyLabelKind`. Unblock: the
   existing open decision in `data_contract.md`.
-
+- Semantic-support review controls remain disabled until allowed response
+  values, reviewer instructions, and the adjudication rule are frozen in a
+  dated protocol amendment. Preparing the current substrate does not clear
+  this dependency.
