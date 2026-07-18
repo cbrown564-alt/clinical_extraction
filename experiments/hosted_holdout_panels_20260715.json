@@ -1,6 +1,7 @@
 {
-  "schema_version": "hosted-holdout-panels-v1",
-  "generated_date": "2026-07-15",
+  "schema_version": "six-model-holdout-panels-v2",
+  "generated_date": "2026-07-18",
+  "panel_status": "retained_six_model_aggregate_only",
   "row_content_included": false,
   "inspection_policy": "Aggregate fields and sealed-artifact fingerprints only. No held-out row was inspected to build this record.",
   "panels": {
@@ -78,6 +79,44 @@
             "local_path": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_aggregate.json",
             "sha256": "c060b4fc9e752c21b8d8b68b4cc433e9248ea59100f729ea4aae7985fb2d6de1",
             "bytes": 158561
+          }
+        },
+        {
+          "model": "ollama_chat/qwen3.6:35b",
+          "runtime": "native Ollama chat; thinking disabled; temperature 0",
+          "clinical_headline": {"f1": 0.7872, "precision": 0.7848, "recall": 0.7896},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "parse_schema_failures": 0,
+          "exact_evidence_rate_after_assembly": 1.0,
+          "sealed_artifact": {
+            "local_path": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_sealed_rows.jsonl",
+            "sha256": "18b38ceebc965877030f8ef89df3dfc53e9323a9a7c549264de86478cfda6373",
+            "bytes": 12449278
+          },
+          "aggregate_source": {
+            "local_path": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_aggregate.json",
+            "sha256": "3ff06c8fa331c8508b3025181e1b518ef7e2cc1adb2903d0da0fee4405a6e2c1",
+            "bytes": 17860
+          }
+        },
+        {
+          "model": "ollama_chat/gemma4:26b",
+          "runtime": "native Ollama chat; thinking disabled; temperature 0",
+          "clinical_headline": {"f1": 0.7169, "precision": 0.7299, "recall": 0.7043},
+          "call_failures": 0,
+          "blocking_parse_failures": 0,
+          "parse_schema_failures": 6,
+          "exact_evidence_rate_after_assembly": 1.0,
+          "sealed_artifact": {
+            "local_path": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_sealed_rows.jsonl",
+            "sha256": "ee0855fc65305def5114c6f04fcdb84913e45c9115fe2bd361a5df84e85ee66e",
+            "bytes": 12510311
+          },
+          "aggregate_source": {
+            "local_path": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_aggregate.json",
+            "sha256": "0b8bd5260a9ecf787499b5bf6befa1ffa5782e6a18a737d159d76245edd7c324",
+            "bytes": 17864
           }
         }
       ]
@@ -162,6 +201,52 @@
             "local_path": "scratch/holdout/gan2026_matched_v07_restart_v2/deepseek_v4_flash/sealed_rows.jsonl",
             "sha256": "d4c34cd201d51f5da8e8c28a6d3afd03cf813241fe15eb6d6bbd6bcf25ab403c",
             "bytes": 5657550
+          }
+        },
+        {
+          "model": "ollama_chat/qwen3.6:35b",
+          "route": "Native Ollama chat; thinking disabled; temperature 0",
+          "status": "retained_completed_v07",
+          "structured_records": 450,
+          "call_failures": 0,
+          "parse_schema_label_issues": 0,
+          "initial_parse_schema_label_issues": 1,
+          "exact_evidence": 363,
+          "repair_notes": 316,
+          "purist": {"correct": 367, "total": 450, "accuracy": 0.8156},
+          "pragmatic": {"correct": 380, "total": 450, "accuracy": 0.8444},
+          "sealed_artifact": {
+            "local_path": "scratch/local_queue/qwen36_35b/gan/test450_sealed_rows.jsonl",
+            "sha256": "2291c0d91356d6e36bf62e70ceb0383d50abd2709a046e96456e01a94c1c97e0",
+            "bytes": 5846751
+          },
+          "aggregate_source": {
+            "local_path": "scratch/local_queue/qwen36_35b/gan/test450_aggregate.md",
+            "sha256": "5db3a7af882269cf539a5b4ca34aa6da95c5f1c8de014d94275e9c95eacee26c",
+            "bytes": 2709
+          }
+        },
+        {
+          "model": "ollama_chat/gemma4:26b",
+          "route": "Native Ollama chat; thinking disabled; temperature 0",
+          "status": "retained_completed_v07",
+          "structured_records": 450,
+          "call_failures": 0,
+          "parse_schema_label_issues": 0,
+          "initial_parse_schema_label_issues": 7,
+          "exact_evidence": 437,
+          "repair_notes": 291,
+          "purist": {"correct": 343, "total": 450, "accuracy": 0.7622},
+          "pragmatic": {"correct": 367, "total": 450, "accuracy": 0.8156},
+          "sealed_artifact": {
+            "local_path": "scratch/local_queue/gemma4_26b/gan/test450_sealed_rows.jsonl",
+            "sha256": "ec48035422a3c4694029117ec973730d50ff999a32e7c5c2f658e53390572784",
+            "bytes": 5934344
+          },
+          "aggregate_source": {
+            "local_path": "scratch/local_queue/gemma4_26b/gan/test450_aggregate.md",
+            "sha256": "d8ba7326ec795c3019b837c055ee6fd74f340443eeb54856bb5cb28296934523",
+            "bytes": 2706
           }
         }
       ]

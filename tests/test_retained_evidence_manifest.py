@@ -61,7 +61,10 @@ def test_architecture_freeze_covers_every_reference_cell_and_policy_role() -> No
         "split",
         "split_runbook",
     }
-    assert freeze["model_policy"]["comparison_roster_status"] == "three_of_six_retained"
+    assert (
+        freeze["model_policy"]["comparison_roster_status"]
+        == "six_of_six_dev140_and_holdout_retained"
+    )
 
 
 def test_architecture_freeze_rejects_policy_hash_drift() -> None:
@@ -112,6 +115,17 @@ def test_model_transfer_package_keeps_permitted_dev_replay_inputs() -> None:
         "experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl",
     }
     assert expected <= artifact_paths
+
+
+def test_retained_manifest_selects_both_six_model_panels() -> None:
+    manifest = load_retained_evidence_manifest(MANIFEST)
+    packages = {record["id"]: record for record in manifest["evidence_packages"]}
+    assert packages["exectv2_fixed_six_model_panel_subject"]["result_summary"][
+        "local_conditions_retained_at_equal_status"
+    ] is True
+    assert packages["gan2026_matched_six_model_panel_subject"]["result_summary"][
+        "local_conditions_retained_at_equal_status"
+    ] is True
 
 
 def test_hybrid_reference_manifest_keeps_all_finding_assembly_inputs() -> None:

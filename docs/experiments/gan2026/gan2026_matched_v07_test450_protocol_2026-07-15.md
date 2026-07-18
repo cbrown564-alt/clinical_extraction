@@ -1,14 +1,13 @@
 # Gan 2026 matched hosted v0.7 test450 protocol
 
 Date: 2026-07-15  
-Status: complete; four hosted aggregates recorded
+Status: complete; six aggregate-only conditions retained
 Authorization: the user explicitly requested these runs on 2026-07-15.
 
 ## Question and claim boundary
 
-How do GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, and thinking-enabled DeepSeek
-V4 Flash compare when each uses the same Gan one-call pipeline, prompt v0.7,
-repair policy, and scorer?
+How do the selected six models compare when each uses the same Gan one-call
+pipeline, prompt v0.7, repair policy, and scorer?
 
 The result may be reported only as a matched, aggregate-only panel on the
 previously used locked holdout. Prompt v0.7 was developed from permitted
@@ -16,7 +15,7 @@ validation failures, but test450 has supported sequential aggregate runs and a
 small part of one generated row report was accidentally exposed during earlier
 documentation work. The panel is therefore not a pristine one-shot or
 model-neutral capability ranking. It cannot support row-level analysis,
-post-holdout tuning, or a complete six-model claim.
+post-holdout tuning or a model-neutral capability ranking.
 
 ## Frozen data, rows, and readout
 
@@ -84,6 +83,8 @@ model-specific semantic repair.
 | GPT-5.6 Luna | `openai/gpt-5.6-luna` | 1 | 10,000 | Retain completed v0.7 run |
 | GPT-5.6 Sol | `openai/gpt-5.6-sol`, Responses | omitted | 10,000 | Retain completed v0.7 run |
 | DeepSeek V4 Flash, thinking enabled | `deepseek/deepseek-v4-flash` | 0 | 32,000 | Fresh after pilot |
+| Qwen 3.6:35B | `ollama_chat/qwen3.6:35b`, native Ollama | 0 | recorded local condition | Retain sealed-output aggregate |
+| Gemma 4 26B | `ollama_chat/gemma4:26b`, native Ollama | 0 | recorded local condition | Retain sealed-output aggregate |
 
 Configuration:
 `configs/holdout/gan2026_matched_v07_hosted_20260715.json`.
@@ -121,9 +122,10 @@ exact-evidence count, repair totals, and timing/provider usage when available.
 Run each fresh condition once after its pilot passes. A completed aggregate is
 retained regardless of score. A call, parser, schema, evidence, repair, or
 scoring defect is recorded and stops that condition; it does not license
-test450 repair or rerun. The study answers the hosted four-model matched-panel
-question when both fresh conditions complete and all four aggregates are
-fingerprinted. Otherwise it ends as a bounded operational failure.
+test450 repair or rerun. The original hosted launch gate closed when both fresh
+hosted conditions completed and all four hosted aggregates were fingerprinted.
+The retained study is complete when the Qwen and Gemma aggregate-only local
+conditions are also fingerprinted in the common six-model panel.
 
 ## User-requested interruption and clean restart amendment
 
@@ -150,9 +152,11 @@ latency claims.
 
 ## Aggregate result
 
-Both replacement runs completed. Together with the retained Luna and Sol
-conditions, the matched hosted panel is complete. No test450 row was inspected
-to produce this table.
+Both replacement runs completed. Together with the retained Luna, Sol, Qwen,
+and Gemma conditions, the matched six-model panel is complete. No test450 row
+was inspected to produce this table. Qwen and Gemma were promoted from
+aggregate-only no-call reparses of sealed local outputs; this route difference
+is retained as provenance rather than used to downgrade their claim status.
 
 | Model | Purist | Pragmatic | Structured records | Exact evidence | Repair notes | Call failures | Parse/schema/label issues |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -160,6 +164,8 @@ to produce this table.
 | GPT-5.6 Luna | 352/450 (0.7822) | 365/450 (0.8111) | 447/450 | 446/450 | 305 | 0 | 3 |
 | GPT-5.6 Sol | 358/450 (0.7956) | 376/450 (0.8356) | 450/450 | 449/450 | 366 | 0 | 0 |
 | DeepSeek V4 Flash, thinking enabled | 342/450 (0.7600) | 362/450 (0.8044) | 446/450 | 434/450 | 259 | 0 | 4 |
+| Qwen 3.6:35B | 367/450 (0.8156) | 380/450 (0.8444) | 450/450 | 363/450 | 316 | 0 | 0 |
+| Gemma 4 26B | 343/450 (0.7622) | 367/450 (0.8156) | 450/450 | 437/450 | 291 | 0 | 0 |
 
 GPT-4.1-mini completed in 2,469.362 seconds (41.156 minutes), and DeepSeek
 completed in 11,167.049 seconds (186.117 minutes). These observed times are not
@@ -169,5 +175,6 @@ conditions differ.
 The fresh GPT-4.1-mini and DeepSeek runs used commit `2f709b78` with recorded
 uncommitted run-control changes. Their sealed artifacts are retained under the
 replacement roots above. The result supports a same-prompt, same-pipeline
-hosted comparison with the stated transport caveats; it does not support
-row-level error analysis, post-holdout tuning, or a model-neutral ranking.
+six-model comparison with the stated transport and local-reparse caveats; it
+does not support row-level error analysis, post-holdout tuning, or a
+model-neutral ranking.

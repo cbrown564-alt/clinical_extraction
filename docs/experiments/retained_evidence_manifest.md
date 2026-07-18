@@ -1,7 +1,6 @@
 # Retained Evidence Manifest
 
-Last rebuilt: 2026-07-14
-Architecture-boundary note updated: 2026-07-15
+Last rebuilt: 2026-07-18
 
 This is the human-readable view of
 [`retained_evidence_manifest.json`](retained_evidence_manifest.json). The JSON
@@ -39,15 +38,15 @@ checkout; CI requests them explicitly.
 
 ## Architecture freeze
 
-Freeze `reduced_reference_architecture_20260714` records:
+Freeze `retained_comparison_architecture_20260718` records:
 
-- source commit `465621341c6af59f2fc028be7bf5f9e325739c50`;
+- source commit `6c6df72c4069999c5cd24a12014f6b8d6a1183f5`;
 - Python 3.11 plus the exact dependency declaration and lock;
 - every retained reference-cell ID;
 - exact prompt, scorer, split, repair, model, split-runbook, quality-workflow,
   and dependency policy fingerprints;
-- the retained runtime identifiers and the honest three-of-six model-panel
-  boundary; and
+- the retained runtime identifiers and the completed six-model dev140 and
+  aggregate-only holdout boundaries; and
 - the no-call verification commands required before evidence changes.
 
 The freeze does not authorize model calls. New calls require a predeclaration;
@@ -90,6 +89,10 @@ by its assembly config; those inputs are selected and hash-checked here.
 | ExECT calibration and confidence | S5, S8 | Internal correctness rule: Brier `0.2225`, base-rate `0.2340`, ECE `0.0587`; aggregate-only test60 model-confidence AUROC `0.5394` / `0.5503` / `0.4895` for GPT-4.1-mini / historical DeepSeek / Qwen, with neither fixed routing rule adopted | Deployment calibration, thinking-enabled DeepSeek V4 Flash confidence, and a six-model confidence comparison |
 | ExECT published metrics | S7 | Paper-derived normalized-phrase, CUI, and all-feature scorer plus a no-call all-nine-entity dev140 replay: macro item F1 `0.5687`, `0.7144`, and `0.6020` | Original system, annotation process, and reported `0.87`/`0.90` validation scores are not reproduced |
 | Annotation quality | S7, S9 | Generated 584-record taxonomy hash-checks 13 retained sources, maps all 57 explicitly cited letters, separates original scores from sensitivity handling, and records three open and one fixed direct gold issues | Ten historical Diagnosis concept rows remain aggregate-only; independent clinical review is still required for clinical-validity claims |
+| ExECT fixed six-model panel | S4, S6, S8 | All six fixed one-call dev140 results and all six aggregate-only test60 results are hash-selected; local Qwen and Gemma have the same retained status as hosted models | Published-benchmark reproduction and independent clinical validation remain open; hosted/local runtime differences remain caveats |
+| Gan matched six-model panel | S4, S8 | All six prompt-v0.7 test450 aggregate results are hash-selected with Purist, Pragmatic, operational, evidence, and sealed-source fingerprints | The panel is not a pristine one-shot or model-neutral ranking; local no-call-reparse and provider-route differences must remain visible |
+| ExECT six-model SF over-inference | S5, S8 | A predeclared no-call dev140 replay compares model-structured and final projected/suppressed state sets for all six models; the final stage improves state F1 for every model, with 54 wrong-to-correct and one correct-to-wrong transition | The gold unknown-only denominator is zero, so the study is diagnostic and does not establish Gan-to-ExECT transfer or factuality prevalence |
+| Cross-task six-model report | S4, S5, S8 | The two retained panels are synthesized without pooling their task-specific scores; Sol leads ExECT, Qwen leads Gan, and cross-task rank correlation is 0.20 | Not a shared-metric capability ranking, pristine one-shot comparison, published ExECT benchmark, or clinical validation |
 
 ## Authority and deletion rule
 

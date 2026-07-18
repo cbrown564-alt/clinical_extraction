@@ -31,14 +31,16 @@ compare rules only, LLM only, and LLM with rules. Saved Gan holdout results are
 comparison. On ExECT dev140, rules only reached 0.6020 paper-derived all-features
 macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
 method reached 0.7393 clinical fact F1. The historical combined control reached
-0.9189 but used deterministic Prescription and SF-union paths; final six-model
-results are pending.
+0.9189 but used deterministic Prescription and SF-union paths. In the fixed
+six-model ExECT test60 panel, Sol led at 0.8047 clinical-headline F1; in the
+matched Gan v0.7 test450 panel, Qwen led at 367/450 Purist.
 Saved-output ablations show positive normalization contributions on both tasks,
 while the evidence check is score-inert on those representative replays. The
 selected evidence supports a reproducible component comparison with explicit
 data limits and a tested implementation of the published ExECT metric views. It
 does not reproduce the original ExECT system or its reported 0.87/0.90 scores,
-and it does not support independent clinical validation or a completed six-model result.
+and it does not support general model superiority, cross-task reliability
+transfer, or independent clinical validation.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -240,37 +242,38 @@ audit made 450 new reasoner calls while replaying two upstream traces.
 Matched tokens, cost, latency, hardware, and cache telemetry were not retained,
 so no measured token, dollar, energy, or latency comparison is claimed.
 
-\subsection{Planned Final ExECT Model Comparison}
+\subsection{Fixed ExECT Model Comparison}
 
-Table~\ref{tab:model-swap} records the fixed six-model roster. Results remain
-pending until every condition uses the corrected model-led family architecture.
+Table~\ref{tab:model-swap} records the fixed six-model roster under the
+corrected model-led family architecture.
 
 \begin{table}[!t]
-\caption{Planned ExECT Six-Model Comparison}
+\caption{Fixed ExECT Six-Model Comparison}
 \label{tab:model-swap}
 \centering
 \scriptsize
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrrrrrrr}
 \toprule
-Model condition & Overall & Diagnosis & SF & Prescription & Investigations & Call/parse failures \\
+Model condition & dev140 & test60 & Diagnosis & SF & Prescription & Investigations & Test call/parse \\
 \midrule
-GPT-4.1-mini & Pending & Pending & Pending & Pending & Pending & Pending \\
-GPT-5.6 Luna & Pending & Pending & Pending & Pending & Pending & Pending \\
-GPT-5.6 Sol & Pending & Pending & Pending & Pending & Pending & Pending \\
-DeepSeek V4 Flash (thinking) & Pending & Pending & Pending & Pending & Pending & Pending \\
-Qwen 3.6:35B (local) & Pending & Pending & Pending & Pending & Pending & Pending \\
-Gemma 4 26B (local) & Pending & Pending & Pending & Pending & Pending & Pending \\
+GPT-4.1-mini & 0.8202 & 0.7572 & 0.8470 & 0.6936 & 0.8672 & 0.8538 & 0/0 \\
+GPT-5.6 Luna & 0.8832 & 0.7950 & 0.8910 & 0.7892 & 0.9250 & 0.9202 & 0/0 \\
+GPT-5.6 Sol & 0.8920 & 0.8047 & 0.8882 & 0.8012 & 0.9432 & 0.9358 & 0/0 \\
+DeepSeek V4 Flash (thinking) & 0.8767 & 0.7881 & 0.8764 & 0.7610 & 0.9280 & 0.9389 & 0/0 \\
+Qwen 3.6:35B (local) & 0.8571 & 0.7872 & 0.8720 & 0.7062 & 0.9249 & 0.9105 & 0/0 \\
+Gemma 4 26B (local) & 0.8016 & 0.7169 & 0.8378 & 0.6226 & 0.9046 & 0.8047 & 0/6 \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
 Historical rows are excluded because Prescription was deterministic-only and SF
-included an independent extractor union. Corrected candidates remain
-unpromoted: durable configurations reproduce the attribution and aggregate
-gates, but deterministic correct-to-wrong counts remain nonzero. DeepSeek uses
-\code{deepseek/deepseek-chat} with thinking enabled and is reported as DeepSeek V4 Flash.
+included an independent extractor union. The fixed rows preserve attribution,
+state-profile, schema/evidence, and regression records. DeepSeek uses the
+official \code{deepseek-v4-flash} route with thinking enabled. Test60 is
+aggregate only; provider and local-runtime differences prevent a model-neutral
+capability ranking.
 
 \subsection{Cross-Task Components and Reliability}
 
@@ -307,15 +310,18 @@ Subject & Retained result & Boundary \\
 ExECT evidence & Hybrid dev140 minimum exact evidence rate 1.0000 & Development reference. \\
 ExECT calibration & Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 & Full200 aggregate internal scoring-rule result. \\
 ExECT confidence & Test60 failure AUROC 0.5394 GPT; 0.5503 historical DeepSeek; 0.4895 Qwen & Aggregate negative result for saved outputs. \\
+ExECT SF state replay & Final projection/suppression improves state F1 for all six; 54 W$\rightarrow$C and one C$\rightarrow$W & dev140 development result. \\
 Gan grounding & Architecture-specific validation grounding packages retained & Metrics are not uniform across families. \\
-Reproducibility & 1,157 tests, Ruff, mypy, hashes, split restrictions, and six-run replay pass on Python 3.11 & Engineering verification, not clinical validation. \\
+Reproducibility & Tests, Ruff, mypy, hashes, split restrictions, and six-run replay pass & Engineering verification, not clinical validation. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Neither predeclared model-confidence review rule met its test60 catch-rate and
 burden gates, so no confidence-based review policy is adopted. The retained
-evidence index does not include evidence for a cross-task over-reading claim.
+evidence does not support a cross-task over-reading claim. The predeclared
+ExECT analogue has zero gold unknown-only letters; empty-gold letters remain
+diagnostic rather than being substituted after the result.
 
 \section{Discussion}
 
@@ -330,8 +336,10 @@ replay shows that CUI matching recovers surface variation, while feature
 completion remains the larger limitation.
 
 Historical model-transfer artifacts ran with three runtime models, but their
-Prescription/SF columns and unrecorded DeepSeek thinking state exclude them
-from the final model comparison. The corrected panel remains incomplete.
+Prescription/SF columns are excluded from the final model comparison. The
+fixed panel replaces them with six exact conditions under one component
+boundary. Runtime differences still prevent general model superiority claims,
+and the ExECT and Gan rankings differ substantially.
 
 The cross-task ablation suggests that normalization is useful in both tasks.
 The exact-evidence check's zero F1 delta shows why aggregate score changes are
@@ -345,23 +353,26 @@ ExECT full200 includes dev140 and is not an independent holdout.
 strict benchmark. The paper-derived replay uses development data and does not
 reproduce the original system, annotation process, or 0.87/0.90 scores. A
 legacy benchmark/CUI companion has small current-code replay drift. The fixed
-six-model panel is incomplete, and the historical combined control does not
+six-model panels use different provider transports, temperatures, token limits,
+and local versus hosted runtimes. The historical combined control does not
 satisfy the final model-led family boundary.
 Model-reported confidence was uninformative for the three saved historical
 outputs under the frozen test60 analysis; this is not deployment calibration
 or a six-model result. Annotation-quality findings are internally adjudicated; unqualified
 clinical validity would require independent domain review. The current retained
-evidence does not support a cross-task over-reading claim.
+evidence does not support a cross-task over-reading claim; ExECT has zero gold
+unknown-only letters under the predeclared measure.
 
 \section{Conclusion}
 
 An inspectable clinical extraction system can preserve performance evidence
 and the source needed to interpret it. The selected results support a
-historical three-method comparison on two tasks and saved Gan holdout results.
-They expose why the final ExECT model comparison requires a corrected family
-architecture. They do not support strict ExECT score reproduction, a six-model
-conclusion, or independent clinical validation. Those boundaries are part of
-the result, not footnotes to it.
+three-method comparison on two tasks and fixed six-model panels under each
+task's named scorer. They expose the effect and regression risk of deterministic
+components without assigning their gains to the model. They do not support
+strict ExECT score reproduction, general model superiority, cross-task
+reliability transfer, or independent clinical validation. Those boundaries are
+part of the result, not footnotes to it.
 
 \section*{Reproducibility Statement}
 

@@ -1,0 +1,4 @@
+{"comparison": {"purist_correct": true, "pragmatic_correct": true}, "final_label": "2 per week"}
+{"comparison": {"purist_correct": true, "pragmatic_correct": false}, "decision_record": {"final_label": "no seizure frequency reference"}}
+{"comparison": null, "structured_record": {"selection": {"final_label": "unknown"}}}
+{"comparison": null}

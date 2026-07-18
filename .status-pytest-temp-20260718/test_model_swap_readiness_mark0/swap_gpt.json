@@ -1,0 +1,985 @@
+{
+  "candidate_name": "swap_gpt",
+  "changed_row_accounting": {
+    "versus_v042_default_quarantine": {
+      "by_indicator": {
+        "Diagnosis": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Investigations": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "Prescription": {
+          "categories": {},
+          "changed_rows": 0
+        },
+        "SeizureFrequency": {
+          "categories": {},
+          "changed_rows": 0
+        }
+      },
+      "details": []
+    }
+  },
+  "claim_boundary": "toy model swap",
+  "diagnosis_policy_variant": "default",
+  "diagnosis_resolution_candidate": false,
+  "fact_origin_accounting": {
+    "by_lane": {
+      "Diagnosis": {
+        "dictionary_normalized": {
+          "target_model_generated": 2
+        },
+        "evidence_valid": {
+          "target_model_generated": 2
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 2
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 2
+        },
+        "source_scored": {
+          "target_model_generated": 2
+        }
+      },
+      "Investigations": {
+        "dictionary_normalized": {
+          "target_model_generated": 2
+        },
+        "evidence_valid": {
+          "target_model_generated": 2
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 2
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 2
+        },
+        "source_scored": {
+          "target_model_generated": 2
+        }
+      },
+      "Prescription": {
+        "dictionary_normalized": {
+          "target_model_generated": 2
+        },
+        "evidence_valid": {
+          "target_model_generated": 2
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 2
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 2
+        },
+        "source_scored": {
+          "target_model_generated": 2
+        }
+      },
+      "SeizureFrequency": {
+        "dictionary_normalized": {
+          "target_model_generated": 2
+        },
+        "evidence_valid": {
+          "target_model_generated": 2
+        },
+        "protocol_model_preserving_canonical": {
+          "target_model_generated": 2
+        },
+        "residual_benchmark_added": {
+          "target_model_generated": 2
+        },
+        "source_scored": {
+          "target_model_generated": 2
+        }
+      }
+    },
+    "by_surface": {
+      "dictionary_normalized": {
+        "target_model_generated": 8
+      },
+      "evidence_valid": {
+        "target_model_generated": 8
+      },
+      "protocol_model_preserving_canonical": {
+        "target_model_generated": 8
+      },
+      "residual_benchmark_added": {
+        "target_model_generated": 8
+      },
+      "source_scored": {
+        "target_model_generated": 8
+      }
+    }
+  },
+  "finding_views": [
+    "raw_candidate",
+    "evidence_valid",
+    "clinical_headline",
+    "fidelity_companion",
+    "benchmark_cui"
+  ],
+  "gate_decision": {
+    "basis": "Generic assembly gates remain diagnostic; the model-swap readiness report governs cross-model promotion.",
+    "checks": [
+      {
+        "detail": "delta vs v0.42 control +0.1786; floor -0.0100",
+        "name": "Prescription control regression",
+        "passed": true
+      },
+      {
+        "detail": "delta vs v0.42 control +0.1385; floor -0.0100",
+        "name": "Investigations control regression",
+        "passed": true
+      },
+      {
+        "detail": "1.0000; must beat 0.6693 and tie/beat 0.7127",
+        "name": "Diagnosis headline",
+        "passed": true
+      },
+      {
+        "detail": "1.0000; baseline 0.6693",
+        "name": "Diagnosis concept_negation",
+        "passed": true
+      },
+      {
+        "detail": "0.0000; must beat 0.5572 and tie/beat 0.6321",
+        "name": "SeizureFrequency headline",
+        "passed": false
+      },
+      {
+        "detail": "1.0000; baseline 0.2887",
+        "name": "SeizureFrequency active_rate_fidelity",
+        "passed": true
+      },
+      {
+        "detail": "0 changed rows",
+        "name": "Prescription changed-row control",
+        "passed": true
+      },
+      {
+        "detail": "0 changed rows",
+        "name": "Investigations changed-row control",
+        "passed": true
+      }
+    ],
+    "decision": "same-core-model-swap-dev140-readout"
+  },
+  "generated_on": "2026-06-25",
+  "input_artifacts": {
+    "diagnosis_decomposer": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+    "focused_comparator": "",
+    "prescription_deterministic_repair": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+    "sf_model_projection_suppression": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+    "sf_structured_union": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+    "structured_key_family_event_ledger": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl"
+  },
+  "lane_diagnostics": {
+    "Diagnosis": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 2,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 2,
+      "scored_mentions": 2
+    },
+    "Investigations": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 2,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 2,
+      "scored_mentions": 2
+    },
+    "Prescription": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 2,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 2,
+      "scored_mentions": 2
+    },
+    "SeizureFrequency": {
+      "call_failures": 0,
+      "evidence_invalid_dropped": 0,
+      "exact_evidence_mentions": 2,
+      "exact_evidence_rate": 1.0,
+      "parse_schema_failures": 0,
+      "raw_mentions": 2,
+      "scored_mentions": 2
+    }
+  },
+  "lane_sources": {
+    "Diagnosis": {
+      "artifact": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+      "lens": "diagnosis_hierarchy_negation_v01",
+      "ownership_label": "toy_dx",
+      "source_lane": "toy_dx"
+    },
+    "Investigations": {
+      "artifact": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+      "lens": "investigations_result_v01",
+      "ownership_label": "toy_inv",
+      "source_lane": "toy_inv"
+    },
+    "Prescription": {
+      "artifact": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+      "lens": "prescription_regimen_v01",
+      "ownership_label": "toy_rx",
+      "source_lane": "toy_rx"
+    },
+    "SeizureFrequency": {
+      "artifact": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/rows.jsonl",
+      "lens": "sf_state_projection_suppression_v01",
+      "ownership_label": "toy_model_sf",
+      "source_lane": "toy_model_sf"
+    }
+  },
+  "model_preserving_policy_candidate": false,
+  "model_swap": {
+    "architecture_contract": "historical_same_core",
+    "architecture_core_id": "same_core_test",
+    "calls_per_letter": 2.0,
+    "candidate_id": "swap_gpt",
+    "config_path": "C:/Users/cbrow/Code/clinical_extraction/.status-pytest-temp-20260718/test_model_swap_readiness_mark0/swap_gpt.json",
+    "diagnosis_resolution_candidate": false,
+    "live_call_components": [
+      "structured_key_family_event_ledger",
+      "diagnosis_decomposer"
+    ],
+    "max_tokens": {
+      "diagnosis_decomposer": 2600,
+      "structured_key_family_event_ledger": 6000
+    },
+    "model": "openai/gpt-4.1-mini",
+    "model_label": "GPT-4.1-mini",
+    "prompt_profile": "full",
+    "replay_source_revision": "",
+    "replayed_components": [
+      "sf_structured_direct_adapter",
+      "sf_state_projection",
+      "sf_unknown_suppression",
+      "sf_union_arbitration",
+      "prescription_deterministic_repair",
+      "finding_assembly"
+    ],
+    "row_inspection_policy": "dev140_only_no_full200_or_holdout_row_level_inspection",
+    "runtime": "openai_chat",
+    "temperature": 0.0
+  },
+  "pipeline_family": "toy_same_core_model_swap",
+  "prescription_policy_variant": "default",
+  "prescription_rescue_scope_candidate": false,
+  "report_title": "ExECTv2 Focused-Lane Component-Evidence Replay",
+  "row_count": 2,
+  "score_ladder": {
+    "benchmark": {
+      "after_cui_projection": 0.0,
+      "by_indicator_raw": {
+        "Diagnosis": 1.0,
+        "Investigations": 1.0,
+        "Prescription": 1.0,
+        "SeizureFrequency": 1.0
+      },
+      "raw": 1.0
+    },
+    "cui_projection_companion": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 2,
+          "precision": 1.0,
+          "precision_tp": 2,
+          "pred_count": 2,
+          "recall": 1.0,
+          "recall_tp": 2,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "SeizureFrequency": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        }
+      },
+      "overall": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "gold_count": 8,
+        "precision": 1.0,
+        "precision_tp": 8,
+        "pred_count": 8,
+        "recall": 1.0,
+        "recall_tp": 8,
+        "tp": 8
+      }
+    },
+    "evidence_valid_score": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 2,
+          "precision": 1.0,
+          "precision_tp": 2,
+          "pred_count": 2,
+          "recall": 1.0,
+          "recall_tp": 2,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "SeizureFrequency": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        }
+      },
+      "overall": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "gold_count": 8,
+        "precision": 1.0,
+        "precision_tp": 8,
+        "pred_count": 8,
+        "recall": 1.0,
+        "recall_tp": 8,
+        "tp": 8
+      }
+    },
+    "fidelity_companions": {
+      "Diagnosis": {
+        "concept_negation": {
+          "f1": 1.0,
+          "fidelity_gap": 0.0,
+          "headline_f1": 1.0
+        }
+      },
+      "SeizureFrequency": {
+        "active_rate_fidelity": {
+          "f1": 1.0,
+          "fidelity_gap": 0.0,
+          "headline_f1": 1.0
+        }
+      }
+    },
+    "headline_target": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 2,
+          "precision": 1.0,
+          "precision_tp": 2,
+          "pred_count": 2,
+          "recall": 1.0,
+          "recall_tp": 2,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "SeizureFrequency": {
+          "f1": 0.0,
+          "fn": 2,
+          "fp": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "shortfall_to_target": 0.9,
+          "tp": 0
+        }
+      },
+      "overall": {
+        "f1": 0.75,
+        "fn": 2,
+        "fp": 2,
+        "gold_count": 8,
+        "precision": 0.75,
+        "precision_tp": 6,
+        "pred_count": 8,
+        "recall": 0.75,
+        "recall_tp": 6,
+        "tp": 6
+      }
+    },
+    "materialized_surfaces": {
+      "dictionary_normalized": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "precision_tp": 8,
+          "pred_count": 8,
+          "recall": 1.0,
+          "recall_tp": 8,
+          "tp": 8
+        }
+      },
+      "evidence_valid": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "precision_tp": 8,
+          "pred_count": 8,
+          "recall": 1.0,
+          "recall_tp": 8,
+          "tp": 8
+        }
+      },
+      "protocol_model_preserving_canonical": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "precision_tp": 8,
+          "pred_count": 8,
+          "recall": 1.0,
+          "recall_tp": 8,
+          "tp": 8
+        }
+      },
+      "residual_benchmark_added": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "precision_tp": 8,
+          "pred_count": 8,
+          "recall": 1.0,
+          "recall_tp": 8,
+          "tp": 8
+        }
+      },
+      "source_scored": {
+        "by_indicator": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          }
+        },
+        "overall": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 8,
+          "precision": 1.0,
+          "precision_tp": 8,
+          "pred_count": 8,
+          "recall": 1.0,
+          "recall_tp": 8,
+          "tp": 8
+        }
+      }
+    },
+    "raw_lane_score": {
+      "by_indicator": {
+        "Diagnosis": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold_count": 2,
+          "precision": 1.0,
+          "precision_tp": 2,
+          "pred_count": 2,
+          "recall": 1.0,
+          "recall_tp": 2,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Investigations": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "Prescription": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        },
+        "SeizureFrequency": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "shortfall_to_target": 0.0,
+          "tp": 2
+        }
+      },
+      "overall": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "gold_count": 8,
+        "precision": 1.0,
+        "precision_tp": 8,
+        "pred_count": 8,
+        "recall": 1.0,
+        "recall_tp": 8,
+        "tp": 8
+      }
+    }
+  },
+  "split": "toy",
+  "stage": "toy2",
+  "structural_replay": {
+    "lens_count": 4,
+    "producer_count": 5,
+    "source_row_counts": {
+      "diagnosis_decomposer": 2,
+      "prescription_deterministic_repair": 2,
+      "sf_model_projection_suppression": 2,
+      "sf_structured_union": 2,
+      "structured_key_family_event_ledger": 2
+    }
+  },
+  "target_report": {
+    "adr": "docs/decisions/0030-four-exact-indicators-drive-exectv2-plan11.md",
+    "best_by_indicator": {
+      "Diagnosis": {
+        "candidate": "swap_gpt",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "shortfall_to_target": 0.0
+      },
+      "Investigations": {
+        "candidate": "swap_gpt",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "shortfall_to_target": 0.0
+      },
+      "Prescription": {
+        "candidate": "swap_gpt",
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "shortfall_to_target": 0.0
+      },
+      "SeizureFrequency": {
+        "candidate": "swap_gpt",
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "shortfall_to_target": 0.9
+      }
+    },
+    "candidates": [
+      {
+        "blocking_indicators": [
+          "SeizureFrequency"
+        ],
+        "error_analysis": {
+          "per_indicator": {
+            "Diagnosis": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            },
+            "Investigations": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            },
+            "Prescription": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            },
+            "SeizureFrequency": {
+              "candidate_miss": 0,
+              "evidence_failure": 0,
+              "wrong_detail_selection": 0
+            }
+          }
+        },
+        "fidelity_companions": {
+          "Diagnosis": {
+            "companion": "concept_negation",
+            "companion_f1": 1.0,
+            "fidelity_gap": 0.0,
+            "forgives": "Negation (negated vs affirmed)",
+            "headline_f1": 1.0
+          },
+          "SeizureFrequency": {
+            "companion": "active_rate_fidelity",
+            "companion_f1": 1.0,
+            "fidelity_gap": 0.0,
+            "forgives": "rate magnitude among active states",
+            "headline_f1": 1.0
+          }
+        },
+        "headline_scores": {
+          "Diagnosis": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "gold_count": 2,
+            "precision": 1.0,
+            "precision_tp": 2,
+            "pred_count": 2,
+            "recall": 1.0,
+            "recall_tp": 2,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Investigations": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "Prescription": {
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "shortfall_to_target": 0.0,
+            "tp": 2
+          },
+          "SeizureFrequency": {
+            "f1": 0.0,
+            "fn": 2,
+            "fp": 2,
+            "precision": 0.0,
+            "recall": 0.0,
+            "shortfall_to_target": 0.9,
+            "tp": 0
+          }
+        },
+        "meets_all_targets": false,
+        "name": "swap_gpt",
+        "overall_target_score": {
+          "f1": 0.75,
+          "fn": 2,
+          "fp": 2,
+          "gold_count": 8,
+          "precision": 0.75,
+          "precision_tp": 6,
+          "pred_count": 8,
+          "recall": 0.75,
+          "recall_tp": 6,
+          "tp": 6
+        },
+        "ownership": "toy_model_swap"
+      }
+    ],
+    "headline_score_policies": {
+      "Diagnosis": "projected clinical-fact concept_only score after deterministic Diagnosis normalization/projection; scored as projected core facts per letter",
+      "Investigations": "clinical_headline modality/performed/result score after deterministic investigation normalization/projection",
+      "Prescription": "clinical_headline regimen score after deterministic medication normalization/projection",
+      "SeizureFrequency": "projected seizure-state clinical_headline score after deterministic frequency-state normalization/projection"
+    },
+    "pipeline_family": "exectv2_adr0030_target_indicator_report",
+    "row_count": 2,
+    "scope_note": "ADR 0030 surface only: Diagnosis, SeizureFrequency, Prescription, and Investigations. Non-target ExECT families are intentionally omitted.",
+    "source_generated_on": "",
+    "source_pipeline_family": "exectv2_finding_assembly_views",
+    "split": "",
+    "stage": "dev2",
+    "target_f1": 0.9,
+    "target_indicators": [
+      "Diagnosis",
+      "SeizureFrequency",
+      "Prescription",
+      "Investigations"
+    ]
+  }
+}

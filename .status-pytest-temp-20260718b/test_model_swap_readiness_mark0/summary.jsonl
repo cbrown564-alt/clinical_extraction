@@ -1,0 +1,2 @@
+{"call_failures": 0, "candidate_id": "swap_gpt", "minimum_exact_evidence_rate": 1.0, "model_label": "GPT-4.1-mini", "overall_clinical_headline_f1": 0.75, "parse_schema_failures": 0, "status": "complete"}
+{"call_failures": null, "candidate_id": "swap_deepseek", "minimum_exact_evidence_rate": null, "model_label": "DeepSeek chat", "overall_clinical_headline_f1": null, "parse_schema_failures": null, "status": "pending_source_artifacts"}

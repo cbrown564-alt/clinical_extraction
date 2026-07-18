@@ -1,6 +1,6 @@
 # Inspectable Clinical Extraction from Epilepsy Letters
 
-Updated: 2026-07-15
+Updated: 2026-07-18
 Status: working manuscript
 
 The [paper claim status](../canon/10_paper_provenance.md) limits what this
@@ -22,14 +22,15 @@ the existing strict micro scorer), the GEPA LLM-only negative comparison
 reached 0.7393 clinical fact F1, and the historical LLM-with-rules development
 control reached 0.9189. That control uses a deterministic Prescription producer
 and a Seizure Frequency extractor union, so it is not the final model-led
-architecture. The fixed six-model comparison is incomplete and its
-paper-facing results are pending. Replays of saved outputs found normalization
+architecture. In the fixed six-model ExECT test60 panel, Sol led at 0.8047
+clinical-headline F1; in the matched Gan v0.7 test450 panel, Qwen led at
+367/450 Purist. Replays of saved outputs found normalization
 gains on both tasks (+0.0389 ExECT; +0.0293 Gan); the exact-evidence check did
 not change those replay scores. The selected evidence supports a reproducible
 component comparison with explicit data limits and a tested implementation of
 the published ExECT metric views. It does not reproduce the original ExECT
-system or its reported 0.87/0.90 scores, and it does not support a six-model
-conclusion or independent clinical validation.
+system or its reported 0.87/0.90 scores, general model superiority, cross-task
+reliability transfer, or independent clinical validation.
 
 ## 1. Introduction
 
@@ -173,28 +174,28 @@ Matched prompt/completion tokens, cost, wall time, hardware, and cache telemetry
 were not retained. These runs therefore support a quality-versus-model-pass
 comparison, not measured token, dollar, energy, or latency efficiency.
 
-### 4.4 Planned final ExECT model comparison
+### 4.4 Fixed ExECT model comparison
 
-| Model condition | Overall | Diagnosis | Seizure frequency | Prescription | Investigations | Call / parse failures |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | Pending | Pending | Pending | Pending | Pending | Pending |
-| GPT-5.6 Luna | Pending | Pending | Pending | Pending | Pending | Pending |
-| GPT-5.6 Sol | Pending | Pending | Pending | Pending | Pending | Pending |
-| DeepSeek V4 Flash, thinking enabled | Pending | Pending | Pending | Pending | Pending | Pending |
-| Qwen 3.6:35B, local | Pending | Pending | Pending | Pending | Pending | Pending |
-| Gemma 4 26B, local | Pending | Pending | Pending | Pending | Pending | Pending |
+| Model condition | dev140 | test60 | Diagnosis | Seizure frequency | Prescription | Investigations | Test call / parse failures |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| GPT-4.1-mini | 0.8202 | 0.7572 | 0.8470 | 0.6936 | 0.8672 | 0.8538 | 0 / 0 |
+| GPT-5.6 Luna | 0.8832 | 0.7950 | 0.8910 | 0.7892 | 0.9250 | 0.9202 | 0 / 0 |
+| GPT-5.6 Sol | 0.8920 | 0.8047 | 0.8882 | 0.8012 | 0.9432 | 0.9358 | 0 / 0 |
+| DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | 0.8764 | 0.7610 | 0.9280 | 0.9389 | 0 / 0 |
+| Qwen 3.6:35B, local | 0.8571 | 0.7872 | 0.8720 | 0.7062 | 0.9249 | 0.9105 | 0 / 0 |
+| Gemma 4 26B, local | 0.8016 | 0.7169 | 0.8378 | 0.6226 | 0.9046 | 0.8047 | 0 / 6 |
 
 Decision 0039 fixes the six model conditions. Decision 0040 requires each
 named model to supply Diagnosis, Seizure Frequency, Prescription, and
 Investigations facts, followed only by attributable deterministic correction.
-The historical GPT, DeepSeek, and Qwen rows are excluded: their Prescription
-column was deterministic-only and their Seizure Frequency column included an
-independent extractor union. Corrected saved-output aggregates remain
-unpromoted candidates. Durable configurations now reproduce their attribution,
-`state_profile`, schema/evidence, and regression records, but nonzero
-deterministic correct-to-wrong counts prevent promotion as final model rows.
-DeepSeek uses `deepseek/deepseek-chat` with thinking enabled and is reported as
-DeepSeek V4 Flash.
+The historical GPT, DeepSeek, and Qwen rows are excluded because their
+Prescription column was deterministic-only and their Seizure Frequency column
+included an independent extractor union. The fixed rows use the decision-0041
+one-call architecture and preserve attribution, `state_profile`,
+schema/evidence, and regression records. DeepSeek uses the official
+`deepseek-v4-flash` route with thinking enabled. Dev140 family scores are shown
+above; test60 is aggregate only and uses the same internal scorer. Hosted/local
+route and temperature differences prevent a model-neutral capability ranking.
 
 ### 4.5 Component replays
 
@@ -214,12 +215,15 @@ selected replay rows.
 | ExECT evidence | Minimum exact-evidence rate 1.0000 for the combined dev140 run | Development result |
 | ExECT internal calibration | Brier 0.2225; base-rate Brier 0.2340; ECE 0.0587 | Full200 aggregate scoring-rule result |
 | ExECT model confidence | Test60 failure AUROC 0.5394 GPT-4.1-mini; 0.5503 historical DeepSeek; 0.4895 Qwen | Aggregate negative result for saved outputs |
+| ExECT six-model SF state replay | Final projection/suppression improves state-profile F1 for all six; 54 wrong-to-correct and one correct-to-wrong transition | dev140 development evidence; repeated letters across models |
 | Gan grounding | Validation evidence exists for each selected method | Metrics differ by method |
-| Clean-checkout reproducibility | 1,157 tests, Ruff, mypy, hashes, split restrictions, and six replays passed on Python 3.11 | Engineering verification, not clinical validation |
+| Clean-checkout reproducibility | Tests, Ruff, mypy, hashes, split restrictions, and six reference replays passed | Engineering verification, not clinical validation |
 
 Neither predeclared model-confidence review rule met its test60 catch-rate and
 burden gates, so no confidence-based review policy was adopted. No selected
-report supports a cross-task over-reading claim.
+result supports a cross-task over-reading claim. The predeclared ExECT analogue
+has zero gold unknown-only letters; empty-gold letters remain diagnostic rather
+than being substituted after the result.
 
 ## 5. Discussion
 
@@ -233,11 +237,11 @@ superiority. The rules-only replay does
 show that CUI matching recovers surface-form variation, but feature completion
 remains a larger limitation than identifier coverage.
 
-Historical ExECT artifacts ran with three different model providers, but the
-DeepSeek run did not record its thinking state and is excluded from the
-paper-facing comparison. The historical Prescription and Seizure Frequency
-columns are also excluded from model comparison. Runtime differences and the
-incomplete corrected panel prevent a model-ordering conclusion.
+Historical ExECT artifacts ran with three different model providers, but their
+Prescription and Seizure Frequency columns are excluded from model comparison.
+The fixed panel replaces them with six exact model conditions under the same
+component boundary. Runtime differences still prevent a general model-ordering
+conclusion, and the ExECT and Gan orderings differ substantially.
 Normalization helped on both development replays. The exact-evidence result
 shows why a component cannot be judged by aggregate score alone: its rejection
 and repair behavior require direct tests.
@@ -254,21 +258,23 @@ and repair behavior require direct tests.
 - The selected `v08` control does not meet the final model-led family ownership
   boundary because Prescription is deterministic and Seizure Frequency uses an
   independent extractor union.
-- The model study does not yet cover the fixed six-model roster and uses
-  different runtimes; the historical DeepSeek thinking state is also unresolved.
+- The fixed six-model panels use different provider transports, temperatures,
+  token limits, and local versus hosted runtimes.
 - Model-reported confidence was uninformative for the three saved historical
   outputs under the frozen test60 analysis; this is not deployment calibration
   or a six-model result.
 - Annotation findings were reviewed internally, not by an independent clinical team.
-- The selected evidence does not support a cross-task over-reading claim.
+- The selected evidence does not support a cross-task over-reading claim; the
+  current ExECT gold has zero unknown-only letters under the predeclared metric.
 
 ## 7. Conclusion
 
-The selected results support an inspectable historical comparison of
-rules-only, LLM-only, and LLM-with-rules methods on two tasks and saved Gan
-holdout results. They expose why the final ExECT model comparison requires a
-corrected family architecture. They do not yet support strict ExECT benchmark
-score reproduction, a six-model conclusion, or independent clinical validation.
+The selected results support an inspectable comparison of rules-only, LLM-only,
+and LLM-with-rules methods on two tasks plus fixed six-model panels under each
+task's named scorer. They expose the effect and regression risk of deterministic
+components without assigning their gains to the model. They do not support
+strict ExECT benchmark score reproduction, general model superiority,
+cross-task reliability transfer, or independent clinical validation.
 
 ## References
 

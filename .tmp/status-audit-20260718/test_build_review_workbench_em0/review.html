@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnosis interpretation review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: oklch(0.965 0.009 355);
+      --paper: oklch(0.995 0.002 355);
+      --panel: oklch(0.982 0.005 355);
+      --surface: oklch(0.945 0.012 355);
+      --surface-strong: oklch(0.905 0.014 355);
+      --ink: oklch(0.21 0.022 355);
+      --muted: oklch(0.42 0.025 355);
+      --border: oklch(0.82 0.016 355);
+      --primary: oklch(0.43 0.13 355);
+      --primary-hover: oklch(0.37 0.13 355);
+      --primary-soft: oklch(0.955 0.028 355);
+      --accent: oklch(0.48 0.12 245);
+      --accent-soft: oklch(0.95 0.026 245);
+      --success: oklch(0.43 0.1 155);
+      --success-soft: oklch(0.95 0.032 155);
+      --warning: oklch(0.55 0.12 75);
+      --warning-soft: oklch(0.96 0.04 85);
+      --danger: oklch(0.48 0.16 25);
+      --danger-soft: oklch(0.95 0.035 25);
+      --focus: oklch(0.58 0.16 245);
+      --paper-shadow: 0 2px 8px oklch(0.22 0.03 355 / 0.13);
+      --header-height: 7.75rem;
+      --radius: 10px;
+      --queue-width: 18rem;
+      --decision-width: clamp(24rem, 28vw, 32rem);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      min-width: 320px;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button, select, input[type="search"], textarea { color: var(--ink); }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 20;
+      padding: 0.6rem 0.8rem;
+      color: var(--bg);
+      background: var(--ink);
+      border-radius: 6px;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    .topbar {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 10;
+      min-height: var(--header-height);
+      padding: 0.85rem 1rem 0.75rem;
+      background: var(--paper);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-row,
+    .filter-row,
+    .progress-copy,
+    .toolbar-actions,
+    .case-heading,
+    .queue-meta,
+    .case-meta,
+    .panel-heading,
+    .nav-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .title-row { gap: 1rem; justify-content: space-between; }
+    .title-block { min-width: 16rem; }
+    h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.015em; }
+    .subtitle { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.875rem; }
+
+    .progress-block { width: min(34rem, 42vw); }
+    .progress-copy { justify-content: space-between; gap: 1rem; font-size: 0.875rem; }
+    .progress-track {
+      height: 0.48rem;
+      margin-top: 0.3rem;
+      overflow: hidden;
+      background: var(--surface-strong);
+      border-radius: 999px;
+    }
+    .progress-fill {
+      width: 100%;
+      height: 100%;
+      background: var(--primary);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 180ms ease-out;
+    }
+
+    .toolbar-actions { gap: 0.45rem; }
+    .button {
+      min-height: 2.25rem;
+      padding: 0.42rem 0.72rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--paper);
+      cursor: pointer;
+      font-weight: 650;
+      font-size: 0.875rem;
+      transition: background-color 160ms ease-out, border-color 160ms ease-out, transform 160ms ease-out;
+    }
+    .button:hover { background: var(--surface); border-color: oklch(0.7 0.025 355); }
+    .button:active { transform: translateY(1px); }
+    .button.primary { color: var(--paper); border-color: var(--primary); background: var(--primary); }
+    .button.primary:hover { background: var(--primary-hover); }
+    .button.danger { color: var(--danger); }
+    .button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+    .save-state {
+      min-width: 6.5rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-align: right;
+    }
+    .save-state.warning { color: var(--danger); font-weight: 700; }
+
+    .filter-row {
+      gap: 0.55rem;
+      margin-top: 0.72rem;
+    }
+    .search-wrap { flex: 1; min-width: 14rem; }
+    input[type="search"], select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+    input[type="search"], select { min-height: 2.3rem; padding: 0.4rem 0.58rem; }
+    select { width: auto; max-width: 13rem; }
+    .filter-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-areas:
+        "queue note evidence"
+        "queue answer answer";
+      grid-template-columns: var(--queue-width) minmax(32rem, 1fr) var(--decision-width);
+      grid-template-rows: minmax(0, 1fr) auto;
+      height: calc(100vh - var(--header-height));
+      min-height: 32rem;
+      background: var(--bg);
+    }
+
+    .queue-panel,
+    .note-panel,
+    .decision-panel { min-width: 0; }
+
+    .queue-panel {
+      grid-area: queue;
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+    .panel-heading {
+      position: sticky;
+      top: var(--header-height);
+      z-index: 4;
+      justify-content: space-between;
+      gap: 0.6rem;
+      min-height: 3.1rem;
+      padding: 0.7rem 0.8rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-heading h2 { margin: 0; font-size: 0.875rem; }
+    .result-count { color: var(--muted); font-size: 0.7rem; }
+
+    .case-queue {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+    .queue-empty { padding: 2rem 1rem; color: var(--muted); text-align: center; }
+    .queue-item {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 0.8rem;
+      color: var(--ink);
+      text-align: left;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+    }
+    .queue-item { transition: background-color 160ms ease-out; }
+    .queue-item:hover { background: var(--panel); }
+    .queue-item[aria-current="true"] { background: var(--primary-soft); }
+    .queue-meta { justify-content: space-between; gap: 0.5rem; }
+    .letter-id { font-size: 0.7rem; font-weight: 750; }
+    .queue-concept {
+      display: -webkit-box;
+      margin-top: 0.25rem;
+      overflow: hidden;
+      font-size: 0.875rem;
+      font-weight: 650;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .queue-methods { margin-top: 0.33rem; color: var(--muted); font-size: 0.7rem; }
+
+    .status-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .status-dot { width: 0.48rem; height: 0.48rem; background: var(--border); border-radius: 50%; }
+    .status-mark[data-status="representation"] .status-dot { background: var(--accent); }
+    .status-mark[data-status="extraction_error"] .status-dot { background: var(--danger); }
+    .status-mark[data-status="uncertain"] .status-dot { background: var(--warning); }
+    .status-mark[data-status="clinical_review"] .status-dot { background: var(--primary); }
+
+    .note-panel {
+      grid-area: note;
+      display: flex;
+      align-items: flex-start;
+      min-height: 0;
+      overflow: auto;
+      padding: 1.15rem;
+      background: var(--bg);
+    }
+    .letter-sheet {
+      width: 100%;
+      min-height: 100%;
+      padding: 1.8rem clamp(1.5rem, 4vw, 4rem) 4rem;
+      background: var(--paper);
+      border-radius: 8px;
+      box-shadow: var(--paper-shadow);
+    }
+    .letter-masthead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .letter-kind {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 750;
+    }
+    .letter-kind::before {
+      width: 0.58rem;
+      height: 0.58rem;
+      content: "";
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .case-heading {
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.65rem;
+    }
+    .case-heading h2 { margin: 0; font-size: 1.125rem; letter-spacing: -0.01em; }
+    .case-position { color: var(--muted); font-size: 0.875rem; white-space: nowrap; }
+    .letter-subject { margin: -0.25rem 0 0.9rem; color: var(--muted); font-size: 0.875rem; }
+    .letter-subject strong { color: var(--ink); font-weight: 700; }
+    .case-meta { flex-wrap: wrap; gap: 0.42rem; margin-bottom: 1.2rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.5rem;
+      padding: 0.18rem 0.46rem;
+      border-radius: 999px;
+      background: var(--surface-strong);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .badge.direction { color: var(--primary); background: var(--primary-soft); }
+    .note-help {
+      margin: 0 0 1.5rem;
+      padding: 0.65rem 0.75rem;
+      color: var(--muted);
+      background: var(--accent-soft);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+    .note-text {
+      width: 100%;
+      max-width: 90ch;
+      margin-inline: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.125rem;
+      line-height: 1.82;
+      text-wrap: pretty;
+    }
+    mark {
+      padding: 0.05rem 0.1rem;
+      color: var(--ink);
+      background: var(--warning-soft);
+      border-radius: 3px;
+    }
+
+    .decision-panel {
+      grid-area: evidence;
+      min-height: 0;
+      overflow: auto;
+      border-left: 1px solid var(--border);
+      background: var(--panel);
+      overscroll-behavior: contain;
+    }
+    .decision-content { padding: 1rem; }
+    .decision-content h2 { margin: 0; font-size: 1.125rem; }
+    .decision-lede { margin: 0.25rem 0 0.9rem; color: var(--muted); font-size: 0.875rem; }
+    .concept-focus {
+      padding: 0.7rem 0.75rem;
+      background: var(--primary-soft);
+      border-radius: var(--radius);
+    }
+    .concept-focus span { display: block; color: var(--muted); font-size: 0.7rem; }
+    .concept-focus strong { display: block; margin-top: 0.15rem; font-size: 0.875rem; }
+
+    details { border-bottom: 1px solid var(--border); }
+    summary {
+      padding: 0.75rem 0;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 750;
+    }
+    .mention-list { display: grid; gap: 0.6rem; padding-bottom: 0.85rem; }
+    .mention {
+      padding: 0.65rem;
+      background: var(--surface);
+      border-radius: 8px;
+    }
+    .mention-title { font-size: 0.875rem; font-weight: 750; overflow-wrap: anywhere; }
+    .mention-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.16rem 0.5rem;
+      margin-top: 0.45rem;
+      font-size: 0.7rem;
+    }
+    .mention-grid dt { color: var(--muted); }
+    .mention-grid dd { margin: 0; overflow-wrap: anywhere; }
+    .evidence {
+      margin: 0.45rem 0 0;
+      color: var(--muted);
+      font-size: 0.7rem;
+      line-height: 1.45;
+    }
+
+    .decision-dock {
+      grid-area: answer;
+      display: grid;
+      grid-template-columns: minmax(34rem, 1fr) minmax(15rem, 22rem) auto;
+      gap: 0.75rem 1rem;
+      align-items: end;
+      padding: 0.75rem 1rem;
+      background: var(--paper);
+      border-top: 1px solid var(--border);
+    }
+    .decision-dock fieldset { margin: 0; padding: 0; border: 0; }
+    .decision-dock legend { margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 800; }
+    .triage-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+    .triage-option { position: relative; }
+    .triage-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .triage-option label {
+      display: flex;
+      min-height: 4rem;
+      padding: 0.6rem;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--paper);
+      cursor: pointer;
+      font-size: 0.7rem;
+      line-height: 1.25;
+      transition: background-color 160ms ease-out, border-color 160ms ease-out, transform 160ms ease-out;
+    }
+    .triage-option label:hover { background: var(--surface); }
+    .triage-option label:active { transform: translateY(1px); }
+    .triage-option input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .triage-option input:checked + label[data-value="representation"] {
+      border-color: var(--accent); background: var(--accent-soft);
+    }
+    .triage-option input:checked + label[data-value="extraction_error"] {
+      border-color: var(--danger); background: var(--danger-soft);
+    }
+    .triage-option input:checked + label[data-value="uncertain"] {
+      border-color: var(--warning); background: var(--warning-soft);
+    }
+    .triage-option input:checked + label[data-value="clinical_review"] {
+      border-color: var(--primary); background: var(--primary-soft);
+    }
+    .triage-copy { display: grid; gap: 0.2rem; }
+    .triage-copy strong { font-weight: 750; }
+    .triage-copy span { color: var(--ink); font-weight: 500; opacity: 0.68; }
+    .shortcut {
+      min-width: 1.5rem;
+      margin-left: auto;
+      padding: 0.18rem 0.35rem;
+      color: var(--muted);
+      background: var(--surface);
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .decision-reassurance { margin: -0.15rem 0 0.65rem; color: var(--muted); font-size: 0.7rem; }
+
+    .review-note-field { min-width: 0; }
+    .notes-label { display: block; margin: 0 0 0.3rem; font-size: 0.7rem; font-weight: 750; }
+    textarea { min-height: 4.2rem; padding: 0.5rem 0.58rem; resize: vertical; font-size: 0.875rem; }
+    .dock-footer { display: grid; gap: 0.65rem; align-content: end; }
+    .auto-advance { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.7rem; }
+    .nav-actions { gap: 0.35rem; }
+
+    .empty-workbench {
+      grid-column: 1 / -1;
+      max-width: 34rem;
+      margin: 5rem auto;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .empty-workbench h2 { margin: 0; }
+    .empty-workbench p { color: var(--muted); }
+
+    @media (max-width: 1100px) {
+      :root { --header-height: 10.5rem; }
+      .title-row { align-items: flex-start; flex-wrap: wrap; }
+      .progress-block { width: min(30rem, 60vw); }
+      .filter-row { flex-wrap: wrap; }
+      .workbench {
+        grid-template-areas:
+          "queue note"
+          "queue evidence"
+          "queue answer";
+        grid-template-columns: 16rem minmax(28rem, 1fr);
+        grid-template-rows: minmax(20rem, 1fr) auto auto;
+        height: auto;
+      }
+      .decision-panel {
+        height: auto;
+        overflow: visible;
+        border-top: 1px solid var(--border);
+        border-left: 0;
+      }
+      .decision-dock { grid-template-columns: 1fr minmax(15rem, 20rem); }
+      .dock-footer { grid-column: 1 / -1; display: flex; justify-content: space-between; }
+      .triage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      :root { --header-height: auto; }
+      .topbar { position: relative; }
+      .progress-block { order: 3; width: 100%; }
+      .toolbar-actions { flex-wrap: wrap; }
+      .filter-row > * { flex: 1 1 10rem; }
+      select { width: 100%; max-width: none; }
+      .workbench { display: block; }
+      .panel-heading { position: relative; top: auto; }
+      .case-queue { flex: none; height: 15rem; }
+      .queue-panel { border-right: 0; border-bottom: 1px solid var(--border); }
+      .note-panel { padding: 0.7rem; }
+      .letter-sheet { min-height: auto; padding: 1.25rem 1rem 2.5rem; border-radius: 6px; }
+      .letter-masthead { align-items: flex-start; }
+      .decision-panel { height: auto; }
+      .decision-dock { display: block; }
+      .triage-grid { grid-template-columns: 1fr; }
+      .review-note-field { margin-top: 0.75rem; }
+      .dock-footer { margin-top: 0.75rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#note-panel">Skip to clinical note</a>
+  <header class="topbar">
+    <div class="title-row">
+      <div class="title-block">
+        <h1>Diagnosis review</h1>
+        <p class="subtitle">One letter at a time · saved on this device</p>
+      </div>
+      <div class="progress-block" aria-label="Review progress">
+        <div class="progress-copy">
+          <span id="progress-label">0 of 0 reviewed</span>
+          <span id="progress-detail">0%</span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <div class="toolbar-actions">
+        <span class="save-state" id="save-state" role="status" aria-live="polite">Ready</span>
+        <button class="button" id="import-button" type="button">Import</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden>
+        <button class="button primary" id="export-button" type="button">Export JSON</button>
+        <button class="button danger" id="reset-button" type="button">Reset</button>
+      </div>
+    </div>
+    <div class="filter-row" aria-label="Review filters">
+      <div class="search-wrap">
+        <label class="filter-label" for="search-input">Search cases</label>
+        <input id="search-input" type="search" placeholder="Find a letter or concept · /">
+      </div>
+      <label class="filter-label" for="status-filter">Triage status</label>
+      <select id="status-filter">
+        <option value="all">All statuses</option>
+        <option value="unreviewed">Unreviewed</option>
+        <option value="representation">Representation issue</option>
+        <option value="extraction_error">Extraction error</option>
+        <option value="uncertain">Uncertain</option>
+        <option value="clinical_review">Clinical review</option>
+      </select>
+      <label class="filter-label" for="method-filter">Method</label>
+      <select id="method-filter"><option value="all">All methods</option></select>
+      <label class="filter-label" for="direction-filter">Direction</label>
+      <select id="direction-filter">
+        <option value="all">Missed + spurious</option>
+        <option value="missed">Missed</option>
+        <option value="spurious">Spurious</option>
+      </select>
+      <button class="button" id="clear-filters" type="button">Clear filters</button>
+    </div>
+  </header>
+
+  <main class="workbench" id="workbench">
+    <aside class="queue-panel" aria-label="Review queue">
+      <div class="panel-heading">
+        <h2>Review queue</h2>
+        <span class="result-count" id="result-count">0 cases</span>
+      </div>
+      <div class="case-queue" id="case-queue"></div>
+    </aside>
+
+    <article class="note-panel" id="note-panel" tabindex="-1">
+      <div class="letter-sheet">
+        <div class="letter-masthead">
+          <span class="letter-kind">Clinical correspondence</span>
+          <span class="case-position" id="case-position"></span>
+        </div>
+        <div class="case-heading">
+          <h2 id="case-title">Select a letter</h2>
+        </div>
+        <p class="letter-subject">Review focus: <strong id="case-subject">—</strong></p>
+        <div class="case-meta" id="case-meta"></div>
+        <p class="note-help">Highlighted phrases connect this letter to the comparison panel. Read them in context before choosing.</p>
+        <div class="note-text" id="note-text"></div>
+      </div>
+    </article>
+
+    <aside class="decision-panel" aria-label="Comparison and triage">
+      <div class="decision-content">
+        <h2>Compare the evidence</h2>
+        <p class="decision-lede">Use the letter and extracted mentions to understand this disagreement.</p>
+        <div class="concept-focus">
+          <span id="focus-direction">Disagreement</span>
+          <strong id="focus-concept">—</strong>
+        </div>
+        <div id="comparison"></div>
+      </div>
+
+    </aside>
+
+    <form class="decision-dock" id="decision-form">
+      <fieldset>
+          <legend>What best explains this disagreement?</legend>
+          <p class="decision-reassurance">Choose the closest fit. You can change it at any time.</p>
+          <div class="triage-grid">
+            <div class="triage-option">
+              <input type="radio" name="triage" id="triage-representation" value="representation">
+              <label for="triage-representation" data-value="representation"><span class="triage-copy"><strong>Representation issue</strong><span>Same meaning, different labels</span></span><kbd class="shortcut">1</kbd></label>
+            </div>
+            <div class="triage-option">
+              <input type="radio" name="triage" id="triage-error" value="extraction_error">
+              <label for="triage-error" data-value="extraction_error"><span class="triage-copy"><strong>Extraction error</strong><span>The system missed or added it</span></span><kbd class="shortcut">2</kbd></label>
+            </div>
+            <div class="triage-option">
+              <input type="radio" name="triage" id="triage-uncertain" value="uncertain">
+              <label for="triage-uncertain" data-value="uncertain"><span class="triage-copy"><strong>Uncertain</strong><span>The evidence is not decisive</span></span><kbd class="shortcut">3</kbd></label>
+            </div>
+            <div class="triage-option">
+              <input type="radio" name="triage" id="triage-clinical" value="clinical_review">
+              <label for="triage-clinical" data-value="clinical_review"><span class="triage-copy"><strong>Clinical review</strong><span>Requires domain judgement</span></span><kbd class="shortcut">4</kbd></label>
+            </div>
+          </div>
+      </fieldset>
+      <div class="review-note-field">
+        <label class="notes-label" for="review-notes">Triage note</label>
+        <textarea id="review-notes" placeholder="Optional reason, ambiguity, or follow-up…"></textarea>
+      </div>
+      <div class="dock-footer">
+        <label class="auto-advance"><input id="auto-advance" type="checkbox" checked> Auto-advance</label>
+        <div class="nav-actions">
+          <button class="button" id="previous-button" type="button" aria-label="Previous case">← Back</button>
+          <button class="button" id="next-button" type="button" aria-label="Next case">Continue →</button>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script type="application/json" id="audit-data">[{"review_key":"EA0001|missed|focal epilepsy","letter_id":"EA0001","direction":"missed","normalized_concept":"focal epilepsy","methods":["llm_only"],"note_text":"Diagnosis: focal epilepsy","gold_diagnosis_mentions":[],"method_records":{}}]</script>
+  <script type="application/json" id="audit-summary">{"gold_sha256":"gold-digest","union":{"review_row_count":1}}</script>
+  <script>
+    (() => {
+      "use strict";
+
+      const rows = JSON.parse(document.getElementById("audit-data").textContent);
+      const summary = JSON.parse(document.getElementById("audit-summary").textContent);
+      const statusLabels = {
+        unreviewed: "Unreviewed",
+        representation: "Representation",
+        extraction_error: "Extraction error",
+        uncertain: "Uncertain",
+        clinical_review: "Clinical review"
+      };
+      const methodLabels = {
+        rules_only: "Rules only",
+        llm_only: "LLM only",
+        llm_with_rules: "LLM with rules"
+      };
+      const sourceDigest = summary.gold_sha256 || "unknown-source";
+      const storageKey = `exectv2-diagnosis-review:${sourceDigest}:v1`;
+      let storageAvailable = true;
+      let decisions = loadDecisions();
+      let filteredRows = [];
+      let selectedKey = rows[0]?.review_key || null;
+      let notesTimer = null;
+
+      const elements = Object.fromEntries([
+        "progress-label", "progress-detail", "progress-fill", "save-state", "search-input",
+        "status-filter", "method-filter", "direction-filter", "clear-filters", "case-queue",
+        "result-count", "case-title", "case-subject", "case-position", "case-meta", "note-text",
+        "focus-direction", "focus-concept", "comparison", "decision-form", "review-notes",
+        "auto-advance", "previous-button", "next-button", "import-button", "import-file",
+        "export-button", "reset-button"
+      ].map(id => [id, document.getElementById(id)]));
+
+      populateMethodFilter();
+      bindEvents();
+      render();
+
+      function loadDecisions() {
+        try {
+          const raw = localStorage.getItem(storageKey);
+          return raw ? JSON.parse(raw) : {};
+        } catch (error) {
+          storageAvailable = false;
+          return {};
+        }
+      }
+
+      function persist(message = "Saved locally") {
+        if (!storageAvailable) {
+          setSaveState("Storage unavailable · export often", true);
+          return;
+        }
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(decisions));
+          setSaveState(message, false);
+        } catch (error) {
+          storageAvailable = false;
+          setSaveState("Storage unavailable · export often", true);
+        }
+      }
+
+      function setSaveState(message, warning) {
+        elements["save-state"].textContent = message;
+        elements["save-state"].classList.toggle("warning", Boolean(warning));
+      }
+
+      function populateMethodFilter() {
+        const methods = [...new Set(rows.flatMap(row => row.methods))].sort();
+        for (const method of methods) {
+          const option = document.createElement("option");
+          option.value = method;
+          option.textContent = methodLabels[method] || method;
+          elements["method-filter"].append(option);
+        }
+      }
+
+      function bindEvents() {
+        for (const id of ["search-input", "status-filter", "method-filter", "direction-filter"]) {
+          elements[id].addEventListener("input", render);
+        }
+        elements["clear-filters"].addEventListener("click", () => {
+          elements["search-input"].value = "";
+          elements["status-filter"].value = "all";
+          elements["method-filter"].value = "all";
+          elements["direction-filter"].value = "all";
+          render();
+        });
+        elements["case-queue"].addEventListener("click", event => {
+          const target = event.target.closest("[data-review-key]");
+          if (!target) return;
+          selectedKey = target.dataset.reviewKey;
+          renderCase();
+          scrollSelectedIntoView();
+        });
+        elements["decision-form"].addEventListener("change", event => {
+          if (event.target.name !== "triage") return;
+          setTriage(event.target.value);
+        });
+        elements["review-notes"].addEventListener("input", () => {
+          clearTimeout(notesTimer);
+          notesTimer = setTimeout(saveNotes, 250);
+        });
+        elements["previous-button"].addEventListener("click", () => moveSelection(-1));
+        elements["next-button"].addEventListener("click", () => moveSelection(1));
+        elements["export-button"].addEventListener("click", exportDecisions);
+        elements["import-button"].addEventListener("click", () => elements["import-file"].click());
+        elements["import-file"].addEventListener("change", importDecisions);
+        elements["reset-button"].addEventListener("click", resetDecisions);
+        document.addEventListener("keydown", handleKeyboard);
+      }
+
+      function applyFilters() {
+        const query = elements["search-input"].value.trim().toLowerCase();
+        const status = elements["status-filter"].value;
+        const method = elements["method-filter"].value;
+        const direction = elements["direction-filter"].value;
+        filteredRows = rows.filter(row => {
+          const decisionStatus = decisions[row.review_key]?.triage || "unreviewed";
+          if (status !== "all" && decisionStatus !== status) return false;
+          if (method !== "all" && !row.methods.includes(method)) return false;
+          if (direction !== "all" && row.direction !== direction) return false;
+          if (!query) return true;
+          const haystack = [
+            row.review_key, row.letter_id, row.normalized_concept, row.direction,
+            row.methods.join(" "), row.note_text
+          ].join(" ").toLowerCase();
+          return haystack.includes(query);
+        });
+        if (!filteredRows.some(row => row.review_key === selectedKey)) {
+          selectedKey = filteredRows[0]?.review_key || null;
+        }
+      }
+
+      function render() {
+        applyFilters();
+        renderProgress();
+        renderQueue();
+        renderCase();
+      }
+
+      function renderProgress() {
+        const triaged = rows.filter(row => decisions[row.review_key]?.triage).length;
+        const percent = rows.length ? Math.round((triaged / rows.length) * 100) : 0;
+        elements["progress-label"].textContent = `${triaged} of ${rows.length} reviewed`;
+        elements["progress-detail"].textContent = `${percent}%`;
+        elements["progress-fill"].style.transform = `scaleX(${percent / 100})`;
+      }
+
+      function renderQueue() {
+        elements["result-count"].textContent = `${filteredRows.length} ${filteredRows.length === 1 ? "case" : "cases"}`;
+        if (!filteredRows.length) {
+          elements["case-queue"].innerHTML = '<div class="queue-empty">No cases match these filters.</div>';
+          return;
+        }
+        elements["case-queue"].innerHTML = filteredRows.map(row => {
+          const status = decisions[row.review_key]?.triage || "unreviewed";
+          return `
+            <button class="queue-item" type="button" data-review-key="${escapeAttribute(row.review_key)}"
+              aria-current="${row.review_key === selectedKey}">
+              <span class="queue-meta">
+                <span class="letter-id">${escapeHtml(row.letter_id)}</span>
+                <span class="status-mark" data-status="${status}">
+                  <span class="status-dot" aria-hidden="true"></span>${statusLabels[status]}
+                </span>
+              </span>
+              <span class="queue-concept">${escapeHtml(row.normalized_concept)}</span>
+              <span class="queue-methods">${escapeHtml(row.direction)} · ${row.methods.map(method => methodLabels[method] || method).join(" · ")}</span>
+            </button>`;
+        }).join("");
+      }
+
+      function currentRow() {
+        return rows.find(row => row.review_key === selectedKey) || null;
+      }
+
+      function renderCase() {
+        const row = currentRow();
+        const disabled = !row;
+        elements["previous-button"].disabled = disabled || filteredRows.findIndex(item => item.review_key === selectedKey) <= 0;
+        elements["next-button"].disabled = disabled || filteredRows.findIndex(item => item.review_key === selectedKey) >= filteredRows.length - 1;
+        for (const input of document.querySelectorAll('input[name="triage"]')) input.disabled = disabled;
+        elements["review-notes"].disabled = disabled;
+        if (!row) {
+          elements["case-title"].textContent = "No letter selected";
+          elements["case-subject"].textContent = "—";
+          elements["case-position"].textContent = "";
+          elements["case-meta"].innerHTML = "";
+          elements["note-text"].textContent = "Adjust the filters to show a review case.";
+          elements["focus-direction"].textContent = "Disagreement";
+          elements["focus-concept"].textContent = "—";
+          elements["comparison"].innerHTML = "";
+          elements["review-notes"].value = "";
+          return;
+        }
+        const index = filteredRows.findIndex(item => item.review_key === row.review_key);
+        elements["case-title"].textContent = `Letter ${row.letter_id}`;
+        elements["case-subject"].textContent = row.normalized_concept;
+        elements["case-position"].textContent = `${index + 1} of ${filteredRows.length}`;
+        elements["case-meta"].innerHTML = [
+          `<span class="badge direction">${escapeHtml(row.direction)}</span>`,
+          ...row.methods.map(method => `<span class="badge">${escapeHtml(methodLabels[method] || method)}</span>`),
+          `<span class="badge">${escapeHtml(row.review_key)}</span>`
+        ].join("");
+        elements["note-text"].innerHTML = highlightedNote(row);
+        elements["focus-direction"].textContent = `${capitalize(row.direction)} normalized concept`;
+        elements["focus-concept"].textContent = row.normalized_concept;
+        elements["comparison"].innerHTML = renderComparison(row);
+        const decision = decisions[row.review_key] || {};
+        for (const input of document.querySelectorAll('input[name="triage"]')) {
+          input.checked = input.value === decision.triage;
+        }
+        elements["review-notes"].value = decision.note || "";
+      }
+
+      function renderComparison(row) {
+        const gold = row.gold_diagnosis_mentions || [];
+        const goldHtml = gold.length ? gold.map(renderGoldMention).join("") : '<p class="evidence">No gold Diagnosis mentions.</p>';
+        const sections = [`<details open><summary>Gold Diagnosis mentions · ${gold.length}</summary><div class="mention-list">${goldHtml}</div></details>`];
+        for (const method of row.methods) {
+          const mentions = row.method_records?.[method]?.diagnosis_candidate_mentions || [];
+          const content = mentions.length ? mentions.map(renderPredictedMention).join("") : '<p class="evidence">No diagnosis candidate mention remains for this method.</p>';
+          sections.push(`<details open><summary>${escapeHtml(methodLabels[method] || method)} · ${mentions.length}</summary><div class="mention-list">${content}</div></details>`);
+        }
+        return sections.join("");
+      }
+
+      function renderGoldMention(mention) {
+        const attrs = mention.attributes || {};
+        return `<div class="mention">
+          <div class="mention-title">${escapeHtml(mention.text || mention.raw_text || "Untitled gold mention")}</div>
+          <dl class="mention-grid">
+            <dt>CUI</dt><dd>${escapeHtml(attrs.CUI || "—")}</dd>
+            <dt>Category</dt><dd>${escapeHtml(attrs.DiagCategory || "—")}</dd>
+            <dt>Certainty</dt><dd>${escapeHtml(attrs.Certainty || "—")}</dd>
+            <dt>Negation</dt><dd>${escapeHtml(attrs.Negation || "—")}</dd>
+            <dt>Span</dt><dd>${escapeHtml(formatSpan(mention))}</dd>
+          </dl>
+        </div>`;
+      }
+
+      function renderPredictedMention(mention) {
+        const attrs = mention.attributes || {};
+        return `<div class="mention">
+          <div class="mention-title">${escapeHtml(mention.text || "Untitled prediction")}</div>
+          <dl class="mention-grid">
+            <dt>Source entity</dt><dd>${escapeHtml(mention.entity || "—")}</dd>
+            <dt>CUI</dt><dd>${escapeHtml(attrs.CUI || "—")}</dd>
+            <dt>Category</dt><dd>${escapeHtml(attrs.DiagCategory || "—")}</dd>
+            <dt>Certainty</dt><dd>${escapeHtml(attrs.Certainty || "—")}</dd>
+            <dt>Negation</dt><dd>${escapeHtml(attrs.Negation || "—")}</dd>
+            <dt>Owner</dt><dd>${escapeHtml(mention.component_owner || "—")}</dd>
+          </dl>
+          ${mention.evidence ? `<p class="evidence"><strong>Evidence:</strong> ${escapeHtml(mention.evidence)}</p>` : ""}
+        </div>`;
+      }
+
+      function formatSpan(mention) {
+        if (mention.start_index == null || mention.end_index == null) return "—";
+        return `${mention.start_index}–${mention.end_index}`;
+      }
+
+      function highlightedNote(row) {
+        const note = row.note_text || "";
+        const needles = new Set([row.normalized_concept]);
+        for (const mention of row.gold_diagnosis_mentions || []) {
+          if (mention.text) needles.add(mention.text.replaceAll("-", " "));
+          if (mention.raw_text) needles.add(mention.raw_text.replaceAll("-", " "));
+        }
+        for (const method of row.methods) {
+          for (const mention of row.method_records?.[method]?.diagnosis_candidate_mentions || []) {
+            if (mention.text) needles.add(mention.text.replaceAll("-", " "));
+            if (mention.evidence) needles.add(mention.evidence);
+          }
+        }
+        const lower = note.toLowerCase();
+        const intervals = [];
+        for (const rawNeedle of needles) {
+          const needle = String(rawNeedle || "").trim();
+          if (needle.length < 4 || needle.length > 320) continue;
+          const target = needle.toLowerCase();
+          let start = 0;
+          while (start < lower.length && intervals.length < 120) {
+            const found = lower.indexOf(target, start);
+            if (found < 0) break;
+            intervals.push([found, found + target.length]);
+            start = found + target.length;
+          }
+        }
+        if (!intervals.length) return escapeHtml(note);
+        intervals.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+        const merged = [];
+        for (const interval of intervals) {
+          const last = merged.at(-1);
+          if (last && interval[0] <= last[1]) last[1] = Math.max(last[1], interval[1]);
+          else merged.push([...interval]);
+        }
+        let cursor = 0;
+        let html = "";
+        for (const [start, end] of merged) {
+          html += escapeHtml(note.slice(cursor, start));
+          html += `<mark>${escapeHtml(note.slice(start, end))}</mark>`;
+          cursor = end;
+        }
+        return html + escapeHtml(note.slice(cursor));
+      }
+
+      function setTriage(value) {
+        const row = currentRow();
+        if (!row) return;
+        decisions[row.review_key] = {
+          ...(decisions[row.review_key] || {}),
+          triage: value,
+          note: elements["review-notes"].value,
+          updated_at: new Date().toISOString()
+        };
+        persist();
+        renderProgress();
+        renderQueue();
+        if (elements["auto-advance"].checked) setTimeout(() => moveSelection(1), 130);
+      }
+
+      function saveNotes() {
+        const row = currentRow();
+        if (!row) return;
+        const existing = decisions[row.review_key] || {};
+        const note = elements["review-notes"].value;
+        if (!existing.triage && !note) return;
+        decisions[row.review_key] = { ...existing, note, updated_at: new Date().toISOString() };
+        persist();
+      }
+
+      function moveSelection(delta) {
+        const currentIndex = filteredRows.findIndex(row => row.review_key === selectedKey);
+        const nextIndex = Math.min(Math.max(currentIndex + delta, 0), filteredRows.length - 1);
+        if (nextIndex < 0 || !filteredRows[nextIndex]) return;
+        selectedKey = filteredRows[nextIndex].review_key;
+        renderCase();
+        renderQueue();
+        scrollSelectedIntoView();
+      }
+
+      function scrollSelectedIntoView() {
+        const selected = elements["case-queue"].querySelector('[aria-current="true"]');
+        selected?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      function handleKeyboard(event) {
+        const target = event.target;
+        const editing = target.matches("input, textarea, select") || target.isContentEditable;
+        if (event.key === "/" && !editing) {
+          event.preventDefault();
+          elements["search-input"].focus();
+          return;
+        }
+        if (editing) return;
+        if (event.key.toLowerCase() === "j") moveSelection(1);
+        else if (event.key.toLowerCase() === "k") moveSelection(-1);
+        else if (event.key === "1") setTriage("representation");
+        else if (event.key === "2") setTriage("extraction_error");
+        else if (event.key === "3") setTriage("uncertain");
+        else if (event.key === "4") setTriage("clinical_review");
+        else if (event.key.toLowerCase() === "e") exportDecisions();
+      }
+
+      function exportDecisions() {
+        saveNotes();
+        const payload = {
+          schema_version: "exectv2_diagnosis_review_overlay_v1",
+          exported_at: new Date().toISOString(),
+          source_gold_sha256: sourceDigest,
+          source_audit_schema: summary.schema_version,
+          source_review_row_count: rows.length,
+          triaged_count: rows.filter(row => decisions[row.review_key]?.triage).length,
+          decisions
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = `exectv2-diagnosis-review-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+        setSaveState("Exported", false);
+      }
+
+      async function importDecisions(event) {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        try {
+          const payload = JSON.parse(await file.text());
+          if (!payload.decisions || typeof payload.decisions !== "object") throw new Error("No decisions object found");
+          if (payload.source_gold_sha256 && payload.source_gold_sha256 !== sourceDigest) {
+            const proceed = confirm("This review export was created from a different source digest. Import it anyway?");
+            if (!proceed) return;
+          }
+          decisions = { ...decisions, ...payload.decisions };
+          persist("Imported and saved");
+          render();
+        } catch (error) {
+          alert(`Could not import this file: ${error.message}`);
+        }
+      }
+
+      function resetDecisions() {
+        const confirmed = confirm("Remove every local triage decision and note for this audit? Export first if you may need them.");
+        if (!confirmed) return;
+        decisions = {};
+        if (storageAvailable) localStorage.removeItem(storageKey);
+        setSaveState("Local review reset", false);
+        render();
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>'"]/g, character => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+        })[character]);
+      }
+
+      function escapeAttribute(value) { return escapeHtml(value); }
+      function capitalize(value) { return value ? value[0].toUpperCase() + value.slice(1) : ""; }
+    })();
+  </script>
+</body>
+</html>

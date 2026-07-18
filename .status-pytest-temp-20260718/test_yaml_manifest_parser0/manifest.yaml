@@ -1,0 +1,21 @@
+
+candidate_id: parsed_candidate
+pipeline_family: parsed_family
+ownership: parsed_owner
+split: dev
+row_count: 2
+claim_boundary: dev_only_component_evidence
+baseline_producer: control
+producers:
+  control:
+    kind: saved_jsonl
+    artifact: experiments/control.jsonl
+    ownership_label: llm_first_control
+lenses:
+  Diagnosis:
+    producer: control
+    lens: diagnosis_hierarchy_negation_v01
+    source_lane: v0.42_control
+views:
+  - raw_candidate
+  - evidence_valid

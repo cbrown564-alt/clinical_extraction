@@ -1,6 +1,6 @@
 # 07 — ExECT results
 
-Last updated: 2026-07-15
+Last updated: 2026-07-18
 
 The main ExECT comparison covers diagnosis, seizure frequency, prescriptions,
 and investigations.
@@ -35,9 +35,9 @@ Seizure Frequency included a union with an independent deterministic
 extractor. The old Prescription and Seizure Frequency columns must not be used
 as model-to-model results.
 
-## Fixed hosted-model results
+## Fixed six-model results
 
-The four hosted models completed the same decision-0041 one-call pipeline with
+All six selected models completed the same decision-0041 one-call pipeline with
 prompt `exectv2_hybrid_key_family_event_ledger_v0.9.24`, the selected joint
 bounded policy, and the internal `clinical_headline` scorer.
 
@@ -47,11 +47,14 @@ bounded policy, and the internal `clinical_headline` scorer.
 | GPT-5.6 Luna | 0.8832 | 0.7950 | 59/59; 0 call or blocking parse failures |
 | GPT-5.6 Sol | 0.8920 | 0.8047 | 59/59; 0 call or blocking parse failures |
 | DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | 59/59; 0 call or blocking parse failures |
+| Qwen 3.6:35B | 0.8571 | 0.7872 | 59/59; 0 call or parse/schema failures |
+| Gemma 4 26B | 0.8016 | 0.7169 | 59/59; 0 call failures; 6 aggregate parse/schema failures |
 
 Dev140 permits development inspection; test60 is frozen aggregate-only. The
-test result is holdout evidence for this internal scorer, not the published
-ExECT benchmark or clinical validation. It completes the hosted portion of the
-six-model roster, not the local Qwen and Gemma conditions. See the
+test result is retained holdout evidence for this internal scorer, not the
+published ExECT benchmark or clinical validation. Qwen and Gemma have the same
+retained aggregate status as the four hosted conditions. Their provider route,
+local runtime, and parse behavior remain explicit comparison caveats. See the
 [hosted protocol and result](../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md).
 
 ## Corrected model-led architecture candidates
@@ -140,7 +143,6 @@ letters rather than manifest dev140. Affected partial runs are excluded, and
 the corrected runner now enforces manifest IDs before starting or resuming.
 See the [single-call Diagnosis ablation](../experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md).
 
-Remaining work: complete the local Qwen 3.6:35B and Gemma 4 26B conditions,
-freeze the common six-model panel, and complete the retained-evidence update.
-Independent clinical review is still required for clinical-validity claims
-about the Diagnosis interpretation decisions.
+The common six-model panel is complete and hash-selected in the retained
+evidence index. Independent clinical review is still required for
+clinical-validity claims about the Diagnosis interpretation decisions.

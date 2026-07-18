@@ -20,6 +20,8 @@
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
+| Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
+| ExECT six-model SF over-inference | [protocol](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md) and [result](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md) |
 | ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
 | ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
 | Guide to the different ExECT Diagnosis F1 scores | [Diagnosis score guide](experiments/exectv2/diagnosis/exectv2_diagnosis_score_guide_2026-07-14.md) |

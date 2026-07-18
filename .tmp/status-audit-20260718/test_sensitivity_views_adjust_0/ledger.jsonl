@@ -1,0 +1,3 @@
+{"review_key": "one", "direction": "missed", "methods": ["rules_only"], "review_decision": {"triage": "representation", "mechanism": "same_cui_representation"}}
+{"review_key": "two", "direction": "spurious", "methods": ["rules_only", "llm_only"], "review_decision": {"triage": "representation", "mechanism": "likely_gold_omission"}}
+{"review_key": "three", "direction": "missed", "methods": ["llm_only"], "review_decision": {"triage": "extraction_error", "mechanism": "missed_named_diagnosis"}}

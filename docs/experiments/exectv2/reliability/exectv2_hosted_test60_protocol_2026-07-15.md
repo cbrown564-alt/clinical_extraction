@@ -1,12 +1,12 @@
 # ExECTv2 hosted test60 protocol
 
 Date: 2026-07-15  
-Status: complete; aggregate-only results recorded  
+Status: complete; six-model aggregate-only results retained
 Authorization: the user explicitly authorized this run on 2026-07-15.
 
 ## Question
 
-How do the four hosted decision-0039 models perform on ExECTv2 test60 under
+How do the six decision-0039 models perform on ExECTv2 test60 under
 the fixed decision-0041 one-call architecture and decision-0040 component
 policy selected on dev140?
 
@@ -53,11 +53,13 @@ it does not license test60 tuning.
 
 ## Stop rule and claim boundary
 
-Run all four hosted conditions once. Report each completed aggregate and any
-operational failure. Do not choose or tune a model from test60 for another
+Run all four hosted conditions once. The separately authorized local queue uses
+the same frozen decision-0041 architecture and contributes Qwen and Gemma
+aggregate-only readouts. Report each completed aggregate and any operational
+failure. Do not choose or tune a model from test60 for another
 test60 attempt. A clean result is frozen ExECTv2 test60 holdout evidence for
 these exact models and this internal scorer, not the published ExECT benchmark,
-clinical validation, or a complete six-model conclusion.
+clinical validation.
 
 Configuration: [hosted holdout runs](../../../../configs/holdout/hosted_holdout_runs_20260715.json).
 
@@ -97,7 +99,12 @@ zero blocking parse/schema failures. No held-out row was inspected.
 | GPT-5.6 Luna | 0.7950 | 0.8272 | 0.7652 |
 | GPT-5.6 Sol | 0.8047 | 0.8237 | 0.7866 |
 | DeepSeek V4 Flash, thinking enabled | 0.7881 | 0.8158 | 0.7622 |
+| Qwen 3.6:35B | 0.7872 | 0.7848 | 0.7896 |
+| Gemma 4 26B | 0.7169 | 0.7299 | 0.7043 |
 
-These are frozen results for the internal `clinical_headline` scorer and the
-named decision-0041 pipeline. They are not published ExECT benchmark scores,
-clinical validation, or evidence about the two unfinished local models.
+The Qwen and Gemma local conditions each cover 59/59 letters with zero call
+failures. Qwen has zero aggregate parse/schema failures; Gemma records six.
+All six results have the same retained status for the internal
+`clinical_headline` scorer and named decision-0041 pipeline. Hosted-versus-local
+runtime and parse differences remain explicit caveats. These are not published
+ExECT benchmark scores or clinical validation.

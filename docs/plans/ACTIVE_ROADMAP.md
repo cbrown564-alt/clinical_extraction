@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-16
+Last updated: 2026-07-18
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -21,7 +21,7 @@ held-out rows, so it is not an independent holdout.
    retained-evidence validation, and all six reference replays pass. CI runs
    the three repository-wide checks.
 3. **Pipeline fixed for new evidence.** Retained evidence index v3 records source
-   commit `46562134`, Python and dependency versions, the six reference runs,
+   commit `6c6df72c`, Python and dependency versions, the six reference runs,
    and the exact prompt, scorer, split, repair, model, runbook, and CI policies.
 4. **Clean checkout and paper checked.** A separate Python 3.11 checkout
    retrieved the Git LFS evidence, checked hashes and split restrictions,
@@ -113,6 +113,21 @@ held-out rows, so it is not an independent holdout.
     contaminated resume artifacts. The candidate failed its experimental gate,
     but decision 0041 selects it for the final comparison because the small
     final-F1 difference does not justify a second model pass.
+19. **Six-model panels retained.** GPT-4.1-mini, Luna, Sol, thinking DeepSeek,
+    Qwen, and Gemma are hash-selected for ExECT dev140 and aggregate-only
+    test60. The same six models are retained for Gan v0.7 test450. Qwen and
+    Gemma have the same canonical claim status as the hosted conditions;
+    hosted/local route and local no-call-reparse differences remain caveats.
+20. **Six-model comparison report completed.** The retained ExECT and Gan
+    panels are synthesized with task-specific scores, component attribution,
+    operational caveats, and no pooled capability ranking. Sol leads ExECT,
+    Qwen leads Gan, and their cross-task rank correlation is `0.20`.
+21. **ExECT SF over-inference analogue closed as diagnostic.** A predeclared
+    no-call replay covers all six models and 840 model-letter dev140 pairs. The
+    deterministic SF stage improves state-profile F1 for every model, with 54
+    wrong-to-correct and one correct-to-wrong transition, but the gold
+    unknown-only denominator is zero. Empty-gold letters were not substituted,
+    so Gan-to-ExECT over-reading transfer remains unsupported.
 
 ## Ordered evidence work
 
@@ -124,16 +139,8 @@ held-out rows, so it is not an independent holdout.
    controller timeout. Their partial artifacts are rejected and must not be
    resumed. Write a new dated protocol before any further Sol or DeepSeek
    holdout calls.
-2. Freeze the completed four-model hosted ExECT test60 panel and the completed
-   four-model hosted Gan v0.7 test450 panel in the retained-evidence index.
-   Preserve the aggregate-only boundaries.
-3. Schedule the long local conditions independently in this order: Qwen
-   3.6:35B for ExECTv2 and Gan, then Gemma 4 26B for ExECTv2 and Gan. Record
-   exact revisions, quantization, hardware, endpoint, and adapter policy. These
-   local runs do not block the hosted evaluations or their evidence work.
-4. Select and freeze the exact Gan prompt condition for Qwen and Gemma after
-   the hosted v0.5 protocol is settled, then verify the complete panels before
-   reporting six-model results.
+2. Complete the Qwen/Gemma Gan validation750 study separately; it is
+   development evidence and does not alter the retained test450 panel.
 
 ## Limits
 
@@ -141,8 +148,9 @@ held-out rows, so it is not an independent holdout.
   comparison.
 - The source for the Gan multi-model comparator (`V12`) was removed; its
   aggregate report remains.
-- No cross-task ExECT over-reading claim is active because no selected report
-  supports it.
+- No cross-task ExECT over-reading claim is active. The selected diagnostic
+  replay has zero gold unknown-only letters, so the current ExECT annotations
+  cannot estimate the predeclared measure.
 - MLflow, the frontend, and Observatory are outside the retained deliverables.
 - The five largest selected ExECT replay files are immutable Git LFS objects;
   the retained evidence index records their identities and retrieval details.
