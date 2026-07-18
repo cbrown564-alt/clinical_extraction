@@ -13,6 +13,12 @@ from typing import Any, Literal
 
 import dspy
 
+from clinical_extraction.core.local_structured_output import (
+    FormatOnlyJsonRetry,
+    assess_structured_output,
+    build_format_only_retry_input,
+    validate_format_retry,
+)
 from clinical_extraction.core.run_resume import merge_rows, pending_items, read_completed
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     DIAGNOSIS,
@@ -68,6 +74,7 @@ from .projection import (
 from .prompt_builders import (
     build_prompt_input,
 )
+from .records import StructuredExtractionRecord
 from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
 )
@@ -90,6 +97,7 @@ def run_split(
     prompt_profile: PromptProfile = "full",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     program = DspyKeyEntitiesStructuredExtractor()
+    format_retry_program = FormatOnlyJsonRetry()
     if mode == "live":
         dspy.configure(
             lm=build_dspy_lm(
@@ -138,6 +146,41 @@ def run_split(
         record, parse_errors = (
             parse_structured_events_json(raw_output) if raw_output else (None, ["not_run"])
         )
+        initial_parse_errors = list(parse_errors)
+        assessment = assess_structured_output(
+            raw_output, initial_parse_errors, call_error=call_error
+        )
+        format_retry_output = ""
+        format_retry_notes: list[str] = []
+        if mode == "live" and model.startswith("ollama_chat/") and assessment.retry_eligible:
+            try:
+                retry_prediction = format_retry_program(
+                    retry_input_json=build_format_only_retry_input(
+                        malformed_output=raw_output,
+                        schema=StructuredExtractionRecord.model_json_schema(),
+                    )
+                )
+                format_retry_output = str(retry_prediction.repaired_json)
+                retry_validation = validate_format_retry(
+                    raw_output, initial_parse_errors, format_retry_output
+                )
+                retry_record, retry_parse_errors = parse_structured_events_json(
+                    format_retry_output
+                )
+                format_retry_notes = list(retry_validation.notes)
+                if retry_validation.accepted and retry_record is not None:
+                    record = retry_record
+                    parse_errors = [*retry_parse_errors, *format_retry_notes]
+                elif retry_validation.accepted:
+                    format_retry_notes = ["format_retry_rejected: schema_validation"]
+                    parse_errors = [*initial_parse_errors, *format_retry_notes]
+                else:
+                    parse_errors = [*initial_parse_errors, *format_retry_notes]
+            except Exception as exc:  # pragma: no cover - live provider behavior.
+                format_retry_notes = [
+                    f"format_retry_rejected: provider_error:{type(exc).__name__}"
+                ]
+                parse_errors = [*initial_parse_errors, *format_retry_notes]
         parse_errors = [*adapter_repair_notes, *parse_errors]
         mentions = flatten_events(record) if record else []
         predicted_letter, gate_warnings = to_predicted_letter(
@@ -159,7 +202,11 @@ def run_split(
                 "prompt_input_json": prompt_input_json,
                 "raw_output": raw_output,
                 "call_error": call_error,
+                "initial_parse_errors": initial_parse_errors,
                 "parse_errors": parse_errors,
+                "structured_output_failure_codes": list(assessment.failure_codes),
+                "format_retry_output": format_retry_output,
+                "format_retry_notes": format_retry_notes,
                 "gate_warnings": gate_warnings,
                 "n_events_raw": len(record.clinical_events) if record else 0,
                 "n_mentions_raw": len(mentions),
@@ -248,6 +295,19 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         "examples": n,
         "call_failures": sum(bool(r.get("call_error")) for r in rows),
         "parse_failures": sum(has_blocking_parse_issue(r.get("parse_errors")) for r in rows),
+        "initial_parse_failures": sum(
+            has_blocking_parse_issue(r.get("initial_parse_errors")) for r in rows
+        ),
+        "format_retries_applied": sum(
+            "format_retry_applied" in (r.get("format_retry_notes") or []) for r in rows
+        ),
+        "format_retries_rejected": sum(
+            any(
+                str(note).startswith("format_retry_rejected:")
+                for note in (r.get("format_retry_notes") or [])
+            )
+            for r in rows
+        ),
         "n_events_raw": sum(int(r.get("n_events_raw", 0)) for r in rows),
         "n_mentions_raw": n_mentions_raw,
         "n_mentions_scored": sum(int(r.get("n_mentions_scored", 0)) for r in rows),
@@ -301,6 +361,9 @@ def write_report(
             "",
             f"- Call failures: {summary.get('call_failures', 0)}",
             f"- Parse/schema failures: {summary.get('parse_failures', 0)}",
+            f"- Initial parse/schema failures: {summary.get('initial_parse_failures', 0)}",
+            f"- Format retries applied: {summary.get('format_retries_applied', 0)}",
+            f"- Format retries rejected: {summary.get('format_retries_rejected', 0)}",
             f"- Clinical events raw: {summary.get('n_events_raw', 0)}",
             f"- Mentions raw: {summary.get('n_mentions_raw', 0)}",
             f"- Mentions scored: {summary.get('n_mentions_scored', 0)}",

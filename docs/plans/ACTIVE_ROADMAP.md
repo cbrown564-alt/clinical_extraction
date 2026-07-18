@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -116,16 +116,24 @@ held-out rows, so it is not an independent holdout.
 
 ## Ordered evidence work
 
-1. Freeze the completed four-model hosted ExECT test60 panel and the completed
-   Luna/Sol Gan test450 additions in the retained-evidence index. Preserve the
-   aggregate-only boundaries.
-2. Schedule the long local conditions independently in this order: Qwen
+1. Decision 0043 setup and the authorized call attempt are recorded. The exact
+   v0.5 payload matches all 450 retained GPT prompt payloads; the retained
+   artifact fails non-prompt reconciliation, so fresh GPT was required. All
+   four pilots passed. Fresh GPT and Luna completed (`361/450` and `362/450`
+   Purist); Sol and DeepSeek stopped at 350/450 and 150/450 after the combined
+   controller timeout. Their partial artifacts are rejected and must not be
+   resumed. Write a new dated protocol before any further Sol or DeepSeek
+   holdout calls.
+2. Freeze the completed four-model hosted ExECT test60 panel and the completed
+   four-model hosted Gan v0.7 test450 panel in the retained-evidence index.
+   Preserve the aggregate-only boundaries.
+3. Schedule the long local conditions independently in this order: Qwen
    3.6:35B for ExECTv2 and Gan, then Gemma 4 26B for ExECTv2 and Gan. Record
    exact revisions, quantization, hardware, endpoint, and adapter policy. These
    local runs do not block the hosted evaluations or their evidence work.
-3. Decide whether to rerun historical Gan GPT-4.1-mini, thinking DeepSeek, and
-   Qwen on v0.7 before making a same-prompt comparison.
-4. Verify and freeze the complete panels before reporting six-model results.
+4. Select and freeze the exact Gan prompt condition for Qwen and Gemma after
+   the hosted v0.5 protocol is settled, then verify the complete panels before
+   reporting six-model results.
 
 ## Limits
 

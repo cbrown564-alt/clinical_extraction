@@ -79,7 +79,11 @@ def main() -> None:
             )
 
     structured_rows = _run_structured(config, letters, structured_jsonl, args)
-    _require_clean_complete_rows(structured_rows, expected_count=len(letters))
+    _require_complete_rows(
+        structured_rows,
+        expected_count=len(letters),
+        allow_row_failures=args.allow_row_failures,
+    )
     if diagnosis_jsonl is not None:
         _run_diagnosis(config, letters, structured_rows, diagnosis_jsonl, args)
     _run_model_led_sf_chain(
@@ -215,6 +219,21 @@ def _require_clean_complete_rows(rows: list[dict], *, expected_count: int) -> No
         raise RuntimeError(
             "Refusing model artifact before scoring: "
             f"{call_failures} call failure(s), {parse_failures} parse/schema failure(s)."
+        )
+
+
+def _require_complete_rows(
+    rows: list[dict], *, expected_count: int, allow_row_failures: bool
+) -> None:
+    """Require all rows while optionally retaining reported model failures."""
+
+    if not allow_row_failures:
+        _require_clean_complete_rows(rows, expected_count=expected_count)
+        return
+    if len(rows) != expected_count:
+        raise RuntimeError(
+            f"Refusing incomplete model artifact: expected {expected_count} rows, "
+            f"found {len(rows)}."
         )
 
 
@@ -369,6 +388,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--no-resume", action="store_true")
     parser.add_argument("--no-dspy-cache", action="store_true")
     parser.add_argument("--allow-non-dev140", action="store_true")
+    parser.add_argument(
+        "--allow-row-failures",
+        action="store_true",
+        help="Keep complete runs even when model call or parse failures are reported.",
+    )
     args = parser.parse_args()
     args.resume = not args.no_resume
     return args

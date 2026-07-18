@@ -1,7 +1,7 @@
 # Gan 2026 matched hosted v0.7 test450 protocol
 
 Date: 2026-07-15  
-Status: predeclared before the GPT-4.1-mini and DeepSeek V4 Flash calls  
+Status: complete; four hosted aggregates recorded
 Authorization: the user explicitly requested these runs on 2026-07-15.
 
 ## Question and claim boundary
@@ -147,3 +147,27 @@ blocking parse/schema/label failures, and 5/5 exact evidence, and no frozen
 prompt or implementation file changed afterward. The aborted calls are an
 operational cost of interruption and cannot be used in matched cost, token, or
 latency claims.
+
+## Aggregate result
+
+Both replacement runs completed. Together with the retained Luna and Sol
+conditions, the matched hosted panel is complete. No test450 row was inspected
+to produce this table.
+
+| Model | Purist | Pragmatic | Structured records | Exact evidence | Repair notes | Call failures | Parse/schema/label issues |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 353/450 (0.7844) | 371/450 (0.8244) | 448/450 | 419/450 | 317 | 0 | 2 |
+| GPT-5.6 Luna | 352/450 (0.7822) | 365/450 (0.8111) | 447/450 | 446/450 | 305 | 0 | 3 |
+| GPT-5.6 Sol | 358/450 (0.7956) | 376/450 (0.8356) | 450/450 | 449/450 | 366 | 0 | 0 |
+| DeepSeek V4 Flash, thinking enabled | 342/450 (0.7600) | 362/450 (0.8044) | 446/450 | 434/450 | 259 | 0 | 4 |
+
+GPT-4.1-mini completed in 2,469.362 seconds (41.156 minutes), and DeepSeek
+completed in 11,167.049 seconds (186.117 minutes). These observed times are not
+a matched latency comparison because routes, token limits, and provider
+conditions differ.
+
+The fresh GPT-4.1-mini and DeepSeek runs used commit `2f709b78` with recorded
+uncommitted run-control changes. Their sealed artifacts are retained under the
+replacement roots above. The result supports a same-prompt, same-pipeline
+hosted comparison with the stated transport caveats; it does not support
+row-level error analysis, post-holdout tuning, or a model-neutral ranking.

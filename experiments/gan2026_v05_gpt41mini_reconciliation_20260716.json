@@ -1,0 +1,49 @@
+{
+  "artifact": {
+    "blob_sha256": "f3b0d4d56600a2acaee8ae12a0eaca4294b9b1b0960694b2ee6d1226bf18a0c6",
+    "bytes": 4916121,
+    "call_failures": 0,
+    "git_commit": "facfd07d9789b633e6a583f1ca1a6bd7b8f09558",
+    "path": "experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl",
+    "prompt_versions": ["gan2026_hybrid_structured_events_v0.5"],
+    "rows": 450,
+    "split_manifests": ["gan2026_split_v1"],
+    "splits": ["test"],
+    "stored_pragmatic_correct": 381,
+    "stored_purist_correct": 364
+  },
+  "claim_boundary": "Aggregate-only no-call reconciliation; no held-out row identifiers, notes, predictions, or failures are emitted.",
+  "compatibility_counts": {
+    "current_final_label_changes": 15,
+    "normalized_events_matches": 170,
+    "parse_errors_matches": 435,
+    "prompt_payload_matches": 450,
+    "rows": 450,
+    "structured_record_matches": 435
+  },
+  "current_non_prompt_replay": {
+    "evidence_valid": 418,
+    "json_dialect_repairs": 0,
+    "label_repairs": 307,
+    "parse_or_validation_failures": 2,
+    "pragmatic_correct": 383,
+    "purist_correct": 366
+  },
+  "decision": {
+    "exact_non_prompt_replay": false,
+    "prompt_payloads_match": true,
+    "rerun_gpt41mini_required": true,
+    "reuse_gpt41mini": false
+  },
+  "fingerprints": {
+    "current_code_sha256": {
+      "src\\clinical_extraction\\tasks\\seizure_frequency\\gan2026\\contract\\schema_repair.py": "cd3c2095fb8923f328a7c5b144c4a38f5ec65be53a65a84d866cc6afcec949fe",
+      "src\\clinical_extraction\\tasks\\seizure_frequency\\gan2026\\evaluate.py": "18fdec285a5a80aa92d06bdb6e75f6b6e619d76dfeb1ca5eec0751fe7123c402",
+      "src\\clinical_extraction\\tasks\\seizure_frequency\\gan2026\\labels.py": "6c1635541403c3cf419595a7883ec8055335facf88af8a62cc175465afb224ba",
+      "src\\clinical_extraction\\tasks\\seizure_frequency\\gan2026\\llm\\hybrid_structured_events.py": "35fb00839d4e8e53bf4a6309b2096b1419de4601f0b386174beba677894afc5b",
+      "src\\clinical_extraction\\tasks\\seizure_frequency\\gan2026\\normalize.py": "f3a11e3480c001b8972bb8f70ddcb674a567418491a61ad983aae50f47c83c4c"
+    },
+    "v05_rendered_snapshot_bytes": 3716,
+    "v05_rendered_snapshot_sha256": "77a5575244423f989b247ff1e89930c081c0e91a3b19e0ad74687bf40eb90993"
+  }
+}

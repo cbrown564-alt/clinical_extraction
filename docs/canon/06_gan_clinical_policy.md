@@ -1,6 +1,6 @@
 # 06 — Gan 2026 results and holdout rules
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 Gan 2026 asks for one current seizure-frequency label per letter.
 
@@ -33,15 +33,18 @@ must no longer claim that no test row was ever exposed.
 
 | Model | Prompt | Purist | Pragmatic | Operational result |
 | --- | --- | ---: | ---: | --- |
-| GPT-4.1-mini | v0.6 | 364/450 (0.8089) | not consolidated here | Retained aggregate |
+| GPT-4.1-mini | v0.7 | 353/450 (0.7844) | 371/450 (0.8244) | 0 call failures; 2 parse/schema/label issues; 419/450 exact evidence |
 | GPT-5.6 Luna | v0.7 | 352/450 (0.7822) | 365/450 (0.8111) | 0 call failures; 3 parse/schema/label issues |
 | GPT-5.6 Sol | v0.7 | 358/450 (0.7956) | 376/450 (0.8356) | 0 call or parse/schema failures |
-| DeepSeek V4 Flash, thinking enabled | v0.7 | 346/450 (0.7689) | not consolidated here | Retained aggregate |
+| DeepSeek V4 Flash, thinking enabled | v0.7 | 342/450 (0.7600) | 362/450 (0.8044) | 0 call failures; 4 parse/schema/label issues; 434/450 exact evidence |
 
-Only aggregate results from these locked-test runs may be cited. Luna and Sol used the same
-current v0.7 candidate; GPT-4.1-mini used v0.6. The table therefore supports
-named model results, not an exact four-model same-prompt ranking. See the
-[hosted protocol and result](../experiments/gan2026/gan2026_hosted_test450_protocol_2026-07-15.md).
+Only aggregate results from these locked-test runs may be cited. All four use
+the same current v0.7 prompt, pipeline, repair policy, and scorer. The panel is
+matched on those fields, but provider-required transport and temperature
+differences remain, prompt v0.7 was developed from validation failures, and
+test450 has supported sequential aggregate evaluations. Report it as a matched
+aggregate-only panel, not a pristine one-shot or model-neutral capability
+ranking. See the [matched protocol and result](../experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md).
 
 ## Efficiency result
 

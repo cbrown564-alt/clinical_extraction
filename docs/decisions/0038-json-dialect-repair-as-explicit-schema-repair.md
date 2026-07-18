@@ -2,6 +2,10 @@
 
 Date: 2026-06-02
 
+Extended by [decision 0042](0042-shared-local-model-structured-output-repair.md),
+which applies named format repairs, failure classification, bounded retry, and
+runtime probes consistently across local models.
+
 ## Decision
 
 Treat local-model JSON dialect recovery as an explicit schema-repair step, not

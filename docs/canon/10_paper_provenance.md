@@ -1,6 +1,6 @@
 # 10 — Paper claims and supporting evidence
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 This file states how strongly the paper may make each claim. The
 [retained evidence index](../experiments/retained_evidence_manifest.md) records
@@ -35,7 +35,7 @@ must not make a stronger claim than either source supports.
 | C8 | The recorded ExECT model rows do not implement one consistent model-led method across all four families | Strong for the saved-output ownership audit and verified corrected architecture replay | Full200 aggregate-only evidence; corrected scores remain unpromoted because deterministic correct-to-wrong counts are nonzero |
 | C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs, unrecorded DeepSeek thinking state, and no deployment or six-model claim |
 | C10 | On the fixed hosted ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, thinking DeepSeek 0.7881, and GPT-4.1-mini 0.7572 clinical-headline F1 | Holdout aggregate evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or a complete six-model result |
-| C11 | On Gan test450, current v0.7 Luna scored 352/450 and Sol 358/450 Purist | Frozen aggregate evidence | GPT-4.1-mini's retained 364/450 result used v0.6; a post-run documentation command exposed part of a row table, no row was analyzed or used for tuning, and no claim that rows were never exposed is permitted |
+| C11 | On the matched Gan v0.7 test450 hosted panel, Sol scored 358/450, GPT-4.1-mini 353/450, Luna 352/450, and thinking DeepSeek 342/450 Purist | Frozen aggregate evidence | Same prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a row table without subsequent analysis or tuning |
 
 ## Selected headline results
 
@@ -48,7 +48,7 @@ must not make a stronger claim than either source supports.
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
 | ExECT fixed hosted panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; thinking DeepSeek 0.7881 clinical-headline F1 |
-| Gan current hosted additions, test450 | Luna 352/450; Sol 358/450 Purist |
+| Gan matched hosted v0.7 panel, test450 | GPT-4.1-mini 353/450; Luna 352/450; Sol 358/450; thinking DeepSeek 342/450 Purist |
 
 The historical DeepSeek full200 aggregate is `0.8566`, but its thinking state
 was not recorded. It is retained for audit only and is excluded from the
@@ -76,6 +76,6 @@ paper-facing model table unless thinking-enabled execution can be proved.
 ## Open work
 
 1. Complete local Qwen 3.6:35B and Gemma 4 26B on the fixed ExECT pipeline.
-2. Resolve whether Gan's historical GPT-4.1-mini, DeepSeek, and Qwen rows need
-   exact v0.7 reruns before any same-prompt cross-model claim.
+2. Complete Qwen and Gemma under the frozen Gan v0.7 condition before making a
+   six-model claim.
 3. Freeze hashes and verification records for the completed hosted panels.

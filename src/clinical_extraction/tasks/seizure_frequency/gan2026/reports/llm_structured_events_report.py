@@ -93,6 +93,10 @@ def write_report(
         f"- Structured records: {summary['structured_records']} / {summary['examples']}",
         f"- Call failures: {summary['call_failures']}",
         f"- Parse/schema/label issues: {summary['parse_or_validation_failures']}",
+        "- Initial parse/schema/label issues: "
+        f"{summary.get('initial_parse_or_validation_failures', 0)}",
+        f"- Format retries applied: {summary.get('format_retries_applied', 0)}",
+        f"- Format retries rejected: {summary.get('format_retries_rejected', 0)}",
         f"- JSON dialect repairs: {summary.get('json_dialect_repairs', 0)}",
         f"- Deterministic repair notes: {summary['repair_notes']}",
         f"- Exact selection evidence substrings: {summary['evidence_valid']} / "

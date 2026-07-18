@@ -11,6 +11,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequenc
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_structured_temporal
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events import (
     PROMPT_VERSION,
+    PROMPT_VERSION_V0_5,
     PROMPT_VERSION_V0_6,
     PROMPT_VERSION_V0_7,
     StructuredExtractionRecord,
@@ -145,6 +146,18 @@ def test_structured_events_prompt_version_selector_preserves_v06() -> None:
         assert "countable-fact check" not in " ".join(v06_prompt["instructions"])
     finally:
         set_active_prompt_version(PROMPT_VERSION_V0_7)
+
+
+def test_restored_v05_prompt_has_the_historical_instruction_set() -> None:
+    prompt = json.loads(build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_5))
+    instructions = prompt["instructions"]
+
+    assert prompt["prompt_version"] == PROMPT_VERSION_V0_5
+    assert len(instructions) == 13
+    assert "When both a frequency_rate or cluster_frequency event" not in " ".join(
+        instructions
+    )
+    assert "Use any extra checking silently" not in " ".join(instructions)
 
 
 def test_parse_structured_json_repairs_schema_aliases_and_normalizes_selected_label() -> None:

@@ -1,6 +1,6 @@
 # LLM model and comparison policy
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 Status: retained reference frozen; corrected final-comparison target accepted
 
 The machine-readable freeze is `architecture_freeze` in
@@ -22,6 +22,19 @@ be added to the paper evidence set.
 The exact Ollama route is part of the identity. Qwen must use the native
 `ollama_chat/qwen3.6:35b` route with thinking disabled; the OpenAI-compatible
 Ollama endpoint is not an equivalent runtime.
+
+Local structured-output handling is governed by
+[decision 0042](../decisions/0042-shared-local-model-structured-output-repair.md).
+Qwen and Gemma use the same defect-based schema repairs, failure codes,
+value-preserving retry rule, and pre-run native Ollama probe. The normal path is
+one extraction call. A parseable schema failure may add one format-only retry;
+reports must count it separately.
+
+The 2026-07-16 native probe on Ollama 0.30.10 found different enforcement
+modes. `gemma4:26b` uses `native_schema_constraint`. `qwen3.6:35b` uses
+`prompt_plus_shared_parser` because its installed `qwen3.5` Ollama parser still
+ignores `format` when `think=false`. Qwen clinical prompts explicitly require
+JSON, and all drift remains subject to decision 0042 repair and reporting.
 
 ## Retained historical ExECT model-comparison core
 

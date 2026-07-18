@@ -1,0 +1,94 @@
+{
+  "protocol": "docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "split": "test",
+  "row_policy": "aggregate_only",
+  "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+  "prompt_snapshot_sha256": "77a5575244423f989b247ff1e89930c081c0e91a3b19e0ad74687bf40eb90993",
+  "pilot_gate": {
+    "all_four_passed": true,
+    "records": 5,
+    "completed_calls": 5,
+    "structured_records": 5,
+    "blocking_parse_schema_label_failures": 0,
+    "exact_evidence": 5
+  },
+  "conditions": {
+    "gpt41mini": {
+      "status": "complete",
+      "model": "openai/gpt-4.1-mini",
+      "temperature": 0,
+      "max_tokens": 10000,
+      "rows": 450,
+      "structured_records": 446,
+      "call_failures": 0,
+      "parse_or_validation_failures": 4,
+      "evidence_valid": 419,
+      "purist_correct": 361,
+      "purist_accuracy": 0.8022,
+      "pragmatic_correct": 379,
+      "pragmatic_accuracy": 0.8422,
+      "repair_notes": 310,
+      "artifact_sha256": "7ef20cf70d8d753883ab2d23fdaa38cca0ccbfb9838938a30d6cbc43f676ebb8",
+      "artifact_bytes": 4979263
+    },
+    "gpt56luna": {
+      "status": "complete",
+      "model": "openai/gpt-5.6-luna",
+      "temperature": 1,
+      "max_tokens": 10000,
+      "rows": 450,
+      "structured_records": 447,
+      "call_failures": 0,
+      "parse_or_validation_failures": 3,
+      "evidence_valid": 444,
+      "purist_correct": 362,
+      "purist_accuracy": 0.8044,
+      "pragmatic_correct": 375,
+      "pragmatic_accuracy": 0.8333,
+      "repair_notes": 273,
+      "artifact_sha256": "292169c5a3c0f786ace2e9505e40e026c2b55a4cb0a1d73401d8c925a4de06de",
+      "artifact_bytes": 4732528
+    },
+    "gpt56sol": {
+      "status": "continuation_authorized",
+      "model": "openai/gpt-5.6-sol",
+      "temperature": null,
+      "max_tokens": 10000,
+      "completed_rows": 350,
+      "call_failures_in_partial": 0,
+      "partial_artifact_sha256": "4ab70506fc9f0a33010dc577d021e4d8302656b62c24c53f1a24b9c7cdc59546",
+      "partial_artifact_bytes": 3653530,
+      "panel_result": null,
+      "continuation": {
+        "authorized_on": "2026-07-17",
+        "mode": "resume-existing",
+        "existing_rows_reused": 350,
+        "new_rows_authorized": 100,
+        "row_level_analysis": false,
+        "partial_evidence_scored": false
+      }
+    },
+    "deepseek_v4_flash": {
+      "status": "continuation_authorized",
+      "model": "deepseek/deepseek-v4-flash",
+      "temperature": 0,
+      "max_tokens": 32000,
+      "completed_rows": 150,
+      "call_failures_in_partial": 0,
+      "partial_artifact_sha256": "01b9702692c70ef2ecc0508d77c9ff7260f0d6d1744bc3e0a164b72a51138974",
+      "partial_artifact_bytes": 1474686,
+      "panel_result": null,
+      "continuation": {
+        "authorized_on": "2026-07-17",
+        "mode": "resume-existing",
+        "existing_rows_reused": 150,
+        "new_rows_authorized": 300,
+        "row_level_analysis": false,
+        "partial_evidence_scored": false
+      }
+    }
+  },
+  "claim_boundary": "GPT-4.1-mini and Luna are aggregate-only results for fresh v0.5 conditions. Sol and DeepSeek are authorized to resume from sealed partial artifacts without recreating completed rows. No partial evidence is scored or used for row-level analysis; only complete merged 450-row aggregates may enter the four-model panel."
+}

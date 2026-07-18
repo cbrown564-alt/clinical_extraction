@@ -14,9 +14,18 @@ function Invoke-QueueStep {
     "DONE $(Get-Date -Format o) $Name" | Add-Content (Join-Path $QueueRoot "queue.status.log")
 }
 
+function Invoke-LocalProbe {
+    param([string]$Slug, [string]$Model)
+    Invoke-QueueStep "${Slug}_structured_probe" @(
+        "scripts/probe_ollama_structured_output.py", "--model", $Model
+    )
+}
+
 Set-Location $Root
 $GemmaExect = "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json"
+Invoke-LocalProbe "qwen36_35b" "qwen3.6:35b"
 Invoke-QueueStep "qwen_exect_test60" @("scripts/run_hosted_holdout_panel.py", "--config", "configs/holdout/local_exect_qwen_test60_20260715.json", "--panel", "exectv2")
+Invoke-LocalProbe "gemma4_26b" "gemma4:26b"
 Invoke-QueueStep "gemma_exect_dev5" @("scripts/smoke_exectv2_six_model_condition.py", "--config", $GemmaExect, "--rows", "5")
 Invoke-QueueStep "gemma_exect_dev140" @("scripts/run_exectv2_six_model_comparison.py", "--config", $GemmaExect, "--no-dspy-cache")
 Invoke-QueueStep "gemma_exect_test60" @("scripts/run_hosted_holdout_panel.py", "--config", "configs/holdout/local_exect_gemma_test60_20260715.json", "--panel", "exectv2")

@@ -17,7 +17,12 @@
     "parameter_size": "25.8B",
     "quantization": "Q4_K_M",
     "thinking": "disabled_with_think_false",
-    "num_ctx": 32768,
+    "structured_output_mode": "native_schema_constraint",
+    "native_schema_constraint": "enforced",
+    "structured_probe_date": "2026-07-16",
+    "num_ctx": 65536,
+    "context_probe": "exectv2_gemma4_context_probe_dev140_20260717",
+    "context_policy": "single_call_only_due_to_partial_offload_and_low_transient_system_memory_headroom",
     "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
     "cache_mode": "disabled"
   },

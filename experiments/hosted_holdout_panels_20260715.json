@@ -95,6 +95,24 @@
       "claim_boundary": "Matched aggregate-only panel on a previously used holdout; not a pristine one-shot or model-neutral ranking.",
       "conditions": [
         {
+          "model": "openai/gpt-4.1-mini",
+          "route": "OpenAI chat; temperature 0",
+          "status": "completed_fresh_v07_restart_v2",
+          "structured_records": 448,
+          "call_failures": 0,
+          "parse_schema_label_issues": 2,
+          "exact_evidence": 419,
+          "repair_notes": 317,
+          "purist": {"correct": 353, "total": 450, "accuracy": 0.7844},
+          "pragmatic": {"correct": 371, "total": 450, "accuracy": 0.8244},
+          "wall_clock_seconds": 2469.362,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/gan2026_matched_v07_restart_v2/gpt41mini/sealed_rows.jsonl",
+            "sha256": "1f3bf765dd68041ff8f70458ef9c0d23e8b3eea63679fef9bcaa4e3f5d2ea03a",
+            "bytes": 5971344
+          }
+        },
+        {
           "model": "openai/gpt-5.6-luna",
           "route": "OpenAI chat; provider-required temperature 1",
           "status": "retained_completed_v07",
@@ -126,6 +144,24 @@
             "local_path": "scratch/holdout/gan_test450_sol_credit_v4/gpt56sol/gpt56sol_sealed_rows.jsonl",
             "sha256": "eaa89506602eb99098a0c15dfa391fd9fe7da32bf90a04c8ca83a57bb56c23e4",
             "bytes": 5895545
+          }
+        },
+        {
+          "model": "deepseek/deepseek-v4-flash",
+          "route": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
+          "status": "completed_fresh_v07_restart_v2",
+          "structured_records": 446,
+          "call_failures": 0,
+          "parse_schema_label_issues": 4,
+          "exact_evidence": 434,
+          "repair_notes": 259,
+          "purist": {"correct": 342, "total": 450, "accuracy": 0.7600},
+          "pragmatic": {"correct": 362, "total": 450, "accuracy": 0.8044},
+          "wall_clock_seconds": 11167.049,
+          "sealed_artifact": {
+            "local_path": "scratch/holdout/gan2026_matched_v07_restart_v2/deepseek_v4_flash/sealed_rows.jsonl",
+            "sha256": "d4c34cd201d51f5da8e8c28a6d3afd03cf813241fe15eb6d6bbd6bcf25ab403c",
+            "bytes": 5657550
           }
         }
       ]

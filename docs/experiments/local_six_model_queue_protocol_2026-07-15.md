@@ -25,6 +25,9 @@ then run the two Gan 2026 conditions. The fixed order is:
 - Qwen route: `ollama_chat/qwen3.6:35b`, `think=false`, Q4_K_M.
 - Gemma route: `ollama_chat/gemma4:26b`, `think=false`, Q4_K_M.
 - Ollama endpoint: `http://localhost:11434`.
+- Structured-output probe: Qwen uses `prompt_plus_shared_parser`; Gemma uses
+  `native_schema_constraint`. Both must pass the decision-0042 two-stage probe
+  before clinical rows.
 
 ## Gates and row policy
 

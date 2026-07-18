@@ -80,7 +80,7 @@ def test_six_model_configs_freeze_exact_roster_runtime_and_graph() -> None:
         "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522"
     )
     assert gemma["thinking"] == "disabled_with_think_false"
-    assert gemma["num_ctx"] == 32768
+    assert gemma["num_ctx"] == 65536
     assert gemma["digest"] == (
         "5571076f3d70050487b26b341705799e0ab29b808164f90d20d4cf84f699d251"
     )

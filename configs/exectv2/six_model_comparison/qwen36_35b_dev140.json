@@ -17,6 +17,9 @@
     "parameter_size": "36.0B",
     "quantization": "Q4_K_M",
     "thinking": "disabled_with_think_false",
+    "structured_output_mode": "prompt_plus_shared_parser",
+    "native_schema_constraint": "not_enforced_by_ollama_qwen3.5_parser",
+    "structured_probe_date": "2026-07-16",
     "num_ctx": 32768,
     "hardware": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB VRAM",
     "cache_mode": "disabled"

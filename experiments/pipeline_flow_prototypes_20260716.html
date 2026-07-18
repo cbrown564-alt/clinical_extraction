@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Static interactive prototypes for inspecting the ExECTv2 and Gan clinical extraction pipelines.">
+  <title>Clinical extraction trace explorer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: oklch(0.972 0.004 250);
+      --paper: oklch(1 0 0);
+      --panel: oklch(0.95 0.006 250);
+      --line: oklch(0.855 0.01 250);
+      --line-strong: oklch(0.72 0.018 250);
+      --ink: oklch(0.205 0.025 250);
+      --muted: oklch(0.43 0.025 250);
+      --faint: oklch(0.56 0.018 250);
+      --blue: oklch(0.47 0.13 245);
+      --blue-dark: oklch(0.37 0.12 245);
+      --blue-soft: oklch(0.93 0.032 245);
+      --amber: oklch(0.56 0.12 68);
+      --amber-dark: oklch(0.4 0.09 68);
+      --amber-soft: oklch(0.94 0.038 75);
+      --green: oklch(0.43 0.1 155);
+      --green-soft: oklch(0.94 0.032 155);
+      --red: oklch(0.48 0.15 25);
+      --red-soft: oklch(0.95 0.032 25);
+      --code: oklch(0.17 0.022 250);
+      --radius: 9px;
+      --sidebar: 17rem;
+      font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; color: var(--ink); background: var(--bg); }
+    button, select { font: inherit; color: inherit; }
+    button:focus-visible, select:focus-visible, summary:focus-visible {
+      outline: 3px solid oklch(0.68 0.14 245); outline-offset: 2px;
+    }
+    .app-header {
+      position: sticky; top: 0; z-index: 10;
+      display: grid; grid-template-columns: minmax(14rem, 1fr) auto minmax(14rem, 1fr);
+      align-items: center; min-height: 4.2rem; padding: .65rem 1.1rem;
+      background: var(--paper); border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+    .brand-mark {
+      display: grid; place-items: center; width: 2rem; height: 2rem;
+      border-radius: 7px; color: white; background: var(--ink); font-weight: 800;
+    }
+    .brand strong, .brand span { display: block; }
+    .brand strong { font-size: .88rem; }
+    .brand span { color: var(--muted); font-size: .72rem; }
+    .view-tabs {
+      display: flex; align-items: center; gap: .1rem; padding: .2rem;
+      border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+    }
+    .view-tab {
+      min-height: 2.1rem; padding: .35rem .7rem; border: 0; border-radius: 6px;
+      color: var(--muted); background: transparent; cursor: pointer; font-weight: 700; font-size: .78rem;
+    }
+    .view-tab[aria-selected="true"] { color: var(--ink); background: var(--paper); box-shadow: 0 1px 3px oklch(.2 0 0 / .12); }
+    .header-meta { justify-self: end; color: var(--muted); font-size: .72rem; }
+    .header-meta b { color: var(--ink); }
+    main { max-width: 1680px; margin: 0 auto; padding: 1rem; }
+    .view[hidden] { display: none; }
+    .view-heading {
+      display: flex; justify-content: space-between; align-items: end; gap: 1rem;
+      min-height: 4rem; margin-bottom: .8rem;
+    }
+    .view-heading h1 { margin: 0; font-size: 1.35rem; line-height: 1.2; letter-spacing: -.02em; }
+    .view-heading p { max-width: 72ch; margin: .2rem 0 0; color: var(--muted); font-size: .82rem; }
+    .pipeline-switch {
+      display: flex; gap: .15rem; padding: .2rem; border-radius: 8px; background: var(--panel);
+    }
+    .pipeline-switch button {
+      padding: .38rem .65rem; border: 0; border-radius: 6px;
+      color: var(--muted); background: transparent; cursor: pointer; font-weight: 750; font-size: .76rem;
+    }
+    .pipeline-switch button.active[data-pipeline="exect"] { color: var(--blue-dark); background: var(--blue-soft); }
+    .pipeline-switch button.active[data-pipeline="gan"] { color: var(--amber-dark); background: var(--amber-soft); }
+
+    /* Evidence workbench */
+    .workbench {
+      display: grid; grid-template-columns: var(--sidebar) minmax(25rem, 1fr) minmax(22rem, 27rem);
+      min-height: calc(100vh - 10.5rem); overflow: hidden;
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+    }
+    .stages { padding: .75rem; background: var(--panel); border-right: 1px solid var(--line); }
+    .panel-title {
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 2.2rem; margin: 0 .25rem .45rem; font-size: .74rem; font-weight: 800;
+    }
+    .panel-title span { color: var(--faint); font-weight: 650; }
+    .stage-list { display: grid; gap: .18rem; }
+    .stage-button {
+      display: grid; grid-template-columns: 1.65rem 1fr auto; align-items: center; gap: .55rem;
+      width: 100%; min-height: 3.7rem; padding: .45rem .55rem; border: 0; border-radius: 7px;
+      text-align: left; background: transparent; cursor: pointer;
+    }
+    .stage-button:hover { background: oklch(1 0 0 / .65); }
+    .stage-button.active { background: var(--paper); box-shadow: 0 1px 3px oklch(.2 0 0 / .12); }
+    .stage-index {
+      display: grid; place-items: center; width: 1.55rem; height: 1.55rem;
+      border: 1px solid var(--line-strong); border-radius: 50%; color: var(--muted); font-size: .68rem; font-weight: 800;
+    }
+    .stage-button.active .stage-index { color: white; border-color: var(--blue); background: var(--blue); }
+    .gan-mode .stage-button.active .stage-index { border-color: var(--amber); background: var(--amber); }
+    .stage-button b, .stage-button small { display: block; }
+    .stage-button b { font-size: .78rem; }
+    .stage-button small { margin-top: .08rem; color: var(--muted); font-size: .69rem; }
+    .stage-state { color: var(--green); font-size: .74rem; font-weight: 800; }
+    .stage-state.repair { color: var(--amber-dark); }
+    .trace-key { margin-top: .9rem; padding: .7rem .55rem; border-top: 1px solid var(--line); }
+    .trace-key p { margin: 0 0 .5rem; color: var(--muted); font-size: .69rem; }
+    .legend { display: flex; align-items: center; gap: .4rem; margin: .32rem 0; color: var(--muted); font-size: .69rem; }
+    .legend i { width: .5rem; height: .5rem; border-radius: 50%; background: var(--blue); }
+    .legend i.rule { background: var(--amber); }.legend i.valid { background: var(--green); }
+    .note-panel { min-width: 0; overflow: auto; }
+    .note-toolbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      min-height: 3.4rem; padding: .65rem 1rem; border-bottom: 1px solid var(--line);
+    }
+    .note-toolbar b, .note-toolbar span { display: block; }
+    .note-toolbar b { font-size: .82rem; }.note-toolbar span { color: var(--muted); font-size: .7rem; }
+    .source-badge { padding: .25rem .45rem; border-radius: 5px; color: var(--muted); background: var(--panel); font-size: .68rem; font-weight: 700; }
+    .clinical-note {
+      max-width: 76ch; margin: 0 auto; padding: 2.4rem 2rem 2rem;
+      font-family: Georgia, "Times New Roman", serif; font-size: 1.03rem; line-height: 1.9;
+    }
+    mark {
+      padding: .1rem .12rem; border-radius: 3px; color: inherit;
+      background: var(--blue-soft); box-decoration-break: clone; -webkit-box-decoration-break: clone;
+    }
+    mark.secondary { background: var(--amber-soft); }
+    mark.dim { color: inherit; background: transparent; text-decoration: underline 2px var(--line-strong); text-underline-offset: 3px; }
+    .finding-bar { padding: 0 1rem 1rem; }
+    .finding-bar h2 { margin: 0 0 .5rem; font-size: .75rem; }
+    .findings { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .finding {
+      display: flex; align-items: center; gap: .45rem; padding: .38rem .55rem;
+      border: 1px solid var(--line); border-radius: 6px; background: var(--paper); font-size: .72rem;
+    }
+    .finding b { font-size: .69rem; }.finding span { color: var(--muted); }
+    .trace-panel { min-width: 0; padding: 1rem; overflow: auto; border-left: 1px solid var(--line); background: oklch(.988 .002 250); }
+    .trace-panel h2 { margin: .15rem 0 .2rem; font-size: 1rem; }
+    .trace-panel > p { margin: 0 0 .9rem; color: var(--muted); font-size: .76rem; }
+    .status-row { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .85rem; }
+    .status-pill { padding: .24rem .42rem; border-radius: 5px; color: var(--green); background: var(--green-soft); font-size: .66rem; font-weight: 800; }
+    .status-pill.rule { color: var(--amber-dark); background: var(--amber-soft); }
+    .trace-section { padding: .75rem 0; border-top: 1px solid var(--line); }
+    .trace-label { color: var(--muted); font-size: .66rem; font-weight: 800; }
+    .trace-value { margin-top: .28rem; font-size: .78rem; }
+    .diff { display: grid; gap: .35rem; margin-top: .35rem; }
+    .diff div { padding: .55rem .6rem; border-radius: 6px; font: .72rem/1.45 "SFMono-Regular", Consolas, monospace; }
+    .before { background: var(--red-soft); }.after { background: var(--green-soft); }
+    pre {
+      margin: .35rem 0 0; padding: .7rem; overflow: auto; border-radius: 7px;
+      color: oklch(.91 .008 250); background: var(--code);
+      font: .72rem/1.5 "SFMono-Regular", Consolas, monospace; white-space: pre-wrap;
+    }
+    .source-link { display: flex; align-items: center; gap: .45rem; color: var(--blue-dark); font-size: .72rem; font-weight: 700; }
+    .source-link::before { content: ""; width: 1.6rem; height: 2px; background: var(--blue); }
+    .output-tabs {
+      display: flex; gap: .15rem; margin: .9rem 0 .1rem; padding: .2rem;
+      border-radius: 7px; background: var(--panel);
+    }
+    .output-tab {
+      flex: 1; padding: .35rem .25rem; border: 0; border-radius: 5px;
+      color: var(--muted); background: transparent; cursor: pointer; font-size: .68rem; font-weight: 750;
+    }
+    .output-tab[aria-selected="true"] { color: var(--ink); background: var(--paper); box-shadow: 0 1px 2px oklch(.2 0 0 / .12); }
+    .output-panel[hidden] { display: none; }
+    .full-output { max-height: 27rem; min-height: 18rem; }
+    .metadata-list { margin: .3rem 0 0; }
+    .metadata-list div { display: grid; grid-template-columns: 7rem 1fr; gap: .6rem; padding: .48rem 0; border-bottom: 1px solid var(--line); }
+    .metadata-list dt { color: var(--muted); font-size: .66rem; font-weight: 800; }
+    .metadata-list dd { margin: 0; overflow-wrap: anywhere; font: .7rem/1.4 "SFMono-Regular", Consolas, monospace; }
+
+    /* Side-by-side case */
+    .case-sheet { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .case-source { display: grid; grid-template-columns: 10rem minmax(0, 1fr); border-bottom: 1px solid var(--line); }
+    .case-source header { padding: 1rem; background: var(--panel); }
+    .case-source h2 { margin: 0; font-size: .85rem; }.case-source p { margin: .25rem 0 0; color: var(--muted); font-size: .7rem; }
+    .case-note { max-width: 90ch; margin: 0; padding: 1.15rem 1.3rem; font-family: Georgia, serif; line-height: 1.75; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; }
+    .pipeline-column { min-width: 0; }.pipeline-column + .pipeline-column { border-left: 1px solid var(--line); }
+    .column-head { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 1.15rem; border-bottom: 1px solid var(--line); }
+    .column-head h2 { margin: 0; font-size: 1rem; }.column-head p { margin: .2rem 0 0; color: var(--muted); font-size: .72rem; }
+    .pipeline-tag { align-self: start; padding: .25rem .42rem; border-radius: 5px; font-size: .66rem; font-weight: 800; }
+    .pipeline-tag.exect { color: var(--blue-dark); background: var(--blue-soft); }
+    .pipeline-tag.gan { color: var(--amber-dark); background: var(--amber-soft); }
+    .steps { padding: .45rem 1.15rem .8rem; }
+    .case-step { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr); gap: .65rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+    .case-step:last-child { border-bottom: 0; }
+    .case-step .step-number { color: var(--faint); font: 700 .7rem/1.4 "SFMono-Regular", Consolas, monospace; }
+    .case-step h3 { margin: 0; font-size: .78rem; }.case-step p { margin: .2rem 0 .45rem; color: var(--muted); font-size: .72rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .chip { padding: .24rem .38rem; border-radius: 4px; background: var(--panel); font-size: .67rem; }
+    .receipt { margin: .4rem 1.15rem 1.15rem; padding: .85rem; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); }
+    .receipt h3 { margin: 0 0 .6rem; font-size: .77rem; }
+    .receipt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+    .receipt-grid div { min-width: 0; }.receipt-grid label { display: block; color: var(--muted); font-size: .63rem; font-weight: 800; }
+    .receipt-grid b { display: block; margin-top: .15rem; overflow-wrap: anywhere; font-size: .7rem; }
+
+    /* Transformation table */
+    .table-shell { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .table-toolbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      min-height: 3.5rem; padding: .65rem .85rem; border-bottom: 1px solid var(--line);
+    }
+    .table-toolbar p { margin: 0; color: var(--muted); font-size: .72rem; }
+    .table-toolbar select { min-height: 2.1rem; padding: .35rem .55rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); font-size: .74rem; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; min-width: 980px; border-collapse: collapse; }
+    th { padding: .65rem .7rem; color: var(--muted); background: var(--panel); border-bottom: 1px solid var(--line); text-align: left; font-size: .65rem; letter-spacing: .025em; }
+    td { padding: .72rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; font-size: .72rem; }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: oklch(.985 .003 250); }
+    .stage-cell { min-width: 10.5rem; }.stage-cell b, .stage-cell span { display: block; }.stage-cell span { margin-top: .15rem; color: var(--muted); font-size: .67rem; }
+    .mono { font-family: "SFMono-Regular", Consolas, monospace; font-size: .68rem; }
+    .evidence-cell { max-width: 15rem; }.evidence-cell q { color: var(--blue-dark); }
+    .table-status { display: inline-flex; gap: .3rem; align-items: center; white-space: nowrap; color: var(--green); font-weight: 800; }
+    .table-status::before { content: ""; width: .42rem; height: .42rem; border-radius: 50%; background: currentColor; }
+    .table-status.repaired { color: var(--amber-dark); }
+    details.row-detail { margin-top: .35rem; }
+    details.row-detail summary { color: var(--blue-dark); cursor: pointer; font-size: .68rem; font-weight: 750; }
+    details.row-detail pre { min-width: 17rem; }
+
+    /* DAG canvas */
+    .dag-shell { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+    .dag-toolbar {
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+      min-height: 3.6rem; padding: .65rem .85rem; border-bottom: 1px solid var(--line);
+    }
+    .dag-toolbar p { margin: 0; color: var(--muted); font-size: .72rem; }
+    .dag-legend { display: flex; flex-wrap: wrap; gap: .75rem; color: var(--muted); font-size: .67rem; }
+    .dag-legend span { display: flex; align-items: center; gap: .32rem; }
+    .dag-legend i { width: .48rem; height: .48rem; border-radius: 50%; background: var(--blue); }
+    .dag-legend i.rule { background: var(--amber); }.dag-legend i.evidence { background: var(--green); }
+    .dag-scroll { overflow: auto; background: var(--panel); }
+    .dag-canvas { position: relative; width: 1300px; height: 690px; margin: 0 auto; }
+    .dag-canvas svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .dag-edge { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+    .dag-edge.emphasis { stroke: var(--blue); }.gan-dag .dag-edge.emphasis { stroke: var(--amber); }
+    .dag-edge.evidence { stroke: var(--green); stroke-dasharray: 5 4; }
+    .dag-node {
+      position: absolute; width: 13.5rem; min-height: 9.5rem; padding: .8rem;
+      border: 1px solid var(--line-strong); border-radius: 9px; background: var(--paper);
+    }
+    .dag-node.source { left: 2rem; top: 250px; }
+    .dag-node.producer-a { left: 18rem; top: 120px; }
+    .dag-node.producer-b { left: 18rem; top: 390px; }
+    .dag-node.assembly { left: 35rem; top: 250px; }
+    .dag-node.normalize { left: 52rem; top: 120px; }
+    .dag-node.evidence { left: 52rem; top: 390px; }
+    .dag-node.score { left: 69rem; top: 250px; }
+    .dag-node .node-type { display: flex; justify-content: space-between; gap: .4rem; color: var(--muted); font-size: .63rem; font-weight: 800; }
+    .dag-node .node-type i { width: .5rem; height: .5rem; margin-top: .18rem; border-radius: 50%; background: var(--blue); }
+    .dag-node.rule .node-type i { background: var(--amber); }.dag-node.evidence .node-type i { background: var(--green); }
+    .dag-node h2 { margin: .55rem 0 .3rem; font-size: .82rem; }
+    .dag-node p { min-height: 2.9rem; margin: 0; color: var(--muted); font-size: .69rem; }
+    .node-change { display: flex; gap: .3rem; margin: .6rem 0; }
+    .node-change span { padding: .22rem .35rem; border-radius: 4px; background: var(--panel); font: .64rem/1.3 "SFMono-Regular", Consolas, monospace; }
+    .dag-link { padding: 0; border: 0; color: var(--blue-dark); background: transparent; cursor: pointer; font-size: .68rem; font-weight: 800; }
+    .gan-dag .dag-link { color: var(--amber-dark); }
+    .dag-annotation {
+      position: absolute; width: 13.5rem; padding: .55rem .65rem; border-radius: 6px;
+      color: var(--muted); background: var(--paper); font-size: .67rem; line-height: 1.4;
+    }
+    .dag-annotation b { color: var(--ink); }
+    .annotation-origin { left: 2rem; top: 445px; }
+    .annotation-branch { left: 35rem; top: 455px; }
+    .annotation-score { left: 69rem; top: 445px; }
+    footer { padding: .8rem .15rem 0; color: var(--muted); font-size: .68rem; }
+
+    @media (max-width: 1050px) {
+      .app-header { grid-template-columns: 1fr auto; }.view-tabs { order: 3; grid-column: 1 / -1; justify-self: stretch; margin-top: .6rem; }
+      .view-tab { flex: 1; }.header-meta { align-self: start; }
+      .workbench { grid-template-columns: 15rem minmax(24rem, 1fr); }.trace-panel { grid-column: 1 / -1; border-top: 1px solid var(--line); border-left: 0; }
+      .comparison { grid-template-columns: 1fr; }.pipeline-column + .pipeline-column { border-top: 1px solid var(--line); border-left: 0; }
+    }
+    @media (max-width: 720px) {
+      main { padding: .65rem; }.header-meta { display: none; }.app-header { grid-template-columns: 1fr; }.brand { justify-content: center; }
+      .view-heading { display: block; }.pipeline-switch { margin-top: .65rem; }.pipeline-switch button { flex: 1; }
+      .workbench { display: block; min-height: 0; }.stages { overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .stage-list { display: flex; width: max-content; }.stage-button { width: 13rem; }.trace-key { display: none; }
+      .clinical-note { padding: 1.4rem 1rem; }.note-toolbar { align-items: start; }.trace-panel { max-height: none; }
+      .case-source { grid-template-columns: 1fr; }.case-source header { border-bottom: 1px solid var(--line); }
+      .receipt-grid { grid-template-columns: 1fr 1fr; }.table-toolbar { align-items: start; flex-direction: column; }
+      .dag-toolbar { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><div class="brand-mark">CE</div><div><strong>Clinical extraction trace</strong><span>Inspectable modular pipelines</span></div></div>
+    <nav class="view-tabs" aria-label="Design concepts">
+      <button class="view-tab" data-view="workbench" aria-selected="true">Evidence workbench</button>
+      <button class="view-tab" data-view="dag-view" aria-selected="false">Pipeline DAG</button>
+      <button class="view-tab" data-view="case-study" aria-selected="false">Case study</button>
+      <button class="view-tab" data-view="table-view" aria-selected="false">Transformation table</button>
+    </nav>
+    <div class="header-meta"><b>SYN-014</b> · illustrative synthetic record</div>
+  </header>
+
+  <main>
+    <section class="view" id="workbench">
+      <div class="view-heading">
+        <div><h1>Inspect every transformation</h1><p>Select a stage to see the exact input, output, rule ownership and supporting evidence. The source note remains fixed.</p></div>
+        <div class="pipeline-switch" aria-label="Pipeline"><button class="active" data-pipeline="exect">ExECTv2</button><button data-pipeline="gan">Gan 2026</button></div>
+      </div>
+      <div class="workbench" id="workbenchShell">
+        <aside class="stages">
+          <h2 class="panel-title">Pipeline stages <span id="stageCount">6 stages</span></h2>
+          <div class="stage-list" id="stageList"></div>
+          <div class="trace-key">
+            <p>Every output retains these trace categories:</p>
+            <div class="legend"><i></i> Model-produced value</div>
+            <div class="legend"><i class="rule"></i> Deterministic transformation</div>
+            <div class="legend"><i class="valid"></i> Verified evidence</div>
+          </div>
+        </aside>
+
+        <section class="note-panel">
+          <div class="note-toolbar"><div><b>Synthetic follow-up letter</b><span>Source offsets 0000–0286 · immutable</span></div><span class="source-badge">SOURCE SYN-014</span></div>
+          <article class="clinical-note">
+            The patient has <mark data-evidence="diagnosis">focal epilepsy</mark>. Since the medication change, she reports
+            <mark data-evidence="rate">three to four focal aware seizures each month</mark>, usually
+            <mark class="secondary" data-evidence="cluster">in clusters of two over one day</mark>.
+            She had <mark class="secondary" data-evidence="free">no seizures for six weeks</mark> before symptoms returned.
+            Continue <mark data-evidence="prescription">lamotrigine 150 mg twice daily</mark>.
+          </article>
+          <div class="finding-bar"><h2 id="findingTitle">Assembled phenotype findings</h2><div class="findings" id="findings"></div></div>
+        </section>
+
+        <aside class="trace-panel" aria-live="polite">
+          <div class="status-row" id="statusRow"></div>
+          <h2 id="traceTitle"></h2><p id="traceSummary"></p>
+          <div class="output-tabs" role="tablist" aria-label="Stage output detail">
+            <button class="output-tab" data-output="complete" role="tab" aria-selected="true">Complete output</button>
+            <button class="output-tab" data-output="change" role="tab" aria-selected="false">Change</button>
+            <button class="output-tab" data-output="metadata" role="tab" aria-selected="false">Provenance</button>
+          </div>
+          <div class="output-panel" data-panel="complete">
+            <div class="trace-section"><div class="trace-label">FULL SAVED STAGE OUTPUT</div><pre class="full-output" id="fullOutput"></pre></div>
+          </div>
+          <div class="output-panel" data-panel="change" hidden>
+            <div class="trace-section"><div class="trace-label">ENTERED</div><div class="trace-value" id="traceInput"></div></div>
+            <div class="trace-section"><div class="trace-label">TRANSFORMATION</div><div class="trace-value" id="traceRule"></div><div class="diff"><div class="before" id="traceBefore"></div><div class="after" id="traceAfter"></div></div></div>
+            <div class="trace-section"><div class="trace-label">SOURCE EVIDENCE</div><div class="source-link" id="traceEvidence"></div></div>
+          </div>
+          <div class="output-panel" data-panel="metadata" hidden>
+            <div class="trace-section"><div class="trace-label">TRACE METADATA</div><dl class="metadata-list" id="traceMetadata"></dl></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="dag-view" hidden>
+      <div class="view-heading">
+        <div><h1>Pipeline DAG</h1><p>Read the entire route at once. Every node explains its operation, names the change it makes, and opens the same item in the Evidence Workbench.</p></div>
+        <div class="pipeline-switch dag-switch" aria-label="DAG pipeline"><button class="active" data-dag-pipeline="exect">ExECTv2</button><button data-dag-pipeline="gan">Gan 2026</button></div>
+      </div>
+      <section class="dag-shell">
+        <div class="dag-toolbar">
+          <p id="dagDescription">Broad phenotyping branches into independently attributable producers before family-specific assembly.</p>
+          <div class="dag-legend"><span><i></i> Model or source</span><span><i class="rule"></i> Deterministic change</span><span><i class="evidence"></i> Evidence check</span></div>
+        </div>
+        <div class="dag-scroll">
+          <div class="dag-canvas" id="dagCanvas"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="case-study" hidden>
+      <div class="view-heading"><div><h1>One note, two resolutions</h1><p>A static comparison for explaining why broad phenotyping and deep seizure-frequency extraction need different pipelines.</p></div></div>
+      <article class="case-sheet">
+        <section class="case-source"><header><h2>Shared source</h2><p>SYN-014 · synthetic</p></header><p class="case-note">The patient has focal epilepsy. Since the medication change, she reports three to four focal aware seizures each month, usually in clusters of two over one day. She had no seizures for six weeks before symptoms returned. Continue lamotrigine 150 mg twice daily.</p></section>
+        <div class="comparison">
+          <section class="pipeline-column">
+            <header class="column-head"><div><h2>What phenotype facts are present?</h2><p>Broad extraction across the clinical letter.</p></div><span class="pipeline-tag exect">ExECTv2</span></header>
+            <div class="steps">
+              <div class="case-step"><span class="step-number">01</span><div><h3>Produce candidates</h3><p>Model-led key families and deterministic all-entity routes remain separately attributable.</p><div class="chips"><span class="chip">Diagnosis</span><span class="chip">Prescription</span><span class="chip">Investigations</span><span class="chip">Seizure Frequency</span></div></div></div>
+              <div class="case-step"><span class="step-number">02</span><div><h3>Apply family-specific assembly</h3><p>Each clinical family uses a bounded lens instead of forcing every entity into one shared shape.</p><div class="chips"><span class="chip">family policy</span><span class="chip">candidate identity</span><span class="chip">suppression reason</span></div></div></div>
+              <div class="case-step"><span class="step-number">03</span><div><h3>Project distinct scoring views</h3><p>Clinical recovery, phrase, CUI, evidence and attributes remain separate evaluation questions.</p><div class="chips"><span class="chip">focal epilepsy</span><span class="chip">lamotrigine · 150 mg · BID</span><span class="chip">3–4 / month</span></div></div></div>
+            </div>
+            <div class="receipt"><h3>Trace receipt</h3><div class="receipt-grid"><div><label>ORIGIN</label><b>model + deterministic</b></div><div><label>ASSEMBLY</label><b>family lenses</b></div><div><label>EVIDENCE</label><b>exact spans</b></div><div><label>OUTPUT</label><b>multiple findings</b></div><div><label>SCORING</label><b>five views</b></div><div><label>TRACE</label><b>complete</b></div></div></div>
+          </section>
+          <section class="pipeline-column">
+            <header class="column-head"><div><h2>What is the seizure-frequency state?</h2><p>Deep reconstruction of one clinical object.</p></div><span class="pipeline-tag gan">Gan 2026</span></header>
+            <div class="steps">
+              <div class="case-step"><span class="step-number">01</span><div><h3>Decompose frequency events</h3><p>Rates, clusters and seizure-free intervals are retained before a final answer is selected.</p><div class="chips"><span class="chip">3–4 / month</span><span class="chip">cluster 2 / day</span><span class="chip">6 weeks free</span></div></div></div>
+              <div class="case-step"><span class="step-number">02</span><div><h3>Repair and normalize explicitly</h3><p>Format-only schema repair stays separate from semantic normalization, time arithmetic and evidence policy.</p><div class="chips"><span class="chip">schema repair</span><span class="chip">monthly window</span><span class="chip">selected evidence</span></div></div></div>
+              <div class="case-step"><span class="step-number">03</span><div><h3>Select and score one answer</h3><p>The compact benchmark label is the end of a fully retained transformation history.</p><div class="chips"><span class="chip">3–4 per month</span><span class="chip">Purist</span><span class="chip">Pragmatic</span></div></div></div>
+            </div>
+            <div class="receipt"><h3>Trace receipt</h3><div class="receipt-grid"><div><label>ORIGIN</label><b>structured model event</b></div><div><label>REPAIR</label><b>format-only</b></div><div><label>EVIDENCE</label><b>exact selected span</b></div><div><label>OUTPUT</label><b>one frequency label</b></div><div><label>SCORING</label><b>Purist + Pragmatic</b></div><div><label>TRACE</label><b>complete</b></div></div></div>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <section class="view" id="table-view" hidden>
+      <div class="view-heading"><div><h1>Transformation ledger</h1><p>The technically rigorous view: every operation is a row, and every row can expose its before-and-after payload.</p></div></div>
+      <section class="table-shell">
+        <div class="table-toolbar"><p>Each row names whether the operation is model-led, format-only, deterministic semantic logic, evidence checking or scoring.</p><select id="tablePipeline" aria-label="Table pipeline"><option value="gan">Gan 2026</option><option value="exect">ExECTv2</option></select></div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>STAGE</th><th>INPUT</th><th>TRANSFORMATION</th><th>OUTPUT</th><th>EVIDENCE</th><th>STATUS</th></tr></thead>
+          <tbody id="ledgerBody"></tbody>
+        </table></div>
+      </section>
+    </section>
+    <footer>Illustrative synthetic content · reflects the current repository architecture · not a clinical decision-support interface.</footer>
+  </main>
+
+  <script>
+    const $ = (selector, context = document) => context.querySelector(selector);
+    const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
+
+    const pipelineData = {
+      exect: {
+        mode: "ExECTv2",
+        findingsTitle: "Assembled phenotype findings",
+        findings: [["Diagnosis","focal epilepsy"],["Seizure Frequency","3–4 / month"],["Prescription","lamotrigine · 150 mg · BID"],["Patient History","medication change"]],
+        stages: [
+          {name:"Source letter",sub:"Immutable input",state:"Passed",title:"Clinical letter loaded",summary:"The complete source letter enters the pipeline with stable identity and character offsets.",input:"SYN-014 · 286 characters",rule:"No transformation",before:"No structured findings",after:"Source identity and offsets registered",json:'{"source_id":"SYN-014","characters":286,"offsets":"preserved"}',evidence:"Entire source letter",tags:["SOURCE RETAINED"]},
+          {name:"Candidate producers",sub:"Model + deterministic",state:"Passed",title:"Candidate findings produced",summary:"Model-led key families and deterministic all-entity candidates are stored without merging their origins.",input:"Clinical letter + producer configuration",rule:"Independent candidate production",before:"Unstructured clinical prose",after:"17 candidates with producer identity",json:'{"candidates":17,"origins":["model","deterministic"]}',evidence:"All candidate spans retained",tags:["MODEL OUTPUT","ORIGIN RETAINED"]},
+          {name:"Family assembly",sub:"Bounded policies",state:"Passed",title:"Family lenses applied",summary:"Diagnosis, Prescription, Investigations and Seizure Frequency each apply their declared assembly policy.",input:"17 attributed candidates",rule:"Family-specific selection and suppression",before:"Overlapping candidate set",after:"4 selected findings · 1 suppressed duplicate",json:'{"selected":4,"suppressed":1,"policy":"family_lenses"}',evidence:"Selected and suppressed spans retained",tags:["DETERMINISTIC RULE","ATTRIBUTED"]},
+          {name:"Normalization",sub:"Concept + attributes",state:"Passed",title:"Clinical finding normalized",summary:"The exact mention remains available while concept and attributes are normalized for comparison.",input:"“lamotrigine 150 mg twice daily”",rule:"Medication regimen normalization",before:"twice daily",after:"frequency = BID",json:'{"concept":"lamotrigine","dose":"150 mg","frequency":"BID"}',evidence:"Characters 0235–0274",tags:["DETERMINISTIC RULE","EXACT EVIDENCE"]},
+          {name:"Evidence identity",sub:"Exact source trace",state:"Passed",title:"Evidence and finding identity checked",summary:"Every assembled finding retains its source mention, normalized representation, producer and family route.",input:"4 assembled findings",rule:"Exact-substring and identity checks",before:"Finding object without validation flag",after:"evidence_valid = true",json:'{"finding_id":"SYN-014:rx:01","evidence_valid":true}',evidence:"Exact substring confirmed",tags:["VERIFIED EVIDENCE"]},
+          {name:"Scoring views",sub:"Distinct projections",state:"Passed",title:"Scoring views projected",summary:"Clinical headline, normalized phrase, CUI, evidence and full attributes remain distinct views.",input:"Verified clinical findings",rule:"View-specific benchmark projection",before:"One rich finding object",after:"Five evaluation views",json:'{"views":["clinical_headline","phrase","CUI","evidence","attributes"]}',evidence:"Trace attached to every view",tags:["SCORED OUTPUT","TRACE COMPLETE"]}
+        ]
+      },
+      gan: {
+        mode: "Gan 2026",
+        findingsTitle: "Reconstructed frequency events",
+        findings: [["Explicit rate","3–4 / month"],["Cluster","2 / 1 day"],["Seizure-free","6 weeks"],["Selected answer","3–4 per month"]],
+        stages: [
+          {name:"Source note",sub:"Immutable input",state:"Passed",title:"Frequency note loaded",summary:"The source note enters the deep extraction route with stable identity and offsets.",input:"SYN-014 · selected frequency context",rule:"No transformation",before:"No structured events",after:"Source identity and offsets registered",json:'{"source_id":"SYN-014","task":"seizure_frequency"}',evidence:"Frequency context preserved",tags:["SOURCE RETAINED"]},
+          {name:"Structured events",sub:"Model extraction",state:"Passed",title:"Frequency events decomposed",summary:"The model emits rate, cluster and seizure-free events before any final answer is selected.",input:"Frequency statements + context",rule:"Structured event extraction",before:"Narrative frequency history",after:"3 candidate event objects",json:'{"rate":"3-4/month","cluster":"2/1 day","seizure_free":"6 weeks"}',evidence:"Three source spans attached",tags:["MODEL OUTPUT","EVIDENCE ATTACHED"]},
+          {name:"Schema repair",sub:"Format only",state:"Repaired",title:"Structured payload repaired",summary:"JSON dialect repair makes the payload valid without changing the intended clinical meaning.",input:'{rate:"3-4", unit:"month",}',rule:"Trailing comma + scalar range repair",before:'"rate": "3-4",',after:'"rate": {"low":3,"high":4}',json:'{"repair_kind":"json_dialect","semantic_change":false}',evidence:"Source spans unchanged by repair",tags:["FORMAT REPAIR","RECORDED"]},
+          {name:"Normalization",sub:"Semantic rules",state:"Passed",title:"Rate and time window normalized",summary:"Declared deterministic logic normalizes units and represents the monthly interval.",input:"rate 3–4 · unit month",rule:"Monthly rate normalization",before:'unit = "month"',after:"window_days = 30.4375",json:'{"normalized_rate":[3,4],"window_days":30.4375}',evidence:"Rate phrase remains exact",tags:["DETERMINISTIC RULE","ATTRIBUTED"]},
+          {name:"Evidence selection",sub:"Exact trace",state:"Passed",title:"Final evidence selected and checked",summary:"The answer is supported by the explicit monthly rate while cluster and seizure-free events remain in the trace.",input:"3 candidate events",rule:"Selected-evidence precedence",before:"Multiple temporally relevant events",after:"Explicit monthly rate selected",json:'{"selected_event":"rate","evidence_valid":true}',evidence:"“three to four … each month”",tags:["VERIFIED EVIDENCE","SELECTION RECORDED"]},
+          {name:"Benchmark scoring",sub:"Purist + Pragmatic",state:"Passed",title:"Final frequency label scored",summary:"The compact label is scored under both mappings without discarding the richer event history.",input:"Normalized answer: 3–4 / month",rule:"Benchmark label projection",before:"Rich selected clinical state",after:'label = "3–4 per month"',json:'{"purist_correct":true,"pragmatic_correct":true}',evidence:"Complete trace attached to score",tags:["SCORED OUTPUT","TRACE COMPLETE"]}
+        ]
+      }
+    };
+
+    const ledger = {
+      gan: [
+        ["Source note","Immutable input","SYN-014","Register source identity","note + offsets","Entire note","Passed"],
+        ["Structured events","Model extraction","frequency context","Extract rate, cluster and free interval","3 event objects","3 attached spans","Passed"],
+        ["Schema repair","Format only",'{rate:"3-4",}',"Repair JSON dialect",'{"rate":[3,4]}',"Unchanged","Repaired"],
+        ["Normalization","Deterministic semantic","3–4 · month","Normalize rate window","3–4 / 30.4375 days","Exact rate phrase","Passed"],
+        ["Evidence selection","Deterministic semantic","3 candidate events","Select explicit current rate","3–4 / month",'“three to four … each month”',"Passed"],
+        ["Scoring","Benchmark format","normalized answer","Purist + Pragmatic projection","3–4 per month","Trace attached","Passed"]
+      ],
+      exect: [
+        ["Source letter","Immutable input","SYN-014","Register source identity","letter + offsets","Entire letter","Passed"],
+        ["Candidate producers","Model + deterministic","clinical letter","Run independent producers","17 candidates","All candidate spans","Passed"],
+        ["Family assembly","Deterministic semantic","17 candidates","Apply family lenses","4 selected findings","Selected + suppressed spans","Passed"],
+        ["Normalization","Deterministic semantic","mention + attributes","Normalize concept and regimen","clinical finding object","Exact mention","Passed"],
+        ["Evidence identity","Validation","4 findings","Check substring and identity","evidence_valid = true","Exact spans","Passed"],
+        ["Scoring views","Evaluation","verified findings","Project five distinct views","view-specific rows","Trace attached","Passed"]
+      ]
+    };
+
+    let currentPipeline = "exect";
+    let currentStageIndex = 0;
+    const dagCopy = {
+      exect: {
+        description: "Broad phenotyping branches into independently attributable producers before family-specific assembly.",
+        producerA: ["Model-led candidates","Structured key-family findings","1 letter","4 families"],
+        producerB: ["Deterministic candidates","All-entity rules run independently","1 letter","13 candidates"],
+        annotations: [
+          "<b>Why preserve the source?</b> Stable offsets let every later representation return to the complete letter.",
+          "<b>Why branch here?</b> Independent producers keep improvements and regressions attributable.",
+          "<b>Why separate scoring views?</b> Clinical recovery, phrase, CUI and attributes answer different questions."
+        ]
+      },
+      gan: {
+        description: "Deep frequency extraction keeps source context and structured events separate until evidence-backed selection.",
+        producerA: ["Structured events","Model decomposes the frequency history","1 context","3 events"],
+        producerB: ["Source evidence","Exact spans remain an independent input","3 spans","unchanged"],
+        annotations: [
+          "<b>Why preserve the source?</b> The selected frequency answer must remain checkable against the full note.",
+          "<b>Why show schema repair?</b> Format correction must not be confused with clinical interpretation.",
+          "<b>Why retain all events?</b> The final label is compact, but clusters and seizure-free intervals remain auditable."
+        ]
+      }
+    };
+
+    function renderPipeline(key, selectedIndex = 0) {
+      currentPipeline = key;
+      currentStageIndex = selectedIndex;
+      const data = pipelineData[key];
+      $("#workbenchShell").classList.toggle("gan-mode", key === "gan");
+      $$(".pipeline-switch button[data-pipeline]").forEach(button => button.classList.toggle("active", button.dataset.pipeline === key));
+      $("#stageCount").textContent = data.stages.length + " stages";
+      $("#stageList").innerHTML = data.stages.map((stage, index) =>
+        '<button class="stage-button' + (index === selectedIndex ? ' active' : '') + '" data-stage="' + index + '">' +
+        '<span class="stage-index">' + (index + 1) + '</span><span><b>' + stage.name + '</b><small>' + stage.sub + '</small></span>' +
+        '<span class="stage-state' + (stage.state === "Repaired" ? ' repair' : '') + '">' + (stage.state === "Passed" ? "✓" : "●") + '</span></button>'
+      ).join("");
+      $("#findingTitle").textContent = data.findingsTitle;
+      $("#findings").innerHTML = data.findings.map(f => '<div class="finding"><b>' + f[0] + '</b><span>' + f[1] + '</span></div>').join("");
+      $$(".stage-button").forEach(button => button.addEventListener("click", () => {
+        $$(".stage-button").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        currentStageIndex = Number(button.dataset.stage);
+        renderTrace(data.stages[currentStageIndex], currentStageIndex, key);
+      }));
+      renderTrace(data.stages[selectedIndex], selectedIndex, key);
+    }
+
+    function renderTrace(stage, stageIndex, pipelineKey) {
+      const parsedOutput = (() => { try { return JSON.parse(stage.json); } catch { return stage.json; } })();
+      const completeOutput = {
+        run: {
+          source_id: "SYN-014",
+          dataset: "illustrative_synthetic",
+          pipeline: pipelineData[pipelineKey].mode,
+          stage_index: stageIndex,
+          stage_name: stage.name,
+          status: stage.state
+        },
+        input: {
+          summary: stage.input,
+          source_offsets_preserved: true
+        },
+        operation: {
+          name: stage.rule,
+          categories: stage.tags
+        },
+        output: parsedOutput,
+        change: {
+          before: stage.before,
+          after: stage.after
+        },
+        evidence: {
+          selected_text: stage.evidence,
+          source_id: "SYN-014",
+          valid: stage.tags.some(tag => tag.includes("EVIDENCE")) || stageIndex === 0
+        },
+        trace: {
+          previous_stage: stageIndex > 0 ? pipelineData[pipelineKey].stages[stageIndex - 1].name : null,
+          next_stage: stageIndex < pipelineData[pipelineKey].stages.length - 1 ? pipelineData[pipelineKey].stages[stageIndex + 1].name : null,
+          full_history_retained: true
+        }
+      };
+      $("#statusRow").innerHTML = stage.tags.map((tag, index) => '<span class="status-pill' + (tag.includes("RULE") || tag.includes("REPAIR") ? ' rule' : '') + '">' + tag + '</span>').join("");
+      $("#traceTitle").textContent = stage.title;
+      $("#traceSummary").textContent = stage.summary;
+      $("#traceInput").textContent = stage.input;
+      $("#traceRule").textContent = stage.rule;
+      $("#traceBefore").textContent = "Before · " + stage.before;
+      $("#traceAfter").textContent = "After · " + stage.after;
+      $("#traceEvidence").textContent = stage.evidence;
+      $("#fullOutput").textContent = JSON.stringify(completeOutput, null, 2);
+      $("#traceMetadata").innerHTML = [
+        ["source_id","SYN-014"],
+        ["pipeline",pipelineData[pipelineKey].mode],
+        ["stage",stage.name],
+        ["stage_index",String(stageIndex)],
+        ["status",stage.state],
+        ["operation",stage.rule],
+        ["previous",completeOutput.trace.previous_stage || "—"],
+        ["next",completeOutput.trace.next_stage || "—"],
+        ["history_retained","true"]
+      ].map(item => "<div><dt>" + item[0] + "</dt><dd>" + item[1] + "</dd></div>").join("");
+    }
+
+    function renderLedger(key) {
+      $("#ledgerBody").innerHTML = ledger[key].map((row, index) =>
+        '<tr><td class="stage-cell"><b>' + row[0] + '</b><span>' + row[1] + '</span></td>' +
+        '<td class="mono">' + row[2] + '</td><td>' + row[3] + '</td><td class="mono">' + row[4] + '</td>' +
+        '<td class="evidence-cell"><q>' + row[5] + '</q></td><td><span class="table-status' + (row[6] === "Repaired" ? ' repaired' : '') + '">' + row[6] + '</span>' +
+        '<details class="row-detail"><summary>Inspect payload</summary><pre>{\n  "stage": "' + row[0] + '",\n  "trace_index": ' + index + ',\n  "source_id": "SYN-014"\n}</pre></details></td></tr>'
+      ).join("");
+    }
+
+    function showView(viewId) {
+      $$(".view-tab").forEach(item => item.setAttribute("aria-selected", String(item.dataset.view === viewId)));
+      $$(".view").forEach(view => view.hidden = view.id !== viewId);
+    }
+
+    function renderDag(key) {
+      const data = pipelineData[key];
+      const copy = dagCopy[key];
+      const stages = data.stages;
+      $("#dagCanvas").classList.toggle("gan-dag", key === "gan");
+      $("#dagDescription").textContent = copy.description;
+      $$(".dag-switch button").forEach(button => button.classList.toggle("active", button.dataset.dagPipeline === key));
+      const nodes = [
+        ["source",0,"source","SOURCE",stages[0].name,stages[0].summary,"raw","registered"],
+        ["producer-a",1,"model","PRODUCER",copy.producerA[0],copy.producerA[1],copy.producerA[2],copy.producerA[3]],
+        ["producer-b",key === "exect" ? 1 : 0,key === "exect" ? "rule" : "evidence",key === "exect" ? "PRODUCER" : "EVIDENCE",copy.producerB[0],copy.producerB[1],copy.producerB[2],copy.producerB[3]],
+        ["assembly",2,"rule",key === "exect" ? "ASSEMBLY" : "FORMAT REPAIR",stages[2].name,stages[2].summary,stages[2].before,stages[2].after],
+        ["normalize",3,"rule","DETERMINISTIC",stages[3].name,stages[3].summary,stages[3].before,stages[3].after],
+        ["evidence",4,"evidence","EVIDENCE",stages[4].name,stages[4].summary,"candidate","verified"],
+        ["score",5,"rule","PROJECTION",stages[5].name,stages[5].summary,"rich state","scored output"]
+      ];
+      const edges = '<svg viewBox="0 0 1300 690" aria-hidden="true">' +
+        '<path class="dag-edge emphasis" d="M217 325 C235 325 235 195 252 195"/>' +
+        '<path class="dag-edge evidence" d="M217 325 C235 325 235 465 252 465"/>' +
+        '<path class="dag-edge emphasis" d="M441 195 C468 195 462 325 490 325"/>' +
+        '<path class="dag-edge evidence" d="M441 465 C468 465 462 325 490 325"/>' +
+        '<path class="dag-edge emphasis" d="M679 325 C704 325 703 195 728 195"/>' +
+        '<path class="dag-edge evidence" d="M679 325 C704 325 703 465 728 465"/>' +
+        '<path class="dag-edge emphasis" d="M917 195 C943 195 941 325 966 325"/>' +
+        '<path class="dag-edge evidence" d="M917 465 C943 465 941 325 966 325"/></svg>';
+      const nodeMarkup = nodes.map(node =>
+        '<article class="dag-node ' + node[0] + ' ' + node[2] + '"><div class="node-type"><span>' + node[3] + '</span><i></i></div>' +
+        '<h2>' + node[4] + '</h2><p>' + node[5] + '</p><div class="node-change"><span>' + node[6] + '</span><span>→</span><span>' + node[7] + '</span></div>' +
+        '<button class="dag-link" data-dag-stage="' + node[1] + '" data-dag-key="' + key + '">Open in workbench →</button></article>'
+      ).join("");
+      const annotationMarkup =
+        '<aside class="dag-annotation annotation-origin">' + copy.annotations[0] + '</aside>' +
+        '<aside class="dag-annotation annotation-branch">' + copy.annotations[1] + '</aside>' +
+        '<aside class="dag-annotation annotation-score">' + copy.annotations[2] + '</aside>';
+      $("#dagCanvas").innerHTML = edges + nodeMarkup + annotationMarkup;
+      $$(".dag-link").forEach(button => button.addEventListener("click", () => {
+        renderPipeline(button.dataset.dagKey, Number(button.dataset.dagStage));
+        showView("workbench");
+      }));
+    }
+
+    $$(".view-tab").forEach(tab => tab.addEventListener("click", () => showView(tab.dataset.view)));
+    $$(".pipeline-switch button[data-pipeline]").forEach(button => button.addEventListener("click", () => renderPipeline(button.dataset.pipeline)));
+    $$(".dag-switch button").forEach(button => button.addEventListener("click", () => renderDag(button.dataset.dagPipeline)));
+    $$(".output-tab").forEach(tab => tab.addEventListener("click", () => {
+      $$(".output-tab").forEach(item => item.setAttribute("aria-selected", String(item === tab)));
+      $$(".output-panel").forEach(panel => panel.hidden = panel.dataset.panel !== tab.dataset.output);
+    }));
+    $("#tablePipeline").addEventListener("change", event => renderLedger(event.target.value));
+    renderPipeline("exect");
+    renderDag("exect");
+    renderLedger("gan");
+  </script>
+</body>
+</html>

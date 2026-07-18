@@ -16,6 +16,7 @@
 | Strength of paper claims | [paper claim status](canon/10_paper_provenance.md) |
 | Gan evidence and holdout rules | [Gan evidence summary](canon/06_gan_clinical_policy.md) |
 | Gan hosted test450 protocol and result | [hosted Gan result](experiments/gan2026/gan2026_hosted_test450_protocol_2026-07-15.md) |
+| Gan matched v0.5 test450 protocol and aggregate | [v0.5 protocol](experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md) and [aggregate artifact](../experiments/gan2026_matched_v05_test450_aggregate_20260716.json) |
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
@@ -39,9 +40,11 @@
 | Package boundaries | [software design](design/architecture.md) |
 | Data and split rules | [data rules](design/data_contract.md) and [Gan split rules](design/gan2026_split_protocol.md) |
 | Component attribution | [component attribution](design/component_evidence_attribution_architecture.md) |
+| Proposed pipeline trace explorer | [frontend and backend specification](design/pipeline_trace_explorer_spec.md) |
 | Final ExECT family ownership | [decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md) |
 | Single-call final comparison architecture | [decision 0041](decisions/0041-single-call-exect-model-comparison.md) |
 | Model policy and final six-model roster | [model policy](design/model_strategy.md) and [decision 0039](decisions/0039-final-exect-six-model-roster.md) |
+| Shared hosted Gan prompt | [decision 0043](decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) |
 | Evidence metric | [evidence groundedness](reference/evidence_groundedness_metric.md) |
 | Procedures | [runbooks](runbooks/) |
 

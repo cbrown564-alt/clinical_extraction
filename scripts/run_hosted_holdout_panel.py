@@ -72,6 +72,9 @@ def _prepare_exect_command(model: dict[str, Any], panel: dict[str, Any]) -> list
         str(runtime_config),
         "--allow-non-dev140",
         "--no-dspy-cache",
+        "--progress-every",
+        "1",
+        "--allow-row-failures",
     ]
 
 
@@ -97,6 +100,9 @@ def _prepare_gan_command(model: dict[str, Any], panel: dict[str, Any]) -> list[s
         "--max-tokens",
         str(model.get("gan_max_tokens", panel["max_tokens"])),
         "--disable-dspy-cache",
+        "--progress-every",
+        "1",
+        "--resume-existing",
         "--jsonl",
         str(root / f"{slug}_sealed_rows.jsonl"),
         "--markdown",

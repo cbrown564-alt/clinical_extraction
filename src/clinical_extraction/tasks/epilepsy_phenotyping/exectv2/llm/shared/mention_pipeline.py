@@ -7,6 +7,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from clinical_extraction.core.local_structured_output import raw_output_from_adapter_error
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.repair import (
     ExtractionRecord,
     MentionRecord,
@@ -65,19 +66,7 @@ def parse_extraction_json(
 def raw_output_from_adapter_parse_error(error_text: str) -> str | None:
     """Recover the model payload embedded in a DSPy adapter parse error."""
 
-    marker = "LM Response:"
-    if marker not in error_text:
-        return None
-    tail = error_text.split(marker, 1)[1]
-    for stop in (
-        "\n\nExpected to find output fields",
-        "\r\n\r\nExpected to find output fields",
-    ):
-        if stop in tail:
-            tail = tail.split(stop, 1)[0]
-            break
-    payload = tail.strip()
-    return payload or None
+    return raw_output_from_adapter_error(error_text)
 
 
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:

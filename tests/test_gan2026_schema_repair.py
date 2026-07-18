@@ -26,6 +26,46 @@ def test_parse_json_payload_with_schema_repair_handles_literal_control_character
     assert notes == ["json_dialect_repaired: literal_control_characters"]
 
 
+def test_parse_json_payload_with_schema_repair_handles_trailing_commas() -> None:
+    payload, notes = parse_json_payload_with_schema_repair(
+        '{"events": [{"kind": "frequency_rate",}], "selection": {},}'
+    )
+
+    assert payload == {
+        "events": [{"kind": "frequency_rate"}],
+        "selection": {},
+    }
+    assert notes == ["json_dialect_repaired: trailing_commas"]
+
+
+def test_parse_json_payload_with_schema_repair_handles_local_key_and_container_drift() -> None:
+    payload, notes = parse_json_payload_with_schema_repair(
+        """{
+        "events": [{pevent_id": "e1", "kind": "frequency_rate"}
+        },
+        "selection": {"final_kind": "frequency"}
+        }"""
+    )
+
+    assert payload == {
+        "events": [{"pevent_id": "e1", "kind": "frequency_rate"}],
+        "selection": {"final_kind": "frequency"},
+    }
+    assert notes == [
+        "json_dialect_repaired: unquoted_object_keys",
+        "json_dialect_repaired: extra_container_close",
+    ]
+
+
+def test_parse_json_payload_with_schema_repair_handles_mixed_key_quote() -> None:
+    payload, notes = parse_json_payload_with_schema_repair(
+        '''{"attributes": {"TimeSince_or_TimeOf': "Since"}}'''
+    )
+
+    assert payload == {"attributes": {"TimeSince_or_TimeOf": "Since"}}
+    assert notes == ["json_dialect_repaired: mixed_object_key_quote"]
+
+
 def test_parse_json_payload_with_schema_repair_can_disable_python_literal_dialect() -> None:
     try:
         parse_json_payload_with_schema_repair(
@@ -169,3 +209,37 @@ def test_repair_structured_extraction_payload_handles_last_event_final_kind_alia
         "events": [{"kind": "last_event_only"}],
         "selection": {"final_kind": "frequency", "confidence": "high"},
     }
+
+
+def test_repair_structured_extraction_payload_repairs_structural_key_drift() -> None:
+    payload = repair_structured_extraction_payload(
+        {
+            "events": [
+                {"event_id": "e1", "kind": "frequency_rate", "evidence": "weekly"},
+                {
+                    "pevent_id": "e2",
+                    "kind": "no_reference",
+                    "evidence": None,
+                    "temporlagity": "historical",
+                },
+                {"kind": "seizure_free", "evidence": "none this year"},
+            ],
+            "selection": {"final_kind": "frequency", "rationality": "Selected e1."},
+        }
+    )
+
+    assert payload["events"][1]["event_id"] == "e2"
+    assert payload["events"][1]["evidence"] == ""
+    assert payload["events"][1]["temporality"] == "historical"
+    assert "temporlagity" not in payload["events"][1]
+    assert payload["events"][2]["event_id"] == "e3"
+    assert payload["selection"]["rationale"] == "Selected e1."
+    assert "rationality" not in payload["selection"]
+
+
+def test_repair_structured_extraction_payload_preserves_non_no_reference_null_evidence() -> None:
+    payload = repair_structured_extraction_payload(
+        {"events": [{"kind": "frequency_rate", "evidence": None}], "selection": {}}
+    )
+
+    assert payload["events"][0]["evidence"] is None
