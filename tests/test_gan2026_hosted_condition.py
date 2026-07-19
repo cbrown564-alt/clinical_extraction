@@ -53,6 +53,8 @@ def test_main_requires_explicit_frozen_prompt(monkeypatch) -> None:
         "prompt_version": hosted.FROZEN_PROMPT_VERSION,
         "argv": ["--pipeline", "llm_with_rules"],
     }
+    assert hosted.hybrid_structured_events.build_dspy_lm is hosted.build_hosted_lm
+    assert hosted.llm_only_canonical_pipeline.build_dspy_lm is hosted.build_hosted_lm
 
 
 def test_main_rejects_any_other_prompt() -> None:

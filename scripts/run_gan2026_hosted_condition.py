@@ -10,7 +10,10 @@ import dspy
 
 from clinical_extraction.tasks.seizure_frequency.gan2026 import llm_config
 from clinical_extraction.tasks.seizure_frequency.gan2026.cli import llm_pipeline_cli
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    hybrid_structured_events,
+    llm_only_canonical_pipeline,
+)
 
 SOL_MODEL = "openai/gpt-5.6-sol"
 FROZEN_PROMPT_VERSION = hybrid_structured_events.PROMPT_VERSION_V0_7
@@ -63,6 +66,8 @@ def main(argv: list[str] | None = None) -> None:
             f"{FROZEN_PROMPT_VERSION!r}; got {prompt_args.prompt_version!r}"
         )
     hybrid_structured_events.set_active_prompt_version(prompt_args.prompt_version)
+    hybrid_structured_events.build_dspy_lm = build_hosted_lm
+    llm_only_canonical_pipeline.build_dspy_lm = build_hosted_lm
     llm_config.build_dspy_lm = build_hosted_lm
     llm_pipeline_cli.main(remaining)
 

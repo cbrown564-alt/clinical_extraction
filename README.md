@@ -138,7 +138,7 @@ Windows PowerShell:
 ```powershell
 py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,trace-ui]"
 python -m pytest
 ```
 
@@ -147,7 +147,7 @@ macOS or Linux:
 ```sh
 python3.11 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,trace-ui]"
 python -m pytest
 ```
 
