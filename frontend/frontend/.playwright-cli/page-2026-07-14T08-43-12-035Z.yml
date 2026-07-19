@@ -1,0 +1,33 @@
+- generic [active] [ref=f1e1]:
+  - banner [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - link "Clinical Extraction Explorer home" [ref=f1e4] [cursor=pointer]:
+        - /url: /workbench
+        - generic [ref=f1e10]: Clinical Extraction Explorer
+      - navigation "Primary workflows" [ref=f1e11]:
+        - link "Inspect workflow" [ref=f1e12] [cursor=pointer]:
+          - /url: /workbench
+          - generic [ref=f1e16]: Inspect
+        - link "Evaluate workflow" [ref=f1e17] [cursor=pointer]:
+          - /url: /observatory
+          - generic [ref=f1e20]: Evaluate
+        - link "Assure workflow" [ref=f1e21] [cursor=pointer]:
+          - /url: /gold-audit
+          - generic [ref=f1e25]: Assure
+      - generic [ref=f1e32]:
+        - generic [ref=f1e33]: Cross-project
+        - generic [ref=f1e34]: scope
+    - navigation "Assure tools" [ref=f1e35]:
+      - generic [ref=f1e36]: Assure
+      - link "Gold audit" [ref=f1e38] [cursor=pointer]:
+        - /url: /gold-audit
+      - link "Qualified review ExECTv2" [ref=f1e43] [cursor=pointer]:
+        - /url: /qualified-review
+        - text: Qualified review
+        - generic [ref=f1e48]: ExECTv2
+      - link "Gold evidence" [ref=f1e49] [cursor=pointer]:
+        - /url: /gold-noise
+  - main [ref=f1e52]:
+    - paragraph [ref=f1e54]: Loading gold noise evidence…
+  - button "Open Next.js Dev Tools" [ref=f1e60] [cursor=pointer]
+  - alert [ref=f1e64]

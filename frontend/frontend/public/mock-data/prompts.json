@@ -1,0 +1,182 @@
+{
+  "prompts": [
+    {
+      "module": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_claim_table_selector",
+      "prompt_version": "gan2026_llm_only_claim_table_selector_v5",
+      "policy_taxonomy": [
+        {
+          "policy_id": "sct_v5.schema.scalar_enum_output",
+          "controlled_variable": "prompt_schema_enum_scalar_policy",
+          "portability": "general",
+          "status": "active",
+          "description": "Prompt requires enum fields to be single schema values rather than lists or free-text mixtures."
+        },
+        {
+          "policy_id": "sct_v5.schema.strict_json_object",
+          "controlled_variable": "prompt_strict_json_object_policy",
+          "portability": "general",
+          "status": "active",
+          "description": "Prompt requires exactly one JSON object with no markdown wrapper."
+        },
+        {
+          "policy_id": "sct_v5.evidence.exact_substring",
+          "controlled_variable": "prompt_exact_evidence_substring_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt requires claim and final-query evidence to be copied as source substrings."
+        },
+        {
+          "policy_id": "sct_v5.gan_label.parser_ready_surface",
+          "controlled_variable": "prompt_gan_parser_ready_label_policy",
+          "portability": "benchmark_format",
+          "status": "active",
+          "description": "Prompt bans prose and symbols in final_label and asks for Gan-parser-compatible label syntax."
+        },
+        {
+          "policy_id": "sct_v5.gan_label.interval_preservation",
+          "controlled_variable": "prompt_explicit_interval_preservation_policy",
+          "portability": "gan2026_specific",
+          "status": "active",
+          "description": "Prompt preserves explicit interval and range wording instead of rounding or softening it."
+        },
+        {
+          "policy_id": "sct_v5.gan_label.cluster_dual_axis",
+          "controlled_variable": "prompt_cluster_cadence_and_burden_policy",
+          "portability": "gan2026_specific",
+          "status": "active",
+          "description": "Prompt preserves both cluster cadence and per-cluster burden when both are stated."
+        },
+        {
+          "policy_id": "sct_v5.schema.cluster_axis_state",
+          "controlled_variable": "prompt_cluster_axis_state_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt requires each claim and final selector decision to expose whether cluster cadence, per-cluster burden, both axes, or only vague clustering is present."
+        },
+        {
+          "policy_id": "sct_v5.selection.current_burden_precedence",
+          "controlled_variable": "prompt_current_burden_selection_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt selects the highest current or recent seizure burden unless an overall count is given."
+        },
+        {
+          "policy_id": "sct_v5.selection.add_same_window_counts",
+          "controlled_variable": "prompt_same_window_count_addition_policy",
+          "portability": "gan2026_specific",
+          "status": "active",
+          "description": "Prompt adds exact counts across active semiologies in the same current window."
+        },
+        {
+          "policy_id": "sct_v5.boundary.unknown_no_reference_seizure_free",
+          "controlled_variable": "prompt_boundary_answer_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt separates unknown, no seizure frequency reference, and seizure-free answers."
+        },
+        {
+          "policy_id": "sct_v5.schema.boundary_state",
+          "controlled_variable": "prompt_boundary_state_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt requires explicit boundary-state fields so unknown, no-reference, seizure-free, proxy, last-event-only, and conditional/window-limited cases remain inspectable before scoring."
+        },
+        {
+          "policy_id": "sct_v5.exclusion.proxy_or_conditional_frequency",
+          "controlled_variable": "prompt_proxy_conditional_exclusion_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt excludes proxy, conditional, rescue-medication, and non-epileptic counts unless they explicitly state current epileptic seizure burden."
+        },
+        {
+          "policy_id": "sct_v5.gan_label.compact_interval_notation",
+          "controlled_variable": "prompt_compact_interval_notation_policy",
+          "portability": "gan2026_specific",
+          "status": "active",
+          "description": "Prompt maps compact interval notation such as q2-3wk to 1 per 2 to 3 week."
+        },
+        {
+          "policy_id": "sct_v5.gan_label.maximum_burden",
+          "controlled_variable": "prompt_maximum_current_burden_policy",
+          "portability": "gan2026_specific",
+          "status": "active",
+          "description": "Prompt preserves explicit maximum current burden instead of converting it to multiple."
+        },
+        {
+          "policy_id": "sct_v5.selection.constrained_selector",
+          "controlled_variable": "prompt_constrained_selector_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt separates source-near claim extraction from a constrained final selector decision over selected claims."
+        }
+      ],
+      "policy_ids": [
+        "sct_v5.schema.scalar_enum_output",
+        "sct_v5.schema.strict_json_object",
+        "sct_v5.evidence.exact_substring",
+        "sct_v5.gan_label.parser_ready_surface",
+        "sct_v5.gan_label.interval_preservation",
+        "sct_v5.gan_label.cluster_dual_axis",
+        "sct_v5.schema.cluster_axis_state",
+        "sct_v5.selection.current_burden_precedence",
+        "sct_v5.selection.add_same_window_counts",
+        "sct_v5.boundary.unknown_no_reference_seizure_free",
+        "sct_v5.schema.boundary_state",
+        "sct_v5.exclusion.proxy_or_conditional_frequency",
+        "sct_v5.gan_label.compact_interval_notation",
+        "sct_v5.gan_label.maximum_burden",
+        "sct_v5.selection.constrained_selector"
+      ]
+    },
+    {
+      "module": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_direct_labeler",
+      "prompt_version": "gan2026_llm_only_direct_labeler_v0.1",
+      "policy_taxonomy": [],
+      "policy_ids": []
+    },
+    {
+      "module": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_structured_events",
+      "prompt_version": "gan2026_llm_only_structured_events_v0.5",
+      "policy_taxonomy": [],
+      "policy_ids": []
+    },
+    {
+      "module": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_minimal_evidence_selector",
+      "prompt_version": "gan2026_llm_only_minimal_evidence_selector_v2",
+      "policy_taxonomy": [
+        {
+          "policy_id": "mes_v2.schema.shallow_json_object",
+          "controlled_variable": "minimal_schema_shape",
+          "portability": "general",
+          "status": "active",
+          "description": "Prompt requires a shallow answer plus supporting_facts JSON object."
+        },
+        {
+          "policy_id": "mes_v2.evidence.exact_answer_substring",
+          "controlled_variable": "answer_evidence_substring_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt requires answer.evidence to be copied from the note."
+        },
+        {
+          "policy_id": "mes_v2.answer.close_text_match",
+          "controlled_variable": "close_text_match_answer_policy",
+          "portability": "seizure_frequency",
+          "status": "active",
+          "description": "Prompt asks for selected answer text that closely matches the note; normalization is downstream."
+        }
+      ],
+      "policy_ids": [
+        "mes_v2.schema.shallow_json_object",
+        "mes_v2.evidence.exact_answer_substring",
+        "mes_v2.answer.close_text_match"
+      ]
+    },
+    {
+      "module": "clinical_extraction.tasks.seizure_frequency.gan2026.hybrid.hybrid_rules_candidates_llm_adjudicator",
+      "prompt_version": "gan2026_final_selection_adjudicator_v0.5_conservative",
+      "policy_taxonomy": [],
+      "policy_ids": []
+    }
+  ]
+}

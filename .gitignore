@@ -12,6 +12,8 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+node_modules/
+.trace_explorer/
 
 .worktrees/
 

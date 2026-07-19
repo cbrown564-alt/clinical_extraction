@@ -1,0 +1,41 @@
+{
+  "protocol": "docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "pipeline": "llm_with_rules",
+  "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+  "repair_mode": "hybrid_full_stack",
+  "schema_repair": "current_shared_schema_repair",
+  "temperature": 0,
+  "max_tokens": 16000,
+  "dspy_cache": false,
+  "conditions": [
+    {
+      "slug": "qwen36_35b_test450",
+      "model": "ollama_chat/qwen3.6:35b",
+      "split": "test",
+      "row_count": 450,
+      "row_policy": "aggregate_only",
+      "pilot_root": "scratch/validation/gan2026_matched_v05_local/qwen36_35b",
+      "output_root": "scratch/holdout/gan2026_matched_v05_local/qwen36_35b"
+    },
+    {
+      "slug": "gemma4_26b_test450",
+      "model": "ollama_chat/gemma4:26b",
+      "split": "test",
+      "row_count": 450,
+      "row_policy": "aggregate_only",
+      "pilot_root": "scratch/validation/gan2026_matched_v05_local/gemma4_26b",
+      "output_root": "scratch/holdout/gan2026_matched_v05_local/gemma4_26b"
+    },
+    {
+      "slug": "qwen36_35b_validation750",
+      "model": "ollama_chat/qwen3.6:35b",
+      "split": "validation",
+      "row_count": 750,
+      "row_policy": "development_row_level",
+      "output_root": "scratch/local_queue/qwen36_35b/gan"
+    }
+  ]
+}
+

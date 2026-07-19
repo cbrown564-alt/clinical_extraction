@@ -239,6 +239,49 @@ def test_run_split_reuses_raw_outputs_without_new_call(tmp_path: Path) -> None:
     assert rows[0]["parse_errors"] == []
 
 
+def test_run_split_retains_explorer_compatible_llm_only_boundary(tmp_path: Path) -> None:
+    raw_output = json.dumps(
+        {
+            "final_label": " 2 PER MONTH ",
+            "evidence": "two seizures per month",
+            "answer_kind": "frequency",
+            "selected_seizure_type": "seizures",
+            "time_window": "current",
+            "applied_rule_families": [],
+            "confidence": "high",
+            "rationale": "The note gives the current frequency.",
+        }
+    )
+
+    rows, _ = run_split(
+        [_record()],
+        split="validation",
+        split_manifest="gan2026_split_v1",
+        model="openai/gpt-4.1-mini",
+        temperature=0.0,
+        max_tokens=100,
+        mode="prompt-only",
+        reuse_raw_outputs={10: raw_output},
+        reuse_source="test fixture",
+    )
+
+    trace = rows[0]["row_trace"]
+    assert trace["schema_version"] == "gan2026.row_trace.v1"
+    assert trace["method"] == "llm_only"
+    assert trace["model_prediction"]["record"]["final_label"] == " 2 PER MONTH "
+    assert trace["model_prediction"]["raw_output_field"] == "raw_output"
+    assert trace["deterministic_adapter"]["before_label"] == " 2 PER MONTH "
+    assert trace["deterministic_adapter"]["after_label"] == "2 per month"
+    assert trace["deterministic_adapter"]["events"] == [
+        "final_label_repaired: ' 2 PER MONTH ' -> '2 per month'"
+    ]
+    assert trace["evidence_validation"] == {
+        "evidence": "two seizures per month",
+        "exact_substring": True,
+    }
+    assert trace["scoring"] == rows[0]["comparison"]
+
+
 def test_run_split_checkpoints_progress(tmp_path: Path) -> None:
     jsonl_path = tmp_path / "checkpoint.jsonl"
     report_path = tmp_path / "checkpoint.md"

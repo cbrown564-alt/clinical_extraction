@@ -1,0 +1,76 @@
+{
+  "protocol": "docs/experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "split": "validation",
+  "row_count": 750,
+  "row_policy": "development_row_level",
+  "methods": [
+    {
+      "method": "llm_with_rules",
+      "pipeline": "llm_with_rules",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.7",
+      "repair_mode": "hybrid_full_stack"
+    },
+    {
+      "method": "llm_only",
+      "pipeline": "llm",
+      "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+      "repair_mode": "model_selected_evidence_benchmark_adapter"
+    }
+  ],
+  "dspy_cache": false,
+  "row_trace_schema": "gan2026.row_trace.v1",
+  "conditions": [
+    {
+      "slug": "gpt41mini",
+      "model": "openai/gpt-4.1-mini",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI chat",
+      "temperature": 0,
+      "max_tokens": 10000
+    },
+    {
+      "slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI chat",
+      "temperature": 1,
+      "max_tokens": 10000
+    },
+    {
+      "slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI Responses; temperature omitted by adapter",
+      "temperature": null,
+      "cli_temperature": 0,
+      "max_tokens": 10000
+    },
+    {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "execution_group": "hosted_deepseek",
+      "transport": "Official DeepSeek route; thinking enabled by model route",
+      "temperature": 0,
+      "max_tokens": 32000
+    },
+    {
+      "slug": "qwen36_35b",
+      "model": "ollama_chat/qwen3.6:35b",
+      "execution_group": "local",
+      "transport": "Native Ollama chat; think=false",
+      "temperature": 0,
+      "max_tokens": 16000
+    },
+    {
+      "slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "execution_group": "local",
+      "transport": "Native Ollama chat; think=false",
+      "temperature": 0,
+      "max_tokens": 16000
+    }
+  ],
+  "artifact_root": "scratch/validation/gan2026_six_model_comparison_20260718"
+}

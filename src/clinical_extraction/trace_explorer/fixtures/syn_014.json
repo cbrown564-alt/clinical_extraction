@@ -1,0 +1,622 @@
+{
+  "schema_version": "illustrative.fixture.v1",
+  "fixture_id": "SYN-014",
+  "source": {
+    "source_id": "SYN-014",
+    "text": "Epilepsy review — synthetic example\n\nCurrent medication: lamotrigine 150 mg twice daily. Adherence is good.\n\nIn the last month she recorded four focal impaired-awareness seizures, including a cluster of three on 14 July. She had been seizure-free for six months before this recurrence.\n\nPlan: continue treatment and the seizure diary."
+  },
+  "runs": [
+    {
+      "run": {
+        "run_id": "syn-exect-014",
+        "task": "exectv2",
+        "dataset": "synthetic",
+        "split": "SYN-014",
+        "method": "llm_with_rules",
+        "pipeline_family": "structured_key_family_event_ledger",
+        "model": "illustrative model",
+        "model_route": "saved fixture",
+        "mode": "saved_output",
+        "prompt_version": "synthetic.exect.v1",
+        "program_version": "trace-fixture.v1",
+        "profile": "full",
+        "repair_policy": "illustrative-attributed-normalization-v1",
+        "scorer": "clinical_headline",
+        "replay_mode": "saved_output",
+        "run_state": "illustrative"
+      },
+      "expected_records": 1,
+      "completed_records": 1,
+      "failed_records": 0,
+      "quarantined_records": 0,
+      "integrity": {"status": "verified_fixture", "schema": "illustrative.fixture.v1"},
+      "stages": [
+        {
+          "stage_id": "source",
+          "sequence": 0,
+          "name": "Immutable source",
+          "summary": "Load the synthetic letter without changing its text.",
+          "semantic_role": "source",
+          "category": "source",
+          "owner": {"component_id": "source-loader", "display_name": "Source loader"},
+          "status": "passed",
+          "input_refs": ["fixture:SYN-014"],
+          "output_ref": "source:SYN-014",
+          "inline_summary": {"source_id": "SYN-014", "kind": "synthetic letter"},
+          "payload": {"source_id": "SYN-014", "immutable": true},
+          "changes": [],
+          "evidence": [],
+          "predecessor_stage_ids": [],
+          "successor_stage_ids": ["candidate-production"]
+        },
+        {
+          "stage_id": "candidate-production",
+          "sequence": 1,
+          "name": "Candidate production",
+          "summary": "The structured model call proposes family-scoped clinical facts.",
+          "semantic_role": "candidate_production",
+          "category": "model",
+          "owner": {"component_id": "structured-key-family-event-ledger", "display_name": "Structured family producer"},
+          "status": "passed",
+          "input_refs": ["source:SYN-014"],
+          "output_ref": "model-output:exect:SYN-014",
+          "inline_summary": {"families": 4, "prescription_candidates": 1},
+          "payload": {
+            "raw_model_output": {
+              "Diagnosis": [{"text": "epilepsy", "assertion": "present"}],
+              "Seizure Frequency": [{"text": "four focal impaired-awareness seizures", "timeframe": "last month"}],
+              "Prescription": [{"drug": "lamotrigine", "dose": 150, "unit": "mg", "schedule": "twice daily", "evidence": "lamotrigine 150 mg twice daily"}],
+              "Investigations": []
+            }
+          },
+          "changes": [
+            {
+              "change_id": "add-prescription-candidate",
+              "operation_owner": {"component_id": "structured-key-family-event-ledger", "display_name": "Structured family producer"},
+              "kind": "add",
+              "operation": "Propose the source-backed Prescription candidate",
+              "before_ref": null,
+              "after_ref": "/Prescription/0",
+              "before_value": null,
+              "after_value": {"drug": "lamotrigine", "dose": 150, "unit": "mg", "schedule": "twice daily"},
+              "clinical_meaning_changed": "unknown",
+              "evidence_ids": ["ev-prescription"],
+              "reason": "The saved structured output proposed one medication regimen."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-prescription", "citation": "lamotrigine 150 mg twice daily", "role": "selected", "finding_ids": ["exect-prescription"]}
+          ],
+          "predecessor_stage_ids": ["source"],
+          "successor_stage_ids": ["family-assembly"]
+        },
+        {
+          "stage_id": "family-assembly",
+          "sequence": 2,
+          "name": "Family assembly",
+          "summary": "Keep the model-produced Prescription fact and attach its family identity.",
+          "semantic_role": "assembly",
+          "category": "assembly",
+          "owner": {"component_id": "clinical-finding-assembler", "display_name": "Clinical finding assembler"},
+          "status": "passed",
+          "input_refs": ["model-output:exect:SYN-014"],
+          "output_ref": "finding:exect-prescription",
+          "inline_summary": {"selected_finding": "exect-prescription", "family": "Prescription"},
+          "payload": {"finding_id": "exect-prescription", "entity": "Prescription", "selected": true, "fact_origin": "model"},
+          "changes": [
+            {
+              "change_id": "select-prescription-candidate",
+              "operation_owner": {"component_id": "clinical-finding-assembler", "display_name": "Clinical finding assembler"},
+              "kind": "select",
+              "operation": "Select the model-produced Prescription fact for assembly",
+              "before_ref": "/Prescription/0",
+              "after_ref": "finding:exect-prescription",
+              "before_value": {"schedule": "twice daily"},
+              "after_value": {"finding_id": "exect-prescription", "schedule": "twice daily"},
+              "clinical_meaning_changed": false,
+              "evidence_ids": ["ev-prescription"],
+              "reason": "The candidate is preserved without substitution by an independent rules extractor."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-prescription", "citation": "lamotrigine 150 mg twice daily", "role": "selected", "finding_ids": ["exect-prescription"]}
+          ],
+          "predecessor_stage_ids": ["candidate-production"],
+          "successor_stage_ids": ["schedule-normalization"]
+        },
+        {
+          "stage_id": "schedule-normalization",
+          "sequence": 3,
+          "name": "Prescription normalization",
+          "summary": "Normalize the supported schedule phrase while preserving the regimen.",
+          "semantic_role": "normalization",
+          "category": "deterministic_semantic",
+          "rule_category": "general",
+          "owner": {"component_id": "prescription-schedule-normalizer", "display_name": "Prescription schedule normalizer"},
+          "status": "repaired",
+          "input_refs": ["finding:exect-prescription"],
+          "output_ref": "finding:exect-prescription:normalized",
+          "inline_summary": {"before": "twice daily", "after": "BID", "clinical_meaning_changed": false},
+          "payload": {"drug": "lamotrigine", "dose": 150, "unit": "mg", "schedule": "BID", "surface_schedule": "twice daily"},
+          "changes": [
+            {
+              "change_id": "normalize-prescription-schedule",
+              "operation_owner": {"component_id": "prescription-schedule-normalizer", "display_name": "Prescription schedule normalizer"},
+              "kind": "normalize",
+              "operation": "Normalize the supported schedule phrase to BID",
+              "before_ref": "/Prescription/0/schedule",
+              "after_ref": "/findings/exect-prescription/attributes/schedule",
+              "before_value": "twice daily",
+              "after_value": "BID",
+              "clinical_meaning_changed": false,
+              "deterministic_rule": "schedule_twice_daily_to_bid",
+              "rule_category": "general",
+              "evidence_ids": ["ev-prescription"],
+              "reason": "BID is the stable representation of the exact supported phrase twice daily."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-prescription", "citation": "lamotrigine 150 mg twice daily", "role": "selected", "finding_ids": ["exect-prescription"]}
+          ],
+          "predecessor_stage_ids": ["family-assembly"],
+          "successor_stage_ids": ["evidence-validation"]
+        },
+        {
+          "stage_id": "evidence-validation",
+          "sequence": 4,
+          "name": "Evidence validation",
+          "summary": "Verify that the selected medication citation resolves exactly in the source.",
+          "semantic_role": "evidence_validation",
+          "category": "evidence_validation",
+          "owner": {"component_id": "evidence-groundedness", "display_name": "Evidence groundedness verifier"},
+          "status": "passed",
+          "input_refs": ["finding:exect-prescription:normalized"],
+          "output_ref": "evidence:ev-prescription:verified",
+          "inline_summary": {"grade": "EXACT", "grounded": true},
+          "payload": {"evidence_id": "ev-prescription", "grade": "EXACT", "selected": true},
+          "changes": [
+            {
+              "change_id": "validate-prescription-evidence",
+              "operation_owner": {"component_id": "evidence-groundedness", "display_name": "Evidence groundedness verifier"},
+              "kind": "validate",
+              "operation": "Validate exact Prescription evidence offsets",
+              "before_ref": "/findings/exect-prescription/evidence",
+              "after_ref": "/evidence/ev-prescription/grade",
+              "before_value": "lamotrigine 150 mg twice daily",
+              "after_value": "EXACT",
+              "clinical_meaning_changed": false,
+              "evidence_ids": ["ev-prescription"],
+              "reason": "The citation is an exact substring with stable offsets."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-prescription", "citation": "lamotrigine 150 mg twice daily", "role": "selected", "finding_ids": ["exect-prescription"]}
+          ],
+          "predecessor_stage_ids": ["schedule-normalization"],
+          "successor_stage_ids": ["scoring"]
+        },
+        {
+          "stage_id": "scoring",
+          "sequence": 5,
+          "name": "Score projection",
+          "summary": "Project the assembled synthetic finding into the named clinical-headline view.",
+          "semantic_role": "scoring",
+          "category": "scoring",
+          "owner": {"component_id": "clinical-headline-scorer", "display_name": "Clinical fact recovery scorer"},
+          "status": "passed",
+          "input_refs": ["finding:exect-prescription:normalized"],
+          "output_ref": "score:clinical_headline:illustrative",
+          "inline_summary": {"score_view": "clinical_headline", "scope": "illustrative fixture"},
+          "payload": {"score_id": "clinical_headline", "display_value": "illustrative match", "benchmark_result": false},
+          "changes": [
+            {
+              "change_id": "project-clinical-headline",
+              "operation_owner": {"component_id": "clinical-headline-scorer", "display_name": "Clinical fact recovery scorer"},
+              "kind": "project",
+              "operation": "Project the finding to the clinical_headline view",
+              "before_ref": "finding:exect-prescription:normalized",
+              "after_ref": "score:clinical_headline:illustrative",
+              "before_value": {"entity": "Prescription", "schedule": "BID"},
+              "after_value": {"view": "clinical_headline", "status": "illustrative_match"},
+              "clinical_meaning_changed": false,
+              "evidence_ids": ["ev-prescription"],
+              "reason": "Scoring projects the retained finding without changing it."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-prescription", "citation": "lamotrigine 150 mg twice daily", "role": "selected", "finding_ids": ["exect-prescription"]}
+          ],
+          "predecessor_stage_ids": ["evidence-validation"],
+          "successor_stage_ids": []
+        }
+      ],
+      "findings": [
+        {
+          "finding_id": "exect-prescription",
+          "entity": "Prescription",
+          "text": "lamotrigine 150 mg BID",
+          "normalized_concept": "lamotrigine",
+          "assertion": "present",
+          "attributes": {"dose": 150, "unit": "mg", "schedule": "BID"},
+          "producer": "structured-key-family-event-ledger",
+          "fact_origin": "model_with_deterministic_normalization",
+          "raw_surface": "lamotrigine 150 mg twice daily",
+          "evidence_status": "EXACT",
+          "state": "selected",
+          "selected": true,
+          "task_payload": {"entity_family": "Prescription", "provenance_events": ["add-prescription-candidate", "select-prescription-candidate", "normalize-prescription-schedule"]}
+        }
+      ],
+      "score_views": [
+        {
+          "score_id": "clinical_headline",
+          "display_name": "Clinical fact recovery",
+          "value": null,
+          "display_value": "Illustrative match",
+          "scope": "SYN-014 only",
+          "status": "illustrative",
+          "description": "A named projection for the synthetic mechanism example, not benchmark performance."
+        }
+      ]
+    },
+    {
+      "run": {
+        "run_id": "syn-gan-014",
+        "task": "gan2026",
+        "dataset": "synthetic",
+        "split": "SYN-014",
+        "method": "llm_with_rules",
+        "pipeline_family": "hybrid_structured_events",
+        "model": "illustrative model",
+        "model_route": "saved fixture",
+        "mode": "saved_output",
+        "prompt_version": "synthetic.gan.v1",
+        "program_version": "trace-fixture.v1",
+        "profile": "structured-events",
+        "repair_policy": "illustrative-gan-repair-v1",
+        "scorer": "Purist + Pragmatic",
+        "replay_mode": "saved_output",
+        "run_state": "illustrative"
+      },
+      "expected_records": 1,
+      "completed_records": 1,
+      "failed_records": 0,
+      "quarantined_records": 0,
+      "integrity": {"status": "verified_fixture", "schema": "illustrative.fixture.v1"},
+      "stages": [
+        {
+          "stage_id": "source",
+          "sequence": 0,
+          "name": "Immutable source",
+          "summary": "Load the same synthetic letter used by the ExECT explanation.",
+          "semantic_role": "source",
+          "category": "source",
+          "owner": {"component_id": "source-loader", "display_name": "Source loader"},
+          "status": "passed",
+          "input_refs": ["fixture:SYN-014"],
+          "output_ref": "source:SYN-014",
+          "inline_summary": {"source_id": "SYN-014", "kind": "synthetic letter"},
+          "payload": {"source_id": "SYN-014", "immutable": true},
+          "changes": [],
+          "evidence": [],
+          "predecessor_stage_ids": [],
+          "successor_stage_ids": ["candidate-production"]
+        },
+        {
+          "stage_id": "candidate-production",
+          "sequence": 1,
+          "name": "Frequency event extraction",
+          "summary": "The model emits current, cluster, and historical seizure-state candidates.",
+          "semantic_role": "candidate_production",
+          "category": "model",
+          "owner": {"component_id": "gan-structured-event-extractor", "display_name": "Gan structured event extractor"},
+          "status": "passed",
+          "input_refs": ["source:SYN-014"],
+          "output_ref": "model-output:gan:SYN-014",
+          "inline_summary": {"candidate_events": 3, "raw_container": "object"},
+          "payload": {
+            "raw_model_output": {
+              "events": {
+                "current": {"count": "four", "period": "last month", "kind": "focal impaired-awareness"},
+                "cluster": {"count": 3, "date": "14 July", "kind": "cluster"},
+                "seizure_free": {"duration": "six months", "temporal_status": "historical"}
+              }
+            }
+          },
+          "changes": [
+            {
+              "change_id": "add-frequency-candidates",
+              "operation_owner": {"component_id": "gan-structured-event-extractor", "display_name": "Gan structured event extractor"},
+              "kind": "add",
+              "operation": "Propose three seizure-frequency state events",
+              "before_ref": null,
+              "after_ref": "/events",
+              "before_value": null,
+              "after_value": ["gan-current-rate", "gan-cluster-event", "gan-seizure-free-event"],
+              "clinical_meaning_changed": "unknown",
+              "evidence_ids": ["ev-current-rate", "ev-cluster", "ev-seizure-free"],
+              "reason": "The saved model output retains all three source-backed event types."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-current-rate", "citation": "In the last month she recorded four focal impaired-awareness seizures", "role": "selected", "finding_ids": ["gan-current-rate"]},
+            {"evidence_id": "ev-cluster", "citation": "a cluster of three on 14 July", "role": "supporting", "finding_ids": ["gan-cluster-event"]},
+            {"evidence_id": "ev-seizure-free", "citation": "She had been seizure-free for six months before this recurrence", "role": "supporting", "finding_ids": ["gan-seizure-free-event"]}
+          ],
+          "predecessor_stage_ids": ["source"],
+          "successor_stage_ids": ["schema-repair"]
+        },
+        {
+          "stage_id": "schema-repair",
+          "sequence": 2,
+          "name": "Schema repair",
+          "summary": "Wrap the keyed event object in the required event-list transport shape.",
+          "semantic_role": "format_repair",
+          "category": "format_repair",
+          "owner": {"component_id": "gan-schema-repair", "display_name": "Gan schema repair"},
+          "status": "repaired",
+          "input_refs": ["model-output:gan:SYN-014"],
+          "output_ref": "structured-events:gan:SYN-014",
+          "inline_summary": {"repair": "object_to_list", "clinical_meaning_changed": false},
+          "payload": {"frequency_events": [{"event_id": "gan-current-rate"}, {"event_id": "gan-cluster-event"}, {"event_id": "gan-seizure-free-event"}]},
+          "changes": [
+            {
+              "change_id": "repair-event-container",
+              "operation_owner": {"component_id": "gan-schema-repair", "display_name": "Gan schema repair"},
+              "kind": "format_repair",
+              "operation": "Repair the event container from an object to a list",
+              "before_ref": "/events",
+              "after_ref": "/frequency_events",
+              "before_value": "keyed object",
+              "after_value": "ordered list",
+              "clinical_meaning_changed": false,
+              "evidence_ids": [],
+              "reason": "The transport shape changes while all three event payloads remain intact."
+            }
+          ],
+          "evidence": [],
+          "predecessor_stage_ids": ["candidate-production"],
+          "successor_stage_ids": ["rate-normalization"]
+        },
+        {
+          "stage_id": "rate-normalization",
+          "sequence": 3,
+          "name": "Monthly rate normalization",
+          "summary": "Convert the exact current count and period into a monthly rate.",
+          "semantic_role": "normalization",
+          "category": "deterministic_semantic",
+          "rule_category": "seizure_frequency",
+          "owner": {"component_id": "gan-monthly-rate-normalizer", "display_name": "Monthly rate normalizer"},
+          "status": "repaired",
+          "input_refs": ["structured-events:gan:SYN-014"],
+          "output_ref": "event:gan-current-rate:normalized",
+          "inline_summary": {"count": 4, "period": "month", "monthly_rate": 4.0},
+          "payload": {"event_id": "gan-current-rate", "count": 4, "period": "month", "monthly_rate": 4.0, "frequency_kind": "finite_rate"},
+          "changes": [
+            {
+              "change_id": "normalize-current-monthly-rate",
+              "operation_owner": {"component_id": "gan-monthly-rate-normalizer", "display_name": "Monthly rate normalizer"},
+              "kind": "normalize",
+              "operation": "Normalize the selected count and period to 4 per month",
+              "before_ref": "/frequency_events/gan-current-rate",
+              "after_ref": "/frequency_events/gan-current-rate/monthly_rate",
+              "before_value": {"count": "four", "period": "last month"},
+              "after_value": {"count": 4, "period": "month", "monthly_rate": 4.0},
+              "clinical_meaning_changed": true,
+              "deterministic_rule": "exact_count_period_to_monthly_rate",
+              "rule_category": "seizure_frequency",
+              "evidence_ids": ["ev-current-rate"],
+              "reason": "Exact operands support the deterministic monthly calculation."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-current-rate", "citation": "In the last month she recorded four focal impaired-awareness seizures", "role": "selected", "finding_ids": ["gan-current-rate"]}
+          ],
+          "predecessor_stage_ids": ["schema-repair"],
+          "successor_stage_ids": ["event-selection"]
+        },
+        {
+          "stage_id": "event-selection",
+          "sequence": 4,
+          "name": "Current-event selection",
+          "summary": "Select the current monthly rate while retaining cluster and historical seizure-free events.",
+          "semantic_role": "selection",
+          "category": "assembly",
+          "owner": {"component_id": "gan-current-event-selector", "display_name": "Gan current-event selector"},
+          "status": "passed",
+          "input_refs": ["event:gan-current-rate:normalized", "event:gan-cluster-event", "event:gan-seizure-free-event"],
+          "output_ref": "selected-state:gan:SYN-014",
+          "inline_summary": {"selected_event_ids": ["gan-current-rate"], "retained_event_ids": ["gan-cluster-event", "gan-seizure-free-event"]},
+          "payload": {"selected_event_ids": ["gan-current-rate"], "selected_clinical_state": "finite_rate", "retained_events": ["gan-cluster-event", "gan-seizure-free-event"]},
+          "changes": [
+            {
+              "change_id": "select-current-rate",
+              "operation_owner": {"component_id": "gan-current-event-selector", "display_name": "Gan current-event selector"},
+              "kind": "select",
+              "operation": "Select the current rate without discarding other event states",
+              "before_ref": "/frequency_events",
+              "after_ref": "/selected_event_ids",
+              "before_value": ["gan-current-rate", "gan-cluster-event", "gan-seizure-free-event"],
+              "after_value": ["gan-current-rate"],
+              "clinical_meaning_changed": true,
+              "deterministic_rule": "select_current_frequency_event",
+              "rule_category": "seizure_frequency",
+              "evidence_ids": ["ev-current-rate", "ev-cluster", "ev-seizure-free"],
+              "reason": "The current rate answers the task while the cluster and historical state remain inspectable."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-current-rate", "citation": "In the last month she recorded four focal impaired-awareness seizures", "role": "selected", "finding_ids": ["gan-current-rate"]},
+            {"evidence_id": "ev-cluster", "citation": "a cluster of three on 14 July", "role": "supporting", "finding_ids": ["gan-cluster-event"]},
+            {"evidence_id": "ev-seizure-free", "citation": "She had been seizure-free for six months before this recurrence", "role": "supporting", "finding_ids": ["gan-seizure-free-event"]}
+          ],
+          "predecessor_stage_ids": ["rate-normalization"],
+          "successor_stage_ids": ["evidence-validation"]
+        },
+        {
+          "stage_id": "evidence-validation",
+          "sequence": 5,
+          "name": "Evidence validation",
+          "summary": "Verify the selected rate and retained event citations independently.",
+          "semantic_role": "evidence_validation",
+          "category": "evidence_validation",
+          "owner": {"component_id": "evidence-groundedness", "display_name": "Evidence groundedness verifier"},
+          "status": "passed",
+          "input_refs": ["selected-state:gan:SYN-014"],
+          "output_ref": "evidence:gan:SYN-014:verified",
+          "inline_summary": {"exact": 3, "absent": 0},
+          "payload": {"grades": {"ev-current-rate": "EXACT", "ev-cluster": "EXACT", "ev-seizure-free": "EXACT"}},
+          "changes": [],
+          "evidence": [
+            {"evidence_id": "ev-current-rate", "citation": "In the last month she recorded four focal impaired-awareness seizures", "role": "selected", "finding_ids": ["gan-current-rate"]},
+            {"evidence_id": "ev-cluster", "citation": "a cluster of three on 14 July", "role": "supporting", "finding_ids": ["gan-cluster-event"]},
+            {"evidence_id": "ev-seizure-free", "citation": "She had been seizure-free for six months before this recurrence", "role": "supporting", "finding_ids": ["gan-seizure-free-event"]}
+          ],
+          "predecessor_stage_ids": ["event-selection"],
+          "successor_stage_ids": ["scoring"]
+        },
+        {
+          "stage_id": "scoring",
+          "sequence": 6,
+          "name": "Purist and Pragmatic projection",
+          "summary": "Project the selected rate into separate named Gan score views.",
+          "semantic_role": "scoring",
+          "category": "scoring",
+          "owner": {"component_id": "gan-purist-pragmatic-scorer", "display_name": "Gan Purist and Pragmatic scorer"},
+          "status": "passed",
+          "input_refs": ["selected-state:gan:SYN-014"],
+          "output_ref": "score:gan:SYN-014:illustrative",
+          "inline_summary": {"normalized_label": "4 per month", "views": ["Purist", "Pragmatic"]},
+          "payload": {"normalized_label": "4 per month", "Purist": "illustrative match", "Pragmatic": "illustrative match", "benchmark_result": false},
+          "changes": [
+            {
+              "change_id": "project-gan-label",
+              "operation_owner": {"component_id": "gan-purist-pragmatic-scorer", "display_name": "Gan Purist and Pragmatic scorer"},
+              "kind": "project",
+              "operation": "Project the selected monthly rate into Purist and Pragmatic views",
+              "before_ref": "selected-state:gan:SYN-014",
+              "after_ref": "score:gan:SYN-014:illustrative",
+              "before_value": {"monthly_rate": 4.0, "frequency_kind": "finite_rate"},
+              "after_value": {"normalized_label": "4 per month", "views": ["Purist", "Pragmatic"]},
+              "clinical_meaning_changed": false,
+              "deterministic_rule": "gan_benchmark_projection",
+              "rule_category": "benchmark_format",
+              "evidence_ids": ["ev-current-rate"],
+              "reason": "Benchmark formatting does not replace the selected clinical state."
+            }
+          ],
+          "evidence": [
+            {"evidence_id": "ev-current-rate", "citation": "In the last month she recorded four focal impaired-awareness seizures", "role": "selected", "finding_ids": ["gan-current-rate"]}
+          ],
+          "predecessor_stage_ids": ["evidence-validation"],
+          "successor_stage_ids": []
+        }
+      ],
+      "findings": [
+        {
+          "finding_id": "gan-current-rate",
+          "entity": "Seizure Frequency",
+          "text": "4 per month",
+          "normalized_concept": "finite_rate",
+          "assertion": "present",
+          "attributes": {"count": 4, "period": "month", "monthly_rate": 4.0},
+          "producer": "gan-structured-event-extractor",
+          "fact_origin": "model_with_deterministic_normalization",
+          "raw_surface": "four focal impaired-awareness seizures",
+          "evidence_status": "EXACT",
+          "state": "selected",
+          "selected": true,
+          "task_payload": {"frequency_kind": "finite_rate", "selected_event_id": "gan-current-rate"}
+        },
+        {
+          "finding_id": "gan-cluster-event",
+          "entity": "Seizure Frequency",
+          "text": "cluster of three",
+          "normalized_concept": "cluster",
+          "assertion": "present",
+          "attributes": {"cluster_size": 3, "date": "14 July"},
+          "producer": "gan-structured-event-extractor",
+          "fact_origin": "model",
+          "raw_surface": "a cluster of three on 14 July",
+          "evidence_status": "EXACT",
+          "state": "retained_not_selected",
+          "selected": false,
+          "task_payload": {"frequency_kind": "cluster", "selected_event_id": null}
+        },
+        {
+          "finding_id": "gan-seizure-free-event",
+          "entity": "Seizure Frequency",
+          "text": "seizure-free for six months",
+          "normalized_concept": "seizure_free",
+          "assertion": "historical",
+          "attributes": {"duration": "six months", "temporal_status": "historical"},
+          "producer": "gan-structured-event-extractor",
+          "fact_origin": "model",
+          "raw_surface": "She had been seizure-free for six months before this recurrence",
+          "evidence_status": "EXACT",
+          "state": "retained_not_selected",
+          "selected": false,
+          "task_payload": {"frequency_kind": "seizure_free", "selected_event_id": null}
+        }
+      ],
+      "score_views": [
+        {
+          "score_id": "Purist",
+          "display_name": "Purist",
+          "value": null,
+          "display_value": "Illustrative match",
+          "scope": "SYN-014 only",
+          "status": "illustrative",
+          "description": "Synthetic exact-label projection, not Gan benchmark performance."
+        },
+        {
+          "score_id": "Pragmatic",
+          "display_name": "Pragmatic",
+          "value": null,
+          "display_value": "Illustrative match",
+          "scope": "SYN-014 only",
+          "status": "illustrative",
+          "description": "Synthetic pragmatic-label projection, kept separate from Purist."
+        }
+      ]
+    },
+    {
+      "run": {
+        "run_id": "syn-aggregate-only",
+        "task": "exectv2",
+        "dataset": "ExECTv2",
+        "split": "test60",
+        "method": "llm_with_rules",
+        "pipeline_family": "access-policy-demonstration",
+        "model": "withheld illustrative condition",
+        "model_route": "saved aggregate",
+        "mode": "saved_output",
+        "prompt_version": "withheld",
+        "program_version": "trace-fixture.v1",
+        "profile": "aggregate-only",
+        "repair_policy": "withheld",
+        "scorer": "clinical_headline",
+        "replay_mode": "aggregate_only",
+        "run_state": "illustrative"
+      },
+      "expected_records": 60,
+      "completed_records": 60,
+      "failed_records": 0,
+      "quarantined_records": 0,
+      "integrity": {"status": "aggregate_metadata_only", "schema": "illustrative.fixture.v1"},
+      "stages": [],
+      "findings": [],
+      "score_views": [
+        {
+          "score_id": "clinical_headline",
+          "display_name": "Clinical fact recovery",
+          "value": null,
+          "display_value": "Withheld in access test",
+          "scope": "aggregate-only demonstration",
+          "status": "withheld",
+          "description": "This synthetic run exists only to prove that row routes are unavailable."
+        }
+      ]
+    }
+  ]
+}
