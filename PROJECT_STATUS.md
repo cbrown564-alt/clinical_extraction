@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-18 on the working tree after commit `7bc1db7`
+Last updated: 2026-07-19 on the working tree after commit `2bfb4030`
 
 ## Current outcome
 
@@ -34,6 +34,13 @@ tree. Gan and ExECT now have explicit results for the same eight questions,
 with task-specific measures, assurance metadata, evidence states,
 comparability labels, and gap decisions. The generated machine and human
 scorecards do not pool incompatible values or calculate a composite score.
+
+The predeclared Gan `validation750` LLM-plus-rules versus LLM-only comparison
+has seven of twelve full conditions through the 750-row trace gate. DeepSeek
+LLM-only and Qwen LLM-plus-rules are active; Qwen LLM-only and both Gemma
+conditions remain queued. GPT-4.1-mini, Luna, and Sol have complete matched
+pairs, and DeepSeek LLM-plus-rules is complete. These are inspectable
+development results, not holdout or clinical-validation evidence.
 
 ## Fresh evidence
 
@@ -155,6 +162,19 @@ not independent clinical validation or a new clean-checkout reproduction.
 
 ## In progress
 
+- The Gan `validation750` six-model comparison is finishing the remaining five
+  conditions without changing the frozen prompts, model routes, clinical
+  rules, scorer, or live schema-repair behavior mid-panel.
+- A post-panel no-call schema-repair replay is agreed but not yet implemented.
+  It must run uniformly over all twelve saved raw-output artifacts only after
+  the frozen panel completes. Unambiguous JSON and container-shape repairs may
+  be applied directly. A malformed unselected event may be quarantined only
+  when the selected path is independently valid. The replay must never change
+  selected event IDs, evidence, kind, label, or rationale; it must retain the
+  raw payload and explicit before/after repair trace. This selected-answer-
+  preserving schema repair is separate from both syntax-only repair and
+  clinical semantic repair.
+
 - DeepSeek V4 Flash is completing its remaining 100 v0.5 test450 calls on the
   hosted route. Its final 450 raw outputs will be replayed through today's
   shared schema repair before any score is reported.
@@ -167,15 +187,13 @@ not independent clinical validation or a new clean-checkout reproduction.
 
 ## Next
 
-1. Predeclare and run the Gan winning `llm_with_rules` configuration on the
-   full permitted `validation750` split for all six fixed models. Retain the
-   row-level structured output, deterministic repair trace, evidence, and
-   scores needed to make every model inspectable in the Example Explorer.
-2. Predeclare and run a matched Gan `llm_only` configuration on the same
-   `validation750` rows for all six fixed models. Freeze the model-only
-   prediction boundary before execution, retain row-level artifacts, and make
-   the six conditions comparable with the winning mode and deterministic-only
-   control in the Example Explorer.
+1. Complete the remaining DeepSeek, Qwen, and Gemma `validation750`
+   conditions and require all twelve artifacts to pass the row-identity and
+   `gan2026.row_trace.v1` gates.
+2. Implement and test the agreed selected-answer-preserving schema-repair
+   policy, then replay it uniformly over all twelve frozen raw-output
+   artifacts. Report the syntax-only, container-shape, quarantined-unselected-
+   event, and clinical-semantic transitions separately.
 3. Complete DeepSeek, Qwen, and Gemma v0.5 test450 aggregates and replay all
    hosted raw outputs through the current schema repair.
 4. Complete Qwen v0.5 validation750, then use the matched development outputs

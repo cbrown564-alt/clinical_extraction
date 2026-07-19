@@ -7,6 +7,14 @@ import json
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
+    load_records_for_split,
+)
+from clinical_extraction.trace_explorer.gan2026_comparison import (
+    GanValidationDiscovery,
+    discover_gan2026_validation_runs,
+)
+
 _NAMED_RESOURCES: dict[str, str] = {
     "registry": "registry.json",
     "pipeline_families": "pipeline-families.json",
@@ -54,16 +62,34 @@ class FrontendDataStore:
             for path in validation_dir.glob("*.json")
             if path.is_file() and path.stem.isdigit()
         }
+        self._gan_fingerprint: tuple[tuple[str, int, int], ...] = ()
+        self._gan_validation = self._discover_gan_validation()
 
     def named(self, resource: str) -> dict[str, Any]:
+        if resource in {"pipeline_families", "registry"}:
+            self._refresh_gan_validation()
         if resource == "exectv2_runs":
             return copy.deepcopy(self._exectv2_payload)
+        if resource == "pipeline_families" and self._gan_validation is not None:
+            return copy.deepcopy(self._gan_validation.catalog)
         relative_path = _NAMED_RESOURCES.get(resource)
         if relative_path is None:
             raise KeyError(resource)
         value = self._read(self.root / relative_path)
         if not isinstance(value, dict):
             raise ValueError("frontend resource must contain a JSON object")
+        if resource == "registry" and self._gan_validation is not None:
+            runs = value.get("runs")
+            if not isinstance(runs, list):
+                raise ValueError("frontend registry must contain a run list")
+            dynamic_ids = {
+                str(item["run_id"]) for item in self._gan_validation.registry_entries
+            }
+            value["runs"] = [
+                item
+                for item in runs
+                if isinstance(item, dict) and str(item.get("run_id")) not in dynamic_ids
+            ] + [copy.deepcopy(item) for item in self._gan_validation.registry_entries]
         return value
 
     def records(self, split: str) -> dict[str, Any] | None:
@@ -78,6 +104,16 @@ class FrontendDataStore:
         return self._object(path) if path is not None else None
 
     def artifact(self, run_id: str, *, limit: int | None = None) -> dict[str, Any] | None:
+        self._refresh_gan_validation()
+        if self._gan_validation is not None:
+            replay_path = self._gan_validation.replay_artifacts.get(run_id)
+            if replay_path is not None:
+                return {
+                    "run_id": run_id,
+                    "artifact_path": replay_path.relative_to(self.root.parents[3]).as_posix(),
+                    "artifact_type": "jsonl",
+                    "content": self._read_jsonl(replay_path, limit=limit),
+                }
         path = self._artifacts.get(run_id)
         if path is None:
             return None
@@ -86,6 +122,62 @@ class FrontendDataStore:
         if limit is not None and isinstance(content, list):
             payload["content"] = content[:limit]
         return payload
+
+    def _discover_gan_validation(self) -> GanValidationDiscovery | None:
+        repo_root = self.root.parents[3]
+        config_path = (
+            repo_root / "configs" / "gan2026" / "six_model_validation_comparison_20260718.json"
+        )
+        if not config_path.is_file():
+            return None
+        expected_indices = {
+            int(record.source_row_index) for record in load_records_for_split("validation")
+        }
+        discovery = discover_gan2026_validation_runs(
+            config_path,
+            expected_indices=expected_indices,
+        )
+        self._gan_fingerprint = self._gan_source_fingerprint(config_path)
+        return discovery
+
+    def _refresh_gan_validation(self) -> None:
+        repo_root = self.root.parents[3]
+        config_path = (
+            repo_root / "configs" / "gan2026" / "six_model_validation_comparison_20260718.json"
+        )
+        changed = (
+            config_path.is_file()
+            and self._gan_source_fingerprint(config_path) != self._gan_fingerprint
+        )
+        if changed:
+            self._gan_validation = self._discover_gan_validation()
+
+    @staticmethod
+    def _gan_source_fingerprint(config_path: Path) -> tuple[tuple[str, int, int], ...]:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        repo_root = config_path.parent.parent.parent
+        artifact_root = repo_root / str(config["artifact_root"])
+        paths = [config_path, *artifact_root.glob("*/*/validation750.rows.jsonl")]
+        return tuple(
+            sorted(
+                (str(path.resolve()), path.stat().st_size, path.stat().st_mtime_ns)
+                for path in paths
+                if path.is_file()
+            )
+        )
+
+    @staticmethod
+    def _read_jsonl(path: Path, *, limit: int | None) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        with path.open(encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
+                value = json.loads(line)
+                if not isinstance(value, dict):
+                    raise ValueError(f"expected object at {path}:{line_number}")
+                rows.append(value)
+                if limit is not None and len(rows) >= limit:
+                    break
+        return rows
 
     def exectv2_catalog(self) -> dict[str, Any]:
         """Return architecture summaries without eagerly sending row-level data."""

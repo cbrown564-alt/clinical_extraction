@@ -13,7 +13,7 @@ const MODEL_ORDER = [
 
 const GROUPS: Array<{ mode: GanComparisonMode; label: string }> = [
   { mode: "llm_plus_rules", label: "Winning mode · LLM + rules" },
-  { mode: "llm_only", label: "LLM only · raw one-call output (not retained)" },
+  { mode: "llm_only", label: "LLM only · raw one-call output" },
   { mode: "deterministic_only", label: "Deterministic only · no model" },
 ];
 

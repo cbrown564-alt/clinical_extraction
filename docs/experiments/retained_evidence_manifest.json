@@ -22,14 +22,14 @@
       {
         "role": "dependency",
         "path": "pyproject.toml",
-        "sha256": "d5f249ec7d3c6018d8b5e17a87a88064792d430ec62f9506cb23bfc06fe396a0",
-        "bytes": 1333
+        "sha256": "2e28c6eaec0b6df5ebaaa8e54b94254c88be80fb63f2782b56c7355b725bcd20",
+        "bytes": 1548
       },
       {
         "role": "dependency",
         "path": "uv.lock",
-        "sha256": "5cf2c6d82b165d162dc7e3e10fa2a74d5bb03624b459f270fde7f9c6f97bd840",
-        "bytes": 714173
+        "sha256": "371e4187d54eec0ee2e6d5104d0e3c28e35f5bbfe5c83b853868eb8d8c95525d",
+        "bytes": 716973
       },
       {
         "role": "model",
@@ -82,8 +82,8 @@
       {
         "role": "quality",
         "path": ".github/workflows/ci.yml",
-        "sha256": "e385594ade5aaadc8e8994c130a73f94520649bf36a90dbb1a5acc6921bb2158",
-        "bytes": 434
+        "sha256": "8e43dd6956f0dcbe77f5a3692d867a9608b79e2c03ece1b60fed299bb44925a1",
+        "bytes": 443
       },
       {
         "role": "repair",
@@ -1516,8 +1516,8 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "90620505b5ec554c1dc85894fa012afcc67be79f31985dff4dcbeb8ffeed9e53",
-          "bytes": 12019,
+          "sha256": "dcea1ccc359d35a0f37f026d97e757980572ba54cfa0b3198914f6f28bbec82a",
+          "bytes": 13926,
           "retrieval": "git_path"
         }
       ]

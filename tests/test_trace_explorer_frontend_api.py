@@ -150,31 +150,31 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
     assert [str(item["model"]) for item in by_mode["llm_plus_rules"]] == expected_models
     assert [str(item["model"]) for item in by_mode["llm_only"]] == expected_models
 
+    model_runs = [*by_mode["llm_plus_rules"], *by_mode["llm_only"]]
+    assert all(item["split"] == "validation750" for item in model_runs)
+    assert all("test450" not in str(item["run_id"]) for item in model_runs)
     assert all(
-        item["availability"] == "aggregate_only"
-        and item["evidence_scope"] == "test450_aggregate_only"
-        and item["has_replay_artifact"] is False
-        for item in by_mode["llm_plus_rules"]
+        item["availability"] in {"replay", "not_retained"}
+        and item["evidence_scope"]
+        in {"validation750_row_level", "incomplete_not_served"}
+        for item in model_runs
     )
+    assert any(item["availability"] == "replay" for item in model_runs)
     assert all(
-        item["availability"] == "not_retained"
-        and item["evidence_scope"] == "not_measured"
-        and item["has_replay_artifact"] is False
-        for item in by_mode["llm_only"]
+        item["has_replay_artifact"] is (item["availability"] == "replay")
+        for item in model_runs
     )
 
-    qwen = next(
-        item
-        for item in by_mode["llm_plus_rules"]
-        if item["model"] == "ollama_chat/qwen3.6:35b"
-    )
-    assert qwen["metrics"] == {
-        "row_count": 450,
-        "purist_correct": 367,
-        "purist_accuracy": 0.8156,
-        "pragmatic_correct": 380,
-        "pragmatic_accuracy": 0.8444,
-    }
+    completed = next(item for item in model_runs if item["availability"] == "replay")
+    assert completed["metrics"]["row_count"] == 750
+    replay = client.get(f"/artifacts/{completed['run_id']}", params={"limit": 2})
+    assert replay.status_code == 200
+    assert len(replay.json()["content"]) == 2
+    assert all(row["split"] == "validation" for row in replay.json()["content"])
+
+    incomplete = next(item for item in model_runs if item["availability"] == "not_retained")
+    assert incomplete["progress"]["completed_rows"] < 750
+    assert client.get(f"/artifacts/{incomplete['run_id']}").status_code == 404
 
     deterministic = by_mode["deterministic_only"][0]
     assert deterministic["run_id"] == "rules_only"

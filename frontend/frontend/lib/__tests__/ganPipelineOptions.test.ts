@@ -64,7 +64,7 @@ describe("Gan architecture options", () => {
     ]);
     expect(groups.map((group) => group.options.length)).toEqual([6, 6, 1]);
     expect(groups[0].label).toBe("Winning mode · LLM + rules");
-    expect(groups[1].label).toBe("LLM only · raw one-call output (not retained)");
+    expect(groups[1].label).toBe("LLM only · raw one-call output");
     expect(groups[2].label).toBe("Deterministic only · no model");
     expect(groups[0].options.map((item) => item.model)).toEqual(MODELS);
     expect(groups[1].options.every((item) => item.availability === "not_retained")).toBe(true);

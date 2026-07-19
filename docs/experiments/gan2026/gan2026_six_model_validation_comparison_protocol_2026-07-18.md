@@ -1,7 +1,7 @@
 # Gan 2026 six-model validation comparison protocol
 
 Date: 2026-07-18  
-Status: predeclared and user-authorized; calls pending
+Status: predeclared and user-authorized; hosted calls in progress
 
 ## Primary question
 
@@ -172,7 +172,7 @@ the disclosed dirty working tree. The relevant pre-run files are:
 | Normalization and selected-evidence repair | `src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py` | `f3a11e3480c001b8972bb8f70ddcb674a567418491a61ad983aae50f47c83c4c` |
 | Gan category mapping | `src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py` | `6c1635541403c3cf419595a7883ec8055335facf88af8a62cc175465afb224ba` |
 | Gan scorer | `src/clinical_extraction/tasks/seizure_frequency/gan2026/evaluate.py` | `18fdec285a5a80aa92d06bdb6e75f6b6e619d76dfeb1ca5eec0751fe7123c402` |
-| Hosted transport wrapper | `scripts/run_gan2026_hosted_condition.py` | `56d88e7e9a5cc4c8ea7bdaed2096b7e837cfcc2c032cad854432f423f3ccb0f8` |
+| Hosted transport wrapper | `scripts/run_gan2026_hosted_condition.py` | `71775b563851818718c108cd43e4ba22cdd612940489a1cb366c2779e83f9307` |
 | Comparison controller | `scripts/run_gan2026_six_model_validation_comparison.ps1` | `c57b79a67b61a4aee897cf45efa030f4b0e42768e82e1721e1fb931117fbd32a` |
 | Machine configuration | `configs/gan2026/six_model_validation_comparison_20260718.json` | `0231b0eae4c2d8ad3b6231fb9dec237d0a31238c2992b6f178088e16fd81b513` |
 
@@ -180,6 +180,39 @@ If a pilot exposes a transport-only defect, stop before the full condition,
 amend this protocol and the hashes, and repeat the pilot. A prompt, clinical
 repair, label, scorer, or prediction-boundary change rejects the frozen panel
 and requires a new dated protocol.
+
+### Transport amendment, 2026-07-19
+
+The first GPT-5.6 Sol `llm_with_rules` pilot made five failed calls because the
+hosted wrapper replaced `llm_config.build_dspy_lm` after both Gan pipeline
+modules had imported that function. The original bound function therefore
+passed the CLI placeholder `temperature=0` to Sol, which supports only its
+default temperature. No full Sol condition was started. The wrapper now
+installs the same already-predeclared Responses factory on both pipeline-module
+bindings as well as `llm_config`; the factory continues to omit temperature for
+Sol and changes no prompt, schema, clinical rule, label, scorer, or prediction
+boundary. The failed pilot is an operational artifact only. Sol must pass a
+fresh five-row pilot written to a separate retry artifact before its full run.
+
+### Sol LLM-only quota recovery, 2026-07-19
+
+The GPT-5.6 Sol `llm_only` full run was stopped after writing 715 manifest rows:
+613 successful model decisions and 102 `insufficient_quota` call failures. The
+remaining 35 manifest rows were not written. After the user restored API
+budget, they explicitly authorized a recovery run.
+
+The failed 715-row JSONL and report must be retained as
+`validation750.quota-exhausted.rows.jsonl` and
+`validation750.quota-exhausted.report.md`. The recovery retry set is frozen to
+the 102 rows with a non-empty `call_error` plus the 35 missing manifest rows,
+for 137 calls total. The 613 successful first-attempt rows must not be called
+again. Recovery uses the unchanged Sol route, Responses transport, LLM-only
+prompt, schema, cache-disabled setting, model-prediction boundary, benchmark
+adapter, scorer, and row-trace schema. The canonical JSONL is seeded with the
+613 byte-preserved successful lines and resumed through the standard runner;
+the failed-attempt backup and machine-readable retry manifest preserve attempt
+provenance. Completion still requires 750 unique manifest rows, zero final
+call failures, and 750 valid `gan2026.row_trace.v1` LLM-only traces.
 
 ## Stop rule and claim boundary
 

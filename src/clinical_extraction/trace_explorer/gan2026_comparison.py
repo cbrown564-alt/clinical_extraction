@@ -1,9 +1,8 @@
-"""Project the retained Gan six-model panel into the frontend selector contract.
+"""Discover governed Gan validation750 artifacts for the trace explorer.
 
-Gan's v0.7 test450 rows are sealed. The frontend may surface retained aggregate
-scores, but it must never imply that row-level replays exist. The matched
-LLM-only panel has not been measured, so those variants are named for comparison
-completeness and explicitly marked unavailable.
+Only complete rows from the predeclared six-model validation comparison are
+replayable. Partial conditions remain visible as progress metadata but their
+rows are never served.
 """
 
 from __future__ import annotations
@@ -12,6 +11,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
+
+TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 
 
 @dataclass(frozen=True)
@@ -34,168 +35,223 @@ MODEL_CONDITIONS = (
     ModelCondition("gemma4_26b", "ollama_chat/gemma4:26b", "Gemma 4 26B"),
 )
 
-PURIST_MEASUREMENT = "gan2026_six_model_test450_purist_accuracy"
-PRAGMATIC_MEASUREMENT = "gan2026_six_model_test450_pragmatic_accuracy"
+
+@dataclass(frozen=True)
+class GanValidationDiscovery:
+    catalog: dict[str, Any]
+    registry_entries: tuple[dict[str, Any], ...]
+    replay_artifacts: dict[str, Path]
 
 
-def build_gan2026_pipeline_families(scorecard_path: Path) -> dict[str, Any]:
-    """Build the 6 + 6 + 1 Gan comparison catalog from retained aggregates."""
+def discover_gan2026_validation_runs(
+    config_path: Path,
+    *,
+    expected_indices: set[int],
+) -> GanValidationDiscovery:
+    """Build the selector and replay allowlist from exact validation750 outputs."""
 
-    payload = json.loads(scorecard_path.read_text(encoding="utf-8"))
-    measurements = payload.get("measurements")
-    if not isinstance(measurements, list):
-        raise ValueError("shared reliability scorecard has no measurements")
-
-    by_id = {
-        str(item.get("measurement_id")): item
-        for item in measurements
-        if isinstance(item, dict)
-    }
-    purist = _measurement_values(by_id, PURIST_MEASUREMENT)
-    pragmatic = _measurement_values(by_id, PRAGMATIC_MEASUREMENT)
-
+    config = _object(config_path)
+    artifact_root = config_path.parent.parent.parent / str(config["artifact_root"])
+    configured = {str(item["slug"]): item for item in config["conditions"]}
+    methods = {str(item["method"]): item for item in config["methods"]}
     families: list[dict[str, Any]] = []
-    for condition in MODEL_CONDITIONS:
-        purist_value = _model_value(purist, condition.route, PURIST_MEASUREMENT)
-        pragmatic_value = _model_value(
-            pragmatic, condition.route, PRAGMATIC_MEASUREMENT
-        )
-        families.append(
-            _model_family(
-                condition,
-                comparison_mode="llm_plus_rules",
-                availability="aggregate_only",
-                evidence_scope="test450_aggregate_only",
-                metrics={
-                    "row_count": 450,
-                    "purist_correct": int(purist_value["correct"]),
-                    "purist_accuracy": float(purist_value["accuracy"]),
-                    "pragmatic_correct": int(pragmatic_value["correct"]),
-                    "pragmatic_accuracy": float(pragmatic_value["accuracy"]),
-                },
-            )
-        )
+    registry: list[dict[str, Any]] = []
+    artifacts: dict[str, Path] = {}
 
-    for condition in MODEL_CONDITIONS:
-        families.append(
-            _model_family(
-                condition,
-                comparison_mode="llm_only",
-                availability="not_retained",
-                evidence_scope="not_measured",
-                metrics=None,
+    for method_name in ("llm_with_rules", "llm_only"):
+        method = methods[method_name]
+        for condition in MODEL_CONDITIONS:
+            configured_condition = configured[condition.slug]
+            if configured_condition["model"] != condition.route:
+                raise ValueError(f"configured model mismatch for {condition.slug}")
+            path = artifact_root / condition.slug / method_name / "validation750.rows.jsonl"
+            inspection = _inspect_rows(
+                path,
+                expected_indices=expected_indices,
+                method=method_name,
             )
-        )
+            family = _model_family(
+                condition,
+                method_name=method_name,
+                prompt_version=str(method["prompt_version"]),
+                repair_mode=str(method["repair_mode"]),
+                inspection=inspection,
+            )
+            families.append(family)
+            if not inspection["complete"]:
+                continue
+            run_id = str(family["run_id"])
+            artifacts[run_id] = path.resolve()
+            registry.append(
+                {
+                    "run_id": run_id,
+                    "artifact_paths": [
+                        path.relative_to(config_path.parent.parent.parent).as_posix()
+                    ],
+                    "date": "2026-07-19",
+                    "decision": "development_comparison",
+                    "mode": "replay",
+                    "model": condition.route,
+                    "model_role": family["display_label"],
+                    "pipeline_family": family["pipeline_family"],
+                    "primary_metrics": family["metrics"],
+                    "repair_mode": method["repair_mode"],
+                    "replay_status": "native_validation_run",
+                    "row_count": 750,
+                    "split": "validation",
+                    "registry_roles": ["six_model_validation_comparison"],
+                    "evidence_validity": (
+                        "Row-level Gan validation development evidence; not holdout evidence."
+                    ),
+                }
+            )
 
-    families.append(
-        {
-            "value": "rules_only",
-            "run_id": "rules_only",
-            "label": "Deterministic canonical",
-            "display_label": "Deterministic canonical",
-            "model_label": "No model",
-            "executable": True,
-            "kind": "rules_only",
-            "architecture_family": "rules_only",
-            "pipeline_family": "rules_only",
-            "model": "(model-independent)",
-            "comparison_mode": "deterministic_only",
-            "comparison_role": "control",
-            "availability": "live",
-            "evidence_scope": "validation_rows",
-            "has_replay_artifact": False,
-            "split": "validation",
-            "prompt_version": "deterministic",
-            "repair_mode": "deterministic_v1",
-            "run_count": 1,
+    families.append(_rules_only_family())
+    return GanValidationDiscovery(
+        catalog={
+            "generated_on": "2026-07-19",
+            "source_artifact": config["protocol"],
+            "claim_boundary": (
+                "Gan validation750 is inspectable development evidence. Only exact, "
+                "trace-valid 750-row conditions are replayable; test450 is excluded."
+            ),
+            "families": families,
+        },
+        registry_entries=tuple(registry),
+        replay_artifacts=artifacts,
+    )
+
+
+def _inspect_rows(
+    path: Path,
+    *,
+    expected_indices: set[int],
+    method: str,
+) -> dict[str, Any]:
+    if not path.is_file():
+        return {"complete": False, "row_count": 0}
+    row_count = 0
+    indices: list[int] = []
+    trace_count = 0
+    purist_correct = 0
+    pragmatic_correct = 0
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            try:
+                value = json.loads(line)
+            except json.JSONDecodeError:
+                return {"complete": False, "row_count": row_count}
+            if not isinstance(value, dict):
+                return {"complete": False, "row_count": row_count}
+            row_count += 1
+            try:
+                indices.append(int(value["source_row_index"]))
+            except (KeyError, TypeError, ValueError):
+                return {"complete": False, "row_count": row_count}
+            trace = value.get("row_trace") or {}
+            trace_count += int(
+                trace.get("schema_version") == TRACE_SCHEMA_VERSION
+                and trace.get("method") == method
+                and value.get("split") == "validation"
+                and value.get("split_manifest") == "gan2026_split_v1"
+            )
+            comparison = value.get("comparison") or {}
+            purist_correct += int(bool(comparison.get("purist_correct")))
+            pragmatic_correct += int(bool(comparison.get("pragmatic_correct")))
+    unique_indices = set(indices)
+    complete = (
+        row_count == len(expected_indices)
+        and len(unique_indices) == len(expected_indices)
+        and unique_indices == expected_indices
+        and trace_count == row_count
+    )
+    result: dict[str, Any] = {"complete": complete, "row_count": row_count}
+    if complete:
+        result["metrics"] = {
+            "row_count": row_count,
+            "purist_correct": purist_correct,
+            "purist_accuracy": round(purist_correct / row_count, 4),
+            "pragmatic_correct": pragmatic_correct,
+            "pragmatic_accuracy": round(pragmatic_correct / row_count, 4),
         }
-    )
-    return {
-        "generated_on": payload.get("generated_date"),
-        "source_artifact": f"experiments/{scorecard_path.name}",
-        "claim_boundary": (
-            "Gan v0.7 test450 is aggregate-only. Matched six-model LLM-only "
-            "scores and row-level v0.7 replays are not retained."
-        ),
-        "families": families,
-    }
-
-
-def write_gan2026_pipeline_families(scorecard_path: Path, output_path: Path) -> Path:
-    payload = build_gan2026_pipeline_families(scorecard_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
-    return output_path
-
-
-def _measurement_values(
-    measurements: dict[str, dict[str, Any]], measurement_id: str
-) -> dict[str, Any]:
-    measurement = measurements.get(measurement_id)
-    if measurement is None:
-        raise ValueError(f"missing retained measurement: {measurement_id}")
-    values = measurement.get("value")
-    if not isinstance(values, dict):
-        raise ValueError(f"retained measurement has no model values: {measurement_id}")
-    return values
-
-
-def _model_value(
-    values: dict[str, Any], route: str, measurement_id: str
-) -> dict[str, Any]:
-    value = values.get(route)
-    if not isinstance(value, dict):
-        raise ValueError(f"{measurement_id} has no value for {route}")
-    return value
+    return result
 
 
 def _model_family(
     condition: ModelCondition,
     *,
-    comparison_mode: Literal["llm_plus_rules", "llm_only"],
-    availability: Literal["aggregate_only", "not_retained"],
-    evidence_scope: Literal["test450_aggregate_only", "not_measured"],
-    metrics: dict[str, Any] | None,
+    method_name: Literal["llm_with_rules", "llm_only"],
+    prompt_version: str,
+    repair_mode: str,
+    inspection: dict[str, Any],
 ) -> dict[str, Any]:
-    family = (
-        "hybrid_structured_events"
-        if comparison_mode == "llm_plus_rules"
-        else "llm_only_raw_output"
-    )
-    kind = "hybrid" if comparison_mode == "llm_plus_rules" else "llm_only"
-    run_id = f"gan2026_winning_mode_{condition.slug}_{comparison_mode}_test450"
+    comparison_mode = "llm_plus_rules" if method_name == "llm_with_rules" else "llm_only"
+    kind = "hybrid" if method_name == "llm_with_rules" else "llm_only"
+    run_id = f"gan2026_validation750_{condition.slug}_{method_name}"
+    complete = bool(inspection["complete"])
+    mode_label = "LLM + rules" if method_name == "llm_with_rules" else "LLM only"
+    status_label = mode_label if complete else "in progress"
     result: dict[str, Any] = {
         "value": run_id,
         "run_id": run_id,
         "label": condition.label,
-        "display_label": condition.label,
+        "display_label": f"{condition.label} · {status_label}",
         "model_label": condition.label,
         "executable": False,
         "kind": kind,
         "architecture_family": kind,
-        "pipeline_family": family,
+        "pipeline_family": (
+            "hybrid_structured_events"
+            if method_name == "llm_with_rules"
+            else "llm_only_canonical_pipeline"
+        ),
         "model": condition.route,
         "comparison_mode": comparison_mode,
-        "comparison_role": (
-            "winner" if comparison_mode == "llm_plus_rules" else "diagnostic"
-        ),
-        "availability": availability,
-        "evidence_scope": evidence_scope,
-        "has_replay_artifact": False,
-        "split": "test450",
-        "prompt_version": "gan2026_hybrid_structured_events_v0.7",
-        "repair_mode": (
-            "hybrid_full_stack" if comparison_mode == "llm_plus_rules" else "none"
-        ),
-        "run_count": 1,
+        "comparison_role": "winner" if method_name == "llm_with_rules" else "diagnostic",
+        "availability": "replay" if complete else "not_retained",
+        "evidence_scope": "validation750_row_level" if complete else "incomplete_not_served",
+        "has_replay_artifact": complete,
+        "split": "validation750",
+        "prompt_version": prompt_version,
+        "repair_mode": repair_mode,
+        "run_count": 1 if complete else 0,
+        "progress": {"completed_rows": inspection["row_count"], "expected_rows": 750},
     }
-    if metrics is not None:
-        result["metrics"] = metrics
+    if complete:
+        result["metrics"] = inspection["metrics"]
     else:
         result["unavailable_reason"] = (
-            "A matched six-model LLM-only Gan panel has not been retained."
+            "This condition is incomplete; partial validation rows are not served."
         )
     return result
+
+
+def _rules_only_family() -> dict[str, Any]:
+    return {
+        "value": "rules_only",
+        "run_id": "rules_only",
+        "label": "Deterministic canonical",
+        "display_label": "Deterministic canonical",
+        "model_label": "No model",
+        "executable": True,
+        "kind": "rules_only",
+        "architecture_family": "rules_only",
+        "pipeline_family": "rules_only",
+        "model": "(model-independent)",
+        "comparison_mode": "deterministic_only",
+        "comparison_role": "control",
+        "availability": "live",
+        "evidence_scope": "validation_rows",
+        "has_replay_artifact": False,
+        "split": "validation",
+        "prompt_version": "deterministic",
+        "repair_mode": "deterministic_v1",
+        "run_count": 1,
+    }
+
+
+def _object(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError(f"expected JSON object in {path}")
+    return value
