@@ -111,6 +111,7 @@ PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
 # v0.6 reasoner/chat validation error analysis; v0.6 remains selectable for
 # comparator and replay scripts.
 PROMPT_VERSION = PROMPT_VERSION_V0_7
+ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {PROMPT_VERSION_V0_5, PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}
 )
@@ -649,6 +650,27 @@ def parse_structured_json(
     note_text: str | None = None,
     repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[StructuredExtractionRecord | None, list[NormalizedEventRecord], list[str]]:
+    extraction, normalized_events, errors, _ = parse_structured_json_with_trace(
+        raw_output,
+        note_text=note_text,
+        repair_config=repair_config,
+    )
+    return extraction, normalized_events, errors
+
+
+def parse_structured_json_with_trace(
+    raw_output: str,
+    *,
+    note_text: str | None = None,
+    repair_config: StructuredRepairConfig | None = None,
+) -> tuple[
+    StructuredExtractionRecord | None,
+    list[NormalizedEventRecord],
+    list[str],
+    dict[str, Any],
+]:
+    """Parse structured output and retain the model boundary and repair stages."""
+
     repair_config = repair_config or StructuredRepairConfig()
     try:
         raw_payload, errors = parse_json_payload_with_schema_repair(
@@ -657,12 +679,31 @@ def parse_structured_json(
         )
         payload = _filter_structured_payload(repair_structured_extraction_payload(raw_payload))
     except json.JSONDecodeError as exc:
-        return None, [], [f"invalid_json: {exc.msg}"]
+        errors = [f"invalid_json: {exc.msg}"]
+        return None, [], errors, _hybrid_row_trace(
+            model_extraction=None,
+            schema_payload_changed=False,
+            format_events=errors,
+            resolved_label=None,
+            final_label=None,
+            semantic_events=[],
+        )
+    schema_payload_changed = payload != raw_payload
+    format_events = list(errors)
 
     try:
         extraction = StructuredExtractionRecord.model_validate(payload)
     except ValidationError as exc:
-        return None, [], [f"schema_validation_error: {exc.errors()[0]['msg']}"]
+        errors.append(f"schema_validation_error: {exc.errors()[0]['msg']}")
+        return None, [], errors, _hybrid_row_trace(
+            model_extraction=None,
+            schema_payload_changed=schema_payload_changed,
+            format_events=errors,
+            resolved_label=None,
+            final_label=None,
+            semantic_events=[],
+        )
+    model_extraction = extraction
 
     normalized_events = [
         _normalize_event(event, note_text=note_text) for event in extraction.events
@@ -670,8 +711,16 @@ def parse_structured_json(
     final_label = _resolve_final_label(extraction, normalized_events)
     if final_label is None:
         errors.append("unscorable_final_label: no selected event normalized to a Gan label")
-        return extraction, normalized_events, errors
+        return extraction, normalized_events, errors, _hybrid_row_trace(
+            model_extraction=model_extraction,
+            schema_payload_changed=schema_payload_changed,
+            format_events=format_events,
+            resolved_label=None,
+            final_label=None,
+            semantic_events=[],
+        )
 
+    resolved_label = final_label
     repaired_label = final_label
     if repair_config.basic_label_repair and not repair_config.selected_evidence_repair:
         basic_repair = (
@@ -761,7 +810,55 @@ def parse_structured_json(
                 "selection": extraction.selection.model_copy(update={"final_label": repaired_label})
             }
         )
-    return extraction, normalized_events, errors
+    semantic_events = [
+        error for error in errors if str(error).startswith("final_label_repaired:")
+    ]
+    return extraction, normalized_events, errors, _hybrid_row_trace(
+        model_extraction=model_extraction,
+        schema_payload_changed=schema_payload_changed,
+        format_events=format_events,
+        resolved_label=resolved_label,
+        final_label=repaired_label,
+        semantic_events=semantic_events,
+    )
+
+
+def _hybrid_row_trace(
+    *,
+    model_extraction: StructuredExtractionRecord | None,
+    schema_payload_changed: bool,
+    format_events: Sequence[str],
+    resolved_label: str | None,
+    final_label: str | None,
+    semantic_events: Sequence[str],
+) -> dict[str, Any]:
+    selection = model_extraction.selection if model_extraction else None
+    return {
+        "schema_version": ROW_TRACE_SCHEMA_VERSION,
+        "method": "llm_with_rules",
+        "model_prediction": {
+            "raw_output_field": "raw_output",
+            "record": model_extraction.model_dump() if model_extraction else None,
+        },
+        "format_repair": {
+            "schema_payload_changed": schema_payload_changed,
+            "events": list(format_events),
+        },
+        "deterministic_selection": {
+            "selected_event_ids": list(selection.selected_event_ids) if selection else [],
+            "model_final_label": selection.final_label if selection else None,
+            "resolved_label": resolved_label,
+            "normalized_events_field": "normalized_events",
+        },
+        "deterministic_semantic": {
+            "rule_category": "seizure_frequency",
+            "before_label": resolved_label,
+            "after_label": final_label,
+            "events": list(semantic_events),
+        },
+        "evidence_validation": None,
+        "scoring": None,
+    }
 
 
 def _filter_structured_payload(payload: Any) -> Any:
@@ -899,14 +996,26 @@ def run_split(
                         "adapter_output_field_repaired: structured_json_missing"
                     )
 
-        extraction, normalized_events, parse_errors = (
-            parse_structured_json(
+        extraction, normalized_events, parse_errors, row_trace = (
+            parse_structured_json_with_trace(
                 raw_output,
                 note_text=record.note_text,
                 repair_config=repair_config,
             )
             if raw_output
-            else (None, [], ["not_run"])
+            else (
+                None,
+                [],
+                ["not_run"],
+                _hybrid_row_trace(
+                    model_extraction=None,
+                    schema_payload_changed=False,
+                    format_events=["not_run"],
+                    resolved_label=None,
+                    final_label=None,
+                    semantic_events=[],
+                ),
+            )
         )
         initial_parse_errors = list(parse_errors)
         assessment = assess_structured_output(
@@ -926,15 +1035,19 @@ def run_split(
                 retry_validation = validate_format_retry(
                     raw_output, initial_parse_errors, format_retry_output
                 )
-                retry_extraction, retry_events, retry_errors = parse_structured_json(
+                retry_extraction, retry_events, retry_errors, retry_row_trace = (
+                    parse_structured_json_with_trace(
                     format_retry_output,
                     note_text=record.note_text,
                     repair_config=repair_config,
+                )
                 )
                 format_retry_notes = list(retry_validation.notes)
                 if retry_validation.accepted and retry_extraction is not None:
                     extraction = retry_extraction
                     normalized_events = retry_events
+                    row_trace = retry_row_trace
+                    row_trace["model_prediction"]["raw_output_field"] = "format_retry_output"
                     parse_errors = [*retry_errors, *format_retry_notes]
                 elif retry_validation.accepted:
                     format_retry_notes = ["format_retry_rejected: schema_validation"]
@@ -953,6 +1066,16 @@ def run_split(
             else False
         )
         comparison = _compare_to_gold(record, extraction) if extraction else None
+        row_trace["format_repair"]["events"] = [
+            *adapter_repair_notes,
+            *row_trace["format_repair"]["events"],
+            *format_retry_notes,
+        ]
+        row_trace["evidence_validation"] = {
+            "evidence": extraction.selection.evidence if extraction else "",
+            "exact_substring": evidence_valid,
+        }
+        row_trace["scoring"] = comparison
         row: dict[str, Any] = {
             "source_row_index": record.source_row_index,
             "split": split,
@@ -970,6 +1093,7 @@ def run_split(
             "structured_record": extraction.model_dump() if extraction else None,
             "normalized_events": [event.model_dump() for event in normalized_events],
             "evidence_valid": evidence_valid,
+            "row_trace": row_trace,
             "reference": {
                 "gold_label": record.gold_label,
                 "gold_normalized_label": record.gold_normalized_label,

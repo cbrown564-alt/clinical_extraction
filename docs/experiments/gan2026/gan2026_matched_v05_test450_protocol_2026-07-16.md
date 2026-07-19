@@ -140,3 +140,20 @@ A resumed condition is complete only when its merged artifact contains all
 450 unique requested rows and passes aggregate validation. If continuation
 fails again, its partial artifact is retained and reported as incomplete; it
 is not silently replaced or rerun.
+
+## 2026-07-18 evidence correction and continuation amendment
+
+The Sol continuation completed on 2026-07-17 but was not propagated into the
+retained aggregate or project status. Aggregate-only verification on
+2026-07-18 confirmed 450 unique test-manifest rows, prompt v0.5 throughout,
+373/450 Purist, 384/450 Pragmatic, 450 exact-evidence selections, and zero call
+or parse/validation failures.
+
+DeepSeek's first continuation added 200 rows to its 150-row base, leaving 350
+unique rows and 100 remaining. The user authorized the remaining calls in
+parallel with the local v0.5 queue and explicitly accepted today's shared
+schema repair for that continuation. The reported DeepSeek result must come
+from a no-call replay of all 450 saved raw outputs through that current schema
+repair, not from the mixed intermediate parsed fields. The extension and
+replay rules are predeclared in the
+[2026-07-18 local and replay protocol](gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).

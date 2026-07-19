@@ -1,0 +1,15 @@
+{
+  "count": 1,
+  "issues": [
+    {
+      "letter_id": "EA0146",
+      "entity": "Prescription",
+      "field": "DrugName",
+      "gold_value": "Perampanel",
+      "conflicting_evidence": "Same gold annotation resolves to brivaracetam on every other field: CUIPhrase='brivaracetam', CUI='C1699861', and the annotated span text is 'Brivetiracetam-' (a typo of brivaracetam). DrugName is the sole field naming perampanel.",
+      "resolution_status": "open",
+      "date": "2026-07-02",
+      "notes": "Found in Phase 0 pipeline assumption audit and confirmed on the frozen dev140 corpus in Phase 3. Frozen corpus NOT edited."
+    }
+  ]
+}

@@ -60,6 +60,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 )
 
 PROMPT_VERSION = "gan2026_llm_only_canonical_pipeline_v0.8"
+ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 DEFAULT_JSONL_PATH = Path(
     "experiments/gan2026_llm_only_canonical_pipeline_validation_gpt41mini_2026-06-07.jsonl"
 )
@@ -419,38 +420,100 @@ def build_prompt_input(record: GanFrequencyRecord) -> str:
 def parse_decision_json(
     raw_output: str,
 ) -> tuple[CanonicalLlmDecisionRecord | None, list[str]]:
+    decision, errors, _ = parse_decision_json_with_trace(raw_output)
+    return decision, errors
+
+
+def parse_decision_json_with_trace(
+    raw_output: str,
+) -> tuple[CanonicalLlmDecisionRecord | None, list[str], dict[str, Any]]:
+    """Parse one model decision while retaining the pre-adapter prediction boundary."""
+
     errors: list[str] = []
     try:
         raw_payload, dialect_notes = parse_json_payload_with_schema_repair(
             _extract_json_object(raw_output)
         )
     except json.JSONDecodeError as exc:
-        return None, [f"invalid_json: {exc.msg}"]
+        errors = [f"invalid_json: {exc.msg}"]
+        return None, errors, _llm_only_row_trace(
+            model_decision=None,
+            schema_payload_changed=False,
+            format_events=errors,
+            adapter_events=[],
+        )
     errors.extend(dialect_notes)
-    raw_payload = _coerce_rationale_key_typo(raw_payload)
-    payload = _filter_decision_payload(repair_decision_payload(raw_payload))
-
+    payload = _coerce_rationale_key_typo(raw_payload)
+    payload = _filter_decision_payload(repair_decision_payload(payload))
     payload = _coerce_applied_rule_families(payload)
+    schema_payload_changed = payload != raw_payload
 
     try:
-        decision = CanonicalLlmDecisionRecord.model_validate(payload)
+        model_decision = CanonicalLlmDecisionRecord.model_validate(payload)
     except ValidationError as exc:
-        return None, [f"schema_validation_error: {exc.errors()[0]['msg']}"]
+        errors.append(f"schema_validation_error: {exc.errors()[0]['msg']}")
+        return None, errors, _llm_only_row_trace(
+            model_decision=None,
+            schema_payload_changed=schema_payload_changed,
+            format_events=errors,
+            adapter_events=[],
+        )
 
     repaired_label = repair_prediction_label_with_evidence(
-        decision.final_label,
-        decision.evidence,
+        model_decision.final_label,
+        model_decision.evidence,
     )
-    if repaired_label != decision.final_label:
-        errors.append(f"final_label_repaired: {decision.final_label!r} -> {repaired_label!r}")
-        decision = decision.model_copy(update={"final_label": repaired_label})
+    adapter_events: list[str] = []
+    if repaired_label != model_decision.final_label:
+        event = f"final_label_repaired: {model_decision.final_label!r} -> {repaired_label!r}"
+        errors.append(event)
+        adapter_events.append(event)
+    decision = model_decision.model_copy(update={"final_label": repaired_label})
 
     try:
         label_to_frequency_record(decision.final_label)
     except ValueError as exc:
         errors.append(f"unscorable_final_label: {exc}")
 
-    return decision, errors
+    return decision, errors, _llm_only_row_trace(
+        model_decision=model_decision,
+        schema_payload_changed=schema_payload_changed,
+        format_events=list(dialect_notes),
+        adapter_events=adapter_events,
+        scored_decision=decision,
+    )
+
+
+def _llm_only_row_trace(
+    *,
+    model_decision: CanonicalLlmDecisionRecord | None,
+    schema_payload_changed: bool,
+    format_events: Sequence[str],
+    adapter_events: Sequence[str],
+    scored_decision: CanonicalLlmDecisionRecord | None = None,
+) -> dict[str, Any]:
+    before_label = model_decision.final_label if model_decision else None
+    final_decision = scored_decision or model_decision
+    return {
+        "schema_version": ROW_TRACE_SCHEMA_VERSION,
+        "method": "llm_only",
+        "model_prediction": {
+            "raw_output_field": "raw_output",
+            "record": model_decision.model_dump() if model_decision else None,
+        },
+        "format_repair": {
+            "schema_payload_changed": schema_payload_changed,
+            "events": list(format_events),
+        },
+        "deterministic_adapter": {
+            "rule_category": "benchmark_format",
+            "before_label": before_label,
+            "after_label": final_decision.final_label if final_decision else None,
+            "events": list(adapter_events),
+        },
+        "evidence_validation": None,
+        "scoring": None,
+    }
 
 
 def _coerce_rationale_key_typo(payload: Any) -> Any:
@@ -543,8 +606,19 @@ def run_split(
             except Exception as exc:  # pragma: no cover - exercised only with live APIs.
                 call_error = f"{type(exc).__name__}: {exc}"
 
-        decision, parse_errors = (
-            parse_decision_json(raw_output) if raw_output else (None, ["not_run"])
+        decision, parse_errors, row_trace = (
+            parse_decision_json_with_trace(raw_output)
+            if raw_output
+            else (
+                None,
+                ["not_run"],
+                _llm_only_row_trace(
+                    model_decision=None,
+                    schema_payload_changed=False,
+                    format_events=["not_run"],
+                    adapter_events=[],
+                ),
+            )
         )
         evidence_text_contained = (
             evidence_is_substring(record.note_text, decision.evidence)
@@ -552,6 +626,11 @@ def run_split(
             else False
         )
         comparison = _compare_to_gold(record, decision) if decision else None
+        row_trace["evidence_validation"] = {
+            "evidence": decision.evidence if decision else "",
+            "exact_substring": evidence_text_contained,
+        }
+        row_trace["scoring"] = comparison
         rows.append(
             {
                 "source_row_index": record.source_row_index,
@@ -565,6 +644,7 @@ def run_split(
                 "parse_errors": parse_errors,
                 "decision_record": decision.model_dump() if decision else None,
                 "evidence_text_contained": evidence_text_contained,
+                "row_trace": row_trace,
                 "reference": {
                     "gold_label": record.gold_label,
                     "gold_monthly_frequency": record.gold_monthly_frequency,

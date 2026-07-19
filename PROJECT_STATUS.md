@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-18 at commit `6c6df72c`
+Last updated: 2026-07-18 on the working tree after commit `7bc1db7`
 
 ## Current outcome
 
@@ -11,8 +11,13 @@ equal canonical status; sealed row artifacts remain ignored and uninspectable.
 
 Gan has a matched six-model aggregate-only `test450` panel under prompt v0.7:
 all six conditions are recorded in the committed aggregate panel. The separate
-v0.5 hosted comparison has complete GPT-4.1-mini and Luna conditions; resuming
-the sealed Sol and DeepSeek partial conditions is authorized but incomplete.
+v0.5 hosted comparison has complete GPT-4.1-mini, Luna, and Sol conditions.
+Sol's previously undocumented continuation completed at 373/450 Purist.
+DeepSeek has 350 unique sealed rows and is running the remaining 100.
+
+A user-authorized extension is adding Qwen and Gemma test450 conditions under
+the same v0.5 prompt, followed by Qwen validation750. The cancelled Qwen v0.7
+validation run stopped at 367/750 rows and is not evidence for the new queue.
 
 These panels are retained paper evidence with aggregate-only holdout limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
@@ -81,10 +86,19 @@ rows. The complete panel is aggregate-only evidence on a previously used
 holdout, not a pristine one-shot or model-neutral capability ranking.
 
 Under the separate v0.5 protocol, GPT-4.1-mini completed at 361/450 Purist and
-379/450 Pragmatic, and Luna at 362/450 and 375/450. Sol is sealed at 350/450
-rows and DeepSeek at 150/450 rows; neither partial condition has a score.
-Continuation is authorized by the
-[amended protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md).
+379/450 Pragmatic, Luna at 362/450 and 375/450, and Sol at 373/450 and
+384/450. DeepSeek has 350 unique rows and remains unscored until all 450 raw
+outputs are complete and replayed through today's schema repair. The
+[amended hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
+and [local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
+own the active runs.
+
+A no-call replay ran all 450 saved GPT-4.1-mini, Luna, and Sol raw outputs
+through today's shared schema repair and the unchanged downstream stack. It
+changed zero final labels and produced zero Purist or Pragmatic transitions in
+all three conditions. The scores therefore remain 361, 362, and 373 Purist.
+The [aggregate replay artifact](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)
+records source and replay fingerprints.
 
 ### Reliability and cross-task comparison
 
@@ -117,7 +131,8 @@ row inspection was used.
 
 ## Verification state
 
-Repository-wide checks pass on the current shared-framework working tree:
+Repository-wide checks passed on the shared-framework tree before the current
+v0.5 run-control and replay additions:
 
 - **Verified:** all 1,305 pytest tests pass under the repository `.venv`.
 - **Verified:** repository-wide Ruff passes.
@@ -129,22 +144,43 @@ Repository-wide checks pass on the current shared-framework working tree:
   paper. Every rendered page was inspected; no clipping, unreadable table,
   undefined reference, overfull box, or LaTeX warning remains.
 
+For the current additions, the focused replay and v0.5 runner tests pass and
+Ruff passes on the new replay files. Repository-wide pytest, Ruff, and mypy
+have not yet been rerun, so the earlier broad verification does not cover these
+working-tree changes.
+
 This verifies the current implementation, retained hashes, common-panel
 invariants, source synchronization, reference replays, and paper render. It is
 not independent clinical validation or a new clean-checkout reproduction.
 
 ## In progress
 
-- A Gan Qwen validation750 run was active during this status audit under the
-  [2026-07-18 protocol](docs/experiments/gan2026/gan2026_local_val750_qwen_gemma_protocol_2026-07-18.md).
-  Its output was still growing and incomplete. Gemma is queued after Qwen.
-  This is development work and does not alter the completed `test450`
-  aggregates.
+- DeepSeek V4 Flash is completing its remaining 100 v0.5 test450 calls on the
+  hosted route. Its final 450 raw outputs will be replayed through today's
+  shared schema repair before any score is reported.
+- The local queue runs Qwen v0.5 test450, Gemma v0.5 test450, then Qwen v0.5
+  validation750. Each test condition requires a five-row validation pilot and
+  remains aggregate-only.
+- The earlier Qwen v0.7 validation750 process was cancelled at 367 rows on the
+  user's instruction. Its partial artifact is retained only as an operational
+  record and must not be resumed into the v0.5 condition.
 
 ## Next
 
-1. Finish or explicitly stop and record the Qwen/Gemma validation750 queue.
-2. Complete independent review of the frozen semantic-support substrate before
+1. Predeclare and run the Gan winning `llm_with_rules` configuration on the
+   full permitted `validation750` split for all six fixed models. Retain the
+   row-level structured output, deterministic repair trace, evidence, and
+   scores needed to make every model inspectable in the Example Explorer.
+2. Predeclare and run a matched Gan `llm_only` configuration on the same
+   `validation750` rows for all six fixed models. Freeze the model-only
+   prediction boundary before execution, retain row-level artifacts, and make
+   the six conditions comparable with the winning mode and deterministic-only
+   control in the Example Explorer.
+3. Complete DeepSeek, Qwen, and Gemma v0.5 test450 aggregates and replay all
+   hosted raw outputs through the current schema repair.
+4. Complete Qwen v0.5 validation750, then use the matched development outputs
+   for the predeclared hard-slice and synthetic mechanism study.
+5. Complete independent review of the frozen semantic-support substrate before
    strengthening any faithfulness or clinical-validity claim.
 
 ## Blocked or unvalidated
@@ -162,6 +198,8 @@ not independent clinical validation or a new clean-checkout reproduction.
 - **Gan `test450`:** locked and aggregate-only. A prior documentation command
   exposed part of a row table; no row was used for tuning. Do not perform
   failure analysis or prompt, repair, or scorer changes from test rows.
+  The v0.5 extension and current-schema replays inspect only aggregate counts;
+  sealed row details remain unreported and cannot drive tuning.
 - **ExECT `dev140`:** development review is permitted.
 - **ExECT `test60`:** locked and aggregate-only. During sanitization, embedded
   row details were visible to the agent but were not shown to the user,
@@ -185,6 +223,9 @@ not independent clinical validation or a new clean-checkout reproduction.
 - Decisions and run protocols: [documentation navigation](docs/NAVIGATION.md)
 - Cross-task six-model synthesis:
   [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+- Active Gan v0.5 extension and schema replay:
+  [protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
+  and [aggregate replay](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Detailed work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)

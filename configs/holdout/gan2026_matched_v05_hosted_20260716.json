@@ -40,7 +40,7 @@
     },
     {
       "slug": "gpt56sol",
-      "status": "continuation_authorized_2026-07-17",
+      "status": "complete_2026-07-17",
       "model": "openai/gpt-5.6-sol",
       "transport": "DSPy/LiteLLM OpenAI Responses; temperature omitted",
       "temperature": null,
@@ -50,7 +50,7 @@
     },
     {
       "slug": "deepseek_v4_flash",
-      "status": "continuation_authorized_2026-07-17",
+      "status": "continuation_100_rows_remaining_2026-07-18",
       "model": "deepseek/deepseek-v4-flash",
       "transport": "official DeepSeek hosted route; thinking enabled by model route",
       "temperature": 0,

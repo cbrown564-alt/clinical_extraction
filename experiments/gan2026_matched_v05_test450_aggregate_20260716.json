@@ -52,14 +52,36 @@
       "artifact_bytes": 4732528
     },
     "gpt56sol": {
-      "status": "continuation_authorized",
+      "status": "complete",
       "model": "openai/gpt-5.6-sol",
       "temperature": null,
       "max_tokens": 10000,
+      "rows": 450,
+      "structured_records": 450,
+      "call_failures": 0,
+      "parse_or_validation_failures": 0,
+      "evidence_valid": 450,
+      "purist_correct": 373,
+      "purist_accuracy": 0.8289,
+      "pragmatic_correct": 384,
+      "pragmatic_accuracy": 0.8533,
+      "repair_notes": 338,
+      "artifact_sha256": "cb34099969fe3a0709accf3605993cae11ee0faa87c85b5865bf032cf85e7d00",
+      "artifact_bytes": 4770406,
+      "completed_on": "2026-07-17"
+    },
+    "deepseek_v4_flash": {
+      "status": "continuation_authorized",
+      "model": "deepseek/deepseek-v4-flash",
+      "temperature": 0,
+      "max_tokens": 32000,
       "completed_rows": 350,
       "call_failures_in_partial": 0,
-      "partial_artifact_sha256": "4ab70506fc9f0a33010dc577d021e4d8302656b62c24c53f1a24b9c7cdc59546",
-      "partial_artifact_bytes": 3653530,
+      "base_artifact_sha256": "01b9702692c70ef2ecc0508d77c9ff7260f0d6d1744bc3e0a164b72a51138974",
+      "base_artifact_bytes": 1474686,
+      "resume_checkpoint_sha256": "8531805f4dadfd6808c0beb75ae97706145b2375ec811b2f55e830c3d9a4a5c9",
+      "resume_checkpoint_bytes": 1980576,
+      "resume_checkpoint_rows": 200,
       "panel_result": null,
       "continuation": {
         "authorized_on": "2026-07-17",
@@ -69,26 +91,7 @@
         "row_level_analysis": false,
         "partial_evidence_scored": false
       }
-    },
-    "deepseek_v4_flash": {
-      "status": "continuation_authorized",
-      "model": "deepseek/deepseek-v4-flash",
-      "temperature": 0,
-      "max_tokens": 32000,
-      "completed_rows": 150,
-      "call_failures_in_partial": 0,
-      "partial_artifact_sha256": "01b9702692c70ef2ecc0508d77c9ff7260f0d6d1744bc3e0a164b72a51138974",
-      "partial_artifact_bytes": 1474686,
-      "panel_result": null,
-      "continuation": {
-        "authorized_on": "2026-07-17",
-        "mode": "resume-existing",
-        "existing_rows_reused": 150,
-        "new_rows_authorized": 300,
-        "row_level_analysis": false,
-        "partial_evidence_scored": false
-      }
     }
   },
-  "claim_boundary": "GPT-4.1-mini and Luna are aggregate-only results for fresh v0.5 conditions. Sol and DeepSeek are authorized to resume from sealed partial artifacts without recreating completed rows. No partial evidence is scored or used for row-level analysis; only complete merged 450-row aggregates may enter the four-model panel."
+  "claim_boundary": "GPT-4.1-mini, Luna, and Sol are complete aggregate-only v0.5 conditions. DeepSeek has 350 unique sealed rows and is authorized to complete the remaining 100. No incomplete DeepSeek evidence is scored; only a complete 450-row current-schema replay may enter the extended panel."
 }

@@ -1,0 +1,10 @@
+{
+  "split": "validation",
+  "source_row_index": 156,
+  "gold_label": "1 per 6 day",
+  "gold_reference": "seizures every 6 days",
+  "row_ok": true,
+  "note_text": "Epilepsy Centre\n\nNeurosciences Division\n\n\nFrom: Dr Priya Mehta (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST)\nSent: 01 March 2014 10:15\nTo: kch.epilepsyclinic@nhs.net\nCc: Dr Daniel O\u2019Connor (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST); Dr Emily Rhodes (KING'S COLLEGE HOSPITAL NHS FOUNDATION TRUST)\nSubject: Communication needs and treatment update\n\nHi Priya\n\nEpilepsy Diagnosis:\n\nFocal epilepsy\n\n\nPresent Medication:\n\n1. Lamotrigine 150 mg twice daily\n2. Topiramate 50 mg at night\n\n\nPresent Seizure Frequency:\n\nPatient reports seizures every 6 days, typically brief focal aware episodes with auditory distortion and right-sided facial tingling. Family corroborates this pattern over the past two months.\n\n\nPlan of Action:\n\nThe patient describes consistent focal auras followed by brief behavioural arrest without generalisation. No clear precipitating factors have been identified. We agreed to maintain lamotrigine at the current dose and to increase topiramate to 50 mg twice daily in one week if tolerated, with a view to evaluating impact on the observed pattern of seizures every 6 days. Safety advice and SUDEP discussion have been noted at previous visits and were revisited briefly.\n\nGiven hearing difficulty, the patient prefers scheduled speakerphone calls with a family member assisting communication. Please route non-urgent matters via scheduled calls and written summaries. We will arrange a telephone review in six weeks, using speakerphone with the nominated family contact present, and a face-to-face review in three months. If any adverse effects occur (cognitive slowing, paraesthesia, visual symptoms), please advise the patient to contact the clinic for earlier review.\n\nWith best wishes",
+  "labels_match_all_categories": true,
+  "quotes_ok_all_categories": true
+}

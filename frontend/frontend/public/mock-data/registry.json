@@ -1,0 +1,192 @@
+{
+  "registry_path": "experiments/registry.jsonl",
+  "runs": [
+    {
+      "artifact_paths": [
+        "experiments/gan2026_rules_only_v1_baseline_2026-05-31.jsonl"
+      ],
+      "cache_reuse_source": null,
+      "claim_language_notes": "Frozen rules_only_v1 comparator; aggregate locked-test context is historical, not a tuning surface.",
+      "date": "2026-05-31",
+      "decision": "historical",
+      "evidence_validity": "Report-level deterministic evidence summary.",
+      "mode": "rules_only_v1",
+      "model": "none",
+      "model_role": "deterministic comparator",
+      "pipeline_family": "rules_only",
+      "primary_metrics": {
+        "test_pragmatic": 0.7867,
+        "test_purist": 0.76,
+        "validation_pragmatic": 0.9387,
+        "validation_purist": 0.9293
+      },
+      "repair_mode": "deterministic_v1",
+      "replay_status": "analysis_only",
+      "row_count": 1200,
+      "run_id": "gan2026_rules_only_v1_baseline_2026-05-31",
+      "split": "validation+test",
+      "superseded_by": null,
+      "supersedes": [],
+      "registry_roles": [
+        "floor_comparator"
+      ]
+    },
+    {
+      "artifact_paths": [
+        "experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.jsonl",
+        "experiments/gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09.md"
+      ],
+      "date": "2026-06-09",
+      "decision": "phase4_complete",
+      "mode": "live",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "structured-events extraction (v0.5): raw note text -> structured events; deterministic normalize/project/render/score/route downstream.",
+      "pipeline_family": "hybrid_structured_events",
+      "primary_metrics": {
+        "pragmatic_accuracy": 0.8467,
+        "purist_accuracy": 0.8089
+      },
+      "replay_status": "native_run_split",
+      "row_count": 450,
+      "run_id": "gan2026_test450_phase4_frozen_audit_hybrid_structured_events_gpt41mini_2026-06-09",
+      "split": "test",
+      "registry_roles": [
+        "production_winner"
+      ],
+      "superseded_by": null,
+      "supersedes": []
+    },
+    {
+      "artifact_paths": [
+        "experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
+        "experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md"
+      ],
+      "date": "2026-06-13",
+      "decision": "promote",
+      "mode": "live",
+      "model": "openai/gpt-4.1",
+      "model_role": "V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; ceiling comparator only, not production.",
+      "pipeline_family": "fresh_evidence_reasoner",
+      "primary_metrics": {
+        "final_purist_correct": 682,
+        "rows": 750
+      },
+      "replay_status": "live",
+      "row_count": 750,
+      "run_id": "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13",
+      "split": "validation",
+      "registry_roles": [
+        "ceiling_comparator",
+        "component_ladder",
+        "historical_lineage"
+      ],
+      "superseded_by": null,
+      "supersedes": []
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "holistic_finding_assembly",
+      "date": "2026-06-21",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml",
+        "docs/experiments/exectv2/key_entities/exectv2_holistic_finding_assembly_v08_dev140_20260621.md",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.json",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_20260621.jsonl"
+      ],
+      "mode": "v08 Dev140 Control",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "performance-control",
+      "split": "dev140",
+      "decision": "control",
+      "claim_boundary": "Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v08_dev140_p7fix_gpt41mini_20260702",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "dev140_p7fix_gpt41mini_20260702",
+      "date": "2026-07-02",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v08_dev140.yaml",
+        "docs/experiments/exectv2/reliability/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.md",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.json",
+        "experiments/exectv2_holistic_finding_assembly_v08_dev140_p7_treatment_20260702.jsonl"
+      ],
+      "mode": "v08 P7 Prescription Rescore Dev140 Control",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "performance-control",
+      "split": "dev140",
+      "decision": "control",
+      "claim_boundary": "Dev-only component-attributed architecture evidence; not a benchmark, full-200, or locked-test claim",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "partial_hybrid",
+      "date": "2026-06-21",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140.yaml",
+        "docs/experiments/exectv2/key_entities/exectv2_v09_single_gpt_simplification_study_dev140_20260621.md",
+        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.json",
+        "experiments/exectv2_holistic_finding_assembly_v09_partial_hybrid_dev140_20260621.jsonl"
+      ],
+      "mode": "v09 Partial Hybrid Simplification",
+      "model": "openai/gpt-4.1-mini",
+      "model_role": "simplicity-control",
+      "split": "dev140",
+      "decision": "simplification",
+      "claim_boundary": "Dev-only simplification evidence; not a v08 replacement on all family surfaces",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "deepseek_reparse",
+      "date": "2026-06-22",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v0916_deepseek_reparse_dev140_20260622.jsonl"
+      ],
+      "mode": "DeepSeek v0.9.16 Dev140 Diagnostic",
+      "model": "deepseek/deepseek-chat",
+      "model_role": "diagnostic-comparator",
+      "split": "dev140",
+      "decision": "diagnostic",
+      "claim_boundary": "diagnostic same raw deepseek v0910 through v0916 dictionary dev140",
+      "scorer_view": "headline_target"
+    },
+    {
+      "task": "exectv2",
+      "run_id": "exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140",
+      "pipeline_family": "exectv2_holistic_finding_assembly",
+      "architecture_family": "qwencompact_residualrepair",
+      "date": "2026-06-22",
+      "row_count": 140,
+      "artifact_paths": [
+        "configs/exectv2/finding_assembly/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140.yaml",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.md",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.json",
+        "experiments/exectv2_holistic_finding_assembly_v0922_qwencompact_residualrepair_dev140_20260622.jsonl"
+      ],
+      "mode": "Qwen v0.9.22 Dev140 Diagnostic",
+      "model": "ollama_chat/qwen3.6:35b",
+      "model_role": "diagnostic-comparator",
+      "split": "dev140",
+      "decision": "diagnostic",
+      "claim_boundary": "local qwen v0910 qwen compact live dev140 ctx12288 maxtok2500 standard dictionary residual repair v13",
+      "scorer_view": "headline_target"
+    }
+  ]
+}
