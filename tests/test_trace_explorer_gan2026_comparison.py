@@ -48,6 +48,12 @@ def test_discovery_serves_only_complete_validation750_conditions(tmp_path: Path)
     assert set(discovery.replay_artifacts) == {complete["run_id"]}
 
 
+def test_deepseek_uses_the_same_plain_model_naming_as_other_routes() -> None:
+    deepseek = next(condition for condition in MODEL_CONDITIONS if "deepseek" in condition.route)
+
+    assert deepseek.label == "DeepSeek V4 Flash"
+
+
 def test_discovery_rejects_wrong_split_or_trace_schema(tmp_path: Path) -> None:
     config_path = _write_config(tmp_path)
     path = (

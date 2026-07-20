@@ -181,6 +181,12 @@ def test_permitted_validation_records_support_the_restored_workbench(client: Tes
     assert record.json()["source_row_index"] == 79
     assert "6 to 7 per year" in record.json()["note_text"]
 
+    replay_record = client.get("/records/validation/1694")
+    assert replay_record.status_code == 200
+    assert replay_record.json()["source_row_index"] == 1694
+    assert replay_record.json()["split"] == "validation"
+    assert replay_record.json()["note_text"]
+
     missing = client.get("/records/validation/999999")
     assert missing.status_code == 404
     assert "999999" not in missing.text
@@ -317,7 +323,10 @@ def test_semantic_support_review_is_blinded_revisioned_and_dev_only(
 
     assert queue.status_code == 200
     payload = queue.json()
-    assert payload["protocol_version"] == "exectv2-semantic-support-review-v1"
+    assert payload["protocol_version"] == "exectv2-semantic-support-review-v2"
+    assert payload["allowed_values"] == {
+        "clinical_support": ["supported", "unsupported", "unclear"]
+    }
     assert payload["blinded"] is True
     assert payload["total"] == 48
     assert payload["decided"] == 0
@@ -334,12 +343,8 @@ def test_semantic_support_review_is_blinded_revisioned_and_dev_only(
     decision = {
         "review_item_id": packet["review_item_id"],
         "reviewer_id": reviewer_id,
-        "semantic_support": "supported",
-        "evidence_decisive": "decisive",
-        "current_fact_warranted": "warranted",
-        "unsupported_inference": "absent",
-        "reviewer_confidence": "high",
-        "review_notes": "Exact wording supports the stored conclusion and status.",
+        "clinical_support": "supported",
+        "review_notes": "Exact wording supports the extracted finding.",
     }
     first = client.post("/semantic-support-review/decide", json=decision)
     assert first.status_code == 200
@@ -347,7 +352,7 @@ def test_semantic_support_review_is_blinded_revisioned_and_dev_only(
 
     revised = client.post(
         "/semantic-support-review/decide",
-        json={**decision, "reviewer_confidence": "medium"},
+        json={**decision, "clinical_support": "unclear"},
     )
     assert revised.status_code == 200
     assert revised.json()["decision"]["revision"] == 2
@@ -377,20 +382,30 @@ def test_semantic_support_review_is_blinded_revisioned_and_dev_only(
     assert [item["revision"] for item in export.json()["revisions"]] == [1, 2]
 
 
-def test_semantic_support_review_requires_notes_for_non_positive_judgments(
+def test_semantic_support_review_keeps_notes_optional_for_every_judgment(
     client: TestClient,
 ) -> None:
+    packet = client.get("/semantic-support-review/packets").json()["packets"][0]
+    for judgment in ("supported", "unsupported", "unclear"):
+        response = client.post(
+            "/semantic-support-review/decide",
+            json={
+                "review_item_id": packet["review_item_id"],
+                "reviewer_id": f"independent-clinician-{judgment}",
+                "clinical_support": judgment,
+            },
+        )
+        assert response.status_code == 200
+
+
+def test_semantic_support_review_rejects_the_retired_schema(client: TestClient) -> None:
     packet = client.get("/semantic-support-review/packets").json()["packets"][0]
     response = client.post(
         "/semantic-support-review/decide",
         json={
             "review_item_id": packet["review_item_id"],
             "reviewer_id": "independent-clinician-a",
-            "semantic_support": "unsupported",
-            "evidence_decisive": "insufficient",
-            "current_fact_warranted": "not_warranted",
-            "unsupported_inference": "present",
-            "reviewer_confidence": "high",
+            "semantic_support": "supported",
         },
     )
 

@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -89,50 +89,11 @@ class SemanticSupportReviewDecision(BaseModel):
 
     review_item_id: str = Field(min_length=1, max_length=1000)
     reviewer_id: str = Field(min_length=1, max_length=120)
-    semantic_support: Literal[
-        "supported", "unsupported", "uncertain", "not_assessable"
-    ]
-    evidence_decisive: Literal[
-        "decisive", "compatible_only", "insufficient", "uncertain", "not_assessable"
-    ]
-    current_fact_warranted: Literal[
-        "warranted", "not_warranted", "uncertain", "not_applicable", "not_assessable"
-    ]
-    unsupported_inference: Literal["absent", "present", "uncertain", "not_assessable"]
-    reviewer_confidence: Literal["low", "medium", "high"]
+    clinical_support: Literal["supported", "unsupported", "unclear"]
     review_notes: str | None = Field(default=None, max_length=10_000)
 
-    @model_validator(mode="after")
-    def require_note_for_exception(self) -> SemanticSupportReviewDecision:
-        clean_positive = (
-            self.semantic_support == "supported"
-            and self.evidence_decisive == "decisive"
-            and self.current_fact_warranted in {"warranted", "not_applicable"}
-            and self.unsupported_inference == "absent"
-        )
-        if not clean_positive and not (self.review_notes or "").strip():
-            raise ValueError("review_notes are required for exceptions and uncertainty")
-        return self
-
-
 _SEMANTIC_SUPPORT_ALLOWED_VALUES = {
-    "semantic_support": ["supported", "unsupported", "uncertain", "not_assessable"],
-    "evidence_decisive": [
-        "decisive",
-        "compatible_only",
-        "insufficient",
-        "uncertain",
-        "not_assessable",
-    ],
-    "current_fact_warranted": [
-        "warranted",
-        "not_warranted",
-        "uncertain",
-        "not_applicable",
-        "not_assessable",
-    ],
-    "unsupported_inference": ["absent", "present", "uncertain", "not_assessable"],
-    "reviewer_confidence": ["low", "medium", "high"],
+    "clinical_support": ["supported", "unsupported", "unclear"],
 }
 
 
@@ -428,7 +389,7 @@ def semantic_support_review_packets(
         packet["has_decision"] = str(packet["review_item_id"]) in decided_ids
     return {
         **payload,
-        "protocol_version": "exectv2-semantic-support-review-v1",
+        "protocol_version": "exectv2-semantic-support-review-v2",
         "blinded": True,
         "reviewer_id": reviewer_id,
         "total": len(packets),
@@ -478,8 +439,8 @@ def semantic_support_review_export(
     revisions = reviews.revisions(review_kind)
     source = data.semantic_support_review_packets()
     return {
-        "schema_version": "exectv2-semantic-support-review-export-v1",
-        "protocol_version": "exectv2-semantic-support-review-v1",
+        "schema_version": "exectv2-semantic-support-review-export-v2",
+        "protocol_version": "exectv2-semantic-support-review-v2",
         "reviewer_id": reviewer_id,
         "claim_boundary": source["claim_boundary"],
         "completion": {"decided": len(decisions), "total": len(source["packets"])},

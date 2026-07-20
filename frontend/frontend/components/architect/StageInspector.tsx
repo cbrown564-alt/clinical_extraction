@@ -31,7 +31,7 @@ const stageMeta: Record<
     label: "Repair",
     icon: <Wrench className="h-3.5 w-3.5" />,
     color: "text-llm",
-    desc: "Format repair and benchmark-normalisation adjustments.",
+    desc: "JSON and schema repair applied to the model output.",
   },
   score: {
     label: "Score",
@@ -219,7 +219,25 @@ export default function StageInspector() {
           <>
             {trace.repair && trace.repair.changes.length > 0 ? (
               <div className="space-y-3">
-                {trace.repair.changes.map((change, idx) => (
+                {trace.repair.repairType && (
+                  <div className="rounded-lg border border-llm/20 bg-llm/5 p-3">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-llm">Repair type</div>
+                    <div className="mt-1 text-sm font-medium text-foreground">{trace.repair.repairType}</div>
+                  </div>
+                )}
+                {trace.repair.beforeValue !== undefined && trace.repair.afterValue !== undefined && (
+                  <div className="grid gap-3 xl:grid-cols-2">
+                    <div className="min-w-0 rounded-lg border border-border bg-surface p-3">
+                      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Before</div>
+                      <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground">{trace.repair.beforeValue}</pre>
+                    </div>
+                    <div className="min-w-0 rounded-lg border border-border bg-surface p-3">
+                      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">After</div>
+                      <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground">{trace.repair.afterValue}</pre>
+                    </div>
+                  </div>
+                )}
+                {!trace.repair.repairType && trace.repair.changes.map((change, idx) => (
                   <div key={idx} className="rounded-lg border border-llm/20 bg-llm/5 p-3">
                     <div className="text-sm text-foreground">{change}</div>
                   </div>

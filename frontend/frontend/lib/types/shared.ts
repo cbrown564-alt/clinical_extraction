@@ -193,6 +193,8 @@ export interface StageSelect {
   finalLabel: string;
   rationale: string;
   evidence: string;
+  /** False when selection was part of the same model call represented by Extract. */
+  isDistinctStage?: boolean;
   monthlyFrequency?: number;
   selectedIds?: string[];
   rejectedIds?: string[];
@@ -200,6 +202,9 @@ export interface StageSelect {
 
 export interface StageRepair {
   changes: string[];
+  repairType?: string;
+  beforeValue?: string;
+  afterValue?: string;
   beforeLabel?: string;
   afterLabel?: string;
 }
@@ -506,6 +511,29 @@ export interface DecisionRecordArtifactRow {
   parse_errors?: string[];
   repair_changes?: unknown[];
   score_layers?: Record<string, unknown>;
+  raw_output?: string;
+  row_trace?: {
+    model_prediction?: {
+      raw_output_field?: string;
+      record?: {
+        final_label?: string;
+        evidence?: string;
+        rationale?: string;
+        answer_kind?: string;
+        [key: string]: unknown;
+      };
+    };
+    deterministic_adapter?: {
+      before_label?: string;
+      after_label?: string;
+      events?: string[];
+      rule_category?: string;
+    };
+    format_repair?: {
+      schema_payload_changed?: boolean;
+      events?: string[];
+    };
+  };
 }
 
 // Group B: Events-based families
@@ -559,6 +587,16 @@ export interface EventsArtifactRow {
   evidence_summary?: {
     selected_evidence?: string;
     selected_evidence_valid?: boolean;
+  };
+  raw_output?: string;
+  row_trace?: {
+    model_prediction?: {
+      record?: Record<string, unknown> | null;
+    };
+    format_repair?: {
+      schema_payload_changed?: boolean;
+      events?: string[];
+    };
   };
   reference: {
     gold_label: string;

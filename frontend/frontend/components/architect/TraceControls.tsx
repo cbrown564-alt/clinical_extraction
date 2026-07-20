@@ -9,11 +9,13 @@ import {
   Loader2,
   AlertCircle,
   RotateCcw,
-  Zap,
   Film,
   BarChart3,
   Pencil,
   X,
+  Blend,
+  Bot,
+  Braces,
 } from "lucide-react";
 import { useArchitectStore } from "@/lib/stores";
 import {
@@ -25,8 +27,9 @@ import {
 } from "@/lib/hooks";
 import { fetchRegistry, fetchArtifact, fetchRecord } from "@/lib/api";
 import { adaptDeterministicTrace, adaptTrace, isReplaySupported } from "@/lib/traceAdapter";
-import type { PipelineFamily } from "@/lib/types";
 import {
+  ganPipelineModeLabel,
+  ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
   resolveGanPipelineOption,
@@ -41,12 +44,6 @@ function isDeterministicFamily(family: string): boolean {
 
 function isLiveFamily(family: string): boolean {
   return isDeterministicFamily(family);
-}
-
-function familyKindLabel(family: PipelineFamily, aggregateOnly: boolean): string {
-  if (aggregateOnly) return "Aggregate";
-  if (isLiveFamily(family)) return "Live";
-  return "Replay";
 }
 
 export default function TraceControls() {
@@ -325,38 +322,10 @@ export default function TraceControls() {
     setShowCustomNoteEditor(false);
   };
 
-  // Derived: currently selected replay row label
-  const selectedReplayLabel = (() => {
-    if (replayRowIndex === null || !replayRows) return null;
-    const row = replayRows[replayRowIndex] as {
-      source_row_index?: number;
-      reference?: { gold_label?: string };
-    };
-    return `Row ${row?.source_row_index ?? replayRowIndex} · ${row?.reference?.gold_label ?? "?"}`;
-  })();
-
   return (
     <div className="shrink-0 border-b border-border bg-surface">
       {/* Single compact row */}
       <div className="flex flex-wrap items-center gap-3 px-4 py-2">
-        {/* Mode badge */}
-        <div
-          className={`flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide shrink-0 ${
-            isLive
-              ? "border-deterministic/20 bg-deterministic/5 text-deterministic"
-              : "border-hybrid/20 bg-hybrid/5 text-hybrid"
-          }`}
-        >
-          {isLive ? (
-            <Zap className="h-3 w-3" />
-          ) : isAggregateOnly ? (
-            <BarChart3 className="h-3 w-3" />
-          ) : (
-            <Film className="h-3 w-3" />
-          )}
-          {familyKindLabel(pipelineFamily, isAggregateOnly)}
-        </div>
-
         {/* Specimen selector – dataset mode (live) */}
         {isLive && (
           <div className="flex items-center gap-1.5">
@@ -421,11 +390,6 @@ export default function TraceControls() {
                 );
               })}
             </select>
-            {selectedReplayLabel && (
-              <span className="text-xs text-muted font-mono truncate max-w-[180px]">
-                {selectedReplayLabel}
-              </span>
-            )}
           </div>
         )}
 
@@ -452,6 +416,26 @@ export default function TraceControls() {
           <label htmlFor="architect-pipeline-select" className="text-[11px] font-semibold uppercase tracking-wide text-muted">
             Pipeline
           </label>
+          {selectedOption?.comparison_mode && (
+            <span
+              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] font-medium ${
+                selectedOption.comparison_mode === "llm_plus_rules"
+                  ? "border-hybrid/25 bg-hybrid/8 text-hybrid"
+                  : selectedOption.comparison_mode === "llm_only"
+                    ? "border-llm/25 bg-llm/8 text-llm"
+                    : "border-deterministic/25 bg-deterministic/8 text-deterministic"
+              }`}
+            >
+              {selectedOption.comparison_mode === "llm_plus_rules" ? (
+                <Blend className="h-3 w-3" aria-hidden="true" />
+              ) : selectedOption.comparison_mode === "llm_only" ? (
+                <Bot className="h-3 w-3" aria-hidden="true" />
+              ) : (
+                <Braces className="h-3 w-3" aria-hidden="true" />
+              )}
+              {ganPipelineModeLabel(selectedOption.comparison_mode)}
+            </span>
+          )}
           <select
             id="architect-pipeline-select"
             className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-foreground outline-none focus:border-deterministic min-w-[220px]"
@@ -471,14 +455,12 @@ export default function TraceControls() {
                     value={opt.run_id}
                     disabled={opt.availability === "not_retained"}
                   >
-                    {opt.label}
+                    {ganPipelineOptionLabel(opt.label)}
                     {opt.availability === "aggregate_only"
                       ? " · aggregate only"
                       : opt.availability === "not_retained"
                         ? " · not retained"
-                        : opt.availability === "replay"
-                          ? " · replay"
-                          : ""}
+                        : ""}
                   </option>
                 ))}
               </optgroup>
@@ -544,13 +526,8 @@ export default function TraceControls() {
               Pragmatic {selectedAggregateMetrics.pragmatic_correct}/{selectedAggregateMetrics.row_count}
             </span>
           </div>
-        ) : selectedReplayLabel ? (
-          <div className="flex items-center gap-1.5 rounded-md border border-hybrid/20 bg-hybrid/5 px-2.5 py-1 text-xs text-hybrid shrink-0">
-            <Film className="h-3.5 w-3.5" />
-            <span className="font-medium truncate max-w-[200px]">{selectedReplayLabel}</span>
-          </div>
         ) : replayRows && replayRows.length > 0 ? (
-          <span className="text-xs text-muted shrink-0">Select a replay row</span>
+          null
         ) : isLoading ? (
           <span className="flex items-center gap-1 text-xs text-muted shrink-0">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

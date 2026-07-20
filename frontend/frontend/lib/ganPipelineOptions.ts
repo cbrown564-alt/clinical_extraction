@@ -17,6 +17,20 @@ const GROUPS: Array<{ mode: GanComparisonMode; label: string }> = [
   { mode: "deterministic_only", label: "Deterministic only · no model" },
 ];
 
+const MODE_LABELS: Record<GanComparisonMode, string> = {
+  llm_plus_rules: "LLM + Rules",
+  llm_only: "LLM Only",
+  deterministic_only: "Rules Only",
+};
+
+export function ganPipelineModeLabel(mode: GanComparisonMode): string {
+  return MODE_LABELS[mode];
+}
+
+export function ganPipelineOptionLabel(label: string): string {
+  return label.replace(/\s*[·-]\s*(?:replay|live)\s*$/i, "");
+}
+
 function modelRank(model?: string): number {
   const index = MODEL_ORDER.indexOf(model ?? "");
   return index < 0 ? MODEL_ORDER.length : index;

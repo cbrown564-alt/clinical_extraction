@@ -21,6 +21,9 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
     case "extract": {
       const count = trace.extract.items.length;
       if (count === 0) return <span className="opacity-70">No candidates</span>;
+      if (trace.extract.items.every((item) => item.kind === "llm_decision")) {
+        return <span className="truncate">Model decision · {trace.extract.items[0].rawValue}</span>;
+      }
       const groups = Array.from(new Set(trace.extract.items.map((i) => i.ruleGroup).filter(Boolean)));
       return (
         <span className="truncate">
@@ -43,6 +46,9 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
       );
     }
     case "select": {
+      if (trace.select.isDistinctStage === false) {
+        return <span className="opacity-70">Combined with Extract</span>;
+      }
       const label = trace.select.finalLabel;
       const count = trace.select.selectedIds?.length ?? 0;
       return (
@@ -55,6 +61,9 @@ function stageSummary(stage: TraceStage, trace: Trace): React.ReactNode {
     case "repair": {
       const changes = trace.repair?.changes.length ?? 0;
       if (changes === 0) return <span className="opacity-70">No changes</span>;
+      if (trace.repair?.repairType) {
+        return <span className="truncate">{trace.repair.repairType}</span>;
+      }
       const before = trace.repair?.beforeLabel;
       const after = trace.repair?.afterLabel;
       return (
@@ -93,7 +102,7 @@ function stageCount(stage: TraceStage, trace: Trace): number {
     case "normalise":
       return trace.normalise.items.length;
     case "select":
-      return 1;
+      return trace.select.isDistinctStage === false ? 0 : 1;
     case "repair":
       return trace.repair ? trace.repair.changes.length : 0;
     case "score":
@@ -113,6 +122,7 @@ export default function StageStrip() {
     icon: stage.icon,
     count: trace ? stageCount(stage.id, trace) : undefined,
     sublabel: trace ? stageSummary(stage.id, trace) : "Awaiting trace",
+    disabled: stage.id === "select" && trace?.select.isDistinctStage === false,
   }));
 
   return (

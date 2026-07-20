@@ -20,63 +20,31 @@ import {
   postSemanticSupportReviewDecision,
 } from "@/lib/api";
 import type {
-  CurrentFactWarrant,
-  EvidenceDecisiveness,
-  ReviewConfidence,
+  ClinicalSupportVerdict,
   SemanticSupportReviewDecision,
   SemanticSupportReviewPacket,
-  SemanticSupportVerdict,
-  UnsupportedInference,
 } from "@/lib/types";
 import LetterRenderer from "@/components/observatory/LetterRenderer";
+import {
+  clinicalSupportFromShortcut,
+  presentConclusionFields,
+  shouldSaveReviewShortcut,
+  structureConclusionFields,
+} from "@/lib/semanticSupportPresentation";
 
 const SEMANTIC_OPTIONS = [
-  { value: "supported", label: "Supported", hint: "The conclusion follows from the source" },
-  { value: "unsupported", label: "Unsupported", hint: "The conclusion does not follow" },
-  { value: "uncertain", label: "Uncertain", hint: "More than one judgment is reasonable" },
-  { value: "not_assessable", label: "Not assessable", hint: "The supplied record cannot resolve it" },
+  { value: "supported", label: "Supported", shortcut: "S", hint: "The source clinically supports the extracted finding" },
+  { value: "unsupported", label: "Unsupported", shortcut: "D", hint: "The source does not clinically support the finding" },
+  { value: "unclear", label: "Unclear", shortcut: "A", hint: "The supplied context does not support a clear decision" },
 ] as const;
-
-const DECISIVE_OPTIONS = [
-  { value: "decisive", label: "Decisive" },
-  { value: "compatible_only", label: "Compatible only" },
-  { value: "insufficient", label: "Insufficient" },
-  { value: "uncertain", label: "Uncertain" },
-  { value: "not_assessable", label: "Not assessable" },
-] as const;
-
-const CURRENT_FACT_OPTIONS = [
-  { value: "warranted", label: "Warranted" },
-  { value: "not_warranted", label: "Not warranted" },
-  { value: "not_applicable", label: "Not applicable" },
-  { value: "uncertain", label: "Uncertain" },
-  { value: "not_assessable", label: "Not assessable" },
-] as const;
-
-const INFERENCE_OPTIONS = [
-  { value: "absent", label: "No added inference" },
-  { value: "present", label: "Unsupported inference" },
-  { value: "uncertain", label: "Uncertain" },
-  { value: "not_assessable", label: "Not assessable" },
-] as const;
-
-const CONFIDENCE_OPTIONS: ReviewConfidence[] = ["low", "medium", "high"];
 
 interface Draft {
-  semanticSupport: SemanticSupportVerdict | null;
-  evidenceDecisive: EvidenceDecisiveness | null;
-  currentFactWarranted: CurrentFactWarrant | null;
-  unsupportedInference: UnsupportedInference | null;
-  confidence: ReviewConfidence | null;
+  clinicalSupport: ClinicalSupportVerdict | null;
   notes: string;
 }
 
 const EMPTY_DRAFT: Draft = {
-  semanticSupport: null,
-  evidenceDecisive: null,
-  currentFactWarranted: null,
-  unsupportedInference: null,
-  confidence: null,
+  clinicalSupport: null,
   notes: "",
 };
 
@@ -87,20 +55,16 @@ function decisionId(value: SemanticSupportReviewPacket | SemanticSupportReviewDe
 function decisionToDraft(decision?: SemanticSupportReviewDecision): Draft {
   if (!decision) return EMPTY_DRAFT;
   return {
-    semanticSupport: decision.semantic_support,
-    evidenceDecisive: decision.evidence_decisive,
-    currentFactWarranted: decision.current_fact_warranted,
-    unsupportedInference: decision.unsupported_inference,
-    confidence: decision.reviewer_confidence,
+    clinicalSupport: decision.clinical_support,
     notes: decision.review_notes ?? "",
   };
 }
 
 function selectedTone(value: string): string {
-  if (["supported", "decisive", "warranted", "not_applicable", "absent", "high"].includes(value)) {
+  if (value === "supported") {
     return "qr-tone-ok";
   }
-  if (["unsupported", "insufficient", "not_warranted", "present"].includes(value)) {
+  if (value === "unsupported") {
     return "qr-tone-bad";
   }
   return "qr-tone-format";
@@ -116,23 +80,27 @@ function ChoiceGroup<T extends string>({
   label: string;
   prompt: string;
   value: T | null;
-  options: ReadonlyArray<{ value: T; label: string; hint?: string }>;
+  options: ReadonlyArray<{ value: T; label: string; shortcut?: string; hint?: string }>;
   onChange: (value: T) => void;
 }) {
   return (
     <fieldset className="space-y-2.5">
       <legend className="qr-kicker">{label}</legend>
       <p className="text-xs leading-relaxed text-[var(--qr-mute)]">{prompt}</p>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-1 gap-2">
         {options.map((option) => (
           <button
             key={option.value}
             type="button"
             aria-pressed={value === option.value}
+            aria-keyshortcuts={option.shortcut}
             onClick={() => onChange(option.value)}
             className={`qr-choice min-h-[48px] ${value === option.value ? selectedTone(option.value) : ""}`}
           >
-            <span className="font-medium">{option.label}</span>
+            <span className="flex items-center justify-between gap-3 font-medium">
+              {option.label}
+              {option.shortcut && <kbd className="qr-shortcut">{option.shortcut}</kbd>}
+            </span>
             {option.hint && <span className="mt-0.5 block text-[10px] leading-snug opacity-70">{option.hint}</span>}
           </button>
         ))}
@@ -220,21 +188,7 @@ export default function SemanticSupportReviewWorkspace() {
     [currentIndex, selectPacket, visible]
   );
 
-  const cleanPositive = Boolean(
-    draft.semanticSupport === "supported" &&
-      draft.evidenceDecisive === "decisive" &&
-      ["warranted", "not_applicable"].includes(draft.currentFactWarranted ?? "") &&
-      draft.unsupportedInference === "absent"
-  );
-  const allJudgments = Boolean(
-    draft.semanticSupport &&
-      draft.evidenceDecisive &&
-      draft.currentFactWarranted &&
-      draft.unsupportedInference &&
-      draft.confidence
-  );
-  const requiresNote = allJudgments && !cleanPositive;
-  const canSave = Boolean(current && allJudgments && (!requiresNote || draft.notes.trim()));
+  const canSave = Boolean(current && draft.clinicalSupport);
 
   const saveMutation = useMutation({
     mutationFn: postSemanticSupportReviewDecision,
@@ -258,11 +212,7 @@ export default function SemanticSupportReviewWorkspace() {
     saveMutation.mutate({
       review_item_id: decisionId(current),
       reviewer_id: reviewerId,
-      semantic_support: draft.semanticSupport!,
-      evidence_decisive: draft.evidenceDecisive!,
-      current_fact_warranted: draft.currentFactWarranted!,
-      unsupported_inference: draft.unsupportedInference!,
-      reviewer_confidence: draft.confidence!,
+      clinical_support: draft.clinicalSupport!,
       review_notes: draft.notes.trim() || null,
     });
   }, [canSave, current, draft, reviewerId, saveMutation]);
@@ -270,18 +220,15 @@ export default function SemanticSupportReviewWorkspace() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      if (target?.tagName === "TEXTAREA" || target?.tagName === "INPUT" || target?.tagName === "SELECT") return;
-      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+      if (target?.tagName === "INPUT" || target?.tagName === "SELECT") return;
+      const shortcutValue = clinicalSupportFromShortcut(event.key);
+      if (shouldSaveReviewShortcut(event.key, target?.tagName)) {
         event.preventDefault();
         handleSave();
-      } else if (event.key.toLowerCase() === "p") {
+      } else if (shortcutValue) {
         setDraft((value) => ({
           ...value,
-          semanticSupport: "supported",
-          evidenceDecisive: "decisive",
-          currentFactWarranted: "warranted",
-          unsupportedInference: "absent",
-          confidence: "high",
+          clinicalSupport: shortcutValue,
         }));
       } else if (event.key === "ArrowLeft") {
         goRelative(-1);
@@ -398,7 +345,8 @@ export default function SemanticSupportReviewWorkspace() {
   const highlights = current && evidenceStart >= 0
     ? [{ start: evidenceStart, end: evidenceStart + current.evidence_text.length, kind: "gold", label: "Cited evidence" }]
     : [];
-  const attributes = Object.entries(current?.selected_conclusion.attributes ?? {});
+  const conclusionFields = current ? presentConclusionFields(current.selected_conclusion) : [];
+  const structuredConclusion = structureConclusionFields(conclusionFields);
 
   return (
     <div className="qr-shell flex h-full min-h-0 flex-col">
@@ -478,19 +426,36 @@ export default function SemanticSupportReviewWorkspace() {
                 </div>
               </div>
 
-              <article className="ssr-claim-card">
-                <div className="flex items-center gap-2 text-[var(--qr-focus)]"><Sparkles className="h-4 w-4" /><p className="qr-kicker text-[var(--qr-focus)]">Conclusion under review</p></div>
-                <p className="mt-3 text-xl font-semibold leading-snug text-[var(--qr-ink)]">{current.selected_conclusion.text || current.selected_conclusion.normalized_concept || "Unlabelled conclusion"}</p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {current.selected_conclusion.assertion && <span className="qr-chip is-candidate">{current.selected_conclusion.assertion}</span>}
-                  {attributes.map(([key, value]) => <span key={key} className="qr-chip"><span className="qr-mono mr-1 opacity-65">{key}</span>{String(value)}</span>)}
-                </div>
-              </article>
+              <div className="ssr-comparison" aria-label="Extraction compared with its cited source">
+                <article className="ssr-claim-card">
+                  <div className="flex items-center gap-2 text-[var(--qr-focus)]"><Sparkles className="h-4 w-4" /><h3 className="text-sm font-semibold text-[var(--qr-ink)]">System extracted</h3></div>
+                  {structuredConclusion.headline && (
+                    <div className="ssr-finding-headline mt-4">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--qr-focus)]">{structuredConclusion.headline.label}</p>
+                      <p className="mt-1 text-lg font-semibold leading-snug text-[var(--qr-ink)]">{structuredConclusion.headline.value}</p>
+                    </div>
+                  )}
+                  {structuredConclusion.metadata.length > 0 && (
+                    <div className="ssr-metadata-branch">
+                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--qr-mute)]">Associated metadata</p>
+                      <dl className="divide-y divide-[var(--qr-line)]">
+                        {structuredConclusion.metadata.map((field) => (
+                          <div key={`${field.label}-${field.value}`} className="grid grid-cols-[minmax(110px,0.7fr)_minmax(0,1.3fr)] gap-3 py-2">
+                            <dt className="text-xs font-medium text-[var(--qr-mute)]">{field.label}</dt>
+                            <dd className="text-sm font-medium text-[var(--qr-ink)]">{field.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  )}
+                </article>
 
-              <article className="ssr-evidence-card mt-4">
-                <div className="flex items-center gap-2"><FileText className="h-4 w-4 text-[var(--qr-accent)]" /><p className="qr-kicker">Cited evidence</p></div>
-                <blockquote className="mt-3 font-serif text-lg leading-relaxed text-[var(--qr-ink)]">“{current.evidence_text}”</blockquote>
-              </article>
+                <article className="ssr-evidence-card">
+                  <div className="flex items-center gap-2"><FileText className="h-4 w-4 text-[var(--qr-accent)]" /><h3 className="text-sm font-semibold text-[var(--qr-ink)]">Source says</h3></div>
+                  <blockquote className="mt-4 font-serif text-lg leading-relaxed text-[var(--qr-ink)]">“{current.evidence_text}”</blockquote>
+                  <p className="mt-4 text-xs leading-relaxed text-[var(--qr-mute)]">Use the full letter below when timing, assertion, or surrounding clinical context is not explicit here.</p>
+                </article>
+              </div>
 
               <div className="mt-7 mb-3 flex items-center justify-between gap-3">
                 <p className="qr-kicker flex items-center gap-2"><BookOpen className="h-3.5 w-3.5" />Full letter context</p>
@@ -504,28 +469,21 @@ export default function SemanticSupportReviewWorkspace() {
         <aside className="qr-rail flex w-full shrink-0 flex-col border-t border-[var(--qr-line)] lg:w-[400px] lg:border-l lg:border-t-0">
           <div className="border-b border-[var(--qr-line)] px-4 py-3">
             <div className="flex items-start justify-between gap-3">
-              <div><p className="qr-kicker">Your judgment</p><h2 className="mt-1 text-base font-semibold text-[var(--qr-ink)]">Four-part evidence check</h2></div>
+              <div><p className="qr-kicker">Your judgment</p><h2 className="mt-1 text-base font-semibold text-[var(--qr-ink)]">Clinical support review</h2></div>
               {existing && <span className="ssr-revision">revision {existing.revision ?? 1}</span>}
             </div>
-            <button type="button" onClick={() => setDraft((value) => ({ ...value, semanticSupport: "supported", evidenceDecisive: "decisive", currentFactWarranted: "warranted", unsupportedInference: "absent", confidence: "high" }))} className="qr-secondary-btn mt-3 flex w-full items-center justify-center gap-2">
-              <Check className="h-3.5 w-3.5" /> Mark clean support <span className="qr-mono opacity-60">P</span>
-            </button>
           </div>
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
-            <ChoiceGroup label="1 · Semantic support" prompt="Does the cited text support the selected clinical conclusion?" value={draft.semanticSupport} options={SEMANTIC_OPTIONS} onChange={(value) => setDraft((currentDraft) => ({ ...currentDraft, semanticSupport: value }))} />
-            <ChoiceGroup label="2 · Evidence strength" prompt="Is the evidence sufficient, rather than merely compatible?" value={draft.evidenceDecisive} options={DECISIVE_OPTIONS} onChange={(value) => setDraft((currentDraft) => ({ ...currentDraft, evidenceDecisive: value }))} />
-            <ChoiceGroup label="3 · Assertion and time" prompt="Is the stored assertion and current-fact status warranted?" value={draft.currentFactWarranted} options={CURRENT_FACT_OPTIONS} onChange={(value) => setDraft((currentDraft) => ({ ...currentDraft, currentFactWarranted: value }))} />
-            <ChoiceGroup label="4 · Added meaning" prompt="Does the conclusion introduce unsupported clinical meaning?" value={draft.unsupportedInference} options={INFERENCE_OPTIONS} onChange={(value) => setDraft((currentDraft) => ({ ...currentDraft, unsupportedInference: value }))} />
-            <fieldset className="space-y-2"><legend className="qr-kicker">Confidence</legend><div className="flex gap-1.5">{CONFIDENCE_OPTIONS.map((value) => <button key={value} type="button" aria-pressed={draft.confidence === value} onClick={() => setDraft((currentDraft) => ({ ...currentDraft, confidence: value }))} className={`qr-pill flex-1 capitalize ${draft.confidence === value ? selectedTone(value) : ""}`}>{value}</button>)}</div></fieldset>
+          <div className="min-h-0 flex-1 space-y-7 overflow-y-auto px-4 py-5">
+            <ChoiceGroup label="1 · Clinical support" prompt="Is the complete extracted finding clinically supported by the cited text and full letter context?" value={draft.clinicalSupport} options={SEMANTIC_OPTIONS} onChange={(value) => setDraft((currentDraft) => ({ ...currentDraft, clinicalSupport: value }))} />
             <label className="block space-y-1.5">
-              <span className="qr-kicker">Source-based note {requiresNote ? "· required" : "· optional"}</span>
-              <textarea value={draft.notes} onChange={(event) => setDraft((currentDraft) => ({ ...currentDraft, notes: event.target.value }))} className="qr-input min-h-[96px] resize-y" placeholder={requiresNote ? "Explain the exception or uncertainty using the source…" : "Add a note if it will help adjudication…"} />
+              <span className="qr-kicker">2 · Any additional notes? · optional</span>
+              <textarea value={draft.notes} onChange={(event) => setDraft((currentDraft) => ({ ...currentDraft, notes: event.target.value }))} className="qr-input min-h-[140px] resize-y" placeholder="Add any context that may help later review…" />
             </label>
           </div>
           <div className="border-t border-[var(--qr-line)] p-3">
             <button type="button" onClick={handleSave} disabled={!canSave || saveMutation.isPending} className="qr-save">
               {saveMutation.isPending ? "Saving revision…" : existing ? "Update and advance" : "Save and advance"}
-              <span className="qr-mono text-[11px] opacity-70">⌘/Ctrl+Enter</span>
+              <span className="qr-mono text-[11px] opacity-70">Enter</span>
             </button>
             {saveMutation.isError && <p className="mt-2 text-center text-xs text-[var(--qr-bad)]">Could not save: {String(saveMutation.error)}</p>}
             {exportError && <p className="mt-2 text-center text-xs text-[var(--qr-bad)]">Could not export: {exportError}</p>}
