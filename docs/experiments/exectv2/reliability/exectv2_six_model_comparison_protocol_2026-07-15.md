@@ -48,7 +48,7 @@ On 2026-07-15 the configured OpenAI account listed all three hosted OpenAI
   returned 401 from Chat Completions and completed through the Responses API;
   DSPy's `model_type="responses"` is therefore a declared transport adapter
   for Sol. The official DeepSeek account listed `deepseek-v4-flash` and
-`deepseek-v4-pro`. A 14-token route probe that omitted the thinking toggle
+`deepseek-v4-pro`. A 14-token route probe that omitted an explicit runtime override
 returned both `reasoning_content` and final content from `deepseek-v4-flash`,
 confirming the documented default. `deepseek-chat` is not this condition: it
 is the legacy non-thinking compatibility alias.

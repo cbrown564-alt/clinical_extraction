@@ -260,7 +260,7 @@ Model condition & dev140 & test60 & Diagnosis & SF & Prescription & Investigatio
 GPT-4.1-mini & 0.8202 & 0.7572 & 0.8470 & 0.6936 & 0.8672 & 0.8538 & 0/0 \\
 GPT-5.6 Luna & 0.8832 & 0.7950 & 0.8910 & 0.7892 & 0.9250 & 0.9202 & 0/0 \\
 GPT-5.6 Sol & 0.8920 & 0.8047 & 0.8882 & 0.8012 & 0.9432 & 0.9358 & 0/0 \\
-DeepSeek V4 Flash (thinking) & 0.8767 & 0.7881 & 0.8764 & 0.7610 & 0.9280 & 0.9389 & 0/0 \\
+DeepSeek V4 Flash & 0.8767 & 0.7881 & 0.8764 & 0.7610 & 0.9280 & 0.9389 & 0/0 \\
 Qwen 3.6:35B (local) & 0.8571 & 0.7872 & 0.8720 & 0.7062 & 0.9249 & 0.9105 & 0/0 \\
 Gemma 4 26B (local) & 0.8016 & 0.7169 & 0.8378 & 0.6226 & 0.9046 & 0.8047 & 0/6 \\
 \bottomrule
@@ -271,7 +271,7 @@ Gemma 4 26B (local) & 0.8016 & 0.7169 & 0.8378 & 0.6226 & 0.9046 & 0.8047 & 0/6 
 Historical rows are excluded because Prescription was deterministic-only and SF
 included an independent extractor union. The fixed rows preserve attribution,
 state-profile, schema/evidence, and regression records. DeepSeek uses the
-official \code{deepseek-v4-flash} route with thinking enabled. Test60 is
+official \code{deepseek-v4-flash} route. Test60 is
 aggregate only; provider and local-runtime differences prevent a model-neutral
 capability ranking.
 

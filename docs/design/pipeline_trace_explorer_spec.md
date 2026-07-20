@@ -317,13 +317,21 @@ and text match within displayed operation metadata. Expand a row to show its
 payload and provenance. The table preserves source order unless the user
 explicitly sorts it; an active sort is always visible.
 
-### 6. Semantic support review
+### 6. Clinical review
 
-This view is an optional, post-v1 feature for the frozen 48-item ExECTv2
-semantic-support sample. It answers one question: does the cited text
-sufficiently and decisively support the final clinical conclusion, including
-its assertion and temporal status? It must not be reused for correctness
-scoring, gold editing, model ranking, or unrestricted record annotation.
+This ExECTv2 workspace contains two distinct, blinded tasks in one shared
+review layout:
+
+- **Correctness review:** is the complete stored attribute value clinically
+  correct? Allowed values are `correct` and `incorrect`.
+- **Semantic support:** is the complete extracted finding clinically supported
+  by the cited text and supplied letter context? Allowed values are
+  `supported`, `unsupported`, and `unclear`.
+
+Both tasks collect optional notes and revisioned reviewer identity. They share
+the queue, extraction-to-source comparison, full-letter context, judgment
+panel, shortcuts, and save-and-advance behavior. They do not share decisions
+or collapse correctness into semantic support.
 
 #### Review-set admission
 
@@ -343,27 +351,23 @@ the missing prerequisite. The UI never invents those values.
 
 #### Reviewer loop
 
-1. Select the semantic-support review set and enter the reviewer identity that
-   will be recorded in the exported artifact.
-2. Open the next unreviewed item. The screen shows model, family, selected
-   conclusion, assertion, attributes, rationale, component owner, fact origin,
-   exact evidence text, and stable source identity.
-3. Inspect the evidence in the source panel. Full `dev140` context is loaded
-   only on request and is never copied into the review artifact.
-4. Record all protocol fields: `semantic_support`, `evidence_decisive`,
-   `current_fact_warranted`, `unsupported_inference`, and optional notes.
-5. Save a draft, mark the item complete, or skip it with a required reason.
+1. Enter the reviewer identity used for both task queues.
+2. Choose Correctness review or Semantic support without leaving the clinical
+   review workspace.
+3. Open the next unreviewed item and compare the complete extraction with the
+   cited source and permitted full `dev140` letter context.
+4. Record the task's single required judgment and optional notes.
+5. Save and advance with Enter.
 6. Move to the next item without revealing automated correctness, confidence,
    another reviewer's judgment, aggregate model performance, or future
    adjudication outcome.
 7. Review completion counts by family and model, validate the set, and export a
    separate machine-readable review artifact.
 
-The layout reuses the evidence workbench rather than creating a second source
-viewer. On desktop, the source and evidence occupy the main area and the five
-review fields form one stable side panel. On narrow screens, source, conclusion,
-and evidence precede the form. A sticky item navigator may show position and
-completion state, but not performance summaries.
+The layout reuses one evidence-review structure rather than maintaining a
+second source viewer. On desktop, the extraction and source comparison occupy
+the main area and the single judgment plus optional notes occupy a stable side
+panel. On narrow screens, source, conclusion, and evidence precede the form.
 
 #### Bias controls and review states
 

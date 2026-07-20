@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-20 on the working tree after commit `2729c741`
+Last updated: 2026-07-20 on the working tree after commit `c51bbc8e`
 
 ## Current outcome
 
@@ -9,13 +9,15 @@ models on `dev140` and has aggregate-only `test60` results for the same six
 models. The retained aggregate panel records all six test60 conditions with
 equal canonical status; sealed row artifacts remain ignored and uninspectable.
 
-Gan has complete matched six-model `validation750` and aggregate-only `test450`
+Gan has complete matched six-model `dev750` and aggregate-only `test450`
 panels. The development panel contains all twelve predeclared model-by-method
 conditions: six `llm_with_rules` and six `llm_only` runs, each with exactly 750
 unique manifest rows and 750 valid `gan2026.row_trace.v1` records. The v0.7
 test panel and the separate v0.5 test extension each contain all six models.
+Retained Gan filenames and machine-readable split fields use the legacy
+identifier `validation750` for `dev750`.
 
-These panels are retained paper evidence with aggregate-only holdout limits.
+These panels are retained paper evidence with aggregate-only test limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
 local routes and no-call aggregate reparse provenance remain explicit caveats.
 
@@ -31,11 +33,12 @@ with task-specific measures, assurance metadata, evidence states,
 comparability labels, and gap decisions. The generated machine and human
 scorecards do not pool incompatible values or calculate a composite score.
 
-The predeclared Gan `validation750` comparison is implemented and verified as a
+The predeclared Gan `dev750` comparison is implemented and verified as a
 complete development panel. `llm_with_rules` improves Purist accuracy over the
 matched `llm_only` condition for every model, by 65 to 134 correct rows. The
-row-level component and failure analysis remains research work; these results
-are not holdout evidence, clinical validation, or a model-neutral ranking.
+row-level component and failure analysis is complete for the retained panel;
+these results are not test evidence, clinical validation, or a model-neutral
+ranking.
 
 The post-panel no-call replay is complete from retained development traces.
 Across 9,000 model-condition rows it recovers 11 schema-valid
@@ -65,12 +68,12 @@ policy, and the internal `clinical_headline` scorer.
 
 | Model | dev140 F1 | test60 F1 | Evidence state |
 | --- | ---: | ---: | --- |
-| GPT-4.1-mini | 0.8202 | 0.7572 | Committed run and aggregate holdout summary |
-| GPT-5.6 Luna | 0.8832 | 0.7950 | Committed run and aggregate holdout summary |
-| GPT-5.6 Sol | 0.8920 | 0.8047 | Committed run and aggregate holdout summary |
-| DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | Committed run and aggregate holdout summary |
-| Qwen 3.6:35B | 0.8571 | 0.7872 | Retained dev run and aggregate holdout summary |
-| Gemma 4 26B | 0.8016 | 0.7169 | Retained dev run and aggregate holdout summary |
+| GPT-4.1-mini | 0.8202 | 0.7572 | Committed run and aggregate test summary |
+| GPT-5.6 Luna | 0.8832 | 0.7950 | Committed run and aggregate test summary |
+| GPT-5.6 Sol | 0.8920 | 0.8047 | Committed run and aggregate test summary |
+| DeepSeek V4 Flash | 0.8767 | 0.7881 | Committed run and aggregate test summary |
+| Qwen 3.6:35B | 0.8571 | 0.7872 | Retained dev run and aggregate test summary |
+| Gemma 4 26B | 0.8016 | 0.7169 | Retained dev run and aggregate test summary |
 
 Exact evidence is `1.0` after assembly for every model. These are development
 results, not the published ExECT benchmark or clinical validation. The
@@ -86,7 +89,7 @@ the published benchmark. See the
 
 ### Gan fixed-prompt comparisons
 
-The matched `validation750` development comparison uses
+The matched `dev750` development comparison uses
 `gan2026_hybrid_structured_events_v0.7` for `llm_with_rules` and
 `gan2026_llm_only_canonical_pipeline_v0.8` for `llm_only`.
 
@@ -95,7 +98,7 @@ The matched `validation750` development comparison uses
 | GPT-4.1-mini | 653/750 | 577/750 | +76 |
 | GPT-5.6 Luna | 646/750 | 558/750 | +88 |
 | GPT-5.6 Sol | 655/750 | 590/750 | +65 |
-| DeepSeek V4 Flash, thinking enabled | 643/750 | 559/750 | +84 |
+| DeepSeek V4 Flash | 643/750 | 559/750 | +84 |
 | Qwen 3.6:35B | 667/750 | 565/750 | +102 |
 | Gemma 4 26B | 646/750 | 512/750 | +134 |
 
@@ -116,14 +119,14 @@ Purist and Pragmatic scorers.
 | GPT-4.1-mini | 353/450 | 371/450 | Committed aggregate summary |
 | GPT-5.6 Luna | 352/450 | 365/450 | Committed aggregate summary |
 | GPT-5.6 Sol | 358/450 | 376/450 | Committed aggregate summary |
-| DeepSeek V4 Flash, thinking enabled | 342/450 | 362/450 | Committed aggregate summary |
+| DeepSeek V4 Flash | 342/450 | 362/450 | Committed aggregate summary |
 | Qwen 3.6:35B | 367/450 | 380/450 | Retained aggregate summary |
 | Gemma 4 26B | 343/450 | 367/450 | Retained aggregate summary |
 
 The local summaries record 0 final call/parse/schema/label failures after
 deterministic repair and exact evidence for 363/450 Qwen and 437/450 Gemma
 rows. The complete panel is aggregate-only evidence on a previously used
-holdout, not a pristine one-shot or model-neutral capability ranking.
+test result, not a pristine one-shot or model-neutral capability ranking.
 
 Under the separate v0.5 protocol, all six conditions are complete: GPT-4.1-mini
 scores 361/450 Purist and 379/450 Pragmatic, Luna 362/450 and 375/450, Sol
@@ -165,11 +168,13 @@ maps all 16 task-by-criterion cells to retained evidence or an explicit gap.
 The companion
 [ExECT semantic-support protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
 selects 48 evidence-valid dev140 findings across six models and four families.
-All substrate review fields remain unset. The allowed values, exception-note
-rule, two-reviewer blinding, and third-reviewer adjudication rule are frozen in
-the protocol, and the local `/semantic-support-review` workspace is ready for
-use. This is still not semantic-support evidence or independent clinical
-validation. No model call or locked row inspection was used.
+All substrate review fields remain unset. The three semantic-support values,
+optional-note policy, two-reviewer blinding, and third-reviewer adjudication
+rule are frozen in the protocol. The local `/clinical-review` workspace now
+combines separate Correctness review and Semantic support task tabs in the same
+evidence-review structure while keeping their decisions separate. This is
+still not semantic-support evidence or independent clinical validation. No
+model call or locked row inspection was used.
 
 ## Verification state
 
@@ -257,7 +262,7 @@ not independent clinical validation or a new clean-checkout reproduction.
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Independent semantic-support review:
   [protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
-  and local route `http://127.0.0.1:3000/semantic-support-review`
+  and local route `http://127.0.0.1:3000/clinical-review`
 - Detailed work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)
 
 Use *implemented*, *verified*, *validated*, and *promoted* precisely.

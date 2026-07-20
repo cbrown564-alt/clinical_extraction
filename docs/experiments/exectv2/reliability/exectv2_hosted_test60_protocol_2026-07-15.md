@@ -26,7 +26,7 @@ policy selected on dev140?
 
 The conditions are GPT-4.1-mini (`openai/gpt-4.1-mini`), GPT-5.6 Luna
 (`openai/gpt-5.6-luna`), GPT-5.6 Sol (`openai/gpt-5.6-sol`, Responses
-transport), and thinking-enabled DeepSeek V4 Flash
+transport), and DeepSeek V4 Flash
 (`deepseek/deepseek-v4-flash`). Temperature is zero, DSPy cache is disabled,
 and the structured-event maximum is 10,000 tokens.
 
@@ -98,7 +98,7 @@ zero blocking parse/schema failures. No held-out row was inspected.
 | GPT-4.1-mini | 0.7572 | 0.7742 | 0.7409 |
 | GPT-5.6 Luna | 0.7950 | 0.8272 | 0.7652 |
 | GPT-5.6 Sol | 0.8047 | 0.8237 | 0.7866 |
-| DeepSeek V4 Flash, thinking enabled | 0.7881 | 0.8158 | 0.7622 |
+| DeepSeek V4 Flash | 0.7881 | 0.8158 | 0.7622 |
 | Qwen 3.6:35B | 0.7872 | 0.7848 | 0.7896 |
 | Gemma 4 26B | 0.7169 | 0.7299 | 0.7043 |
 

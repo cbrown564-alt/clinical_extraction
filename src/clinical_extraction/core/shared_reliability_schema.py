@@ -219,7 +219,7 @@ def task_cells_for_measurements(measurements: Sequence[Mapping[str, Any]]) -> li
             "strongest_evidence_state": "aggregate_holdout_evidence",
             "summary": (
                 "Six-model test450 Purist and Pragmatic accuracy plus the retained "
-                "subject validation/test comparison."
+                "subject development/test comparison."
             ),
             "gap_ids": [],
         },

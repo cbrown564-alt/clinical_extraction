@@ -1,6 +1,6 @@
 # 02 — Processing steps
 
-Last updated: 2026-07-15
+Last updated: 2026-07-20
 
 Exact source, configuration, scorer, test, and replay paths are in the
 [retained evidence index](../experiments/retained_evidence_manifest.md).
@@ -48,5 +48,6 @@ workflow. Any change that can alter a prediction requires a new recorded
 version and a complete replay. This rule does not authorize model calls.
 
 Saved-output replays found normalization gains of +0.0389 on ExECT dev140 and
-+0.0293 on Gan validation750. The exact-evidence check changed neither score;
++0.0293 on Gan dev750. Retained Gan artifacts use the legacy identifier
+`validation750`. The exact-evidence check changed neither score;
 rejection and repair tests provide its separate evidence.

@@ -30,8 +30,8 @@ candidate, or rejecting a family-level policy change?
 ## Candidates and comparator
 
 The three historical saved-output conditions are GPT-4.1-mini, the historical
-DeepSeek V4 Flash API run whose thinking state was not recorded, and Qwen 3.6
-35B repair v02.
+DeepSeek V4 Flash API run with incomplete runtime metadata, and Qwen 3.6 35B
+repair v02.
 
 For each model, letter, and family, compare:
 
@@ -104,4 +104,4 @@ protocol.
 This study is development-only mechanism evidence. It cannot establish test60
 or holdout performance, clinical validity, cross-model transfer, or safety on a
 new distribution. The historical DeepSeek condition remains audit-only because
-its thinking setting was not recorded.
+its runtime metadata is incomplete.

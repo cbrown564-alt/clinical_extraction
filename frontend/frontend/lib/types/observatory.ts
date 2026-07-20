@@ -117,19 +117,7 @@ export interface GoldAuditDecisionResponse {
 
 // ── Qualified consensus-incorrect review ──
 
-export type QualifiedValueVerdict =
-  | "correct"
-  | "format_only_variant"
-  | "incorrect"
-  | "ambiguous"
-  | "not_assessable";
-
-export type QualifiedEntailment =
-  | "entailed"
-  | "plausible"
-  | "ambiguous"
-  | "contradicted"
-  | "absent";
+export type CorrectnessVerdict = "correct" | "incorrect";
 
 export interface QualifiedLinkedEvent {
   fact_id: string;
@@ -193,13 +181,11 @@ export interface QualifiedReviewDecision {
   letter_id?: string | null;
   attribute_name?: string | null;
   attribute_value?: string | null;
-  attribute_entailment?: QualifiedEntailment | null;
-  value_verdict?: QualifiedValueVerdict | null;
-  clinical_interpretation?: string | null;
-  reviewer_rationale?: string | null;
-  reviewer_confidence?: "low" | "medium" | "high" | null;
-  auditor?: string | null;
+  reviewer_id: string;
+  correctness: CorrectnessVerdict;
+  review_notes?: string | null;
   timestamp?: string;
+  revision?: number;
 }
 
 export interface QualifiedReviewPacketsResponse {
@@ -210,6 +196,8 @@ export interface QualifiedReviewPacketsResponse {
 }
 
 export interface QualifiedReviewDecisionsResponse {
+  reviewer_id: string;
+  blinded: boolean;
   decisions: QualifiedReviewDecision[];
   count: number;
 }

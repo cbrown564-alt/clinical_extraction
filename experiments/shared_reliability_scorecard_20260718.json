@@ -442,7 +442,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation750 development rows permitted",
+      "row_inspection_rule": "dev750 rows permitted",
       "row_scope": "development_rows_permitted",
       "score_stage": "final",
       "scorer": "Gan 2026 Purist label accuracy",
@@ -452,7 +452,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750",
+      "split": "dev750",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -888,7 +888,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation rows permitted; test450 aggregate only",
+      "row_inspection_rule": "dev750 rows permitted; test450 aggregate only",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
       "scorer": "Gan unknown-gold active-rate over-read transform",
@@ -898,7 +898,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750+test450",
+      "split": "dev750+test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -1038,7 +1038,7 @@
         "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
       ],
       "source_hashes": {
-        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f9558c7d45d7f35e21e58e84ee593af5162d43c5fdf11526ef399ab05a794f8b"
       },
       "split": "dev140",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -1101,7 +1101,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation rows permitted; test450 aggregate only",
+      "row_inspection_rule": "dev750 rows permitted; test450 aggregate only",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
       "scorer": "Gan retained faithfulness transform",
@@ -1111,7 +1111,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750+test450",
+      "split": "dev750+test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -1492,7 +1492,7 @@
       ],
       "source_hashes": {
         "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md": "47db96e7d0b4a134edcc29091f8ce3c54187b22b26c07b33643a663120327e08",
-        "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json": "582cc4a15ab084c650afc4d0f33ee8e5b55afad486462aa844a1f79a896311bb"
+        "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json": "97aa08e37008c47d7e8e4fab1601a65d538b6e4ac410c651882051076b6fc0ff"
       },
       "split": "dev140_sample",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -1552,7 +1552,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation750 development rows permitted",
+      "row_inspection_rule": "dev750 rows permitted",
       "row_scope": "development_rows_permitted",
       "score_stage": "final",
       "scorer": "Gan external-confidence calibration transform",
@@ -1562,7 +1562,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750",
+      "split": "dev750",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -1598,7 +1598,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation750 development rows permitted",
+      "row_inspection_rule": "dev750 rows permitted",
       "row_scope": "development_rows_permitted",
       "score_stage": "final",
       "scorer": "Gan retained risk-coverage transform",
@@ -1608,7 +1608,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750",
+      "split": "dev750",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -1672,7 +1672,7 @@
     },
     {
       "cache_replay_mode": "no-call split replay; test60 aggregate only",
-      "claim_boundary": "Historical three-model negative result; not a six-model, thinking-enabled DeepSeek V4 Flash, or deployment conclusion.",
+      "claim_boundary": "Historical three-model negative result; not a six-model, DeepSeek V4 Flash, or deployment conclusion.",
       "comparability": "construct_only",
       "criterion_id": "uncertainty_selective_action",
       "dataset": "ExECTv2 2025 broad epilepsy phenotyping corpus",
@@ -1695,7 +1695,7 @@
       "reproducibility_command": "python scripts/check_exectv2_model_reported_confidence.py",
       "result_state": "measured",
       "review_policy_adopted": false,
-      "route_runtime": "historical saved outputs; DeepSeek thinking state unrecorded",
+      "route_runtime": "historical saved outputs; incomplete DeepSeek runtime metadata",
       "row_inspection_rule": "aggregate-only test60; rows not emitted",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
@@ -1756,7 +1756,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750+test450_aggregate",
+      "split": "dev750+test450_aggregate",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -2040,7 +2040,7 @@
       "reproducibility_command": "python scripts/cross_task_shared_component_ablation.py",
       "result_state": "measured",
       "route_runtime": "no-call saved-output replay",
-      "row_inspection_rule": "validation750 development rows permitted",
+      "row_inspection_rule": "dev750 rows permitted",
       "row_scope": "development_rows_permitted",
       "score_stage": "normalized",
       "scorer": "Gan Purist accuracy",
@@ -2050,7 +2050,7 @@
       "source_hashes": {
         "experiments/cross_task_shared_component_ablation_2026-06-27.json": "79e22c9b688d45e8e06d250727a8ca2412d350a0ed12b5a82904029c337bfa47"
       },
-      "split": "validation750",
+      "split": "dev750",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_applicable_no_call_replay",
@@ -2504,7 +2504,7 @@
         "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
       ],
       "source_hashes": {
-        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f9558c7d45d7f35e21e58e84ee593af5162d43c5fdf11526ef399ab05a794f8b"
       },
       "split": "dev140",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -2568,7 +2568,7 @@
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": "openai/gpt-4.1-mini retained subject",
-      "row_inspection_rule": "validation750 development rows permitted",
+      "row_inspection_rule": "dev750 rows permitted",
       "row_scope": "development_rows_permitted",
       "score_stage": "final",
       "scorer": "Gan seizure-band error parity transform",
@@ -2578,7 +2578,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750",
+      "split": "dev750",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "not_recorded_in_compact_scorecard",
@@ -2886,7 +2886,7 @@
         "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
       ],
       "source_hashes": {
-        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f824c3ac1aba9d64bd9d01317fb55fe86716875700b864283e589f576bf83e11"
+        "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json": "f9558c7d45d7f35e21e58e84ee593af5162d43c5fdf11526ef399ab05a794f8b"
       },
       "split": "not_measured",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -2930,7 +2930,7 @@
       "source_hashes": {
         "experiments/gan2026_reliability_master_scorecard_2026-06-17.json": "eee03abfe92e22156e8abf513a97d3e2ba3fddba2addba392d1297cfebffc043"
       },
-      "split": "validation750+test450",
+      "split": "dev750+test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
       "task": "gan2026",
       "temperature": "mixed retained conditions",
@@ -3567,7 +3567,7 @@
       ],
       "result_state": "measured",
       "strongest_evidence_state": "aggregate_holdout_evidence",
-      "summary": "Six-model test450 Purist and Pragmatic accuracy plus the retained subject validation/test comparison.",
+      "summary": "Six-model test450 Purist and Pragmatic accuracy plus the retained subject development/test comparison.",
       "task": "gan2026"
     },
     {

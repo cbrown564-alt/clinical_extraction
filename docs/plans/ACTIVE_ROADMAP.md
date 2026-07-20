@@ -113,7 +113,7 @@ held-out rows, so it is not an independent holdout.
     contaminated resume artifacts. The candidate failed its experimental gate,
     but decision 0041 selects it for the final comparison because the small
     final-F1 difference does not justify a second model pass.
-19. **Six-model panels retained.** GPT-4.1-mini, Luna, Sol, thinking DeepSeek,
+19. **Six-model panels retained.** GPT-4.1-mini, Luna, Sol, DeepSeek,
     Qwen, and Gemma are hash-selected for ExECT dev140 and aggregate-only
     test60. The same six models are retained for Gan v0.7 test450. Qwen and
     Gemma have the same canonical claim status as the hosted conditions;
@@ -137,12 +137,12 @@ held-out rows, so it is not an independent holdout.
 23. **All six-model dataset panels completed.** ExECT has all six fixed one-call
     conditions on dev140 and aggregate-only test60. Gan has all six models on
     aggregate-only test450 and all twelve model-by-method conditions on
-    validation750. Every Gan development condition has 750 unique manifest rows
+    dev750. Retained artifacts use the legacy identifier `validation750`.
+    Every Gan development condition has 750 unique manifest rows
     and 750 valid row traces. The generated no-call summary records hashes,
-    aggregate scores, evidence counts, failures, and matched transitions. This
-    completes execution, not the component analysis or evidence promotion.
+    aggregate scores, evidence counts, failures, and matched transitions.
 24. **Gan post-panel replay, attribution, and retention completed.** The bounded
-    schema policy recovers 11 validation records across the twelve conditions
+    schema policy recovers 11 development records across the twelve conditions
     while changing zero existing selected answers. The retained 9,000-row audit
     separates score layers, format/schema repair, clinical semantic repair,
     evidence, first failure, matched method transitions, and rules-control

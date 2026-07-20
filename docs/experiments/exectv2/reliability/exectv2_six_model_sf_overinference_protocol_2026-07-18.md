@@ -21,7 +21,7 @@ ExECT's multi-mention annotations.
 - Excluded: `test60` row identifiers, text, predictions, evidence, errors, and
   changed rows. Existing `test60` aggregates may appear only in the separate
   six-model comparison report.
-- Models: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, thinking-enabled DeepSeek V4
+- Models: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, DeepSeek V4
   Flash, Qwen 3.6:35B, and Gemma 4 26B.
 - Call mode: replay committed decision-0041 outputs; no model calls.
 

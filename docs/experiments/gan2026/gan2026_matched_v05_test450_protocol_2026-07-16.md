@@ -6,7 +6,7 @@ Readout: aggregate-only
 
 ## Primary question
 
-How do GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, and thinking-enabled DeepSeek
+How do GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, and DeepSeek
 V4 Flash compare when each uses the exact restored Gan structured-events v0.5
 payload and the same current non-prompt pipeline?
 
@@ -69,7 +69,7 @@ differences are provider requirements, not clinical or semantic adapters.
 | GPT-4.1-mini | `openai/gpt-4.1-mini`, OpenAI chat | 0 | 10,000 | Fresh required after failed reconciliation |
 | GPT-5.6 Luna | `openai/gpt-5.6-luna`, OpenAI chat | 1 | 10,000 | Fresh after pilot |
 | GPT-5.6 Sol | `openai/gpt-5.6-sol`, OpenAI Responses; temperature omitted | omitted | 10,000 | Fresh after pilot |
-| DeepSeek V4 Flash, thinking enabled | `deepseek/deepseek-v4-flash`, official route | 0 | 32,000 | Fresh after pilot |
+| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash`, official route | 0 | 32,000 | Fresh after pilot |
 
 ## Operational pilots and launch gate
 

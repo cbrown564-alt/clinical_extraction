@@ -23,7 +23,7 @@ complete answer.
 - Saved outputs: the three historical model-led producer sets referenced by
   `configs/exectv2/model_led_audit/`, at their recorded Git revision.
 - Models: GPT-4.1-mini, historical DeepSeek chat, and Qwen 3.6:35B repair v02.
-  The DeepSeek thinking state is unrecorded, so its result remains audit-only.
+  The DeepSeek runtime metadata is incomplete, so its result remains audit-only.
 - Call mode: Git-blob replay; no model calls.
 
 ## Fixed analysis
@@ -75,5 +75,5 @@ based review policy.
 
 The strongest possible claim is an aggregate out-of-sample result for these
 saved historical outputs on ExECTv2 `test60`. It is not deployment calibration,
-independent clinical validation, a six-model conclusion, or evidence about a
-thinking-enabled DeepSeek V4 Flash run.
+independent clinical validation, a six-model conclusion, or evidence about the
+final DeepSeek V4 Flash runtime.

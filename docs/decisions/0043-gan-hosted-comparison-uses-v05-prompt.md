@@ -6,7 +6,7 @@ Status: accepted; protocol and runs pending
 ## Decision
 
 The next hosted Gan comparison for GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
-and thinking-enabled DeepSeek V4 Flash will use
+and DeepSeek V4 Flash will use
 `gan2026_hybrid_structured_events_v0.5` for every model.
 
 Prompt v0.5 becomes the default comparison prompt for this four-model panel.
@@ -94,4 +94,3 @@ Evidence owners:
 - [Gan results and holdout rules](../canon/06_gan_clinical_policy.md)
 - [Matched v0.7 protocol and result](../experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md)
 - [Retained evidence manifest](../experiments/retained_evidence_manifest.md)
-

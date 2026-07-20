@@ -1,17 +1,17 @@
-# Gan 2026 six-model validation comparison protocol
+# Gan 2026 six-model development comparison protocol
 
 Date: 2026-07-18  
-Status: all twelve conditions complete; post-panel analysis pending
+Status: all twelve conditions and the post-panel analysis complete
 
 ## Primary question
 
-On the permitted Gan 2026 `validation750` development split, how does the
+On the permitted Gan 2026 `dev750` split, how does the
 selected single-pass structured-events `llm_with_rules` method compare with a
 matched one-call `llm_only` method across the fixed six-model roster, and which
 saved model, deterministic-adapter, deterministic-clinical, evidence, and
 scoring steps own their row-level differences?
 
-This full-distribution run is justified despite saturated historical validation
+This full-distribution run is justified despite saturated historical development
 because the missing evidence is not another score for one model. The repository
 does not have a matched six-model method-by-model panel or inspectable traces
 for all twelve conditions. A hard slice cannot establish that each model ran on
@@ -20,7 +20,8 @@ the same 750 manifest rows or populate the Example Explorer across the panel.
 ## Data and inspection policy
 
 - Dataset: Gan 2026.
-- Split: `validation`, 750 development rows.
+- Split: `dev750`, 750 development rows. The manifest and retained artifacts
+  use the legacy split key `validation` or identifier `validation750`.
 - Manifest: `gan2026_split_v1` at
   `data/Gan (2026)/splits/gan2026_split_v1.json`.
 - Manifest SHA-256:
@@ -29,9 +30,9 @@ the same 750 manifest rows or populate the Example Explorer across the panel.
   changed-row inspection are permitted.
 - Gan `test450` is outside this study and must not be opened or used.
 
-Every completed artifact must contain exactly the manifest's 750 validation
+Every completed artifact must contain exactly the manifest's 750 development
 `source_row_index` values once each. The earlier cancelled Qwen v0.7 partial
-artifact at 367/750 and the separate Qwen v0.5 validation queue are excluded and
+artifact at 367/750 and the separate Qwen v0.5 development queue are excluded and
 must not be resumed into this comparison.
 
 ## Candidate, comparator, and control
@@ -65,7 +66,8 @@ must not be resumed into this comparison.
 
 ### Fixed rules comparison
 
-The existing deterministic canonical validation750 artifact is the no-call
+The existing deterministic canonical dev750 artifact (legacy ID:
+`validation750`) is the no-call
 control. It is not rerun per model. The twelve fresh conditions must retain the
 same source-row identity so a later no-call comparison can align them with that
 single model-independent control.
@@ -77,7 +79,7 @@ single model-independent control.
 | GPT-4.1-mini | `openai/gpt-4.1-mini`, hosted chat | 0 | 10,000 |
 | GPT-5.6 Luna | `openai/gpt-5.6-luna`, hosted chat | 1 | 10,000 |
 | GPT-5.6 Sol | `openai/gpt-5.6-sol`, Responses | omitted by adapter | 10,000 |
-| DeepSeek V4 Flash, thinking enabled | `deepseek/deepseek-v4-flash`, official hosted route | 0 | 32,000 |
+| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash`, official hosted route | 0 | 32,000 |
 | Qwen 3.6:35B | `ollama_chat/qwen3.6:35b`, native Ollama, `think=false` | 0 | 16,000 |
 | Gemma 4 26B | `ollama_chat/gemma4:26b`, native Ollama, `think=false` | 0 | 16,000 |
 

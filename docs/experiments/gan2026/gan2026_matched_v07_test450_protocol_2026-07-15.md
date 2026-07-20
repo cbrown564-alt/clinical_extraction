@@ -82,7 +82,7 @@ model-specific semantic repair.
 | GPT-4.1-mini | `openai/gpt-4.1-mini` | 0 | 10,000 | Fresh after pilot |
 | GPT-5.6 Luna | `openai/gpt-5.6-luna` | 1 | 10,000 | Retain completed v0.7 run |
 | GPT-5.6 Sol | `openai/gpt-5.6-sol`, Responses | omitted | 10,000 | Retain completed v0.7 run |
-| DeepSeek V4 Flash, thinking enabled | `deepseek/deepseek-v4-flash` | 0 | 32,000 | Fresh after pilot |
+| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash` | 0 | 32,000 | Fresh after pilot |
 | Qwen 3.6:35B | `ollama_chat/qwen3.6:35b`, native Ollama | 0 | recorded local condition | Retain sealed-output aggregate |
 | Gemma 4 26B | `ollama_chat/gemma4:26b`, native Ollama | 0 | recorded local condition | Retain sealed-output aggregate |
 
@@ -163,7 +163,7 @@ is retained as provenance rather than used to downgrade their claim status.
 | GPT-4.1-mini | 353/450 (0.7844) | 371/450 (0.8244) | 448/450 | 419/450 | 317 | 0 | 2 |
 | GPT-5.6 Luna | 352/450 (0.7822) | 365/450 (0.8111) | 447/450 | 446/450 | 305 | 0 | 3 |
 | GPT-5.6 Sol | 358/450 (0.7956) | 376/450 (0.8356) | 450/450 | 449/450 | 366 | 0 | 0 |
-| DeepSeek V4 Flash, thinking enabled | 342/450 (0.7600) | 362/450 (0.8044) | 446/450 | 434/450 | 259 | 0 | 4 |
+| DeepSeek V4 Flash | 342/450 (0.7600) | 362/450 (0.8044) | 446/450 | 434/450 | 259 | 0 | 4 |
 | Qwen 3.6:35B | 367/450 (0.8156) | 380/450 (0.8444) | 450/450 | 363/450 | 316 | 0 | 0 |
 | Gemma 4 26B | 343/450 (0.7622) | 367/450 (0.8156) | 450/450 | 437/450 | 291 | 0 | 0 |
 

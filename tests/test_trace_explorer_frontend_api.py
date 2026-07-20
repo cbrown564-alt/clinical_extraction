@@ -245,7 +245,8 @@ def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -
 
 
 def test_review_decisions_persist_separately_from_trace_data(client: TestClient) -> None:
-    packets = client.get("/qualified-review/packets")
+    reviewer_id = "local-reviewer"
+    packets = client.get("/qualified-review/packets", params={"reviewer_id": reviewer_id})
     assert packets.status_code == 200
     packet = packets.json()["packets"][0]
     decision = {
@@ -254,17 +255,15 @@ def test_review_decisions_persist_separately_from_trace_data(client: TestClient)
         "letter_id": packet["letter_id"],
         "attribute_name": packet["attribute_name"],
         "attribute_value": packet["attribute_value"],
-        "attribute_entailment": "entailed",
-        "value_verdict": "correct",
-        "reviewer_rationale": "The exact source phrase says twice daily.",
-        "reviewer_confidence": "high",
-        "auditor": "local-reviewer",
+        "reviewer_id": reviewer_id,
+        "correctness": "correct",
+        "review_notes": "The exact source phrase supports the stored value.",
     }
     saved = client.post("/qualified-review/decide", json=decision)
     assert saved.status_code == 200
     assert saved.json()["status"] == "saved"
 
-    decisions = client.get("/qualified-review/decisions")
+    decisions = client.get("/qualified-review/decisions", params={"reviewer_id": reviewer_id})
     assert decisions.status_code == 200
     matching = [
         item
@@ -272,7 +271,13 @@ def test_review_decisions_persist_separately_from_trace_data(client: TestClient)
         if item["attribute_review_id"] == packet["attribute_review_id"]
     ]
     assert len(matching) == 1
-    assert matching[0]["reviewer_rationale"] == decision["reviewer_rationale"]
+    assert matching[0]["review_notes"] == decision["review_notes"]
+    assert matching[0]["revision"] == 1
+
+    other_reviewer = client.get(
+        "/qualified-review/decisions", params={"reviewer_id": "other-reviewer"}
+    )
+    assert other_reviewer.json()["count"] == 0
 
     trace = client.get("/api/v1/runs/syn-exect-014/records/SYN-014/trace")
     assert trace.status_code == 200
@@ -293,7 +298,9 @@ def test_review_queues_and_writes_enforce_development_row_policy(client: TestCli
         "/qualified-review/decide",
         json={
             "attribute_review_id": "not-in-the-governed-queue",
-            "reviewer_rationale": "Must not be stored.",
+            "reviewer_id": "local-reviewer",
+            "correctness": "incorrect",
+            "review_notes": "Must not be stored.",
         },
     )
     assert ungoverned.status_code == 404

@@ -38,8 +38,8 @@ Protocol:
 - Test policy: test60 rows were not assembled, scored, serialized, inspected, or
   quoted. The full200 producer blobs were filtered by identifier into temporary
   dev-only files before assembly.
-- Models: GPT-4.1-mini, the historical DeepSeek API run whose thinking state was
-  not recorded, and Qwen 3.6 35B repair v02.
+- Models: GPT-4.1-mini, the historical DeepSeek API run with incomplete runtime
+  metadata, and Qwen 3.6 35B repair v02.
 - Replay: saved outputs only; zero model calls.
 - Gold, scorer, prompts, and rules: unchanged.
 - Primary row comparison: equality of family-local `clinical_headline` keys

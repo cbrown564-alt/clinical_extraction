@@ -14,7 +14,7 @@ be added to the paper evidence set.
 | Identifier | Retained role | Boundary |
 | --- | --- | --- |
 | `openai/gpt-4.1-mini` | Gan and ExECT development/reference runtime | Development baseline, not a best-model claim |
-| `deepseek/deepseek-chat` | DeepSeek V4 Flash API runtime | Retained result has no recorded thinking state; not yet eligible as the final reported DeepSeek condition |
+| `deepseek/deepseek-chat` | DeepSeek V4 Flash API runtime | Retained result has incomplete runtime metadata; not yet eligible as the final reported DeepSeek condition |
 | `ollama_chat/qwen3.6:35b` | ExECT local model-transfer runtime | Local transfer evidence; thinking disabled |
 | `deepseek/deepseek-reasoner` | GEPA reflection model | Optimizer provenance only |
 | `openai/gpt-4.1` | Gan V12 frozen holdout reviewer | Aggregate ceiling evidence only |
@@ -101,7 +101,7 @@ Decision 0039 fixes the final roster:
 | GPT-4.1-mini | Closed-weight | Hosted |
 | GPT-5.6 Luna | Closed-weight | Hosted |
 | GPT-5.6 Sol | Closed-weight | Hosted |
-| DeepSeek V4 Flash, thinking enabled | Open-weight | Hosted |
+| DeepSeek V4 Flash | Open-weight | Hosted |
 | Qwen 3.6:35B | Open-weight | Local |
 | Gemma 4 26B | Open-weight | Local |
 
@@ -111,10 +111,8 @@ revision if exposed, temperature, token limits, cache mode, hardware/endpoint
 metadata, and the handling of model-specific format adapters.
 
 `deepseek/deepseek-chat` is the API identifier for DeepSeek V4 Flash. The final
-reported condition must run with thinking enabled and must be displayed as
-**DeepSeek V4 Flash**. The retained result does not record its thinking state,
-so it cannot satisfy the final condition unless durable metadata proves that
-thinking was enabled.
+reported condition is displayed as **DeepSeek V4 Flash**. The retained result
+has incomplete runtime metadata, so it cannot satisfy the final condition.
 
 No six-model ordering or size/reasoning conclusion is permitted until all six
 conditions run under the corrected final-comparison core and the runtime

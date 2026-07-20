@@ -33,10 +33,10 @@ temperature, the provider default value `1`; Sol omits the unsupported
 temperature parameter. DSPy cache is disabled, and the maximum is 10,000
 tokens.
 
-No repeat is authorized for the completed GPT-4.1-mini, thinking DeepSeek, or
+No repeat is authorized for the completed GPT-4.1-mini, DeepSeek, or
 Qwen 3.6:35B conditions. Their aggregate-only results are retained in current
 evidence or recoverable from Git history: GPT-4.1-mini v0.6 scored 364/450
-Purist; thinking DeepSeek scored 345/450 on v0.6 and 346/450 on v0.7; Qwen
+Purist; DeepSeek scored 345/450 on v0.6 and 346/450 on v0.7; Qwen
 v0.6 repairfix scored 366/450. These historical prompts remain named rather
 than being treated as exact reruns of the current code.
 
@@ -120,7 +120,7 @@ Luna had three aggregate parse/schema/label failures; Sol had none.
 | GPT-5.6 Sol | v0.7 | 358/450 (0.7956) | 376/450 (0.8356) | 0 | 0 |
 
 For context, the retained hosted comparators are GPT-4.1-mini at 364/450
-Purist on v0.6 and thinking DeepSeek at 346/450 on v0.7. Their prompt and
+Purist on v0.6 and DeepSeek at 346/450 on v0.7. Their prompt and
 pipeline histories remain named; this is not an exact four-model matched rerun.
 
 ## Documentation-exposure amendment

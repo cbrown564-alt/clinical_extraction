@@ -1,8 +1,8 @@
-# Gan 2026 six-model validation comparison
+# Gan 2026 six-model development comparison
 
 Generated: 2026-07-20T08:37:41.487142+00:00
 
-Development evidence on `validation750`; not holdout evidence or clinical validation.
+Development evidence on `dev750` (legacy artifact ID: `validation750`); not test evidence or clinical validation.
 
 ## Conditions
 

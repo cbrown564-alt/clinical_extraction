@@ -34,8 +34,8 @@ not credited to the LLM.
 - Dataset and split: ExECTv2 full200, comprising dev140 and test60.
 - Row policy: aggregate-only. Do not inspect, quote, classify, or tune from
   test60 rows or full200 row-level differences.
-- Models: GPT-4.1-mini, a historical DeepSeek V4 Flash API run whose thinking
-  state was not recorded, and Qwen 3.6 35B repair v02.
+- Models: GPT-4.1-mini, a historical DeepSeek V4 Flash API run with incomplete
+  runtime metadata, and Qwen 3.6 35B repair v02.
 - Replay: saved historical outputs only; no new model calls.
 - Comparator: the recorded full200 scores in the three-model table.
 - Primary component metrics: Diagnosis and Prescription clinical-fact F1.
@@ -105,12 +105,12 @@ model outputs, and no new calls.
 | Model | Overall | Diagnosis | SF headline | SF `state_profile` | Prescription | Investigations |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.7813 | 0.8700 | 0.8614 |
-| DeepSeek V4 Flash API run (thinking state unrecorded) | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
+| DeepSeek V4 Flash API run (incomplete runtime metadata) | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
 | Qwen 3.6 35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.7812 | 0.9220 | 0.8548 |
 
 Within these historical saved outputs, the best corrected Diagnosis score is
-`0.8789` for DeepSeek. It is audit-only and will not be the paper's DeepSeek
-result unless thinking-enabled execution can be proved. The best corrected
+`0.8789` for DeepSeek. It is audit-only because its runtime metadata is
+incomplete. The best corrected
 Prescription score is `0.9220` for Qwen.
 
 The changes from the manuscript table are not all gains from the Diagnosis
@@ -128,7 +128,7 @@ not measure the named model's Prescription extraction.
 | Model | Model output only | Model plus shared corrections | Final model-origin facts | Rule-added facts |
 | --- | ---: | ---: | ---: | ---: |
 | GPT-4.1-mini | 0.8595 | 0.8700 | 395 | 10 |
-| DeepSeek V4 Flash API run (thinking state unrecorded) | 0.9043 | 0.9057 | 301 | 12 |
+| DeepSeek V4 Flash API run (incomplete runtime metadata) | 0.9043 | 0.9057 | 301 | 12 |
 | Qwen 3.6 35B, repair v02 | 0.9213 | 0.9220 | 294 | 12 |
 
 The corrected Prescription path is model-led. Shared rules normalize drug and
@@ -159,7 +159,7 @@ retains attributable projection and suppression only.
 | Model | Historical assembled `clinical_headline` F1 | Corrected model-led F1 | Change |
 | --- | ---: | ---: | ---: |
 | GPT-4.1-mini | 0.7525 | 0.6501 | -0.1024 |
-| DeepSeek V4 Flash API run (thinking state unrecorded) | 0.7602 | 0.7146 | -0.0456 |
+| DeepSeek V4 Flash API run (incomplete runtime metadata) | 0.7602 | 0.7146 | -0.0456 |
 | Qwen 3.6 35B, repair v02 | 0.7020 | 0.6343 | -0.0677 |
 
 The lower corrected values are not regressions caused by removing a useful
@@ -237,4 +237,4 @@ disables Prescription residual addition; and adds general model-preserving
 guards for Diagnosis subsumption and Prescription current-versus-future
 selection. The final six-model protocol must use decision-0040 family bindings
 and rerun the same aggregate checks; it must not reuse the historical DeepSeek
-result unless thinking-enabled execution is proved.
+result because its runtime metadata is incomplete.

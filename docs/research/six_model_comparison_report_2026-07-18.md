@@ -1,33 +1,69 @@
 # Six-model comparison across ExECTv2 and Gan 2026
 
-Date: 2026-07-18  
-Status: retained-panel report with bounded development and aggregate-only holdout claims
+Date: 2026-07-18
+Updated: 2026-07-20
+Status: final comparison report; test results are aggregate-only
+
+## Terms used in this report
+
+- **ExECTv2** extracts facts from four parts of an epilepsy letter: Diagnosis,
+  Seizure Frequency, Prescription, and Investigations.
+- **Gan 2026** assigns one current seizure-frequency label to each letter.
+- **Development split** means data that may be examined one row at a time.
+  `dev140` contains 140 ExECTv2 letters; `dev750` contains 750 Gan letters.
+- **Locked test split** means data whose individual rows may not be examined or
+  used to change the system. This report gives only totals for ExECTv2 `test60`
+  and Gan `test450`.
+- **Aggregate-only** means that only totals and summary scores are available,
+  not individual predictions or errors.
+- **LLM only** means the saved model output before deterministic code changes
+  its clinical content. **LLM with rules** means the final output after fixed,
+  non-model code checks, standardizes, selects, or repairs that output.
+- **F1** combines precision, the share of extracted facts that are correct, and
+  recall, the share of reference facts that were extracted. Higher is better.
+- **Purist accuracy** requires the exact Gan reference label. **Pragmatic
+  accuracy** also accepts specified clinically equivalent labels. Higher is
+  better for both measures.
+- **Exact evidence** means that a prediction includes text copied exactly from
+  its source letter. It shows that a quotation is present, not that the
+  quotation clinically supports the prediction.
+- **Wrong to correct** and **correct to wrong** count answers changed by the
+  deterministic code. The latter are also called regressions.
 
 ## Executive conclusion
 
-The same six named model conditions were evaluated on the fixed ExECTv2 and
-Gan pipelines: GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, thinking-enabled
+The same six models were evaluated with the fixed ExECTv2 and Gan pipelines:
+GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
 DeepSeek V4 Flash, Qwen 3.6:35B, and Gemma 4 26B.
 
-There is no stable cross-task winner. Sol leads ExECT test60, while Qwen leads
-Gan test450. Their aggregate rank correlation is only `0.20`. This supports a
-task- and pipeline-specific interpretation; it does not support a general model
-superiority claim.
+There is no stable winner across the two tasks. GPT-5.6 Sol leads ExECT test60
+with an F1 of `0.80`, while Qwen 3.6:35B leads Gan test450 with a Purist
+accuracy of `0.82`. The rank correlation is `0.20`, where `1.00` would mean the
+two rankings were identical. Choose a model for the task and pipeline being
+used. These results do not show that one model is generally superior.
 
-ExECT's final deterministic transforms improve the saved development aggregate
-for every model, while final exact source-text evidence is `1.0` for all six.
-That evidence rate establishes citation presence, not semantic support. The
-ExECT unknown-versus-rate study is not measurable because its predeclared
-unknown-only denominator is zero. Gan's six-model panel is aggregate-only on a
-previously used locked holdout, so it supports comparison at the named scorer
-and protocol scope, not row-level error analysis or tuning.
+Adding deterministic checks improves the development score for every model on
+both tasks. The checks are not uniformly safe: on Gan they also change 23 to 34
+previously correct answers to incorrect answers per model. All test results are
+aggregate-only, so they support comparison under these protocols but not
+row-level test error analysis, tuning, or a general claim about model quality.
 
-## 1. Datasets and task profiles
+### Results at a glance
 
-### ExECTv2: broad epilepsy phenotyping
+| Question | ExECTv2 | Gan 2026 |
+| --- | --- | --- |
+| What is extracted? | Facts from four parts of an epilepsy letter | One current seizure-frequency label |
+| Primary measure | Internal clinical-fact F1 | Purist accuracy |
+| Best test result | GPT-5.6 Sol: `0.80` | Qwen 3.6:35B: `0.82` |
+| Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | 65 to 134 additional correct rows on dev750 |
+| Main limitation | Internal metric; 59 loadable test letters | Previously used locked test split |
 
-ExECTv2 uses de-identified clinical letters to recover four fixed clinical
-families in the final comparison: Diagnosis, Seizure Frequency, Prescription,
+## 1. What the two tasks measure
+
+### ExECTv2: facts from four parts of an epilepsy letter
+
+ExECTv2 uses de-identified clinical letters to recover facts from four fixed
+parts of each letter: Diagnosis, Seizure Frequency, Prescription,
 and Investigations. `dev140` permits row-level development analysis;
 `test60` is locked and reported only through aggregate readouts. The primary
 score is internal de-duplicated clinical fact recovery (`clinical_headline`)
@@ -39,42 +75,45 @@ Illustrative synthetic letter, not a retained dataset row:
 > on levetiracetam 500 mg twice daily. MRI brain was normal; EEG showed left
 > temporal epileptiform discharges. The working diagnosis is focal epilepsy.
 
-Expected structured content is evidence-linked and family-specific:
+The expected structured output links each fact to supporting text:
 
-| Family | Example extracted fact |
+| Part of the letter | Example extracted fact |
 | --- | --- |
 | Diagnosis | focal epilepsy, affirmed |
 | Seizure Frequency | seizure-free since March 2024 |
 | Prescription | levetiracetam, 500 mg, twice daily |
 | Investigations | MRI normal; EEG with left temporal discharges |
 
+The pipeline produces one prediction as follows:
+
 ```mermaid
-flowchart LR
-    A[Clinical letter] --> B[One structured event-ledger call]
-    B --> C[Model-owned candidates and exact evidence]
-    C --> D1[Diagnosis transform]
-    C --> D2[Seizure-frequency projection and suppression]
-    C --> D3[Prescription normalization and bounded repair]
-    C --> D4[Investigation validation and deduplication]
-    D1 --> E[Clinical finding store and attribution]
-    D2 --> E
-    D3 --> E
-    D4 --> E
-    E --> F[clinical_headline F1 and companion views]
+flowchart TD
+    A[Clinical letter] --> B[Phenotype extraction]
+    B --> C1[Diagnosis checks]
+    B --> C2[Frequency checks]
+    B --> C3[Prescription checks]
+    B --> C4[Investigation checks]
+    C1 --> D[Final facts]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    D --> E[F1 score]
 ```
 
-The named model supplies the candidate facts for all four families. Deterministic
-code may normalize, project, suppress, validate, or apply bounded repair, but
-an independent rules extractor may not replace or union the model's result.
+The model proposes facts and quotes supporting text. Fixed code then checks and
+standardizes each part without running a second extractor or adding
+facts the model did not propose. The final facts are compared with the reference
+using the internal `clinical_headline` F1 measure.
 
 ### Gan 2026: current seizure-frequency extraction
 
 Gan uses synthetic clinical letters and asks for one current seizure-frequency
 label per letter. The source contains 1,500 records; the fixed comparison uses
-validation750 for development evidence and test450 as a locked aggregate-only
-holdout. The primary scorer is Purist accuracy; Pragmatic accuracy is a
-secondary side-car. Both are label-level measures and are not numerically
-interchangeable with ExECT F1.
+`dev750` for development evidence and `test450` as a locked aggregate-only
+test split. Retained filenames and machine-readable records use the legacy
+identifier `validation750` for `dev750`. The primary scorer is Purist accuracy;
+Pragmatic accuracy is a secondary measure. Both are label-level measures and
+are not numerically interchangeable with ExECT F1.
 
 Illustrative synthetic letter, not a retained test row:
 
@@ -82,165 +121,231 @@ Illustrative synthetic letter, not a retained test row:
 > have been no prolonged seizure-free intervals, and the frequency is otherwise
 > unchanged. The current answer is an active monthly seizure frequency.
 
+The pipeline produces one prediction as follows:
+
 ```mermaid
-flowchart LR
-    A[Clinical letter] --> B[Structured event extraction]
-    B --> C[Schema and JSON-dialect repair]
-    C --> D[Selected-evidence derivation]
-    D --> E[hybrid_full_stack clinical repair]
-    E --> F[Rendered Gan label]
-    F --> G[Purist and Pragmatic scoring]
+flowchart TD
+    A[Clinical letter] --> B[Frequency selection]
+    B --> C[Format repair]
+    C --> D[Evidence link]
+    D --> E[Clinical rules]
+    E --> F[Gan label]
+    F --> G[Accuracy]
 ```
 
-The Gan stack keeps raw model selection, format repair, selected evidence,
-clinical repair, rendered label, and scorer output separate. Exact evidence is
-reported at the Gan row-level measurement point; it is not directly comparable
-with ExECT's post-assembly mention rate.
+The model identifies seizure events and selects the current frequency. Fixed
+code repairs formatting, keeps the supporting quotation, resolves conflicts
+between current and historical statements, and converts the answer to a Gan
+label. Each stage is saved so errors can be assigned to model selection,
+formatting, clinical rules, or label conversion. The final label is scored with
+Purist accuracy; Pragmatic accuracy is reported as a secondary measure.
 
-## 2. Comparison contract and results
+## 2. Comparison method and results
 
-The panels are matched within each task, not pooled across tasks.
+Each model uses the same data, prompt, processing steps, and score as the other
+models within a task. Scores from the two tasks are not combined.
 
 | Field | ExECTv2 | Gan 2026 |
 | --- | --- | --- |
-| Development evidence | `dev140`; row review permitted | `validation750`; development/replay evidence |
-| Locked evidence | `test60`; 59 loadable letters; aggregate only | `test450`; 450 rows; aggregate only |
-| Model call | One structured four-family call per letter | One structured event call per note |
+| Development split | `dev140`; row review permitted | `dev750` (legacy ID: `validation750`); row review permitted |
+| Test split | `test60`; 59 loadable letters; aggregate only | `test450`; 450 rows; aggregate only |
+| Model call | One structured call for all four parts of each letter | One structured call for seizure events in each note |
 | Prompt | `exectv2_hybrid_key_family_event_ledger_v0.9.24` | `gan2026_hybrid_structured_events_v0.7` |
-| Final repair | Attributable family transforms and finding assembly | `hybrid_full_stack` |
+| Fixed code after the model | Checks and standardizes each part, then assembles the facts | Repairs format, links evidence, applies clinical rules, and converts the label (`hybrid_full_stack`) |
 | Primary score | `clinical_headline` F1 | Purist accuracy |
 
-### ExECTv2 six-model panel
+### ExECTv2: development and test F1
+
+The final ExECT pipeline retains the same model order from dev140 to test60.
+Every test60 score is lower than its corresponding development score, with a
+mean absolute F1 change of `0.08`.
+
+![Horizontal barbell chart comparing ExECT dev140 and test60 clinical-headline F1 for all six models](assets/six_model_comparison_2026-07-18/exect_dev_test.svg)
 
 | Model | dev140 F1 | test60 F1 | Change | Final exact evidence | Schema/parse signal |
 | --- | ---: | ---: | ---: | ---: | --- |
-| GPT-5.6 Sol | 0.8920 | 0.8047 | -0.0873 | 1.0000 | 0 |
-| GPT-5.6 Luna | 0.8832 | 0.7950 | -0.0882 | 1.0000 | 0 |
-| DeepSeek V4 Flash (thinking) | 0.8767 | 0.7881 | -0.0886 | 1.0000 | 0 |
-| Qwen 3.6:35B | 0.8571 | 0.7872 | -0.0699 | 1.0000 | 0 |
-| GPT-4.1-mini | 0.8202 | 0.7572 | -0.0630 | 1.0000 | 0 |
-| Gemma 4 26B | 0.8016 | 0.7169 | -0.0847 | 1.0000 | 6 aggregate events |
+| GPT-5.6 Sol | 0.89 | 0.80 | -0.09 | 1.00 | 0 |
+| GPT-5.6 Luna | 0.88 | 0.80 | -0.09 | 1.00 | 0 |
+| DeepSeek V4 Flash | 0.88 | 0.79 | -0.09 | 1.00 | 0 |
+| Qwen 3.6:35B | 0.86 | 0.79 | -0.07 | 1.00 | 0 |
+| GPT-4.1-mini | 0.82 | 0.76 | -0.06 | 1.00 | 0 |
+| Gemma 4 26B | 0.80 | 0.72 | -0.08 | 1.00 | 6 aggregate events |
 
-All six retain the same rank order from dev140 to test60. The mean absolute
-F1 change is `0.0803`; this is useful transfer evidence for the internal scorer,
-but the small locked split and row-inspection ban prevent a failure-mechanism
-or broad robustness claim.
+The unchanged model order shows that the development ordering also held on
+this test split. The small locked split and the ban on examining its rows mean
+the report cannot explain individual failures or claim broad reliability.
 
-Family-level development comparison:
+### ExECTv2: model output before and after fixed code
+
+The development comparison uses the saved model output for LLM only and the
+output after the fixed code for LLM with rules. The fixed code improves
+clinical-headline F1 for every model; gains range from `0.08`
+to `0.11`.
+
+![Grouped horizontal bars comparing the ExECT raw LLM stage with the final LLM plus rules stage on dev140](assets/six_model_comparison_2026-07-18/exect_llm_rules.svg)
+
+| Model | LLM only | LLM with rules | Change |
+| --- | ---: | ---: | ---: |
+| GPT-5.6 Sol | 0.81 | 0.89 | +0.08 |
+| GPT-5.6 Luna | 0.81 | 0.88 | +0.08 |
+| DeepSeek V4 Flash | 0.79 | 0.88 | +0.09 |
+| Qwen 3.6:35B | 0.75 | 0.86 | +0.11 |
+| GPT-4.1-mini | 0.71 | 0.82 | +0.11 |
+| Gemma 4 26B | 0.70 | 0.80 | +0.10 |
+
+These gains combine several operations: removing facts without valid quoted
+evidence; standardizing values; recovering Diagnosis facts; converting or
+removing Seizure Frequency facts; repairing Prescription facts; and assembling
+the final output. The comparison does not isolate the effect of any one rule.
+
+### ExECTv2: results for each part of the letter
+
+These results are separate from the overall comparison because each part has
+different fact counts and extraction behavior. Seizure Frequency is
+the weakest family for every model, while Prescription or Investigations is
+usually strongest.
+
+![Heatmap of ExECT dev140 F1 by model and phenotype family](assets/six_model_comparison_2026-07-18/exect_family_heatmap.svg)
+
+Development results by part:
 
 | Model | Diagnosis | Seizure Frequency | Prescription | Investigations |
 | --- | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | 0.8470 | 0.6936 | 0.8672 | 0.8538 |
-| GPT-5.6 Luna | 0.8910 | 0.7892 | 0.9250 | 0.9202 |
-| GPT-5.6 Sol | 0.8882 | 0.8012 | 0.9432 | 0.9358 |
-| DeepSeek V4 Flash | 0.8764 | 0.7610 | 0.9280 | 0.9389 |
-| Qwen 3.6:35B | 0.8720 | 0.7062 | 0.9249 | 0.9105 |
-| Gemma 4 26B | 0.8378 | 0.6226 | 0.9046 | 0.8047 |
+| GPT-4.1-mini | 0.85 | 0.69 | 0.87 | 0.85 |
+| GPT-5.6 Luna | 0.89 | 0.79 | 0.93 | 0.92 |
+| GPT-5.6 Sol | 0.89 | 0.80 | 0.94 | 0.94 |
+| DeepSeek V4 Flash | 0.88 | 0.76 | 0.93 | 0.94 |
+| Qwen 3.6:35B | 0.87 | 0.71 | 0.92 | 0.91 |
+| Gemma 4 26B | 0.84 | 0.62 | 0.90 | 0.80 |
 
-The saved raw-to-final development deltas range from `+0.0773` to `+0.1083`
-F1. They combine evidence filtering, normalization, Diagnosis recovery,
-Seizure Frequency projection/suppression, Prescription repair, and final
-assembly; they are not model-only gains.
+### Gan 2026: development and test Purist accuracy
 
-### Gan six-model test450 panel
+The final `llm_with_rules` pipeline is compared on Purist accuracy across
+dev750 and aggregate-only test450. Qwen ranks first on both splits; the rest of
+the ordering changes, so development rank is not treated as a fixed test rank.
 
-| Model | Purist | Pragmatic | Rank | Exact evidence | Schema/repair trace |
-| --- | ---: | ---: | ---: | ---: | --- |
-| Qwen 3.6:35B | 367/450 (0.8156) | 380/450 (0.8444) | 1 | 363/450 | 0 final; deterministic repair |
-| GPT-5.6 Sol | 358/450 (0.7956) | 376/450 (0.8356) | 2 | 449/450 | 0; 366 repair notes |
-| GPT-4.1-mini | 353/450 (0.7844) | 371/450 (0.8244) | 3 | 419/450 | 2; 317 repair notes |
-| GPT-5.6 Luna | 352/450 (0.7822) | 365/450 (0.8111) | 4 | 446/450 | 3; 305 repair notes |
-| Gemma 4 26B | 343/450 (0.7622) | 367/450 (0.8156) | 5 | 437/450 | 0 final; deterministic repair |
-| DeepSeek V4 Flash (thinking) | 342/450 (0.7600) | 362/450 (0.8044) | 6 | 434/450 | 4; 259 repair notes |
+![Horizontal barbell chart comparing Gan dev750 and test450 Purist accuracy for all six models](assets/six_model_comparison_2026-07-18/gan_dev_test.svg)
 
-Qwen and Gemma use the same named prompt, pipeline, repair policy, and scorer
-as the hosted conditions. Local route and retained aggregate-reparse details
-remain explicit provenance notes; they do not change the six-row headline
-comparison. The panel is aggregate-only, not a pristine one-shot or general
-model-capability ranking.
+| Model | dev750 Purist | test450 Purist | Change |
+| --- | ---: | ---: | ---: |
+| Qwen 3.6:35B | 667/750 (0.89) | 367/450 (0.82) | -0.07 |
+| GPT-5.6 Sol | 655/750 (0.87) | 358/450 (0.80) | -0.08 |
+| GPT-4.1-mini | 653/750 (0.87) | 353/450 (0.78) | -0.09 |
+| GPT-5.6 Luna | 646/750 (0.86) | 352/450 (0.78) | -0.08 |
+| Gemma 4 26B | 646/750 (0.86) | 343/450 (0.76) | -0.10 |
+| DeepSeek V4 Flash | 643/750 (0.86) | 342/450 (0.76) | -0.10 |
 
-## 3. ExECT component and reliability mechanisms
+Only totals are available for the test results, and this locked split had been
+used before this comparison. The results support comparison with the stated
+score and procedure. They do not support analysis of individual test errors or
+an estimate from a test split used only once.
 
-The predeclared ExECT Seizure Frequency replay compares model-structured state
-sets with the final projected/suppressed state sets on the same 140 development
-letters. The deterministic stage improves state-profile F1 for every model:
+### Gan 2026: model output before and after fixed code
 
-| Model | Structured state F1 | Final state F1 | Delta | Wrong→correct | Correct→wrong |
+The development comparison evaluates LLM with rules and LLM only on the same
+750 rows for each model:
+
+![Grouped horizontal bars comparing Gan LLM only with LLM plus rules Purist accuracy on matched dev750 rows](assets/six_model_comparison_2026-07-18/gan_llm_rules.svg)
+
+| Model | LLM with rules | LLM only | Net gain | Wrong→correct | Correct→wrong |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | 0.7340 | 0.7845 | +0.0505 | 13 | 0 |
-| GPT-5.6 Luna | 0.8357 | 0.8551 | +0.0194 | 4 | 0 |
-| GPT-5.6 Sol | 0.8509 | 0.8603 | +0.0094 | 3 | 1 |
-| DeepSeek V4 Flash | 0.8104 | 0.8429 | +0.0325 | 9 | 0 |
-| Qwen 3.6:35B | 0.7517 | 0.7986 | +0.0469 | 13 | 0 |
-| Gemma 4 26B | 0.6894 | 0.7386 | +0.0492 | 12 | 0 |
+| GPT-4.1-mini | 653/750 | 577/750 | +76 | 110 | 34 |
+| GPT-5.6 Luna | 646/750 | 558/750 | +88 | 120 | 32 |
+| GPT-5.6 Sol | 655/750 | 590/750 | +65 | 96 | 31 |
+| DeepSeek V4 Flash | 643/750 | 559/750 | +84 | 115 | 31 |
+| Qwen 3.6:35B | 667/750 | 565/750 | +102 | 125 | 23 |
+| Gemma 4 26B | 646/750 | 512/750 | +134 | 168 | 34 |
 
-Across the six repeated panels there are 54 wrong-to-correct and one
+The fixed code improves the final Purist result for every model, but it also
+changes some correct answers to wrong answers. A
+later replay repaired 11 invalid records but changed none of the answers that
+had already been selected. These are development results for the tested model
+models and the way each model was run. They do not show that the method is ready
+for wider use. Rules without a model also remain more accurate on many rows.
+
+### Gan 2026: Purist and Pragmatic accuracy
+
+Purist accuracy remains the primary result. Pragmatic accuracy is shown as a
+separate score rather than combined with the Purist ranking; it is
+higher for every model but does not change the first-place model.
+
+![Grouped horizontal bars comparing Gan test450 Purist and Pragmatic accuracy by model](assets/six_model_comparison_2026-07-18/gan_purist_pragmatic.svg)
+
+| Model | Purist | Pragmatic | Rank | Answers with exact evidence | Format or repair record |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Qwen 3.6:35B | 367/450 (0.82) | 380/450 (0.84) | 1 | 363/450 | 0 final; deterministic repair |
+| GPT-5.6 Sol | 358/450 (0.80) | 376/450 (0.84) | 2 | 449/450 | 0; 366 repair notes |
+| GPT-4.1-mini | 353/450 (0.78) | 371/450 (0.82) | 3 | 419/450 | 2; 317 repair notes |
+| GPT-5.6 Luna | 352/450 (0.78) | 365/450 (0.81) | 4 | 446/450 | 3; 305 repair notes |
+| Gemma 4 26B | 343/450 (0.76) | 367/450 (0.82) | 5 | 437/450 | 0 final; deterministic repair |
+| DeepSeek V4 Flash | 342/450 (0.76) | 362/450 (0.80) | 6 | 434/450 | 4; 259 repair notes |
+
+Qwen and Gemma use the same prompt, pipeline, repair policy, and scorer as the
+hosted models, but run locally. This difference is recorded in the saved
+results. Only totals are available, so this comparison does not establish a general model
+ranking.
+
+## 3. Other findings about errors and evidence
+
+Before seeing the results, the study specified a comparison of the Seizure
+Frequency states produced by the model with those left after fixed code
+converted or removed states. A state records whether the letter gives a rate,
+says the patient is seizure-free, or leaves the current frequency unknown. The
+fixed code improves F1 for these state sets for every model on the same 140
+development letters:
+
+| Model | Model state F1 | F1 after fixed code | Change | Wrong→correct | Correct→wrong |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 0.73 | 0.78 | +0.05 | 13 | 0 |
+| GPT-5.6 Luna | 0.84 | 0.86 | +0.02 | 4 | 0 |
+| GPT-5.6 Sol | 0.85 | 0.86 | +0.01 | 3 | 1 |
+| DeepSeek V4 Flash | 0.81 | 0.84 | +0.03 | 9 | 0 |
+| Qwen 3.6:35B | 0.75 | 0.80 | +0.05 | 13 | 0 |
+| Gemma 4 26B | 0.69 | 0.74 | +0.05 | 12 | 0 |
+
+Across the six runs there are 54 wrong-to-correct and one
 correct-to-wrong transition. The repeated 140 letters mean these counts are
-descriptive, not 840 independent clinical samples. The intended ExECT
-unknown-versus-rate measure remains closed: the unknown-only gold denominator
-is zero, and empty-gold letters cannot be relabelled as unknown.
+descriptive, not 840 independent clinical samples. The planned comparison of
+unknown frequency with a stated rate cannot be calculated: the reference data
+contain no letters labelled only as unknown, and letters with no reference
+fact cannot be counted as unknown.
 
-## 4. Eight-criterion reliability scorecard
+Other limits on the main scores are:
 
-The same eight questions are applied to both tasks, but each task keeps its own
-measurement object, denominator, score stage, and evidence state. No composite
-reliability score or pooled task ranking is calculated.
+- ExECT records an exact source-text match for `1.00` of final facts for every
+  model. This confirms citation presence, not that the cited text clinically
+  supports the fact; independent clinical review is still pending.
+- The planned ExECT unknown-versus-rate analysis cannot be calculated because
+  there are no unknown-only gold cases. Gan findings on this question therefore
+  cannot be transferred to ExECT.
+- Parsing, output-format, repair, and model-host information is saved for every model,
+  but the runs do not provide matched cost or latency measurements.
+- Results for each part of the ExECT letter are reported, but neither task measures
+  demographic fairness or deployment calibration.
 
-### ExECTv2
-
-| Criterion | Evidence and result | Limit / disposition |
-| --- | --- | --- |
-| Clinical correctness and generalization | Six-model dev140 and test60 F1; all six test ranks retained | Complete for named internal scorer; not published benchmark or clinical validation |
-| Clinical selection and unsupported inference | Unknown-only study predeclared | Not measurable: denominator is zero; no transfer claim |
-| Evidence support and faithfulness | Exact evidence `1.0` after final assembly | Citation presence only; semantic-support sample awaits independent review |
-| Uncertainty and selective action | Internal scoring-rule calibration and historical confidence-routing replay | Partial; no six-model deployment-calibration claim |
-| Robustness and stability | Six-model dev-to-test changes and parser/runtime events | Partial; no wording perturbation or self-consistency study |
-| Component attribution and correction safety | Score stages, fact origin, and 54/1 SF transitions | Complete for recorded replay; repeated letters limit pooled transition interpretation |
-| Coverage and clinical-slice behavior | Diagnosis, SF, Prescription, and Investigations scores for all six | Partial; family variation is not demographic fairness |
-| Operational reliability | Six test60 aggregates, failures, schema events, and route metadata | Partial; no matched cross-route cost/latency claim |
-
-### Gan 2026
-
-| Criterion | Evidence and result | Limit / disposition |
-| --- | --- | --- |
-| Clinical correctness and generalization | Six-model test450 Purist and Pragmatic panel plus retained validation/test subject comparison | Complete for named aggregate scope; no row-level holdout analysis |
-| Clinical selection and unsupported inference | Gan unknown-gold active-rate over-read result retained | Partial; compact source lacks selected denominator counts |
-| Evidence support and faithfulness | Row-level textual grounding and exact-evidence counts | Partial; exact presence is not independent semantic review |
-| Uncertainty and selective action | External calibration, risk-coverage, and failure-prediction results for named subject | Partial; not a six-model routing result |
-| Robustness and stability | Prompt-version and repeated-temperature subdimensions | Partial; not broad perturbation robustness |
-| Component attribution and correction safety | Shared normalization delta and separate repair stages | Partial; complete stage-transition inventory is unavailable |
-| Coverage and clinical-slice behavior | Seizure-band variation and six-model results | Partial; demographic fairness is not measured |
-| Operational reliability | Six-model failures, repairs, exact evidence, and bounded historical cost estimate | Partial; matched efficiency telemetry is unavailable |
-
-### Cross-task interpretation
-
-The criteria are comparable as questions about reliability, not as one numeric
-scale. Correctness, evidence support, uncertainty, robustness, attribution,
-coverage, and operations use different units and scopes. Clinical selection and
-unsupported inference is explicitly not comparable because ExECT lacks a valid
-unknown-only denominator. Exact evidence must not be called semantic support,
-and family variation must not be called demographic fairness.
-
-## 5. Decision and claim boundary
+## 4. What the report does and does not establish
 
 The report supports:
 
 - a fixed six-model comparison on both named task pipelines;
-- ExECT development component evidence and aggregate-only test60 transfer
-  evidence;
+- the change made by fixed code on ExECT development data, and ExECT test60
+  totals produced without changing the development procedure;
+- the change made by fixed code on the same 750 Gan development rows,
+  including answers changed from correct to wrong and the processing step
+  responsible for the first error;
 - Gan aggregate-only test450 Purist and Pragmatic evidence;
-- a bounded result that model rank is task-specific, with Sol leading ExECT and
-  Qwen leading Gan; and
+- the result, limited to these tasks and procedures, that model rank is
+  task-specific, with Sol leading ExECT and Qwen leading Gan; and
 - a negative, data-limited result for transferring Gan's unknown-versus-rate
   measure to ExECT.
 
-It does not support general model superiority, a pooled reliability score,
-Gan-to-ExECT reliability transfer, the published ExECT benchmark, deployment
-calibration, semantic faithfulness validation, or clinical validation.
-Independent clinical review remains the material next requirement for stronger
-clinical-validity claims.
+It does not support general model superiority, one reliability score combined
+across tasks, applying Gan findings to ExECT, the published ExECT benchmark,
+estimates of confidence after deployment, proof that quotations clinically
+support the extracted facts, or clinical validation. Independent clinical
+review is required before making stronger clinical-validity claims.
 
-## Evidence owners
+## Sources and technical detail
 
 - [Project status](../../PROJECT_STATUS.md)
 - [Paper claim status](../canon/10_paper_provenance.md)
@@ -251,3 +356,5 @@ clinical-validity claims.
 - [Gan v0.7 test450 protocol](../experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md)
 - [ExECT SF reliability protocol](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
 - [ExECT SF reliability result](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
+- [Gan dev750 comparison](../experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md)
+- [Gan post-panel component audit](../experiments/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md)

@@ -187,7 +187,7 @@
         },
         {
           "model": "deepseek/deepseek-v4-flash",
-          "route": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
+          "route": "Official DeepSeek V4 Flash route; temperature 0",
           "status": "completed_fresh_v07_restart_v2",
           "structured_records": 446,
           "call_failures": 0,

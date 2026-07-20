@@ -46,9 +46,9 @@ correctness after the fixed decision-0040 pipeline.
 This is a no-call replay of saved historical outputs. Dev140 and test60 are
 reported separately, and no test60 row identifier, text, prediction, or failure
 was emitted. The result concerns these saved outputs only. The historical
-DeepSeek thinking state is unrecorded. This is not deployment calibration,
-independent clinical validation, a six-model conclusion, or evidence for a
-thinking-enabled DeepSeek V4 Flash run.
+DeepSeek runtime metadata is incomplete. This is not deployment calibration,
+independent clinical validation, a six-model conclusion, or evidence for the
+final DeepSeek V4 Flash runtime.
 
 Protocol: `docs/experiments/exectv2/reliability/exectv2_model_reported_confidence_protocol_2026-07-15.md`
 

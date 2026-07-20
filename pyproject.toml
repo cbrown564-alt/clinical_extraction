@@ -13,13 +13,13 @@ authors = [{ name = "Clinical Extraction Contributors" }]
 dependencies = [
   "dspy>=2.5.0",
   "pydantic>=2.7.0",
-  "pandas>=2.2.0",
-  "jupyter>=1.0.0",
   "PyYAML>=6.0",
+  "openai>=1.0.0",
 ]
 
 [project.scripts]
 gan2026-llm-experiment = "clinical_extraction.tasks.seizure_frequency.gan2026.cli.llm_pipeline_cli:main"
+clinical-extract = "clinical_extraction.operational.cli:main"
 trace-explorer-index = "clinical_extraction.trace_explorer.index:main"
 trace-explorer = "clinical_extraction.trace_explorer.api.app:main"
 
@@ -29,6 +29,8 @@ dev = [
   "ruff>=0.5.0",
   "mypy>=1.10.0",
   "types-PyYAML>=6.0",
+  "pandas>=2.2.0",
+  "jupyter>=1.0.0",
 ]
 trace-ui = [
   "fastapi==0.136.3",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SemanticSupportReviewWorkspace from "@/components/semantic-support-review/SemanticSupportReviewWorkspace";
+import ClinicalReviewWorkspace from "@/components/clinical-review/ClinicalReviewWorkspace";
 
 export const metadata: Metadata = {
   title: "Semantic Support Review",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function SemanticSupportReviewPage() {
-  return <SemanticSupportReviewWorkspace />;
+  return <ClinicalReviewWorkspace defaultTask="semantic" />;
 }

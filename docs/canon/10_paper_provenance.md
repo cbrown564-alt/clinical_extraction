@@ -12,8 +12,8 @@ must not make a stronger claim than either source supports.
 | ID | Statement | Current evidence | State |
 | --- | --- | --- | --- |
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
-| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control; the Gan six-model validation panel now has retained row-level score layers, first-failure ownership, evidence, rules-regression, and matched transition records | Bounded development answer |
-| S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved holdout quality, run metadata, and aggregate input availability | Bounded |
+| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control; the Gan six-model development panel now has retained row-level score layers, first-failure ownership, evidence, rules-regression, and matched transition records | Bounded development answer |
+| S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved test quality, run metadata, and aggregate input availability | Bounded |
 | S4 | Six exact models run on one fixed ExECT pipeline | All six completed matched dev140 and aggregate-only test60 conditions; the retained panel gives local Qwen and Gemma the same claim status as the four hosted models | Confirmed |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; the predeclared six-model ExECT dev140 analogue has zero unknown-only gold letters, so transfer is not measurable from current gold | Unsupported |
 | S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests, cross-task replay, and a 9,000-row Gan saved-output audit separate format/schema recovery, selected-answer identity, deterministic semantic changes, evidence, and scoring | Bounded development answer |
@@ -33,12 +33,12 @@ must not make a stronger claim than either source supports.
 | C6 | Gan V12 gains 15/450 Purist-correct rows while requiring a three-pass cold architecture rather than one pass | Strong for saved quality and architecture structure | Tokens, cost, latency, and hardware were not measured in a matched run |
 | C7 | The ExECT rules-only system scores 0.5687 phrase, 0.7144 CUI, and 0.6020 all-features macro item F1 | Strong for the named no-call dev140 replay | Paper-derived metric implementation on development data; not reproduction of the original system or reported scores |
 | C8 | The recorded ExECT model rows do not implement one consistent model-led method across all four families | Strong for the saved-output ownership audit and verified corrected architecture replay | Full200 aggregate-only evidence; corrected scores remain unpromoted because deterministic correct-to-wrong counts are nonzero |
-| C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs, unrecorded DeepSeek thinking state, and no deployment or six-model claim |
-| C10 | On the fixed six-model ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, thinking DeepSeek 0.7881, Qwen 0.7872, GPT-4.1-mini 0.7572, and Gemma 0.7169 clinical-headline F1 | Holdout aggregate evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or clinical validation; hosted and local runtime routes differ |
-| C11 | On the matched Gan v0.7 test450 panel, Qwen scored 367/450, Sol 358/450, GPT-4.1-mini 353/450, Luna 352/450, Gemma 343/450, and thinking DeepSeek 342/450 Purist | Frozen aggregate evidence | Same prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; local results use aggregate-only reparse of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a row table without subsequent analysis or tuning |
+| C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs with incomplete runtime metadata, and no deployment or six-model claim |
+| C10 | On the fixed six-model ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, DeepSeek 0.7881, Qwen 0.7872, GPT-4.1-mini 0.7572, and Gemma 0.7169 clinical-headline F1 | Aggregate test evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or clinical validation; hosted and local runtime routes differ |
+| C11 | On the matched Gan v0.7 test450 panel, Qwen scored 367/450, Sol 358/450, GPT-4.1-mini 353/450, Luna 352/450, Gemma 343/450, and DeepSeek 342/450 Purist | Frozen aggregate evidence | Same prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; local results use aggregate-only reparse of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a row table without subsequent analysis or tuning |
 | C12 | The fixed deterministic ExECT SF projection/suppression stage improves dev140 state-profile F1 for all six model conditions, with 54 wrong-to-correct and one correct-to-wrong transition across the six panels | Development component evidence | The same 140 letters are repeated for each model; the unknown-only denominator is zero, so this does not establish cross-task over-inference transfer or factuality prevalence |
 | C13 | Gan 2026 and ExECTv2 are assessed with the same eight reliability questions using task-specific measures, explicit evidence states, and explicit comparability labels | Strong for the generated framework and selected retained evidence | The tasks do not share one metric; criterion evidence is uneven; construct-only and not-comparable values are not compared numerically; no composite score or clinical-validity claim |
-| C14 | On Gan validation750, `llm_with_rules` improves Purist correctness over matched `llm_only` for all six routes, with 96–168 wrong-to-correct and 23–34 correct-to-wrong transitions per model; bounded schema replay recovers 11 records with zero changes to an existing selected answer | Development component evidence from twelve retained 750-row traces and a no-call replay | The near-ceiling rules-only comparator remains stronger on many rows; evidence validity is incomplete on changed rows; provider routes differ; not holdout evidence, clinical validation, or a universal method/model ranking |
+| C14 | On Gan dev750, `llm_with_rules` improves Purist correctness over matched `llm_only` for all six routes, with 96–168 wrong-to-correct and 23–34 correct-to-wrong transitions per model; bounded schema replay recovers 11 records with zero changes to an existing selected answer | Development component evidence from twelve retained 750-row traces and a no-call replay; retained artifacts use the legacy split identifier `validation750` | The near-ceiling rules-only comparator remains stronger on many rows; evidence validity is incomplete on changed rows; provider routes differ; not test evidence, clinical validation, or a universal method/model ranking |
 
 ## Selected headline results
 
@@ -50,16 +50,16 @@ must not make a stronger claim than either source supports.
 | ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393 |
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
-| ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; thinking DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
-| Gan matched six-model v0.7 panel, test450 | GPT-4.1-mini 353/450; Luna 352/450; Sol 358/450; thinking DeepSeek 342/450; Qwen 367/450; Gemma 343/450 Purist |
+| ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
+| Gan matched six-model v0.7 panel, test450 | GPT-4.1-mini 353/450; Luna 352/450; Sol 358/450; DeepSeek 342/450; Qwen 367/450; Gemma 343/450 Purist |
 
-The historical DeepSeek full200 aggregate is `0.8566`, but its thinking state
-was not recorded. It is retained for audit only and is excluded from the
-paper-facing model table unless thinking-enabled execution can be proved.
+The historical DeepSeek full200 aggregate is `0.8566`, but its runtime metadata
+is incomplete. It is retained for audit only and excluded from the paper-facing
+model table.
 
 ## Wording the paper must avoid
 
-- Do not describe ExECT full200 as an independent holdout.
+- Do not describe ExECT full200 as an independent test split.
 - Do not describe `clinical_headline` as the published strict benchmark.
 - Do not describe the paper-derived development replay as reproduction of the
   original ExECT system or its 0.87/0.90 validation scores.
@@ -72,7 +72,7 @@ paper-facing model table unless thinking-enabled execution can be proved.
 - Do not describe `v08` as satisfying the final model-led family contract.
 - Do not promote the corrected aggregate candidates as final model rows. The
   architecture checks now exist, but deterministic correct-to-wrong counts are
-  nonzero and the historical DeepSeek thinking state is unrecorded.
+  nonzero and the historical DeepSeek runtime metadata is incomplete.
 - Do not turn Gan model-pass counts into measured token, dollar, energy, or
   latency savings.
 - Do not describe the eight-criterion framework as one shared reliability
@@ -86,6 +86,6 @@ paper-facing model table unless thinking-enabled execution can be proved.
 ## Open work
 
 1. Keep the six-model claim bounded to the named fixed pipelines, aggregate
-   holdout readouts, and recorded route differences.
+   test readouts, and recorded route differences.
 2. Complete independent clinical review before any semantic-support or
    clinical-validity claim.

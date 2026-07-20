@@ -13,7 +13,7 @@ Clinical extraction results are difficult to interpret when model output,
 deterministic rules, repair, evidence checks, and scoring are reported as one
 method. We evaluate three methods—rules only, LLM only, and LLM with rules—on
 two epilepsy-letter tasks. Gan 2026 asks for one current seizure-frequency
-label; ExECTv2 extracts several epilepsy phenotypes. On Gan validation750, the
+label; ExECTv2 extracts several epilepsy phenotypes. On Gan dev750, the
 three selected methods produced 697/750, 581/750, and 661/748 rendered
 Purist-correct predictions. Saved Gan holdout results are 364/450 for the
 single-pass system and 379/450 for a multi-model comparison. On ExECT dev140,
@@ -66,7 +66,8 @@ different repair and scoring steps visible.
 ### 3.1 Tasks and data splits
 
 Gan 2026 asks for one current seizure-frequency label per synthetic letter.
-Validation750 permits row review and replay. Test450 is locked: only saved
+Dev750 permits row review and replay. Retained artifacts use the legacy split
+identifier `validation750`. Test450 is locked: only saved
 aggregate results may be used, and holdout failures cannot guide development.
 
 ExECTv2 covers diagnosis, seizure frequency, prescriptions, and investigations
@@ -130,9 +131,9 @@ This rule does not authorize model calls.
 | ExECTv2 | Rules only | dev140 | all-features macro item F1 0.6020 | Paper-derived metric development reference; strict micro item F1 0.3548 |
 | ExECTv2 | LLM only | dev140 | clinical fact F1 0.7393 | GEPA negative development comparison |
 | ExECTv2 | Historical LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 | Reproducible development control; not the final model-led family architecture |
-| Gan 2026 | Rules only | validation750 | 697/750 Purist | Development comparison |
-| Gan 2026 | LLM only | validation750 | 581/750 Purist | Development comparison |
-| Gan 2026 | LLM with rules | validation750 | 661/748 rendered Purist | Development comparison |
+| Gan 2026 | Rules only | dev750 | 697/750 Purist | Development comparison |
+| Gan 2026 | LLM only | dev750 | 581/750 Purist | Development comparison |
+| Gan 2026 | LLM with rules | dev750 | 661/748 rendered Purist | Development comparison |
 
 All six runs replay from selected files without model calls. The ExECT combined
 method also returns evidence-valid F1 0.8913. Its legacy benchmark/CUI companion
@@ -181,7 +182,7 @@ comparison, not measured token, dollar, energy, or latency efficiency.
 | GPT-4.1-mini | 0.8202 | 0.7572 | 0.8470 | 0.6936 | 0.8672 | 0.8538 | 0 / 0 |
 | GPT-5.6 Luna | 0.8832 | 0.7950 | 0.8910 | 0.7892 | 0.9250 | 0.9202 | 0 / 0 |
 | GPT-5.6 Sol | 0.8920 | 0.8047 | 0.8882 | 0.8012 | 0.9432 | 0.9358 | 0 / 0 |
-| DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | 0.8764 | 0.7610 | 0.9280 | 0.9389 | 0 / 0 |
+| DeepSeek V4 Flash | 0.8767 | 0.7881 | 0.8764 | 0.7610 | 0.9280 | 0.9389 | 0 / 0 |
 | Qwen 3.6:35B, local | 0.8571 | 0.7872 | 0.8720 | 0.7062 | 0.9249 | 0.9105 | 0 / 0 |
 | Gemma 4 26B, local | 0.8016 | 0.7169 | 0.8378 | 0.6226 | 0.9046 | 0.8047 | 0 / 6 |
 
@@ -193,13 +194,13 @@ Prescription column was deterministic-only and their Seizure Frequency column
 included an independent extractor union. The fixed rows use the decision-0041
 one-call architecture and preserve attribution, `state_profile`,
 schema/evidence, and regression records. DeepSeek uses the official
-`deepseek-v4-flash` route with thinking enabled. Dev140 family scores are shown
+`deepseek-v4-flash` route. Dev140 family scores are shown
 above; test60 is aggregate only and uses the same internal scorer. Hosted/local
 route and temperature differences prevent a model-neutral capability ranking.
 
 ### 4.5 Component replays
 
-| Component removed | ExECT dev140 score change | Gan validation750 score change |
+| Component removed | ExECT dev140 score change | Gan dev750 score change |
 | --- | ---: | ---: |
 | Normalization and shared dictionary | +0.0389 | +0.0293 |
 | Exact-evidence check | 0.0000 | 0.0000 |

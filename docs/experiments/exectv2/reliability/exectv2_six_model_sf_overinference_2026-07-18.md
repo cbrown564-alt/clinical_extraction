@@ -15,7 +15,7 @@ The primary gold unknown-only denominator contains **0 letters**, so the result 
 | GPT-4.1-mini | 0/0 (n/a) | 0/0 (n/a) | 0.7340 | 0.7845 | 13 | 0 |
 | GPT-5.6 Luna | 0/0 (n/a) | 0/0 (n/a) | 0.8357 | 0.8551 | 4 | 0 |
 | GPT-5.6 Sol | 0/0 (n/a) | 0/0 (n/a) | 0.8509 | 0.8603 | 3 | 1 |
-| DeepSeek V4 Flash, thinking enabled | 0/0 (n/a) | 0/0 (n/a) | 0.8104 | 0.8429 | 9 | 0 |
+| DeepSeek V4 Flash | 0/0 (n/a) | 0/0 (n/a) | 0.8104 | 0.8429 | 9 | 0 |
 | Qwen 3.6:35B | 0/0 (n/a) | 0/0 (n/a) | 0.7517 | 0.7986 | 13 | 0 |
 | Gemma 4 26B | 0/0 (n/a) | 0/0 (n/a) | 0.6894 | 0.7386 | 12 | 0 |
 
@@ -29,7 +29,7 @@ The final stage adds the named deterministic Seizure Frequency projection and su
 | GPT-4.1-mini | 0 | 0 | 0 | 3 | 1.0000 | 0 |
 | GPT-5.6 Luna | 0 | 0 | 0 | 1 | 1.0000 | 0 |
 | GPT-5.6 Sol | 0 | 0 | 0 | 0 | 1.0000 | 0 |
-| DeepSeek V4 Flash, thinking enabled | 0 | 0 | 0 | 1 | 1.0000 | 0 |
+| DeepSeek V4 Flash | 0 | 0 | 0 | 1 | 1.0000 | 0 |
 | Qwen 3.6:35B | 0 | 0 | 0 | 2 | 1.0000 | 0 |
 | Gemma 4 26B | 0 | 0 | 0 | 5 | 1.0000 | 0 |
 
@@ -47,7 +47,7 @@ The following counts are diagnostics, not factuality prevalence estimates.
 | GPT-4.1-mini | 11/41 | 5/34 | 0/2 |
 | GPT-5.6 Luna | 10/41 | 4/34 | 0/2 |
 | GPT-5.6 Sol | 7/41 | 4/34 | 0/2 |
-| DeepSeek V4 Flash, thinking enabled | 8/41 | 2/34 | 0/2 |
+| DeepSeek V4 Flash | 8/41 | 2/34 | 0/2 |
 | Qwen 3.6:35B | 13/41 | 5/34 | 0/2 |
 | Gemma 4 26B | 12/41 | 10/34 | 1/2 |
 

@@ -2,7 +2,7 @@
 
 Generated: 2026-07-20T09:01:11.607176+00:00
 
-Development evidence on `validation750`; no model calls or test rows were used.
+Development evidence on `dev750` (legacy artifact ID: `validation750`); no model calls or test rows were used.
 
 ## Replay result
 
@@ -84,4 +84,4 @@ The replay is accepted only if selected-answer changes remain zero. Recovered re
 
 ## Claim boundary
 
-Development component evidence for the named validation split and frozen routes; not holdout evidence, clinical validation, or a model-neutral ranking.
+Development component evidence for the named dev750 split and frozen routes; not test evidence, clinical validation, or a model-neutral ranking.

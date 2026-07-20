@@ -1,0 +1,48 @@
+# Canonical SF surface regex fragments (P1-1 Phase 1).
+patterns:
+  EVERY_N_TO_M_PERIODS:
+    flags: [IGNORECASE]
+    pattern: '\bevery\s+(?P<lower>\d+)\s*(?:-|to)\s*(?P<upper>\d+)\s+(?P<period>days?|weeks?|months?|years?)\b'
+
+  SEIZURES_EVERY_RANGE_WEEKS:
+    flags: [IGNORECASE]
+    pattern: '\bseizures?\s+every\s+(?P<low>\d+)\s+to\s+(?P<high>\d+)\s+weeks?\b'
+
+  NO_FURTHER_SINCE:
+    flags: [IGNORECASE]
+    pattern: '\b(?:has|have|had)\s+not\s+had\s+any\s+further\s+seizures\s+since\b|\bno\s+further\s+seizures\s+since\b|\bno\s+seizures\s+since\b'
+
+  CONTEXTUAL_RATE_NOISE:
+    flags: [IGNORECASE]
+    pattern: '\b(?:free\s+of\s+seizures|dvla|drive\s+until|previously|before\s+the\s+seizure|best\s+period|longest\s+period|up\s+until|first\s+seizure\s+at\s+the\s+age|at\s+the\s+age\s+of\s+\d+|at\s+onset|at\s+the\s+onset|well\s+controlled|reasonably\s+controlled|remain\s+well\s+controlled|uncontrolled|clumsy|low\s+mood|at\s+least\s+three\s+seizures\s+he\s+has\s+epilepsy|not\s+related\s+to\s+sleep\s+or\s+meals|febrile\s+seizures?|mother\s+had\s+epilepsy|family\s+history|up\s+to\s+\w+\s+weeks?\s+seizure\s+free|transient\s+loss\s+of\s+consciousness|as\s+a\s+child\s+he\s+had\s+seizures|helped\s+(?:his|her)\s+seizures|background\s+of\s+frequent\s+seizures|continues\s+to\s+get\s+seizures\s+despite\s+pharmacological\s+treatment)\b'
+
+  NO_FURTHER_GTC_SINCE:
+    flags: [IGNORECASE]
+    pattern: '\bnot had any further generalised tonic clonic seizures since\b'
+
+  GTC_RANGE_PER_WEEK:
+    flags: [IGNORECASE]
+    pattern: '\b(?P<low>\d+)\s*[-–]\s*(?P<high>\d+)\s+generalised\s+tonic\s+clonic\s+seizures?\s+per\s+week\b'
+
+  DATED_GTC:
+    flags: [IGNORECASE]
+    pattern: '(?P<count>\d+)\s+generalised tonic clonic seizures\s+(?P<year>\d{4})'
+
+  GTCS_ACTIVE_WITHOUT_COUNT:
+    flags: [IGNORECASE]
+    pattern: '\b(?:on\s+sunday\s+and\s+monday,\s+he\s+was\s+having|further)\s+generalised\s+tonic\s+clonic\s+seizures\b'
+
+  GTC_FURTHER_SINCE:
+    flags: [IGNORECASE]
+    pattern: '\bfurther\s+generalised\s+tonic\s+clonic\s+seizures\s+since\b'
+
+  GTC_FOUR_LAST_THREE_WEEKS:
+    flags: [IGNORECASE]
+    pattern: '\bgeneralised\s+tonic\s+clonic\s+seizures?[\s\S]{0,180}\bhad\s+four\s+in\s+the\s+last\s+three\s+weeks\b'
+
+  GTC_PER_MONTH:
+    flags: [IGNORECASE]
+    pattern: '\b(?P<count>\d+)\s+generali[sz]ed\s+tonic\s+clonic\s+seizures?[^.\n]{0,40}\bper\s+month\b'
+
+fragments:
+  PERIOD_UNIT: days?|weeks?|months?|years?

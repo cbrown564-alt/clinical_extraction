@@ -9,17 +9,16 @@
 - Predeclaration: `docs/experiments/exectv2/reliability/exectv2_same_core_full200_predeclaration_2026-06-25.md`
 
 Historical evidence note: `deepseek/deepseek-chat` is the API identifier for
-DeepSeek V4 Flash, but this run does not record whether thinking was enabled.
-Its score remains reproducible audit evidence but is not eligible as the final
-paper result for DeepSeek. The final table will report only a thinking-enabled
-condition under the display name **DeepSeek V4 Flash**.
+DeepSeek V4 Flash, but this run has incomplete runtime metadata. Its score
+remains reproducible audit evidence but is not eligible as the final paper
+result for DeepSeek. The final table uses the display name **DeepSeek V4 Flash**.
 
 ## Model Rows
 
 | Candidate | Model | Status | Overall | Dx | SF | Presc | Inv | Call failures | Parse/schema failures | Min evidence rate |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `exectv2_2call_no_sf_adjudicator_gpt41mini_full200` | GPT-4.1-mini | complete | 0.8356 | 0.8397 | 0.7525 | 0.8926 | 0.8563 | 0 | 0 | 1.0000 |
-| `exectv2_2call_no_sf_adjudicator_deepseek_full200` | DeepSeek V4 Flash API run (thinking state unrecorded) | complete | 0.8566 | 0.8708 | 0.7602 | 0.8926 | 0.9091 | 0 | 1 | 1.0000 |
+| `exectv2_2call_no_sf_adjudicator_deepseek_full200` | DeepSeek V4 Flash API run (incomplete runtime metadata) | complete | 0.8566 | 0.8708 | 0.7602 | 0.8926 | 0.9091 | 0 | 1 | 1.0000 |
 
 ## Readiness Gates
 

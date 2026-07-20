@@ -42,7 +42,7 @@
       "slug": "deepseek_v4_flash",
       "status": "fresh_after_validation_pilot",
       "model": "deepseek/deepseek-v4-flash",
-      "transport": "official DeepSeek hosted route; thinking enabled by model route",
+      "transport": "official DeepSeek hosted route",
       "temperature": 0,
       "max_tokens": 32000,
       "pilot_root": "scratch/validation/gan2026_matched_v07/deepseek_v4_flash",

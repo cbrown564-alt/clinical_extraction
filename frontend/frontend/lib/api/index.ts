@@ -148,12 +148,18 @@ export function fetchGoldAuditNext(split: string = "validation", dataset: "gan20
   );
 }
 
-export function fetchQualifiedReviewPackets() {
-  return request<import("../types").QualifiedReviewPacketsResponse>("/qualified-review/packets");
+export function fetchQualifiedReviewPackets(reviewerId: string) {
+  const params = new URLSearchParams({ reviewer_id: reviewerId });
+  return request<import("../types").QualifiedReviewPacketsResponse>(
+    `/qualified-review/packets?${params.toString()}`
+  );
 }
 
-export function fetchQualifiedReviewDecisions() {
-  return request<import("../types").QualifiedReviewDecisionsResponse>("/qualified-review/decisions");
+export function fetchQualifiedReviewDecisions(reviewerId: string) {
+  const params = new URLSearchParams({ reviewer_id: reviewerId });
+  return request<import("../types").QualifiedReviewDecisionsResponse>(
+    `/qualified-review/decisions?${params.toString()}`
+  );
 }
 
 export function postQualifiedReviewDecision(decision: import("../types").QualifiedReviewDecision) {

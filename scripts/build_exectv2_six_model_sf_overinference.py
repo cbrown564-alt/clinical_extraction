@@ -27,7 +27,7 @@ MODEL_SPECS = (
     ("GPT-4.1-mini", "gpt41mini"),
     ("GPT-5.6 Luna", "gpt56luna"),
     ("GPT-5.6 Sol", "gpt56sol"),
-    ("DeepSeek V4 Flash, thinking enabled", "deepseek_v4_flash"),
+    ("DeepSeek V4 Flash", "deepseek_v4_flash"),
     ("Qwen 3.6:35B", "qwen36_35b"),
     ("Gemma 4 26B", "gemma4_26b"),
 )

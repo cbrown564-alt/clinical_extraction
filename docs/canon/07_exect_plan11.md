@@ -17,16 +17,15 @@ and investigations.
 | Model | Full200 clinical fact F1 | Limit |
 | --- | ---: | --- |
 | GPT-4.1-mini | 0.8356 | Development-inclusive aggregate |
-| DeepSeek V4 Flash, historical run | 0.8566 | Development-inclusive aggregate; thinking state not recorded, so not final-report eligible |
+| DeepSeek V4 Flash, historical run | 0.8566 | Development-inclusive aggregate with incomplete runtime metadata; not final-report eligible |
 | Qwen 3.6:35b, repair v02 | 0.8197 | Diagnostic aggregate |
 
 This is not the planned six-model comparison. Full200 contains dev140 and
 held-out test60, so it is not an independent holdout. The final roster is
 GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol, hosted DeepSeek V4 Flash, local Qwen
 3.6:35B, and local Gemma 4 26B. DeepSeek V4 Flash uses the
-`deepseek/deepseek-chat` API identifier, but only a thinking-enabled result will
-be reported for that model. The retained row does not record the thinking
-state, so it does not yet satisfy the final condition. See
+`deepseek/deepseek-chat` API identifier. The retained historical row has
+incomplete runtime metadata, so it does not satisfy the final condition. See
 [decision 0039](../decisions/0039-final-exect-six-model-roster.md).
 
 The historical rows also do not measure one consistent model-led method.
@@ -46,7 +45,7 @@ bounded policy, and the internal `clinical_headline` scorer.
 | GPT-4.1-mini | 0.8202 | 0.7572 | 59/59; 0 call or blocking parse failures |
 | GPT-5.6 Luna | 0.8832 | 0.7950 | 59/59; 0 call or blocking parse failures |
 | GPT-5.6 Sol | 0.8920 | 0.8047 | 59/59; 0 call or blocking parse failures |
-| DeepSeek V4 Flash, thinking enabled | 0.8767 | 0.7881 | 59/59; 0 call or blocking parse failures |
+| DeepSeek V4 Flash | 0.8767 | 0.7881 | 59/59; 0 call or blocking parse failures |
 | Qwen 3.6:35B | 0.8571 | 0.7872 | 59/59; 0 call or parse/schema failures |
 | Gemma 4 26B | 0.8016 | 0.7169 | 59/59; 0 call failures; 6 aggregate parse/schema failures |
 
@@ -70,7 +69,7 @@ scores from saved outputs:
 | Model | Overall | Diagnosis | SF headline | SF `state_profile` | Prescription | Investigations |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | GPT-4.1-mini | 0.8171 | 0.8583 | 0.6501 | 0.7813 | 0.8700 | 0.8614 |
-| DeepSeek V4 Flash API run, thinking state unrecorded | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
+| DeepSeek V4 Flash API run, incomplete runtime metadata | 0.8543 | 0.8789 | 0.7146 | 0.8085 | 0.9057 | 0.9091 |
 | Qwen 3.6:35B, repair v02 | 0.8234 | 0.8520 | 0.6343 | 0.7812 | 0.9220 | 0.8548 |
 
 Durable decision-0040 configurations and a no-call Git-blob replay reproduce

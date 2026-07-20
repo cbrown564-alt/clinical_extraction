@@ -57,7 +57,7 @@ def render_report(scorecard: Mapping[str, Any]) -> str:
         "openai/gpt-4.1-mini": "GPT-4.1-mini",
         "openai/gpt-5.6-luna": "GPT-5.6 Luna",
         "openai/gpt-5.6-sol": "GPT-5.6 Sol",
-        "deepseek/deepseek-v4-flash": "DeepSeek V4 Flash (thinking)",
+        "deepseek/deepseek-v4-flash": "DeepSeek V4 Flash",
         "ollama_chat/qwen3.6:35b": "Qwen 3.6:35B",
         "ollama_chat/gemma4:26b": "Gemma 4 26B",
     }

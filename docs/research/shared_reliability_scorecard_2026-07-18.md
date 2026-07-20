@@ -17,7 +17,7 @@ The exact selected sources and hashes are owned by the
 
 | Criterion | State | Strongest evidence | Result and limit |
 | --- | --- | --- | --- |
-| Clinical correctness and generalization | `measured` / `complete_for_recorded_scope` | `aggregate_holdout_evidence` | Six-model test450 Purist and Pragmatic accuracy plus the retained subject validation/test comparison. |
+| Clinical correctness and generalization | `measured` / `complete_for_recorded_scope` | `aggregate_holdout_evidence` | Six-model test450 Purist and Pragmatic accuracy plus the retained subject development/test comparison. |
 | Clinical selection and unsupported inference | `measured` / `partial` | `aggregate_holdout_evidence` | Unknown-gold active-rate over-read is retained; selected denominator counts are absent from the compact source. |
 | Evidence support and faithfulness | `measured` / `partial` | `aggregate_holdout_evidence` | Textual grounding is measured; independent semantic-support review is not selected. |
 | Uncertainty and selective action | `measured` / `complete_for_recorded_scope` | `development_answer` | External-signal calibration and full risk-coverage results are retained for the named subject. |
@@ -33,7 +33,7 @@ The exact selected sources and hashes are owned by the
 | GPT-4.1-mini | 353/450 | 371/450 |
 | GPT-5.6 Luna | 352/450 | 365/450 |
 | GPT-5.6 Sol | 358/450 | 376/450 |
-| DeepSeek V4 Flash (thinking) | 342/450 | 362/450 |
+| DeepSeek V4 Flash | 342/450 | 362/450 |
 | Qwen 3.6:35B | 367/450 | 380/450 |
 | Gemma 4 26B | 343/450 | 367/450 |
 
@@ -61,7 +61,7 @@ one-shot or general model-superiority comparison.
 | GPT-4.1-mini | 0.8202 | 0.7572 | -0.0630 |
 | GPT-5.6 Luna | 0.8832 | 0.7950 | -0.0882 |
 | GPT-5.6 Sol | 0.8920 | 0.8047 | -0.0873 |
-| DeepSeek V4 Flash (thinking) | 0.8767 | 0.7881 | -0.0886 |
+| DeepSeek V4 Flash | 0.8767 | 0.7881 | -0.0886 |
 | Qwen 3.6:35B | 0.8571 | 0.7872 | -0.0699 |
 | Gemma 4 26B | 0.8016 | 0.7169 | -0.0847 |
 

@@ -13,7 +13,7 @@
   "comparator": "structured model predicted_mentions before SF projection/suppression",
   "candidate": "final assembled predicted_mentions",
   "repair_policy": "selected joint bounded policy; SF state projection v0.6 and unsupported-state suppression v0.7",
-  "source_revision": "6c6df72c4069999c5cd24a12014f6b8d6a1183f5",
+  "source_revision": "c51bbc8e7840c41938c14ff25a35fac6c4ead9a8",
   "dirty_tree_note": "Generated from the current working tree; source artifacts are hash-recorded.",
   "primary_denominator": 0,
   "primary_evidence_state": "diagnostic",
@@ -11271,7 +11271,7 @@
       ]
     },
     {
-      "model": "DeepSeek V4 Flash, thinking enabled",
+      "model": "DeepSeek V4 Flash",
       "runtime_model": "deepseek/deepseek-v4-flash",
       "runtime": "official_deepseek_v4_flash_default_thinking",
       "structured_artifact": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715_structured.jsonl",

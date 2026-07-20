@@ -5,7 +5,7 @@ Status: frozen before no-call replay
 
 ## Primary question
 
-After all twelve Gan validation conditions completed, can bounded structural
+After all twelve Gan development conditions completed, can bounded structural
 schema repair recover additional valid records without changing an already
 selected clinical answer, and which component owns each matched method gain or
 regression?
@@ -13,13 +13,15 @@ regression?
 ## Data and inspection
 
 - Dataset: Gan 2026.
-- Split: `validation750`, manifest `gan2026_split_v1`.
+- Split: `dev750`; the manifest and retained artifacts use the legacy identifier
+  `validation750`. Manifest: `gan2026_split_v1`.
 - Row policy: development row-level inspection permitted.
 - Inputs: the twelve frozen artifacts under
   `scratch/validation/gan2026_six_model_comparison_20260718/`.
 - Model calls: none; cache/replay mode is saved raw-output replay.
 - Scorers: frozen Gan Purist primary and Pragmatic secondary.
-- Rules comparison: retained deterministic canonical validation750 artifact.
+- Rules comparison: retained deterministic canonical dev750 artifact (legacy
+  ID: `validation750`).
 
 Gan `test450` is excluded. No locked row may enter the replay or analysis.
 

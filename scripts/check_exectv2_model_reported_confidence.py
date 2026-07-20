@@ -148,7 +148,7 @@ def build_study(configs: list[model_swap.ModelSwapConfig]) -> dict[str, Any]:
         "claim_boundary": (
             "Aggregate out-of-sample evidence for three saved historical model outputs. "
             "Not deployment calibration, independent clinical validation, a six-model "
-            "conclusion, or a thinking-enabled DeepSeek V4 Flash result."
+            "conclusion, or evidence for the final DeepSeek V4 Flash runtime."
         ),
     }
 
@@ -341,9 +341,9 @@ def render_report(payload: dict[str, Any]) -> str:
             "This is a no-call replay of saved historical outputs. Dev140 and test60 are",
             "reported separately, and no test60 row identifier, text, prediction, or failure",
             "was emitted. The result concerns these saved outputs only. The historical",
-            "DeepSeek thinking state is unrecorded. This is not deployment calibration,",
+            "DeepSeek runtime metadata is incomplete. This is not deployment calibration,",
             "independent clinical validation, a six-model conclusion, or evidence for a",
-            "thinking-enabled DeepSeek V4 Flash run.",
+            "final DeepSeek V4 Flash runtime.",
             "",
             f"Protocol: `{payload['protocol']}`",
             "",

@@ -1,6 +1,6 @@
 # 03 — Evidence priority and data limits
 
-Last updated: 2026-07-14
+Last updated: 2026-07-20
 
 ## When records disagree
 
@@ -19,8 +19,8 @@ Deleted history remains available in Git but is not current evidence.
 | Split | May rows be inspected? | Permitted use |
 | --- | --- | --- |
 | ExECT dev140 | Yes | Development, replay, and error analysis |
-| Gan validation750 | Yes | Development comparisons and component analysis |
-| ExECT full200 | No row review of test60 | Aggregate development-inclusive check; not an independent holdout |
+| Gan dev750 (legacy artifact ID: `validation750`) | Yes | Development comparisons and component analysis |
+| ExECT full200 | No row review of test60 | Aggregate development-inclusive check; not an independent test split |
 | Gan test450 | No | Cite saved aggregate results only |
 
 Routine commands must not expose Gan test450 or ExECT test60 rows for

@@ -75,13 +75,9 @@ class QualifiedReviewDecision(BaseModel):
     letter_id: str | None = None
     attribute_name: str | None = None
     attribute_value: str | None = None
-    attribute_entailment: str | None = None
-    value_verdict: str | None = None
-    clinical_interpretation: str | None = None
-    reviewer_rationale: str | None = None
-    reviewer_confidence: str | None = None
-    auditor: str | None = None
-    timestamp: str | None = None
+    reviewer_id: str = Field(min_length=1, max_length=120)
+    correctness: Literal["correct", "incorrect"]
+    review_notes: str | None = Field(default=None, max_length=10_000)
 
 
 class SemanticSupportReviewDecision(BaseModel):
@@ -336,9 +332,10 @@ def exectv2_run(run_id: str, data: FrontendDataDependency) -> dict[str, Any]:
 def qualified_review_packets(
     data: FrontendDataDependency,
     reviews: ReviewStoreDependency,
+    reviewer_id: str | None = Query(default=None, min_length=1, max_length=120),
 ) -> dict[str, Any]:
     payload = data.qualified_review_packets()
-    decisions = _qualified_decisions(data, reviews)
+    decisions = reviews.list(_correctness_review_kind(reviewer_id)) if reviewer_id else []
     decided_ids = {str(item["attribute_review_id"]) for item in decisions}
     packets = payload.get("packets")
     if isinstance(packets, list):
@@ -353,11 +350,16 @@ def qualified_review_packets(
 
 @router.get("/qualified-review/decisions")
 def qualified_review_decisions(
-    data: FrontendDataDependency,
     reviews: ReviewStoreDependency,
+    reviewer_id: str = Query(min_length=1, max_length=120),
 ) -> dict[str, Any]:
-    decisions = _qualified_decisions(data, reviews)
-    return {"decisions": decisions, "count": len(decisions)}
+    decisions = reviews.list(_correctness_review_kind(reviewer_id))
+    return {
+        "reviewer_id": reviewer_id,
+        "decisions": decisions,
+        "count": len(decisions),
+        "blinded": True,
+    }
 
 
 @router.post("/qualified-review/decide")
@@ -369,7 +371,11 @@ def qualified_review_decide(
     if decision.attribute_review_id not in data.qualified_review_ids():
         raise not_found()
     payload = decision.model_dump(mode="json", exclude_none=True)
-    saved = reviews.save("qualified", decision.attribute_review_id, payload)
+    saved = reviews.save_revisioned(
+        _correctness_review_kind(decision.reviewer_id),
+        decision.attribute_review_id,
+        payload,
+    )
     return {"status": "saved", "decision": saved}
 
 
@@ -651,6 +657,10 @@ def _merge_decisions(
 
 def _semantic_support_review_kind(reviewer_id: str) -> str:
     return f"semantic-support:{reviewer_id.strip()}"
+
+
+def _correctness_review_kind(reviewer_id: str) -> str:
+    return f"correctness:{reviewer_id.strip()}"
 
 
 def _qualified_decisions(
