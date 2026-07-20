@@ -153,17 +153,9 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
     model_runs = [*by_mode["llm_plus_rules"], *by_mode["llm_only"]]
     assert all(item["split"] == "validation750" for item in model_runs)
     assert all("test450" not in str(item["run_id"]) for item in model_runs)
-    assert all(
-        item["availability"] in {"replay", "not_retained"}
-        and item["evidence_scope"]
-        in {"validation750_row_level", "incomplete_not_served"}
-        for item in model_runs
-    )
-    assert any(item["availability"] == "replay" for item in model_runs)
-    assert all(
-        item["has_replay_artifact"] is (item["availability"] == "replay")
-        for item in model_runs
-    )
+    assert all(item["availability"] == "replay" for item in model_runs)
+    assert all(item["evidence_scope"] == "validation750_row_level" for item in model_runs)
+    assert all(item["has_replay_artifact"] is True for item in model_runs)
 
     completed = next(item for item in model_runs if item["availability"] == "replay")
     assert completed["metrics"]["row_count"] == 750
@@ -171,10 +163,6 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
     assert replay.status_code == 200
     assert len(replay.json()["content"]) == 2
     assert all(row["split"] == "validation" for row in replay.json()["content"])
-
-    incomplete = next(item for item in model_runs if item["availability"] == "not_retained")
-    assert incomplete["progress"]["completed_rows"] < 750
-    assert client.get(f"/artifacts/{incomplete['run_id']}").status_code == 404
 
     deterministic = by_mode["deterministic_only"][0]
     assert deterministic["run_id"] == "rules_only"
@@ -316,3 +304,94 @@ def test_review_queues_and_writes_enforce_development_row_policy(client: TestCli
     )
     assert locked.status_code == 403
     assert locked.json()["error"]["code"] == "aggregate_only"
+
+
+def test_semantic_support_review_is_blinded_revisioned_and_dev_only(
+    client: TestClient,
+) -> None:
+    reviewer_id = "independent-clinician-a"
+    queue = client.get(
+        "/semantic-support-review/packets",
+        params={"reviewer_id": reviewer_id},
+    )
+
+    assert queue.status_code == 200
+    payload = queue.json()
+    assert payload["protocol_version"] == "exectv2-semantic-support-review-v1"
+    assert payload["blinded"] is True
+    assert payload["total"] == 48
+    assert payload["decided"] == 0
+    assert len(payload["packets"]) == 48
+    assert all(packet["full_letter_text"] for packet in payload["packets"])
+    assert all(packet["letter_id"].startswith("EA") for packet in payload["packets"])
+    assert "gold_mentions" not in queue.text
+    assert all(
+        {"gold_mentions", "gold_correct", "model_correct"}.isdisjoint(packet)
+        for packet in payload["packets"]
+    )
+
+    packet = payload["packets"][0]
+    decision = {
+        "review_item_id": packet["review_item_id"],
+        "reviewer_id": reviewer_id,
+        "semantic_support": "supported",
+        "evidence_decisive": "decisive",
+        "current_fact_warranted": "warranted",
+        "unsupported_inference": "absent",
+        "reviewer_confidence": "high",
+        "review_notes": "Exact wording supports the stored conclusion and status.",
+    }
+    first = client.post("/semantic-support-review/decide", json=decision)
+    assert first.status_code == 200
+    assert first.json()["decision"]["revision"] == 1
+
+    revised = client.post(
+        "/semantic-support-review/decide",
+        json={**decision, "reviewer_confidence": "medium"},
+    )
+    assert revised.status_code == 200
+    assert revised.json()["decision"]["revision"] == 2
+
+    own_decisions = client.get(
+        "/semantic-support-review/decisions",
+        params={"reviewer_id": reviewer_id},
+    )
+    assert own_decisions.status_code == 200
+    assert own_decisions.json()["count"] == 1
+    assert own_decisions.json()["decisions"][0]["revision"] == 2
+
+    other_queue = client.get(
+        "/semantic-support-review/packets",
+        params={"reviewer_id": "independent-clinician-b"},
+    )
+    assert other_queue.status_code == 200
+    assert other_queue.json()["decided"] == 0
+    assert not any(packet["has_decision"] for packet in other_queue.json()["packets"])
+
+    export = client.get(
+        "/semantic-support-review/export",
+        params={"reviewer_id": reviewer_id},
+    )
+    assert export.status_code == 200
+    assert export.json()["completion"]["decided"] == 1
+    assert [item["revision"] for item in export.json()["revisions"]] == [1, 2]
+
+
+def test_semantic_support_review_requires_notes_for_non_positive_judgments(
+    client: TestClient,
+) -> None:
+    packet = client.get("/semantic-support-review/packets").json()["packets"][0]
+    response = client.post(
+        "/semantic-support-review/decide",
+        json={
+            "review_item_id": packet["review_item_id"],
+            "reviewer_id": "independent-clinician-a",
+            "semantic_support": "unsupported",
+            "evidence_decisive": "insufficient",
+            "current_fact_warranted": "not_warranted",
+            "unsupported_inference": "present",
+            "reviewer_confidence": "high",
+        },
+    )
+
+    assert response.status_code == 422

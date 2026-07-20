@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import Any, Literal
 
 from fastapi import APIRouter, Query
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
     label_to_frequency_record,
@@ -82,6 +82,58 @@ class QualifiedReviewDecision(BaseModel):
     reviewer_confidence: str | None = None
     auditor: str | None = None
     timestamp: str | None = None
+
+
+class SemanticSupportReviewDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    review_item_id: str = Field(min_length=1, max_length=1000)
+    reviewer_id: str = Field(min_length=1, max_length=120)
+    semantic_support: Literal[
+        "supported", "unsupported", "uncertain", "not_assessable"
+    ]
+    evidence_decisive: Literal[
+        "decisive", "compatible_only", "insufficient", "uncertain", "not_assessable"
+    ]
+    current_fact_warranted: Literal[
+        "warranted", "not_warranted", "uncertain", "not_applicable", "not_assessable"
+    ]
+    unsupported_inference: Literal["absent", "present", "uncertain", "not_assessable"]
+    reviewer_confidence: Literal["low", "medium", "high"]
+    review_notes: str | None = Field(default=None, max_length=10_000)
+
+    @model_validator(mode="after")
+    def require_note_for_exception(self) -> SemanticSupportReviewDecision:
+        clean_positive = (
+            self.semantic_support == "supported"
+            and self.evidence_decisive == "decisive"
+            and self.current_fact_warranted in {"warranted", "not_applicable"}
+            and self.unsupported_inference == "absent"
+        )
+        if not clean_positive and not (self.review_notes or "").strip():
+            raise ValueError("review_notes are required for exceptions and uncertainty")
+        return self
+
+
+_SEMANTIC_SUPPORT_ALLOWED_VALUES = {
+    "semantic_support": ["supported", "unsupported", "uncertain", "not_assessable"],
+    "evidence_decisive": [
+        "decisive",
+        "compatible_only",
+        "insufficient",
+        "uncertain",
+        "not_assessable",
+    ],
+    "current_fact_warranted": [
+        "warranted",
+        "not_warranted",
+        "uncertain",
+        "not_applicable",
+        "not_assessable",
+    ],
+    "unsupported_inference": ["absent", "present", "uncertain", "not_assessable"],
+    "reviewer_confidence": ["low", "medium", "high"],
+}
 
 
 class GoldAuditDecision(BaseModel):
@@ -360,6 +412,82 @@ def qualified_review_decide(
     return {"status": "saved", "decision": saved}
 
 
+@router.get("/semantic-support-review/packets")
+def semantic_support_review_packets(
+    data: FrontendDataDependency,
+    reviews: ReviewStoreDependency,
+    reviewer_id: str | None = Query(default=None, min_length=1, max_length=120),
+) -> dict[str, Any]:
+    payload = data.semantic_support_review_packets()
+    decisions = (
+        reviews.list(_semantic_support_review_kind(reviewer_id)) if reviewer_id else []
+    )
+    decided_ids = {str(item["review_item_id"]) for item in decisions}
+    packets = payload["packets"]
+    for packet in packets:
+        packet["has_decision"] = str(packet["review_item_id"]) in decided_ids
+    return {
+        **payload,
+        "protocol_version": "exectv2-semantic-support-review-v1",
+        "blinded": True,
+        "reviewer_id": reviewer_id,
+        "total": len(packets),
+        "decided": len(decided_ids),
+        "allowed_values": _SEMANTIC_SUPPORT_ALLOWED_VALUES,
+    }
+
+
+@router.get("/semantic-support-review/decisions")
+def semantic_support_review_decisions(
+    reviews: ReviewStoreDependency,
+    reviewer_id: str = Query(min_length=1, max_length=120),
+) -> dict[str, Any]:
+    decisions = reviews.list(_semantic_support_review_kind(reviewer_id))
+    return {
+        "reviewer_id": reviewer_id,
+        "decisions": decisions,
+        "count": len(decisions),
+        "blinded": True,
+    }
+
+
+@router.post("/semantic-support-review/decide")
+def semantic_support_review_decide(
+    decision: SemanticSupportReviewDecision,
+    data: FrontendDataDependency,
+    reviews: ReviewStoreDependency,
+) -> dict[str, Any]:
+    if decision.review_item_id not in data.semantic_support_review_ids():
+        raise not_found()
+    saved = reviews.save_revisioned(
+        _semantic_support_review_kind(decision.reviewer_id),
+        decision.review_item_id,
+        decision.model_dump(mode="json", exclude_none=True),
+    )
+    return {"status": "saved", "decision": saved}
+
+
+@router.get("/semantic-support-review/export")
+def semantic_support_review_export(
+    data: FrontendDataDependency,
+    reviews: ReviewStoreDependency,
+    reviewer_id: str = Query(min_length=1, max_length=120),
+) -> dict[str, Any]:
+    review_kind = _semantic_support_review_kind(reviewer_id)
+    decisions = reviews.list(review_kind)
+    revisions = reviews.revisions(review_kind)
+    source = data.semantic_support_review_packets()
+    return {
+        "schema_version": "exectv2-semantic-support-review-export-v1",
+        "protocol_version": "exectv2-semantic-support-review-v1",
+        "reviewer_id": reviewer_id,
+        "claim_boundary": source["claim_boundary"],
+        "completion": {"decided": len(decisions), "total": len(source["packets"])},
+        "decisions": decisions,
+        "revisions": revisions,
+    }
+
+
 @router.get("/gold-audit/rows")
 def gold_audit_rows(
     data: FrontendDataDependency,
@@ -558,6 +686,10 @@ def _merge_decisions(
     merged = {identity(item): item for item in seed}
     merged.update({identity(item): item for item in local})
     return list(merged.values())
+
+
+def _semantic_support_review_kind(reviewer_id: str) -> str:
+    return f"semantic-support:{reviewer_id.strip()}"
 
 
 def _qualified_decisions(

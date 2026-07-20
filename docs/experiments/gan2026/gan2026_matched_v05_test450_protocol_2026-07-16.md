@@ -157,3 +157,12 @@ from a no-call replay of all 450 saved raw outputs through that current schema
 repair, not from the mixed intermediate parsed fields. The extension and
 replay rules are predeclared in the
 [2026-07-18 local and replay protocol](gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).
+
+## Completion addendum, 2026-07-20
+
+All six aggregate-only test450 conditions are complete. DeepSeek finished with
+450 unique rows and scored 344/450 Purist and 366/450 Pragmatic. The local Qwen
+and Gemma extensions completed at 362/450 and 355/450 Purist respectively.
+The aggregate artifact records all six scores, operational counts, and sealed-
+artifact fingerprints. Completion does not authorize test-row inspection or
+failure analysis.

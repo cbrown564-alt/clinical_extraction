@@ -17,6 +17,8 @@
 | Gan evidence and holdout rules | [Gan evidence summary](canon/06_gan_clinical_policy.md) |
 | Gan hosted test450 protocol and result | [hosted Gan result](experiments/gan2026/gan2026_hosted_test450_protocol_2026-07-15.md) |
 | Gan matched v0.5 test450 protocol and aggregate | [v0.5 protocol](experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md) and [aggregate artifact](../experiments/gan2026_matched_v05_test450_aggregate_20260716.json) |
+| Gan six-model validation method comparison | [protocol](experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md), [result](experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md), and [machine artifact](../experiments/gan2026_six_model_validation_comparison_20260718.json) |
+| Gan post-panel schema replay and component audit | [protocol](experiments/gan2026/gan2026_six_model_post_panel_replay_protocol_2026-07-20.md), [report](experiments/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md), and [machine audit](../experiments/gan2026_six_model_post_panel_attribution_20260720.json) |
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
@@ -35,7 +37,7 @@
 | Combined annotation defects, conventions, ambiguity, scoring, sensitivity, and review status | [annotation-evidence synthesis](experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md) |
 | Reliability across tasks | [cross-task reliability](canon/09_cross_task_reliability.md) |
 | Detailed eight-criterion reliability result | [shared reliability scorecard](research/shared_reliability_scorecard_2026-07-18.md) |
-| Pending ExECT semantic-support review sample | [review protocol](experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md) |
+| ExECT independent semantic-support review | [frozen rubric and review protocol](experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md); local interface at `/semantic-support-review` |
 
 ## Implementation
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from clinical_extraction.core.json_schema_repair import (
@@ -11,6 +12,7 @@ from clinical_extraction.core.json_schema_repair import (
 __all__ = [
     "parse_json_payload_with_schema_repair",
     "repair_decision_payload",
+    "repair_selected_answer_payload",
     "repair_structured_extraction_payload",
 ]
 
@@ -84,6 +86,66 @@ def repair_structured_extraction_payload(payload: Any) -> Any:
         repaired_selection.setdefault("confidence", "medium")
         repaired["selection"] = repaired_selection
     return repaired
+
+
+def repair_selected_answer_payload(
+    payload: Any,
+    *,
+    event_validator: Callable[[Any], Any] | None = None,
+) -> tuple[Any, list[str], list[str]]:
+    """Apply selected-answer-preserving structural repair.
+
+    Mapping-to-list conversion and an empty evidence string for an explicit
+    ``no_reference`` selection preserve model values. Invalid events may be
+    quarantined only when a caller supplies the canonical event validator and
+    the event is not selected. Selected events are never removed.
+    """
+
+    if not isinstance(payload, dict):
+        return payload, [], []
+
+    repaired = dict(payload)
+    notes: list[str] = []
+    quarantined: list[str] = []
+    events = repaired.get("events")
+    if isinstance(events, dict) and all(isinstance(event, dict) for event in events.values()):
+        repaired["events"] = list(events.values())
+        events = repaired["events"]
+        notes.append("container_shape_repaired: events_mapping_to_list")
+
+    selection = repaired.get("selection")
+    if isinstance(selection, dict):
+        repaired_selection = dict(selection)
+        if (
+            repaired_selection.get("final_kind") == "no_reference"
+            and repaired_selection.get("evidence") is None
+        ):
+            repaired_selection["evidence"] = ""
+            notes.append("container_shape_repaired: no_reference_null_evidence")
+        repaired["selection"] = repaired_selection
+        selection = repaired_selection
+
+    if not isinstance(events, list) or event_validator is None:
+        return repaired, notes, quarantined
+
+    selected_ids = {
+        str(value)
+        for value in (selection or {}).get("selected_event_ids", [])
+        if value is not None
+    }
+    retained: list[Any] = []
+    for event in events:
+        event_id = str(event.get("event_id", "")) if isinstance(event, dict) else ""
+        try:
+            event_validator(event)
+        except (TypeError, ValueError):
+            if event_id and event_id not in selected_ids:
+                quarantined.append(event_id)
+                notes.append(f"unselected_event_quarantined: {event_id}")
+                continue
+        retained.append(event)
+    repaired["events"] = retained
+    return repaired, notes, quarantined
 
 
 def _move_key_alias(payload: dict[str, Any], alias: str, canonical: str) -> None:

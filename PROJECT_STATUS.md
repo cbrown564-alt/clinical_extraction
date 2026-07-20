@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-19 on the working tree after commit `2bfb4030`
+Last updated: 2026-07-20 on the working tree after commit `2729c741`
 
 ## Current outcome
 
@@ -9,15 +9,11 @@ models on `dev140` and has aggregate-only `test60` results for the same six
 models. The retained aggregate panel records all six test60 conditions with
 equal canonical status; sealed row artifacts remain ignored and uninspectable.
 
-Gan has a matched six-model aggregate-only `test450` panel under prompt v0.7:
-all six conditions are recorded in the committed aggregate panel. The separate
-v0.5 hosted comparison has complete GPT-4.1-mini, Luna, and Sol conditions.
-Sol's previously undocumented continuation completed at 373/450 Purist.
-DeepSeek has 350 unique sealed rows and is running the remaining 100.
-
-A user-authorized extension is adding Qwen and Gemma test450 conditions under
-the same v0.5 prompt, followed by Qwen validation750. The cancelled Qwen v0.7
-validation run stopped at 367/750 rows and is not evidence for the new queue.
+Gan has complete matched six-model `validation750` and aggregate-only `test450`
+panels. The development panel contains all twelve predeclared model-by-method
+conditions: six `llm_with_rules` and six `llm_only` runs, each with exactly 750
+unique manifest rows and 750 valid `gan2026.row_trace.v1` records. The v0.7
+test panel and the separate v0.5 test extension each contain all six models.
 
 These panels are retained paper evidence with aggregate-only holdout limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
@@ -35,12 +31,26 @@ with task-specific measures, assurance metadata, evidence states,
 comparability labels, and gap decisions. The generated machine and human
 scorecards do not pool incompatible values or calculate a composite score.
 
-The predeclared Gan `validation750` LLM-plus-rules versus LLM-only comparison
-has seven of twelve full conditions through the 750-row trace gate. DeepSeek
-LLM-only and Qwen LLM-plus-rules are active; Qwen LLM-only and both Gemma
-conditions remain queued. GPT-4.1-mini, Luna, and Sol have complete matched
-pairs, and DeepSeek LLM-plus-rules is complete. These are inspectable
-development results, not holdout or clinical-validation evidence.
+The predeclared Gan `validation750` comparison is implemented and verified as a
+complete development panel. `llm_with_rules` improves Purist accuracy over the
+matched `llm_only` condition for every model, by 65 to 134 correct rows. The
+row-level component and failure analysis remains research work; these results
+are not holdout evidence, clinical validation, or a model-neutral ranking.
+
+The post-panel no-call replay is complete from retained development traces.
+Across 9,000 model-condition rows it recovers 11 schema-valid
+`llm_with_rules` records and changes zero existing selected answers. The
+component audit retains matched rescues, regressions, exact-evidence status,
+rules-control regressions, score layers, clinical subproblems, and first-
+failure ownership. Because the deterministic rules control remains stronger on
+many rows, this is a bounded development answer rather than method promotion.
+
+The ExECT semantic-support rubric and adjudication rule are now frozen. A local
+review workspace serves the real 48-item `dev140` sample with the selected
+conclusion, exact evidence, highlighted full-letter context, four required
+judgments, exception notes, reviewer-specific blinded queues, revision history,
+and JSON export. The workflow is implemented and browser-verified; no clinical
+review decision has been collected or validated by this work.
 
 ## Fresh evidence
 
@@ -74,6 +84,27 @@ the published benchmark. See the
 
 ### Gan fixed-prompt comparisons
 
+The matched `validation750` development comparison uses
+`gan2026_hybrid_structured_events_v0.7` for `llm_with_rules` and
+`gan2026_llm_only_canonical_pipeline_v0.8` for `llm_only`.
+
+| Model | LLM with rules Purist | LLM only Purist | Net gain |
+| --- | ---: | ---: | ---: |
+| GPT-4.1-mini | 653/750 | 577/750 | +76 |
+| GPT-5.6 Luna | 646/750 | 558/750 | +88 |
+| GPT-5.6 Sol | 655/750 | 590/750 | +65 |
+| DeepSeek V4 Flash, thinking enabled | 643/750 | 559/750 | +84 |
+| Qwen 3.6:35B | 667/750 | 565/750 | +102 |
+| Gemma 4 26B | 646/750 | 512/750 | +134 |
+
+All twelve conditions have 750 unique expected rows and 750 trace records.
+Final call failures are zero except Qwen LLM-only (5) and Gemma LLM-only (7);
+blocking parse/schema failures range from 0 to 8 for `llm_with_rules` and 0 to
+63 for `llm_only`. These failures remain part of the frozen development result.
+The [generated comparison](docs/experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md)
+and [machine-readable artifact](experiments/gan2026_six_model_validation_comparison_20260718.json)
+record hashes, scores, evidence counts, and matched row transitions.
+
 The matched v0.7 `test450` panel uses one call per note, prompt
 `gan2026_hybrid_structured_events_v0.7`, `hybrid_full_stack` repair, and the Gan
 Purist and Pragmatic scorers.
@@ -92,10 +123,10 @@ deterministic repair and exact evidence for 363/450 Qwen and 437/450 Gemma
 rows. The complete panel is aggregate-only evidence on a previously used
 holdout, not a pristine one-shot or model-neutral capability ranking.
 
-Under the separate v0.5 protocol, GPT-4.1-mini completed at 361/450 Purist and
-379/450 Pragmatic, Luna at 362/450 and 375/450, and Sol at 373/450 and
-384/450. DeepSeek has 350 unique rows and remains unscored until all 450 raw
-outputs are complete and replayed through today's schema repair. The
+Under the separate v0.5 protocol, all six conditions are complete: GPT-4.1-mini
+scores 361/450 Purist and 379/450 Pragmatic, Luna 362/450 and 375/450, Sol
+373/450 and 384/450, DeepSeek 344/450 and 366/450, Qwen 362/450 and 384/450,
+and Gemma 355/450 and 374/450. The
 [amended hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
 and [local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
 own the active runs.
@@ -132,29 +163,30 @@ maps all 16 task-by-criterion cells to retained evidence or an explicit gap.
 The companion
 [ExECT semantic-support protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
 selects 48 evidence-valid dev140 findings across six models and four families.
-All review fields remain unset; this is a prepared substrate, not semantic-
-support evidence or independent clinical validation. No model call or locked
-row inspection was used.
+All substrate review fields remain unset. The allowed values, exception-note
+rule, two-reviewer blinding, and third-reviewer adjudication rule are frozen in
+the protocol, and the local `/semantic-support-review` workspace is ready for
+use. This is still not semantic-support evidence or independent clinical
+validation. No model call or locked row inspection was used.
 
 ## Verification state
 
-Repository-wide checks passed on the shared-framework tree before the current
-v0.5 run-control and replay additions:
+Repository-wide checks pass on the current working tree:
 
-- **Verified:** all 1,305 pytest tests pass under the repository `.venv`.
+- **Verified:** all 1,352 pytest tests pass under the repository `.venv`.
 - **Verified:** repository-wide Ruff passes.
-- **Verified:** mypy passes across 294 source files.
+- **Verified:** mypy passes across 314 source files.
 - **Verified:** both deterministic builders reproduce their selected outputs,
   the retained-evidence manifest validates, and all six no-call reference cells
   replay their expected scores.
-- **Verified:** the IEEE PDF builds in two passes as a four-page letter-size
-  paper. Every rendered page was inspected; no clipping, unreadable table,
-  undefined reference, overfull box, or LaTeX warning remains.
-
-For the current additions, the focused replay and v0.5 runner tests pass and
-Ruff passes on the new replay files. Repository-wide pytest, Ruff, and mypy
-have not yet been rerun, so the earlier broad verification does not cover these
-working-tree changes.
+- **Verified:** the semantic-review API suite passes (`11` tests), the frontend
+  Jest suite passes (`51` tests), frontend lint passes, and the Next.js
+  production build completes with the new route. The entry, evidence, decision,
+  exception-note, and responsive flows were inspected in the browser.
+- **Previously verified:** the IEEE PDF builds in two passes as a four-page
+  letter-size paper with no clipping, unreadable table, undefined reference,
+  overfull box, or LaTeX warning. The paper was not rebuilt for these
+  implementation and documentation changes.
 
 This verifies the current implementation, retained hashes, common-panel
 invariants, source synchronization, reference replays, and paper render. It is
@@ -162,44 +194,19 @@ not independent clinical validation or a new clean-checkout reproduction.
 
 ## In progress
 
-- The Gan `validation750` six-model comparison is finishing the remaining five
-  conditions without changing the frozen prompts, model routes, clinical
-  rules, scorer, or live schema-repair behavior mid-panel.
-- A post-panel no-call schema-repair replay is agreed but not yet implemented.
-  It must run uniformly over all twelve saved raw-output artifacts only after
-  the frozen panel completes. Unambiguous JSON and container-shape repairs may
-  be applied directly. A malformed unselected event may be quarantined only
-  when the selected path is independently valid. The replay must never change
-  selected event IDs, evidence, kind, label, or rationale; it must retain the
-  raw payload and explicit before/after repair trace. This selected-answer-
-  preserving schema repair is separate from both syntax-only repair and
-  clinical semantic repair.
-
-- DeepSeek V4 Flash is completing its remaining 100 v0.5 test450 calls on the
-  hosted route. Its final 450 raw outputs will be replayed through today's
-  shared schema repair before any score is reported.
-- The local queue runs Qwen v0.5 test450, Gemma v0.5 test450, then Qwen v0.5
-  validation750. Each test condition requires a five-row validation pilot and
-  remains aggregate-only.
-- The earlier Qwen v0.7 validation750 process was cancelled at 367 rows on the
-  user's instruction. Its partial artifact is retained only as an operational
-  record and must not be resumed into the v0.5 condition.
+- Independent review of the 48-item ExECT semantic-support substrate remains
+  the next evidence dependency. The rubric, reviewer separation, and
+  adjudication rule are frozen; the review interface is ready.
 
 ## Next
 
-1. Complete the remaining DeepSeek, Qwen, and Gemma `validation750`
-   conditions and require all twelve artifacts to pass the row-identity and
-   `gan2026.row_trace.v1` gates.
-2. Implement and test the agreed selected-answer-preserving schema-repair
-   policy, then replay it uniformly over all twelve frozen raw-output
-   artifacts. Report the syntax-only, container-shape, quarantined-unselected-
-   event, and clinical-semantic transitions separately.
-3. Complete DeepSeek, Qwen, and Gemma v0.5 test450 aggregates and replay all
-   hosted raw outputs through the current schema repair.
-4. Complete Qwen v0.5 validation750, then use the matched development outputs
-   for the predeclared hard-slice and synthetic mechanism study.
-5. Complete independent review of the frozen semantic-support substrate before
-   strengthening any faithfulness or clinical-validity claim.
+1. Assign two independent clinical reviewer IDs and have each reviewer complete
+   all 48 items without sharing IDs or reviewing the other's export.
+2. Send every field-level disagreement to a third named clinical adjudicator;
+   retain both original decisions and every revision.
+3. Export the completed reviewer and adjudication artifacts, validate their
+   completeness, then update the reliability scorecard and paper claim owner
+   within the protocol's development-only limits.
 
 ## Blocked or unvalidated
 
@@ -246,6 +253,9 @@ not independent clinical validation or a new clean-checkout reproduction.
   and [aggregate replay](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
+- Independent semantic-support review:
+  [protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
+  and local route `http://127.0.0.1:3000/semantic-support-review`
 - Detailed work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)
 
 Use *implemented*, *verified*, *validated*, and *promoted* precisely.

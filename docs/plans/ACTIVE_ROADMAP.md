@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-18
+Last updated: 2026-07-20
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -134,6 +134,26 @@ held-out rows, so it is not an independent holdout.
     and human scorecards map all 16 task-by-criterion cells without numerical
     pooling or a composite score. A 48-item ExECT dev140 semantic-support sample
     is prepared but remains unreviewed.
+23. **All six-model dataset panels completed.** ExECT has all six fixed one-call
+    conditions on dev140 and aggregate-only test60. Gan has all six models on
+    aggregate-only test450 and all twelve model-by-method conditions on
+    validation750. Every Gan development condition has 750 unique manifest rows
+    and 750 valid row traces. The generated no-call summary records hashes,
+    aggregate scores, evidence counts, failures, and matched transitions. This
+    completes execution, not the component analysis or evidence promotion.
+24. **Gan post-panel replay, attribution, and retention completed.** The bounded
+    schema policy recovers 11 validation records across the twelve conditions
+    while changing zero existing selected answers. The retained 9,000-row audit
+    separates score layers, format/schema repair, clinical semantic repair,
+    evidence, first failure, matched method transitions, and rules-control
+    regressions. The result supports a bounded development comparison, not
+    promotion over the deterministic rules control.
+25. **Independent semantic-support review workflow prepared.** The four-field
+    rubric, allowed values, exception-note rule, two-reviewer blinding, and
+    third-reviewer adjudication rule are frozen. The local ExECT review route
+    serves the 48-item dev140 sample with highlighted full-letter context,
+    reviewer-separated revisioned decisions, and JSON export. The interface is
+    implemented and browser-verified; review conclusions remain uncollected.
 
 ## Ordered evidence work
 
@@ -142,16 +162,12 @@ The completed eight-criterion cross-task reliability framework is specified in t
 Its remaining semantic-support dependency requires independent review; the
 framework did not authorize model calls or locked-row inspection.
 
-1. Decision 0043 setup and the authorized call attempt are recorded. The exact
-   v0.5 payload matches all 450 retained GPT prompt payloads; the retained
-   artifact fails non-prompt reconciliation, so fresh GPT was required. All
-   four pilots passed. Fresh GPT and Luna completed (`361/450` and `362/450`
-   Purist); Sol and DeepSeek stopped at 350/450 and 150/450 after the combined
-   controller timeout. Their partial artifacts are rejected and must not be
-   resumed. Write a new dated protocol before any further Sol or DeepSeek
-   holdout calls.
-2. Complete the Qwen/Gemma Gan validation750 study separately; it is
-   development evidence and does not alter the retained test450 panel.
+1. Give two independent clinicians separate reviewer IDs and have each finish
+   all 48 items without viewing the other reviewer's decisions.
+2. Adjudicate every field-level disagreement with a third named clinician while
+   retaining both original decisions and their revisions.
+3. Validate and export the completed review package, then update the shared
+   reliability result and paper claim owner within the protocol's limits.
 
 ## Limits
 

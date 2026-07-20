@@ -1,7 +1,7 @@
 # Gan 2026 six-model validation comparison protocol
 
 Date: 2026-07-18  
-Status: predeclared and user-authorized; hosted calls in progress
+Status: all twelve conditions complete; post-panel analysis pending
 
 ## Primary question
 
@@ -213,6 +213,35 @@ adapter, scorer, and row-trace schema. The canonical JSONL is seeded with the
 the failed-attempt backup and machine-readable retry manifest preserve attempt
 provenance. Completion still requires 750 unique manifest rows, zero final
 call failures, and 750 valid `gan2026.row_trace.v1` LLM-only traces.
+
+### Gemma LLM-only schema-adherence exception, 2026-07-20
+
+The first Gemma LLM-only five-row pilot and one fresh retry each produced four
+schema-valid model prediction records. In both attempts, the same permitted
+development row exhausted the predeclared 16,000-token completion allowance
+and returned truncated JSON. Neither attempt started the full condition.
+
+One diagnostic 32,000-token pilot completed on 2026-07-20 with zero call
+failures but again produced only four schema-valid model prediction records.
+The same permitted development row exhausted the larger ceiling and returned
+truncated JSON. Raising the output ceiling alone was therefore rejected, and
+the fixed Gemma ceiling was restored to 16,000 tokens.
+
+The user then explicitly authorized the full 750-row Gemma LLM-only run at the
+original 16,000-token ceiling, accepting weaker schema adherence as a
+meaningful negative development result. For this condition only, the repeated
+4/5 pilot result is disclosed and the original five-schema-valid-record start
+gate is waived. The model tag and digest, native Ollama route, `think=false`,
+temperature, 4,096-token Ollama context, prompt, schema, prediction boundary,
+cache-disabled setting, benchmark adapter, scorer, and row-trace contract
+remain unchanged.
+
+Every full-run call, parse, schema, truncation, and fallback event remains part
+of the result. Failed rows must not be silently dropped, replaced, or retried
+because their clinical answer is undesirable. Row-level failure analysis is
+permitted on this development split after the full artifact completes. The
+exception weakens operational comparability and must remain visible in any
+component or model comparison.
 
 ## Stop rule and claim boundary
 

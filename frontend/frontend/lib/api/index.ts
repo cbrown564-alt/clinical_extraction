@@ -163,6 +163,36 @@ export function postQualifiedReviewDecision(decision: import("../types").Qualifi
   });
 }
 
+export function fetchSemanticSupportReviewPackets(reviewerId: string) {
+  const params = new URLSearchParams({ reviewer_id: reviewerId });
+  return request<import("../types").SemanticSupportReviewPacketsResponse>(
+    `/semantic-support-review/packets?${params.toString()}`
+  );
+}
+
+export function fetchSemanticSupportReviewDecisions(reviewerId: string) {
+  const params = new URLSearchParams({ reviewer_id: reviewerId });
+  return request<import("../types").SemanticSupportReviewDecisionsResponse>(
+    `/semantic-support-review/decisions?${params.toString()}`
+  );
+}
+
+export function postSemanticSupportReviewDecision(
+  decision: import("../types").SemanticSupportReviewDecision
+) {
+  return request<import("../types").SemanticSupportReviewDecideResponse>(
+    "/semantic-support-review/decide",
+    { method: "POST", body: JSON.stringify(decision) }
+  );
+}
+
+export function fetchSemanticSupportReviewExport(reviewerId: string) {
+  const params = new URLSearchParams({ reviewer_id: reviewerId });
+  return request<import("../types").SemanticSupportReviewExport>(
+    `/semantic-support-review/export?${params.toString()}`
+  );
+}
+
 // ── Gold noise (read-only inspection) ──
 
 export function fetchGoldNoiseLedgers() {

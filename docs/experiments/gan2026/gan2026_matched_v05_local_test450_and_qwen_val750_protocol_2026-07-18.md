@@ -1,7 +1,7 @@
 # Gan 2026 v0.5 local test450 and Qwen validation750 protocol
 
 Date: 2026-07-18  
-Status: authorized; runs pending  
+Status: test450 extension complete; Qwen validation attempt retained
 Authorization: the user explicitly requested these runs on 2026-07-18.
 
 ## Question
@@ -110,3 +110,16 @@ Retain a complete aggregate regardless of score. Do not repair, rerun, or tune
 from test450 row behavior. The final v0.5 table is an aggregate-only comparison
 on a previously used holdout with route and schema-adapter caveats. The Qwen
 validation750 result is development evidence.
+
+## Completion addendum, 2026-07-20
+
+The Qwen and Gemma test450 conditions and the DeepSeek continuation completed
+with 450 unique test-manifest rows each. Their aggregate-only Purist/Pragmatic
+results are Qwen 362/384, Gemma 355/374, and DeepSeek 344/366. The retained
+aggregate file records the six-condition v0.5 panel without exposing row data.
+
+The separate Qwen v0.5 validation command produced only 45 rows despite its
+`validation750` filename and is not a complete validation condition. It is an
+operational artifact and is not used as evidence. The complete six-model
+validation evidence is owned by the separate matched v0.7/v0.8 protocol and
+its twelve 750-row artifacts.

@@ -1,13 +1,13 @@
 {
   "schema_version": "retained-evidence-v3",
-  "generated_date": "2026-07-18",
+  "generated_date": "2026-07-20",
   "authority": "Machine-readable companion to docs/experiments/retained_evidence_manifest.md. Canonical claim status remains docs/canon/10_paper_provenance.md.",
   "architecture_freeze": {
-    "freeze_id": "retained_comparison_architecture_20260718",
-    "created_date": "2026-07-18",
+    "freeze_id": "retained_comparison_architecture_20260720",
+    "created_date": "2026-07-20",
     "status": "frozen_for_new_evidence",
-    "source_commit": "6c6df72c4069999c5cd24a12014f6b8d6a1183f5",
-    "source_commit_scope": "Implementation and quality-gate tree before this metadata-only freeze commit; the freeze commit changes manifest validation, tests, and governing documents.",
+    "source_commit": "2729c741495d540ce567c25eea4f3717cee14f79",
+    "source_commit_scope": "Committed base plus the exact hash-selected selected-answer-preserving schema replay implementation, tests, and evidence artifacts recorded in this manifest.",
     "python_version": "3.11",
     "mutation_policy": "A semantic prompt, scorer, split, repair, runtime route, or component-graph change requires a new freeze ID and complete replay.",
     "reference_cell_ids": [
@@ -130,8 +130,8 @@
       {
         "role": "repair",
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
-        "sha256": "d397e68dd21d4579ec2ce687b8554b5150af6efb515c3219a9b4d1cb8d3403a4",
-        "bytes": 9247
+        "sha256": "e5c95e27ff6c0ccf1597bf28034d615a9f7ef4541c583e283dfc189df18e34c1",
+        "bytes": 11575
       },
       {
         "role": "scorer",
@@ -245,7 +245,8 @@
       "required_commands": [
       "python scripts/check_retained_evidence_manifest.py",
       "python scripts/verify_reference_evidence.py",
-      "python scripts/check_exectv2_model_led_audit.py",
+        "python scripts/check_exectv2_model_led_audit.py",
+        "python scripts/analyze_gan2026_six_model_post_panel.py --retained-artifact-root experiments/gan2026_six_model_validation_20260718 --check",
         "python scripts/check_doc_hygiene.py",
         "python -m pytest",
         "python -m ruff check .",
@@ -1691,8 +1692,8 @@
         },
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
-          "sha256": "19420afdd0c11049a265a7252da166a4072c9ebc393311383d90d1f501960422",
-          "bytes": 3083,
+          "sha256": "085b65eca2b59372ecd6aed638dca68fc01e171956bd7404f6c84e9e472116c1",
+          "bytes": 5171,
           "retrieval": "git_path"
         },
         {
@@ -1735,6 +1736,178 @@
           "path": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.jsonl",
           "sha256": "f199dcc05b0b0aaaf2e5941c942d9385c8398294338286ef8a9d78d8ed2f4640",
           "bytes": 33132336,
+          "retrieval": "git_path"
+        }
+      ]
+    },
+    {
+      "id": "gan2026_six_model_post_panel_attribution_subject",
+      "task": "gan2026",
+      "architecture_family": "cross_family",
+      "dataset": "Gan et al. 2026 seizure-frequency benchmark",
+      "split_manifest": "data/gan_2026/splits/gan2026_split_v1.json",
+      "split": "validation750",
+      "row_count": 9000,
+      "row_inspection_policy": "validation750 rows permitted; test450 excluded from replay and row-level analysis",
+      "scorer": "Purist row correctness plus evidence validity, score-layer transitions, first-failure ownership, and clinical-subproblem attribution",
+      "model": "GPT-4.1-mini; GPT-5.6 Luna; GPT-5.6 Sol; thinking DeepSeek V4 Flash; Qwen 3.6:35B; Gemma 4 26B",
+      "model_role": "Matched llm_only and llm_with_rules development attribution across the fixed six-model roster",
+      "prompt_program_version": "Gan prompt v0.7 retained validation outputs with selected-answer-preserving schema replay",
+      "cache_replay_mode": "no-call replay from 12 retained validation traces",
+      "repair_policy": "Container-shape and no-reference format repair plus quarantine of invalid unselected events; selected events and final answers are never removed or changed",
+      "claim_boundary": "Development mechanism evidence only. It is not locked-test evidence, clinical validation, or proof that LLM-with-rules beats the deterministic rules control.",
+      "story_ids": ["S2", "S6"],
+      "result_summary": {
+        "model_condition_rows": 9000,
+        "selected_answer_changes": 0,
+        "recovered_structured_records": 11,
+        "hybrid_rescues_min": 96,
+        "hybrid_rescues_max": 168,
+        "hybrid_regressions_min": 23,
+        "hybrid_regressions_max": 34,
+        "llm_clinical_selection_first_failures": 1449,
+        "evidence_selection_first_failures": 616,
+        "format_or_schema_first_failures": 84,
+        "deterministic_semantic_first_failures": 40
+      },
+      "artifacts": [
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/deepseek_v4_flash--llm_only.jsonl",
+          "sha256": "4837f7c3730733ea8aa79318fec8012acf4325fdffb70de57427d45c98ce79eb",
+          "bytes": 14110754,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:f737af5cf505a542af612be8b653212b0a2235bd6bd5bec77a82ba87a15c92c1"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/deepseek_v4_flash--llm_with_rules.jsonl",
+          "sha256": "4d9fb9d1a04be299207d7cfe5a9d2467ee5376ba8ad20731025c171dc01464dd",
+          "bytes": 11035650,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:14d365c2e7707d610ab9fb7d0fb8f29561fa6eccc15e579ee676763d263ee6e4"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gemma4_26b--llm_only.jsonl",
+          "sha256": "0c8ea60deb07923196d0ce8c3b35b6fccb526f11a4d2500c3f644bd2beb2fa46",
+          "bytes": 13988768,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:767ab5c96a0ff7115b0422f3e058dd7c93946834fe6275a8b69f933bf59509ab"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gemma4_26b--llm_with_rules.jsonl",
+          "sha256": "ea785e53498c6cf1cb42e4e35a5c7aebc79543ae2468ae0da36acdab0e29999e",
+          "bytes": 11578787,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:83eb283db3f955466eac11dc6abf4b6e3819b10b49204c33a2e4d6c486d7acfe"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt41mini--llm_only.jsonl",
+          "sha256": "de40c9d9f159739a39089e5c7e06ca6a1fced650c7151af4237de90af9c9baff",
+          "bytes": 14196220,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:6dda07fb3da2455be45145e2204646173ddd3618e6d31fc2ccc287bd49b0451d"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt41mini--llm_with_rules.jsonl",
+          "sha256": "dad88a8b02db4ac19286adb01c692ef19b272308797acbb15e1f08e2be8cc4e5",
+          "bytes": 11988047,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:201ab495aafeb27aa88b7a3724407e3fdd286625dcbfe7a8bac31ebbfa79f4ae"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt56luna--llm_only.jsonl",
+          "sha256": "e1e9b088e06c98009cbc11f8421c579d7d76955417aa412173f9cf16252f7e91",
+          "bytes": 14047317,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:cee2057d72a1e7fd40b4c7eaf823b401b435426e604e5bda4e71d02257033ddf"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt56luna--llm_with_rules.jsonl",
+          "sha256": "e7ea0ed2140e2bff5fb0c66624fb41aca54933bf9a4a4254a949a8ca0c2da6e0",
+          "bytes": 11486932,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:e713320c030f328d097c3f8c43d8259312d84db2847b4a6c9ebfc24641d5bbfd"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt56sol--llm_only.jsonl",
+          "sha256": "2e7724e695286533acbfd722707bdcb2e3e866aadcd9cb918dd6c58339773ba1",
+          "bytes": 14129593,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:b19b9effac818b5596d00b57189b278e1b8bb6e64b4cadef15a5b851f9e712eb"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/gpt56sol--llm_with_rules.jsonl",
+          "sha256": "47bbc42e7f8c7eaa2db7add76a22d38d0904ca6b4313b40b40268b0fbc1e3b61",
+          "bytes": 11839570,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:12dcbf28fcd6b8274cb2a0ecefecebeb79f829f107d3ae3ce227753b71bc12f7"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/qwen36_35b--llm_only.jsonl",
+          "sha256": "ec3ae17963bd3d5585677bdf6eb9d09cc55b1a2e8ab5ed3461c6ebb2b0450030",
+          "bytes": 14378981,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:25ba7a01323c11753fea88574c0d812153b992b44f6c141baef41077d5e2278f"
+        },
+        {
+          "path": "experiments/gan2026_six_model_validation_20260718/qwen36_35b--llm_with_rules.jsonl",
+          "sha256": "9264a218f7dd70218660cc0850763db590b5c9cef364d8dd5e4ddd6641452cb0",
+          "bytes": 11603392,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:24c7f37768c97e49416f08afb80d424de0a19614e60c6266edbf0e27d9fa1e36"
+        },
+        {
+          "path": "experiments/gan2026_six_model_post_panel_attribution_20260720.json",
+          "sha256": "ae739d63bcae85ebfc2ea990f903d9f0b6d03d77344db9c54450d2067637bcb6",
+          "bytes": 8305990,
+          "retrieval": "git_lfs",
+          "lfs_oid": "sha256:a0f0853ff789348f391ee403a1a757c1300d604075fb2fcf53f94629774b27bc"
+        },
+        {
+          "path": "docs/experiments/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md",
+          "sha256": "75d1bbbd8e3cea3d50461d0ed78551dbbeeb2e5f9b8d131819983b9cdb2405f8",
+          "bytes": 3737,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "docs/experiments/gan2026/gan2026_six_model_post_panel_replay_protocol_2026-07-20.md",
+          "sha256": "decb50512c5296b4e77519a64df45dca40ab2b0d8629df8fb78d23ce94a4ebab",
+          "bytes": 2940,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "scripts/analyze_gan2026_six_model_post_panel.py",
+          "sha256": "14ee8b370a415a923fd9b02efad94176a411bbb26b1d8e7e81e3880c36caa71b",
+          "bytes": 23561,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
+          "sha256": "e5c95e27ff6c0ccf1597bf28034d615a9f7ef4541c583e283dfc189df18e34c1",
+          "bytes": 11575,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+          "sha256": "04976daa61c1f1af862d751bcc89c28dc57acc123898153c01a70f71b320b687",
+          "bytes": 55980,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_analyze_gan2026_six_model_post_panel.py",
+          "sha256": "70770f829c035f71edb924ebe4c6cc8b98ee563335f4dfe09fef2389b93051be",
+          "bytes": 2544,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_gan2026_schema_repair.py",
+          "sha256": "3c42772332dd42f6e27dbbb43bf1175b8d3f138fb2d87b4174f462470a61f2ed",
+          "bytes": 13455,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "tests/test_gan2026_hybrid_structured_events_contract.py",
+          "sha256": "9cb5ae0bb841b9098174a6796aa47c67f4caaa9e6fd2023287745fc3377c68a7",
+          "bytes": 21886,
           "retrieval": "git_path"
         }
       ]
@@ -1832,8 +2005,8 @@
         },
         {
           "path": "docs/canon/10_paper_provenance.md",
-          "sha256": "86dcb07a9a1524dd6b06081a14728106bea83244d690b7f14254f7446ef42c03",
-          "bytes": 9419,
+          "sha256": "e945ea4086d4687cca24359826bbe60e8830cf8e60e1e22932e4c1594ce4ba37",
+          "bytes": 10477,
           "retrieval": "git_path"
         }
       ]

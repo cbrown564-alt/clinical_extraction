@@ -1,6 +1,6 @@
 # 10 — Paper claims and supporting evidence
 
-Last updated: 2026-07-18
+Last updated: 2026-07-20
 
 This file states how strongly the paper may make each claim. The
 [retained evidence index](../experiments/retained_evidence_manifest.md) records
@@ -12,11 +12,11 @@ must not make a stronger claim than either source supports.
 | ID | Statement | Current evidence | State |
 | --- | --- | --- | --- |
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
-| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control, while a separate decision-0040 aggregate replay verifies corrected family ownership and regression counts | Partial |
+| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control; the Gan six-model validation panel now has retained row-level score layers, first-failure ownership, evidence, rules-regression, and matched transition records | Bounded development answer |
 | S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved holdout quality, run metadata, and aggregate input availability | Bounded |
 | S4 | Six exact models run on one fixed ExECT pipeline | All six completed matched dev140 and aggregate-only test60 conditions; the retained panel gives local Qwen and Gemma the same claim status as the four hosted models | Confirmed |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; the predeclared six-model ExECT dev140 analogue has zero unknown-only gold letters, so transfer is not measurable from current gold | Unsupported |
-| S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests and cross-task replay exist | Partial |
+| S6 | Extraction, normalization, final formatting, schema, and evidence steps are explicit and tested | Step-specific tests, cross-task replay, and a 9,000-row Gan saved-output audit separate format/schema recovery, selected-answer identity, deterministic semantic changes, evidence, and scoring | Bounded development answer |
 | S7 | ExECT reports paper-derived normalized-phrase, CUI, and full-attribute metrics | No-call rules-only dev140 replay covers all nine entities; original 0.87/0.90 scores are not reproduced | Development answer |
 | S8 | Both tasks are assessed with the same eight reliability questions and task-specific measures with stated limits | Generated machine and human scorecards cover all 16 task-by-criterion cells; Gan and ExECT retained packages supply the named results and explicit gaps | Confirmed for framework coverage; evidence strength remains criterion-specific |
 | S9 | Annotation defects, conventions, ambiguity, multiplicity, scoring effects, handling, and sensitivity have transparent provenance | Generated 584-record taxonomy hash-checks 13 retained sources and maps all 57 explicitly cited letters; ten historical Diagnosis concept rows remain aggregate-only | Bounded |
@@ -38,6 +38,7 @@ must not make a stronger claim than either source supports.
 | C11 | On the matched Gan v0.7 test450 panel, Qwen scored 367/450, Sol 358/450, GPT-4.1-mini 353/450, Luna 352/450, Gemma 343/450, and thinking DeepSeek 342/450 Purist | Frozen aggregate evidence | Same prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; local results use aggregate-only reparse of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a row table without subsequent analysis or tuning |
 | C12 | The fixed deterministic ExECT SF projection/suppression stage improves dev140 state-profile F1 for all six model conditions, with 54 wrong-to-correct and one correct-to-wrong transition across the six panels | Development component evidence | The same 140 letters are repeated for each model; the unknown-only denominator is zero, so this does not establish cross-task over-inference transfer or factuality prevalence |
 | C13 | Gan 2026 and ExECTv2 are assessed with the same eight reliability questions using task-specific measures, explicit evidence states, and explicit comparability labels | Strong for the generated framework and selected retained evidence | The tasks do not share one metric; criterion evidence is uneven; construct-only and not-comparable values are not compared numerically; no composite score or clinical-validity claim |
+| C14 | On Gan validation750, `llm_with_rules` improves Purist correctness over matched `llm_only` for all six routes, with 96–168 wrong-to-correct and 23–34 correct-to-wrong transitions per model; bounded schema replay recovers 11 records with zero changes to an existing selected answer | Development component evidence from twelve retained 750-row traces and a no-call replay | The near-ceiling rules-only comparator remains stronger on many rows; evidence validity is incomplete on changed rows; provider routes differ; not holdout evidence, clinical validation, or a universal method/model ranking |
 
 ## Selected headline results
 
@@ -78,6 +79,9 @@ paper-facing model table unless thinking-enabled execution can be proved.
   metric or calculate a composite reliability score.
 - Do not present the prepared ExECT semantic-support sample as reviewed
   evidence; all 48 review conclusions remain unset pending independent review.
+- Do not describe the Gan matched-method development result as promotion over
+  the rules-only comparator; the component audit retains substantial rules-
+  correct regressions and incomplete changed-row evidence.
 
 ## Open work
 

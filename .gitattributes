@@ -3,3 +3,5 @@ experiments/exectv2_2call_no_sf_adjudicator_gpt41mini_dev140_20260625.jsonl filt
 experiments/exectv2_2call_no_sf_adjudicator_deepseek_dev140_20260625.jsonl filter=lfs diff=lfs merge=lfs -text
 experiments/exectv2_2call_no_sf_adjudicator_qwen36_dev140_20260625.jsonl filter=lfs diff=lfs merge=lfs -text
 experiments/exectv2_2call_no_sf_adjudicator_qwen36_repair_v02_dev140_20260625.jsonl filter=lfs diff=lfs merge=lfs -text
+experiments/gan2026_six_model_validation_20260718/*.jsonl filter=lfs diff=lfs merge=lfs -text
+experiments/gan2026_six_model_post_panel_attribution_20260720.json filter=lfs diff=lfs merge=lfs -text

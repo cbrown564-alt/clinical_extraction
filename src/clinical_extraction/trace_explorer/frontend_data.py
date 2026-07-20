@@ -258,6 +258,74 @@ class FrontendDataStore:
             for packet in self.qualified_review_packets()["packets"]
         }
 
+    def semantic_support_review_packets(self) -> dict[str, Any]:
+        """Return the frozen dev140 review sample with governed full-letter context."""
+
+        repo_root = self.root.parents[3]
+        substrate_path = (
+            repo_root
+            / "experiments"
+            / "exectv2_semantic_support_review_substrate_dev140_20260718.json"
+        ).resolve()
+        if not substrate_path.is_relative_to(repo_root) or not substrate_path.is_file():
+            raise ValueError("semantic-support review substrate is unavailable")
+        substrate = json.loads(substrate_path.read_text(encoding="utf-8"))
+        if not isinstance(substrate, dict):
+            raise ValueError("semantic-support review substrate must be an object")
+        review_items = substrate.get("review_items")
+        shared_letters = self._exectv2_payload.get("shared_letters")
+        if not isinstance(review_items, list) or not isinstance(shared_letters, list):
+            raise ValueError("semantic-support review source is malformed")
+
+        letter_text_by_id = {
+            str(letter["letter_id"]): str(letter["letter_text"])
+            for letter in shared_letters
+            if isinstance(letter, dict)
+            and str(letter.get("letter_id")) in self._permitted_exect_letter_ids
+            and isinstance(letter.get("letter_text"), str)
+        }
+        packets: list[dict[str, Any]] = []
+        review_fields = {
+            "semantic_support",
+            "evidence_decisive",
+            "current_fact_warranted",
+            "unsupported_inference",
+            "reviewer_id",
+            "reviewed_at",
+            "review_notes",
+        }
+        for review_item in review_items:
+            if not isinstance(review_item, dict):
+                continue
+            letter_id = str(review_item.get("letter_id"))
+            full_letter_text = letter_text_by_id.get(letter_id)
+            if full_letter_text is None:
+                continue
+            packet = {
+                key: copy.deepcopy(value)
+                for key, value in review_item.items()
+                if key not in review_fields
+            }
+            packet["full_letter_text"] = full_letter_text
+            packet["queue_position"] = len(packets) + 1
+            packets.append(packet)
+
+        if len(packets) != 48:
+            raise ValueError("semantic-support review queue must contain 48 dev140 items")
+        return {
+            "claim_boundary": substrate.get("claim_boundary"),
+            "dataset": substrate.get("dataset"),
+            "families": copy.deepcopy(substrate.get("families")),
+            "models": copy.deepcopy(substrate.get("models")),
+            "packets": packets,
+        }
+
+    def semantic_support_review_ids(self) -> set[str]:
+        return {
+            str(packet["review_item_id"])
+            for packet in self.semantic_support_review_packets()["packets"]
+        }
+
     def gold_audit_rows(self, dataset: str) -> dict[str, Any]:
         resource = "gold_audit_exect_rows" if dataset == "exectv2" else "gold_audit_gan_rows"
         payload = self.named(resource)

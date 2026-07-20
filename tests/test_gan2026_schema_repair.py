@@ -1,8 +1,15 @@
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
     repair_decision_payload,
+    repair_selected_answer_payload,
     repair_structured_extraction_payload,
 )
+
+
+def _reject_invented_event_kind(event: object) -> object:
+    if isinstance(event, dict) and event.get("kind") == "invented_kind":
+        raise ValueError("invalid event kind")
+    return event
 
 
 def test_parse_json_payload_with_schema_repair_handles_python_literal_dialect() -> None:
@@ -243,3 +250,116 @@ def test_repair_structured_extraction_payload_preserves_non_no_reference_null_ev
     )
 
     assert payload["events"][0]["evidence"] is None
+
+
+def test_repair_selected_answer_payload_converts_event_mapping_without_changing_values() -> None:
+    payload, notes, quarantined = repair_selected_answer_payload(
+        {
+            "events": {
+                "e1": {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": "weekly",
+                }
+            },
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 per week",
+                "evidence": "weekly",
+                "confidence": "high",
+                "rationale": "The note states weekly.",
+            },
+        },
+        event_validator=_reject_invented_event_kind,
+    )
+
+    assert [event["event_id"] for event in payload["events"]] == ["e1"]
+    assert notes == ["container_shape_repaired: events_mapping_to_list"]
+    assert quarantined == []
+
+
+def test_repair_selected_answer_payload_quarantines_only_invalid_unselected_event() -> None:
+    payload, notes, quarantined = repair_selected_answer_payload(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "frequency_rate",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": "weekly",
+                },
+                {
+                    "event_id": "e2",
+                    "kind": "invented_kind",
+                    "temporality": "historical",
+                    "assertion_status": "asserted",
+                    "evidence": "years ago",
+                },
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 per week",
+                "evidence": "weekly",
+                "confidence": "high",
+                "rationale": "Selected e1.",
+            },
+        },
+        event_validator=_reject_invented_event_kind,
+    )
+
+    assert [event["event_id"] for event in payload["events"]] == ["e1"]
+    assert notes == ["unselected_event_quarantined: e2"]
+    assert quarantined == ["e2"]
+
+
+def test_repair_selected_answer_payload_never_quarantines_selected_event() -> None:
+    payload, notes, quarantined = repair_selected_answer_payload(
+        {
+            "events": [
+                {
+                    "event_id": "e1",
+                    "kind": "invented_kind",
+                    "temporality": "current",
+                    "assertion_status": "asserted",
+                    "evidence": "weekly",
+                }
+            ],
+            "selection": {
+                "selected_event_ids": ["e1"],
+                "final_kind": "frequency",
+                "final_label": "1 per week",
+                "evidence": "weekly",
+                "confidence": "high",
+                "rationale": "Selected e1.",
+            },
+        }
+    )
+
+    assert payload["events"][0]["event_id"] == "e1"
+    assert notes == []
+    assert quarantined == []
+
+
+def test_repair_selected_answer_payload_repairs_no_reference_null_evidence_only() -> None:
+    payload, notes, quarantined = repair_selected_answer_payload(
+        {
+            "events": [],
+            "selection": {
+                "selected_event_ids": [],
+                "final_kind": "no_reference",
+                "final_label": None,
+                "evidence": None,
+                "confidence": "high",
+                "rationale": "No frequency information.",
+            },
+        }
+    )
+
+    assert payload["selection"]["evidence"] == ""
+    assert notes == ["container_shape_repaired: no_reference_null_evidence"]
+    assert quarantined == []
