@@ -272,9 +272,9 @@ def build_exectv2_measurements(inputs: ExectMeasurementInputs) -> list[dict[str,
             source_artifacts=[inputs.confidence_path],
             claim_boundary=(
                 "Historical three-model negative result; not a six-model, "
-                "thinking-enabled DeepSeek V4 Flash, or deployment conclusion."
+                "DeepSeek V4 Flash, or deployment conclusion."
             ),
-            route_runtime="historical saved outputs; DeepSeek thinking state unrecorded",
+            route_runtime="historical saved outputs; incomplete DeepSeek runtime metadata",
             temperature={
                 "openai/gpt-4.1-mini": 0,
                 "deepseek/deepseek-chat": 0,

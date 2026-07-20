@@ -313,8 +313,8 @@ def build_analysis(
         "method_comparisons": comparisons,
         "rows": detail_rows,
         "claim_boundary": (
-            "Development component evidence for the named validation split and frozen routes; "
-            "not holdout evidence, clinical validation, or a model-neutral ranking."
+            "Development component evidence for the named dev750 split and frozen routes; "
+            "not test evidence, clinical validation, or a model-neutral ranking."
         ),
     }
 

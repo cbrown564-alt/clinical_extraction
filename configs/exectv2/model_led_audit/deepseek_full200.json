@@ -13,7 +13,7 @@
   "max_tokens": {"structured_key_family_event_ledger": 6000, "diagnosis_decomposer": 2600},
   "live_call_components": ["structured_key_family_event_ledger", "diagnosis_decomposer"],
   "replayed_components": ["sf_structured_direct_adapter", "sf_state_projection", "sf_unknown_suppression", "prescription_dictionary_lens", "finding_assembly"],
-  "claim_boundary": "Saved-output full200 aggregate-only architecture audit. DeepSeek thinking state is unrecorded; not a final roster result.",
+  "claim_boundary": "Saved-output full200 aggregate-only architecture audit. DeepSeek runtime metadata is incomplete; not a final roster result.",
   "run_command": ".venv\\Scripts\\python.exe scripts/check_exectv2_model_led_audit.py",
   "assembly": {
     "candidate_id": "exectv2_model_led_deepseek_full200_audit",
@@ -21,7 +21,7 @@
     "ownership": "component_attributed_model_led_saved_output_replay",
     "split": "full200",
     "row_count": 200,
-    "claim_boundary": "Saved-output full200 aggregate-only architecture audit. DeepSeek thinking state is unrecorded; not a final roster result.",
+    "claim_boundary": "Saved-output full200 aggregate-only architecture audit. DeepSeek runtime metadata is incomplete; not a final roster result.",
     "baseline_producer": "structured_key_family_event_ledger",
     "promotion_decision": "retain-architecture-audit-not-final-model-row",
     "producers": {

@@ -66,14 +66,8 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
     destinations: [
       { href: "/gold-audit", label: "Gold audit", scope: "dataset", Icon: FileCheck },
       {
-        href: "/qualified-review",
-        label: "Qualified review",
-        scope: "exectv2",
-        Icon: ClipboardCheck,
-      },
-      {
-        href: "/semantic-support-review",
-        label: "Evidence review",
+        href: "/clinical-review",
+        label: "Clinical review",
         scope: "exectv2",
         Icon: ClipboardCheck,
       },
@@ -88,6 +82,9 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
 ];
 
 export function workflowForPath(pathname: string): AppWorkflow {
+  if (["/clinical-review", "/qualified-review", "/semantic-support-review"].includes(pathname)) {
+    return APP_WORKFLOWS.find((workflow) => workflow.id === "assure") ?? APP_WORKFLOWS[0];
+  }
   return (
     APP_WORKFLOWS.find((workflow) =>
       workflow.destinations.some((destination) => destination.href === pathname)

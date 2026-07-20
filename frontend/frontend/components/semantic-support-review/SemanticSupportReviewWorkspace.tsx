@@ -109,10 +109,10 @@ function ChoiceGroup<T extends string>({
   );
 }
 
-export default function SemanticSupportReviewWorkspace() {
+export default function SemanticSupportReviewWorkspace({ reviewerId: suppliedReviewerId }: { reviewerId?: string }) {
   const queryClient = useQueryClient();
   const [reviewerInput, setReviewerInput] = useState("");
-  const [reviewerId, setReviewerId] = useState("");
+  const [reviewerId, setReviewerId] = useState(suppliedReviewerId ?? "");
   const [mode, setMode] = useState<"queue" | "done">("queue");
   const [family, setFamily] = useState("all");
   const [currentId, setCurrentId] = useState<string | null>(null);
@@ -122,6 +122,7 @@ export default function SemanticSupportReviewWorkspace() {
   const [exportError, setExportError] = useState("");
 
   useEffect(() => {
+    if (suppliedReviewerId) return;
     const stored = window.localStorage.getItem("semantic-support-reviewer-id") ?? "";
     if (stored) {
       // Restore only the local reviewer identity; decisions remain server-side.
@@ -129,7 +130,7 @@ export default function SemanticSupportReviewWorkspace() {
       setReviewerInput(stored);
       setReviewerId(stored);
     }
-  }, []);
+  }, [suppliedReviewerId]);
 
   const packetsQuery = useQuery({
     queryKey: ["semantic-support-review-packets", reviewerId],
@@ -369,9 +370,13 @@ export default function SemanticSupportReviewWorkspace() {
         <button type="button" className="qr-secondary-btn flex items-center gap-2" onClick={() => void downloadExport()} disabled={exporting}>
           <Download className="h-3.5 w-3.5" /> {exporting ? "Preparing…" : "Export mine"}
         </button>
-        <button type="button" className="qr-chip" onClick={() => { stashDraft(); setReviewerId(""); }} title="Switch reviewer">
-          {reviewerId}
-        </button>
+        {suppliedReviewerId ? (
+          <span className="qr-chip">{reviewerId}</span>
+        ) : (
+          <button type="button" className="qr-chip" onClick={() => { stashDraft(); setReviewerId(""); }} title="Switch reviewer">
+            {reviewerId}
+          </button>
+        )}
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">

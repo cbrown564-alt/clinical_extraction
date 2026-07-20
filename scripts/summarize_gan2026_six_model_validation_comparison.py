@@ -222,11 +222,12 @@ def build_summary(repo_root: Path, config_path: Path) -> dict[str, Any]:
 
 def write_markdown(summary: Mapping[str, Any], path: Path) -> None:
     lines = [
-        "# Gan 2026 six-model validation comparison",
+        "# Gan 2026 six-model development comparison",
         "",
         f"Generated: {summary['generated_at_utc']}",
         "",
-        "Development evidence on `validation750`; not holdout evidence or clinical validation.",
+        "Development evidence on `dev750` (legacy artifact ID: `validation750`); "
+        "not test evidence or clinical validation.",
         "",
         "## Conditions",
         "",

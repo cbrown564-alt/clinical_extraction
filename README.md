@@ -10,7 +10,7 @@ clinical result and where each method fails.
 
 Repository cleanup, engineering repair, pipeline fixation, and clean-checkout
 verification are complete. The active work fills the remaining paper evidence
-gaps. Gan 2026 holdout evidence remains locked. See
+gaps. Gan 2026 test evidence remains locked. See
 [project status](PROJECT_STATUS.md) for current results and limits.
 
 ## Current work
@@ -18,7 +18,8 @@ gaps. Gan 2026 holdout evidence remains locked. See
 The repository contains two tasks:
 
 - **Gan 2026** extracts one current seizure-frequency label from each letter.
-  Its 450-row test split is locked; only saved aggregate results may be used.
+  Its 750-row development split permits row review and replay. Its 450-row test
+  split is locked; only saved aggregate results may be used.
 - **ExECTv2** extracts diagnosis, seizure frequency, prescriptions, and
   investigations from de-identified letters. Its 140-row development split
   remains available for research.
@@ -68,7 +69,7 @@ Current state, as of 2026-07-20:
   quality tradeoff and selects one structured call per letter.
 - The fixed six-model ExECT panel is retained on dev140 and aggregate-only
   test60. Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for
-  GPT-5.6 Luna, 0.8047 for GPT-5.6 Sol, 0.7881 for thinking DeepSeek V4 Flash,
+  GPT-5.6 Luna, 0.8047 for GPT-5.6 Sol, 0.7881 for DeepSeek V4 Flash,
   0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The matched Gan v0.7
   aggregate-only test450 panel retains the same six models, with the hosted and
   local route differences disclosed.
@@ -77,9 +78,12 @@ Current state, as of 2026-07-20:
   state-profile result for every model, but its unknown-only gold denominator
   is zero; Gan-to-ExECT over-reading transfer therefore remains unsupported.
 - All six selected models have completed the fixed ExECT dev140/test60 and Gan
-  validation750/test450 panels. The Gan development comparison includes six
+  dev750/test450 panels. Retained Gan filenames use the legacy identifier
+  `validation750` for `dev750`. The Gan development comparison includes six
   matched `llm_with_rules` and `llm_only` pairs with 750 unique rows and valid
-  traces per condition; component analysis and evidence promotion remain open.
+  traces per condition. The component audit retains matched rescues,
+  regressions, score layers, evidence validity, and first-failure ownership;
+  the result is a bounded development answer, not method promotion.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 
