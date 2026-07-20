@@ -215,6 +215,45 @@ def test_parse_structured_json_can_disable_python_literal_json_dialect_repair() 
     assert errors == ["invalid_json: Expecting property name enclosed in double quotes"]
 
 
+def test_parse_structured_json_repairs_event_mapping_container() -> None:
+    payload = json.loads(_raw_structured())
+    payload["events"] = {event["event_id"]: event for event in payload["events"]}
+
+    extraction, _, errors = parse_structured_json(json.dumps(payload))
+
+    assert extraction is not None
+    assert "container_shape_repaired: events_mapping_to_list" in errors
+
+
+def test_parse_structured_json_quarantines_schema_invalid_unselected_event() -> None:
+    payload = json.loads(_raw_structured())
+    payload["events"].append(
+        {
+            "event_id": "bad",
+            "kind": "invented_kind",
+            "temporality": "historical",
+            "assertion_status": "asserted",
+            "evidence": "years ago",
+        }
+    )
+
+    extraction, _, errors = parse_structured_json(json.dumps(payload))
+
+    assert extraction is not None
+    assert all(event.event_id != "bad" for event in extraction.events)
+    assert "unselected_event_quarantined: bad" in errors
+
+
+def test_parse_structured_json_rejects_schema_invalid_selected_event() -> None:
+    payload = json.loads(_raw_structured())
+    payload["events"][0]["kind"] = "invented_kind"
+
+    extraction, _, errors = parse_structured_json(json.dumps(payload))
+
+    assert extraction is None
+    assert errors[-1].startswith("schema_validation_error:")
+
+
 def test_json_dialect_only_mode_repairs_dialect_without_final_label_repair() -> None:
     raw = (
         "{'events': [{'event_id': 'e1', 'kind': 'frequency_rate', "

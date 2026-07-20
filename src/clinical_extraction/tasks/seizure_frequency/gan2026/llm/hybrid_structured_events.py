@@ -32,6 +32,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair import (
     parse_json_payload_with_schema_repair,
+    repair_selected_answer_payload,
     repair_structured_extraction_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
@@ -677,7 +678,16 @@ def parse_structured_json_with_trace(
             _extract_json_object(raw_output),
             python_literal_dialect_repair=repair_config.json_dialect_repair,
         )
-        payload = _filter_structured_payload(repair_structured_extraction_payload(raw_payload))
+        structurally_repaired, structural_notes, _ = repair_selected_answer_payload(raw_payload)
+        payload = _filter_structured_payload(
+            repair_structured_extraction_payload(structurally_repaired)
+        )
+        payload, quarantine_notes, _ = repair_selected_answer_payload(
+            payload,
+            event_validator=StructuredEventRecord.model_validate,
+        )
+        errors.extend(structural_notes)
+        errors.extend(quarantine_notes)
     except json.JSONDecodeError as exc:
         errors = [f"invalid_json: {exc.msg}"]
         return None, [], errors, _hybrid_row_trace(

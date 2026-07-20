@@ -28,7 +28,7 @@ recovery (`clinical_headline`). The ExECT score is an internal research metric,
 not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
 full-attribute views are also available for explicit benchmark comparison.
 
-Current state, as of 2026-07-18:
+Current state, as of 2026-07-20:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
@@ -76,6 +76,10 @@ Current state, as of 2026-07-18:
   separate. A predeclared no-call ExECT SF reliability replay improves the
   state-profile result for every model, but its unknown-only gold denominator
   is zero; Gan-to-ExECT over-reading transfer therefore remains unsupported.
+- All six selected models have completed the fixed ExECT dev140/test60 and Gan
+  validation750/test450 panels. The Gan development comparison includes six
+  matched `llm_with_rules` and `llm_only` pairs with 750 unique rows and valid
+  traces per condition; component analysis and evidence promotion remain open.
 
 Use the [short reading paths](docs/THREAD_MAP.md) to find the relevant files.
 

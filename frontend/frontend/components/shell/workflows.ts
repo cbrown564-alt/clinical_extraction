@@ -72,6 +72,12 @@ export const APP_WORKFLOWS: AppWorkflow[] = [
         Icon: ClipboardCheck,
       },
       {
+        href: "/semantic-support-review",
+        label: "Evidence review",
+        scope: "exectv2",
+        Icon: ClipboardCheck,
+      },
+      {
         href: "/gold-noise",
         label: "Gold evidence",
         scope: "cross-project",

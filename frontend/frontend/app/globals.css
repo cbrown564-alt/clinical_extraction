@@ -363,6 +363,66 @@ body {
   font-weight: 600;
 }
 
+.ssr-welcome {
+  background: var(--qr-paper);
+}
+
+.ssr-welcome > div {
+  padding: 2rem;
+  border: 1px solid var(--qr-line);
+  background: color-mix(in srgb, var(--qr-paper) 96%, transparent);
+}
+
+.ssr-stat {
+  padding: 0.9rem 1rem;
+  border-left: 2px solid var(--qr-accent);
+  background: var(--qr-surface);
+}
+
+.ssr-session-card {
+  padding: 1.25rem;
+  border: 1px solid var(--qr-line);
+  background: var(--qr-panel);
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--qr-ink) 8%, transparent);
+}
+
+.ssr-blind-chip,
+.ssr-revision {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid color-mix(in srgb, var(--qr-accent) 35%, var(--qr-line));
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--qr-accent) 8%, var(--qr-surface));
+  color: var(--qr-accent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ssr-revision {
+  border-color: var(--qr-line);
+  background: var(--qr-surface);
+  color: var(--qr-mute);
+}
+
+.ssr-claim-card,
+.ssr-evidence-card {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--qr-line);
+  background: var(--qr-surface);
+}
+
+.ssr-claim-card {
+  border-left: 3px solid var(--qr-focus);
+}
+
+.ssr-evidence-card {
+  border-left: 3px solid var(--qr-accent);
+}
+
 .qr-shell :is(button, input, textarea):focus-visible {
   outline: 2px solid var(--qr-accent);
   outline-offset: 2px;
