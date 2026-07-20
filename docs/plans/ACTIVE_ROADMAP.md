@@ -148,12 +148,14 @@ held-out rows, so it is not an independent holdout.
     evidence, first failure, matched method transitions, and rules-control
     regressions. The result supports a bounded development comparison, not
     promotion over the deterministic rules control.
-25. **Independent semantic-support review workflow prepared.** The four-field
-    rubric, allowed values, exception-note rule, two-reviewer blinding, and
-    third-reviewer adjudication rule are frozen. The local ExECT review route
-    serves the 48-item dev140 sample with highlighted full-letter context,
-    reviewer-separated revisioned decisions, and JSON export. The interface is
-    implemented and browser-verified; review conclusions remain uncollected.
+25. **Independent semantic-support review workflow prepared.** The simplified
+    first-round rubric records one required clinical-support judgment
+    (`supported`, `unsupported`, or `unclear`) plus optional notes. Two-reviewer
+    blinding and third-reviewer adjudication remain frozen. The local ExECT
+    review route serves the 48-item dev140 sample with highlighted full-letter
+    context, reviewer-separated revisioned decisions, and JSON export. Prior
+    trial decisions were cleared for this revision; review conclusions remain
+    uncollected.
 
 ## Ordered evidence work
 

@@ -219,25 +219,7 @@ export interface QualifiedReviewDecideResponse {
   decision: QualifiedReviewDecision;
 }
 
-export type SemanticSupportVerdict =
-  | "supported"
-  | "unsupported"
-  | "uncertain"
-  | "not_assessable";
-export type EvidenceDecisiveness =
-  | "decisive"
-  | "compatible_only"
-  | "insufficient"
-  | "uncertain"
-  | "not_assessable";
-export type CurrentFactWarrant =
-  | "warranted"
-  | "not_warranted"
-  | "uncertain"
-  | "not_applicable"
-  | "not_assessable";
-export type UnsupportedInference = "absent" | "present" | "uncertain" | "not_assessable";
-export type ReviewConfidence = "low" | "medium" | "high";
+export type ClinicalSupportVerdict = "supported" | "unsupported" | "unclear";
 
 export interface SemanticSupportReviewPacket {
   review_item_id: string;
@@ -261,11 +243,7 @@ export interface SemanticSupportReviewPacket {
 export interface SemanticSupportReviewDecision {
   review_item_id: string;
   reviewer_id: string;
-  semantic_support: SemanticSupportVerdict;
-  evidence_decisive: EvidenceDecisiveness;
-  current_fact_warranted: CurrentFactWarrant;
-  unsupported_inference: UnsupportedInference;
-  reviewer_confidence: ReviewConfidence;
+  clinical_support: ClinicalSupportVerdict;
   review_notes?: string | null;
   timestamp?: string;
   revision?: number;

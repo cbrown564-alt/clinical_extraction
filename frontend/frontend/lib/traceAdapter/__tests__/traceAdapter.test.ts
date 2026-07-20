@@ -219,4 +219,66 @@ describe("adaptTrace", () => {
       "No trace adapter available"
     );
   });
+
+  it("keeps the LLM decision and deterministic label normalisation in separate stages", () => {
+    const row = {
+      source_row_index: 10,
+      split: "validation",
+      decision_record: {
+        final_label: "4 per day",
+        evidence: "the observed frequency is noted as ≤ four per day",
+        rationale: "The note reports up to four episodes per day.",
+        answer_kind: "frequency",
+      },
+      comparison: { purist_correct: true, pragmatic_correct: true },
+      reference: { gold_label: "4 per day" },
+      raw_output: "{'final_label': 'up to 4 per day'}",
+      row_trace: {
+        model_prediction: {
+          raw_output_field: "raw_output",
+          record: {
+            final_label: "up to 4 per day",
+            evidence: "the observed frequency is noted as ≤ four per day",
+            rationale: "The note reports up to four episodes per day.",
+            answer_kind: "frequency",
+          },
+        },
+        deterministic_adapter: {
+          before_label: "up to 4 per day",
+          after_label: "4 per day",
+          events: ["final_label_repaired: 'up to 4 per day' -> '4 per day'"],
+          rule_category: "benchmark_format",
+        },
+        format_repair: {
+          schema_payload_changed: false,
+          events: ["json_dialect_repaired: python_literal"],
+        },
+      },
+    };
+
+    const trace = adaptTrace(row, "llm_only_canonical_pipeline", {
+      ...mockRecord,
+      source_row_index: 10,
+      gold_label: "4 per day",
+    });
+
+    expect(trace.extract.items).toHaveLength(1);
+    expect(trace.extract.items[0]).toMatchObject({
+      kind: "llm_decision",
+      rawValue: "up to 4 per day",
+    });
+    expect(trace.normalise.items).toHaveLength(1);
+    expect(trace.normalise.items[0]).toMatchObject({
+      kind: "deterministic_adapter",
+      rawValue: "up to 4 per day",
+      normalizedValue: "4 per day",
+      portability: "benchmark_format",
+    });
+    expect(trace.select.isDistinctStage).toBe(false);
+    expect(trace.repair).toMatchObject({
+      repairType: "JSON dialect repair",
+      beforeValue: "{'final_label': 'up to 4 per day'}",
+    });
+    expect(trace.repair?.afterValue).toContain('"final_label": "up to 4 per day"');
+  });
 });

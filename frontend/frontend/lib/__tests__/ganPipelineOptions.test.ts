@@ -1,4 +1,6 @@
 import {
+  ganPipelineModeLabel,
+  ganPipelineOptionLabel,
   groupGanPipelineOptions,
   isGanAggregateRunId,
   resolveGanPipelineOption,
@@ -46,6 +48,20 @@ function option(
 }
 
 describe("Gan architecture options", () => {
+  it("uses method labels that distinguish otherwise identical model choices", () => {
+    expect(ganPipelineModeLabel("llm_plus_rules")).toBe("LLM + Rules");
+    expect(ganPipelineModeLabel("llm_only")).toBe("LLM Only");
+    expect(ganPipelineModeLabel("deterministic_only")).toBe("Rules Only");
+  });
+
+  it("removes execution-mode wording from picker option labels", () => {
+    expect(ganPipelineOptionLabel("GPT-5.6 Sol · replay")).toBe("GPT-5.6 Sol");
+    expect(ganPipelineOptionLabel("GPT-5.6 Sol · live")).toBe("GPT-5.6 Sol");
+    expect(ganPipelineOptionLabel("Deterministic canonical")).toBe(
+      "Deterministic canonical"
+    );
+  });
+
   it("groups the six-model winning mode, LLM-only variants, and deterministic control", () => {
     const options = [
       option("deterministic_only", "(model-independent)", 0),

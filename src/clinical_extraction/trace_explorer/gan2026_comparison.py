@@ -29,7 +29,7 @@ MODEL_CONDITIONS = (
     ModelCondition(
         "deepseek_v4_flash",
         "deepseek/deepseek-v4-flash",
-        "DeepSeek V4 Flash (thinking)",
+        "DeepSeek V4 Flash",
     ),
     ModelCondition("qwen36_35b", "ollama_chat/qwen3.6:35b", "Qwen 3.6:35B"),
     ModelCondition("gemma4_26b", "ollama_chat/gemma4:26b", "Gemma 4 26B"),

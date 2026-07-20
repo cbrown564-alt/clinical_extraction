@@ -62,6 +62,10 @@ class FrontendDataStore:
             for path in validation_dir.glob("*.json")
             if path.is_file() and path.stem.isdigit()
         }
+        self._validation_dataset_records = {
+            int(record.source_row_index): record
+            for record in load_records_for_split("validation")
+        }
         self._gan_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._gan_validation = self._discover_gan_validation()
 
@@ -101,7 +105,21 @@ class FrontendDataStore:
         if split != "validation":
             return None
         path = self._validation_records.get(source_row_index)
-        return self._object(path) if path is not None else None
+        if path is not None:
+            return self._object(path)
+        record = self._validation_dataset_records.get(source_row_index)
+        if record is None:
+            return None
+        return {
+            "split": "validation",
+            "source_row_index": record.source_row_index,
+            "gold_label": record.gold_label,
+            "gold_reference": record.gold_reference,
+            "row_ok": record.row_ok,
+            "note_text": record.note_text,
+            "labels_match_all_categories": record.labels_match_all_categories,
+            "quotes_ok_all_categories": record.quotes_ok_all_categories,
+        }
 
     def artifact(self, run_id: str, *, limit: int | None = None) -> dict[str, Any] | None:
         self._refresh_gan_validation()

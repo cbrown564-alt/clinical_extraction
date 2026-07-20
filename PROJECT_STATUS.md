@@ -45,12 +45,14 @@ rules-control regressions, score layers, clinical subproblems, and first-
 failure ownership. Because the deterministic rules control remains stronger on
 many rows, this is a bounded development answer rather than method promotion.
 
-The ExECT semantic-support rubric and adjudication rule are now frozen. A local
-review workspace serves the real 48-item `dev140` sample with the selected
-conclusion, exact evidence, highlighted full-letter context, four required
-judgments, exception notes, reviewer-specific blinded queues, revision history,
-and JSON export. The workflow is implemented and browser-verified; no clinical
-review decision has been collected or validated by this work.
+The simplified first-round ExECT semantic-support rubric and adjudication rule
+are now frozen. A local review workspace serves the real 48-item `dev140`
+sample with the selected conclusion, exact evidence, highlighted full-letter
+context, one required clinical-support judgment (`supported`, `unsupported`,
+or `unclear`), optional notes, reviewer-specific blinded queues, revision
+history, and JSON export. The workflow is implemented and browser-verified;
+prior trial decisions were cleared before this protocol revision, so no
+clinical review decision has been collected or validated by this work.
 
 ## Fresh evidence
 

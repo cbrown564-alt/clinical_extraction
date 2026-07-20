@@ -1692,8 +1692,8 @@
         },
         {
           "path": "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md",
-          "sha256": "085b65eca2b59372ecd6aed638dca68fc01e171956bd7404f6c84e9e472116c1",
-          "bytes": 5171,
+          "sha256": "47db96e7d0b4a134edcc29091f8ce3c54187b22b26c07b33643a663120327e08",
+          "bytes": 4415,
           "retrieval": "git_path"
         },
         {

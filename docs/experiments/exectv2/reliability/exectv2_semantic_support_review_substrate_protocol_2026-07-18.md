@@ -1,12 +1,12 @@
 # ExECTv2 semantic-support review substrate protocol
 
 Date: 2026-07-20
-Status: rubric frozen; independent review not started
+Status: simplified first-round rubric frozen; independent review not started
 
 ## Question
 
-Does the cited text sufficiently and decisively support the final clinical
-conclusion, including its assertion and temporal status?
+Is the extracted clinical finding supported by the cited text and supplied
+letter context?
 
 This is separate from the exact-evidence check. Exact source presence is an
 eligibility condition for the sample, not a positive semantic-support label.
@@ -47,39 +47,24 @@ a larger or outcome-stratified sample before making those claims.
 
 ## Review fields
 
-An independent clinical reviewer must complete:
+The first-round review deliberately collects only:
 
-- `semantic_support`: whether the evidence supports the selected conclusion;
-- `evidence_decisive`: whether the evidence is sufficient rather than merely
-  compatible;
-- `current_fact_warranted`: whether temporal and assertion status are
-  warranted;
-- `unsupported_inference`: whether the conclusion adds unsupported clinical
-  meaning;
-- reviewer identity, review date, and notes.
+- `clinical_support`: whether the extracted finding is clinically supported;
+- `review_notes`: optional source-based context that may help later analysis;
+- reviewer identity and review date.
 
-The allowed values are frozen as follows:
-
-| Field | Allowed values |
-| --- | --- |
-| `semantic_support` | `supported`, `unsupported`, `uncertain`, `not_assessable` |
-| `evidence_decisive` | `decisive`, `compatible_only`, `insufficient`, `uncertain`, `not_assessable` |
-| `current_fact_warranted` | `warranted`, `not_warranted`, `uncertain`, `not_applicable`, `not_assessable` |
-| `unsupported_inference` | `absent`, `present`, `uncertain`, `not_assessable` |
-| reviewer confidence | `low`, `medium`, `high` |
-
-`not_assessable` means that the supplied letter and review resources cannot
-resolve the judgment. `uncertain` means that the reviewer can assess the item
-but the source supports more than one reasonable judgment. A short note is
-required whenever semantic support is not `supported`, evidence is not
-`decisive`, current-fact status is neither `warranted` nor `not_applicable`, or
-unsupported inference is not `absent`.
+`clinical_support` allows exactly `supported`, `unsupported`, or `unclear`.
+Use `unclear` whenever the supplied text permits more than one reasonable
+judgment or does not contain enough information to decide. Notes remain
+optional for every value. If the first-round results are ambiguous, a later
+predeclared protocol may introduce a more detailed schema; this review must
+not infer those additional dimensions after collection.
 
 Two named clinical reviewers should review all 48 items independently without
 seeing model scores, gold correctness, or the other reviewer's decisions. A
-complete four-field match is accepted provisionally. Any field-level
-disagreement is unresolved until a third named clinical reviewer records an
-adjudication after reading both rationales. The final export must retain both
+matching `clinical_support` value is accepted provisionally. A disagreement is
+unresolved until a third named clinical reviewer records an adjudication after
+reading both reviewers' optional notes. The final export must retain both
 original decisions, every revision, and the adjudication; it must never rewrite
 the sampling substrate.
 
@@ -93,8 +78,8 @@ named reviewer's decisions during independent review.
 1. Review the selected conclusion and cited evidence before opening the full
    letter. Use the full letter whenever assertion, timing, or clinical context
    is not explicit in the excerpt.
-2. Record all four judgments and confidence. Clean positive items require no
-   note; exceptions and uncertainty require a concise source-based note.
+2. Record one support judgment. Add a concise source-based note only when it is
+   useful.
 3. Save and advance. Reviewers may revise a decision; revisions remain in the
    audit log.
 4. Export each completed reviewer file separately. Do not compare reviewers or

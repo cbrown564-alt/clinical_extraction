@@ -4,7 +4,7 @@ import type {
   FullRecordResponse,
   TraceItem,
 } from "../types";
-import { findEvidenceSpan, buildScoreFromComparison, buildScoreFromLayers, buildRepair } from "./utils";
+import { findEvidenceSpan, buildScoreFromComparison, buildScoreFromLayers, buildSchemaRepair } from "./utils";
 
 export function adaptEventsTrace(
   row: EventsArtifactRow,
@@ -99,7 +99,12 @@ export function adaptEventsTrace(
       selectedIds: selection?.selected_event_ids,
       rejectedIds: selection?.rejected_event_ids,
     },
-    repair: buildRepair(row.repair_changes),
+    repair: buildSchemaRepair(
+      row.row_trace?.format_repair,
+      row.raw_output,
+      row.row_trace?.model_prediction?.record ?? row.structured_record,
+      row.repair_changes
+    ),
     score: row.comparison
       ? buildScoreFromComparison(row.comparison, selectFinalLabel, row.reference.gold_label)
       : buildScoreFromLayers(row.score_layers, row.reference.gold_label),

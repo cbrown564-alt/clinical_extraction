@@ -1491,7 +1491,7 @@
         "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md"
       ],
       "source_hashes": {
-        "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md": "19420afdd0c11049a265a7252da166a4072c9ebc393311383d90d1f501960422",
+        "docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md": "47db96e7d0b4a134edcc29091f8ce3c54187b22b26c07b33643a663120327e08",
         "experiments/exectv2_semantic_support_review_substrate_dev140_20260718.json": "582cc4a15ab084c650afc4d0f33ee8e5b55afad486462aa844a1f79a896311bb"
       },
       "split": "dev140_sample",

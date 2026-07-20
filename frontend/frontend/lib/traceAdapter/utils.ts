@@ -141,3 +141,37 @@ export function buildRepair(
   if (changes.length === 0) return undefined;
   return { changes, beforeLabel, afterLabel };
 }
+
+function schemaRepairType(events: string[], schemaPayloadChanged: boolean): string {
+  const prefixes = new Set(events.map((event) => event.split(":", 1)[0]));
+  const types: string[] = [];
+  if (prefixes.has("json_dialect_repaired")) types.push("JSON dialect repair");
+  if (prefixes.has("invalid_json")) types.push("JSON parsing failure");
+  if (prefixes.has("schema_validation_error")) types.push("Schema validation failure");
+  if (prefixes.has("format_retry_rejected")) types.push("Format retry rejected");
+  if (prefixes.has("not_run")) types.push("Schema repair not run");
+  if (schemaPayloadChanged) types.push("Schema payload repair");
+  return types.length > 0 ? Array.from(new Set(types)).join(" · ") : "Schema repair";
+}
+
+/** Build the stage-4 schema repair view from the retained row trace. */
+export function buildSchemaRepair(
+  formatRepair: { schema_payload_changed?: boolean; events?: string[] } | undefined,
+  rawOutput: string | undefined,
+  repairedValue: unknown,
+  fallbackChanges?: unknown[]
+): StageRepair | undefined {
+  const events = (formatRepair?.events ?? []).map(String);
+  const schemaPayloadChanged = formatRepair?.schema_payload_changed === true;
+  if (events.length === 0 && !schemaPayloadChanged) return buildRepair(fallbackChanges);
+
+  return {
+    changes: events.length > 0 ? events : ["Schema payload changed"],
+    repairType: schemaRepairType(events, schemaPayloadChanged),
+    beforeValue: rawOutput ?? "Raw model output unavailable",
+    afterValue:
+      repairedValue == null
+        ? "No valid structured value produced"
+        : JSON.stringify(repairedValue, null, 2),
+  };
+}
