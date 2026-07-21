@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-20 on the working tree after commit `c51bbc8e`
+Last updated: 2026-07-21 on the working tree after commit `c51bbc8e`
 
 ## Current outcome
 
@@ -47,6 +47,16 @@ component audit retains matched rescues, regressions, exact-evidence status,
 rules-control regressions, score layers, clinical subproblems, and first-
 failure ownership. Because the deterministic rules control remains stronger on
 many rows, this is a bounded development answer rather than method promotion.
+
+The Qwen-versus-Sol follow-up audit is also complete on saved `dev750` outputs.
+It shows that the reported +102 versus +65 method difference is not a
+same-raw-output rule ablation because the methods use different prompts and
+prediction structures. Within the event-ledger method, fixed processing has a
+larger scorer-defined net effect for Sol (+387) than Qwen (+336). Eight unique
+raw-correct-to-final-wrong rows expose deterministic over-rules; one additional
+Qwen transition is only scorer-correct because an unsupported vague label maps
+to the unknown sentinel. This is development mechanism evidence, not proof for
+or against policy-level validation overfitting.
 
 The simplified first-round ExECT semantic-support rubric and adjudication rule
 are now frozen. A local review workspace serves the real 48-item `dev140`
@@ -109,6 +119,14 @@ blocking parse/schema failures range from 0 to 8 for `llm_with_rules` and 0 to
 The [generated comparison](docs/experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md)
 and [machine-readable artifact](experiments/gan2026_six_model_validation_comparison_20260718.json)
 record hashes, scores, evidence counts, and matched row transitions.
+
+The [Qwen-versus-Sol row audit](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
+and its [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
+cover all 249 rows where either model is Purist-wrong in either scored method.
+They retain both raw prediction boundaries, both final outputs, rule events,
+selected evidence, and a comment for every row. Qwen's larger between-method
+gain is concentrated in cluster/diary and seizure-free cases, while the true
+same-event-ledger raw-to-final net gain is larger for Sol.
 
 The matched v0.7 `test450` panel uses one call per note, prompt
 `gan2026_hybrid_structured_events_v0.7`, `hybrid_full_stack` repair, and the Gan
@@ -176,13 +194,38 @@ evidence-review structure while keeping their decisions separate. This is
 still not semantic-support evidence or independent clinical validation. No
 model call or locked row inspection was used.
 
+The supervisor source handoff is implemented in the working tree. It exposes
+readable Python source for the selected Gan v0.5 current-frequency and one-call
+ExECT four-family workflows, a direct OpenAI-compatible endpoint client, strict
+input validation, concise and trace outputs, partial success, synced recovery,
+resume identity checks, privacy-safe errors, synthetic examples, and an
+explicit hashed source manifest. The transfer archive contains no required
+`.pyz`, benchmark-result files, private configuration, or research reports.
+Focused and clean-extraction checks pass. Exact supervisor endpoint and
+unaided-usability checks have not occurred; this is not clinical validation.
+The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md) owns
+the detailed evidence and remaining acceptance checks.
+
 ## Verification state
 
-Repository-wide checks pass on the current working tree:
+Current working-tree verification is mixed:
 
-- **Verified:** all 1,352 pytest tests pass under the repository `.venv`.
-- **Verified:** repository-wide Ruff passes.
-- **Verified:** mypy passes across 314 source files.
+- **Verified for the handoff:** 26 focused source API, input/privacy, endpoint
+  request, format-retry, recovery, five-fixture parity, archive, manifest, and
+  clean-command tests pass under the repository `.venv`. The builder also runs
+  the shipped tests from a clean extracted archive.
+- **Verified:** scoped Ruff passes for the implementation and for the repository
+  after excluding unrelated local temp fixtures, the supervisor-provided
+  utility sample, and the generated handoff copy. Mypy passes across 335 source
+  files.
+- **Not currently green repository-wide:** the latest broad pytest run passed
+  1,376/1,381 tests. Four retained-evidence tests report hash drift in unrelated
+  changed research reports. One trace-explorer artifact-root assertion is
+  sensitive to the workspace-local pytest temp directory used because the
+  default Windows pytest temp root is inaccessible. Repository-wide Ruff also
+  sees unrelated untracked temp fixtures and the supervisor utility sample.
+- **Previously verified:** 1,352 pytest tests, repository-wide Ruff, and mypy
+  across 314 source files passed before the later working-tree changes.
 - **Verified:** both deterministic builders reproduce their selected outputs,
   the retained-evidence manifest validates, and all six no-call reference cells
   replay their expected scores.
@@ -195,25 +238,35 @@ Repository-wide checks pass on the current working tree:
   overfull box, or LaTeX warning. The paper was not rebuilt for these
   implementation and documentation changes.
 
-This verifies the current implementation, retained hashes, common-panel
-invariants, source synchronization, reference replays, and paper render. It is
-not independent clinical validation or a new clean-checkout reproduction.
+The fresh handoff checks verify its implementation, source manifest, synthetic
+stage parity, recovery behavior, and clean extracted execution. They do not
+verify the supervisor endpoint, host setup, private-data performance, clinical
+correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
 - Independent review of the 48-item ExECT semantic-support substrate remains
   the next evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
+- Supervisor endpoint and unaided README verification remain the next handoff
+  dependency; no private data is needed to perform them.
 
 ## Next
 
-1. Assign two independent clinical reviewer IDs and have each reviewer complete
+1. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
+   and both bundled synthetic examples against the approved model route; record
+   JSON/thinking/retry behavior and unaided README corrections in the handoff
+   plan.
+2. Assign two independent clinical reviewer IDs and have each reviewer complete
    all 48 items without sharing IDs or reviewing the other's export.
-2. Send every field-level disagreement to a third named clinical adjudicator;
+3. Send every field-level disagreement to a third named clinical adjudicator;
    retain both original decisions and every revision.
-3. Export the completed reviewer and adjudication artifacts, validate their
+4. Export the completed reviewer and adjudication artifacts, validate their
    completeness, then update the reliability scorecard and paper claim owner
    within the protocol's development-only limits.
+5. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
+   eight audited deterministic regression rows and matched non-regression
+   controls; do not tune the frozen six-model panel in place.
 
 ## Blocked or unvalidated
 
@@ -224,6 +277,9 @@ not independent clinical validation or a new clean-checkout reproduction.
 - The selected ExECT joint policy retains three known deterministic
   regressions. The one-call Diagnosis decision also accepts a measured dev140
   quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the two-call ablation.
+- The handoff is implemented and locally checked but not yet verified against
+  the supervisor's exact endpoint or validated for unaided use. Those checks,
+  not private-note testing, clear the operational dependency.
 
 ## Data and claim boundaries
 
@@ -255,6 +311,9 @@ not independent clinical validation or a new clean-checkout reproduction.
 - Decisions and run protocols: [documentation navigation](docs/NAVIGATION.md)
 - Cross-task six-model synthesis:
   [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
+- Gan Qwen-versus-Sol rule-benefit mechanism audit:
+  [row report](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
+  and [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
 - Active Gan v0.5 extension and schema replay:
   [protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
   and [aggregate replay](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)

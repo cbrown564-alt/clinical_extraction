@@ -1,1 +1,0 @@
-"""Clinical assessment assembly submodules."""

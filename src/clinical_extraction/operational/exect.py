@@ -37,11 +37,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import
     sf_state_projection,
     sf_unknown_suppression,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines import (
-    key_entities_structured,
-)
-
-structured_runner = key_entities_structured
 
 TARGET_ENTITIES = (
     DIAGNOSIS.name,
@@ -59,6 +54,10 @@ MATERIALIZED_SURFACES = (
 
 
 def run_exect_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[dict[str, Any]]:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
+        runner as structured_runner,
+    )
+
     letters = [ExectLetter(note.note_id, note.text) for note in notes]
     rows, _ = structured_runner.run_split(
         letters,
@@ -122,8 +121,10 @@ def _assemble(
     letters: Sequence[ExectLetter], structured_rows: Sequence[Mapping[str, Any]]
 ) -> dict[str, dict[str, Any]]:
     direct_rows = [_direct_sf_row(row) for row in structured_rows]
-    projected_rows, _ = sf_state_projection.project_rows(direct_rows, ablation="combined")
-    suppressed_rows, _ = sf_unknown_suppression.suppress_rows(projected_rows)
+    projected_rows = [
+        sf_state_projection.project_row(row, ablation="combined") for row in direct_rows
+    ]
+    suppressed_rows = [sf_unknown_suppression.suppress_row(row) for row in projected_rows]
     manifest = manifest_from_mapping(
         _manifest_payload(Path("structured.jsonl"), Path("sf.jsonl"), row_count=len(letters))
     )

@@ -28,6 +28,14 @@ the relevant decision record and tests
 For the final ExECT family routes, the relevant record is
 [decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md).
 
+## Build the supervisor handoff
+
+[Supervisor handoff plan](plans/supervisor_local_extraction_handoff_plan.md) →
+[software design](design/architecture.md) →
+[ExECT family ownership](decisions/0040-final-exect-llm-with-rules-family-ownership.md) →
+[one-call ExECT architecture](decisions/0041-single-call-exect-model-comparison.md) →
+[local structured-output repair](decisions/0042-shared-local-model-structured-output-repair.md)
+
 ## Change evidence or split policy
 
 [evidence rules](canon/03_evidence_claims_frozen.md) →

@@ -1,0 +1,4 @@
+dspy==3.2.1
+openai==2.41.0
+pydantic==2.13.4
+PyYAML==6.0.3

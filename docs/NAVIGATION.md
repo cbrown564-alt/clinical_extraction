@@ -19,6 +19,7 @@
 | Gan matched v0.5 test450 protocol and aggregate | [v0.5 protocol](experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md) and [aggregate artifact](../experiments/gan2026_matched_v05_test450_aggregate_20260716.json) |
 | Gan six-model validation method comparison | [protocol](experiments/gan2026/gan2026_six_model_validation_comparison_protocol_2026-07-18.md), [result](experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md), and [machine artifact](../experiments/gan2026_six_model_validation_comparison_20260718.json) |
 | Gan post-panel schema replay and component audit | [protocol](experiments/gan2026/gan2026_six_model_post_panel_replay_protocol_2026-07-20.md), [report](experiments/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md), and [machine audit](../experiments/gan2026_six_model_post_panel_attribution_20260720.json) |
+| Gan Qwen versus Sol rule-benefit and every-error-row audit | [protocol](experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_protocol_2026-07-20.md), [report](experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md), and [machine audit](../experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json) |
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
@@ -53,6 +54,7 @@
 | Shared hosted Gan prompt | [decision 0043](decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) |
 | Evidence metric | [evidence groundedness](reference/evidence_groundedness_metric.md) |
 | Shared reliability definitions | [reliability evaluation framework](design/reliability_evaluation_framework.md) and [decision 0044](decisions/0044-shared-reliability-criteria-use-task-specific-measures.md) |
+| Supervisor local extraction handoff | [handoff implementation plan](plans/supervisor_local_extraction_handoff_plan.md) |
 | Procedures | [runbooks](runbooks/) |
 
 Detailed experiment history is intentionally absent from the active tree. Use
