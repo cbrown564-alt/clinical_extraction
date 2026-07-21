@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
@@ -49,9 +49,6 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_prescription_components,
     semantic_config_for,
     source_near_diagnostic,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows as write_jsonl,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
 
@@ -333,6 +330,14 @@ def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
             "published_per_entity_item_f1": PUBLISHED_PER_ENTITY_ITEM_F1,
         },
     }
+
+
+def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (  # noqa: E501
+        write_jsonl_rows,
+    )
+
+    write_jsonl_rows(rows, path)
 
 
 def write_report(

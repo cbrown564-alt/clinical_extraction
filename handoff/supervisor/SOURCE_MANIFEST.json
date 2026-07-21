@@ -1,0 +1,832 @@
+{
+  "files": [
+    {
+      "bytes": 204,
+      "path": ".env.example",
+      "sha256": "63beabbfeddbea21a9d8586e49ac1fba57a121f7a34c753a331551c707d7b374"
+    },
+    {
+      "bytes": 70,
+      "path": ".gitignore",
+      "sha256": "4a3f04c7c997c0b2f8f9c78a45c7335c437be156dbc8d93c0c24d51524e7b8bd"
+    },
+    {
+      "bytes": 117,
+      "path": "clinical_extraction/__init__.py",
+      "sha256": "d008c6d51ea4e71d3fb863d610395f28662b53d1d1e97bb0a56af7fc178da424"
+    },
+    {
+      "bytes": 66,
+      "path": "clinical_extraction/core/__init__.py",
+      "sha256": "5bff1a7d909e11bca4bab153a0519d0b6c0b64361744f56e4ed92111acfdc849"
+    },
+    {
+      "bytes": 10598,
+      "path": "clinical_extraction/core/evidence.py",
+      "sha256": "d088adb1345f4fbd7f6854085a9a5502463f65ac7e51b5bb5ade4d012dd1ecb4"
+    },
+    {
+      "bytes": 2538,
+      "path": "clinical_extraction/core/json_schema_repair.py",
+      "sha256": "57a093ea92bc092f009cc5ccb9c11ebad0a5a68a912f5bf417082b6d08e4209c"
+    },
+    {
+      "bytes": 8462,
+      "path": "clinical_extraction/core/local_structured_output.py",
+      "sha256": "1041439c8605223aba9df33429ef797b7cb2f7889e9f199d47eaf5a27f37a324"
+    },
+    {
+      "bytes": 3374,
+      "path": "clinical_extraction/core/run_resume.py",
+      "sha256": "885490225935d1a1f50fab6e219f98c8192724cf6e14efa6d66acd66a121bace"
+    },
+    {
+      "bytes": 475,
+      "path": "clinical_extraction/core/schemas.py",
+      "sha256": "43abb3724acf112a4a836530041df69070e89772b39d1676cbabc630c6a1c828"
+    },
+    {
+      "bytes": 2259,
+      "path": "clinical_extraction/core/scoring.py",
+      "sha256": "f8b5da31092435622f420214067c13e61d598d25d315f77f1aed8e3a4c5d4234"
+    },
+    {
+      "bytes": 172,
+      "path": "clinical_extraction/operational/__init__.py",
+      "sha256": "1fcb2b040247759f4fc4fc6bb9b669e713c60b9bd47d10bd7d829b55bd00c632"
+    },
+    {
+      "bytes": 15907,
+      "path": "clinical_extraction/operational/exect.py",
+      "sha256": "ad7580d4ebb20166dd12199c7db93ddb8eaf24e8db7e12f1f8970f825d383b1a"
+    },
+    {
+      "bytes": 1849,
+      "path": "clinical_extraction/operational/io.py",
+      "sha256": "1cdc0eea418bd641ed25f79f705191abd9acec6c64134f434fdc78910e1cf51a"
+    },
+    {
+      "bytes": 2144,
+      "path": "clinical_extraction/operational/runtime.py",
+      "sha256": "a4d80e20cc746891ec8861f9b38513b2333ee30317dadd8f6012962a41ab3958"
+    },
+    {
+      "bytes": 49,
+      "path": "clinical_extraction/tasks/__init__.py",
+      "sha256": "b47c44152e6c21d0abb5e2c61030e1d614901728f8d2a6dc47c8ff97879533d0"
+    },
+    {
+      "bytes": 51,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/__init__.py",
+      "sha256": "7a6611422a0f1533155a1a1032f56b577acafe9e361c1166e85ca0c8ef0ae7bb"
+    },
+    {
+      "bytes": 73,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/__init__.py",
+      "sha256": "fee76c428a0950e04c3d10f64a4c6bf7deaf06fb7e17c62bfe59f50ec0b8030c"
+    },
+    {
+      "bytes": 1318,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/__init__.py",
+      "sha256": "03aca95c62100207744d95472ca60f14c1e03676c373b820ce3a4ddbdcf8bbea"
+    },
+    {
+      "bytes": 6726,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/clinical_finding.py",
+      "sha256": "b10e6ce11c4d7a37f8827e176e3fe7f1f71b285b9ebeafbb3306b616dc6da1d4"
+    },
+    {
+      "bytes": 2446,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/finding_store.py",
+      "sha256": "1e0cd8ab15db9cb1aef770a59a9b75f3c7b219b6b5fcb3a5cfcdcb12342dd64e"
+    },
+    {
+      "bytes": 9825,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lens_ops.py",
+      "sha256": "0100db5955bd5a3ecb5c8a2b717fbb77ca756338bae56d38e92a539cf51a4cb5"
+    },
+    {
+      "bytes": 1106,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/__init__.py",
+      "sha256": "2f54fd6b390a158c89e26815830d7d50e59231889644711b52e428be8ed07a2e"
+    },
+    {
+      "bytes": 2330,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/base.py",
+      "sha256": "e2b2079de1875af872ad0ec4b826ac4e5ebe5c78e70f9b3afbfc2d94971a0691"
+    },
+    {
+      "bytes": 18140,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
+      "sha256": "257c1673a357cb9c489ecb0d3f73f4bec152792e7d3aaa29c37fade35a02c496"
+    },
+    {
+      "bytes": 8269,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/investigations.py",
+      "sha256": "b057f378d55d6372f444e332e4775d68f41d84c077c80283d149b32c2270953a"
+    },
+    {
+      "bytes": 14481,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/prescription.py",
+      "sha256": "a2ebea3904854e65789dfe5337bf13f13d856d189499797a3ee15352f77e77a2"
+    },
+    {
+      "bytes": 2503,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/registry.py",
+      "sha256": "8fff6351705c9ec31996c27b479b2d360ec9c8f2868b624255b897910c122a2e"
+    },
+    {
+      "bytes": 9369,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py",
+      "sha256": "8150dc974ff0f1fd200a3f43ef692a4d7d744629286850ed06f888026e6d9908"
+    },
+    {
+      "bytes": 4897,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/manifests.py",
+      "sha256": "6b0aa86e855f1f5cf47c259bb2146f66eb562f45f5f68bddafca5e55fd02a2d7"
+    },
+    {
+      "bytes": 7302,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/producers.py",
+      "sha256": "935500a374a11fb2d693260411c5ebf2f11611ce4754f6a69c3419d32f1ef5d3"
+    },
+    {
+      "bytes": 28754,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/benchmark_projection.py",
+      "sha256": "7cbe4efaeea5cc486e3978c31171582e7b693176249636b7e89b3fe4cd06a1c7"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2716,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/drug_lexicon.py",
+      "sha256": "bd1d00301eb41241208f622c749721f80d96471c8545d1aa5cf5ffe182ec2112"
+    },
+    {
+      "bytes": 9947,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/entities.py",
+      "sha256": "4e34240154830300ffdea4623a6c1ddb093b9628d4b1f6f473b5b593edb6c5e1"
+    },
+    {
+      "bytes": 5042,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/evaluation.py",
+      "sha256": "2c1b264e7fef030f514768ee64ecf3fb2f073e0db59b3cb7cfc658af198b8626"
+    },
+    {
+      "bytes": 1512,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/prediction.py",
+      "sha256": "b9138919ec55b23510f5a0e97e8a69b749593486e5a78499ccb1c4ab49e61165"
+    },
+    {
+      "bytes": 3951,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/repair.py",
+      "sha256": "6b2e90e8fd0228fe84eb28d5b771f02fd6fe71e0b14a36cdd8b1b71ac67ee666"
+    },
+    {
+      "bytes": 695,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/contract/text.py",
+      "sha256": "3a8c3f7f75115183388bc44d018d770466ea82fe8e10b84f1d0e4ba20e4e062e"
+    },
+    {
+      "bytes": 7524,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/data.py",
+      "sha256": "d61c3744bb6eee678df4e50e6a0bf9aec27537025d8d81d28c3c2d1541383974"
+    },
+    {
+      "bytes": 680,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/__init__.py",
+      "sha256": "9922b2a5d3bbb4bd5ff2980cbbcf0271ce7c1bd981b9bdc2f5ac59f442e28e65"
+    },
+    {
+      "bytes": 2701,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/__init__.py",
+      "sha256": "650dea4cc0cdf2f9b9250fa15bd7c747f8601b705374af187375d6aea48a211c"
+    },
+    {
+      "bytes": 25833,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/diagnosis.py",
+      "sha256": "25c98a1f17c34e8fd3bcc8cf4379f9ceb401ebd0ed10ef1421b1eb8fe6f3cfb2"
+    },
+    {
+      "bytes": 10819,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/investigations.py",
+      "sha256": "d6eb7ef3e038a8dfebca26a2bd15a2aa343a38d748bc3813af633f9d5f464586"
+    },
+    {
+      "bytes": 15559,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/prescription.py",
+      "sha256": "08d3a9a5230a5fbfc1fb630bae53426014e57bed221484a681fa32ceaf932843"
+    },
+    {
+      "bytes": 6941,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/conventions/shared.py",
+      "sha256": "2c1229d3ae74c28639daeb626ac0c0b816649d557c1637dc7c9b07487ac24687"
+    },
+    {
+      "bytes": 7023,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/lexicon.py",
+      "sha256": "e5a3c46becfd851ecf1a6bc41215924572771a2c6e347861fd9489740970637c"
+    },
+    {
+      "bytes": 14662,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/normalization.py",
+      "sha256": "a37e371c51d71c350cc4f85d9f08ec9d8d86c059479df9563ad96d68617b05f9"
+    },
+    {
+      "bytes": 3881,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/rule_metadata.py",
+      "sha256": "ec85d59ed15ed93bbe1907f7306e1f23e850df3000ec00eb474f735837ba8ba6"
+    },
+    {
+      "bytes": 27646,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_state_projection.py",
+      "sha256": "066e936240268e7fc02d84c252b31206551ba9cb46a2f30a4bf7ff60fb6af4d9"
+    },
+    {
+      "bytes": 537,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/__init__.py",
+      "sha256": "6e1a666de084b52ccc2511bfd9e37a7e7f1656dc0114953fb4efd15ba8ab20d7"
+    },
+    {
+      "bytes": 78,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/adapters/__init__.py",
+      "sha256": "0460b5bbff7a22a4f0ba8e2d810d987c2864d00751d71cb86cc5c07da16fa58d"
+    },
+    {
+      "bytes": 1385,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/adapters/convention.py",
+      "sha256": "f45e9ae6973ccbae08522dae7cdecfcd50761276e6fb56dd66f3cac00433d31d"
+    },
+    {
+      "bytes": 430,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/__init__.py",
+      "sha256": "62a57ca2bcd007b42a0dcb33a0e3d83dcf699777a54b06682e8417c9ca9fa8bb"
+    },
+    {
+      "bytes": 14203,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/_legacy_constants.py",
+      "sha256": "061bd954eb2835e81e92700455102f76655d16e352f0904f5c4a67292ade8a5e"
+    },
+    {
+      "bytes": 1125,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/_legacy_impl.py",
+      "sha256": "91e0e8b8dedc4956368997a9b15665e9f3df925254173b416e23fbb6d5489cbe"
+    },
+    {
+      "bytes": 3561,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/_legacy_noise.py",
+      "sha256": "4d77fd5ab9945ba7b4a68285398a35e13ab4a9732262792eb089003108b44c2e"
+    },
+    {
+      "bytes": 32846,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/_legacy_residual.py",
+      "sha256": "b2200d2b79da858755899467bab204500eb7a21bc8b4dc82fa17a5ef428ef472"
+    },
+    {
+      "bytes": 16964,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/_legacy_rewrite.py",
+      "sha256": "c2371eccf60166bb76b34c7c601df657bb6d3d9d37790504128a4cdbcd71200c"
+    },
+    {
+      "bytes": 863,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/context.py",
+      "sha256": "c3271daf61382a0cbc0a1b61af34b1cb7229a7f6d240a94512be080e8b0f1aae"
+    },
+    {
+      "bytes": 6286,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/noise_builders.py",
+      "sha256": "d0a573c8dd61872228bd0fdd8ff848f8c570d3e2bfcf8934b758f57af137ee24"
+    },
+    {
+      "bytes": 3461,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/registry.py",
+      "sha256": "61d704d890d60236206b23fa53e11af31559098e786cd19a88b0b5f653f4d986"
+    },
+    {
+      "bytes": 374,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/residual_builders.py",
+      "sha256": "3a37680da116b76def1d22b36b112b23a2388d90d88c536e8d1de36dadcb479c"
+    },
+    {
+      "bytes": 22690,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/builders/rewrite_builders.py",
+      "sha256": "d73e4cb2ecfb23646e9a18f10841e85deb7dc7e6abf33387e89aaa5f3d5026e4"
+    },
+    {
+      "bytes": 2525,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/catalog.py",
+      "sha256": "332572e44146fdf25838139d7e3ea2e5ca8ce8d8d22b04bdf9492f0c78858e23"
+    },
+    {
+      "bytes": 3808,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/patterns.py",
+      "sha256": "dd62add3fb794a274a9329ef45805415b168d1f3be51f5da02390369f33e6c15"
+    },
+    {
+      "bytes": 2469,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/patterns.yaml",
+      "sha256": "bbf013873a65ae101adf37a3b599639da60459507ef00441c579410dbb4925f7"
+    },
+    {
+      "bytes": 882,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_surface_registry/types.py",
+      "sha256": "7bac2000bdb5f268a168fcdd99c7883ba1c4909e4c41c1ca67a620019c95b018"
+    },
+    {
+      "bytes": 13156,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_unknown_suppression.py",
+      "sha256": "c9906649e9c8f1fca089ea1acd678502377f366bcd4af49aa64974b04e97529b"
+    },
+    {
+      "bytes": 1668,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/standard_dictionary.py",
+      "sha256": "6aa464729f997171265253ed77b58e976fb4e47bf9fd8aa31849ac3ab7d18dfb"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 38,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/__init__.py",
+      "sha256": "8bb98b57bc4ccd4a3ca396435d8ba6c52875d76ecc3261a47f4bd6b30360de3d"
+    },
+    {
+      "bytes": 4018,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/__init__.py",
+      "sha256": "555be889fbb4191455e8f08aa916b71db214dab3b31c80acee4e43b17d52f984"
+    },
+    {
+      "bytes": 2769,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/constants.py",
+      "sha256": "bb62fd760961c0ab582d3c669ec681cbcec8158e11f7be664aea2fa7a5ab3c1a"
+    },
+    {
+      "bytes": 7863,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
+      "sha256": "99d708ad3abc3b76800d34a537d1ca595d24ebca22d3e09f058dc5ca2f336b1c"
+    },
+    {
+      "bytes": 7200,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/projection.py",
+      "sha256": "b9f3dd83a589dd3678fd8c038d6dbc805b96340778e56f20b42c4fef0821bf2e"
+    },
+    {
+      "bytes": 787,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders.py",
+      "sha256": "f36806e6400ee204216cd675d51bb9314535109c6bfa47ae63c6645d39bd684d"
+    },
+    {
+      "bytes": 4041,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_full.py",
+      "sha256": "44213d5892d4936b0432ca4490e7eb462d98b71c2f6f91c4f791655dca675257"
+    },
+    {
+      "bytes": 14472,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_qwen_compact.py",
+      "sha256": "f4b8309aef461cf8c62b5382cb3b4f7195829851614f341a4e5da7d0dabf0786"
+    },
+    {
+      "bytes": 15013,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_content.py",
+      "sha256": "ad9365215499cdc7e03f383e31494aa4aeb65fa3731e743b30738699090a8abd"
+    },
+    {
+      "bytes": 25000,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_rules_full.py",
+      "sha256": "fe6d87699fd5fc4af0fff9af08d04e5e035f82af61d0472ca99d1946110775b7"
+    },
+    {
+      "bytes": 1447,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/records.py",
+      "sha256": "f6756d406a65eea89370788bdd0895f3e014a82bd0175988709a7064b82183f0"
+    },
+    {
+      "bytes": 26508,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py",
+      "sha256": "d884fa8ad330f08ba23674ac8d9df3b7985efa5f01a22c16913bcf6bea9b9986"
+    },
+    {
+      "bytes": 1370,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/signatures.py",
+      "sha256": "16a188e0e7fb81c5d9af61ccd0467ed885c0c2bb43bb66170753ca0df9cb6e47"
+    },
+    {
+      "bytes": 35,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/prompts/__init__.py",
+      "sha256": "510a21b9dea3e81fb37b831373037dc9d08d2ee1ddeaa1b1a918a10d64f26053"
+    },
+    {
+      "bytes": 464,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/prompts/key_entities/__init__.py",
+      "sha256": "98c08b8afc4bbf9ed26399c5b194fe9220643a6ccca6ac6dd6db8dfd181e6a9f"
+    },
+    {
+      "bytes": 3396,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/prompts/key_entities/loader.py",
+      "sha256": "a8db940dbb61fabdc7c07c9e18452881499300f722104f804fb28fc31acfcdca"
+    },
+    {
+      "bytes": 27854,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/prompts/key_entities/structured_worked_examples.yaml",
+      "sha256": "fb9959a3418ad2fa3cdc75ffa3a8ce7c744e02a1b153019a5ee253cc167dc659"
+    },
+    {
+      "bytes": 745,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/__init__.py",
+      "sha256": "088ce99e05c83c3da9eed2a80b104b48ac6b047a8d4b230a6b8f40af9325cc40"
+    },
+    {
+      "bytes": 1980,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/dspy_runner.py",
+      "sha256": "10672f0dbba4625a90ea7ab4494ed2308b08609bed6098122e41b1a0f29e9cdd"
+    },
+    {
+      "bytes": 3978,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/json_parse.py",
+      "sha256": "60afb86389f8e6d6e8e692140c44e1b0e3b9489dc23506a7561d3496e8b56d25"
+    },
+    {
+      "bytes": 3494,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/mention_pipeline.py",
+      "sha256": "e9221d3347fdf01ecdf404947ad2d0660833ae9079a021d1faeb81d301c05843"
+    },
+    {
+      "bytes": 1934,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/reporting.py",
+      "sha256": "69959c14ea9c66a8dad075ee195c1093cb10b9ab47d0d3b38491d9e0cf53fe5c"
+    },
+    {
+      "bytes": 4214,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/__init__.py",
+      "sha256": "fca0b9dc99ef5d671a8ab011542874bf4cfea3984279effa34c0cba69d1f5c12"
+    },
+    {
+      "bytes": 4572,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/investigations.py",
+      "sha256": "7d2c337aac2ec6e65d340c6d48f4d808ac70854f5035af2bc4d7224b951a0649"
+    },
+    {
+      "bytes": 28909,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+      "sha256": "ed949f83d16efd6751f1139f15cf1052a7585f3655035019601d63fbfa3a855d"
+    },
+    {
+      "bytes": 5523,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/normalize.py",
+      "sha256": "47c38c1aa742c50aaec9a61c6f70a80f3de51e5f42b1c6ee56fa83b6315bd429"
+    },
+    {
+      "bytes": 16735,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/prescription.py",
+      "sha256": "992b57b024fb6ff3e109970e14a717642086c5e6ad3cd18c6314f8c650c27656"
+    },
+    {
+      "bytes": 19910,
+      "path": "clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/seizure_frequency.py",
+      "sha256": "c0515ac5fa71ad9b6c005648228245cb789a8c3f56409899b9f23996afa67a4a"
+    },
+    {
+      "bytes": 43,
+      "path": "clinical_extraction/tasks/seizure_frequency/__init__.py",
+      "sha256": "52e9aae02c463b9a4a25b765be4f0c0bc01dd105834bb3f38f69f5be6450239f"
+    },
+    {
+      "bytes": 60,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/__init__.py",
+      "sha256": "c751998e1068a8d13973bb804255fd4e5a72bcc1e5dc6f05174bfd92026c2c83"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/contract/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 33070,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/contract/benchmark_prediction_repair.py",
+      "sha256": "b685a198effd35e22c27703763db56ebc48dcb779c78653317a54ac2093f3147"
+    },
+    {
+      "bytes": 9986,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/contract/gold_policy.py",
+      "sha256": "4946e19d8e62f2d8107089d398294af361ad32783f3788750516f73b0af65395"
+    },
+    {
+      "bytes": 507,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+      "sha256": "320e1f5712cef70f55ea4a4047da414992bf185a8d5307a3e07cd5d477eb0d78"
+    },
+    {
+      "bytes": 11778,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
+      "sha256": "adb04c2056110215f7ff89a36dce746c92bd6c0266c1aeae6c04a59978b7f73b"
+    },
+    {
+      "bytes": 4163,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/data.py",
+      "sha256": "8702ef87b000bbdc2775a6f9d30d8b37e205528760427789391098ffc6cf4258"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/deterministic/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4257,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/deterministic/rule_metadata.py",
+      "sha256": "b90b3729d3e9ef4a450e786c5be46a0176cc05d99225d0568cd88474fd72ea0d"
+    },
+    {
+      "bytes": 59,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/deterministic/rules/__init__.py",
+      "sha256": "7021beff69322d1edc36f77b5fa3b91f8ff57bcfec481077b5c40ea96f8ecba6"
+    },
+    {
+      "bytes": 4170,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/deterministic/rules/benchmark_repair.py",
+      "sha256": "f47113f1d761b320bdd23328acd5cc2044f4921a81c7d1243681c848af3072bf"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 57426,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+      "sha256": "e820bff73d4102617bdc518b527394bb3f220e76eb0cb8381f3f06fa21f92989"
+    },
+    {
+      "bytes": 11056,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py",
+      "sha256": "3bcfb8e26d0da850cd0806bd4e66cd7b892615d3259084112550a54f749a6383"
+    },
+    {
+      "bytes": 21907,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+      "sha256": "1ecce16a1a90cba5c9e7900e29fb13b768930a555080e281963223c5ff8f335a"
+    },
+    {
+      "bytes": 10784,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_temporal.py",
+      "sha256": "fc7aa956dfd4b4973de7c49ff45f1864bea07dc9df16dbc8ebdc62d38d68c098"
+    },
+    {
+      "bytes": 1761,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/llm_config.py",
+      "sha256": "1ca4d1125b195417a9236362f74d2d0d63a54a3e2b1b6258ff179c1295d708af"
+    },
+    {
+      "bytes": 9149,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+      "sha256": "f3a11e3480c001b8972bb8f70ddcb674a567418491a61ad983aae50f47c83c4c"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11349,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_cluster.py",
+      "sha256": "bc3b43506d72d848c66ba2350a6d7c56faa3544c499aa16730e5e1ba1045acba"
+    },
+    {
+      "bytes": 5119,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_derivation.py",
+      "sha256": "857bb704de4a7f79e92aa064e28a61f1547e792bc40a0994ea22157fa7ec0f80"
+    },
+    {
+      "bytes": 7367,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_monthly_diary.py",
+      "sha256": "17f0389765daf54dd7a0d47698a405ba2e751d38a957c796a98d2ea08ddbd4e5"
+    },
+    {
+      "bytes": 20645,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_rate.py",
+      "sha256": "cfc7e2655bb550b3f8bfa736ff0c72d7b64fcfc385e7b1da2632f3b43e566515"
+    },
+    {
+      "bytes": 1041,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_text.py",
+      "sha256": "ed739a63969bd139701258b9808ed78867eec4628ddd0e3e99ee1425e6b4a718"
+    },
+    {
+      "bytes": 3622,
+      "path": "clinical_extraction/tasks/seizure_frequency/gan2026/selected_evidence/selected_evidence_window.py",
+      "sha256": "7fa3d505fa0d72a7957b1a1bf29fbfb72d1683257b9224b18c3353043e1dcaf3"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/shared/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "clinical_extraction/tasks/shared/epilepsy/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 9314,
+      "path": "clinical_extraction/tasks/shared/epilepsy/normalization.py",
+      "sha256": "f6a788c55d0e58c403c946012722fc207370ce0fa12ab98957f40ec97e1b3c69"
+    },
+    {
+      "bytes": 1028,
+      "path": "clinical_extraction_local/__init__.py",
+      "sha256": "3df97906788104247d4d4739d5b37debb83d34fef92576248062cd5b1168cff9"
+    },
+    {
+      "bytes": 7524,
+      "path": "clinical_extraction_local/batch.py",
+      "sha256": "4e984aea41539cdc2befda6e3d2176586b16d3aad65b9ad6dba01441bcd9ef02"
+    },
+    {
+      "bytes": 4913,
+      "path": "clinical_extraction_local/cli.py",
+      "sha256": "d4e7522247232314788ce04538568f8bd3e000639e1217f1b75a8a56d519fc24"
+    },
+    {
+      "bytes": 3722,
+      "path": "clinical_extraction_local/client.py",
+      "sha256": "5e1edc6bf13e47a651d5636a805c26eb3c81ca671f1ba7a1c0b3d91492694464"
+    },
+    {
+      "bytes": 143,
+      "path": "clinical_extraction_local/clinical_findings/__init__.py",
+      "sha256": "f0b2f7e650c09839309cd9cc19a2e0badc8137717cf573a2ab543170dfa87aa4"
+    },
+    {
+      "bytes": 7418,
+      "path": "clinical_extraction_local/clinical_findings/pipeline.py",
+      "sha256": "4ccb5a5c13f766b2ce98262d51c8ad2f000b81dad16c6705ecf30ee24f11c153"
+    },
+    {
+      "bytes": 489,
+      "path": "clinical_extraction_local/clinical_findings/prompt.md",
+      "sha256": "2199fe477c99a192c07c5ef05fec3e79a799662bf954b3909f93f241b3dab80e"
+    },
+    {
+      "bytes": 272,
+      "path": "clinical_extraction_local/clinical_findings/schema.json",
+      "sha256": "ceec9f4351be43f83bf6a7f4f2e259628b368faaff7c0acc2fc7b50457fa4625"
+    },
+    {
+      "bytes": 4247,
+      "path": "clinical_extraction_local/config.py",
+      "sha256": "1ee5b9e09e88f1609254deb051e5154152d5f7fbf73e2666c71daf77fb6ce1e8"
+    },
+    {
+      "bytes": 1276,
+      "path": "clinical_extraction_local/errors.py",
+      "sha256": "36dd200f68c764bf475a617ecae9daa0711b3b8226fa7a7de58c4b7e0e73e76e"
+    },
+    {
+      "bytes": 2267,
+      "path": "clinical_extraction_local/extractor.py",
+      "sha256": "d4c1ce93665e6d5f6801eb312bdf9996dca7492bd00e1862e42ad3dc422902bd"
+    },
+    {
+      "bytes": 1870,
+      "path": "clinical_extraction_local/input.py",
+      "sha256": "37c64fe7006ba5dbfaeae5893e2cbf8292c012a408a152a35941ca62c30ed97b"
+    },
+    {
+      "bytes": 1179,
+      "path": "clinical_extraction_local/models.py",
+      "sha256": "c53a26d9b61eca86c7e205f3d978ee20abb2f8a78e160df079839154da53ddf1"
+    },
+    {
+      "bytes": 143,
+      "path": "clinical_extraction_local/seizure_frequency/__init__.py",
+      "sha256": "6ef3e511fd7a2c00d2e67991aa980a4ae840dd8414780506f74c610055b00f53"
+    },
+    {
+      "bytes": 6431,
+      "path": "clinical_extraction_local/seizure_frequency/pipeline.py",
+      "sha256": "f81e1be0f4685027c9ba92f398620adeb31c7ae8007048ac25f8e78b6600e7a2"
+    },
+    {
+      "bytes": 548,
+      "path": "clinical_extraction_local/seizure_frequency/prompt.md",
+      "sha256": "e84f40a681db319b13ab92e7595ba58e42b7b65c7252b6220bbc698ad0c19d7f"
+    },
+    {
+      "bytes": 291,
+      "path": "clinical_extraction_local/seizure_frequency/schema.json",
+      "sha256": "706508ee43bef078c38af77a6e7b21b44f351a45e67fa5aa7ea514e1a01233c1"
+    },
+    {
+      "bytes": 1474,
+      "path": "clinical_extraction_local/versions.py",
+      "sha256": "034290a16051d248d698cefc9dbca99e733e8278f1524e1d7c54c5f9dd18b505"
+    },
+    {
+      "bytes": 2518,
+      "path": "docs/HOW_IT_WORKS.md",
+      "sha256": "2b1746948fb596580c95768cba05825e1162b3a13f70608ea306e7af5faaaa7a"
+    },
+    {
+      "bytes": 1236,
+      "path": "docs/OUTPUTS.md",
+      "sha256": "00269cbbeb5a6fbc47dc0a4385aeea293120b1fe073635be48ec77d281aab2ee"
+    },
+    {
+      "bytes": 999,
+      "path": "docs/PRIVATE_DATA.md",
+      "sha256": "98866c15798aa5a08127980cdf030d948bcb0fa29bdc94002df0ebc5999ead61"
+    },
+    {
+      "bytes": 1015,
+      "path": "docs/TROUBLESHOOTING.md",
+      "sha256": "6c183998cd5b8f41a369f3131a6b9f3f27835cdd4363d1e3e531cd9f888b333d"
+    },
+    {
+      "bytes": 187,
+      "path": "examples/clinical_findings/expected_shape.jsonl",
+      "sha256": "65e7646bf67ac0779e5e04300d9c541ab2109b6478d8492363dde70beb26855c"
+    },
+    {
+      "bytes": 182,
+      "path": "examples/clinical_findings/notes.jsonl",
+      "sha256": "0a415eda34737b96624ad7aaa8565c2ab7cfd8abf861cf326ef168945737f2cf"
+    },
+    {
+      "bytes": 179,
+      "path": "examples/seizure_frequency/expected_shape.jsonl",
+      "sha256": "646fca7605659b7dd93933b0c82f60ee184be11f754a4585d669cfec9e62b370"
+    },
+    {
+      "bytes": 102,
+      "path": "examples/seizure_frequency/notes.jsonl",
+      "sha256": "ac0865b785be0fc18e5dd8dcc8b3779324717f1edc720b58159ed7f5f5c01ec3"
+    },
+    {
+      "bytes": 253,
+      "path": "LICENSE-or-usage-notice.md",
+      "sha256": "54de4116dafa8c32e7a85c12fd0ee770b2e828e0eb9ff3d62177e0695e71a916"
+    },
+    {
+      "bytes": 3559,
+      "path": "README.md",
+      "sha256": "1a589e541dd25b0dbfad01c35693ee99cbaa53ec52f2b4ce3189ecb721547137"
+    },
+    {
+      "bytes": 35,
+      "path": "requirements-dev.txt",
+      "sha256": "64106b0fc7adc0ccf4b6d4bc68815a79c701619ec526d5dbd826e67f683a2c43"
+    },
+    {
+      "bytes": 58,
+      "path": "requirements.lock",
+      "sha256": "be61c93ddef4cd9264d3fd0f07ea37ab3d54519b94cfa8d1e2067c0d9ad48c39"
+    },
+    {
+      "bytes": 54,
+      "path": "requirements.txt",
+      "sha256": "19f9f5f43a303594cf817791555cd268a35f5bbad32d2e3c798b00c46a9d7bf6"
+    },
+    {
+      "bytes": 1136,
+      "path": "run.py",
+      "sha256": "cd8d14859ef05cbae19f23ca5985d4826c7d229b242efa53550f62200bae1d09"
+    },
+    {
+      "bytes": 446,
+      "path": "setup.ps1",
+      "sha256": "c95739f0fe81cd3e320e0f91fed41b513d37ad73d3a956fe92c57230ff38b81b"
+    },
+    {
+      "bytes": 364,
+      "path": "setup.sh",
+      "sha256": "bd60831f07866207bcda1f4100c224098bee773c506c143a706e82db79e77e97"
+    },
+    {
+      "bytes": 6989,
+      "path": "tests/test_clinical_extraction_local.py",
+      "sha256": "c50f011b1f25e1b0d895e9956c3cb6e260bbd8638d45cb41d30807d33756ddb1"
+    },
+    {
+      "bytes": 3629,
+      "path": "tests/test_clinical_extraction_local_batch.py",
+      "sha256": "c88658542429b8859cffce4127cb8782a786f1a9a4f7dd1717cbca2f41defe26"
+    },
+    {
+      "bytes": 4881,
+      "path": "tests/test_clinical_extraction_local_parity.py",
+      "sha256": "c72c08be02b8988199b94fe6b02d6603343a2040279f5b34df9de5b6ffc4e51a"
+    },
+    {
+      "bytes": 659,
+      "path": "tests/test_source_package.py",
+      "sha256": "28f78845c909beafd8b1a28b8aed2c316caa92a8832f0540ee7d845d003cb353"
+    }
+  ],
+  "generated_from": "scripts/build_supervisor_source_handoff.py explicit allowlist",
+  "manifest_version": 1,
+  "source_first": true
+}

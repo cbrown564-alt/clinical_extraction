@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "required": ["clinical_events"],
+  "properties": {
+    "clinical_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "anchor_text", "evidence", "event_state", "mentions"]
+      }
+    }
+  }
+}
+

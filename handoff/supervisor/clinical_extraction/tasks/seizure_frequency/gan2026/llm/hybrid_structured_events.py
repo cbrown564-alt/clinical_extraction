@@ -36,16 +36,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair 
     repair_structured_extraction_payload,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
-    repair_mode_metadata,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
-    build_run_metadata,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.labels import map_pragmatic, map_purist
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm_structured_temporal
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary import (
     monthly_diary_label_from_events as _monthly_diary_label_from_events,
@@ -77,13 +67,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.normalize import (
     repair_prediction_label_clean_scorer_facing,
     repair_prediction_label_format_preserving,
     repair_prediction_label_with_evidence,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
-    load_raw_outputs_by_source_index,
-)
-
-from ..reports.llm_structured_events_report import (
-    write_report,
 )
 
 _clinic_date = llm_structured_temporal.clinic_date
@@ -954,6 +937,10 @@ def run_split(
     checkpoint_report_path: Path | None = None,
     repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
+        repair_mode_metadata,
+    )
+
     repair_config = repair_config or StructuredRepairConfig()
     reuse_raw_outputs = reuse_raw_outputs or {}
     metadata = _run_metadata(
@@ -1178,11 +1165,33 @@ def summarize_records(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
 
 
 def write_jsonl(rows: Sequence[Mapping[str, Any]], path: Path) -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
+        write_jsonl_rows,
+    )
+
     write_jsonl_rows(rows, path)
+
+
+def write_report(
+    rows: Sequence[Mapping[str, Any]],
+    metadata: Mapping[str, Any],
+    path: Path,
+    *,
+    jsonl_path: Path,
+) -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.reports.llm_structured_events_report import (  # noqa: E501
+        write_report as write_structured_report,
+    )
+
+    write_structured_report(rows, metadata, path, jsonl_path=jsonl_path)
 
 
 def load_reusable_raw_outputs(path: Path) -> dict[int, str]:
     """Load reusable raw model outputs from a prior JSONL artifact."""
+
+    from clinical_extraction.tasks.seizure_frequency.gan2026.pipeline.replay_io import (
+        load_raw_outputs_by_source_index,
+    )
 
     return load_raw_outputs_by_source_index(path)
 
@@ -1269,6 +1278,11 @@ def _compare_to_gold(
     record: GanFrequencyRecord,
     extraction: StructuredExtractionRecord,
 ) -> dict[str, Any]:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.labels import (
+        map_pragmatic,
+        map_purist,
+    )
+
     if extraction.selection.final_label is None:
         return {}
     try:
@@ -1361,6 +1375,10 @@ def _run_metadata(
     mode: str,
     api_base: str | None = None,
 ) -> dict[str, Any]:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.run_metadata import (
+        build_run_metadata,
+    )
+
     return build_run_metadata(
         mode=mode,
         model=model,

@@ -18,12 +18,6 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.entities import (
     SEIZURE_FREQUENCY,
 )
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (
-    summarize_sf_rows,
-)
-from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
-    write_jsonl_rows as write_jsonl,
-)
 
 SUPPRESSION_VERSION = "exectv2_hybrid_sf_unknown_suppression_v0.7"
 PIPELINE_FAMILY = "exectv2_hybrid_sf_unknown_suppression"
@@ -62,6 +56,10 @@ def read_rows(path: Path) -> list[dict[str, Any]]:
 
 
 def suppress_rows(rows: Sequence[Mapping[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.sf_replay_scoring import (  # noqa: E501
+        summarize_sf_rows,
+    )
+
     suppressed = [suppress_row(row) for row in rows]
     baseline_summary = summarize_sf_rows([dict(row) for row in rows])
     summary = summarize_sf_rows(suppressed)
@@ -196,6 +194,10 @@ def write_rows_and_report(
     jsonl_path: Path,
     report_path: Path,
 ) -> dict[str, Any]:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (  # noqa: E501
+        write_jsonl_rows as write_jsonl,
+    )
+
     suppressed, metadata = suppress_rows(rows)
     write_jsonl(suppressed, jsonl_path)
     write_report(suppressed, metadata, report_path, jsonl_path=jsonl_path)
