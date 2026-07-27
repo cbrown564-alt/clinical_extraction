@@ -115,13 +115,16 @@ held-out rows, so it is not an independent holdout.
     final-F1 difference does not justify a second model pass.
 19. **Six-model panels retained.** GPT-4.1-mini, Luna, Sol, DeepSeek,
     Qwen, and Gemma are hash-selected for ExECT dev140 and aggregate-only
-    test60. The same six models are retained for Gan v0.7 test450. Qwen and
+    test60. The same six models are retained for the selected Gan v0.5
+    test450 panel. Qwen and
     Gemma have the same canonical claim status as the hosted conditions;
     hosted/local route and local no-call-reparse differences remain caveats.
 20. **Six-model comparison report completed.** The retained ExECT and Gan
     panels are synthesized with task-specific scores, component attribution,
-    operational caveats, and no pooled capability ranking. Sol leads ExECT,
-    Qwen leads Gan, and their cross-task rank correlation is `0.20`.
+    operational caveats, and no pooled capability ranking. Sol leads both
+    selected test panels, and their cross-task rank correlation is `0.61`.
+    Matched six-model Gan v0.5 dev750 coverage remains pending; the complete
+    v0.7 development panel is quarantined as a historical diagnostic.
 21. **ExECT SF over-inference analogue closed as diagnostic.** A predeclared
     no-call replay covers all six models and 840 model-letter dev140 pairs. The
     deterministic SF stage improves state-profile F1 for every model, with 54

@@ -56,10 +56,10 @@ def build_gan2026_measurements(inputs: GanMeasurementInputs) -> list[dict[str, A
             comparability="construct_only",
             source_artifacts=[inputs.hosted_path],
             claim_boundary=(
-                "Matched aggregate-only v0.7 panel; not a pristine one-shot or "
+                "Matched aggregate-only v0.5 panel; not a pristine one-shot or "
                 "model-neutral ranking."
             ),
-            prompt_program="gan2026_hybrid_structured_events_v0.7",
+            prompt_program="gan2026_hybrid_structured_events_v0.5",
             reproducibility_command="python scripts/verify_reference_evidence.py",
             unique_rows=450,
             model_row_count=2700,
@@ -82,9 +82,9 @@ def build_gan2026_measurements(inputs: GanMeasurementInputs) -> list[dict[str, A
             comparability="construct_only",
             source_artifacts=[inputs.hosted_path],
             claim_boundary=(
-                "Secondary aggregate-only v0.7 score; task-specific and not pooled with ExECT F1."
+                "Secondary aggregate-only v0.5 score; task-specific and not pooled with ExECT F1."
             ),
-            prompt_program="gan2026_hybrid_structured_events_v0.7",
+            prompt_program="gan2026_hybrid_structured_events_v0.5",
             reproducibility_command="python scripts/verify_reference_evidence.py",
             unique_rows=450,
             model_row_count=2700,
@@ -142,7 +142,8 @@ def build_gan2026_measurements(inputs: GanMeasurementInputs) -> list[dict[str, A
             comparability="construct_only",
             source_artifacts=[inputs.gan_master_path],
             claim_boundary=(
-                "Named historical subject aggregate only; not the matched six-model v0.7 row."
+                "Named historical subject aggregate only; not the selected matched six-model "
+                "v0.5 panel."
             ),
             route_runtime="openai/gpt-4.1-mini retained subject",
             temperature="not_recorded_in_compact_scorecard",
@@ -583,7 +584,7 @@ def build_gan2026_measurements(inputs: GanMeasurementInputs) -> list[dict[str, A
                 "Observed aggregate events for six unmatched provider/runtime conditions; "
                 "no efficiency ranking."
             ),
-            prompt_program="gan2026_hybrid_structured_events_v0.7",
+            prompt_program="gan2026_hybrid_structured_events_v0.5",
             reproducibility_command="python scripts/check_retained_evidence_manifest.py",
             unique_rows=450,
             model_row_count=2700,

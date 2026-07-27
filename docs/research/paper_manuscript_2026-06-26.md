@@ -23,8 +23,8 @@ reached 0.7393 clinical fact F1, and the historical LLM-with-rules development
 control reached 0.9189. That control uses a deterministic Prescription producer
 and a Seizure Frequency extractor union, so it is not the final model-led
 architecture. In the fixed six-model ExECT test60 panel, Sol led at 0.8047
-clinical-headline F1; in the matched Gan v0.7 test450 panel, Qwen led at
-367/450 Purist. Replays of saved outputs found normalization
+clinical-headline F1; in the selected matched Gan v0.5 test450 panel, Sol led
+at 373/450 Purist. Replays of saved outputs found normalization
 gains on both tasks (+0.0389 ExECT; +0.0293 Gan); the exact-evidence check did
 not change those replay scores. The selected evidence supports a reproducible
 component comparison with explicit data limits and a tested implementation of

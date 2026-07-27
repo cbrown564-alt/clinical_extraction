@@ -35,10 +35,10 @@ must not make a stronger claim than either source supports.
 | C8 | The recorded ExECT model rows do not implement one consistent model-led method across all four families | Strong for the saved-output ownership audit and verified corrected architecture replay | Full200 aggregate-only evidence; corrected scores remain unpromoted because deterministic correct-to-wrong counts are nonzero |
 | C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs with incomplete runtime metadata, and no deployment or six-model claim |
 | C10 | On the fixed six-model ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, DeepSeek 0.7881, Qwen 0.7872, GPT-4.1-mini 0.7572, and Gemma 0.7169 clinical-headline F1 | Aggregate test evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or clinical validation; hosted and local runtime routes differ |
-| C11 | On the matched Gan v0.7 test450 panel, Qwen scored 367/450, Sol 358/450, GPT-4.1-mini 353/450, Luna 352/450, Gemma 343/450, and DeepSeek 342/450 Purist | Frozen aggregate evidence | Same prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; local results use aggregate-only reparse of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a row table without subsequent analysis or tuning |
+| C11 | On the selected matched Gan v0.5 test450 panel, Sol scored 373/450, Luna and Qwen 362/450, GPT-4.1-mini 361/450, Gemma 355/450, and DeepSeek 344/450 Purist | Frozen aggregate evidence | Same v0.5 prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; some conditions use aggregate-only current-schema replay of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a historical row table without subsequent analysis or tuning |
 | C12 | The fixed deterministic ExECT SF projection/suppression stage improves dev140 state-profile F1 for all six model conditions, with 54 wrong-to-correct and one correct-to-wrong transition across the six panels | Development component evidence | The same 140 letters are repeated for each model; the unknown-only denominator is zero, so this does not establish cross-task over-inference transfer or factuality prevalence |
 | C13 | Gan 2026 and ExECTv2 are assessed with the same eight reliability questions using task-specific measures, explicit evidence states, and explicit comparability labels | Strong for the generated framework and selected retained evidence | The tasks do not share one metric; criterion evidence is uneven; construct-only and not-comparable values are not compared numerically; no composite score or clinical-validity claim |
-| C14 | On Gan dev750, `llm_with_rules` improves Purist correctness over matched `llm_only` for all six routes, with 96–168 wrong-to-correct and 23–34 correct-to-wrong transitions per model; bounded schema replay recovers 11 records with zero changes to an existing selected answer | Development component evidence from twelve retained 750-row traces and a no-call replay; retained artifacts use the legacy split identifier `validation750` | The near-ceiling rules-only comparator remains stronger on many rows; evidence validity is incomplete on changed rows; provider routes differ; not test evidence, clinical validation, or a universal method/model ranking |
+| C14 | The historical v0.7 Gan dev750 panel shows a model-by-method interaction and supports component diagnostics, but it is not the selected primary six-model `llm_with_rules` result | Quarantined development diagnostic from twelve retained 750-row traces and a no-call replay | The primary v0.5 six-model dev750 panel is incomplete; do not use v0.7 development scores in a primary ranking, development-to-test comparison, or paper headline |
 
 ## Selected headline results
 
@@ -51,7 +51,7 @@ must not make a stronger claim than either source supports.
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
 | ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
-| Gan matched six-model v0.7 panel, test450 | GPT-4.1-mini 353/450; Luna 352/450; Sol 358/450; DeepSeek 342/450; Qwen 367/450; Gemma 343/450 Purist |
+| Gan matched six-model v0.5 panel, test450 | GPT-4.1-mini 361/450; Luna 362/450; Sol 373/450; DeepSeek 344/450; Qwen 362/450; Gemma 355/450 Purist |
 
 The historical DeepSeek full200 aggregate is `0.8566`, but its runtime metadata
 is incomplete. It is retained for audit only and excluded from the paper-facing
@@ -82,6 +82,9 @@ model table.
 - Do not describe the Gan matched-method development result as promotion over
   the rules-only comparator; the component audit retains substantial rules-
   correct regressions and incomplete changed-row evidence.
+- Do not use prompt v0.7 for a primary Gan `llm_with_rules` score, ranking,
+  reliability cell, development-to-test comparison, or paper claim. It is
+  retained only as a historical prompt-interaction diagnostic.
 
 ## Open work
 

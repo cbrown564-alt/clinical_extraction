@@ -1,6 +1,6 @@
 # 06 — Gan 2026 results and test rules
 
-Last updated: 2026-07-20
+Last updated: 2026-07-27
 
 Gan 2026 asks for one current seizure-frequency label per letter.
 
@@ -34,25 +34,45 @@ must no longer claim that no test row was ever exposed.
 
 | Model | Prompt | Purist | Pragmatic | Operational result |
 | --- | --- | ---: | ---: | --- |
-| GPT-4.1-mini | v0.7 | 353/450 (0.7844) | 371/450 (0.8244) | 0 call failures; 2 parse/schema/label issues; 419/450 exact evidence |
-| GPT-5.6 Luna | v0.7 | 352/450 (0.7822) | 365/450 (0.8111) | 0 call failures; 3 parse/schema/label issues |
-| GPT-5.6 Sol | v0.7 | 358/450 (0.7956) | 376/450 (0.8356) | 0 call or parse/schema failures |
-| DeepSeek V4 Flash | v0.7 | 342/450 (0.7600) | 362/450 (0.8044) | 0 call failures; 4 parse/schema/label issues; 434/450 exact evidence |
-| Qwen 3.6:35B | v0.7 | 367/450 (0.8156) | 380/450 (0.8444) | 0 final call/parse/schema/label issues; 363/450 exact evidence |
-| Gemma 4 26B | v0.7 | 343/450 (0.7622) | 367/450 (0.8156) | 0 final call/parse/schema/label issues; 437/450 exact evidence |
+| GPT-4.1-mini | v0.5 | 361/450 (0.8022) | 379/450 (0.8422) | 0 call failures; 4 parse/validation failures; 419/450 exact evidence |
+| GPT-5.6 Luna | v0.5 | 362/450 (0.8044) | 375/450 (0.8333) | 0 call failures; 3 parse/validation failures; 444/450 exact evidence |
+| GPT-5.6 Sol | v0.5 | 373/450 (0.8289) | 384/450 (0.8533) | 0 call or parse/validation failures; 450/450 exact evidence |
+| DeepSeek V4 Flash | v0.5 | 344/450 (0.7644) | 366/450 (0.8133) | 0 call failures; 3 parse/validation failures; 433/450 exact evidence |
+| Qwen 3.6:35B | v0.5 | 362/450 (0.8044) | 384/450 (0.8533) | 0 call failures; 2 parse/validation failures; 347/450 exact evidence |
+| Gemma 4 26B | v0.5 | 355/450 (0.7889) | 374/450 (0.8311) | 0 call failures; 2 parse/validation failures; 436/450 exact evidence |
 
 Only aggregate results from these locked-test runs may be cited. All six use
-the same current v0.7 prompt, pipeline, repair policy, and scorer. The panel is
+the same v0.5 prompt, pipeline, repair policy, and scorer. The panel is
 matched on those fields, but provider-required transport and temperature
-differences remain. Qwen and Gemma were retained through aggregate-only no-call
-reparse of their sealed local outputs, while the hosted conditions retain their
-recorded hosted execution paths. Prompt v0.7 was developed from development
-failures, and test450 has supported sequential aggregate evaluations. Report
+differences remain. The local conditions and DeepSeek use aggregate-only
+current-schema replay of their sealed raw outputs; the replay changed no
+selected final label. Test450 has supported sequential aggregate evaluations. Report
 the result as a matched aggregate-only panel, not a pristine one-shot or
 model-neutral capability ranking. The local conditions have the same retained
 claim status as the hosted conditions; the route and reparse differences are
 caveats, not a lower evidence tier. See the
-[matched protocol and result](../experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md).
+[hosted protocol](../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
+and [local/replay extension](../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).
+
+## Six-model development coverage
+
+The selected v0.5 `llm_with_rules` condition does not yet have a matched
+six-model dev750 panel. One historical GPT-4.1-mini v0.5 artifact has 750 rows,
+but it requires current-stack reconciliation before it can enter the new panel.
+The attempted Qwen v0.5 development run contains only 45/750 rows and is not
+evidence. Luna, Sol, DeepSeek, and Gemma have no complete v0.5 dev750 condition.
+
+Until full coverage exists, do not use the complete v0.7 dev750 panel as the
+development half of the primary v0.5 comparison.
+
+## Quarantined prompt-interaction evidence
+
+The complete v0.7 test450 panel remains a historical diagnostic. Relative to
+v0.5 it increased Qwen Purist correctness by 5 rows and reduced correctness for
+GPT-4.1-mini by 8, Luna by 10, Sol by 15, DeepSeek by 2, and Gemma by 12. It may
+be cited only as aggregate evidence that prompt changes can interact with model
+family. It must not supply primary scores, rankings, reliability measurements,
+or paper conclusions.
 
 ## Efficiency result
 

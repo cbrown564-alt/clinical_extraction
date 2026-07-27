@@ -33,7 +33,7 @@ macro item F1 (0.3548 under the existing strict micro scorer), the LLM only
 method reached 0.7393 clinical fact F1. The historical combined control reached
 0.9189 but used deterministic Prescription and SF-union paths. In the fixed
 six-model ExECT test60 panel, Sol led at 0.8047 clinical-headline F1; in the
-matched Gan v0.7 test450 panel, Qwen led at 367/450 Purist.
+selected matched Gan v0.5 test450 panel, Sol led at 373/450 Purist.
 Saved-output ablations show positive normalization contributions on both tasks,
 while the evidence check is score-inert on those representative replays. The
 selected evidence supports a reproducible component comparison with explicit
@@ -181,7 +181,7 @@ ExECTv2 & LLM only & dev140 & Headline F1 0.7393 & GEPA negative development com
 ExECTv2 & Historical LLM with rules & dev140 & Clinical fact F1 0.9189 & Reproducible control; not the final model-led architecture. \\
 Gan 2026 & Rules only & validation750 & 697/750 Purist & Deterministic development comparator. \\
 Gan 2026 & LLM only & validation750 & 581/750 Purist & Single-pass development comparator. \\
-Gan 2026 & LLM with rules & validation750 & 661/748 rendered Purist & Single-pass event comparison. \\
+Gan 2026 & LLM with rules (v0.5) & validation750 & 661/748 rendered Purist & Historical GPT-4.1-mini development reference; six-model v0.5 coverage pending. \\
 \bottomrule
 \end{tabular}
 \end{table}

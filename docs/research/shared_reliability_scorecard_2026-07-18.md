@@ -28,14 +28,16 @@ The exact selected sources and hashes are owned by the
 
 ### Gan matched six-model test450 panel
 
+All six conditions use `gan2026_hybrid_structured_events_v0.5`.
+
 | Model | Purist | Pragmatic |
 | --- | ---: | ---: |
-| GPT-4.1-mini | 353/450 | 371/450 |
-| GPT-5.6 Luna | 352/450 | 365/450 |
-| GPT-5.6 Sol | 358/450 | 376/450 |
-| DeepSeek V4 Flash | 342/450 | 362/450 |
-| Qwen 3.6:35B | 367/450 | 380/450 |
-| Gemma 4 26B | 343/450 | 367/450 |
+| GPT-4.1-mini | 361/450 | 379/450 |
+| GPT-5.6 Luna | 362/450 | 375/450 |
+| GPT-5.6 Sol | 373/450 | 384/450 |
+| DeepSeek V4 Flash | 344/450 | 366/450 |
+| Qwen 3.6:35B | 362/450 | 384/450 |
+| Gemma 4 26B | 355/450 | 374/450 |
 
 The panel is aggregate-only evidence on a previously used locked holdout.
 Provider routes and temperatures differ, and the result is not a pristine
@@ -138,8 +140,8 @@ independent clinical validation. Construct-only and not-comparable cells do not
 produce cross-task numerical differences. No composite score is reported.
 
 <!-- MACHINE SYNCHRONIZATION MARKERS; generated, do not edit -->
-<!-- measurement:gan2026_six_model_test450_purist_accuracy:7a4a3a802ee663cbb142aedb8e51405fc41be6de38a67253eb32af9328da8ba5 -->
-<!-- measurement:gan2026_six_model_test450_pragmatic_accuracy:dc3cf80e0695bad91d5cf450e97b925868107d323745f2a534fc31e63c34ff50 -->
+<!-- measurement:gan2026_six_model_test450_purist_accuracy:a6e587f75072ffe994e2e6b4db1d4bf3402e22c60410ce9473072e275d87775f -->
+<!-- measurement:gan2026_six_model_test450_pragmatic_accuracy:d36e5521fd555fb9cb8eb7be6db7f72e2ee55f4ce0b45d8135d372036f5ed11d -->
 <!-- measurement:gan2026_subject_validation750_purist_accuracy:03e28a91a7b4f394eff12e4692ff147c15e750a219b2f6fd8a55ea43f68c73cf -->
 <!-- measurement:gan2026_subject_test450_purist_accuracy:b4776790a0149f107b381082b0d55137203daeb57a9b3758e4ced56488cb71b0 -->
 <!-- measurement:exectv2_six_model_dev140_clinical_headline_f1:20863c01dfe365fd30bf6cf0b9f8ce4f5da0cd6d081afd9914f918c986641575 -->
@@ -167,5 +169,5 @@ produce cross-task numerical differences. No composite score is reported.
 <!-- measurement:exectv2_six_model_dev140_family_f1:1534f084d8336e01dfdec906aac05c650e939b20e757fbdec06f87fd1dd41b7c -->
 <!-- measurement:exectv2_demographic_fairness:9fdf8100fe09d7042f6c7e5ee5b098bde73f26d8c324cd9767118960874dc920 -->
 <!-- measurement:gan2026_historical_operational_summary:27374eeaa1efc7973ccdcce8f77635df7d238c604c6765f3ee2b09e2a48c923f -->
-<!-- measurement:gan2026_six_model_test450_operational_events:2aeea8d8b180505755e3339cdcb2af69f699b15a9195d221d72015600195cae9 -->
+<!-- measurement:gan2026_six_model_test450_operational_events:f30961f9157763bc82a5532eb65fc4fea0759ef390887ca1cf99edf008daf9f5 -->
 <!-- measurement:exectv2_six_model_test60_operational_events:8d83ed44dcad4a5a677c350f11968fb5ddd5cb26c6d13e9ee376ec7b258ea3a6 -->

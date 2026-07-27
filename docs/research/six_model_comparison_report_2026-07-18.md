@@ -1,8 +1,9 @@
 # Six-model comparison across ExECTv2 and Gan 2026
 
 Date: 2026-07-18
-Updated: 2026-07-20
-Status: final comparison report; test results are aggregate-only
+Updated: 2026-07-27
+Status: primary test comparison complete; Gan v0.5 dev750 coverage pending;
+test results are aggregate-only
 
 ## Terms used in this report
 
@@ -36,17 +37,18 @@ The same six models were evaluated with the fixed ExECTv2 and Gan pipelines:
 GPT-4.1-mini, GPT-5.6 Luna, GPT-5.6 Sol,
 DeepSeek V4 Flash, Qwen 3.6:35B, and Gemma 4 26B.
 
-There is no stable winner across the two tasks. GPT-5.6 Sol leads ExECT test60
-with an F1 of `0.80`, while Qwen 3.6:35B leads Gan test450 with a Purist
-accuracy of `0.82`. The rank correlation is `0.20`, where `1.00` would mean the
-two rankings were identical. Choose a model for the task and pipeline being
-used. These results do not show that one model is generally superior.
+GPT-5.6 Sol leads both selected test panels: ExECT test60 with an F1 of `0.80`
+and the Gan v0.5 test450 panel with a Purist accuracy of `0.83`. The rank
+correlation is `0.61`, where `1.00` would mean the two rankings were identical.
+The tasks use different data and scores, so this does not establish general
+model superiority.
 
-Adding deterministic checks improves the development score for every model on
-both tasks. The checks are not uniformly safe: on Gan they also change 23 to 34
-previously correct answers to incorrect answers per model. All test results are
-aggregate-only, so they support comparison under these protocols but not
-row-level test error analysis, tuning, or a general claim about model quality.
+Adding deterministic checks improves the ExECT development score for every
+model. A complete matched Gan v0.5 development panel does not yet exist, so
+this report does not combine the historical v0.7 dev750 results with the
+selected v0.5 test450 results. All test results are aggregate-only, so they
+support comparison under these protocols but not row-level test error analysis
+or tuning.
 
 ### Results at a glance
 
@@ -54,8 +56,8 @@ row-level test error analysis, tuning, or a general claim about model quality.
 | --- | --- | --- |
 | What is extracted? | Facts from four parts of an epilepsy letter | One current seizure-frequency label |
 | Primary measure | Internal clinical-fact F1 | Purist accuracy |
-| Best test result | GPT-5.6 Sol: `0.80` | Qwen 3.6:35B: `0.82` |
-| Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | 65 to 134 additional correct rows on dev750 |
+| Best test result | GPT-5.6 Sol: `0.80` | GPT-5.6 Sol: `0.83` |
+| Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | Pending matched v0.5 dev750 coverage |
 | Main limitation | Internal metric; 59 loadable test letters | Previously used locked test split |
 
 ## 1. What the two tasks measure
@@ -150,7 +152,7 @@ models within a task. Scores from the two tasks are not combined.
 | Development split | `dev140`; row review permitted | `dev750` (legacy ID: `validation750`); row review permitted |
 | Test split | `test60`; 59 loadable letters; aggregate only | `test450`; 450 rows; aggregate only |
 | Model call | One structured call for all four parts of each letter | One structured call for seizure events in each note |
-| Prompt | `exectv2_hybrid_key_family_event_ledger_v0.9.24` | `gan2026_hybrid_structured_events_v0.7` |
+| Prompt | `exectv2_hybrid_key_family_event_ledger_v0.9.24` | `gan2026_hybrid_structured_events_v0.5` |
 | Fixed code after the model | Checks and standardizes each part, then assembles the facts | Repairs format, links evidence, applies clinical rules, and converts the label (`hybrid_full_stack`) |
 | Primary score | `clinical_headline` F1 | Purist accuracy |
 
@@ -218,67 +220,36 @@ Development results by part:
 | Qwen 3.6:35B | 0.87 | 0.71 | 0.92 | 0.91 |
 | Gemma 4 26B | 0.84 | 0.62 | 0.90 | 0.80 |
 
-### Gan 2026: development and test Purist accuracy
+### Gan 2026: development coverage
 
-The final `llm_with_rules` pipeline is compared on Purist accuracy across
-dev750 and aggregate-only test450. Qwen ranks first on both splits; the rest of
-the ordering changes, so development rank is not treated as a fixed test rank.
+The selected v0.5 prompt has complete test450 coverage but not complete
+six-model dev750 coverage. One historical GPT-4.1-mini v0.5 artifact has 750
+rows and requires current-stack reconciliation. The attempted Qwen v0.5 run
+contains 45 rows and is not evidence. Complete v0.5 dev750 conditions are
+missing for Luna, Sol, DeepSeek, Qwen, and Gemma.
 
-![Horizontal barbell chart comparing Gan dev750 and test450 Purist accuracy for all six models](assets/six_model_comparison_2026-07-18/gan_dev_test.svg)
-
-| Model | dev750 Purist | test450 Purist | Change |
-| --- | ---: | ---: | ---: |
-| Qwen 3.6:35B | 667/750 (0.89) | 367/450 (0.82) | -0.07 |
-| GPT-5.6 Sol | 655/750 (0.87) | 358/450 (0.80) | -0.08 |
-| GPT-4.1-mini | 653/750 (0.87) | 353/450 (0.78) | -0.09 |
-| GPT-5.6 Luna | 646/750 (0.86) | 352/450 (0.78) | -0.08 |
-| Gemma 4 26B | 646/750 (0.86) | 343/450 (0.76) | -0.10 |
-| DeepSeek V4 Flash | 643/750 (0.86) | 342/450 (0.76) | -0.10 |
-
-Only totals are available for the test results, and this locked split had been
-used before this comparison. The results support comparison with the stated
-score and procedure. They do not support analysis of individual test errors or
-an estimate from a test split used only once.
-
-### Gan 2026: model output before and after fixed code
-
-The development comparison evaluates LLM with rules and LLM only on the same
-750 rows for each model:
-
-![Grouped horizontal bars comparing Gan LLM only with LLM plus rules Purist accuracy on matched dev750 rows](assets/six_model_comparison_2026-07-18/gan_llm_rules.svg)
-
-| Model | LLM with rules | LLM only | Net gain | Wrong→correct | Correct→wrong |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| GPT-4.1-mini | 653/750 | 577/750 | +76 | 110 | 34 |
-| GPT-5.6 Luna | 646/750 | 558/750 | +88 | 120 | 32 |
-| GPT-5.6 Sol | 655/750 | 590/750 | +65 | 96 | 31 |
-| DeepSeek V4 Flash | 643/750 | 559/750 | +84 | 115 | 31 |
-| Qwen 3.6:35B | 667/750 | 565/750 | +102 | 125 | 23 |
-| Gemma 4 26B | 646/750 | 512/750 | +134 | 168 | 34 |
-
-The fixed code improves the final Purist result for every model, but it also
-changes some correct answers to wrong answers. A
-later replay repaired 11 invalid records but changed none of the answers that
-had already been selected. These are development results for the tested model
-models and the way each model was run. They do not show that the method is ready
-for wider use. Rules without a model also remain more accurate on many rows.
+The earlier complete v0.7 development panel is excluded from primary results
+because combining v0.7 development scores with v0.5 test scores would create a
+false development-to-test comparison. It remains a quarantined prompt-
+interaction diagnostic under [decision 0043](../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md).
 
 ### Gan 2026: Purist and Pragmatic accuracy
 
 Purist accuracy remains the primary result. Pragmatic accuracy is shown as a
 separate score rather than combined with the Purist ranking; it is
-higher for every model but does not change the first-place model.
+higher for every model. Sol leads the Purist ranking; Sol and Qwen tie on
+Pragmatic correctness.
 
 ![Grouped horizontal bars comparing Gan test450 Purist and Pragmatic accuracy by model](assets/six_model_comparison_2026-07-18/gan_purist_pragmatic.svg)
 
 | Model | Purist | Pragmatic | Rank | Answers with exact evidence | Format or repair record |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Qwen 3.6:35B | 367/450 (0.82) | 380/450 (0.84) | 1 | 363/450 | 0 final; deterministic repair |
-| GPT-5.6 Sol | 358/450 (0.80) | 376/450 (0.84) | 2 | 449/450 | 0; 366 repair notes |
-| GPT-4.1-mini | 353/450 (0.78) | 371/450 (0.82) | 3 | 419/450 | 2; 317 repair notes |
-| GPT-5.6 Luna | 352/450 (0.78) | 365/450 (0.81) | 4 | 446/450 | 3; 305 repair notes |
-| Gemma 4 26B | 343/450 (0.76) | 367/450 (0.82) | 5 | 437/450 | 0 final; deterministic repair |
-| DeepSeek V4 Flash | 342/450 (0.76) | 362/450 (0.80) | 6 | 434/450 | 4; 259 repair notes |
+| GPT-5.6 Sol | 373/450 (0.83) | 384/450 (0.85) | 1 | 450/450 | 0 parse/validation failures; 338 repair-note rows |
+| GPT-5.6 Luna | 362/450 (0.80) | 375/450 (0.83) | 2= | 444/450 | 3 parse/validation failures; 273 repair-note rows |
+| Qwen 3.6:35B | 362/450 (0.80) | 384/450 (0.85) | 2= | 347/450 | 2 parse/validation failures; 308 repair-note rows |
+| GPT-4.1-mini | 361/450 (0.80) | 379/450 (0.84) | 4 | 419/450 | 4 parse/validation failures; 310 repair-note rows |
+| Gemma 4 26B | 355/450 (0.79) | 374/450 (0.83) | 5 | 436/450 | 2 parse/validation failures; 295 repair-note rows |
+| DeepSeek V4 Flash | 344/450 (0.76) | 366/450 (0.81) | 6 | 433/450 | 3 parse/validation failures; 250 repair-note rows |
 
 Qwen and Gemma use the same prompt, pipeline, repair policy, and scorer as the
 hosted models, but run locally. This difference is recorded in the saved
@@ -330,12 +301,9 @@ The report supports:
 - a fixed six-model comparison on both named task pipelines;
 - the change made by fixed code on ExECT development data, and ExECT test60
   totals produced without changing the development procedure;
-- the change made by fixed code on the same 750 Gan development rows,
-  including answers changed from correct to wrong and the processing step
-  responsible for the first error;
-- Gan aggregate-only test450 Purist and Pragmatic evidence;
-- the result, limited to these tasks and procedures, that model rank is
-  task-specific, with Sol leading ExECT and Qwen leading Gan; and
+- Gan v0.5 aggregate-only test450 Purist and Pragmatic evidence;
+- the result, limited to these task-specific procedures, that Sol leads both
+  selected test panels; and
 - a negative, data-limited result for transferring Gan's unknown-versus-rate
   measure to ExECT.
 
@@ -353,8 +321,7 @@ review is required before making stronger clinical-validity claims.
 - [Shared eight-criterion scorecard](shared_reliability_scorecard_2026-07-18.md)
 - [Reliability framework](../design/reliability_evaluation_framework.md)
 - [ExECT test60 protocol](../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md)
-- [Gan v0.7 test450 protocol](../experiments/gan2026/gan2026_matched_v07_test450_protocol_2026-07-15.md)
+- [Gan v0.5 hosted test450 protocol](../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
+- [Gan v0.5 local and replay protocol](../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
 - [ExECT SF reliability protocol](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
 - [ExECT SF reliability result](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
-- [Gan dev750 comparison](../experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md)
-- [Gan post-panel component audit](../experiments/gan2026/gan2026_six_model_post_panel_attribution_2026-07-20.md)

@@ -91,10 +91,10 @@ _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_di
 PROMPT_VERSION_V0_5 = "gan2026_hybrid_structured_events_v0.5"
 PROMPT_VERSION_V0_6 = "gan2026_hybrid_structured_events_v0.6"
 PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
-# Active prompt version. v0.7 is the DeepSeek Reasoner-oriented iteration after
-# v0.6 reasoner/chat validation error analysis; v0.6 remains selectable for
-# comparator and replay scripts.
-PROMPT_VERSION = PROMPT_VERSION_V0_7
+# Primary prompt version. v0.5 is the shortest shared cross-model task and the
+# only version selected for paper-facing llm_with_rules comparisons. v0.6 and
+# v0.7 remain selectable for historical replay and prompt-interaction studies.
+PROMPT_VERSION = PROMPT_VERSION_V0_5
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
     {PROMPT_VERSION_V0_5, PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}

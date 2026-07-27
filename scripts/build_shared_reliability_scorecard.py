@@ -165,7 +165,10 @@ def build_scorecard(repo_root: Path = ROOT) -> dict[str, Any]:
     artifact_index = _artifact_index(manifest)
     packages = _packages(manifest)
     hosted = _read_json(repo_root / "experiments/hosted_holdout_panels_20260715.json")
-    gan_panel = hosted["panels"]["gan2026_matched_v07_test450"]
+    gan_panel = _read_json(
+        repo_root / "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
+    )
+    gan_conditions = list(gan_panel["conditions"].values())
     exect_panel = hosted["panels"]["exectv2_test60"]
     gan_master = _read_json(
         repo_root / "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
@@ -175,7 +178,7 @@ def build_scorecard(repo_root: Path = ROOT) -> dict[str, Any]:
         packages["exectv2_fixed_six_model_panel_subject"],
     )
 
-    hosted_path = "experiments/hosted_holdout_panels_20260715.json"
+    hosted_path = "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
     gan_master_path = "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
     sf_path = "experiments/exectv2_six_model_sf_overinference_dev140_20260718.json"
     component_path = "experiments/cross_task_shared_component_ablation_2026-06-27.json"
@@ -259,32 +262,35 @@ def build_scorecard(repo_root: Path = ROOT) -> dict[str, Any]:
     )
 
     gan_routes = {
-        condition["model"]: condition.get("route", "not_recorded")
-        for condition in gan_panel["conditions"]
+        condition["model"]: (
+            f"{condition['model']}; temperature={condition['temperature']}; "
+            f"max_tokens={condition['max_tokens']}"
+        )
+        for condition in gan_conditions
     }
     gan_purist = {
         condition["model"]: {
-            "correct": condition["purist"]["correct"],
-            "accuracy": condition["purist"]["accuracy"],
+            "correct": condition["purist_correct"],
+            "accuracy": condition["purist_accuracy"],
         }
-        for condition in gan_panel["conditions"]
+        for condition in gan_conditions
     }
     gan_pragmatic = {
         condition["model"]: {
-            "correct": condition["pragmatic"]["correct"],
-            "accuracy": condition["pragmatic"]["accuracy"],
+            "correct": condition["pragmatic_correct"],
+            "accuracy": condition["pragmatic_accuracy"],
         }
-        for condition in gan_panel["conditions"]
+        for condition in gan_conditions
     }
     gan_ops = {
         condition["model"]: {
             "call_failures": condition["call_failures"],
-            "parse_schema_label_issues": condition["parse_schema_label_issues"],
+            "parse_schema_label_issues": condition["parse_or_validation_failures"],
             "structured_records": condition["structured_records"],
-            "exact_evidence": condition["exact_evidence"],
+            "exact_evidence": condition["evidence_valid"],
             "repair_notes": condition["repair_notes"],
         }
-        for condition in gan_panel["conditions"]
+        for condition in gan_conditions
     }
     exect_ops = {
         condition["model"]: {

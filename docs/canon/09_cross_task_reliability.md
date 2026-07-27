@@ -1,6 +1,6 @@
 # 09 — Reliability across tasks
 
-Last updated: 2026-07-18
+Last updated: 2026-07-27
 
 Gan 2026 and ExECTv2 now use the same eight paper-facing reliability questions:
 
@@ -33,7 +33,7 @@ not equally complete:
 
 - The fixed six-model panels provide task-specific correctness and aggregate
   holdout evidence. Sol leads ExECT test60 at `0.8047` clinical-headline F1;
-  Qwen leads Gan test450 at `367/450` Purist.
+  Sol leads the selected Gan v0.5 test450 panel at `373/450` Purist.
 - Exact source presence is measured separately from semantic support. The
   48-item ExECT dev140 semantic-support sample is prepared across six models
   and four families, but independent review has not started.

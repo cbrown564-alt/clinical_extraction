@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-21 on the working tree after commit `c51bbc8e`
+Last updated: 2026-07-27 on the working tree after commit `c51bbc8e`
 
 ## Current outcome
 
@@ -9,13 +9,13 @@ models on `dev140` and has aggregate-only `test60` results for the same six
 models. The retained aggregate panel records all six test60 conditions with
 equal canonical status; sealed row artifacts remain ignored and uninspectable.
 
-Gan has complete matched six-model `dev750` and aggregate-only `test450`
-panels. The development panel contains all twelve predeclared model-by-method
-conditions: six `llm_with_rules` and six `llm_only` runs, each with exactly 750
-unique manifest rows and 750 valid `gan2026.row_trace.v1` records. The v0.7
-test panel and the separate v0.5 test extension each contain all six models.
-Retained Gan filenames and machine-readable split fields use the legacy
-identifier `validation750` for `dev750`.
+Gan has a complete selected six-model v0.5 aggregate-only `test450` panel.
+The selected v0.5 `llm_with_rules` condition does not yet have complete
+six-model `dev750` coverage. One historical GPT-4.1-mini v0.5 artifact has 750
+rows and requires current-stack reconciliation; an attempted Qwen v0.5 run has
+45 rows and is not evidence; the other four models have no complete v0.5
+development condition. Retained Gan filenames and machine-readable split
+fields use the legacy identifier `validation750` for `dev750`.
 
 These panels are retained paper evidence with aggregate-only test limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
@@ -33,12 +33,11 @@ with task-specific measures, assurance metadata, evidence states,
 comparability labels, and gap decisions. The generated machine and human
 scorecards do not pool incompatible values or calculate a composite score.
 
-The predeclared Gan `dev750` comparison is implemented and verified as a
-complete development panel. `llm_with_rules` improves Purist accuracy over the
-matched `llm_only` condition for every model, by 65 to 134 correct rows. The
-row-level component and failure analysis is complete for the retained panel;
-these results are not test evidence, clinical validation, or a model-neutral
-ranking.
+The earlier complete six-model Gan `dev750` panel uses prompt v0.7 for
+`llm_with_rules`. It is retained only as a historical prompt-interaction and
+component diagnostic. Its scores and matched method transitions must not
+supply a primary ranking, paper result, reliability cell, or development-to-
+test comparison.
 
 The post-panel no-call replay is complete from retained development traces.
 Across 9,000 model-condition rows it recovers 11 schema-valid
@@ -97,30 +96,30 @@ aggregate parse/schema failures. These are locked internal-scorer results, not
 the published benchmark. See the
 [hosted protocol](docs/experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md).
 
-### Gan fixed-prompt comparisons
+### Gan selected v0.5 comparison
 
-The matched `dev750` development comparison uses
-`gan2026_hybrid_structured_events_v0.7` for `llm_with_rules` and
-`gan2026_llm_only_canonical_pipeline_v0.8` for `llm_only`.
+All six v0.5 `test450` conditions use one structured-event call per note,
+`hybrid_full_stack` repair, and the Gan Purist and Pragmatic scorers.
 
-| Model | LLM with rules Purist | LLM only Purist | Net gain |
+| Model | Purist | Pragmatic | Exact evidence |
 | --- | ---: | ---: | ---: |
-| GPT-4.1-mini | 653/750 | 577/750 | +76 |
-| GPT-5.6 Luna | 646/750 | 558/750 | +88 |
-| GPT-5.6 Sol | 655/750 | 590/750 | +65 |
-| DeepSeek V4 Flash | 643/750 | 559/750 | +84 |
-| Qwen 3.6:35B | 667/750 | 565/750 | +102 |
-| Gemma 4 26B | 646/750 | 512/750 | +134 |
+| GPT-4.1-mini | 361/450 | 379/450 | 419/450 |
+| GPT-5.6 Luna | 362/450 | 375/450 | 444/450 |
+| GPT-5.6 Sol | 373/450 | 384/450 | 450/450 |
+| DeepSeek V4 Flash | 344/450 | 366/450 | 433/450 |
+| Qwen 3.6:35B | 362/450 | 384/450 | 347/450 |
+| Gemma 4 26B | 355/450 | 374/450 | 436/450 |
 
-All twelve conditions have 750 unique expected rows and 750 trace records.
-Final call failures are zero except Qwen LLM-only (5) and Gemma LLM-only (7);
-blocking parse/schema failures range from 0 to 8 for `llm_with_rules` and 0 to
-63 for `llm_only`. These failures remain part of the frozen development result.
-The [generated comparison](docs/experiments/gan2026/gan2026_six_model_validation_comparison_2026-07-18.md)
-and [machine-readable artifact](experiments/gan2026_six_model_validation_comparison_20260718.json)
-record hashes, scores, evidence counts, and matched row transitions.
+The [hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md),
+[local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md),
+and [aggregate artifact](experiments/gan2026_matched_v05_test450_aggregate_20260716.json)
+own the primary test result.
 
-The [Qwen-versus-Sol row audit](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
+The matched v0.5 six-model dev750 panel is predeclared in
+[the development protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
+It remains incomplete and no primary v0.5 development ranking is reported.
+
+The historical v0.7 [Qwen-versus-Sol row audit](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
 and its [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
 cover all 249 rows where either model is Purist-wrong in either scored method.
 They retain both raw prediction boundaries, both final outputs, rule events,
@@ -128,31 +127,31 @@ selected evidence, and a comment for every row. Qwen's larger between-method
 gain is concentrated in cluster/diary and seizure-free cases, while the true
 same-event-ledger raw-to-final net gain is larger for Sol.
 
-The matched v0.7 `test450` panel uses one call per note, prompt
-`gan2026_hybrid_structured_events_v0.7`, `hybrid_full_stack` repair, and the Gan
-Purist and Pragmatic scorers.
+The historical v0.7 [architecture-interaction report](docs/research/gan2026_qwen_sol_architecture_interaction_report_2026-07-27.md)
+and [750-row machine audit](experiments/gan2026_qwen_sol_architecture_interaction_20260727.json)
+show that fixed processing does not preferentially rescue Qwen: the same saved
+event-ledger output has net raw-to-final gains of +336 for Qwen and +387 for
+Sol. Qwen's final 667-versus-655 lead is the balance of 44 Qwen-only-correct
+and 32 Sol-only-correct rows. All 44 Sol failures in the Qwen-only-correct set
+are first owned by LLM clinical selection. Qwen's 32 unique losses contain 18
+LLM-selection, 10 evidence-selection, three format/schema, and one
+deterministic-semantic first failures. This is a model-by-method development
+interaction, not evidence that the deterministic stack is fitted to Qwen or
+to local or smaller models. These results are quarantined from primary claims.
 
-| Model | Purist | Pragmatic | Evidence state |
-| --- | ---: | ---: | --- |
-| GPT-4.1-mini | 353/450 | 371/450 | Committed aggregate summary |
-| GPT-5.6 Luna | 352/450 | 365/450 | Committed aggregate summary |
-| GPT-5.6 Sol | 358/450 | 376/450 | Committed aggregate summary |
-| DeepSeek V4 Flash | 342/450 | 362/450 | Committed aggregate summary |
-| Qwen 3.6:35B | 367/450 | 380/450 | Retained aggregate summary |
-| Gemma 4 26B | 343/450 | 367/450 | Retained aggregate summary |
-
-The local summaries record 0 final call/parse/schema/label failures after
-deterministic repair and exact evidence for 363/450 Qwen and 437/450 Gemma
-rows. The complete panel is aggregate-only evidence on a previously used
-test result, not a pristine one-shot or model-neutral capability ranking.
-
-Under the separate v0.5 protocol, all six conditions are complete: GPT-4.1-mini
-scores 361/450 Purist and 379/450 Pragmatic, Luna 362/450 and 375/450, Sol
-373/450 and 384/450, DeepSeek 344/450 and 366/450, Qwen 362/450 and 384/450,
-and Gemma 355/450 and 374/450. The
-[amended hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
-and [local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
-own the active runs.
+The historical v0.7 [exact-evidence and repair report](docs/research/gan2026_dev750_exact_evidence_and_repair_report_2026-07-27.md)
+and [4,500-row machine audit](experiments/gan2026_dev750_exact_evidence_and_repair_20260727.json)
+derive the metrics from code and every retained `llm_with_rules` development
+row. Exact selected evidence is a case-sensitive contiguous source substring.
+Qwen has 582/750 exact and 672/750 grounded-after-neutral-repair selections;
+87 of the non-exact rows are verified bounded-ellipsis citations. Among all
+168 non-exact Qwen selections, 148 retain at least one exactly cited selected
+event and 139 retain exact evidence for every selected event. Fixed code
+changes the Purist category on 92/168. A reported repair-note count is the
+number of rows with at least one `final_label_repaired:` event, not the number
+of errors or repair events; on dev750 Sol has 597 such rows and 710 events,
+while Qwen has 537 rows and 621 events. These are diagnostic v0.7 development
+measurements, not primary v0.5 evidence.
 
 A no-call replay ran all 450 saved GPT-4.1-mini, Luna, and Sol raw outputs
 through today's shared schema repair and the unchanged downstream stack. It
@@ -165,8 +164,8 @@ records source and replay fingerprints.
 
 The [six-model comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
 synthesizes the fixed panels without pooling their task-specific scores. Sol
-leads ExECT test60, Qwen leads Gan test450, and the cross-task model-rank
-Spearman correlation is `0.20`.
+leads ExECT test60 and the selected Gan v0.5 test450 panel. The cross-task
+model-rank Spearman correlation is `0.61`.
 
 The [ExECT SF over-inference result](docs/experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
 compares the model-structured state set with the final projected/suppressed
@@ -245,6 +244,9 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
+- The selected Gan v0.5 six-model dev750 panel is predeclared but incomplete.
+  It requires one reconciled GPT-4.1-mini condition and complete Luna, Sol,
+  DeepSeek, Qwen, and Gemma conditions.
 - Independent review of the 48-item ExECT semantic-support substrate remains
   the next evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
@@ -253,23 +255,27 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
+1. Complete the predeclared Gan v0.5 dev750 panel without changing the prompt,
+   repair policy, scorer, or split; then rebuild its row-level attribution.
+2. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
    and both bundled synthetic examples against the approved model route; record
    JSON/thinking/retry behavior and unaided README corrections in the handoff
    plan.
-2. Assign two independent clinical reviewer IDs and have each reviewer complete
+3. Assign two independent clinical reviewer IDs and have each reviewer complete
    all 48 items without sharing IDs or reviewing the other's export.
-3. Send every field-level disagreement to a third named clinical adjudicator;
+4. Send every field-level disagreement to a third named clinical adjudicator;
    retain both original decisions and every revision.
-4. Export the completed reviewer and adjudication artifacts, validate their
+5. Export the completed reviewer and adjudication artifacts, validate their
    completeness, then update the reliability scorecard and paper claim owner
    within the protocol's development-only limits.
-5. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
+6. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
    eight audited deterministic regression rows and matched non-regression
    controls; do not tune the frozen six-model panel in place.
 
 ## Blocked or unvalidated
 
+- A primary Gan six-model development ranking and v0.5 development-to-test
+  comparison are blocked until all six v0.5 dev750 conditions are complete.
 - Independent clinical review remains required before any clinical-validity
   claim. Internal annotation review is not that validation.
 - Exact evidence is measured, but semantic support remains unmeasured. The
@@ -311,12 +317,21 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 - Decisions and run protocols: [documentation navigation](docs/NAVIGATION.md)
 - Cross-task six-model synthesis:
   [comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
-- Gan Qwen-versus-Sol rule-benefit mechanism audit:
+- Quarantined Gan v0.7 Qwen-versus-Sol rule-benefit mechanism audit:
   [row report](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
   and [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
+- Quarantined Gan v0.7 Qwen-versus-Sol architecture interaction:
+  [standalone report](docs/research/gan2026_qwen_sol_architecture_interaction_report_2026-07-27.md)
+  and [750-row machine audit](experiments/gan2026_qwen_sol_architecture_interaction_20260727.json)
+- Quarantined Gan v0.7 exact-evidence and repair provenance:
+  [standalone report](docs/research/gan2026_dev750_exact_evidence_and_repair_report_2026-07-27.md)
+  and [4,500-row machine audit](experiments/gan2026_dev750_exact_evidence_and_repair_20260727.json)
 - Active Gan v0.5 extension and schema replay:
   [protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
   and [aggregate replay](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)
+- Selected Gan v0.5 development coverage:
+  [protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md)
+  and [configuration](configs/gan2026/six_model_v05_dev750_20260727.json)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Independent semantic-support review:

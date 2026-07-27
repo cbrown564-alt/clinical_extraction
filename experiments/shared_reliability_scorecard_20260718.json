@@ -263,7 +263,7 @@
   "measurements": [
     {
       "cache_replay_mode": "cache disabled; aggregate-only retained readout",
-      "claim_boundary": "Matched aggregate-only v0.7 panel; not a pristine one-shot or model-neutral ranking.",
+      "claim_boundary": "Matched aggregate-only v0.5 panel; not a pristine one-shot or model-neutral ranking.",
       "comparability": "construct_only",
       "criterion_id": "clinical_correctness_generalization",
       "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
@@ -284,27 +284,27 @@
       ],
       "not_measured_reason": null,
       "pooling_unit": "model_letter",
-      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.5",
       "repair_policy": "hybrid_full_stack",
       "reproducibility_command": "python scripts/verify_reference_evidence.py",
       "result_state": "measured",
       "route_runtime": {
-        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
-        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
-        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
-        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
-        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
-        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+        "deepseek/deepseek-v4-flash": "deepseek/deepseek-v4-flash; temperature=0; max_tokens=32000",
+        "ollama_chat/gemma4:26b": "ollama_chat/gemma4:26b; temperature=0; max_tokens=16000",
+        "ollama_chat/qwen3.6:35b": "ollama_chat/qwen3.6:35b; temperature=0; max_tokens=16000",
+        "openai/gpt-4.1-mini": "openai/gpt-4.1-mini; temperature=0; max_tokens=10000",
+        "openai/gpt-5.6-luna": "openai/gpt-5.6-luna; temperature=1; max_tokens=10000",
+        "openai/gpt-5.6-sol": "openai/gpt-5.6-sol; temperature=None; max_tokens=10000"
       },
       "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
       "scorer": "Gan 2026 Purist label accuracy",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
@@ -315,34 +315,34 @@
       "unit": "correct_labels_and_accuracy",
       "value": {
         "deepseek/deepseek-v4-flash": {
-          "accuracy": 0.76,
-          "correct": 342
+          "accuracy": 0.7644,
+          "correct": 344
         },
         "ollama_chat/gemma4:26b": {
-          "accuracy": 0.7622,
-          "correct": 343
+          "accuracy": 0.7889,
+          "correct": 355
         },
         "ollama_chat/qwen3.6:35b": {
-          "accuracy": 0.8156,
-          "correct": 367
+          "accuracy": 0.8044,
+          "correct": 362
         },
         "openai/gpt-4.1-mini": {
-          "accuracy": 0.7844,
-          "correct": 353
+          "accuracy": 0.8022,
+          "correct": 361
         },
         "openai/gpt-5.6-luna": {
-          "accuracy": 0.7822,
-          "correct": 352
+          "accuracy": 0.8044,
+          "correct": 362
         },
         "openai/gpt-5.6-sol": {
-          "accuracy": 0.7956,
-          "correct": 358
+          "accuracy": 0.8289,
+          "correct": 373
         }
       }
     },
     {
       "cache_replay_mode": "cache disabled; aggregate-only retained readout",
-      "claim_boundary": "Secondary aggregate-only v0.7 score; task-specific and not pooled with ExECT F1.",
+      "claim_boundary": "Secondary aggregate-only v0.5 score; task-specific and not pooled with ExECT F1.",
       "comparability": "construct_only",
       "criterion_id": "clinical_correctness_generalization",
       "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
@@ -363,27 +363,27 @@
       ],
       "not_measured_reason": null,
       "pooling_unit": "model_letter",
-      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.5",
       "repair_policy": "hybrid_full_stack",
       "reproducibility_command": "python scripts/verify_reference_evidence.py",
       "result_state": "measured",
       "route_runtime": {
-        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
-        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
-        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
-        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
-        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
-        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+        "deepseek/deepseek-v4-flash": "deepseek/deepseek-v4-flash; temperature=0; max_tokens=32000",
+        "ollama_chat/gemma4:26b": "ollama_chat/gemma4:26b; temperature=0; max_tokens=16000",
+        "ollama_chat/qwen3.6:35b": "ollama_chat/qwen3.6:35b; temperature=0; max_tokens=16000",
+        "openai/gpt-4.1-mini": "openai/gpt-4.1-mini; temperature=0; max_tokens=10000",
+        "openai/gpt-5.6-luna": "openai/gpt-5.6-luna; temperature=1; max_tokens=10000",
+        "openai/gpt-5.6-sol": "openai/gpt-5.6-sol; temperature=None; max_tokens=10000"
       },
       "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
       "scorer": "Gan 2026 Pragmatic label accuracy",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
@@ -394,28 +394,28 @@
       "unit": "correct_labels_and_accuracy",
       "value": {
         "deepseek/deepseek-v4-flash": {
-          "accuracy": 0.8044,
-          "correct": 362
+          "accuracy": 0.8133,
+          "correct": 366
         },
         "ollama_chat/gemma4:26b": {
-          "accuracy": 0.8156,
-          "correct": 367
+          "accuracy": 0.8311,
+          "correct": 374
         },
         "ollama_chat/qwen3.6:35b": {
-          "accuracy": 0.8444,
-          "correct": 380
+          "accuracy": 0.8533,
+          "correct": 384
         },
         "openai/gpt-4.1-mini": {
-          "accuracy": 0.8244,
-          "correct": 371
+          "accuracy": 0.8422,
+          "correct": 379
         },
         "openai/gpt-5.6-luna": {
-          "accuracy": 0.8111,
-          "correct": 365
+          "accuracy": 0.8333,
+          "correct": 375
         },
         "openai/gpt-5.6-sol": {
-          "accuracy": 0.8356,
-          "correct": 376
+          "accuracy": 0.8533,
+          "correct": 384
         }
       }
     },
@@ -463,7 +463,7 @@
     },
     {
       "cache_replay_mode": "retained no-call summary",
-      "claim_boundary": "Named historical subject aggregate only; not the matched six-model v0.7 row.",
+      "claim_boundary": "Named historical subject aggregate only; not the selected matched six-model v0.5 panel.",
       "comparability": "construct_only",
       "criterion_id": "clinical_correctness_generalization",
       "dataset": "Gan 2026 synthetic clinical letters for seizure frequency",
@@ -818,10 +818,10 @@
       "score_stage": "final",
       "scorer": "ExECTv2 de-duplicated clinical_headline scorer",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "test60",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -1704,7 +1704,7 @@
         "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json"
       ],
       "source_hashes": {
-        "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json": "9230651dd75db9954a7a749c1e9a286134574294cbf0c6732e40de763fc028d0"
+        "experiments/exectv2_model_reported_confidence_out_of_sample_20260715.json": "6fd0f5c19cbdd5fe06cee03902faea94e66e08f4a86623f367a8d251ff1cbf50"
       },
       "split": "test60",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -1958,7 +1958,7 @@
         "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
         "configs/exectv2/six_model_comparison/gemma4_26b_dev140.json",
         "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715.json",
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
         "configs/exectv2/six_model_comparison/deepseek_v4_flash_dev140.json": "e7c57d9e66edae98d86c1719860308ee8cbe52ad5a00a4295841cee2d123e25b",
@@ -1973,7 +1973,7 @@
         "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json": "b0c42b47b6322d3a160425966f2f721e009cb4ec17e801685e718064641049ba",
         "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json": "fd4977e6dbde568b6fe464a7309250f65c66efc01637ae4d1ff3eb8d9614fcbb",
         "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json": "334fe8a69b25b6e27d0a5ae9517af8bd9105c3b98cc5f31c2b8466bcfa9bbeeb",
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "dev140_to_test60",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -2966,27 +2966,27 @@
       ],
       "not_measured_reason": null,
       "pooling_unit": "model_letter",
-      "prompt_program": "gan2026_hybrid_structured_events_v0.7",
+      "prompt_program": "gan2026_hybrid_structured_events_v0.5",
       "repair_policy": "hybrid_full_stack",
       "reproducibility_command": "python scripts/check_retained_evidence_manifest.py",
       "result_state": "measured",
       "route_runtime": {
-        "deepseek/deepseek-v4-flash": "Official DeepSeek V4 Flash route; thinking enabled; temperature 0",
-        "ollama_chat/gemma4:26b": "Native Ollama chat; thinking disabled; temperature 0",
-        "ollama_chat/qwen3.6:35b": "Native Ollama chat; thinking disabled; temperature 0",
-        "openai/gpt-4.1-mini": "OpenAI chat; temperature 0",
-        "openai/gpt-5.6-luna": "OpenAI chat; provider-required temperature 1",
-        "openai/gpt-5.6-sol": "OpenAI Responses; temperature omitted"
+        "deepseek/deepseek-v4-flash": "deepseek/deepseek-v4-flash; temperature=0; max_tokens=32000",
+        "ollama_chat/gemma4:26b": "ollama_chat/gemma4:26b; temperature=0; max_tokens=16000",
+        "ollama_chat/qwen3.6:35b": "ollama_chat/qwen3.6:35b; temperature=0; max_tokens=16000",
+        "openai/gpt-4.1-mini": "openai/gpt-4.1-mini; temperature=0; max_tokens=10000",
+        "openai/gpt-5.6-luna": "openai/gpt-5.6-luna; temperature=1; max_tokens=10000",
+        "openai/gpt-5.6-sol": "openai/gpt-5.6-sol; temperature=None; max_tokens=10000"
       },
       "row_inspection_rule": "aggregate-only test450; no locked-row inspection",
       "row_scope": "aggregate_only_rows_sealed",
       "score_stage": "final",
       "scorer": "aggregate run event accounting",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "test450",
       "split_manifest": "data/Gan (2026)/splits/gan2026_split_v1.json",
@@ -2998,44 +2998,44 @@
       "value": {
         "deepseek/deepseek-v4-flash": {
           "call_failures": 0,
-          "exact_evidence": 434,
-          "parse_schema_label_issues": 4,
-          "repair_notes": 259,
-          "structured_records": 446
+          "exact_evidence": 433,
+          "parse_schema_label_issues": 3,
+          "repair_notes": 250,
+          "structured_records": 447
         },
         "ollama_chat/gemma4:26b": {
           "call_failures": 0,
-          "exact_evidence": 437,
-          "parse_schema_label_issues": 0,
-          "repair_notes": 291,
-          "structured_records": 450
+          "exact_evidence": 436,
+          "parse_schema_label_issues": 2,
+          "repair_notes": 295,
+          "structured_records": 448
         },
         "ollama_chat/qwen3.6:35b": {
           "call_failures": 0,
-          "exact_evidence": 363,
-          "parse_schema_label_issues": 0,
-          "repair_notes": 316,
-          "structured_records": 450
+          "exact_evidence": 347,
+          "parse_schema_label_issues": 2,
+          "repair_notes": 308,
+          "structured_records": 448
         },
         "openai/gpt-4.1-mini": {
           "call_failures": 0,
           "exact_evidence": 419,
-          "parse_schema_label_issues": 2,
-          "repair_notes": 317,
-          "structured_records": 448
+          "parse_schema_label_issues": 4,
+          "repair_notes": 310,
+          "structured_records": 446
         },
         "openai/gpt-5.6-luna": {
           "call_failures": 0,
-          "exact_evidence": 446,
+          "exact_evidence": 444,
           "parse_schema_label_issues": 3,
-          "repair_notes": 305,
+          "repair_notes": 273,
           "structured_records": 447
         },
         "openai/gpt-5.6-sol": {
           "call_failures": 0,
-          "exact_evidence": 449,
+          "exact_evidence": 450,
           "parse_schema_label_issues": 0,
-          "repair_notes": 366,
+          "repair_notes": 338,
           "structured_records": 450
         }
       }
@@ -3163,10 +3163,10 @@
       "score_stage": "final",
       "scorer": "aggregate run event accounting",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "source_hashes": {
-        "experiments/hosted_holdout_panels_20260715.json": "9d62c87b2e5b3d97db475f4493b4fe9cb4357730e5b185d44457b016d34d754d"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json": "0836a0b8ff72bce03f3fc21a5c45227becdb72a7a7e16867c88059a487ec3cfd"
       },
       "split": "test60",
       "split_manifest": "data/ExECTv2 (2025)/splits/exectv2_split_v1.json",
@@ -3251,8 +3251,8 @@
       ],
       "result_state": "measured",
       "source_artifacts": [
-        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json",
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json",
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
       ],
       "task": "gan2026"
     },
@@ -3360,8 +3360,8 @@
       ],
       "result_state": "measured",
       "source_artifacts": [
-        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json",
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json",
+        "experiments/gan2026_reliability_master_scorecard_2026-06-17.json"
       ],
       "task": "gan2026"
     },
@@ -3387,7 +3387,7 @@
         "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
         "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
         "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "task": "exectv2"
     },
@@ -3476,7 +3476,7 @@
         "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715.json",
         "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715.json",
         "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715.json",
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "task": "exectv2"
     },
@@ -3549,7 +3549,7 @@
       ],
       "result_state": "measured",
       "source_artifacts": [
-        "experiments/hosted_holdout_panels_20260715.json"
+        "experiments/gan2026_matched_v05_test450_aggregate_20260716.json"
       ],
       "task": "exectv2"
     }
