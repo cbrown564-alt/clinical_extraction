@@ -226,7 +226,7 @@ def test_report_reproduces_machine_values(scorecard: dict[str, object]) -> None:
     report = render_report(scorecard)
     validate_report(scorecard, report)
 
-    assert "367/450" in report
+    assert "373/450" in report
     assert "0.8047" in report
     assert "54" in report
     assert "zero" in report.lower()

@@ -116,7 +116,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
     prompt = json.loads(build_prompt_input(_record()))
 
     assert prompt["prompt_version"] == PROMPT_VERSION
-    assert prompt["prompt_version"] == PROMPT_VERSION_V0_7
+    assert prompt["prompt_version"] == PROMPT_VERSION_V0_5
     assert prompt["note_text"] == _record().note_text
     assert "gold_label" not in json.dumps(prompt)
     assert "candidate_events" not in prompt
@@ -124,7 +124,7 @@ def test_build_prompt_input_excludes_gold_and_deterministic_candidates() -> None
 
 
 def test_deepseek_reasoner_prompt_conserves_countable_frequency_facts() -> None:
-    prompt = json.loads(build_prompt_input(_record()))
+    prompt = json.loads(build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_7))
     instructions = " ".join(prompt["instructions"])
 
     assert "Use any extra checking silently" in instructions
@@ -145,7 +145,7 @@ def test_structured_events_prompt_version_selector_preserves_v06() -> None:
         assert v06_prompt["prompt_version"] == PROMPT_VERSION_V0_6
         assert "countable-fact check" not in " ".join(v06_prompt["instructions"])
     finally:
-        set_active_prompt_version(PROMPT_VERSION_V0_7)
+        set_active_prompt_version(PROMPT_VERSION_V0_5)
 
 
 def test_restored_v05_prompt_has_the_historical_instruction_set() -> None:

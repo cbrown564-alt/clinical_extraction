@@ -98,6 +98,8 @@ def render_report(scorecard: Mapping[str, Any]) -> str:
             "",
             "### Gan matched six-model test450 panel",
             "",
+            "All six conditions use `gan2026_hybrid_structured_events_v0.5`.",
+            "",
             "| Model | Purist | Pragmatic |",
             "| --- | ---: | ---: |",
         ]

@@ -13,7 +13,6 @@ from matplotlib.ticker import FormatStrFormatter
 
 ROOT = Path(__file__).resolve().parents[1]
 SCORECARD = ROOT / "experiments/shared_reliability_scorecard_20260718.json"
-GAN_DEV = ROOT / "experiments/gan2026_six_model_validation_comparison_20260718.json"
 OUTPUT = ROOT / "docs/research/assets/six_model_comparison_2026-07-18"
 
 MODELS = [
@@ -281,18 +280,12 @@ def main() -> None:
     _style()
     OUTPUT.mkdir(parents=True, exist_ok=True)
     scorecard = _read(SCORECARD)
-    gan_dev = _read(GAN_DEV)
 
     exect_dev = _measurement(scorecard, "exectv2_six_model_dev140_clinical_headline_f1")["value"]
     exect_test = _measurement(scorecard, "exectv2_six_model_test60_clinical_headline_f1")["value"]
     exect_stages = _measurement(scorecard, "exectv2_six_model_score_stage_f1")["value"]
     exect_family = _measurement(scorecard, "exectv2_six_model_dev140_family_f1")["value"]
 
-    gan_conditions = {(row["model"], row["method"]): row for row in gan_dev["conditions"]}
-    gan_rules = {
-        key: gan_conditions[(key, "llm_with_rules")]["purist_accuracy"] for key, _ in MODELS
-    }
-    gan_llm = {key: gan_conditions[(key, "llm_only")]["purist_accuracy"] for key, _ in MODELS}
     gan_test_purist = {
         key: value["accuracy"]
         for key, value in _measurement(scorecard, "gan2026_six_model_test450_purist_accuracy")[
@@ -338,30 +331,6 @@ def main() -> None:
         "Final pipeline on dev140; family F1 uses model-specific fact counts",
         ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"],
         exect_family,
-    )
-    _barbell(
-        "gan_dev_test.svg",
-        "Gan Purist accuracy: development and test",
-        "LLM + rules; dev750 permits row analysis, test450 is aggregate-only; focused scale",
-        "dev750",
-        "test450",
-        gan_rules,
-        gan_test_purist,
-        sort_on=gan_test_purist,
-        xlabel="Purist accuracy (0–1)",
-        colors=(TEAL_LIGHT, TEAL),
-    )
-    _grouped_bar(
-        "gan_llm_rules.svg",
-        "Gan Purist accuracy: LLM and LLM + rules",
-        "Matched conditions on the same 750 development rows per model",
-        "LLM only",
-        "LLM + rules",
-        gan_llm,
-        gan_rules,
-        sort_on=gan_rules,
-        xlabel="Purist accuracy (0–1)",
-        colors=(NEUTRAL, ORANGE),
     )
     _grouped_bar(
         "gan_purist_pragmatic.svg",

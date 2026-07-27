@@ -70,9 +70,10 @@ Current state, as of 2026-07-20:
 - The fixed six-model ExECT panel is retained on dev140 and aggregate-only
   test60. Test60 clinical-headline F1 is 0.7572 for GPT-4.1-mini, 0.7950 for
   GPT-5.6 Luna, 0.8047 for GPT-5.6 Sol, 0.7881 for DeepSeek V4 Flash,
-  0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The matched Gan v0.7
-  aggregate-only test450 panel retains the same six models, with the hosted and
-  local route differences disclosed.
+  0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The selected matched Gan
+  v0.5 aggregate-only test450 panel retains the same six models, with the hosted
+  and local route differences disclosed. Matched six-model v0.5 dev750 coverage
+  is pending.
 - The retained six-model comparison report keeps the task-specific scores
   separate. A predeclared no-call ExECT SF reliability replay improves the
   state-profile result for every model, but its unknown-only gold denominator
