@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-27 on the working tree after commit `c51bbc8e`
+Last updated: 2026-07-28 on the working tree after commit `085be7c5`
 
 ## Current outcome
 
@@ -9,13 +9,14 @@ models on `dev140` and has aggregate-only `test60` results for the same six
 models. The retained aggregate panel records all six test60 conditions with
 equal canonical status; sealed row artifacts remain ignored and uninspectable.
 
-Gan has a complete selected six-model v0.5 aggregate-only `test450` panel.
-The selected v0.5 `llm_with_rules` condition does not yet have complete
-six-model `dev750` coverage. One historical GPT-4.1-mini v0.5 artifact has 750
-rows and requires current-stack reconciliation; an attempted Qwen v0.5 run has
-45 rows and is not evidence; the other four models have no complete v0.5
-development condition. Retained Gan filenames and machine-readable split
-fields use the legacy identifier `validation750` for `dev750`.
+Gan has complete selected six-model v0.5 `dev750` and aggregate-only `test450`
+panels. The development panel contains 4,500 unique row traces with the frozen
+prompt, repair policy, scorers, and split. Its companion attribution artifact
+retains the raw model boundary, deterministic transitions, selected-evidence
+grades, rules-control regressions, first-failure owner, and clinical
+subproblem for every model-row pair. Retained Gan filenames and
+machine-readable split fields use the legacy identifier `validation750` for
+`dev750`.
 
 These panels are retained paper evidence with aggregate-only test limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
@@ -115,9 +116,26 @@ The [hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_proto
 and [aggregate artifact](experiments/gan2026_matched_v05_test450_aggregate_20260716.json)
 own the primary test result.
 
-The matched v0.5 six-model dev750 panel is predeclared in
+The matched v0.5 six-model dev750 panel is complete under
 [the development protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
-It remains incomplete and no primary v0.5 development ranking is reported.
+
+| Model | Purist | Pragmatic | Exact evidence | Raw to final W→C / C→W |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 668/750 | 686/750 | 692/750 | 314 / 5 |
+| GPT-5.6 Luna | 646/750 | 671/750 | 744/750 | 240 / 5 |
+| GPT-5.6 Sol | 656/750 | 678/750 | 749/750 | 317 / 6 |
+| DeepSeek V4 Flash | 619/750 | 641/750 | 728/750 | 174 / 4 |
+| Qwen 3.6:35B | 660/750 | 680/750 | 567/750 | 339 / 4 |
+| Gemma 4 26B | 643/750 | 676/750 | 734/750 | 223 / 5 |
+
+Across all 4,500 rows, fixed processing produces 1,607 wrong-to-correct and 29
+correct-to-wrong raw-boundary transitions. It also regresses 514 rows that the
+independent rules comparator gets correct. Exact selected evidence is present
+on 4,214 rows and grounded selected evidence on 4,328. This supports a bounded
+development comparison and component audit, not method promotion or a
+model-neutral ranking. The [panel report](docs/experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md)
+and [row attribution](experiments/gan2026_matched_v05_dev750_attribution_20260727.json)
+own the detailed evidence.
 
 The historical v0.7 [Qwen-versus-Sol row audit](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
 and its [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
@@ -217,17 +235,24 @@ Current working-tree verification is mixed:
   after excluding unrelated local temp fixtures, the supervisor-provided
   utility sample, and the generated handoff copy. Mypy passes across 335 source
   files.
+- **Verified for the Gan v0.5 dev750 panel:** all six conditions pass strict
+  750-row identity checks; the 4,500-row panel and attribution artifacts
+  reproduce with `finalize --check`; five focused panel tests and scoped Ruff
+  pass.
 - **Not currently green repository-wide:** the latest broad pytest run passed
-  1,376/1,381 tests. Four retained-evidence tests report hash drift in unrelated
-  changed research reports. One trace-explorer artifact-root assertion is
-  sensitive to the workspace-local pytest temp directory used because the
-  default Windows pytest temp root is inaccessible. Repository-wide Ruff also
-  sees unrelated untracked temp fixtures and the supervisor utility sample.
+  1,391/1,396 tests with a workspace-local temp root. Two retained-evidence
+  tests report pre-existing `pyproject.toml` freeze-hash drift; two handoff
+  tests see pre-existing `__pycache__` files; one trace-explorer assertion is
+  sensitive to the workspace-local temp root. Repository-wide Ruff reports 139
+  findings in unrelated untracked temp fixtures and the supervisor utility
+  sample. Mypy passes across 335 source files.
 - **Previously verified:** 1,352 pytest tests, repository-wide Ruff, and mypy
   across 314 source files passed before the later working-tree changes.
-- **Verified:** both deterministic builders reproduce their selected outputs,
-  the retained-evidence manifest validates, and all six no-call reference cells
-  replay their expected scores.
+- **Previously verified:** both deterministic builders reproduce their selected
+  outputs and all six no-call reference cells replay their expected scores.
+  The retained-evidence manifest is not currently green because the frozen
+  `pyproject.toml` fingerprint predates unrelated working-tree drift; the canon
+  fingerprint changed by this panel update is current.
 - **Verified:** the semantic-review API suite passes (`11` tests), the frontend
   Jest suite passes (`51` tests), frontend lint passes, and the Next.js
   production build completes with the new route. The entry, evidence, decision,
@@ -244,9 +269,6 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
-- The selected Gan v0.5 six-model dev750 panel is predeclared but incomplete.
-  It requires one reconciled GPT-4.1-mini condition and complete Luna, Sol,
-  DeepSeek, Qwen, and Gemma conditions.
 - Independent review of the 48-item ExECT semantic-support substrate remains
   the next evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
@@ -255,27 +277,23 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Complete the predeclared Gan v0.5 dev750 panel without changing the prompt,
-   repair policy, scorer, or split; then rebuild its row-level attribution.
-2. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
+1. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
    and both bundled synthetic examples against the approved model route; record
    JSON/thinking/retry behavior and unaided README corrections in the handoff
    plan.
-3. Assign two independent clinical reviewer IDs and have each reviewer complete
+2. Assign two independent clinical reviewer IDs and have each reviewer complete
    all 48 items without sharing IDs or reviewing the other's export.
-4. Send every field-level disagreement to a third named clinical adjudicator;
+3. Send every field-level disagreement to a third named clinical adjudicator;
    retain both original decisions and every revision.
-5. Export the completed reviewer and adjudication artifacts, validate their
+4. Export the completed reviewer and adjudication artifacts, validate their
    completeness, then update the reliability scorecard and paper claim owner
    within the protocol's development-only limits.
-6. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
+5. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
    eight audited deterministic regression rows and matched non-regression
    controls; do not tune the frozen six-model panel in place.
 
 ## Blocked or unvalidated
 
-- A primary Gan six-model development ranking and v0.5 development-to-test
-  comparison are blocked until all six v0.5 dev750 conditions are complete.
 - Independent clinical review remains required before any clinical-validity
   claim. Internal annotation review is not that validation.
 - Exact evidence is measured, but semantic support remains unmeasured. The
@@ -331,7 +349,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   and [aggregate replay](experiments/gan2026_matched_v05_current_schema_replay_20260718.json)
 - Selected Gan v0.5 development coverage:
   [protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md)
-  and [configuration](configs/gan2026/six_model_v05_dev750_20260727.json)
+  [configuration](configs/gan2026/six_model_v05_dev750_20260727.json),
+  [panel report](docs/experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md),
+  [machine panel](experiments/gan2026_matched_v05_dev750_panel_20260727.json),
+  and [row attribution](experiments/gan2026_matched_v05_dev750_attribution_20260727.json)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Independent semantic-support review:

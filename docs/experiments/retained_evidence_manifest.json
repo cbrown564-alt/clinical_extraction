@@ -2006,8 +2006,8 @@
         },
         {
           "path": "docs/canon/10_paper_provenance.md",
-          "sha256": "fe5809468b950e7351f05b2fc171bf5c19ad87528204d6988af2166a980529e5",
-          "bytes": 10469,
+          "sha256": "6cdc3aebaf0015f29458b79707b4b1c32c5e9da318f3234933541d40aaa2e53f",
+          "bytes": 11100,
           "retrieval": "git_path"
         }
       ]

@@ -1,7 +1,7 @@
 # Gan 2026 matched v0.5 six-model dev750 protocol
 
 Date: 2026-07-27  
-Status: predeclared; calls not yet started  
+Status: complete; six conditions and row-level attribution reproduced 2026-07-28
 Decision owner: [decision 0043](../../decisions/0043-gan-hosted-comparison-uses-v05-prompt.md)
 
 ## Primary question
@@ -92,3 +92,25 @@ and repair policy. It will not be a model-neutral capability ranking, clinical
 validation, or a new holdout result. The existing v0.7 development panel
 remains a quarantined prompt-interaction diagnostic and must not be merged with
 this panel.
+
+## Completion record
+
+All six conditions contain exactly 750 unique `gan2026_split_v1`
+`validation750` rows with the frozen v0.5 prompt payload and non-empty raw
+outputs. The aggregate and 4,500-row attribution artifacts reproduce with:
+
+```powershell
+.venv\Scripts\python.exe scripts\gan2026_v05_dev750_panel.py finalize --check
+```
+
+Retained outputs:
+
+- [panel report](gan2026_matched_v05_dev750_panel_2026-07-27.md)
+- [machine panel](../../../experiments/gan2026_matched_v05_dev750_panel_20260727.json)
+- [row-level attribution](../../../experiments/gan2026_matched_v05_dev750_attribution_20260727.json)
+
+GPT-4.1-mini is a saved-raw-output no-call reconciliation. DeepSeek, Qwen, and
+Gemma retain their validated resume provenance. DeepSeek also retains the
+original transient DNS-failed row, its identical-route retry, and replacement
+hashes. These operational repairs did not change the frozen prompt, model
+route, temperature, output limit, cache policy, repair policy, scorer, or split.

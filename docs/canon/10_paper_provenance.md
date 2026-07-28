@@ -1,6 +1,6 @@
 # 10 — Paper claims and supporting evidence
 
-Last updated: 2026-07-20
+Last updated: 2026-07-28
 
 This file states how strongly the paper may make each claim. The
 [retained evidence index](../experiments/retained_evidence_manifest.md) records
@@ -38,7 +38,8 @@ must not make a stronger claim than either source supports.
 | C11 | On the selected matched Gan v0.5 test450 panel, Sol scored 373/450, Luna and Qwen 362/450, GPT-4.1-mini 361/450, Gemma 355/450, and DeepSeek 344/450 Purist | Frozen aggregate evidence | Same v0.5 prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; some conditions use aggregate-only current-schema replay of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a historical row table without subsequent analysis or tuning |
 | C12 | The fixed deterministic ExECT SF projection/suppression stage improves dev140 state-profile F1 for all six model conditions, with 54 wrong-to-correct and one correct-to-wrong transition across the six panels | Development component evidence | The same 140 letters are repeated for each model; the unknown-only denominator is zero, so this does not establish cross-task over-inference transfer or factuality prevalence |
 | C13 | Gan 2026 and ExECTv2 are assessed with the same eight reliability questions using task-specific measures, explicit evidence states, and explicit comparability labels | Strong for the generated framework and selected retained evidence | The tasks do not share one metric; criterion evidence is uneven; construct-only and not-comparable values are not compared numerically; no composite score or clinical-validity claim |
-| C14 | The historical v0.7 Gan dev750 panel shows a model-by-method interaction and supports component diagnostics, but it is not the selected primary six-model `llm_with_rules` result | Quarantined development diagnostic from twelve retained 750-row traces and a no-call replay | The primary v0.5 six-model dev750 panel is incomplete; do not use v0.7 development scores in a primary ranking, development-to-test comparison, or paper headline |
+| C14 | The historical v0.7 Gan dev750 panel shows a model-by-method interaction and supports component diagnostics, but it is not the selected primary six-model `llm_with_rules` result | Quarantined development diagnostic from twelve retained 750-row traces and a no-call replay | The selected v0.5 six-model dev750 panel is now complete; do not merge v0.7 rows or scores into its ranking, development-to-test comparison, or paper headline |
+| C15 | On the selected matched Gan v0.5 dev750 panel, GPT-4.1-mini scored 668/750, Qwen 660/750, Sol 656/750, Luna 646/750, Gemma 643/750, and DeepSeek 619/750 Purist | Reproduced development evidence from 4,500 unique row traces and a companion attribution artifact | Named models, routes, v0.5 prompt, `hybrid_full_stack` repair, Gan scorers, and `gan2026_split_v1` validation rows only; not clinical validation, a model-neutral ranking, method promotion, or new holdout evidence |
 
 ## Selected headline results
 
@@ -51,6 +52,7 @@ must not make a stronger claim than either source supports.
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
 | ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
+| Gan matched six-model v0.5 panel, dev750 | GPT-4.1-mini 668/750; Luna 646/750; Sol 656/750; DeepSeek 619/750; Qwen 660/750; Gemma 643/750 Purist |
 | Gan matched six-model v0.5 panel, test450 | GPT-4.1-mini 361/450; Luna 362/450; Sol 373/450; DeepSeek 344/450; Qwen 362/450; Gemma 355/450 Purist |
 
 The historical DeepSeek full200 aggregate is `0.8566`, but its runtime metadata
