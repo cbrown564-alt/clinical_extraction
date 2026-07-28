@@ -44,6 +44,8 @@ def test_build_index_keeps_source_text_out_of_sqlite_and_locked_rows_out_of_reco
 
 
 def test_index_build_rejects_traversal_or_unapproved_artifacts(tmp_path: Path) -> None:
+    approved_root = tmp_path / "approved"
+    approved_root.mkdir()
     outside = tmp_path / "outside.json"
     outside.write_text(json.dumps({"schema_version": "illustrative.fixture.v1"}), encoding="utf-8")
 
@@ -51,7 +53,7 @@ def test_index_build_rejects_traversal_or_unapproved_artifacts(tmp_path: Path) -
         build_index(
             artifacts=[outside],
             output=tmp_path / "index",
-            approved_roots=[Path.cwd()],
+            approved_roots=[approved_root],
         )
 
 

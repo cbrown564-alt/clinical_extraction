@@ -12,6 +12,10 @@ HANDOFF = ROOT / "handoff" / "supervisor"
 ARCHIVE = ROOT / "handoff" / "clinical_extraction_supervisor_handoff.zip"
 
 
+def _is_runtime_generated(path: Path) -> bool:
+    return "__pycache__" in path.parts or path.suffix in {".pyc", ".pyo"}
+
+
 def test_handoff_is_readable_source_first_and_has_both_workflows() -> None:
     required = [
         HANDOFF / "run.py",
@@ -37,7 +41,11 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
     actual = {
         path.relative_to(HANDOFF).as_posix(): path
         for path in HANDOFF.rglob("*")
-        if path.is_file() and path.name != "SOURCE_MANIFEST.json"
+        if (
+            path.is_file()
+            and path.name != "SOURCE_MANIFEST.json"
+            and not _is_runtime_generated(path)
+        )
     }
     assert set(recorded) == set(actual)
     for name, path in actual.items():
@@ -49,7 +57,7 @@ def test_archive_matches_readable_tree_and_excludes_private_or_research_files() 
     expected = {
         path.relative_to(HANDOFF).as_posix()
         for path in HANDOFF.rglob("*")
-        if path.is_file()
+        if path.is_file() and not _is_runtime_generated(path)
     }
     with zipfile.ZipFile(ARCHIVE) as archive:
         names = set(archive.namelist())
