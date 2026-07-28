@@ -225,34 +225,29 @@ the detailed evidence and remaining acceptance checks.
 
 ## Verification state
 
-Current working-tree verification is mixed:
+Current working-tree backend verification is green for tracked project files:
 
+- **Verified on 2026-07-28 after CI repair:** all 1,397 pytest tests pass with a
+  fresh workspace-local base temp directory. Repository-wide Ruff passes after
+  excluding ignored workspace-local `.tmp` test fixtures, and mypy passes
+  across 335 source files. Pytest reports one cache-write warning because the
+  sandbox cannot write `.pytest_cache`; no test is skipped or failed.
 - **Verified for the handoff:** 26 focused source API, input/privacy, endpoint
   request, format-retry, recovery, five-fixture parity, archive, manifest, and
   clean-command tests pass under the repository `.venv`. The builder also runs
-  the shipped tests from a clean extracted archive.
-- **Verified:** scoped Ruff passes for the implementation and for the repository
-  after excluding unrelated local temp fixtures, the supervisor-provided
-  utility sample, and the generated handoff copy. Mypy passes across 335 source
-  files.
+  the shipped tests from a clean extracted archive. Manifest and archive
+  integrity checks now ignore runtime bytecode caches, which the builder
+  already excludes from shipped output.
 - **Verified for the Gan v0.5 dev750 panel:** all six conditions pass strict
   750-row identity checks; the 4,500-row panel and attribution artifacts
   reproduce with `finalize --check`; five focused panel tests and scoped Ruff
   pass.
-- **Not currently green repository-wide:** the latest broad pytest run passed
-  1,391/1,396 tests with a workspace-local temp root. Two retained-evidence
-  tests report pre-existing `pyproject.toml` freeze-hash drift; two handoff
-  tests see pre-existing `__pycache__` files; one trace-explorer assertion is
-  sensitive to the workspace-local temp root. Repository-wide Ruff reports 139
-  findings in unrelated untracked temp fixtures and the supervisor utility
-  sample. Mypy passes across 335 source files.
-- **Previously verified:** 1,352 pytest tests, repository-wide Ruff, and mypy
-  across 314 source files passed before the later working-tree changes.
-- **Previously verified:** both deterministic builders reproduce their selected
-  outputs and all six no-call reference cells replay their expected scores.
-  The retained-evidence manifest is not currently green because the frozen
-  `pyproject.toml` fingerprint predates unrelated working-tree drift; the canon
-  fingerprint changed by this panel update is current.
+- **Verified:** the retained-evidence manifest validates. Its dependency
+  fingerprint matches the current `pyproject.toml`, and the frozen Gan v0.7
+  prompt now has its own versioned snapshot rather than sharing the mutable
+  default-prompt snapshot. Both deterministic builders reproduce their
+  selected outputs and all six no-call reference cells replay their expected
+  scores.
 - **Verified:** the semantic-review API suite passes (`11` tests), the frontend
   Jest suite passes (`51` tests), frontend lint passes, and the Next.js
   production build completes with the new route. The entry, evidence, decision,

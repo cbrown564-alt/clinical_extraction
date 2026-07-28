@@ -45,7 +45,7 @@ snapshot is deterministic. Its canonical LF fingerprint is:
 
 | Role | Path | Canonical SHA-256 | Canonical bytes |
 | --- | --- | --- | ---: |
-| Rendered prompt | `tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events.txt` | `4ea331bdd24ca70e4fc35f9f6bd502e7a7d0d5a4ffb080d99269a3af89262dda` | 6,450 |
+| Rendered prompt | `tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.7.txt` | `4ea331bdd24ca70e4fc35f9f6bd502e7a7d0d5a4ffb080d99269a3af89262dda` | 6,450 |
 | Pipeline and prompt builder | `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py` | `78126924f5a23052bde9f5c527576386e73c9d3bec3da1748950af563714ce64` | 46,872 |
 | Hosted runner | `scripts/run_gan2026_hosted_condition.py` | `56d88e7e9a5cc4c8ea7bdaed2096b7e837cfcc2c032cad854432f423f3ccb0f8` | 2,215 |
 | Schema and JSON-dialect repair | `src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py` | `ca239a2cbc626a638b8f27271cad0d1ab4d31605373cf7d3651a9d092caec068` | 8,673 |

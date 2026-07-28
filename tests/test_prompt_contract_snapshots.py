@@ -91,6 +91,9 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     "gan2026__hybrid_structured_events_v0.5": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record(), prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_5
     ),
+    "gan2026__hybrid_structured_events_v0.7": lambda: hybrid_structured_events.build_prompt_input(
+        _gan_record(), prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_7
+    ),
     "gan2026__llm_only_canonical_pipeline": lambda: llm_only_canonical_pipeline.build_prompt_input(
         _gan_record()
     ),

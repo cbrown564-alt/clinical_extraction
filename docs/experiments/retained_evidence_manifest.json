@@ -22,8 +22,8 @@
       {
         "role": "dependency",
         "path": "pyproject.toml",
-        "sha256": "2e28c6eaec0b6df5ebaaa8e54b94254c88be80fb63f2782b56c7355b725bcd20",
-        "bytes": 1548
+        "sha256": "3220ab098c604701a7bdce6be7454dda35f45bff10d581e09870e799d728ead4",
+        "bytes": 1629
       },
       {
         "role": "dependency",
@@ -57,7 +57,7 @@
       },
       {
         "role": "prompt",
-        "path": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events.txt",
+        "path": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.7.txt",
         "sha256": "4ea331bdd24ca70e4fc35f9f6bd502e7a7d0d5a4ffb080d99269a3af89262dda",
         "bytes": 6450
       },
@@ -745,7 +745,7 @@
           "data/Gan (2026)/splits/gan2026_split_v1.json"
         ],
         "configurations": [
-          "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events.txt"
+          "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.7.txt"
         ],
         "tests": [
           "tests/test_gan2026_hybrid_structured_events_contract.py",
