@@ -33,6 +33,14 @@ PAPER_SOURCES = (
     / "IEEE-conference-template-062824.tex",
 )
 TASKS = {"gan2026", "exectv2"}
+TEXT_SUFFIXES = frozenset({".json", ".jsonl", ".md", ".py", ".txt", ".yaml", ".yml"})
+
+
+def _canonical_sha256(path: Path) -> str:
+    content = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES:
+        content = content.replace(b"\r\n", b"\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 @pytest.fixture(scope="module")
@@ -262,5 +270,5 @@ def test_semantic_review_source_hashes_match_selected_dev_artifacts() -> None:
     substrate = build_review_substrate(ROOT)
 
     for path, expected in substrate["source_hashes"].items():
-        digest = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+        digest = _canonical_sha256(ROOT / path)
         assert digest == expected
