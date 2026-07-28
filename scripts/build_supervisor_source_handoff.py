@@ -51,6 +51,9 @@ FORBIDDEN_PARTS = {
     "reports",
 }
 TEMPLATE_EXCLUSIONS = {".env", ".venv", "__pycache__", ".pytest_cache"}
+TEXT_SUFFIXES = frozenset(
+    {".json", ".jsonl", ".md", ".ps1", ".py", ".sh", ".txt", ".yaml", ".yml"}
+)
 
 
 def main() -> None:
@@ -203,24 +206,29 @@ def _remove_generated_junk() -> None:
         shutil.rmtree(path)
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _canonical_bytes(path: Path) -> bytes:
+    content = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES:
+        content = content.replace(b"\r\n", b"\n")
+    return content
 
 
 def _write_source_manifest() -> None:
     entries = []
     for path in sorted(HANDOFF.rglob("*")):
         if path.is_file() and path.name != "SOURCE_MANIFEST.json":
+            content = _canonical_bytes(path)
             entries.append(
                 {
                     "path": path.relative_to(HANDOFF).as_posix(),
-                    "sha256": _sha256(path),
-                    "bytes": path.stat().st_size,
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                    "bytes": len(content),
                 }
             )
     payload = {
-        "manifest_version": 1,
+        "manifest_version": 2,
         "source_first": True,
+        "hash_policy": "Text files are normalized from CRLF to LF before hashing.",
         "generated_from": "scripts/build_supervisor_source_handoff.py explicit allowlist",
         "files": entries,
     }

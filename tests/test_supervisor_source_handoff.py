@@ -10,10 +10,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HANDOFF = ROOT / "handoff" / "supervisor"
 ARCHIVE = ROOT / "handoff" / "clinical_extraction_supervisor_handoff.zip"
+TEXT_SUFFIXES = frozenset(
+    {".json", ".jsonl", ".md", ".ps1", ".py", ".sh", ".txt", ".yaml", ".yml"}
+)
 
 
 def _is_runtime_generated(path: Path) -> bool:
     return "__pycache__" in path.parts or path.suffix in {".pyc", ".pyo"}
+
+
+def _canonical_bytes(path: Path) -> bytes:
+    content = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES:
+        content = content.replace(b"\r\n", b"\n")
+    return content
 
 
 def test_handoff_is_readable_source_first_and_has_both_workflows() -> None:
@@ -49,8 +59,9 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
     }
     assert set(recorded) == set(actual)
     for name, path in actual.items():
-        assert recorded[name]["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
-        assert recorded[name]["bytes"] == path.stat().st_size
+        content = _canonical_bytes(path)
+        assert recorded[name]["sha256"] == hashlib.sha256(content).hexdigest()
+        assert recorded[name]["bytes"] == len(content)
 
 
 def test_archive_matches_readable_tree_and_excludes_private_or_research_files() -> None:

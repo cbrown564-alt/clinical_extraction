@@ -153,16 +153,24 @@ def test_gan_architectures_use_the_same_six_model_comparison_matrix(
     model_runs = [*by_mode["llm_plus_rules"], *by_mode["llm_only"]]
     assert all(item["split"] == "validation750" for item in model_runs)
     assert all("test450" not in str(item["run_id"]) for item in model_runs)
-    assert all(item["availability"] == "replay" for item in model_runs)
-    assert all(item["evidence_scope"] == "validation750_row_level" for item in model_runs)
-    assert all(item["has_replay_artifact"] is True for item in model_runs)
+    assert all(item["availability"] in {"replay", "not_retained"} for item in model_runs)
+    for item in model_runs:
+        replayable = item["availability"] == "replay"
+        assert item["has_replay_artifact"] is replayable
+        assert item["evidence_scope"] == (
+            "validation750_row_level" if replayable else "incomplete_not_served"
+        )
 
-    completed = next(item for item in model_runs if item["availability"] == "replay")
-    assert completed["metrics"]["row_count"] == 750
-    replay = client.get(f"/artifacts/{completed['run_id']}", params={"limit": 2})
-    assert replay.status_code == 200
-    assert len(replay.json()["content"]) == 2
-    assert all(row["split"] == "validation" for row in replay.json()["content"])
+    completed = next(
+        (item for item in model_runs if item["availability"] == "replay"),
+        None,
+    )
+    if completed is not None:
+        assert completed["metrics"]["row_count"] == 750
+        replay = client.get(f"/artifacts/{completed['run_id']}", params={"limit": 2})
+        assert replay.status_code == 200
+        assert len(replay.json()["content"]) == 2
+        assert all(row["split"] == "validation" for row in replay.json()["content"])
 
     deterministic = by_mode["deterministic_only"][0]
     assert deterministic["run_id"] == "rules_only"

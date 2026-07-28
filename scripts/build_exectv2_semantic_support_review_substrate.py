@@ -19,6 +19,7 @@ PROTOCOL = Path(
 )
 FAMILIES = ("Diagnosis", "SeizureFrequency", "Prescription", "Investigations")
 SAMPLE_PER_MODEL_FAMILY = 2
+TEXT_SUFFIXES = frozenset({".json", ".jsonl", ".md", ".py", ".txt", ".yaml", ".yml"})
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -30,7 +31,10 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    content = path.read_bytes()
+    if path.suffix.lower() in TEXT_SUFFIXES:
+        content = content.replace(b"\r\n", b"\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 def _stable_rank(*parts: str) -> str:
