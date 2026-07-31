@@ -49,6 +49,7 @@ class FrontendDataStore:
         self.root = root.resolve()
         if not self.root.is_dir():
             raise ValueError("frontend data root is unavailable")
+        self._repo_root = self._resolve_repo_root(self.root)
         self._exectv2_payload = self._object(self.root / _NAMED_RESOURCES["exectv2_runs"])
         self._artifacts = {
             path.stem: path
@@ -68,6 +69,15 @@ class FrontendDataStore:
         }
         self._gan_fingerprint: tuple[tuple[str, int, int], ...] = ()
         self._gan_validation = self._discover_gan_validation()
+
+    @staticmethod
+    def _resolve_repo_root(frontend_data_root: Path) -> Path:
+        """Locate the repository root above the frontend mock-data directory."""
+
+        for candidate in (frontend_data_root, *frontend_data_root.parents):
+            if (candidate / "pyproject.toml").is_file() and (candidate / "src").is_dir():
+                return candidate
+        raise ValueError("repository root is unavailable from frontend data root")
 
     def named(self, resource: str) -> dict[str, Any]:
         if resource in {"pipeline_families", "registry"}:
@@ -128,7 +138,7 @@ class FrontendDataStore:
             if replay_path is not None:
                 return {
                     "run_id": run_id,
-                    "artifact_path": replay_path.relative_to(self.root.parents[3]).as_posix(),
+                    "artifact_path": replay_path.relative_to(self._repo_root).as_posix(),
                     "artifact_type": "jsonl",
                     "content": self._read_jsonl(replay_path, limit=limit),
                 }
@@ -142,7 +152,7 @@ class FrontendDataStore:
         return payload
 
     def _discover_gan_validation(self) -> GanValidationDiscovery | None:
-        repo_root = self.root.parents[3]
+        repo_root = self._repo_root
         config_path = (
             repo_root / "configs" / "gan2026" / "six_model_validation_comparison_20260718.json"
         )
@@ -159,7 +169,7 @@ class FrontendDataStore:
         return discovery
 
     def _refresh_gan_validation(self) -> None:
-        repo_root = self.root.parents[3]
+        repo_root = self._repo_root
         config_path = (
             repo_root / "configs" / "gan2026" / "six_model_validation_comparison_20260718.json"
         )
@@ -279,7 +289,7 @@ class FrontendDataStore:
     def semantic_support_review_packets(self) -> dict[str, Any]:
         """Return the frozen dev140 review sample with governed full-letter context."""
 
-        repo_root = self.root.parents[3]
+        repo_root = self._repo_root
         substrate_path = (
             repo_root
             / "experiments"
