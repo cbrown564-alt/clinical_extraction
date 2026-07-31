@@ -113,6 +113,18 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
         _exect_letter()
     ),
+    "exectv2__structured_key_families_v0.9.25_luna_sf_state": (
+        lambda: exectv2_structured.build_prompt_input(
+            _exect_letter(),
+            prompt_version=exectv2_structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
+        )
+    ),
+    "exectv2__structured_key_families_v0.9.25_luna_sf_boundary_dx": (
+        lambda: exectv2_structured.build_prompt_input(
+            _exect_letter(),
+            prompt_version=exectv2_structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
+        )
+    ),
     "exectv2__diagnosis_decomposer": lambda: exectv2_diagnosis.build_prompt_input(
         _exect_letter(), []
     ),

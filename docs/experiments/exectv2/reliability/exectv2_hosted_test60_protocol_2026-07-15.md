@@ -33,7 +33,8 @@ and the structured-event maximum is 10,000 tokens.
 Candidate: `exectv2_decision_0041_six_model_single_call_test60_v1`. Each model
 makes one `exectv2_hybrid_key_family_event_ledger_v0.9.24` structured call per
 letter. Diagnosis, Seizure Frequency, Prescription, and Investigations use the
-same selected deterministic lenses, joint bounded policy, evidence validation,
+same selected deterministic lenses, Diagnosis/Prescription `default` policy
+(decision 0045; joint/combined archived), evidence validation,
 assembly, and scorer as the completed clean dev140 runs. No prompt, scorer,
 projection, repair, threshold, or fallback may change after calls begin.
 

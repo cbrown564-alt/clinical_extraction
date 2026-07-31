@@ -1,7 +1,10 @@
 # 0040: Final ExECT LLM-with-rules family ownership
 
 Date: 2026-07-15  
-Status: accepted and implemented; disclosed fallback selected, final model rows not promoted
+Status: accepted and implemented; family-ownership boundary remains active  
+Updated: 2026-07-31 — joint disclosed-fallback selection superseded by
+[decision 0045](0045-exect-default-policy-not-joint-combined.md) (`default` /
+`default` is the active comparison policy; joint is archived)
 
 ## Decision
 
@@ -80,9 +83,14 @@ comparison scorer and must disclose its entity-agnostic recall behavior.
   and retains 153/160 current-policy rescues. It dominates the previous
   `decision_0040_model_preserving_dev140_v1` fallback at 161, 9, and 143/160,
   makes no fallback-correct row wrong, and improves all three saved model scores.
-  `decision_0040_joint_bounded_dev140_v1` is therefore the disclosed fallback
-  for the next fixed comparison. The known EA0117 Diagnosis and EA0141/Qwen
-  Prescription failures remain explicit development caveats.
+  `decision_0040_joint_bounded_dev140_v1` was therefore selected as the
+  disclosed fallback for the next fixed comparison. **Superseded for active
+  use by [decision 0045](0045-exect-default-policy-not-joint-combined.md):**
+  the retained six-model panel uses `default` / `default`, and joint is
+  archived after a matched six-model replay showed only marginal F1 gains for
+  the added complexity. The known EA0117 Diagnosis and EA0141/Qwen
+  Prescription failures remain explicit development caveats of that historical
+  joint candidate.
 - The historical three-model scores remain audit evidence only. They must not
   be presented as the final model comparison.
 - A predeclared GPT-4.1-mini dev140 replay tested whether the structured

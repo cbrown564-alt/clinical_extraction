@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-31 after finalizing Gan LLM-with-rules ruleset docs
+Last updated: 2026-07-31 after decision 0045 demotes ExECT joint/combined policy
 
 ## Current outcome
 
@@ -73,8 +73,10 @@ clinical review decision has been collected or validated by this work.
 
 All six `dev140` runs use the decision-0040 model-led family boundary,
 decision-0041 single-call architecture, prompt
-`exectv2_hybrid_key_family_event_ledger_v0.9.24`, the selected joint bounded
-policy, and the internal `clinical_headline` scorer.
+`exectv2_hybrid_key_family_event_ledger_v0.9.24`, Diagnosis/Prescription
+**`default`/`default`** ([decision 0045](docs/decisions/0045-exect-default-policy-not-joint-combined.md)),
+and the internal `clinical_headline` scorer. Joint (`combined`/`combined`) is
+archived development evidence only.
 
 | Model | dev140 F1 | test60 F1 | Evidence state |
 | --- | ---: | ---: | --- |
@@ -222,6 +224,20 @@ produces 54 wrong-to-correct and one correct-to-wrong transition, with exact
 final evidence throughout. These pooled transition counts are descriptive
 because each model uses the same 140 letters.
 
+The [Luna prompt A/B/C panel](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md)
+is complete on `dev140` under **default** Diagnosis/Prescription repair
+(decision 0045). Both B and C improve model-owned SF letter correctness versus
+A (`+2` / `+4`); B leads overall F1 (`0.8871`) and SF final letters (`+6`),
+while C leads the SF hard slice (`+8` model-owned) but loses two Dx final
+letters and ends at `0.8839` overall.
+
+The [aggregate-only test60 transfer](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md)
+is also complete under default repair. A matches the frozen six-model Luna cell
+(`0.7950`). B and C both reach `0.8030` overall; C moves SF most (`+5` SF
+letters; SF F1 `0.5693 → 0.6260`). Sealed rows were not inspected. Prior joint
+(`combined`) Luna readouts are archived beside the variant artifacts as
+`*_joint_archived.*`.
+
 The predeclared primary unknown-only denominator is `0`. The 41 empty-gold
 letters remain diagnostic because ExECT annotation omission cannot be treated
 as proof that a model prediction is false. Gan-to-ExECT over-reading transfer
@@ -293,8 +309,14 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
+- [Decision 0045](docs/decisions/0045-exect-default-policy-not-joint-combined.md)
+  demotes ExECT joint/`combined` assembly: active comparison and Luna A/B/C
+  use `default`/`default`. Joint materials are archived and opt-in only.
+  Owners: [archive index](docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md),
+  [Luna dev140](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md),
+  [Luna test60](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md).
 - Independent review of the 48-item ExECT semantic-support substrate remains
-  the next evidence dependency. The rubric, reviewer separation, and
+  the next paper evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
 - Supervisor endpoint and unaided README verification remain the next handoff
   dependency; no private data is needed to perform them.
@@ -322,9 +344,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
    new predeclared study. Keep sealed `test450` unused for tuning. Any later
    residual work must separate prompt/selection candidates from the closed
    ruleset.
-6. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
-   eight audited deterministic regression rows and matched non-regression
-   controls; do not tune the frozen six-model panel in place.
+6. Keep ExECT assembly on `default`/`default` (decision 0045). Do not re-enable
+   joint/`combined` for active studies. Treat Luna prompt-variant A/B/C as
+   answered under default repair; do not retarget frozen `v0.9.24` prompt
+   producers without a separate promotion protocol.
 
 ## Blocked or unvalidated
 
@@ -332,9 +355,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   claim. Internal annotation review is not that validation.
 - Exact evidence is measured, but semantic support remains unmeasured. The
   48-item ExECT substrate is unreviewed and cannot clear that dependency.
-- The selected ExECT joint policy retains three known deterministic
-  regressions. The one-call Diagnosis decision also accepts a measured dev140
-  quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the two-call ablation.
+- The archived ExECT joint policy retained three known deterministic
+  regressions; it is not active. The one-call Diagnosis decision also accepts a
+  measured dev140 quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the
+  two-call ablation.
 - The handoff is implemented and locally checked but not yet verified against
   the supervisor's exact endpoint or validated for unaided use. Those checks,
   not private-note testing, clear the operational dependency.
@@ -399,6 +423,11 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 - Independent semantic-support review:
   [protocol](docs/experiments/exectv2/reliability/exectv2_semantic_support_review_substrate_protocol_2026-07-18.md)
   and local route `http://127.0.0.1:3000/clinical-review`
+- ExECT Luna prompt-variant A/B/C (`dev140` + aggregate-only `test60`):
+  [dev140 report](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md),
+  [test60 report](docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md),
+  [test60 panel](experiments/exectv2_luna_prompt_variants_test60_20260731/panel.json),
+  and [residual map](docs/experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md)
 - Detailed work order: [active roadmap](docs/plans/ACTIVE_ROADMAP.md)
 
 Use *implemented*, *verified*, *validated*, and *promoted* precisely.

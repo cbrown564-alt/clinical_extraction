@@ -28,6 +28,8 @@
 | Gan quality and model-pass comparison | [Gan efficiency result](research/gan2026/efficiency/gan2026_single_vs_multimodel_efficiency_report_2026-07-14.md) |
 | ExECT evidence | [ExECT evidence summary](canon/07_exect_plan11.md) |
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
+| ExECT Luna prompt A/B/C (dev140 + aggregate-only test60) | [dev140 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md), [test60 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md), [test60 panel](../experiments/exectv2_luna_prompt_variants_test60_20260731/panel.json), and [residual map](experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md) |
+| ExECT joint/combined policy (archived; not active) | [archive index](experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md) and [decision 0045](decisions/0045-exect-default-policy-not-joint-combined.md) |
 | Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
 | ExECT six-model SF over-inference | [protocol](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md) and [result](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md) |
 | ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
@@ -37,7 +39,7 @@
 | Dev140 deterministic benefit and regression mechanisms | [model-led regression analysis](experiments/exectv2/reliability/exectv2_model_led_dev140_regression_analysis_2026-07-15.md) |
 | Bounded Prescription policy and residual rule groups | [Prescription candidate result](experiments/exectv2/reliability/exectv2_prescription_bounded_policy_candidate_2026-07-15.md) |
 | Separate Diagnosis guard effects | [Diagnosis guard ablation](experiments/exectv2/reliability/exectv2_diagnosis_guard_ablation_2026-07-15.md) |
-| Joint bounded policy versus the previous fallback | [Joint policy replay](experiments/exectv2/reliability/exectv2_joint_bounded_policy_replay_2026-07-15.md) |
+| Joint bounded policy (archived historical selection) | [archive index](experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md) |
 | GPT-4.1-mini one-call versus two-call Diagnosis | [single-call Diagnosis ablation](experiments/exectv2/diagnosis/exectv2_gpt41mini_single_call_diagnosis_ablation_2026-07-15.md) |
 | Scoring and annotation limits | [scoring rules](canon/04_scoring.md) |
 | Combined annotation defects, conventions, ambiguity, scoring, sensitivity, and review status | [annotation-evidence synthesis](experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md) |

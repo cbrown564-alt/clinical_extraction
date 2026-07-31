@@ -1,4 +1,8 @@
-"""Replay the frozen joint Diagnosis and Prescription policy on saved dev140 outputs."""
+"""Archived replay of joint Diagnosis/Prescription policy on saved dev140 outputs.
+
+Decision 0045 demotes joint/combined from active comparison use. Requires
+``--allow-archived-joint-policy``.
+"""
 
 from __future__ import annotations
 
@@ -16,6 +20,12 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import model_swap
+
+ARCHIVED_NOTICE = (
+    "Archived by decision 0045: joint/combined is not the active ExECT "
+    "comparison policy. Pass --allow-archived-joint-policy to reproduce the "
+    "historical joint selection check."
+)
 
 if __package__:
     from scripts import analyze_exectv2_model_led_dev140_regressions as baseline_analysis
@@ -71,6 +81,8 @@ REQUIRED_PRESCRIPTION_RESCUES = {
 
 def main() -> None:
     args = _parse_args()
+    if not args.allow_archived_joint_policy:
+        raise SystemExit(ARCHIVED_NOTICE)
     configs = [
         model_swap.load_model_swap_config(path)
         for path in sorted(args.config_dir.glob("*.json"))
@@ -414,9 +426,14 @@ def _rescue_retention(
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config-dir", type=Path, default=CONFIG_DIR)
     parser.add_argument("--output", type=Path, default=OUTPUT_PATH)
+    parser.add_argument(
+        "--allow-archived-joint-policy",
+        action="store_true",
+        help="Required opt-in; joint/combined is archived (decision 0045).",
+    )
     return parser.parse_args()
 
 

@@ -1,0 +1,43 @@
+{
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_protocol_2026-07-31.md",
+  "dataset": "ExECTv2",
+  "split": "test60",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "architecture_core_id": "exectv2_decision_0041_single_call_test60_v1",
+  "repair_policy": {
+    "diagnosis_policy_variant": "default",
+    "prescription_policy_variant": "default"
+  },
+  "dspy_cache": false,
+  "model": "openai/gpt-5.6-luna",
+  "model_label": "GPT-5.6 Luna",
+  "temperature": 1,
+  "max_tokens": {
+    "structured_key_family_event_ledger": 16000
+  },
+  "prompt_profile": "full",
+  "runtime": "openai_chat",
+  "artifact_root": "scratch/holdout/exectv2_luna_prompt_variants_test60_20260731",
+  "variants": [
+    {
+      "slug": "A_v0924_control",
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families.txt",
+      "call_mode": "saved_structured_no_call",
+      "reuse_structured": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_structured.jsonl"
+    },
+    {
+      "slug": "B_luna_sf_state",
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families_v0.9.25_luna_sf_state.txt",
+      "call_mode": "live"
+    },
+    {
+      "slug": "C_luna_sf_boundary_dx",
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families_v0.9.25_luna_sf_boundary_dx.txt",
+      "call_mode": "live"
+    }
+  ]
+}

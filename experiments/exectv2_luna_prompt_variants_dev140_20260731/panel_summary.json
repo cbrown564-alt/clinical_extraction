@@ -1,0 +1,164 @@
+{
+  "claim_boundary": "ExECTv2 Luna-versus-Luna development evidence on dev140 under frozen schema and default Diagnosis/Prescription repair (decision 0045). Not test60, clinical validation, or panel promotion.",
+  "comparison_vs_A": {
+    "B_luna_sf_state": {
+      "delta_b_target_sf_model_owned_correct": 6,
+      "delta_dx_joint_correct": 1,
+      "delta_joint_headline_f1": 0.0039,
+      "delta_sf_joint_correct": 6,
+      "delta_sf_model_owned_correct": 2,
+      "delta_sf_nonempty_model_owned_correct": 2
+    },
+    "C_luna_sf_boundary_dx": {
+      "delta_b_target_sf_model_owned_correct": 8,
+      "delta_dx_joint_correct": -2,
+      "delta_joint_headline_f1": 0.0007,
+      "delta_sf_joint_correct": 5,
+      "delta_sf_model_owned_correct": 4,
+      "delta_sf_nonempty_model_owned_correct": 4
+    }
+  },
+  "generated_on": "2026-07-31",
+  "model": "openai/gpt-5.6-luna",
+  "panel_path": "experiments/exectv2_luna_prompt_variants_dev140_20260731/panel.jsonl",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_protocol_2026-07-31.md",
+  "repair_policy": {
+    "diagnosis_policy_variant": "default",
+    "prescription_policy_variant": "default"
+  },
+  "schema_version": "exectv2.luna_prompt_variants_dev140.v1",
+  "variants": {
+    "A_v0924_control": {
+      "b_target_sf_model_owned_correct": 0,
+      "b_target_sf_total": 42,
+      "call_mode": "saved_structured_no_call",
+      "joint_family_f1": {
+        "Diagnosis": 0.891,
+        "Investigations": 0.9202,
+        "Prescription": 0.925,
+        "SeizureFrequency": 0.7892
+      },
+      "joint_headline_f1": 0.8832,
+      "joint_letter_correct": {
+        "Diagnosis": 91,
+        "Investigations": 125,
+        "Prescription": 116,
+        "SeizureFrequency": 88
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 60,
+        "Investigations": 125,
+        "Prescription": 127,
+        "SeizureFrequency": 86
+      },
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "provenance": {
+        "assembly_sha256": "1c2c9307761ce38fbe17d0e41828281a57152dca8b7470fc5b0c4bed9cc72c44",
+        "call_mode": "saved_structured_no_call",
+        "escalation_reason": "Predeclared Luna-only ExECT prompt-variant A/B/C development comparison on dev140 under docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_protocol_2026-07-31.md",
+        "finished_utc": "2026-07-31T06:49:37.640040+00:00",
+        "limit": null,
+        "new_model_calls": 0,
+        "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families.txt",
+        "prompt_snapshot_sha256": "2e3264e970d38448f8c8fbb6c5f29b8aebd5e6ccaf2e7f37119a1a5df49a2db0",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+        "row_count": 140,
+        "sf_final_sha256": "ec99939d64e4aaa804e2203a2321a4576340b44a67c651234239270fa4609944",
+        "started_utc": "2026-07-31T06:49:29.852589+00:00",
+        "structured_sha256": "f01bd0be77e94d8bf9cf37b76a5d0abd87d0c0390ec273bbbcaf7986f4e714fc",
+        "variant": "A_v0924_control"
+      },
+      "sf_nonempty_model_owned_correct": 57,
+      "sf_nonempty_total": 99,
+      "slug": "A_v0924_control"
+    },
+    "B_luna_sf_state": {
+      "b_target_sf_model_owned_correct": 6,
+      "b_target_sf_total": 42,
+      "call_mode": "live",
+      "joint_family_f1": {
+        "Diagnosis": 0.8899,
+        "Investigations": 0.9237,
+        "Prescription": 0.93,
+        "SeizureFrequency": 0.7988
+      },
+      "joint_headline_f1": 0.8871,
+      "joint_letter_correct": {
+        "Diagnosis": 92,
+        "Investigations": 126,
+        "Prescription": 118,
+        "SeizureFrequency": 94
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 68,
+        "Investigations": 126,
+        "Prescription": 129,
+        "SeizureFrequency": 88
+      },
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state",
+      "provenance": {
+        "assembly_sha256": "13291fef66bd96c663338e4ed129d63350c7095825d4ce1ff88806876300458f",
+        "call_mode": "live",
+        "escalation_reason": "Predeclared Luna-only ExECT prompt-variant A/B/C development comparison on dev140 under docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_protocol_2026-07-31.md",
+        "finished_utc": "2026-07-31T07:17:15.305066+00:00",
+        "limit": null,
+        "new_model_calls": 140,
+        "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families_v0.9.25_luna_sf_state.txt",
+        "prompt_snapshot_sha256": "74de8c89078b0a7793a9c756b443cf48ef484eb5c860c8aebfe56118d1dc4b45",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state",
+        "row_count": 140,
+        "sf_final_sha256": "ed98c03bc81585be45c0319930ba3620568c5636b8af607ab777845c39ac1355",
+        "started_utc": "2026-07-31T06:49:52.186095+00:00",
+        "structured_sha256": "729c0c2fc5cb8d6cbcc8e59392b26ae5f89c4e591185df53754b55467be4d7f7",
+        "variant": "B_luna_sf_state"
+      },
+      "sf_nonempty_model_owned_correct": 59,
+      "sf_nonempty_total": 99,
+      "slug": "B_luna_sf_state"
+    },
+    "C_luna_sf_boundary_dx": {
+      "b_target_sf_model_owned_correct": 8,
+      "b_target_sf_total": 42,
+      "call_mode": "live",
+      "joint_family_f1": {
+        "Diagnosis": 0.88,
+        "Investigations": 0.9278,
+        "Prescription": 0.9353,
+        "SeizureFrequency": 0.79
+      },
+      "joint_headline_f1": 0.8839,
+      "joint_letter_correct": {
+        "Diagnosis": 89,
+        "Investigations": 127,
+        "Prescription": 119,
+        "SeizureFrequency": 93
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 68,
+        "Investigations": 127,
+        "Prescription": 122,
+        "SeizureFrequency": 90
+      },
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx",
+      "provenance": {
+        "assembly_sha256": "d29f10ae42b4d1c71d1470394066a5e2ebd8f08eacce7e8f8e5f8a35f8bae3a1",
+        "call_mode": "live",
+        "escalation_reason": "Predeclared Luna-only ExECT prompt-variant A/B/C development comparison on dev140 under docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_protocol_2026-07-31.md",
+        "finished_utc": "2026-07-31T07:16:46.360418+00:00",
+        "limit": null,
+        "new_model_calls": 140,
+        "prompt_snapshot": "tests/snapshots/prompt_contracts/exectv2__structured_key_families_v0.9.25_luna_sf_boundary_dx.txt",
+        "prompt_snapshot_sha256": "2f966945aa006585f448c88d0b91df999f6653758b6a00a62d2f86b1dd70ff8e",
+        "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx",
+        "row_count": 140,
+        "sf_final_sha256": "f173e01dee92e868d60ad74043a0ca8bf218f097a62267d61dbec37f71bf7793",
+        "started_utc": "2026-07-31T06:49:52.441973+00:00",
+        "structured_sha256": "4da0408967979e860ac22c2e2a0c33ee284a2935b9e9a14d1ae773b81a1946c8",
+        "variant": "C_luna_sf_boundary_dx"
+      },
+      "sf_nonempty_model_owned_correct": 61,
+      "sf_nonempty_total": 99,
+      "slug": "C_luna_sf_boundary_dx"
+    }
+  }
+}

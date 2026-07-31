@@ -1,0 +1,121 @@
+{
+  "schema_version": "exectv2.six_model_joint_policy_replay.v1",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_six_model_joint_policy_replay_protocol_2026-07-31.md",
+  "generated_on": "2026-07-31",
+  "call_mode": "saved_producers_no_call",
+  "new_model_calls": 0,
+  "scorer": "clinical_headline",
+  "policies": {
+    "default": {
+      "diagnosis_policy_variant": "default",
+      "prescription_policy_variant": "default"
+    },
+    "joint": {
+      "diagnosis_policy_variant": "combined",
+      "prescription_policy_variant": "combined"
+    }
+  },
+  "default_f1_tolerance": 0.0005,
+  "artifact_root": "experiments/exectv2_six_model_joint_policy_replay_20260731",
+  "test60_scratch_root": "scratch/holdout/exectv2_six_model_joint_policy_replay_20260731",
+  "base_assembly_config": "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+  "models": [
+    {
+      "slug": "gpt41mini",
+      "model_label": "GPT-4.1-mini",
+      "model": "openai/gpt-4.1-mini",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8202
+      },
+      "test60": {
+        "structured": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_structured.jsonl",
+        "sf_unknown_suppression": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.7572
+      }
+    },
+    {
+      "slug": "gpt56luna",
+      "model_label": "GPT-5.6 Luna",
+      "model": "openai/gpt-5.6-luna",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_gpt56luna_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8832
+      },
+      "test60": {
+        "structured": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_structured.jsonl",
+        "sf_unknown_suppression": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.795
+      }
+    },
+    {
+      "slug": "gpt56sol",
+      "model_label": "GPT-5.6 Sol",
+      "model": "openai/gpt-5.6-sol",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.892
+      },
+      "test60": {
+        "structured": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_structured.jsonl",
+        "sf_unknown_suppression": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8047,
+        "producer_note": "Canonical credit-restart producers; do not use scratch/holdout/exectv2_test60/gpt56sol/"
+      }
+    },
+    {
+      "slug": "deepseek_v4_flash",
+      "model_label": "DeepSeek V4 Flash",
+      "model": "openrouter/deepseek/deepseek-v4-flash",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8767
+      },
+      "test60": {
+        "structured": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_structured.jsonl",
+        "sf_unknown_suppression": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.7881
+      }
+    },
+    {
+      "slug": "qwen36_35b",
+      "model_label": "Qwen 3.6:35B",
+      "model": "ollama_chat/qwen3.6:35b",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_qwen36_35b_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8571
+      },
+      "test60": {
+        "structured": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_structured.jsonl",
+        "sf_unknown_suppression": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.7872
+      }
+    },
+    {
+      "slug": "gemma4_26b",
+      "model_label": "Gemma 4 26B",
+      "model": "ollama_chat/gemma4:26b",
+      "diagnosis_resolution_candidate": true,
+      "dev140": {
+        "structured": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_structured.jsonl",
+        "sf_unknown_suppression": "experiments/exectv2_six_model_single_call_gemma4_26b_dev140_20260715_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.8016
+      },
+      "test60": {
+        "structured": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_structured.jsonl",
+        "sf_unknown_suppression": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_sf_unknown_suppression.jsonl",
+        "expected_default_overall_f1": 0.7169
+      }
+    }
+  ]
+}

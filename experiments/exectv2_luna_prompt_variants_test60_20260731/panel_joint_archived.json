@@ -1,0 +1,118 @@
+{
+  "claim_boundary": "Aggregate-only Luna-versus-Luna test60 transfer evidence for the named prompts and joint repair stack; not clinical validation, row-level analysis, or a rewrite of the frozen six-model v0.9.24 panel.",
+  "comparison_vs_A": {
+    "B_luna_sf_state": {
+      "delta_dx_joint_correct": -1,
+      "delta_joint_headline_f1": 0.01,
+      "delta_sf_joint_correct": 3,
+      "delta_sf_joint_f1": 0.0368,
+      "delta_sf_model_owned_correct": 3
+    },
+    "C_luna_sf_boundary_dx": {
+      "delta_dx_joint_correct": -2,
+      "delta_joint_headline_f1": 0.0102,
+      "delta_sf_joint_correct": 5,
+      "delta_sf_joint_f1": 0.0567,
+      "delta_sf_model_owned_correct": 5
+    }
+  },
+  "complete": true,
+  "conditions": [
+    {
+      "call_failures": 0,
+      "call_mode": "saved_structured_no_call",
+      "joint_family_f1": {
+        "Diagnosis": 0.8598,
+        "Investigations": 0.9231,
+        "Prescription": 0.8916,
+        "SeizureFrequency": 0.5693
+      },
+      "joint_headline_f1": 0.8141,
+      "joint_letter_correct": {
+        "Diagnosis": 35,
+        "Investigations": 54,
+        "Prescription": 45,
+        "SeizureFrequency": 23
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 35,
+        "Investigations": 54,
+        "Prescription": 48,
+        "SeizureFrequency": 23
+      },
+      "parse_failures": 0,
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+      "rows": 59,
+      "structured_sha256": "5e5915a31a34b53faa70899f5cf485f5db4df5e79750c1a1b4423cba9943b45a",
+      "variant": "A_v0924_control"
+    },
+    {
+      "call_failures": 0,
+      "call_mode": "live",
+      "joint_family_f1": {
+        "Diagnosis": 0.8518,
+        "Investigations": 0.9231,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.6061
+      },
+      "joint_headline_f1": 0.8241,
+      "joint_letter_correct": {
+        "Diagnosis": 34,
+        "Investigations": 54,
+        "Prescription": 47,
+        "SeizureFrequency": 26
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 34,
+        "Investigations": 54,
+        "Prescription": 50,
+        "SeizureFrequency": 26
+      },
+      "parse_failures": 0,
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state",
+      "rows": 59,
+      "structured_sha256": "8f20257eb7a79aec6950f552dc7bf98c16100866e642d424c5a3269f3bdd7e20",
+      "variant": "B_luna_sf_state"
+    },
+    {
+      "call_failures": 0,
+      "call_mode": "live",
+      "joint_family_f1": {
+        "Diagnosis": 0.8457,
+        "Investigations": 0.9111,
+        "Prescription": 0.9036,
+        "SeizureFrequency": 0.626
+      },
+      "joint_headline_f1": 0.8243,
+      "joint_letter_correct": {
+        "Diagnosis": 33,
+        "Investigations": 53,
+        "Prescription": 47,
+        "SeizureFrequency": 28
+      },
+      "model_owned_letter_correct": {
+        "Diagnosis": 35,
+        "Investigations": 53,
+        "Prescription": 50,
+        "SeizureFrequency": 28
+      },
+      "parse_failures": 0,
+      "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_boundary_dx",
+      "rows": 59,
+      "structured_sha256": "fa778a70f0c52c0db2fd030c015bf66fc7589c982a2c3b0470de624fa34fba28",
+      "variant": "C_luna_sf_boundary_dx"
+    }
+  ],
+  "configuration": "configs/exectv2/luna_prompt_variants_test60_20260731.json",
+  "dataset": "ExECTv2",
+  "generated_at_utc": "2026-07-31T07:33:43.040517+00:00",
+  "model": "openai/gpt-5.6-luna",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_protocol_2026-07-31.md",
+  "repair_policy": {
+    "diagnosis_policy_variant": "combined",
+    "prescription_policy_variant": "combined"
+  },
+  "row_policy": "aggregate_only",
+  "schema_version": "exectv2.luna_prompt_variants_test60_panel.v1",
+  "split": "test60"
+}

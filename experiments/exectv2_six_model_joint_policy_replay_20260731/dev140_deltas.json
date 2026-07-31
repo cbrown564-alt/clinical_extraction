@@ -1,0 +1,62 @@
+{
+  "deepseek_v4_flash": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0129,
+      "Investigations": 0.0,
+      "Prescription": 0.0324,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0132,
+    "model_label": "DeepSeek V4 Flash"
+  },
+  "gemma4_26b": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0136,
+      "Investigations": 0.0,
+      "Prescription": 0.0151,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0084,
+    "model_label": "Gemma 4 26B"
+  },
+  "gpt41mini": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0107,
+      "Investigations": 0.0,
+      "Prescription": 0.0387,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0135,
+    "model_label": "GPT-4.1-mini"
+  },
+  "gpt56luna": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0176,
+      "Investigations": 0.0,
+      "Prescription": 0.0429,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0174,
+    "model_label": "GPT-5.6 Luna"
+  },
+  "gpt56sol": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0133,
+      "Investigations": 0.0,
+      "Prescription": 0.0249,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0113,
+    "model_label": "GPT-5.6 Sol"
+  },
+  "qwen36_35b": {
+    "delta_family_f1": {
+      "Diagnosis": 0.0118,
+      "Investigations": 0.0,
+      "Prescription": 0.0268,
+      "SeizureFrequency": 0.0
+    },
+    "delta_overall_f1": 0.0111,
+    "model_label": "Qwen 3.6:35B"
+  }
+}

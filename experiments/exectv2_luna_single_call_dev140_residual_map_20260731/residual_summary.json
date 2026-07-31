@@ -1,0 +1,177 @@
+{
+  "call_mode": "saved_output_no_call",
+  "claim_boundary": "ExECTv2 dev140 development mechanism evidence for GPT-5.6 Luna under saved single-call producers. Not test60, clinical validation, or prompt/ruleset promotion.",
+  "config_path": "configs/exectv2/six_model_comparison/gpt56luna_dev140.json",
+  "default": {
+    "change_directions": {
+      "changed_still_wrong": 30,
+      "correct_to_wrong": 23,
+      "wrong_to_correct": 45
+    },
+    "family_f1": {
+      "Diagnosis": 0.891,
+      "Investigations": 0.9202,
+      "Prescription": 0.925,
+      "SeizureFrequency": 0.7892
+    },
+    "family_local_counts": {
+      "Diagnosis": {
+        "correct": 91,
+        "empty_gold_wrong": 0,
+        "exact_evidence_among_wrong": 48,
+        "letters": 140,
+        "wrong": 49
+      },
+      "Investigations": {
+        "correct": 125,
+        "empty_gold_wrong": 1,
+        "exact_evidence_among_wrong": 15,
+        "letters": 140,
+        "wrong": 15
+      },
+      "Prescription": {
+        "correct": 116,
+        "empty_gold_wrong": 2,
+        "exact_evidence_among_wrong": 24,
+        "letters": 140,
+        "wrong": 24
+      },
+      "SeizureFrequency": {
+        "correct": 88,
+        "empty_gold_wrong": 12,
+        "exact_evidence_among_wrong": 49,
+        "letters": 140,
+        "wrong": 52
+      }
+    },
+    "final_wrong_letters_by_family": {
+      "Diagnosis": 49,
+      "Investigations": 15,
+      "Prescription": 24,
+      "SeizureFrequency": 52
+    },
+    "headline_f1": 0.8832,
+    "model_owned_counts": {
+      "Diagnosis": {
+        "correct": 60,
+        "empty_gold_wrong": 2,
+        "exact_evidence_among_wrong": 79,
+        "letters": 140,
+        "wrong": 80
+      },
+      "Investigations": {
+        "correct": 125,
+        "empty_gold_wrong": 1,
+        "exact_evidence_among_wrong": 15,
+        "letters": 140,
+        "wrong": 15
+      },
+      "Prescription": {
+        "correct": 127,
+        "empty_gold_wrong": 0,
+        "exact_evidence_among_wrong": 13,
+        "letters": 140,
+        "wrong": 13
+      },
+      "SeizureFrequency": {
+        "correct": 86,
+        "empty_gold_wrong": 12,
+        "exact_evidence_among_wrong": 51,
+        "letters": 140,
+        "wrong": 54
+      }
+    },
+    "model_owned_wrong_letters_by_family": {
+      "Diagnosis": 80,
+      "Investigations": 15,
+      "Prescription": 13,
+      "SeizureFrequency": 54
+    },
+    "policy": {
+      "diagnosis": "default",
+      "prescription": "default"
+    }
+  },
+  "generated_on": "2026-07-31",
+  "joint": {
+    "family_f1": {
+      "Diagnosis": 0.9086,
+      "Investigations": 0.9202,
+      "Prescription": 0.9679,
+      "SeizureFrequency": 0.7892
+    },
+    "family_local_counts": {
+      "Diagnosis": {
+        "correct": 101,
+        "empty_gold_wrong": 0,
+        "exact_evidence_among_wrong": 38,
+        "letters": 140,
+        "wrong": 39
+      },
+      "Investigations": {
+        "correct": 125,
+        "empty_gold_wrong": 1,
+        "exact_evidence_among_wrong": 15,
+        "letters": 140,
+        "wrong": 15
+      },
+      "Prescription": {
+        "correct": 130,
+        "empty_gold_wrong": 0,
+        "exact_evidence_among_wrong": 10,
+        "letters": 140,
+        "wrong": 10
+      },
+      "SeizureFrequency": {
+        "correct": 88,
+        "empty_gold_wrong": 12,
+        "exact_evidence_among_wrong": 49,
+        "letters": 140,
+        "wrong": 52
+      }
+    },
+    "final_wrong_letters_by_family": {
+      "Diagnosis": 39,
+      "Investigations": 15,
+      "Prescription": 10,
+      "SeizureFrequency": 52
+    },
+    "headline_f1": 0.9006,
+    "policy": {
+      "diagnosis": "combined",
+      "prescription": "combined"
+    },
+    "vs_default_directions": {
+      "changed_still_wrong": 6,
+      "correct_to_wrong": 2,
+      "wrong_to_correct": 26
+    }
+  },
+  "letter_count": 140,
+  "model": "openai/gpt-5.6-luna",
+  "model_label": "GPT-5.6 Luna",
+  "new_model_calls": 0,
+  "prompt_addressable_estimate": {
+    "default_final_wrong_letters": 140,
+    "empty_gold_among_default_final_wrong": 15,
+    "joint_final_wrong_letters": 116,
+    "seed_theme_wrong_letters": 89
+  },
+  "prompt_seed_theme_counts": {
+    "dx_specificity": 49,
+    "sf_rate_construction": 5,
+    "sf_state_boundary": 35
+  },
+  "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_protocol_2026-07-31.md",
+  "schema_version": "exectv2.luna_single_call_dev140_residual_map.v1",
+  "scorer": "family_local_clinical_headline_unit_keys",
+  "themes_on_default_final_wrong": {
+    "annotation_or_empty_gold": 15,
+    "dx_specificity": 49,
+    "other": 14,
+    "rx_current_regimen": 22,
+    "sf_rate_construction": 5,
+    "sf_state_boundary": 35
+  }
+}

@@ -1,0 +1,1752 @@
+{
+  "by_theme": {
+    "annotation_or_empty_gold": [
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "EEG",
+              "Yes",
+              "Unknown"
+            ]
+          }
+        ],
+        "empty_gold": true,
+        "evidence_status": "exact",
+        "family": "Investigations",
+        "family_local_gold_keys": [],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "EEG",
+              "Yes",
+              "Unknown"
+            ]
+          }
+        ],
+        "letter_id": "EA0015",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "EEG",
+              "Yes",
+              "Unknown"
+            ]
+          }
+        ],
+        "note_excerpt": "lady in clinic.\u00a0 She had a mild sub-arachnoid haemorrhage around 12 years ago.\u00a0 She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording.\u00a0\u00a0 \u00a0 Currently she is taking Tegretol 500 mg BD and levetiracetam 250 mg BD.\u00a0 Sh",
+        "prompt_variant_hint": "diagnostic_only",
+        "selected_evidence": [
+          {
+            "evidence": "She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "annotation_or_empty_gold"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "empty_gold": true,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "letter_id": "EA0016",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "note_excerpt": "o recover during which time his partner noticed that he had some lip smacking.  He has not had any the previous seizures. Apart from the previous stroke, he is well. He lives with his partner and is cu",
+        "prompt_variant_hint": "diagnostic_only",
+        "selected_evidence": [
+          {
+            "evidence": "He has not had any the previous seizures.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "He has not had any the previous seizures.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "annotation_or_empty_gold"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0563606"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "empty_gold": true,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [],
+        "first_prediction_changing_owner": "deterministic_sf_post_processing:ownership.generic_active_to_named",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0563606"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "letter_id": "EA0043",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "note_excerpt": "es  I reviewed this 19 year old woman together with her mother in clinic today. She has no had 4 events in total. They have happened roughly every year since the age of 15. They have mostly happened during sleep. They all seem to be pretty much the same. On all occasions she has bitten the side of her tongue. After the events she normally feels quite confused and needs to go to sleep.  Her mother has seen some of these episodes. She recalled one of them where Miss Clarke was shaking her arms and legs whilst unconscious and making unusual groaning noises.   As you know Miss Clark is a diabetic and uses insulin. Her blood sugars have been checked after at least two of these episodes and have been within the normal range. They do feel different to her normal hypoglycaemic attacks. There is no obvious history of absence or myoclonic seizures.  She would like to start driving in the future. She currently works as a hairdresser. A paternal grandmother had seizures associated with brain tumour but otherwise there is no other significant medical history in the family. She had one febrile seizure at the age of eight months. There is no history of significant cerebral brain infections or head injuries.  The neurological examination today in clinic was normal. I note an ECG in the notes from may 2019 which showed a normal PR interval, corrected QT interval and normal QRS axis.  I do think that these episodes are probably epileptic seizures, particularly as Blood sugars recorded have been normal. I think that Miss Clark has the syndrome of epilepsy with tonic  clonic seizure",
+        "prompt_variant_hint": "diagnostic_only",
+        "selected_evidence": [
+          {
+            "evidence": "She has no had 4 events in total. They have happened roughly every year since the age of 15. They have mostly happened during sleep. They all seem to be pretty much the same. On all occasions she has bitten the side of her tongue. After the events she normally feels quite confused and needs to go to sleep.\n\nHer mother has seen some of these episodes. She recalled one of them where Miss Clarke was shaking her arms and legs whilst unconscious and making unusual groaning noises. \n\nAs you know Miss Clark is a diabetic and uses insulin. Her blood sugars have been checked after at least two of these episodes and have been within the normal range. They do feel different to her normal hypoglycaemic attacks. There is no obvious history of absence or myoclonic seizures.\n\nShe would like to start driving in the future. She currently works as a hairdresser. A paternal grandmother had seizures associated with brain tumour but otherwise there is no other significant medical history in the family. She had one febrile seizure at the age of eight months. There is no history of significant cerebral brain infections or head injuries.\n\nThe neurological examination today in clinic was normal. I note an ECG in the notes from may 2019 which showed a normal PR interval, corrected QT interval and normal QRS axis.\n\nI do think that these episodes are probably epileptic seizures, particularly as Blood sugars recorded have been normal.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "She has no had 4 events in total. They have happened roughly every year since the age of 15. They have mostly happened during sleep. They all seem to be pretty much the same. On all occasions she has bitten the side of her tongue. After the events she normally feels quite confused and needs to go to sleep.\n\nHer mother has seen some of these episodes. She recalled one of them where Miss Clarke was shaking her arms and legs whilst unconscious and making unusual groaning noises. \n\nAs you know Miss Clark is a diabetic and uses insulin. Her blood sugars have been checked after at least two of these episodes and have been within the normal range. They do feel different to her normal hypoglycaemic attacks. There is no obvious history of absence or myoclonic seizures.\n\nShe would like to start driving in the future. She currently works as a hairdresser. A paternal grandmother had seizures associated with brain tumour but otherwise there is no other significant medical history in the family. She had one febrile seizure at the age of eight months. There is no history of significant cerebral brain infections or head injuries.\n\nThe neurological examination today in clinic was normal. I note an ECG in the notes from may 2019 which showed a normal PR interval, corrected QT interval and normal QRS axis.\n\nI do think that these episodes are probably epileptic seizures, particularly as Blood sugars recorded have been normal.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "annotation_or_empty_gold"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "empty_gold": true,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "letter_id": "EA0045",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "note_excerpt": "ittle memory of the event. He did not have any warning that this was happening. He has had several episodes where he seemed to go into a day dream. His wife said that he looks vacant when they were happening. He was still and didnt move but didnt look himself at all.   He\u2019s had three episodes whilst asleep where he's shook his arms and made unusual choking noises. These have lasted about a minute. He's felt ok afterwards afterwards. His wife was worried about his airway. His last episode was on 31st August 2018.   He has no significant medical problems. He's never had any episodes like this in the past and doesnt take any regular medication. There were no problems when he was born and he hasnt had any febrile seizures, significant cerebral infections or significant head injuries. He has retired now for 5 years, previously he worked as a manufacturing engineer. He doesnt smoke and drinks around 16 units of alcohol per week. He lives with his wife and drives. He doesnt have any family history of epilepsy   An MRI brain from September 2018 has been normal.   Impression   I think that this is focal onset epilepsy. The smaller episodes are focal seizures with altered awareness and the episodes during sleep are focal to bilateral convulsive seizures   Comments:          I explained the diagnosis of epilepsy Epilepsy is relative",
+        "prompt_variant_hint": "diagnostic_only",
+        "selected_evidence": [
+          {
+            "evidence": "He has had several episodes where he seemed to go into a day dream. His wife said that he looks vacant when they were happening. He was still and didnt move but didnt look himself at all.\n \nHe\u2019s had three episodes whilst asleep where he's shook his arms and made unusual choking noises. These have lasted about a minute. He's felt ok afterwards afterwards. His wife was worried about his airway. His last episode was on 31st August 2018.\n \nHe has no significant medical problems. He's never had any episodes like this in the past and doesnt take any regular medication. There were no problems when he was born and he hasnt had any febrile seizures, significant cerebral infections or significant head injuries. He has retired now for 5 years, previously he worked as a manufacturing engineer. He doesnt smoke and drinks around 16 units of alcohol per week. He lives with his wife and drives. He doesnt have any family history of epilepsy\n \nAn MRI brain from September 2018 has been normal.\n \nImpression\n \nI think that this is focal onset epilepsy. The smaller episodes are focal seizures with altered awareness and the episodes during sleep are focal to bilateral convulsive seizures",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "He\u2019s had three episodes whilst asleep where he's shook his arms and made unusual choking noises. These have lasted about a minute. He's felt ok afterwards afterwards. His wife was worried about his airway. His last episode was on 31st August 2018.\n \nHe has no significant medical problems. He's never had any episodes like this in the past and doesnt take any regular medication. There were no problems when he was born and he hasnt had any febrile seizures, significant cerebral infections or significant head injuries. He has retired now for 5 years, previously he worked as a manufacturing engineer. He doesnt smoke and drinks around 16 units of alcohol per week. He lives with his wife and drives. He doesnt have any family history of epilepsy\n \nAn MRI brain from September 2018 has been normal.\n \nImpression\n \nI think that this is focal onset epilepsy. The smaller episodes are focal seizures with altered awareness and the episodes during sleep are focal to bilateral convulsive seizures",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "His last episode was on 31st August 2018.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          }
+        ],
+        "theme": "annotation_or_empty_gold"
+      }
+    ],
+    "dx_specificity": [
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "genetic generalised epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "tonic clonic seizures"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Diagnosis",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "epilepsy with generalised tonic clonic seizures alone"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "genetic generalised epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "tonic clonic seizures"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "genetic generalised epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "tonic clonic seizures"
+            ]
+          }
+        ],
+        "letter_id": "EA0005",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "genetic generalised epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "tonic clonic seizures"
+            ]
+          }
+        ],
+        "note_excerpt": "Dear Dr,  Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone.  Current medication: sodium valproate 500 mg twice a day Carbamazepine 200 mg t",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Diagnosis: genetic generalised epilepsy-epilepsy with generalised tonic chronic seizures alone.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Seizure type and frequency: Generalised tonic clonic seizure-last event July 2016.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          }
+        ],
+        "theme": "dx_specificity"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Diagnosis",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "standard_dictionary:diagnosis_residual_addition",
+        "joint_final_correct": true,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          }
+        ],
+        "letter_id": "EA0008",
+        "model_owned_correct": true,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal epilepsy"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          }
+        ],
+        "note_excerpt": "Dear Dr,  Diagnosis: symptomatic structural focal epilepsy \tPrevious meningioma resection 3rd January 2005  Seizure type and frequency: fo",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "Diagnosis: symptomatic structural focal epilepsy",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Seizure type and frequency: focal seizures with altered awareness every 3 weeks",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Diagnosis: symptomatic structural focal epilepsy",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "dx_specificity"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal to bilateral convulsive seizures"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "temporal lobe epilepsy"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Diagnosis",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal to bilateral convulsive seizures"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "temporal lobe epilepsy"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "standard_dictionary:diagnosis_residual_addition",
+        "joint_final_correct": true,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal to bilateral convulsive seizures"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "temporal lobe epilepsy"
+            ]
+          }
+        ],
+        "letter_id": "EA0011",
+        "model_owned_correct": true,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal seizures with altered awareness"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "focal to bilateral convulsive seizures"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "temporal lobe epilepsy"
+            ]
+          }
+        ],
+        "note_excerpt": "Diagnosis:\u00a0 Temporal lobe epilepsy \u00a0 Seizure type and frequency:\u00a0 Focal seizures with altered awareness approximat",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "Diagnosis:\u00a0 Temporal lobe epilepsy",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Diagnosis:\u00a0 Temporal lobe epilepsy",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          }
+        ],
+        "theme": "dx_specificity"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [],
+        "empty_gold": false,
+        "evidence_status": "missing",
+        "family": "Diagnosis",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "Diagnosis",
+              "epileptic attack"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [],
+        "letter_id": "EA0015",
+        "model_owned_correct": false,
+        "model_owned_keys": [],
+        "note_excerpt": "I reviewed this 36-year-old lady in clinic.\u00a0 She had a mild sub-arachnoid haemorrhage around 12 years ago.\u00a0 She continues to get a combination of epileptic and nonepileptic events which was confirmed with an EEG recording.\u00a0\u00a0 \u00a0 Currently she",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [],
+        "theme": "dx_specificity"
+      }
+    ],
+    "rx_current_regimen": [
+      {
+        "default_final_correct": false,
+        "default_final_keys": [],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Prescription",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "lamotrigine",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+        "joint_final_correct": true,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "lamotrigine",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "letter_id": "EA0008",
+        "model_owned_correct": true,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "lamotrigine",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "note_excerpt": "eizure type and frequency: focal seizures with altered awareness every 3 weeks  Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below) To start levetiracetam as detailed below  I reviewed this 62 year old man toget",
+        "prompt_variant_hint": "rules_not_prompt",
+        "selected_evidence": [
+          {
+            "evidence": "Current anti-epileptic medication: lamotrigine 75mg bd (to reduce and stop as detailed below)",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          }
+        ],
+        "theme": "rx_current_regimen"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "clobazam",
+              "10",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "eslicarbazepine",
+              "800",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "zonisamide",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Prescription",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "eslicarbazepine",
+              "800",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "zonisamide",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unresolved_multiple_candidate_actions",
+        "joint_final_correct": true,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "eslicarbazepine",
+              "800",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "zonisamide",
+              "75",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "letter_id": "EA0011",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "eslicarbazepine",
+              "800",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "zonisamide",
+              "75",
+              "mg",
+              "2"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "rescue",
+              "clobazam",
+              "as_required"
+            ]
+          }
+        ],
+        "note_excerpt": "seizures, last event around Christmas 2017 \u00a0 Current antiepileptic medication:\u00a0 eslicarbazepine, 800 mg once a day Zonisamide 75 mg twice a day \u00a0 Previous antiepileptic medications tried: includ",
+        "prompt_variant_hint": "rules_not_prompt",
+        "selected_evidence": [
+          {
+            "evidence": "eslicarbazepine, 800 mg once a day",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Zonisamide 75 mg twice a day",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "I suggest adding in some Clobazam to take on an as required basis for seizure clusters.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          }
+        ],
+        "theme": "rx_current_regimen"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "levetiracetam",
+              "750",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Prescription",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "levetiracetam",
+              "750",
+              "mg",
+              "2"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "phenytoin",
+              "100",
+              "mg",
+              "1"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "standard_dictionary:prescription_drop",
+        "joint_final_correct": true,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "levetiracetam",
+              "750",
+              "mg",
+              "2"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "phenytoin",
+              "100",
+              "mg",
+              "1"
+            ]
+          }
+        ],
+        "letter_id": "EA0046",
+        "model_owned_correct": true,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "levetiracetam",
+              "750",
+              "mg",
+              "2"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "phenytoin",
+              "100",
+              "mg",
+              "1"
+            ]
+          }
+        ],
+        "note_excerpt": "tober 2019   Current anti-epileptic medication:                                 Levetiracetam 750mg bd                                 Phenytoin 100mg od (reducing as detailed below)",
+        "prompt_variant_hint": "rules_not_prompt",
+        "selected_evidence": [
+          {
+            "evidence": "                                Levetiracetam 750mg bd",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "                                Phenytoin 100mg od (reducing as detailed below)",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "                                Levetiracetam 750mg bd",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "rx_current_regimen"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "clobazam",
+              "10",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "sodium-valproate",
+              "200",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "Prescription",
+        "family_local_gold_keys": [
+          {
+            "count": 2,
+            "key": [
+              "ordinary",
+              "clobazam",
+              "10",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 2,
+            "key": [
+              "ordinary",
+              "sodium-valproate",
+              "200",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "clobazam",
+              "10",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "sodium-valproate",
+              "200",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "letter_id": "EA0047",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "clobazam",
+              "10",
+              "mg",
+              "1"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              "ordinary",
+              "sodium-valproate",
+              "200",
+              "mg",
+              "2"
+            ]
+          }
+        ],
+        "note_excerpt": "mes a day. She may have had generalised seizures during this sleep in the past. She is currently taking clobazam 10 mg od and sodium valproate 200 mg BD. Given that she is still having seizures I suggest increasing the sodium valproa",
+        "prompt_variant_hint": "rules_not_prompt",
+        "selected_evidence": [
+          {
+            "evidence": "She is currently taking clobazam 10 mg od and sodium valproate 200 mg BD.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "She is currently taking clobazam 10 mg od and sodium valproate 200 mg BD.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "She is currently taking clobazam 10 mg od and sodium valproate 200 mg BD.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "rx_current_regimen"
+      }
+    ],
+    "sf_rate_construction": [
+      {
+        "default_final_correct": false,
+        "default_final_keys": [],
+        "empty_gold": false,
+        "evidence_status": "missing",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [],
+        "letter_id": "EA0019",
+        "model_owned_correct": false,
+        "model_owned_keys": [],
+        "note_excerpt": "Dear Dr,  I reviewed this gentleman with a primary generalised epilepsy in clinic this morning. He is on Epilim 300 mg in the morning and 600 mg in the evening and carbamazepine 300mg bd.  Unfortunately he forgot to take his normal dose of ",
+        "prompt_variant_hint": "B",
+        "selected_evidence": [],
+        "theme": "sf_rate_construction"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "phrase",
+                "generlised tonic clonic seizure"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "phrase",
+                "generlised tonic clonic seizure"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "letter_id": "EA0079",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "phrase",
+                "generlised tonic clonic seizure"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "note_excerpt": "in the frontal leads. I do not have the results of his previous brain imaging.  His epilepsy has been stable over the last few years and he gets around 1 generlised tonic clonic seizure in his sleep per month. He has previously tried topiramate and phenytoin and he is currently taking lev",
+        "prompt_variant_hint": "B",
+        "selected_evidence": [
+          {
+            "evidence": "His epilepsy has been stable over the last few years and he gets around 1 generlised tonic clonic seizure in his sleep per month.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "His epilepsy has been stable over the last few years and he gets around 1 generlised tonic clonic seizure in his sleep per month.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_rate_construction"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C3203523"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "letter_id": "EA0110",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "note_excerpt": "ired and confused. She says it takes up to 2 hours to fully get back to normal. Current frequency of the seizures is once or twice a month, but last month there was a cluster of 3 in a single day and she was taken to A&E. There is also a history of staring episodes which last up to 2 minutes. They oc",
+        "prompt_variant_hint": "B",
+        "selected_evidence": [
+          {
+            "evidence": "Current frequency of the seizures is once or twice a month, but last month there was a cluster of 3 in a single day and she was taken to A&E.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Current frequency of the seizures is once or twice a month, but last month there was a cluster of 3 in a single day and she was taken to A&E.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Current frequency of the seizures is once or twice a month, but last month there was a cluster of 3 in a single day and she was taken to A&E.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_rate_construction"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [],
+        "empty_gold": false,
+        "evidence_status": "missing",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [],
+        "letter_id": "EA0117",
+        "model_owned_correct": false,
+        "model_owned_keys": [],
+        "note_excerpt": "Dear Dr,  Re: \tMiss Sharon Benson \tD.O.B: 13/05/1991 23 Hilly Terrace, Gorseinon  Swansea    Diagnosis: \u2022\tMixture of focal epilepsy and dissociative seizures  Medication: \u2022\tLacosamide 100mg bd  \u2022\tPerampanel 8mgs  I reviewed Sharon in clinic",
+        "prompt_variant_hint": "B",
+        "selected_evidence": [],
+        "theme": "sf_rate_construction"
+      }
+    ],
+    "sf_state_boundary": [
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0751494"
+              ],
+              "seizure-free"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "unknown"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "letter_id": "EA0011",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0270834"
+              ],
+              "active-rate"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "note_excerpt": "Diagnosis:\u00a0 Temporal lobe epilepsy \u00a0 Seizure type and frequency:\u00a0 Focal seizures with altered awareness approximately 1 per fortnight Focal to bilateral convulsive seizures, last event around Christmas 2017 \u00a0 Curr",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Focal to bilateral convulsive seizures, last event around Christmas 2017",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_state_boundary"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0751495"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "unknown"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0751495"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0751495"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "letter_id": "EA0022",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0751495"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "note_excerpt": "Diagnosis:\u00a0 1.\u00a0 Mild head injury 2. Dissociative seizures 3. Focal epilepsy \u00a0 There has been significant improvement since increasing the dose of lamotrigine.\u00a0 I think that the focal seizures are completely under control on the dose of lamotrigine 200 mg twice a day.\u00a0 She does not get any significant side effects from this. \u00a0 She continues to ge",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "There has been significant improvement since increasing the dose of lamotrigine.\u00a0 I think that the focal seizures are completely under control on the dose of lamotrigine 200 mg twice a day.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "There has been significant improvement since increasing the dose of lamotrigine.\u00a0 I think that the focal seizures are completely under control on the dose of lamotrigine 200 mg twice a day.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_state_boundary"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0027066"
+              ],
+              "unknown"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "letter_id": "EA0025",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0494475"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "note_excerpt": "oday. She split up from her partner last year and so underwent a lot of stress. She had approximately 3\u20134 generalised tonic chronic seizures per week from May to August. She also had very frequent myoclonic jerks.  She also has headaches and heartbu",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "She had approximately 3\u20134 generalised tonic chronic seizures per week from May to August.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "She had approximately 3\u20134 generalised tonic chronic seizures per week from May to August.",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_state_boundary"
+      },
+      {
+        "default_final_correct": false,
+        "default_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "empty_gold": false,
+        "evidence_status": "exact",
+        "family": "SeizureFrequency",
+        "family_local_gold_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          }
+        ],
+        "first_prediction_changing_owner": "unchanged",
+        "joint_final_correct": false,
+        "joint_final_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "letter_id": "EA0034",
+        "model_owned_correct": false,
+        "model_owned_keys": [
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0036572"
+              ],
+              "seizure-free"
+            ]
+          },
+          {
+            "count": 1,
+            "key": [
+              [
+                "cui",
+                "C0877017"
+              ],
+              "active-rate"
+            ]
+          }
+        ],
+        "note_excerpt": "750mg twice a day  Seizure type and frequency: focal seizures left arm movement focal to bilateral convulsive seizure 2019  Investigations MRI 2019 right occipital lobe infarct  I spoke to this 58-year-",
+        "prompt_variant_hint": "C",
+        "selected_evidence": [
+          {
+            "evidence": "focal to bilateral convulsive seizure 2019",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "I was pleased to hear that she has not had any further seizures since increasing the levetiracetam.",
+            "grade": "EXACT",
+            "stage": "model_owned"
+          },
+          {
+            "evidence": "focal to bilateral convulsive seizure 2019",
+            "grade": "EXACT",
+            "stage": "final"
+          }
+        ],
+        "theme": "sf_state_boundary"
+      }
+    ]
+  },
+  "generated_on": "2026-07-31",
+  "schema_version": "exectv2.luna_single_call_dev140_residual_map.v1",
+  "selection_rule": "up to 4 default-or-joint final-wrong rows per theme, first in letter\u00d7family order"
+}

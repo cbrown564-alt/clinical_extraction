@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-30
+Last updated: 2026-07-31
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -94,14 +94,14 @@ held-out rows, so it is not an independent holdout.
     bundle for the next comparison despite its original 143/160 rescue-retention
     failure. This policy choice does not convert either negative study into
     promotion evidence.
-17. **Joint bounded policy selected over the previous fallback.** A frozen
-    dev140 replay composed the bounded Prescription and combined Diagnosis
-    components with exact row-level identity and no SF or Investigations change.
-    It produces 172 rescues, 3 regressions, and 153/160 rescue retention versus
-    161, 9, and 143/160 for the previous fallback. All three saved model scores
-    improve and no fallback-correct row becomes wrong. The joint policy is now
-    the disclosed policy for the fixed comparison; the known EA0117 and EA0141
-    failures remain visible.
+17. **Joint bounded policy selected over the previous fallback (later demoted).**
+    A frozen dev140 replay composed the bounded Prescription and combined
+    Diagnosis components with exact row-level identity and no SF or
+    Investigations change. It produces 172 rescues, 3 regressions, and 153/160
+    rescue retention versus 161, 9, and 143/160 for the previous fallback.
+    **Superseded for active use by decision 0045 (2026-07-31):** live ExECT
+    comparison uses `default`/`default`; joint/`combined` is archived after
+    matched six-model gains proved marginal for the complexity.
 18. **Single-call tradeoff selected and split defect contained.** A
     predeclared no-call GPT-4.1-mini replay filtered retained
     full200 blobs to the manifest dev140 IDs before assembly. Replacing the
@@ -184,6 +184,16 @@ Owners: [six-model comparison](../research/six_model_comparison_report_2026-07-1
 [final-ruleset replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json),
 [Luna summary](../research/gan2026_luna_prompt_variants_report_2026-07-30.md).
 Do not inspect sealed `test450` rows for tuning.
+
+ExECT active Diagnosis/Prescription policy is `default`/`default`
+([decision 0045](../decisions/0045-exect-default-policy-not-joint-combined.md)).
+Joint/`combined` is archived (opt-in replay only). Luna prompt-variant A/B/C is
+answered under default repair; C moves SF most on holdout (`+5` SF letters;
+SF F1 `0.5693 → 0.6260`). Dx/Rx residual-addition rule reopening remains out of
+scope.
+Owners: [archive index](../experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md),
+[Luna dev140](../experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md),
+[Luna test60](../experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md).
 
 ## Limits
 

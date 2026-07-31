@@ -11,10 +11,13 @@ Investigations all begin from that named model output. The separate Diagnosis
 decomposer call is removed from the comparison graph.
 
 The deterministic work allowed by decision 0040 remains unchanged and
-separately attributable. In particular, the selected joint bounded Diagnosis
-and Prescription policy, Seizure Frequency projection and suppression,
+separately attributable. Seizure Frequency projection and suppression,
 Investigations normalization, evidence validation, finding assembly, and
-scorer remain fixed.
+scorer remain fixed. Diagnosis/Prescription assembly for active comparison
+uses `default` / `default` per
+[decision 0045](0045-exect-default-policy-not-joint-combined.md); the earlier
+joint bounded (`combined` / `combined`) selection is archived historical
+evidence only.
 
 ## Evidence and trade-off
 

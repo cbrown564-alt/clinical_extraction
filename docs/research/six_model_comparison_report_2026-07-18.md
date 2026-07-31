@@ -3,8 +3,9 @@
 Date: 2026-07-18  
 Updated: 2026-07-31  
 Status: primary test comparison complete; Gan v0.5 six-model `dev750` coverage
-complete; Gan LLM-with-rules ruleset finalized 2026-07-31; test results remain
-aggregate-only
+complete; Gan LLM-with-rules ruleset finalized 2026-07-31; ExECT active
+assembly policy is `default` / `default` (decision 0045; joint/combined
+archived); test results remain aggregate-only
 
 ## Terms used in this report
 
@@ -179,6 +180,14 @@ mean absolute F1 change of `0.08`.
 | Qwen 3.6:35B | 0.86 | 0.79 | -0.07 | 1.00 | 0 |
 | GPT-4.1-mini | 0.82 | 0.76 | -0.06 | 1.00 | 0 |
 | Gemma 4 26B | 0.80 | 0.72 | -0.08 | 1.00 | 6 aggregate events |
+
+These retained panel aggregates use Diagnosis/Prescription **`default` /
+`default`**, which is the active ExECT comparison policy
+([decision 0045](../decisions/0045-exect-default-policy-not-joint-combined.md)).
+An earlier joint (`combined`/`combined`) candidate and a matched six-model
+no-call reassembly remain archived development evidence only; they are not the
+live comparison stack. See the
+[joint-policy archive index](../experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md).
 
 The unchanged model order shows that the development ordering also held on
 this test split. The small locked split and the ban on examining its rows mean

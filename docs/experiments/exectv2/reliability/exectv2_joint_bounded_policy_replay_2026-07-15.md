@@ -1,7 +1,14 @@
 # ExECTv2 joint bounded-policy replay result
 
 Date: 2026-07-15  
-Decision: select the joint bounded policy over the implemented model-preserving fallback
+**Status: archived historical evidence (2026-07-31).** Active comparison uses
+`default` / `default` per
+[decision 0045](../../../decisions/0045-exect-default-policy-not-joint-combined.md).
+Archive index:
+[archive/exectv2_joint_policy_archive_README.md](archive/exectv2_joint_policy_archive_README.md).
+
+Decision (historical): select the joint bounded policy over the implemented
+model-preserving fallback
 
 ## Answer
 

@@ -1,0 +1,730 @@
+{
+  "call_mode": "saved_producers_no_call",
+  "claim_boundary": "No-call ExECTv2 six-model Diagnosis/Prescription policy reassembly of saved producers under default versus joint bounded (combined/combined). test60 is aggregate-only. Not a prompt change, not clinical validation, and not automatic replacement of the historical default-panel hashes.",
+  "finished_utc": "2026-07-31T07:44:27.200566+00:00",
+  "gates": {
+    "default_f1_tolerance": 0.0005,
+    "failures": [],
+    "status": "pass"
+  },
+  "generated_on": "2026-07-31",
+  "new_model_calls": 0,
+  "policies": {
+    "default": {
+      "diagnosis_policy_variant": "default",
+      "prescription_policy_variant": "default"
+    },
+    "joint": {
+      "diagnosis_policy_variant": "combined",
+      "prescription_policy_variant": "combined"
+    }
+  },
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_six_model_joint_policy_replay_protocol_2026-07-31.md",
+  "schema_version": "exectv2.six_model_joint_policy_replay_panel.v1",
+  "scorer": "clinical_headline",
+  "splits": {
+    "dev140": {
+      "default_gate_failures": [],
+      "deltas": {
+        "deepseek_v4_flash": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0129,
+            "Investigations": 0.0,
+            "Prescription": 0.0324,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0132,
+          "model_label": "DeepSeek V4 Flash"
+        },
+        "gemma4_26b": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0136,
+            "Investigations": 0.0,
+            "Prescription": 0.0151,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0084,
+          "model_label": "Gemma 4 26B"
+        },
+        "gpt41mini": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0107,
+            "Investigations": 0.0,
+            "Prescription": 0.0387,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0135,
+          "model_label": "GPT-4.1-mini"
+        },
+        "gpt56luna": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0176,
+            "Investigations": 0.0,
+            "Prescription": 0.0429,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0174,
+          "model_label": "GPT-5.6 Luna"
+        },
+        "gpt56sol": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0133,
+            "Investigations": 0.0,
+            "Prescription": 0.0249,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0113,
+          "model_label": "GPT-5.6 Sol"
+        },
+        "qwen36_35b": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0118,
+            "Investigations": 0.0,
+            "Prescription": 0.0268,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0111,
+          "model_label": "Qwen 3.6:35B"
+        }
+      },
+      "models": [
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.847,
+              "Investigations": 0.8538,
+              "Prescription": 0.8672,
+              "SeizureFrequency": 0.6936
+            },
+            "overall_f1": 0.8202,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8202,
+            "observed_overall_f1": 0.8202,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0107,
+            "Investigations": 0.0,
+            "Prescription": 0.0387,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0135,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8577,
+              "Investigations": 0.8538,
+              "Prescription": 0.9059,
+              "SeizureFrequency": 0.6936
+            },
+            "overall_f1": 0.8337,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-4.1-mini",
+          "model_label": "GPT-4.1-mini",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "c9a45b008263cf8597fb9b0aed7eb10ff79ed7412857f519ab333e1a6a3ff646",
+          "slug": "gpt41mini",
+          "structured_sha256": "03b9d538611e8460239bd5ae3148d0285c0803d9a72dd732492508bd921ea05d"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.891,
+              "Investigations": 0.9202,
+              "Prescription": 0.925,
+              "SeizureFrequency": 0.7892
+            },
+            "overall_f1": 0.8832,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8832,
+            "observed_overall_f1": 0.8832,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0176,
+            "Investigations": 0.0,
+            "Prescription": 0.0429,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0174,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.9086,
+              "Investigations": 0.9202,
+              "Prescription": 0.9679,
+              "SeizureFrequency": 0.7892
+            },
+            "overall_f1": 0.9006,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-5.6-luna",
+          "model_label": "GPT-5.6 Luna",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "ec99939d64e4aaa804e2203a2321a4576340b44a67c651234239270fa4609944",
+          "slug": "gpt56luna",
+          "structured_sha256": "f01bd0be77e94d8bf9cf37b76a5d0abd87d0c0390ec273bbbcaf7986f4e714fc"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8882,
+              "Investigations": 0.9358,
+              "Prescription": 0.9432,
+              "SeizureFrequency": 0.8012
+            },
+            "overall_f1": 0.892,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.892,
+            "observed_overall_f1": 0.892,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0133,
+            "Investigations": 0.0,
+            "Prescription": 0.0249,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0113,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.9015,
+              "Investigations": 0.9358,
+              "Prescription": 0.9681,
+              "SeizureFrequency": 0.8012
+            },
+            "overall_f1": 0.9033,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-5.6-sol",
+          "model_label": "GPT-5.6 Sol",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "49aa4e635c49208517e39e6557a05ab4ae9a1e767ea71ab13aa1d68ebb9b4153",
+          "slug": "gpt56sol",
+          "structured_sha256": "1b173d9085c172c5ffd1b320e4178d999432e112a42707cec8b283b6e697351b"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8764,
+              "Investigations": 0.9389,
+              "Prescription": 0.928,
+              "SeizureFrequency": 0.761
+            },
+            "overall_f1": 0.8767,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8767,
+            "observed_overall_f1": 0.8767,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0129,
+            "Investigations": 0.0,
+            "Prescription": 0.0324,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0132,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8893,
+              "Investigations": 0.9389,
+              "Prescription": 0.9604,
+              "SeizureFrequency": 0.761
+            },
+            "overall_f1": 0.8899,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openrouter/deepseek/deepseek-v4-flash",
+          "model_label": "DeepSeek V4 Flash",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "b861f55b6f144827d5dfd7c33ab71087945cfc52b5d73aa82274c4f9b83679af",
+          "slug": "deepseek_v4_flash",
+          "structured_sha256": "f497bcb8c6df0f6e4030dfb4ffc63b1676e31d5734e49e8aecc72dcbb7ec97da"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.872,
+              "Investigations": 0.9105,
+              "Prescription": 0.9249,
+              "SeizureFrequency": 0.7062
+            },
+            "overall_f1": 0.8571,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8571,
+            "observed_overall_f1": 0.8571,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0118,
+            "Investigations": 0.0,
+            "Prescription": 0.0268,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0111,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8838,
+              "Investigations": 0.9105,
+              "Prescription": 0.9517,
+              "SeizureFrequency": 0.7062
+            },
+            "overall_f1": 0.8682,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "ollama_chat/qwen3.6:35b",
+          "model_label": "Qwen 3.6:35B",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "14a572b16fd185d94ed5b534b5480a505230ce71f3e5b317574ae723ac807934",
+          "slug": "qwen36_35b",
+          "structured_sha256": "87166ab5ff5f0eb89d042d216fc0206a44597f272f0900ae5eb8b448c5aa2b12"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8378,
+              "Investigations": 0.8047,
+              "Prescription": 0.9046,
+              "SeizureFrequency": 0.6226
+            },
+            "overall_f1": 0.8016,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8016,
+            "observed_overall_f1": 0.8016,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0136,
+            "Investigations": 0.0,
+            "Prescription": 0.0151,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0084,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8514,
+              "Investigations": 0.8047,
+              "Prescription": 0.9197,
+              "SeizureFrequency": 0.6226
+            },
+            "overall_f1": 0.81,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "ollama_chat/gemma4:26b",
+          "model_label": "Gemma 4 26B",
+          "producer_note": null,
+          "row_policy": "dev_rows_permitted",
+          "sf_unknown_suppression_sha256": "04b80e900d2ded9b235cf3dc3f3defd108ac8af4461aeb40be87f5abef40cded",
+          "slug": "gemma4_26b",
+          "structured_sha256": "187d01666bf1ae27aa8c64df77933706963d4338ca1546558c69a6361084f98b"
+        }
+      ],
+      "rank_order_changed": false,
+      "rank_order_default": [
+        "gpt56sol",
+        "gpt56luna",
+        "deepseek_v4_flash",
+        "qwen36_35b",
+        "gpt41mini",
+        "gemma4_26b"
+      ],
+      "rank_order_joint": [
+        "gpt56sol",
+        "gpt56luna",
+        "deepseek_v4_flash",
+        "qwen36_35b",
+        "gpt41mini",
+        "gemma4_26b"
+      ],
+      "row_count": 140,
+      "row_policy": "dev_rows_permitted",
+      "split": "dev140"
+    },
+    "test60": {
+      "default_gate_failures": [],
+      "deltas": {
+        "deepseek_v4_flash": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0491,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0171,
+          "model_label": "DeepSeek V4 Flash"
+        },
+        "gemma4_26b": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0104,
+            "Investigations": 0.0,
+            "Prescription": 0.0674,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0215,
+          "model_label": "Gemma 4 26B"
+        },
+        "gpt41mini": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0327,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0125,
+          "model_label": "GPT-4.1-mini"
+        },
+        "gpt56luna": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0109,
+            "Investigations": 0.0,
+            "Prescription": 0.0572,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0191,
+          "model_label": "GPT-5.6 Luna"
+        },
+        "gpt56sol": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0428,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0151,
+          "model_label": "GPT-5.6 Sol"
+        },
+        "qwen36_35b": {
+          "delta_family_f1": {
+            "Diagnosis": 0.0103,
+            "Investigations": 0.0,
+            "Prescription": 0.0454,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0158,
+          "model_label": "Qwen 3.6:35B"
+        }
+      },
+      "models": [
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.811,
+              "Investigations": 0.9091,
+              "Prescription": 0.8144,
+              "SeizureFrequency": 0.5103
+            },
+            "overall_f1": 0.7572,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.7572,
+            "observed_overall_f1": 0.7572,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0327,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0125,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8216,
+              "Investigations": 0.9091,
+              "Prescription": 0.8471,
+              "SeizureFrequency": 0.5103
+            },
+            "overall_f1": 0.7697,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-4.1-mini",
+          "model_label": "GPT-4.1-mini",
+          "producer_note": null,
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "4c3643eea2fc7e8187fe550d951bb25fff440a7a08586d1ddc10d3e292622e53",
+          "slug": "gpt41mini",
+          "structured_sha256": "cdc29964389c75e3d10584d61adf024731c43111f2fc46ecfb05e870054dd26f"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8489,
+              "Investigations": 0.9231,
+              "Prescription": 0.8344,
+              "SeizureFrequency": 0.5693
+            },
+            "overall_f1": 0.795,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.795,
+            "observed_overall_f1": 0.795,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0109,
+            "Investigations": 0.0,
+            "Prescription": 0.0572,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0191,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8598,
+              "Investigations": 0.9231,
+              "Prescription": 0.8916,
+              "SeizureFrequency": 0.5693
+            },
+            "overall_f1": 0.8141,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-5.6-luna",
+          "model_label": "GPT-5.6 Luna",
+          "producer_note": null,
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "4a462fa694fc3b61e7a357b9420ef8221aec3d2674ad46ffbeaa9dc44d14cd46",
+          "slug": "gpt56luna",
+          "structured_sha256": "5e5915a31a34b53faa70899f5cf485f5db4df5e79750c1a1b4423cba9943b45a"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8424,
+              "Investigations": 0.9032,
+              "Prescription": 0.8554,
+              "SeizureFrequency": 0.6143
+            },
+            "overall_f1": 0.8047,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.8047,
+            "observed_overall_f1": 0.8047,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0428,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0151,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.853,
+              "Investigations": 0.9032,
+              "Prescription": 0.8982,
+              "SeizureFrequency": 0.6143
+            },
+            "overall_f1": 0.8198,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openai/gpt-5.6-sol",
+          "model_label": "GPT-5.6 Sol",
+          "producer_note": "Canonical credit-restart producers; do not use scratch/holdout/exectv2_test60/gpt56sol/",
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "478271a8c6653748522eed8c5dcd84e63c3076519428564cea3e9b04aba20b4f",
+          "slug": "gpt56sol",
+          "structured_sha256": "74899f8e2fc7cad367e850329e59e7bb024289c28e92b97ac61aeafb0b9d2173"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8187,
+              "Investigations": 0.9011,
+              "Prescription": 0.8503,
+              "SeizureFrequency": 0.5839
+            },
+            "overall_f1": 0.7881,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.7881,
+            "observed_overall_f1": 0.7881,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0106,
+            "Investigations": 0.0,
+            "Prescription": 0.0491,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0171,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8293,
+              "Investigations": 0.9011,
+              "Prescription": 0.8994,
+              "SeizureFrequency": 0.5839
+            },
+            "overall_f1": 0.8052,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "openrouter/deepseek/deepseek-v4-flash",
+          "model_label": "DeepSeek V4 Flash",
+          "producer_note": null,
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "27a5dc22b6ec87b58c071de37031f0237ca8ddccb3acb33f6c12e732d710cd75",
+          "slug": "deepseek_v4_flash",
+          "structured_sha256": "385668322993900e7386a7e3b433d85a168b0bd24724ae2a6d069b2381c00649"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.8374,
+              "Investigations": 0.8571,
+              "Prescription": 0.8383,
+              "SeizureFrequency": 0.6104
+            },
+            "overall_f1": 0.7872,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.7872,
+            "observed_overall_f1": 0.7872,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0103,
+            "Investigations": 0.0,
+            "Prescription": 0.0454,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0158,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8477,
+              "Investigations": 0.8571,
+              "Prescription": 0.8837,
+              "SeizureFrequency": 0.6104
+            },
+            "overall_f1": 0.803,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "ollama_chat/qwen3.6:35b",
+          "model_label": "Qwen 3.6:35B",
+          "producer_note": null,
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "d82497b493a4da29fba5f123a20db5bcd7b88abe04f2d457890c3ee2f7d20458",
+          "slug": "qwen36_35b",
+          "structured_sha256": "aad3c07d9ad1d0374bd329e6ffb0579e923c7b38b0a827301f89b142e4c398f9"
+        },
+        {
+          "default": {
+            "diagnosis_policy_variant": "default",
+            "family_f1": {
+              "Diagnosis": 0.7934,
+              "Investigations": 0.7865,
+              "Prescription": 0.7778,
+              "SeizureFrequency": 0.4901
+            },
+            "overall_f1": 0.7169,
+            "prescription_policy_variant": "default"
+          },
+          "default_gate": {
+            "expected_overall_f1": 0.7169,
+            "observed_overall_f1": 0.7169,
+            "pass": true,
+            "tolerance": 0.0005
+          },
+          "delta_family_f1": {
+            "Diagnosis": 0.0104,
+            "Investigations": 0.0,
+            "Prescription": 0.0674,
+            "SeizureFrequency": 0.0
+          },
+          "delta_overall_f1": 0.0215,
+          "joint": {
+            "diagnosis_policy_variant": "combined",
+            "family_f1": {
+              "Diagnosis": 0.8038,
+              "Investigations": 0.7865,
+              "Prescription": 0.8452,
+              "SeizureFrequency": 0.4901
+            },
+            "overall_f1": 0.7384,
+            "prescription_policy_variant": "combined"
+          },
+          "model": "ollama_chat/gemma4:26b",
+          "model_label": "Gemma 4 26B",
+          "producer_note": null,
+          "row_policy": "aggregate_only",
+          "sf_unknown_suppression_sha256": "e31d2e123a9339eec28ab470f4e5d4037553e76e78adf18342747a04a6369987",
+          "slug": "gemma4_26b",
+          "structured_sha256": "b931ba113fe87d2b6efe15b30639d6786c7db65d65f55edf609c89e9cca9ff69"
+        }
+      ],
+      "rank_order_changed": false,
+      "rank_order_default": [
+        "gpt56sol",
+        "gpt56luna",
+        "deepseek_v4_flash",
+        "qwen36_35b",
+        "gpt41mini",
+        "gemma4_26b"
+      ],
+      "rank_order_joint": [
+        "gpt56sol",
+        "gpt56luna",
+        "deepseek_v4_flash",
+        "qwen36_35b",
+        "gpt41mini",
+        "gemma4_26b"
+      ],
+      "row_count": 59,
+      "row_policy": "aggregate_only",
+      "split": "test60"
+    }
+  },
+  "started_utc": "2026-07-31T07:42:26.291536+00:00"
+}

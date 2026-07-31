@@ -37,8 +37,9 @@ as model-to-model results.
 ## Fixed six-model results
 
 All six selected models completed the same decision-0041 one-call pipeline with
-prompt `exectv2_hybrid_key_family_event_ledger_v0.9.24`, the selected joint
-bounded policy, and the internal `clinical_headline` scorer.
+prompt `exectv2_hybrid_key_family_event_ledger_v0.9.24`, Diagnosis/Prescription
+`default` / `default` assembly ([decision 0045](../decisions/0045-exect-default-policy-not-joint-combined.md)),
+and the internal `clinical_headline` scorer.
 
 | Model | dev140 F1 | test60 F1 | Test operational result |
 | --- | ---: | ---: | --- |
