@@ -1,9 +1,21 @@
 # 02 — Processing steps
 
-Last updated: 2026-07-20
+Last updated: 2026-07-31
 
 Exact source, configuration, scorer, test, and replay paths are in the
 [retained evidence index](../experiments/retained_evidence_manifest.md).
+
+This page is the abstract. The arrows below compress each method into four
+steps, which is too few to explain ownership, improvement, regression, or
+evidence — the selected Gan hybrid expands "deterministic selection and
+normalization" into schema repair, event normalization, label resolution, and
+ten ordered repair families.
+
+For the full account — every stage, its owner, whether it may change clinical
+meaning, its implementation, and its governing test — read the
+[architecture layer](../architecture/README.md). Those documents are generated
+from machine-readable stage manifests and from teaching cases that execute the
+real pipelines, so they cannot drift from the code without failing CI.
 
 ## Gan 2026
 

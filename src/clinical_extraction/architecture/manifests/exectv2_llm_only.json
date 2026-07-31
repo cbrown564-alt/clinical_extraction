@@ -1,0 +1,145 @@
+{
+  "method_id": "exectv2_llm_only",
+  "task": "exectv2",
+  "task_label": "ExECTv2",
+  "method": "llm_only",
+  "method_label": "LLM only",
+  "role": "selected",
+  "entry_point": {
+    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py",
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:to_predicted_letter_from_dedup_facts"
+  },
+  "one_sentence": "A GEPA-optimized program emits de-duplicated clinical facts for four families, and an adapter maps them into ExECT mentions without adding or merging any fact.",
+  "sixty_second": "The retained GEPA program produces a list of clinical facts, each with a family, evidence, and attributes, already de-duplicated by the program itself. The adapter then does four things: it repairs JSON dialect and coerces the facts list; it drops facts that are malformed or carry no evidence; it maps each surviving fact into an ExECT mention, normalizing representation fields such as negation, dose units, medication frequency, modality, investigation state, and seizure-frequency state; and it passes the mentions through the shared evidence and schema gates. The adapter explicitly does not add or merge clinical facts, and records that claim per fact in its provenance. The honest caveat is that representation normalization is not nothing: a fact whose dose unit or seizure state normalizes differently can match or miss gold on that basis alone.",
+  "prediction_owner": "the GEPA program (stage exect.llm.gepa_program)",
+  "scored_representation": "A PredictedLetter of four-family mentions with attributes and evidence, scored per entity and overall.",
+  "stages": [
+    {
+      "stage_id": "exect.llm.gepa_program",
+      "name": "GEPA program emits clinical facts",
+      "operation": "The optimized program reads the letter and returns de-duplicated clinical facts across Diagnosis, Seizure Frequency, Prescription, and Investigations.",
+      "owner": "model",
+      "effect_class": "clinical_meaning",
+      "input_type": "ExectLetter",
+      "input_example": "\"Diagnosis: focal epilepsy. MRI brain normal. Levetiracetam 500mg twice daily.\"",
+      "output_type": "raw structured JSON (str)",
+      "output_example": "{\"clinical_facts\": [{\"family\": \"diagnosis\", \"text\": \"focal epilepsy\", \"evidence\": \"Diagnosis: focal epilepsy\"}]}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:PROMPT_VERSION"
+      },
+      "governing_test": "tests/test_exectv2_gepa_dedup_adapter.py",
+      "trace_fields": ["raw_output", "prompt_version"],
+      "paper_wording": "A GEPA-optimized program produces de-duplicated clinical facts for four families.",
+      "notes": "GEPA optimization is closed. One saved run is retained as a negative comparison; see docs/canon/08_gepa.md."
+    },
+    {
+      "stage_id": "exect.llm.parse_and_coerce",
+      "name": "Parse JSON and coerce the facts list",
+      "operation": "Recover the JSON object, repair Python-literal dialect, accept either the clinical_facts or facts key, and coerce each entry to a fact-shaped mapping.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "raw structured JSON (str)",
+      "input_example": "output wrapped in prose, or using the 'facts' key",
+      "output_type": "DedupClinicalFactsRecord plus notes",
+      "output_example": "a validated record with two clinical facts",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:parse_dedup_clinical_facts_json"
+      },
+      "governing_test": "tests/test_exectv2_gepa_dedup_adapter.py",
+      "trace_fields": ["parse_errors"],
+      "paper_wording": "Malformed program output is repaired at the transport and schema level only."
+    },
+    {
+      "stage_id": "exect.llm.drop_unusable_facts",
+      "name": "Drop malformed or unevidenced facts",
+      "operation": "Discard facts that fail fact-level validation, name an unsupported family, or carry no evidence span.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "list of candidate facts",
+      "input_example": "a fact with family 'diagnosis' and an empty evidence field",
+      "output_type": "filtered list of facts plus notes",
+      "output_example": "the unevidenced fact is dropped and noted",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:_coerce_facts"
+      },
+      "governing_test": "tests/test_exectv2_gepa_dedup_adapter.py",
+      "trace_fields": ["adapter_notes"],
+      "paper_wording": "Facts that are malformed or carry no evidence are dropped rather than scored.",
+      "notes": "A gate, not a rewrite: it removes facts the model produced, and it never invents one."
+    },
+    {
+      "stage_id": "exect.llm.map_to_mentions",
+      "name": "Map facts to ExECT mentions",
+      "operation": "Turn each fact into an ExECT mention and attribute set, normalizing negation, dose units, medication frequency, modality, investigation performed and result state, and seizure-frequency state.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "representation",
+      "input_type": "list[DedupClinicalFactRecord]",
+      "input_example": "a prescription fact with dose_unit 'milligrams' and frequency 'twice a day'",
+      "output_type": "tuple[list[MentionForEvidence], provenance, notes]",
+      "output_example": "a Prescription mention with dose_unit 'mg' and frequency 'BD'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:clinical_facts_to_mentions"
+      },
+      "governing_test": "tests/test_exectv2_gepa_dedup_adapter.py",
+      "trace_fields": ["provenance[].action", "provenance[].added_fact", "provenance[].deduplicated_by_adapter"],
+      "paper_wording": "An adapter maps program facts into the ExECT representation without adding or merging clinical facts.",
+      "notes": "Every provenance entry records action 'representation_mapping_only', added_fact false, and deduplicated_by_adapter false, so the no-addition claim is checkable per fact rather than asserted in prose. The normalization itself can still change whether a fact matches gold."
+    },
+    {
+      "stage_id": "exect.llm.evidence_schema_gates",
+      "name": "Apply evidence and schema gates",
+      "operation": "Run the shared projection gates: require grounded evidence, enforce the render-safety rules, and emit gate warnings for anything rejected.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "list[MentionForEvidence] plus note text",
+      "input_example": "a mention whose evidence does not appear in the note",
+      "output_type": "PredictedLetter plus gate warnings",
+      "output_example": "the ungrounded mention is withheld and a gate warning is recorded",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/projection.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter"
+      },
+      "governing_test": "tests/test_exectv2_llm_only_projection.py",
+      "trace_fields": ["gate_warnings", "n_evidence_invalid"],
+      "paper_wording": "Findings must pass evidence-grounding and schema gates before scoring."
+    },
+    {
+      "stage_id": "exect.llm.score",
+      "name": "Score against gold",
+      "operation": "Match predicted mentions to gold annotations under the configured match policy and report per-entity and overall precision, recall, and F1.",
+      "owner": "scorer",
+      "effect_class": "benchmark_projection",
+      "input_type": "PredictedLetter plus gold annotations",
+      "input_example": "predicted Diagnosis 'focal epilepsy' against gold 'focal epilepsy'",
+      "output_type": "OverallScore plus per-entity EntityScore",
+      "output_example": "a four-family overall F1",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall"
+      },
+      "governing_test": "tests/test_exectv2_scoring_match_fidelity.py",
+      "trace_fields": ["scores.overall", "scores.per_entity"],
+      "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations."
+    }
+  ],
+  "related_paths": [
+    {
+      "name": "GEPA metric",
+      "role": "rejected candidate or ablation",
+      "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/",
+      "note": "The optimization loop that produced the retained program. Closed; see docs/canon/08_gepa.md."
+    }
+  ],
+  "evidence_owners": [
+    "docs/canon/08_gepa.md",
+    "docs/canon/07_exect_plan11.md"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "method_id": "exectv2_rules_only",
+  "task": "exectv2",
+  "task_label": "ExECTv2",
+  "method": "rules_only",
+  "method_label": "Rules only",
+  "role": "selected",
+  "entry_point": {
+    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/orchestrator.py",
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities.orchestrator:extract_deterministic_all9"
+  },
+  "one_sentence": "Nine independent deterministic extractors read the letter, their findings are pooled and de-duplicated, and the result is scored.",
+  "sixty_second": "No model is involved. Nine entity-specific extractors run over the same note text: Diagnosis, Investigations, Onset, When Diagnosed, Birth History, Epilepsy Cause, Patient History, Prescription, and Seizure Frequency. Seizure Frequency is not a flat extractor - it runs its own staged deterministic sub-pipeline. The nine mention lists are concatenated and passed through mention-identity de-duplication, which is the only place where one extractor's output can suppress another's. The pooled mentions become the predicted letter and are scored against gold. The critical framing point for the paper is coverage, not architecture: this baseline covers nine entities while the model-led comparison covers four, so any score placed beside a four-family model result is not measuring the same task.",
+  "prediction_owner": "the nine deterministic extractors (stage exect.rules.extract_entities)",
+  "scored_representation": "A PredictedLetter of entity mentions with attributes and evidence, scored per entity and overall.",
+  "stages": [
+    {
+      "stage_id": "exect.rules.extract_seizure_frequency",
+      "name": "Extract seizure frequency",
+      "operation": "Run the staged deterministic seizure-frequency sub-pipeline, which has its own candidate, association, and temporal rule layers.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "ExectLetter",
+      "input_example": "\"Seizures are now occurring about twice a month.\"",
+      "output_type": "PredictedLetter (seizure-frequency mentions plus diagnostics)",
+      "output_example": "one SeizureFrequency mention with state and rate attributes",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/pipeline.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline:extract_seizure_frequency"
+      },
+      "governing_test": "tests/test_exectv2_deterministic_sf_pipeline.py",
+      "trace_fields": ["diagnostics.sf_diagnostics"],
+      "paper_wording": "A staged deterministic sub-pipeline extracts seizure-frequency findings.",
+      "notes": "Seizure Frequency is the only family in this baseline with a multi-stage sub-pipeline of its own; the other eight are single extractors."
+    },
+    {
+      "stage_id": "exect.rules.extract_entities",
+      "name": "Extract the other eight entities",
+      "operation": "Run the Diagnosis, Investigations, Onset, When Diagnosed, Birth History, Epilepsy Cause, Patient History, and Prescription extractors over the note text and concatenate their mentions with the seizure-frequency mentions.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "note text (str)",
+      "input_example": "\"Diagnosis: focal epilepsy. MRI brain was normal. Continue levetiracetam 500mg twice daily.\"",
+      "output_type": "tuple[PredictedMention, ...]",
+      "output_example": "Diagnosis 'focal epilepsy', Investigations 'MRI brain', Prescription 'levetiracetam'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/orchestrator.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities.orchestrator:ACTIVE_DETERMINISTIC_ENTITIES"
+      },
+      "governing_test": "tests/test_exectv2_deterministic_all9.py",
+      "trace_fields": ["diagnostics.entity_counts", "diagnostics.active_entities"],
+      "paper_wording": "Entity-specific deterministic extractors produce findings for nine clinical entities.",
+      "notes": "The extractors are independent: none reads another's output, so a Diagnosis miss cannot be recovered from a Prescription hit."
+    },
+    {
+      "stage_id": "exect.rules.dedupe",
+      "name": "De-duplicate mentions",
+      "operation": "Collapse mentions that share a mention identity, so the same finding produced by two extractors is counted once.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "representation",
+      "input_type": "tuple[PredictedMention, ...]",
+      "input_example": "two identical Diagnosis mentions of 'focal epilepsy'",
+      "output_type": "tuple[PredictedMention, ...]",
+      "output_example": "one Diagnosis mention of 'focal epilepsy'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/mention_identity.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.mention_identity:dedupe_mentions"
+      },
+      "governing_test": "tests/test_exectv2_deterministic_all9.py",
+      "trace_fields": ["diagnostics.entity_counts"],
+      "paper_wording": "Findings are de-duplicated by mention identity before scoring.",
+      "notes": "The only stage where one extractor's output can remove another's. It removes duplicates, never disagreements."
+    },
+    {
+      "stage_id": "exect.rules.score",
+      "name": "Score against gold",
+      "operation": "Match predicted mentions to gold annotations under the configured match policy and report per-entity and overall precision, recall, and F1.",
+      "owner": "scorer",
+      "effect_class": "benchmark_projection",
+      "input_type": "PredictedLetter plus gold annotations",
+      "input_example": "predicted Diagnosis 'focal epilepsy' against gold 'focal epilepsy'",
+      "output_type": "OverallScore plus per-entity EntityScore",
+      "output_example": "Diagnosis P/R/F1 and an overall F1",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall"
+      },
+      "governing_test": "tests/test_exectv2_scoring_match_fidelity.py",
+      "trace_fields": ["scores.overall", "scores.per_entity"],
+      "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations.",
+      "notes": "This baseline is scored over nine entities. The model-led comparison is scored over four. Never place the two overall numbers side by side without saying so."
+    }
+  ],
+  "related_paths": [
+    {
+      "name": "Published-metric reproduction",
+      "role": "historical performance control",
+      "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/published.py",
+      "note": "Reproduces the paper-derived metric view, which is not the internal clinical_headline scorer."
+    },
+    {
+      "name": "Diagnosis candidate switches",
+      "role": "rejected candidate or ablation",
+      "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/diagnosis.py",
+      "note": "include_diagnosis_resolution_candidate and include_diagnosis_benchmark_residuals are off in the selected baseline."
+    }
+  ],
+  "evidence_owners": [
+    "docs/canon/07_exect_plan11.md",
+    "docs/canon/04_scoring.md"
+  ]
+}

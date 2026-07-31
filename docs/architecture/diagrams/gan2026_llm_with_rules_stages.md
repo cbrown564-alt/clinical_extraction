@@ -1,0 +1,97 @@
+<!-- GENERATED FILE. Do not edit by hand.
+     Source: src/clinical_extraction/architecture/ (stage manifests +
+     executed teaching cases). Regenerate with
+     python scripts/build_architecture_docs.py -->
+
+# Gan 2026 LLM with rules: stage diagram
+
+> The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.
+
+Node shape carries the ownership. Rounded nodes are model-owned. Rectangles are deterministic. Hexagons are gates. Stages that may change clinical meaning are highlighted.
+
+```mermaid
+flowchart TD
+  letter([source letter])
+  gan_hybrid_build_prompt["Build the structured-events prompt"]
+  letter --> gan_hybrid_build_prompt
+  gan_hybrid_model_call("Model extracts events and selects the answer")
+  gan_hybrid_build_prompt --> gan_hybrid_model_call
+  gan_hybrid_json_schema_repair["Repair JSON dialect and payload shape"]
+  gan_hybrid_model_call --> gan_hybrid_json_schema_repair
+  gan_hybrid_format_only_retry["Format-only retry local models"]
+  gan_hybrid_json_schema_repair --> gan_hybrid_format_only_retry
+  gan_hybrid_schema_validation{{"Validate the extraction schema"}}
+  gan_hybrid_format_only_retry --> gan_hybrid_schema_validation
+  gan_hybrid_normalize_events["Normalize every event"]
+  gan_hybrid_schema_validation --> gan_hybrid_normalize_events
+  gan_hybrid_resolve_label["Resolve the label from the model's selection"]
+  gan_hybrid_normalize_events --> gan_hybrid_resolve_label
+  gan_hybrid_repair_selected_evidence["Repair 1 - evidence-based label repair"]
+  gan_hybrid_resolve_label --> gan_hybrid_repair_selected_evidence
+  gan_hybrid_repair_monthly_diary["Repair 2 - monthly diary"]
+  gan_hybrid_repair_selected_evidence --> gan_hybrid_repair_monthly_diary
+  gan_hybrid_repair_usual_interval["Repair 3 - usual interval"]
+  gan_hybrid_repair_monthly_diary --> gan_hybrid_repair_usual_interval
+  gan_hybrid_repair_typical_over_ytd["Repair 4 - typical rate over year-to-date"]
+  gan_hybrid_repair_usual_interval --> gan_hybrid_repair_typical_over_ytd
+  gan_hybrid_repair_breakthrough["Repair 5 - breakthrough seizures"]
+  gan_hybrid_repair_typical_over_ytd --> gan_hybrid_repair_breakthrough
+  gan_hybrid_repair_non_epileptic["Repair 6 - non-epileptic events"]
+  gan_hybrid_repair_breakthrough --> gan_hybrid_repair_non_epileptic
+  gan_hybrid_repair_residual_jerk["Repair 7 - residual jerks"]
+  gan_hybrid_repair_non_epileptic --> gan_hybrid_repair_residual_jerk
+  gan_hybrid_repair_post_change_burst["Repair 8 - post-change burst"]
+  gan_hybrid_repair_residual_jerk --> gan_hybrid_repair_post_change_burst
+  gan_hybrid_repair_dated_sequence["Repair 9 - dated sequence"]
+  gan_hybrid_repair_post_change_burst --> gan_hybrid_repair_dated_sequence
+  gan_hybrid_repair_elapsed_anchor["Repair 10 - elapsed since anchor"]
+  gan_hybrid_repair_dated_sequence --> gan_hybrid_repair_elapsed_anchor
+  gan_hybrid_scorable_label_check{{"Check the label is scorable"}}
+  gan_hybrid_repair_elapsed_anchor --> gan_hybrid_scorable_label_check
+  gan_hybrid_evidence_containment{{"Check evidence is an exact substring"}}
+  gan_hybrid_scorable_label_check --> gan_hybrid_evidence_containment
+  gan_hybrid_score["Project to Purist and Pragmatic scoring"]
+  gan_hybrid_evidence_containment --> gan_hybrid_score
+
+  class gan_hybrid_build_prompt transport_or_schema;
+  class gan_hybrid_model_call clinical_meaning;
+  class gan_hybrid_json_schema_repair transport_or_schema;
+  class gan_hybrid_format_only_retry transport_or_schema;
+  class gan_hybrid_schema_validation validation_gate;
+  class gan_hybrid_normalize_events representation;
+  class gan_hybrid_resolve_label representation;
+  class gan_hybrid_repair_selected_evidence clinical_meaning;
+  class gan_hybrid_repair_monthly_diary clinical_meaning;
+  class gan_hybrid_repair_usual_interval clinical_meaning;
+  class gan_hybrid_repair_typical_over_ytd clinical_meaning;
+  class gan_hybrid_repair_breakthrough clinical_meaning;
+  class gan_hybrid_repair_non_epileptic clinical_meaning;
+  class gan_hybrid_repair_residual_jerk clinical_meaning;
+  class gan_hybrid_repair_post_change_burst clinical_meaning;
+  class gan_hybrid_repair_dated_sequence clinical_meaning;
+  class gan_hybrid_repair_elapsed_anchor clinical_meaning;
+  class gan_hybrid_scorable_label_check validation_gate;
+  class gan_hybrid_evidence_containment validation_gate;
+  class gan_hybrid_score benchmark_projection;
+  classDef clinical_meaning fill:#fbe9e7,stroke:#c0392b,stroke-width:2px;
+  classDef representation fill:#f4f6f8,stroke:#7f8c8d;
+  classDef transport_or_schema fill:#fbfbfb,stroke:#bdc3c7;
+  classDef validation_gate fill:#eef7ee,stroke:#27ae60;
+  classDef benchmark_projection fill:#eef0fb,stroke:#5b6abf;
+```
+
+## Stages that can change the clinical answer
+
+| Stage | Owner | What it may change |
+| --- | --- | --- |
+| `gan.hybrid.model_call` | model | One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale. |
+| `gan.hybrid.repair.selected_evidence` | rules | Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate. |
+| `gan.hybrid.repair.monthly_diary` | rules | Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard. |
+| `gan.hybrid.repair.usual_interval` | rules | Convert a stated usual interval between seizures into a rate label when the ledger supports it. |
+| `gan.hybrid.repair.typical_over_ytd` | rules | When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate. |
+| `gan.hybrid.repair.breakthrough` | rules | Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background. |
+| `gan.hybrid.repair.non_epileptic` | rules | Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer. |
+| `gan.hybrid.repair.residual_jerk` | rules | Decide whether residual myoclonic jerks count toward the current seizure-frequency answer. |
+| `gan.hybrid.repair.post_change_burst` | rules | Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate. |
+| `gan.hybrid.repair.dated_sequence` | rules | Derive a rate from a sequence of individually dated seizures and the window they span. |
+| `gan.hybrid.repair.elapsed_anchor` | rules | Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label. |

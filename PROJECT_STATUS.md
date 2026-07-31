@@ -1,6 +1,7 @@
 # Project status
 
-Last updated: 2026-07-31 after six-model capability/cost/error-pattern report extension
+Last updated: 2026-07-31 after the six-model capability/cost/error-pattern
+report extension and the architecture-recovery documentation layer
 
 ## Current outcome
 
@@ -22,6 +23,14 @@ A companion policy catalog names the active selection, repair, assembly, and
 scoring conventions with implications, a help case, a hurt case, and where
 each lives (gold, prompt, fixed code, scorer, or architecture). Owner:
 [clinical selection policy catalog](docs/research/clinical_selection_policy_catalog_2026-07-31.md).
+
+An explanatory architecture layer now states, for each of the six selected
+task-method pairs, how a record moves through it and who owns each change.
+Six machine-readable stage manifests drive generated method cards, diagrams,
+and two teaching cases that execute the real pipelines; a CI drift gate fails
+if the published explanation stops matching the code. No prediction-bearing
+code changed and no score moved. Owner:
+[architecture layer](docs/architecture/README.md).
 
 Gan has complete selected six-model v0.5 `dev750` and aggregate-only `test450`
 panels. The development panel contains 4,500 unique row traces with the frozen

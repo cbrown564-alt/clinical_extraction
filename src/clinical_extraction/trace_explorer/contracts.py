@@ -74,11 +74,28 @@ class DiagnosticSeverity(StrEnum):
     ERROR = "error"
 
 
+class OwnerKind(StrEnum):
+    """Who performed a change.
+
+    A change that alters clinical meaning must name a deterministic rule and
+    rule category - unless the model itself made the change, which has no
+    deterministic rule to name. Before this distinction existed a trace could
+    not express "the model made a clinical selection", which is exactly the
+    prediction-ownership misstatement reported in the 2026-07-30 pipeline
+    understandability review.
+    """
+
+    MODEL = "model"
+    DETERMINISTIC = "deterministic"
+    SCORER = "scorer"
+
+
 class OperationOwner(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     component_id: str = Field(min_length=1)
     display_name: str = Field(min_length=1)
+    owner_kind: OwnerKind = OwnerKind.DETERMINISTIC
 
 
 class TraceDiagnostic(BaseModel):
@@ -157,10 +174,17 @@ class TraceChange(BaseModel):
     def validate_change_category(self) -> TraceChange:
         if self.kind is ChangeKind.FORMAT_REPAIR and self.clinical_meaning_changed is not False:
             raise ValueError("format-only repair must state that clinical meaning is unchanged")
-        if self.clinical_meaning_changed is True and (
-            self.deterministic_rule is None or self.rule_category is None
+        if (
+            self.clinical_meaning_changed is True
+            and self.operation_owner.owner_kind is OwnerKind.DETERMINISTIC
+            and (self.deterministic_rule is None or self.rule_category is None)
         ):
             raise ValueError("a deterministic semantic change requires its rule and rule category")
+        if (
+            self.operation_owner.owner_kind is OwnerKind.MODEL
+            and self.deterministic_rule is not None
+        ):
+            raise ValueError("a model-owned change must not claim a deterministic rule")
         return self
 
 
