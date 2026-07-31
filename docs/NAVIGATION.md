@@ -31,6 +31,7 @@
 | ExECT Luna prompt A/B/C (dev140 + aggregate-only test60) | [dev140 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md), [test60 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md), [test60 panel](../experiments/exectv2_luna_prompt_variants_test60_20260731/panel.json), and [residual map](experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md) |
 | ExECT joint/combined policy (archived; not active) | [archive index](experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md) and [decision 0045](decisions/0045-exect-default-policy-not-joint-combined.md) |
 | Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
+| Why the residual error floor persists (plain-English synthesis) | [error-floor audit](research/why_the_error_floor_persists_2026-07-31.md) |
 | ExECT six-model SF over-inference | [protocol](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md) and [result](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md) |
 | ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
 | ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
