@@ -10,10 +10,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.pipeline import (
     build_finding_assembly,

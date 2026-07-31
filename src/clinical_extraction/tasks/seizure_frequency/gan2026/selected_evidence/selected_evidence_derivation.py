@@ -51,13 +51,6 @@ def prediction_label_from_selected_evidence(
     if monthly_diary:
         return monthly_diary
 
-    # Only promote range-over-window before early-rate when the evidence uses an
-    # ``or`` count range. Broader promotion regresses ordinary monthly rates.
-    if re.search(r"\b\d+\s+or\s+\d+\b", text):
-        range_count = range_count_over_window(text)
-        if range_count:
-            return range_count
-
     early_rate = early_rate_label_from_selected_evidence(text)
     if early_rate:
         return early_rate

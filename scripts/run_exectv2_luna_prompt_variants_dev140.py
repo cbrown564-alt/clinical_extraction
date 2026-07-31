@@ -791,7 +791,10 @@ def _render_report(summary: Mapping[str, Any]) -> str:
         "",
         "## Results",
         "",
-        "| Variant | Overall F1 (default repair) | SF model-owned correct | SF final correct | SF nonempty model-owned | B-target SF model-owned |",
+        (
+            "| Variant | Overall F1 (default repair) | SF model-owned correct | "
+            "SF final correct | SF nonempty model-owned | B-target SF model-owned |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for slug, item in summary["variants"].items():
@@ -815,7 +818,10 @@ def _render_report(summary: Mapping[str, Any]) -> str:
                 "",
                 "## Deltas versus A",
                 "",
-                "| Variant | Δ joint F1 | Δ SF model-owned | Δ SF joint | Δ SF nonempty model-owned | Δ B-target SF | Δ Dx joint |",
+                (
+                    "| Variant | Δ joint F1 | Δ SF model-owned | Δ SF joint | "
+                    "Δ SF nonempty model-owned | Δ B-target SF | Δ Dx joint |"
+                ),
                 "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
             ]
         )
