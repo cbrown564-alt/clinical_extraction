@@ -514,7 +514,10 @@ def _render_report(panel: Mapping[str, Any]) -> str:
         "",
         "## Results",
         "",
-        "| Variant | Overall F1 (default repair) | SF F1 | SF model-owned correct | SF final correct | Dx final correct |",
+        (
+            "| Variant | Overall F1 (default repair) | SF F1 | "
+            "SF model-owned correct | SF final correct | Dx final correct |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for item in panel["conditions"]:
@@ -538,7 +541,10 @@ def _render_report(panel: Mapping[str, Any]) -> str:
                 "",
                 "## Deltas versus A",
                 "",
-                "| Variant | Δ joint F1 | Δ SF joint F1 | Δ SF model-owned | Δ SF joint | Δ Dx joint |",
+                (
+                    "| Variant | Δ joint F1 | Δ SF joint F1 | Δ SF model-owned | "
+                    "Δ SF joint | Δ Dx joint |"
+                ),
                 "| --- | ---: | ---: | ---: | ---: | ---: |",
             ]
         )

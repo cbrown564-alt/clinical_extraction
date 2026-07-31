@@ -70,8 +70,8 @@
       {
         "role": "prompt",
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders_full.py",
-        "sha256": "afb05c9fd91fef20fd60b3a9bda5ab9bf59ea30755028e1cfca37778a01b44af",
-        "bytes": 3949
+        "sha256": "327a43905dea7e7f1c30675ed59518acb0921fa6323975bd7c3ffefa812c17e9",
+        "bytes": 4726
       },
       {
         "role": "prompt",
@@ -124,8 +124,8 @@
       {
         "role": "repair",
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/benchmark_prediction_repair.py",
-        "sha256": "0b0adfdceb20a4e82b4814b92aba6a974c7bda09e11c37da0c76cd32a0335a9a",
-        "bytes": 32181
+        "sha256": "552c976a4cb4701acf220dceca7b01b6541e2a7a09bf56011084c5e46e00a0a8",
+        "bytes": 35331
       },
       {
         "role": "repair",
@@ -196,8 +196,8 @@
       {
         "role": "scorer",
         "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
-        "sha256": "8ebc5a9b0b08fe787f7074cc4125b58c833839a1d3495ac7cc4119dd009ebcb4",
-        "bytes": 8900
+        "sha256": "234c2fa3cc0684d8313017e950b2d8ba5e952bb3593565581ddd1661bc49ae75",
+        "bytes": 9633
       },
       {
         "role": "scorer",
@@ -956,8 +956,8 @@
         },
         {
           "path": "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
-          "sha256": "26282dfab0e3d0d591b9cb9a272235027e95dc91b8429f331515074c0b97bec6",
-          "bytes": 7899,
+          "sha256": "56c7b2fc22539405033f4343ba011cb3e0a3156c8f88971f44060871c7b77c20",
+          "bytes": 8421,
           "retrieval": "git_path"
         },
         {
@@ -1366,7 +1366,7 @@
       },
       "artifacts": [
         {"path": "experiments/hosted_holdout_panels_20260715.json", "sha256": "afa50dac11bfef8cd649e7de6853b37d16518746326e31721c95fa197bca8c3a", "bytes": 11702, "retrieval": "git_path"},
-        {"path": "docs/experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md", "sha256": "39fa4f5f680ef3a1376c8a51b70abafeb2f0a55f35213866d61d9ca1797cd0ef", "bytes": 5192, "retrieval": "git_path"},
+        {"path": "docs/experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md", "sha256": "cf9b745460e1ab698b07f48d20ba190457788323d2af4ff20fd4de2f98325825", "bytes": 5252, "retrieval": "git_path"},
         {"path": "configs/exectv2/six_model_comparison/gpt41mini_dev140.json", "sha256": "ecbda0e4620e9a85649744a2013a6a5d1452b71f7a2f9d215438c29aa994e479", "bytes": 4320, "retrieval": "git_path"},
         {"path": "experiments/exectv2_six_model_single_call_gpt41mini_dev140_20260715.json", "sha256": "95ecc5609d5f0e3b669c50fbe18177bf1e3cff690a71bec17f98fa45a77af6d2", "bytes": 586932, "retrieval": "git_path"},
         {"path": "docs/experiments/exectv2/reliability/exectv2_six_model_single_call_gpt41mini_dev140_2026-07-15.md", "sha256": "b97548e52fda6704c40f088bb69abdbe19cf8dc6540ffd993cb4292c1a7b5919", "bytes": 5476, "retrieval": "git_path"},
@@ -1518,8 +1518,8 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "8d7e96b3e51254f4ccaa424c946827335d71009ec4274274885074aa9b6a9989",
-          "bytes": 16640,
+          "sha256": "06b605de5164fa316af95d5078bc7f5b2df4ebc9a63575667d6c854c1ad25bf9",
+          "bytes": 20457,
           "retrieval": "git_path"
         }
       ]
@@ -1889,8 +1889,8 @@
         },
         {
           "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
-          "sha256": "a0586d28c16f184d7482f9178fc582e3491bba781054959e77bc60e9d5c126b8",
-          "bytes": 56433,
+          "sha256": "f41c8f342e08d940b60105562ba18f988c7e4d2ac6fd1598a06758fc3a34197f",
+          "bytes": 64432,
           "retrieval": "git_path"
         },
         {
@@ -1907,8 +1907,8 @@
         },
         {
           "path": "tests/test_gan2026_hybrid_structured_events_contract.py",
-          "sha256": "60232781144d2c785bc3a127f0ab2068cf9b5fe6565eea746aef2734241c1106",
-          "bytes": 21922,
+          "sha256": "733c1f13c008b9801fe9a5605b5e8cd15fb908e2bb89f5d8223b9ea33c800416",
+          "bytes": 24025,
           "retrieval": "git_path"
         }
       ]
@@ -1958,8 +1958,8 @@
         },
         {
           "path": "docs/research/shared_reliability_scorecard_2026-07-18.md",
-          "sha256": "512404ad253681e8a0a20abe756e2ed21c4b6e55ec276726751b3d77c4f42125",
-          "bytes": 16054,
+          "sha256": "3526f4c5c6482c365d768ad37a275d791f325d6af88263bcff8d00f04d9af1ab",
+          "bytes": 16333,
           "retrieval": "git_path"
         },
         {
@@ -2006,8 +2006,8 @@
         },
         {
           "path": "docs/canon/10_paper_provenance.md",
-          "sha256": "6cdc3aebaf0015f29458b79707b4b1c32c5e9da318f3234933541d40aaa2e53f",
-          "bytes": 11100,
+          "sha256": "92636ac6ac867f5a1da69828664e2f8afbb8a930ae890ac016a965ef1d2a79bb",
+          "bytes": 12301,
           "retrieval": "git_path"
         }
       ]

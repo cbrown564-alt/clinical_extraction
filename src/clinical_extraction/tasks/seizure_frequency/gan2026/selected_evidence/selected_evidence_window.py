@@ -73,6 +73,15 @@ def range_count_over_window(text: str) -> str | None:
     if not range_match:
         return None
 
+    # An explicit ``per <unit>`` after the range is already a rate, not a
+    # count-over-window. Do not rebind it to a distant observation window.
+    after_range = text[range_match.end() : range_match.end() + 80]
+    if re.search(
+        r"^(?:\s+[a-z]+(?:-[a-z]+)?){0,6}\s+per\s+(?:day|week|month|year)s?\b",
+        after_range,
+    ):
+        return None
+
     denominator = window.group("count") or "1"
     unit = window.group("unit")
     return _format_prediction_rate(
