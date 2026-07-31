@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-31 after plain-English residual error-floor audit
+Last updated: 2026-07-31 after six-model capability/cost/error-pattern report extension
 
 ## Current outcome
 
@@ -36,11 +36,18 @@ These panels are retained paper evidence with aggregate-only test limits.
 Qwen and Gemma have the same claim status as the four hosted models; their
 local routes and no-call aggregate reparse provenance remain explicit caveats.
 
-The requested six-model comparison report is complete. A predeclared no-call
-ExECT Seizure Frequency reliability replay also covers all six models on
-`dev140`. Its intended unknown-only denominator is empty, so it closes that
-cross-task question as unmeasurable from current ExECT gold rather than
-substituting empty-gold rows.
+The requested six-model comparison report is complete. It now also includes
+external Artificial Analysis Intelligence and Healthcare & Medical Index
+context for all six roster models, clearly labelled list-price / AA latency
+illustrations (not matched run telemetry), and a development error-pattern
+synthesis from Gan `dev750` attribution plus ExECT family/SF tables. Machine
+owner:
+[external capability/cost snapshot](experiments/six_model_external_capability_cost_snapshot_20260731.json).
+
+A predeclared no-call ExECT Seizure Frequency reliability replay also covers
+all six models on `dev140`. Its intended unknown-only denominator is empty, so
+it closes that cross-task question as unmeasurable from current ExECT gold
+rather than substituting empty-gold rows.
 
 The shared paper-facing reliability framework is implemented in the working
 tree. Gan and ExECT now have explicit results for the same eight questions,

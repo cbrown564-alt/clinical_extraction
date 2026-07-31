@@ -5,7 +5,9 @@ Updated: 2026-07-31
 Status: primary test comparison complete; Gan v0.5 six-model `dev750` coverage
 complete; Gan LLM-with-rules ruleset finalized 2026-07-31; ExECT active
 assembly policy is `default` / `default` (decision 0045; joint/combined
-archived); test results remain aggregate-only
+archived); test results remain aggregate-only; external Artificial Analysis
+capability/cost context and development error-pattern synthesis added
+2026-07-31
 
 ## Terms used in this report
 
@@ -45,6 +47,21 @@ correlation is `0.61`, where `1.00` would mean the two rankings were identical.
 The tasks use different data and scores, so this does not establish general
 model superiority.
 
+External Artificial Analysis context aligns with a compressed quality ladder:
+Sol leads the Intelligence Index and Healthcare & Medical Index among the six,
+but Luna and DeepSeek sit close on Healthcare while list prices differ by more
+than an order of magnitude. On these two extraction tasks the absolute gaps are
+modest (ExECT test60 about `0.72`–`0.80`; Gan frozen Purist about `0.76`–
+`0.83`). Smaller or cheaper models can therefore look “good enough” on task
+score even when general/domain indexes separate them more clearly. Matched
+run tokens, latency, and spend were not retained; dollar figures below are
+clearly labelled external list-price illustrations.
+
+Development error ownership is partly shared and partly idiosyncratic: every
+Gan model is dominated by `rate_denominator` rows, while residual first-failure
+owners differ (Qwen heavy on `evidence_selection`; Sol/Luna almost entirely
+`llm_clinical_selection`).
+
 Adding deterministic checks improves the ExECT development score for every
 model. The matched Gan v0.5 six-model `dev750` panel is complete; do not combine
 the historical v0.7 `dev750` panel with the selected v0.5 `test450` results.
@@ -66,6 +83,8 @@ raw outputs through the final ruleset.
 | Primary measure | Internal clinical-fact F1 | Purist accuracy |
 | Best test result | GPT-5.6 Sol: `0.80` | GPT-5.6 Sol: `0.83` frozen panel; `0.85` final-ruleset no-call replay |
 | Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | Matched v0.5 `dev750` complete; final ruleset lifts most models on no-call replay |
+| External capability context | Same six models on AA Intelligence + Healthcare indexes (not task scores) | Same |
+| External cost context | List prices / AA latency; not matched run telemetry | Same |
 | Main limitation | Internal metric; 59 loadable test letters | Locked test split; final-ruleset scores are no-call replays of saved raws |
 
 ## 1. What the two tasks measure
@@ -351,7 +370,118 @@ Other limits on the main scores are:
 - Results for each part of the ExECT letter are reported, but neither task measures
   demographic fairness or deployment calibration.
 
-## 4. What the report does and does not establish
+## 4. External capability context (Artificial Analysis)
+
+No independent MedQA board covers all six roster models. This section uses the
+Artificial Analysis **Intelligence Index** (general capability) and
+**Healthcare & Medical Index** (domain composite: medical knowledge, agentic
+knowledge work, non-hallucination, reasoning, customer interaction). Values
+were retrieved 2026-07-31 from the public AA pages and are stored in
+[`experiments/six_model_external_capability_cost_snapshot_20260731.json`](../../experiments/six_model_external_capability_cost_snapshot_20260731.json).
+
+These scores are **not** ExECT or Gan results. AA “max” / reasoning variants
+are not asserted to match the project’s extraction temperature or reasoning
+settings. Qwen and Gemma use local Ollama in this project; AA still scores the
+same model families independently.
+
+| Roster model | AA variant used | Intelligence Index | Healthcare Index | Healthcare provenance |
+| --- | --- | ---: | ---: | --- |
+| GPT-5.6 Sol | GPT-5.6 Sol (max) | 58.9 | 45.0 | Matches AA published chart |
+| DeepSeek V4 Flash | V4 Flash 0731 (max) | 49.9 | 36.4 | Matches AA published chart |
+| GPT-5.6 Luna | GPT-5.6 Luna (max) | 51.2 | 35.6 | Matches AA published chart |
+| Qwen 3.6:35B | Qwen3.6 35B A3B (Reasoning) | 31.6 | 22.7 | Recomputed from AA component fields with published weights |
+| Gemma 4 26B | Gemma 4 26B A4B (Reasoning) | 25.7 | 15.5 | Recomputed from AA component fields with published weights |
+| GPT-4.1-mini | GPT-4.1 mini | 14.8 | 11.7 | Recomputed from AA component fields with published weights |
+
+Sol leads both indexes. Luna and DeepSeek are close on Healthcare despite a
+large list-price gap (next section). Mini and the two local open-weight models
+trail on both indexes more than they trail on the ExECT/Gan task tables above.
+That supports the intended reading: stronger general/domain models tend to do
+better here, but the **task** gaps are smaller than the **index** gaps.
+
+## 5. External list-price cost and latency context
+
+**Label:** the following are external list-price and Artificial Analysis
+latency estimates, not measured tokens, wall time, or dollars from the ExECT
+or Gan comparison runs. The retained efficiency work already closed matched
+token/cost/latency reconstruction as unavailable.
+
+Hosted first-party or median hosted prices from AA (USD per 1M tokens):
+
+| Roster model | Input $/M | Output $/M | AA blended $/M (7:2:1 where published) | AA output tok/s | AA TTFT (s) | Project route |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| GPT-5.6 Sol | 5.00 | 30.00 | 4.35 | 65.5 | 147.3 | Hosted |
+| GPT-5.6 Luna | 0.20 | 1.20 | 0.17 | 184.4 | 116.5 | Hosted |
+| GPT-4.1-mini | 0.40 | 1.60 | 0.31 | 83.5 | 0.92 | Hosted |
+| DeepSeek V4 Flash | 0.14 | 0.28 | 0.06 | — | — | Hosted |
+| Qwen 3.6:35B | 0.25 | 1.49 | — | 140.8 | — | Local Ollama (table shows hosted median proxy) |
+| Gemma 4 26B | 0.13 | 0.40 | 0.13 | — | — | Local Ollama (table shows hosted median proxy) |
+
+Illustrative only — assume 3,000 input and 1,500 output tokens per note, with
+**no** reasoning/thinking surplus:
+
+| Roster model | Illustrative $/1,000 notes | Relative to Sol |
+| --- | ---: | ---: |
+| GPT-5.6 Sol | 60.00 | 1.00× |
+| GPT-4.1-mini | 3.60 | 0.06× |
+| Qwen 3.6:35B (hosted proxy) | 2.97 | 0.05× |
+| GPT-5.6 Luna | 2.40 | 0.04× |
+| Gemma 4 26B (hosted proxy) | 0.99 | 0.017× |
+| DeepSeek V4 Flash | 0.84 | 0.014× |
+
+Local Qwen/Gemma project runs do not incur that hosted API bill; their true
+marginal cost is hardware, energy, and operator time, which this snapshot does
+not measure. Reasoning models can also emit large thinking-token volumes, so
+real Sol/Luna/DeepSeek spend may exceed the non-thinking illustration.
+
+Read with the task tables: Luna and DeepSeek approach Sol’s ExECT/Gan scores
+and Healthcare Index at a small fraction of Sol’s list price; Gemma trails
+more on task score and indexes but is cheap as a hosted proxy and free at the
+API layer when run locally.
+
+## 6. Do error patterns track model “level”?
+
+This section uses **development** evidence only (`dev750` Gan attribution;
+ExECT `dev140` family and SF-state tables above). Locked test rows remain
+aggregate-only.
+
+### Shared floor (not model-idiosyncratic)
+
+On Gan `dev750`, every model’s clinical-subproblem histogram is dominated by
+`rate_denominator`, with large `seizure_free_boundary` and
+`cluster_or_diary_aggregation` masses. That matches the residual-floor audit:
+the hard core is forced clinical selection under annotation conventions, not a
+missing-quote problem that only weak models show.
+
+On ExECT `dev140`, Seizure Frequency is the weakest family for every model;
+Prescription or Investigations is usually strongest. Deterministic rules raise
+clinical-headline F1 for every model by about `0.08`–`0.11`.
+
+### Idiosyncratic residual owners
+
+Gan `dev750` first-failure owners among rows that are not `none`:
+
+| Model | Final Purist | `llm_clinical_selection` | `evidence_selection` | Other owners |
+| --- | ---: | ---: | ---: | --- |
+| GPT-5.6 Sol | 656/750 | 88 (92.6% of owned failures) | 1 | 6 deterministic |
+| GPT-5.6 Luna | 646/750 | 96 (89.7%) | 3 | 8 format/deterministic |
+| Gemma 4 26B | 643/750 | 101 (82.8%) | 15 | 6 |
+| DeepSeek V4 Flash | 619/750 | 121 (82.3%) | 19 | 7 |
+| GPT-4.1-mini | 668/750 | 70 (53.0%) | 57 (43.2%) | 5 |
+| Qwen 3.6:35B | 660/750 | 55 (22.8%) | 183 (75.9%) | 3 |
+
+Stronger hosted models fail almost entirely at clinical selection after finding
+evidence. Qwen’s residual is mostly evidence-selection / grounding under the
+same prompt and repair stack. Mini splits between selection and evidence.
+Subproblem mixes also differ at the margin (Luna/DeepSeek higher
+`uncertainty_boundary`; Qwen/mini higher `cluster_or_diary_aggregation`).
+
+**Reading:** model “level” predicts aggregate score and shifts the dominant
+failure owner somewhat, but the shared clinical-selection floor remains. Error
+shape is therefore **partly level-linked and partly idiosyncratic**, not a
+clean weak-versus-strong taxonomy.
+
+## 7. What the report does and does not establish
 
 The report supports:
 
@@ -365,15 +495,20 @@ The report supports:
   the 2026-07-31 floors and narrow guards);
 - the result, limited to these task-specific procedures, that Sol leads both
   selected frozen test panels and the final-ruleset `test450` no-call replay;
-  and
+- external AA Intelligence and Healthcare Index context for the same six model
+  families, with list-price and AA latency illustrations; 
+- development evidence that residual Gan failures share a clinical-selection
+  floor while first-failure owners differ by model; and
 - a negative, data-limited result for transferring Gan's unknown-versus-rate
   measure to ExECT.
 
 It does not support general model superiority, one reliability score combined
 across tasks, applying Gan findings to ExECT, the published ExECT benchmark,
-estimates of confidence after deployment, proof that quotations clinically
-support the extracted facts, or clinical validation. Independent clinical
-review is required before making stronger clinical-validity claims.
+matched run token/latency/dollar rankings, treating AA max-effort scores as the
+extraction runtime, estimates of confidence after deployment, proof that
+quotations clinically support the extracted facts, or clinical validation.
+Independent clinical review is required before making stronger clinical-
+validity claims.
 
 ## Sources and technical detail
 
@@ -382,6 +517,9 @@ review is required before making stronger clinical-validity claims.
 - [Retained evidence index](../experiments/retained_evidence_manifest.md)
 - [Shared eight-criterion scorecard](shared_reliability_scorecard_2026-07-18.md)
 - [Reliability framework](../design/reliability_evaluation_framework.md)
+- [External AA capability/cost snapshot](../../experiments/six_model_external_capability_cost_snapshot_20260731.json)
+- [Artificial Analysis Healthcare & Medical Index](https://artificialanalysis.ai/models/capabilities/healthcare-and-medical)
+- [Why the error floor persists](why_the_error_floor_persists_2026-07-31.md)
 - [ExECT test60 protocol](../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md)
 - [Gan v0.5 hosted test450 protocol](../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
 - [Gan v0.5 local and replay protocol](../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
