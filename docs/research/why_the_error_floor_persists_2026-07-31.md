@@ -415,7 +415,8 @@ specific annotated reading.
 3. **Make competing-rate and uncertainty policy explicit.** If gold prefers
    typical pattern over year-to-date totals, or observational rates over
    diagnostic caution, that is benchmark policy. Document it as such rather
-   than treating model caution as stupidity.
+   than treating model caution as stupidity. See the
+   [policy catalog](clinical_selection_policy_catalog_2026-07-31.md).
 4. **Accept that empty or multi-annotated gold needs separate accounting.**
    Empty-gold extractions and multiplicity conventions should not drive prompt
    success criteria as if they were ordinary false facts.

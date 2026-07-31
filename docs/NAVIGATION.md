@@ -32,6 +32,7 @@
 | ExECT joint/combined policy (archived; not active) | [archive index](experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md) and [decision 0045](decisions/0045-exect-default-policy-not-joint-combined.md) |
 | Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
 | Why the residual error floor persists (plain-English synthesis) | [error-floor audit](research/why_the_error_floor_persists_2026-07-31.md) |
+| Clinical selection and scoring policies (help/hurt catalog) | [policy catalog](research/clinical_selection_policy_catalog_2026-07-31.md) |
 | ExECT six-model SF over-inference | [protocol](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md) and [result](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md) |
 | ExECT paper-derived metric result | [published-metric replay](experiments/exectv2/reliability/exectv2_published_metric_reproduction_results_2026-07-14.md) |
 | ExECT Diagnosis review and component result | [Diagnosis component comparison](experiments/exectv2/diagnosis/exectv2_diagnosis_component_comparison_2026-07-14.md) |
