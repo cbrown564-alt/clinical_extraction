@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-31 after decision 0045 demotes ExECT joint/combined policy
+Last updated: 2026-07-31 after plain-English residual error-floor audit
 
 ## Current outcome
 
@@ -8,6 +8,20 @@ The fixed one-call ExECTv2 comparison is implemented for all six selected
 models on `dev140` and has aggregate-only `test60` results for the same six
 models. The retained aggregate panel records all six test60 conditions with
 equal canonical status; sealed row artifacts remain ignored and uninspectable.
+
+A plain-English residual-floor synthesis now joins the retained Gan and ExECT
+mechanism evidence. It concludes that the remaining ~10–20% gap is mostly
+forced clinical selection under annotation conventions (competing rates,
+uncertainty vs coded rates, multi-state profiles, diagnosis inventory), not
+missing quotes or forgotten instructions; scoring/dialect and rule
+over/under-correction are a meaningful minority; further prompt or rule
+tuning is a marginal lever. Owner:
+[why the error floor persists](docs/research/why_the_error_floor_persists_2026-07-31.md).
+
+A companion policy catalog names the active selection, repair, assembly, and
+scoring conventions with implications, a help case, a hurt case, and where
+each lives (gold, prompt, fixed code, scorer, or architecture). Owner:
+[clinical selection policy catalog](docs/research/clinical_selection_policy_catalog_2026-07-31.md).
 
 Gan has complete selected six-model v0.5 `dev750` and aggregate-only `test450`
 panels. The development panel contains 4,500 unique row traces with the frozen

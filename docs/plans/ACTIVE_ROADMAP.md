@@ -195,6 +195,13 @@ Owners: [archive index](../experiments/exectv2/reliability/archive/exectv2_joint
 [Luna dev140](../experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md),
 [Luna test60](../experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md).
 
+Cross-track residual-floor audit (2026-07-31): plain-English synthesis of why
+~85–90% Gan and ~0.8 ExECT ceilings persist after prompt and rule work. Next
+levers are selection architecture, multi-layer scoring, explicit gold policy,
+and hard-case review — not another open-ended prompt/rule pass.
+Owners: [error-floor audit](../research/why_the_error_floor_persists_2026-07-31.md),
+[policy catalog](../research/clinical_selection_policy_catalog_2026-07-31.md).
+
 ## Limits
 
 - GEPA optimization is closed; one saved LLM-only run remains as a negative
