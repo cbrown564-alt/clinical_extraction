@@ -59,6 +59,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repa
     residual_jerk_label_from_events as _residual_jerk_label_from_events,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
+    typical_recurring_rate_over_ytd_from_events as _typical_recurring_rate_over_ytd_from_events,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families import (
     usual_interval_label_from_events as _usual_interval_label_from_events,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
@@ -91,13 +94,25 @@ _small_number_words_to_digits = llm_structured_temporal.small_number_words_to_di
 PROMPT_VERSION_V0_5 = "gan2026_hybrid_structured_events_v0.5"
 PROMPT_VERSION_V0_6 = "gan2026_hybrid_structured_events_v0.6"
 PROMPT_VERSION_V0_7 = "gan2026_hybrid_structured_events_v0.7"
+PROMPT_VERSION_V0_8_LUNA_RATE = "gan2026_hybrid_structured_events_v0.8_luna_rate"
+PROMPT_VERSION_V0_8_LUNA_CURRENT = (
+    "gan2026_hybrid_structured_events_v0.8_luna_current"
+)
 # Primary prompt version. v0.5 is the shortest shared cross-model task and the
 # only version selected for paper-facing llm_with_rules comparisons. v0.6 and
 # v0.7 remain selectable for historical replay and prompt-interaction studies.
+# v0.8 Luna variants are Luna-only development candidates; they must not replace
+# the frozen six-model v0.5 panel.
 PROMPT_VERSION = PROMPT_VERSION_V0_5
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
-    {PROMPT_VERSION_V0_5, PROMPT_VERSION_V0_6, PROMPT_VERSION_V0_7}
+    {
+        PROMPT_VERSION_V0_5,
+        PROMPT_VERSION_V0_6,
+        PROMPT_VERSION_V0_7,
+        PROMPT_VERSION_V0_8_LUNA_RATE,
+        PROMPT_VERSION_V0_8_LUNA_CURRENT,
+    }
 )
 
 
@@ -169,6 +184,30 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
         "description": (
             "v0.7 adds a silent conservation check before selecting unknown, no_reference, "
             "or seizure_free over countable frequency, cluster, or dated-window evidence."
+        ),
+    },
+    {
+        "policy_id": "se_v0_8_luna_rate.rate_and_aggregation",
+        "controlled_variable": "luna_rate_aggregation_instruction_policy",
+        "portability": "gan2026_specific",
+        "status": "candidate",
+        "description": (
+            "Luna-only development candidate: extra plain-language instructions for "
+            "count ranges, overall versus subtype totals, cluster cadence with events "
+            "per cluster, and preferring countable period totals over vague rates. "
+            "Schema and repair stack stay frozen at v0.5."
+        ),
+    },
+    {
+        "policy_id": "se_v0_8_luna_current.current_state_boundaries",
+        "controlled_variable": "luna_current_state_boundary_instruction_policy",
+        "portability": "gan2026_specific",
+        "status": "candidate",
+        "description": (
+            "Luna-only development candidate: extra plain-language instructions for "
+            "short quiet intervals, uncertain events, dated counts versus no_reference, "
+            "and when seizure-free should not override a clearer current burden. "
+            "Schema and repair stack stay frozen at v0.5."
         ),
     },
 ]
@@ -625,7 +664,99 @@ def build_prompt_input(
                 "mentioned but the burden cannot be counted, use unknown_frequency."
             ),
         ]
+    if selected_prompt_version == PROMPT_VERSION_V0_8_LUNA_RATE:
+        instructions = payload["instructions"]
+        assert isinstance(instructions, list)
+        instructions[-1:-1] = list(_LUNA_RATE_INSTRUCTIONS)
+    if selected_prompt_version == PROMPT_VERSION_V0_8_LUNA_CURRENT:
+        instructions = payload["instructions"]
+        assert isinstance(instructions, list)
+        instructions[-1:-1] = list(_LUNA_CURRENT_INSTRUCTIONS)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
+
+
+# Luna-only development candidates. Intentionally instruction-heavier than v0.5
+# because the study tests whether plain-language clinical guidance still moves
+# LLM-only answers under a frozen schema. Keep experiment names, gold labels,
+# and residual taxonomy out of the model-facing text.
+_LUNA_RATE_INSTRUCTIONS = (
+    (
+        "When the note gives a count range such as one to three or 2 to 4 in a "
+        "stated period, keep the full range in the seizure-frequency label "
+        "(for example 1 to 3 per month). Do not collapse the range to one end, "
+        "and do not mark it unresolved_multiple only because the exact count "
+        "inside the range is uncertain."
+    ),
+    (
+        "Prefer a clear count over a stated period, such as 8 in 2 months or "
+        "11 in the past week, over a vague rate such as several times per week "
+        "or multiple per week when both describe the same current burden."
+    ),
+    (
+        "If the note gives an overall current seizure or cluster count and also "
+        "breaks that count down by seizure type, select the overall count. Do "
+        "not replace it with only the most severe or most frequent subtype."
+    ),
+    (
+        "For clusters, keep how often clusters occur and how many events occur "
+        "in a typical cluster. When both are stated, put both in the "
+        "seizure-frequency label, for example 2 cluster per month, 4 per "
+        "cluster. Do not drop the events-per-cluster side when it is present."
+    ),
+    (
+        "A short quiet spell after a recent cluster or recent count does not "
+        "erase that recent countable burden when the cluster or count is still "
+        "the current clinical story. Prefer the recent countable cluster or "
+        "count over a brief seizure-free interval measured from that same "
+        "recent burst."
+    ),
+    (
+        "When clinic or diary totals give a usable recent count, prefer those "
+        "totals over a device hint or a guess from one seizure type alone."
+    ),
+)
+
+_LUNA_CURRENT_INSTRUCTIONS = (
+    (
+        "Do not select seizure_free for a short recent quiet interval of days "
+        "or weeks when the overall current frequency is unclear. In that case "
+        "use unknown_frequency and unknown as the seizure-frequency label."
+    ),
+    (
+        "Do not select seizure_free only because the note mentions long quiet "
+        "stretches, if the note also states a current or yearly seizure rate. "
+        "Select the stated rate when it is still the current clinical burden."
+    ),
+    (
+        "Possible, uncertain, or single questionable events are not enough for "
+        "a frequency answer. Use unknown unless the note states a clear "
+        "countable current rate or cluster pattern."
+    ),
+    (
+        "Keep countable dated counts such as 2 in 6 months or 2 seizures across "
+        "named recent months as frequency_rate evidence. Do not use "
+        "no_reference when such a count exists."
+    ),
+    (
+        "If the note describes recurrent cluster days, for example events every "
+        "4 to 5 days with typically 2 seizures on those days, select "
+        "cluster_frequency and keep both the cluster timing and the typical "
+        "events per cluster. Do not collapse that pattern to unknown only "
+        "because it is not phrased as a smooth average rate."
+    ),
+    (
+        "A vague estimate such as once every few weeks should not override a "
+        "clearer statement that definite seizures have stopped, unless those "
+        "vague events are clearly current epileptic seizures with a usable "
+        "count or rate."
+    ),
+    (
+        "Occasional brief sensations that do not progress, and have no stated "
+        "rate, do not by themselves create a frequency answer. If definite "
+        "seizures have stopped for months, seizure_free may still be correct; "
+        "if the seizure picture is unclear, use unknown."
+    ),
+)
 
 
 def parse_structured_json(
@@ -743,12 +874,21 @@ def parse_structured_json_with_trace(
             extraction,
             note_text=note_text,
         )
-        if monthly_diary_label:
+        if monthly_diary_label and not _should_preserve_label_from_monthly_diary(
+            repaired_label,
+            extraction=extraction,
+        ):
             repaired_label = _replace_repaired_label(errors, repaired_label, monthly_diary_label)
     if repair_config.usual_interval_repair:
         usual_interval_label = _usual_interval_label_from_events(extraction, repaired_label)
         if usual_interval_label:
             repaired_label = _replace_repaired_label(errors, repaired_label, usual_interval_label)
+    typical_over_ytd = _typical_recurring_rate_over_ytd_from_events(
+        extraction,
+        repaired_label,
+    )
+    if typical_over_ytd:
+        repaired_label = _replace_repaired_label(errors, repaired_label, typical_over_ytd)
     if repair_config.breakthrough_repair:
         breakthrough_label = _breakthrough_label_from_events(extraction, repaired_label)
         if breakthrough_label:
@@ -882,6 +1022,46 @@ def _replace_repaired_label(errors: list[str], old_label: str, new_label: str) -
     if new_label != old_label:
         errors.append(f"final_label_repaired: {old_label!r} -> {new_label!r}")
     return new_label
+
+
+def _should_preserve_label_from_monthly_diary(
+    repaired_label: str,
+    *,
+    extraction: StructuredExtractionRecord | None = None,
+) -> bool:
+    """Block diary aggregation from overwriting selected seizure-free or week-scale rates.
+
+    Portability: ``seizure_frequency``. Protects an already-parsable model selection
+    from a multi-month diary rewrite that changes clinical meaning. Explicit
+    current-month seizure-free selections remain eligible for diary override.
+    """
+    label = (repaired_label or "").strip().lower()
+    if not label:
+        return False
+    if label.startswith("seizure free"):
+        # Basic repair may inflate "this month" to multiple year; inspect selection.
+        if extraction is not None:
+            selection_text = " ".join(
+                str(part or "")
+                for part in (
+                    extraction.selection.final_label,
+                    extraction.selection.evidence,
+                    extraction.selection.rationale,
+                )
+            ).lower()
+            if re.search(
+                r"seizure[- ]free for (?:this|the current|current|1) month\b",
+                selection_text,
+            ):
+                return False
+        return True
+    if not re.search(r"\bper\s+(?:\d+(?:\s*to\s+\d+)?\s+)?(?:day|week)\b", label):
+        return False
+    try:
+        label_to_frequency_record(label)
+    except ValueError:
+        return False
+    return True
 
 
 def _should_preserve_sustained_selected_seizure_free(

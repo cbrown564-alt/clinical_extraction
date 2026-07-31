@@ -56,6 +56,12 @@ def range_count_over_window(text: str) -> str | None:
         text,
     )
     if not window:
+        # Also accept bare ``last month`` / ``past week`` after a count range.
+        window = re.search(
+            r"\b(?:past|last)\s+(?:(?P<count>\d+)\s+)?(?P<unit>day|week|month|year)s?\b",
+            text,
+        )
+    if not window:
         return None
 
     range_match = re.search(
@@ -79,7 +85,7 @@ def single_count_over_window(text: str) -> str | None:
     match = re.search(
         r"\b(?P<count>\d+)\s+(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
         r"(?:seizure|attack|convulsion|spasm|mal|event|episode)s?\s+"
-        r"(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)?\s*"
+        r"(?:in|within|over|during|for)\s+(?:the\s+)?(?:past|last)?\s*"
         r"(?P<denominator>\d+)\s+(?P<unit>day|week|month|year)s?\b",
         text,
     )

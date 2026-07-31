@@ -321,6 +321,17 @@ def elapsed_since_anchor_label_from_events(
     return f"1 per {months} month"
 
 
+def _distinct_dated_months(
+    mentions: list[tuple[int, int, int]],
+) -> list[tuple[int, int, int]]:
+    """Collapse repeated same-month mentions; keep one entry per calendar month."""
+    by_month: dict[tuple[int, int], int] = {}
+    for month, year, count in mentions:
+        key = (month, year)
+        by_month[key] = max(by_month.get(key, 0), count)
+    return [(month, year, count) for (month, year), count in by_month.items()]
+
+
 def dated_sequence_label_from_events(
     extraction: StructuredRepairExtractionLike,
     repaired_label: str,
@@ -335,17 +346,30 @@ def dated_sequence_label_from_events(
     if "prior to this improvement" in raw_joined:
         return None
     explicit = re.search(
-        r"\b(?P<count>\d+)\s+seizures?\s+in\s+(?P<months>\d+)\s+months?\b",
+        r"\b(?P<count>\d+)\s+(?:seizures?|events?|episodes?)\s+"
+        r"(?:in|within)\s+(?P<months>\d+)\s+months?\b",
         small_number_words_to_digits(raw_joined),
     )
+    if not explicit:
+        explicit = re.search(
+            r"\b(?P<count>\d+)\s+(?:in|within)\s+(?P<months>\d+)\s+months?\b",
+            small_number_words_to_digits(raw_joined),
+        )
     if explicit:
         if not _dated_sequence_can_override(repaired_label, int(explicit.group("months"))):
             return None
         return f"{explicit.group('count')} per {explicit.group('months')} month"
 
-    dated_events: list[tuple[int, int, int]] = []
-    for text in texts:
-        dated_events.extend(_dated_event_mentions(text))
+    dated_events = _distinct_dated_months(
+        [mention for text in texts for mention in _dated_event_mentions(text)]
+    )
+    # When events only repeat one calendar month (or omit dates), mine the note.
+    if (
+        len(dated_events) < 2
+        and note_text
+        and repaired_label in {"unknown", "no seizure frequency reference"}
+    ):
+        dated_events = _distinct_dated_months(_dated_event_mentions(note_text))
     if len(dated_events) < 2:
         return None
     first_month, first_year, _ = min(dated_events, key=lambda item: item[1] * 12 + item[0])
@@ -364,7 +388,81 @@ def dated_sequence_label_from_events(
         note_text,
     ):
         return None
-    return f"{max_count} per {months} month"
+    count = max(item[2] for item in dated_events)
+    if count < 2:
+        count = len(dated_events)
+    return f"{count} per {months} month"
+
+
+def typical_recurring_rate_over_ytd_from_events(
+    extraction: StructuredRepairExtractionLike,
+    repaired_label: str,
+) -> str | None:
+    """Prefer typical/usual recurring rate over a year-to-date observation total.
+
+    Portability: ``seizure_frequency``. Applies only when selection or the current
+    label is an observation-window / so-far-this-year total and another event
+    already states a typical recurring rate.
+    """
+    selection_text = " ".join(
+        part
+        for part in (
+            extraction.selection.final_label,
+            extraction.selection.evidence,
+            extraction.selection.rationale,
+            repaired_label,
+        )
+        if part
+    ).lower()
+    selection_text = small_number_words_to_digits(selection_text)
+    is_ytd_selection = bool(
+        re.search(
+            r"\b(?:so\s+far\s+this\s+year|this\s+year\s+to\s+date|"
+            r"year\s+to\s+date|\d{4}\s+so\s+far)\b",
+            selection_text,
+        )
+    )
+    # Require explicit YTD language in selection; do not treat every multi-month
+    # observation total as interchangeable with a typical recurring rate.
+    if not is_ytd_selection:
+        return None
+
+    for event in extraction.events:
+        text = small_number_words_to_digits(event_text(event).lower())
+        if not re.search(r"\b(?:typical(?:ly)?|usual(?:ly)?|at present)\b", text):
+            continue
+        monthly = re.search(
+            r"\b(?:a|one|1)?\s*(?:focal\s+)?seizure\s+monthly\b",
+            text,
+        ) or re.search(
+            r"\b(?:typically|usually)\s+(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
+            r"(?:[a-z-]+\s+){0,4}(?:seizures?|events?|episodes?)\s+monthly\b",
+            text,
+        )
+        if monthly:
+            if monthly.lastindex and monthly.groupdict().get("count"):
+                return f"{monthly.group('count')} per month"
+            return "1 per month"
+        weekly = re.search(
+            r"\b(?:a|one|1)?\s*(?:focal\s+)?seizure\s+weekly\b",
+            text,
+        ) or re.search(
+            r"\b(?:typically|usually)\s+(?P<count>\d+(?:\s*to\s*\d+)?)\s+"
+            r"(?:[a-z-]+\s+){0,4}(?:seizures?|events?|episodes?)\s+weekly\b",
+            text,
+        )
+        if weekly:
+            if weekly.lastindex and weekly.groupdict().get("count"):
+                return f"{weekly.group('count')} per week"
+            return "1 per week"
+        per_month = re.search(
+            r"\b(?:typically|usually|at present).{0,40}?"
+            r"(?P<count>\d+(?:\s*to\s*\d+)?|multiple)\s+per\s+month\b",
+            text,
+        )
+        if per_month:
+            return f"{per_month.group('count')} per month"
+    return None
 
 
 def _interval_label_from_event_text(text: str) -> str | None:

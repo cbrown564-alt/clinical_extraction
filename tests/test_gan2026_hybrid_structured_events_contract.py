@@ -14,6 +14,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_e
     PROMPT_VERSION_V0_5,
     PROMPT_VERSION_V0_6,
     PROMPT_VERSION_V0_7,
+    PROMPT_VERSION_V0_8_LUNA_CURRENT,
+    PROMPT_VERSION_V0_8_LUNA_RATE,
     StructuredExtractionRecord,
     StructuredRepairConfig,
     _clinic_date,
@@ -158,6 +160,52 @@ def test_restored_v05_prompt_has_the_historical_instruction_set() -> None:
         instructions
     )
     assert "Use any extra checking silently" not in " ".join(instructions)
+
+
+def test_luna_rate_prompt_keeps_v05_schema_and_adds_rate_guidance() -> None:
+    prompt = json.loads(
+        build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_8_LUNA_RATE)
+    )
+    instructions = prompt["instructions"]
+    joined = " ".join(instructions)
+
+    assert prompt["prompt_version"] == PROMPT_VERSION_V0_8_LUNA_RATE
+    assert prompt["event_schema"] == json.loads(
+        build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_5)
+    )["event_schema"]
+    assert prompt["selection_schema"] == json.loads(
+        build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_5)
+    )["selection_schema"]
+    assert len(instructions) == 19
+    assert "keep the full range in the seizure-frequency label" in joined
+    assert "Prefer a clear count over a stated period" in joined
+    assert "events-per-cluster side" in joined
+    assert "short quiet spell after a recent cluster" in joined
+    assert "countable-fact check" not in joined
+    assert "gold" not in joined.lower()
+    assert "validation750" not in joined
+    assert "hard slice" not in joined.lower()
+
+
+def test_luna_current_prompt_keeps_v05_schema_and_adds_boundary_guidance() -> None:
+    prompt = json.loads(
+        build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_8_LUNA_CURRENT)
+    )
+    instructions = prompt["instructions"]
+    joined = " ".join(instructions)
+
+    assert prompt["prompt_version"] == PROMPT_VERSION_V0_8_LUNA_CURRENT
+    assert prompt["event_schema"] == json.loads(
+        build_prompt_input(_record(), prompt_version=PROMPT_VERSION_V0_5)
+    )["event_schema"]
+    assert len(instructions) == 20
+    assert "short recent quiet interval of days or weeks" in joined
+    assert "Possible, uncertain, or single questionable events" in joined
+    assert "Do not use no_reference when such a count exists" in joined
+    assert "recurrent cluster days" in joined
+    assert "countable-fact check" not in joined
+    assert "gold" not in joined.lower()
+    assert "clinical_subproblem" not in joined
 
 
 def test_parse_structured_json_repairs_schema_aliases_and_normalizes_selected_label() -> None:
