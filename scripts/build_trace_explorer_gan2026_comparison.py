@@ -26,7 +26,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("frontend/frontend/public/mock-data/pipeline-families.json"),
+        default=Path("frontend/public/mock-data/pipeline-families.json"),
     )
     args = parser.parse_args(argv)
     config = (

@@ -15,7 +15,7 @@ From the repository root, start the API with the repository environment:
 In another terminal, start the frontend:
 
 ```powershell
-Set-Location frontend\frontend
+Set-Location frontend
 npm ci
 npm run dev
 ```
