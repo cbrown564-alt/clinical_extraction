@@ -202,6 +202,46 @@ and hard-case review — not another open-ended prompt/rule pass.
 Owners: [error-floor audit](../research/why_the_error_floor_persists_2026-07-31.md),
 [policy catalog](../research/clinical_selection_policy_catalog_2026-07-31.md).
 
+## Architecture recovery (phases 1-4 complete, 2026-07-31)
+
+The four documentation phases proposed by the
+[pipeline understandability review](../reviews/pipeline-understandability-review-2026-07-30.md)
+are implemented. No prediction-bearing code changed and no score moved.
+
+- **Phase 1 — stage manifests.** Six machine-readable manifests, one per
+  selected task-method pair, in `src/clinical_extraction/architecture/manifests/`.
+  Every stage declares its owner, whether it may change clinical meaning, its
+  implementation path and callable, its governing test, and the trace fields
+  that prove it ran. `validate_all()` resolves every callable and test, so a
+  manifest cannot describe code that does not exist.
+- **Phase 2 — executable teaching cases.** One Gan letter and one ExECT letter
+  through all three methods each, built by running the real implementations
+  with fixture model outputs and no model calls. The Gan case shows the model
+  selecting a year-to-date total and the deterministic layer correcting it;
+  the rescue is attributed to one named repair family by a walk that refuses to
+  publish an attribution it cannot reproduce.
+- **Phase 3 — six method cards.** One-sentence, sixty-second, stage table,
+  stage walkthrough, code map, and the five recall questions, generated per
+  method under [`docs/architecture/method_cards/`](../architecture/method_cards).
+- **Phase 4 — diagrams.** Overview, ownership matrix, two detailed hybrid stage
+  diagrams, and a result-attribution origin view, all generated from the
+  manifests. `python scripts/build_architecture_docs.py --check` fails on drift
+  and runs under `pytest`.
+
+Also closed: the `syn_014` trace fixture attributed Gan current-event selection
+to a deterministic component (review finding 5). It now shows the model
+returning `selected_event_ids` and a `final_label`, with deterministic code
+resolving and optionally repairing that selection. The trace contract gained an
+`owner_kind` on `OperationOwner` because it previously could not express a
+model-owned clinical change at all.
+
+**Not closed by this work.** Finding 1 (no single canonical execution path) and
+the Phase 5 refactor remain open, as the review intended — they were gated on
+the explanation existing first. Finding 7's paper-facing decision also remains
+open: `docs/canon/04_scoring.md` still carries historical `v08` as the
+LLM-with-rules row, and whether to replace it with the current one-call
+architecture is a research decision, not a documentation one.
+
 ## Limits
 
 - GEPA optimization is closed; one saved LLM-only run remains as a negative

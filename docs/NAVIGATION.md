@@ -8,6 +8,17 @@
 | Ordered next work | [active roadmap](plans/ACTIVE_ROADMAP.md) |
 | Cleanup history and measurements | [repository cleanup record](research/maintenance/repository_surgery_assessment_2026-07-14.md) |
 
+## How the pipelines work
+
+| Need | Read |
+| --- | --- |
+| How a record moves through any selected method | [architecture index](architecture/README.md) |
+| The whole system on one page | [two tasks x three methods](architecture/diagrams/overview.md) |
+| Which stages may change a clinical answer, anywhere | [ownership matrix](architecture/diagrams/ownership_matrix.md) |
+| One method in depth, with a code map | [method cards](architecture/README.md#method-cards) |
+| A real letter moving stage by stage | [Gan teaching case](architecture/teaching_cases/gan2026.md) and [ExECT teaching case](architecture/teaching_cases/exectv2.md) |
+| Machine-readable stage definitions | `src/clinical_extraction/architecture/manifests/` |
+
 ## Evidence and claims
 
 | Need | Read |

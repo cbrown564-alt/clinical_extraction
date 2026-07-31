@@ -26,6 +26,10 @@ unioned into the named model's result. The selected `v08` score remains a
 historical development control and does not meet this final boundary. See
 [decision 0040](../decisions/0040-final-exect-llm-with-rules-family-ownership.md).
 
+The stage-level account of each of these six cells — who owns each change,
+which stages may change clinical meaning, and where each runs — is the
+[architecture layer](../architecture/README.md).
+
 See [software design](../design/architecture.md),
 [component attribution](../design/component_evidence_attribution_architecture.md),
 and [model policy](../design/model_strategy.md).

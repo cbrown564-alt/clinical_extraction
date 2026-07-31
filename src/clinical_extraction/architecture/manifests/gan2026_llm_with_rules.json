@@ -1,0 +1,427 @@
+{
+  "method_id": "gan2026_llm_with_rules",
+  "task": "gan2026",
+  "task_label": "Gan 2026",
+  "method": "llm_with_rules",
+  "method_label": "LLM with rules",
+  "role": "selected",
+  "entry_point": {
+    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:run_split"
+  },
+  "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
+  "sixty_second": "One structured call returns two linked objects: an event ledger of source-near seizure-frequency facts, and a selection naming which event IDs won, the answer kind, the final label, evidence, confidence, and rationale. The model therefore makes the initial clinical selection - this is the single most misread fact about the method. Deterministic code then repairs JSON and schema, normalizes every event to a comparable rate, resolves an initial label from the model's chosen events, and runs ten named repair families in a fixed order. Each family can rewrite the final label, and each records a named event when it fires, so a changed answer is always attributable to one rule. The repaired label is checked for scorability and exact evidence, then projected to Purist and Pragmatic categories. Model owns the first answer; rules own every subsequent change to it.",
+  "prediction_owner": "the model proposes and selects (gan.hybrid.model_call); ten deterministic repair families may change the answer afterwards",
+  "scored_representation": "One Gan label string per letter, projected to a Purist and a Pragmatic category.",
+  "stages": [
+    {
+      "stage_id": "gan.hybrid.build_prompt",
+      "name": "Build the structured-events prompt",
+      "operation": "Render the note text and the event-ledger schema into the prompt input for one structured call.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "GanFrequencyRecord",
+      "input_example": "note text plus source row index",
+      "output_type": "prompt input JSON (str)",
+      "output_example": "{\"note_text\": \"...\", \"schema\": {...}}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:build_prompt_input"
+      },
+      "governing_test": "tests/test_gan2026_llm_prompt_hygiene.py",
+      "trace_fields": ["prompt_input_json", "prompt_version"],
+      "paper_wording": "A single prompt requests a structured event ledger and an explicit selection."
+    },
+    {
+      "stage_id": "gan.hybrid.model_call",
+      "name": "Model extracts events and selects the answer",
+      "operation": "One structured call returns an event ledger plus a selection naming selected_event_ids, final_kind, final_label, evidence, confidence, and rationale.",
+      "owner": "model",
+      "effect_class": "clinical_meaning",
+      "input_type": "prompt input JSON (str)",
+      "input_example": "note text plus the event-ledger schema",
+      "output_type": "raw structured JSON (str)",
+      "output_example": "{\"events\": [{\"event_id\": \"evt_1\", ...}], \"selection\": {\"selected_event_ids\": [\"evt_1\"], \"final_label\": \"2 per month\"}}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:DspyStructuredExtractor"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": ["raw_output", "row_trace.model_prediction.record"],
+      "paper_wording": "A single language-model call produces a structured event ledger and an explicit selection of the current event.",
+      "notes": "The model, not a deterministic selector, makes the initial event selection. Finding 5 of the 2026-07-30 review reported a teaching fixture that attributed this to a deterministic component."
+    },
+    {
+      "stage_id": "gan.hybrid.json_schema_repair",
+      "name": "Repair JSON dialect and payload shape",
+      "operation": "Recover the JSON object, repair Python-literal dialect, repair the selected-answer payload shape, quarantine events that fail event-level validation, and drop unsupported keys.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "raw structured JSON (str)",
+      "input_example": "output using True/None, or an events list containing one malformed entry",
+      "output_type": "payload dict plus repair notes",
+      "output_example": "a dict matching the structured extraction schema",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/schema_repair.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.schema_repair:repair_structured_extraction_payload"
+      },
+      "governing_test": "tests/test_gan2026_schema_repair.py",
+      "trace_fields": ["row_trace.format_repair.schema_payload_changed", "row_trace.format_repair.events"],
+      "paper_wording": "Malformed model output is repaired at the transport and schema level only.",
+      "notes": "Event quarantine removes entries that cannot validate. It is transport-level by contract, but it does reduce the ledger the model's selection can point at; quarantine notes are retained in parse_errors."
+    },
+    {
+      "stage_id": "gan.hybrid.format_only_retry",
+      "name": "Format-only retry (local models)",
+      "operation": "For local ollama-served models whose first output was unparseable, ask for a format-only repair of the same content and re-enter the parse path; the retry is accepted only if it validates.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "malformed raw output plus the target schema",
+      "input_example": "truncated JSON from a local model",
+      "output_type": "repaired JSON (str) or a rejection note",
+      "output_example": "format_retry_rejected: schema_validation",
+      "implementation": {
+        "path": "src/clinical_extraction/core/local_structured_output.py",
+        "symbol": "clinical_extraction.core.local_structured_output:validate_format_retry"
+      },
+      "governing_test": "tests/test_exectv2_local_format_retry.py",
+      "trace_fields": ["format_retry_output", "format_retry_notes"],
+      "paper_wording": "Local-model outputs that fail to parse receive one format-only repair attempt, accepted only when it validates.",
+      "notes": "Conditional. Fires only in live mode for models whose name starts with ollama_chat/."
+    },
+    {
+      "stage_id": "gan.hybrid.schema_validation",
+      "name": "Validate the extraction schema",
+      "operation": "Validate the repaired payload against the structured extraction record; a failure ends the row with no prediction.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "payload dict",
+      "input_example": "a payload whose selection lacks final_label",
+      "output_type": "StructuredExtractionRecord or a schema_validation_error",
+      "output_example": "schema_validation_error: Field required",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:StructuredExtractionRecord"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": ["parse_errors"],
+      "paper_wording": "Extractions that do not validate against the schema are recorded as failures rather than scored."
+    },
+    {
+      "stage_id": "gan.hybrid.normalize_events",
+      "name": "Normalize every event",
+      "operation": "Convert each model event's source phrase into a comparable normalized rate; this runs over the whole ledger, not only the selected events.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "representation",
+      "input_type": "list[StructuredEventRecord]",
+      "input_example": "event 'about two seizures per month'",
+      "output_type": "list[NormalizedEventRecord]",
+      "output_example": "normalized label '2 per month', monthly_frequency 2.0",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_normalize_event"
+      },
+      "governing_test": "tests/test_gan2026_normalize_governance.py",
+      "trace_fields": ["normalized_events", "row_trace.deterministic_selection.normalized_events_field"],
+      "paper_wording": "Model-produced events are normalized to a common rate representation."
+    },
+    {
+      "stage_id": "gan.hybrid.resolve_label",
+      "name": "Resolve the label from the model's selection",
+      "operation": "Read the model's selected_event_ids and final_kind and resolve the initial label from the corresponding normalized events.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "representation",
+      "input_type": "StructuredExtractionRecord plus normalized events",
+      "input_example": "selected_event_ids ['evt_1'], final_kind 'frequency_rate'",
+      "output_type": "resolved label (str) or None",
+      "output_example": "'2 per month'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_resolve_final_label"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_contract.py",
+      "trace_fields": ["row_trace.deterministic_selection.selected_event_ids", "row_trace.deterministic_selection.model_final_label", "row_trace.deterministic_selection.resolved_label"],
+      "paper_wording": "The model's selection is resolved into a label using the normalized form of the events it selected.",
+      "notes": "Representation, not selection: this stage renders the model's choice, it does not re-choose. If no selected event normalizes to a Gan label the row is recorded unscorable. row_trace.deterministic_selection retains both the model's own final_label and the resolved label so the two can be compared."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.selected_evidence",
+      "name": "Repair 1 - evidence-based label repair",
+      "operation": "Compare the resolved label with the model's quoted evidence span and rewrite the label when the evidence supports a different rate.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "resolved label plus selection evidence plus note text",
+      "input_example": "label '2 per month' with evidence 'two seizures in the past fortnight'",
+      "output_type": "repaired label (str)",
+      "output_example": "'2 per 2 week'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence"
+      },
+      "governing_test": "tests/test_gan2026_selected_evidence_derivation.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair reconciles the label with the evidence span the model selected."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.monthly_diary",
+      "name": "Repair 2 - monthly diary",
+      "operation": "Derive a label from a month-by-month diary in the ledger and override the current label unless the existing label is preserved by the diary guard.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label plus note text",
+      "input_example": "ledger listing 3, 2, and 4 seizures in three named months",
+      "output_type": "repaired label (str)",
+      "output_example": "'3 per month'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_diaries.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair converts month-by-month diary entries into a single rate."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.usual_interval",
+      "name": "Repair 3 - usual interval",
+      "operation": "Convert a stated usual interval between seizures into a rate label when the ledger supports it.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label",
+      "input_example": "'he usually goes about six weeks between seizures'",
+      "output_type": "repaired label (str)",
+      "output_example": "'1 per 6 week'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair converts a stated usual interval into a rate."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.typical_over_ytd",
+      "name": "Repair 4 - typical rate over year-to-date",
+      "operation": "When the ledger holds both a typical recurring rate and a year-to-date total, prefer the typical recurring rate.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label",
+      "input_example": "'typical pattern is a focal seizure monthly' alongside 'seven so far this year'",
+      "output_type": "repaired label (str)",
+      "output_example": "'1 per month'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events"
+      },
+      "governing_test": "tests/test_gan2026_floor_regression_guards.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair prefers a stated typical recurring rate over a year-to-date total.",
+      "notes": "Policy A1 in docs/research/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.breakthrough",
+      "name": "Repair 5 - breakthrough seizures",
+      "operation": "Handle letters where the current burden is expressed as breakthrough seizures against an otherwise controlled background.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label",
+      "input_example": "'seizure free apart from two breakthrough seizures this year'",
+      "output_type": "repaired label (str)",
+      "output_example": "'2 per year'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair resolves breakthrough-seizure phrasing against a controlled background."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.non_epileptic",
+      "name": "Repair 6 - non-epileptic events",
+      "operation": "Prevent events the ledger marks as non-epileptic from supplying the seizure-frequency answer.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label",
+      "input_example": "ledger holding both epileptic seizures and dissociative episodes",
+      "output_type": "repaired label (str)",
+      "output_example": "the epileptic rate, not the combined rate",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair excludes events recorded as non-epileptic from the frequency answer."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.residual_jerk",
+      "name": "Repair 7 - residual jerks",
+      "operation": "Decide whether residual myoclonic jerks count toward the current seizure-frequency answer.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label plus note text",
+      "input_example": "'no generalised seizures but occasional morning jerks'",
+      "output_type": "repaired label (str)",
+      "output_example": "the label the residual-jerk policy selects",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair applies the residual-jerk policy to the frequency answer."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.post_change_burst",
+      "name": "Repair 8 - post-change burst",
+      "operation": "Handle a burst of seizures that follows a named medication or lifestyle change, so a transient burst does not become the current rate.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label plus note text",
+      "input_example": "'after the dose reduction he had four seizures in a week, none since'",
+      "output_type": "repaired label (str)",
+      "output_example": "the settled post-burst rate",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_temporal.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair separates a post-change seizure burst from the settled current rate."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.dated_sequence",
+      "name": "Repair 9 - dated sequence",
+      "operation": "Derive a rate from a sequence of individually dated seizures and the window they span.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label plus note text",
+      "input_example": "'seizures on 3 January, 19 February and 28 March'",
+      "output_type": "repaired label (str)",
+      "output_example": "'3 per 3 month'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_dated_count_competing_rate_floor.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair converts a dated seizure sequence into a rate over its observed window."
+    },
+    {
+      "stage_id": "gan.hybrid.repair.elapsed_anchor",
+      "name": "Repair 10 - elapsed since anchor",
+      "operation": "Derive a seizure-free duration from the elapsed time since the last dated event, unless the sustained seizure-free guard preserves the existing label.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "StructuredExtractionRecord plus current label plus note text",
+      "input_example": "'last seizure was in March' in a letter dated September",
+      "output_type": "repaired label (str)",
+      "output_example": "a seizure-free label over the elapsed window",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events"
+      },
+      "governing_test": "tests/test_gan2026_hybrid_structured_events_repair.py",
+      "trace_fields": ["row_trace.deterministic_semantic.events"],
+      "paper_wording": "A deterministic repair converts an elapsed interval since the last dated seizure into a seizure-free window."
+    },
+    {
+      "stage_id": "gan.hybrid.scorable_label_check",
+      "name": "Check the label is scorable",
+      "operation": "Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable.",
+      "owner": "deterministic",
+      "rule_category": "benchmark_format",
+      "effect_class": "validation_gate",
+      "input_type": "repaired label (str)",
+      "input_example": "'a few a month'",
+      "output_type": "GanFrequencyRecord or an unscorable_final_label error",
+      "output_example": "unscorable_final_label: unrecognized label",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record"
+      },
+      "governing_test": "tests/test_gan2026_labels.py",
+      "trace_fields": ["parse_errors"],
+      "paper_wording": "Labels that cannot be parsed into the benchmark representation are recorded as unscorable."
+    },
+    {
+      "stage_id": "gan.hybrid.evidence_containment",
+      "name": "Check evidence is an exact substring",
+      "operation": "Require the model's quoted selection evidence to appear verbatim in the note text.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "note text plus selection evidence",
+      "input_example": "evidence 'about two seizures per month' against the note text",
+      "output_type": "bool",
+      "output_example": "evidence_valid True",
+      "implementation": {
+        "path": "src/clinical_extraction/core/evidence.py",
+        "symbol": "clinical_extraction.core.evidence:evidence_is_substring"
+      },
+      "governing_test": "tests/test_core_evidence.py",
+      "trace_fields": ["evidence_valid", "row_trace.evidence_validation.exact_substring"],
+      "paper_wording": "Evidence is required to be an exact substring of the source note.",
+      "notes": "The evidence checked is the model's selection evidence, which the repair families do not rewrite. A repaired label can therefore carry evidence that motivated the model's original answer."
+    },
+    {
+      "stage_id": "gan.hybrid.score",
+      "name": "Project to Purist and Pragmatic scoring",
+      "operation": "Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare.",
+      "owner": "scorer",
+      "effect_class": "benchmark_projection",
+      "input_type": "repaired label plus gold monthly frequency",
+      "input_example": "predicted 2.0 per month, gold 2.0 per month",
+      "output_type": "per-row category comparison",
+      "output_example": "purist_correct True, pragmatic_correct True",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist"
+      },
+      "governing_test": "tests/test_gan2026_labels.py",
+      "trace_fields": ["comparison.purist_correct", "comparison.pragmatic_correct", "row_trace.scoring"],
+      "paper_wording": "Predictions are scored under the Purist and Pragmatic category projections."
+    }
+  ],
+  "related_paths": [
+    {
+      "name": "Hybrid research runner",
+      "role": "research entry point",
+      "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/hybrid_structured_events.py",
+      "note": "CLI wrapper over run_split; adds no clinical stage."
+    },
+    {
+      "name": "Repair mode configuration",
+      "role": "experiment control",
+      "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/experiments/repair_modes.py",
+      "note": "Named repair modes switch repair families on and off for ablation. The selected comparison uses hybrid_full_stack."
+    },
+    {
+      "name": "No-call replay",
+      "role": "replay path",
+      "path": "scripts/replay_gan2026_v05_current_schema.py",
+      "note": "Re-parses saved raw model outputs through the current ruleset without model calls; produced experiments/gan2026_six_model_current_floors_replay_20260731/."
+    }
+  ],
+  "evidence_owners": [
+    "docs/canon/06_gan_clinical_policy.md",
+    "docs/research/six_model_comparison_report_2026-07-18.md",
+    "docs/research/clinical_selection_policy_catalog_2026-07-31.md"
+  ]
+}
