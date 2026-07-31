@@ -1506,7 +1506,7 @@
       "prompt_program_version": "Task-specific fixed prompts named in the retained panel protocols",
       "cache_replay_mode": "report synthesis from retained development and aggregate-only holdout artifacts",
       "repair_policy": "Task-specific fixed repair policies; no cross-task score pooling",
-      "claim_boundary": "Bounded synthesis of task-specific panels. It is not a shared-metric ranking, a pristine one-shot comparison, Gan-to-ExECT reliability transfer, the published ExECT benchmark, or clinical validation.",
+      "claim_boundary": "Bounded synthesis of task-specific panels plus external Artificial Analysis Intelligence/Healthcare Index and labelled list-price context. It is not a shared-metric ranking, a pristine one-shot comparison, Gan-to-ExECT reliability transfer, matched run cost telemetry, the published ExECT benchmark, or clinical validation.",
       "story_ids": ["S4", "S5", "S8"],
       "result_summary": {
         "models": 6,
@@ -1518,8 +1518,14 @@
       "artifacts": [
         {
           "path": "docs/research/six_model_comparison_report_2026-07-18.md",
-          "sha256": "06b605de5164fa316af95d5078bc7f5b2df4ebc9a63575667d6c854c1ad25bf9",
-          "bytes": 20457,
+          "sha256": "061dc6660929e244179c3fd493c6726a17247cdc1573314ab799bfa1bfa47290",
+          "bytes": 28461,
+          "retrieval": "git_path"
+        },
+        {
+          "path": "experiments/six_model_external_capability_cost_snapshot_20260731.json",
+          "sha256": "90a589022a860cc2c62bd1e9ebd1120891e08bc3da24687943965b9271d34879",
+          "bytes": 7526,
           "retrieval": "git_path"
         }
       ]

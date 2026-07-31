@@ -30,7 +30,8 @@
 | ExECT hosted test60 protocol and result | [hosted ExECT result](experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md) |
 | ExECT Luna prompt A/B/C (dev140 + aggregate-only test60) | [dev140 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_dev140_2026-07-31.md), [test60 report](experiments/exectv2/reliability/exectv2_luna_prompt_variants_test60_2026-07-31.md), [test60 panel](../experiments/exectv2_luna_prompt_variants_test60_20260731/panel.json), and [residual map](experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md) |
 | ExECT joint/combined policy (archived; not active) | [archive index](experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md) and [decision 0045](decisions/0045-exect-default-policy-not-joint-combined.md) |
-| Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) |
+| Six-model cross-task comparison | [comparison report](research/six_model_comparison_report_2026-07-18.md) (includes AA Healthcare/Intelligence context, labelled list-price cost, and development error-pattern synthesis) |
+| Six-model external capability/cost snapshot | [machine artifact](../experiments/six_model_external_capability_cost_snapshot_20260731.json) |
 | Why the residual error floor persists (plain-English synthesis) | [error-floor audit](research/why_the_error_floor_persists_2026-07-31.md) |
 | Clinical selection and scoring policies (help/hurt catalog) | [policy catalog](research/clinical_selection_policy_catalog_2026-07-31.md) |
 | ExECT six-model SF over-inference | [protocol](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md) and [result](experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md) |
