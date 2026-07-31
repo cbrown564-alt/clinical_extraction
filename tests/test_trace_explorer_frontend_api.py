@@ -15,7 +15,7 @@ TRACE_FIXTURE = (
     / "fixtures"
     / "syn_014.json"
 )
-FRONTEND_FIXTURES = Path("frontend") / "frontend" / "public" / "mock-data"
+FRONTEND_FIXTURES = Path("frontend") / "public" / "mock-data"
 
 
 @pytest.fixture()
