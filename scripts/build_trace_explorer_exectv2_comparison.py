@@ -17,7 +17,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("frontend/frontend/public/mock-data/exectv2/runs.json"),
+        default=Path("frontend/public/mock-data/exectv2/runs.json"),
     )
     args = parser.parse_args(argv)
     output = args.output
