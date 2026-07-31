@@ -1,0 +1,1523 @@
+{
+  "architecture": {
+    "component_ownership": "The deterministic ledger proposes possible evidence spans only. The model owns keep/reject/split/merge decisions and final rendered mentions. Deterministic code later validates evidence, strips illegal attributes, attaches finite ontology codes, and evaluates outputs.",
+    "inspiration": "Gan structured-events discipline: source-near candidate evidence, typed state lanes, exact evidence, then final mention renderings.",
+    "name": "single hybrid key-family event ledger"
+  },
+  "attribute_vocabulary": {
+    "Diagnosis": {
+      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
+      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
+      "Certainty": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "DiagCategory": [
+        "Epilepsy",
+        "MultipleSeizures",
+        "SingleSeizure",
+        "epilepsy"
+      ],
+      "Negation": [
+        "Affirmed",
+        "Negated"
+      ]
+    },
+    "Investigations": {
+      "CT_Performed": [
+        "No",
+        "Yes"
+      ],
+      "CT_Results": [
+        "Abnormal",
+        "Normal",
+        "Unknown"
+      ],
+      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
+      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
+      "EEG_Performed": [
+        "No",
+        "Yes"
+      ],
+      "EEG_Results": [
+        "Abnormal",
+        "Normal",
+        "Unknown"
+      ],
+      "EEG_Type": [
+        "SleepDeprived",
+        "Standard",
+        "VideoTelemetry"
+      ],
+      "MRI_Performed": [
+        "No",
+        "Yes"
+      ],
+      "MRI_Results": [
+        "Abnormal",
+        "Normal",
+        "Unknown"
+      ]
+    },
+    "Prescription": {
+      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
+      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
+      "DoseUnit": [
+        "g",
+        "mg"
+      ],
+      "DrugDose": "string copied or normalized from the letter.",
+      "DrugName": "string copied or normalized from the letter.",
+      "Frequency": [
+        "1",
+        "2",
+        "3",
+        "As_Required"
+      ]
+    },
+    "SeizureFrequency": {
+      "AgeLower": "string copied or normalized from the letter.",
+      "AgeUnit": [
+        "Month",
+        "Year"
+      ],
+      "AgeUpper": "string copied or normalized from the letter.",
+      "CUI": "UMLS CUI only if explicitly available; otherwise omit.",
+      "CUIPhrase": "Clean phrase only if explicitly available; otherwise omit.",
+      "Certainty": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "DayDate": "string copied or normalized from the letter.",
+      "FrequencyChange": [
+        "Decreased",
+        "Frequent",
+        "Increased",
+        "Infrequent",
+        "Same"
+      ],
+      "LowerNumberOfSeizures": "string copied or normalized from the letter.",
+      "LowerNumberOfTimePeriods": "string copied or normalized from the letter.",
+      "MonthDate": "string copied or normalized from the letter.",
+      "Negation": [
+        "Affirmed",
+        "Negated"
+      ],
+      "NumberOfSeizures": "string copied or normalized from the letter.",
+      "NumberOfTimePeriods": "string copied or normalized from the letter.",
+      "PointInTime": [
+        "Birthday",
+        "DrugChange",
+        "LastClinic",
+        "Last_Month",
+        "Last_Week",
+        "Last_Year",
+        "Surgery"
+      ],
+      "TimePeriod": [
+        "Day",
+        "Month",
+        "Week",
+        "Year",
+        "days"
+      ],
+      "TimeSince_or_TimeOfEvent": [
+        "During",
+        "Since"
+      ],
+      "UpperNumberOfSeizures": "string copied or normalized from the letter.",
+      "UpperNumberOfTimePeriods": "string copied or normalized from the letter.",
+      "YearDate": "string copied or normalized from the letter."
+    }
+  },
+  "candidate_evidence_ledger": [
+    {
+      "anchor_hint": "focal epilepsy",
+      "candidate_id": "K0",
+      "evidence": "Clinic note: known focal epilepsy.",
+      "family": "diagnosis",
+      "lane_hint": "diagnosis_assertion",
+      "source": "sentence-diagnosis-trigger"
+    },
+    {
+      "anchor_hint": "seizures",
+      "candidate_id": "K1",
+      "evidence": "Two seizures per month over the last year.",
+      "family": "seizure_frequency",
+      "lane_hint": "active_rate",
+      "source": "sentence-seizure-state-trigger"
+    },
+    {
+      "anchor_hint": "seizure",
+      "candidate_id": "K2",
+      "evidence": "Last seizure was yesterday.",
+      "family": "seizure_frequency",
+      "lane_hint": "seizure_free_anchor",
+      "source": "sentence-seizure-state-trigger"
+    },
+    {
+      "anchor_hint": "levetiracetam",
+      "candidate_id": "K3",
+      "evidence": "Continues levetiracetam 500mg twice daily.",
+      "family": "medication",
+      "lane_hint": "current_regimen",
+      "source": "sentence-medication-trigger"
+    },
+    {
+      "anchor_hint": "MRI",
+      "candidate_id": "K4",
+      "evidence": "MRI brain reported normal.",
+      "family": "investigation",
+      "lane_hint": "performed_investigation",
+      "source": "sentence-investigation-trigger"
+    }
+  ],
+  "clinical_rules": [
+    "First classify each candidate_evidence_ledger item into an event lane: current_regimen, rescue_regimen, future_or_historical_medication, diagnosis_assertion, diagnosis_context_only, active_rate, seizure_free_anchor, qualitative_change, performed_investigation, planned_investigation, or reject.",
+    "Candidate ledger rows are not predictions. Keep, reject, split, merge, or add events based only on the full letter and exact evidence.",
+    "Return only final clinical_events. Do not return candidate IDs unless you copy them into event_state as trace strings.",
+    "Write each rationale as one short final-justification sentence. Do not show step-by-step reasoning, self-questioning, alternative options, or quoted prompt rules inside rationale.",
+    "Use one event per medication, diagnostic concept, seizure-rate statement, or test.",
+    "Both anchor_text and evidence must be exact substrings of the letter.",
+    "Every rendered mention text must be an exact substring of the letter.",
+    "Named seizure types can render both Diagnosis and SeizureFrequency when the letter states both the type and a rate or seizure-free state.",
+    "Do not force a single entity if the same fact belongs to more than one requested family; render each valid entity separately.",
+    "For diagnosis, split compound seizure clauses into atomic diagnostic concepts when the letter names more than one seizure type.",
+    "Every Diagnosis mention must include Certainty and Negation. Use Certainty='5' and Negation='Affirmed' for directly stated diagnoses or seizure types unless the letter explicitly says otherwise.",
+    "For Diagnosis certainty, preserve diagnostic hedging: use Certainty='4' for probable or likely diagnoses, Certainty='3' for possible, suspected, query, or differential diagnoses, and Certainty='5' only for established or unqualified statements.",
+    "For Diagnosis concepts, prefer the most specific epilepsy syndrome or seizure type stated in the letter, such as focal epilepsy, temporal lobe epilepsy, primary generalised epilepsy, or JME. When the letter explicitly states both a generic epilepsy diagnosis and a specific syndrome or seizure type, render both as separate Diagnosis mentions; do not collapse one into the other.",
+    "When a Diagnosis heading or impression states an epilepsy subtype using the word epilepsy, such as 'Temporal lobe epilepsy' or 'Symptomatic structural focal epilepsy', render the subtype and also render generic 'epilepsy' only when the source itself explicitly uses the word epilepsy as a diagnosis. Do not add generic epilepsy from family history, clinic names, medication labels, or weak context.",
+    "Do not add a generic epilepsy companion to a specific epilepsy subtype unless the source separately asserts generic epilepsy as its own diagnosis or context says the patient has/has known epilepsy. For example, 'Diagnosis: symptomatic structural focal epilepsy' renders only 'symptomatic structural focal epilepsy'.",
+    "When narrative says 'intractable epilepsy', keep the modifier in the Diagnosis text; do not shorten it to generic 'epilepsy'.",
+    "In phrases like 'general and complex partial seizures', do not emit 'general seizures'; render 'complex partial seizures' unless another explicit named generalised seizure type is present.",
+    "Onset-history phrases such as 'epilepsy started at age 4' are not a separate Diagnosis mention when the same letter already provides the current diagnosis or named seizure types.",
+    "For Diagnosis mention text, render only the core clinical concept span. Do not include section labels, dashes, hedging words ('probable', 'possible', 'query'), qualifiers like 'single' or 'alone', or surrounding explanation in the mention text; put uncertainty in Certainty instead.",
+    "Do not render bare modifiers such as 'focal', 'generalised', 'probable focal', or 'possibly generalised' as Diagnosis mentions. When such wording appears in a Diagnosis heading modifying epilepsy, render the implied concept, for example 'focal epilepsy' or 'generalised epilepsy'.",
+    "When a Diagnosis heading combines an established epilepsy type with a probable anatomical qualifier, render two concepts with separate certainty: for example 'focal epilepsy-Probable temporal' means text 'focal epilepsy' with Certainty='5' and text 'temporal lobe epilepsy' with Certainty='4'.",
+    "When a Diagnosis heading states established epilepsy before a dash and an uncertain subtype after the dash, keep the generic epilepsy diagnosis at Certainty='5' and apply the lower certainty only to the subtype; for example 'Epilepsy - unclassified, possibly generalised' renders 'epilepsy' Certainty='5' and 'generalised epilepsy' Certainty='3'.",
+    "For abbreviated syndromes, use the exact abbreviation as mention text when that is the source span, for example text 'JME' or 'jme' with Certainty from probable/possible context.",
+    "Do not render vague symptoms, blackout/loss-of-consciousness descriptions, anxiety, or non-epileptic events as Diagnosis unless the same phrase is explicitly asserted as an epileptic seizure, epilepsy diagnosis, or named seizure type.",
+    "Do not render negated resemblance statements as Diagnosis or SeizureFrequency. Phrases such as 'no events which resemble absences, myoclonus or focal seizures' are explicit absence of those events, not affirmed diagnoses or seizure-frequency states.",
+    "Do not render isolated symptoms or aura features as Diagnosis, including myoclonic jerks, jerks, flashing lights, odd sensations, altered awareness by itself, or dizziness, unless the phrase is part of a named seizure type such as 'focal seizures with altered awareness'.",
+    "For tonic-clonic seizure wording, preserve 'tonic clonic' or 'tonic-clonic'. Never write 'tonic chronic'.",
+    "For Diagnosis headings like 'generalised tonic clonic seizures with myoclonic jerks, possible JME', render the plural tonic-clonic seizure type as Diagnosis and render JME with lower certainty; do not render isolated 'myoclonic jerks' as a Diagnosis mention.",
+    "For composite Diagnosis headings such as 'complex partial seizures with secondary generalised tonic clonic seizures', split the heading into separate Diagnosis mentions for the named seizure types instead of returning the whole clause as one text span.",
+    "A problem-list or Diagnosis header is not enough by itself: still exclude anxiety, dissociative/non-epileptic events, blackouts, collapse, and loss of consciousness from the requested Diagnosis family unless the phrase is explicitly asserted as epileptic.",
+    "For diagnosis, use DiagCategory='Epilepsy' for epilepsy syndromes or diagnoses. Use DiagCategory='SingleSeizure' for one singular named seizure event such as 'focal seizure'. Use DiagCategory='MultipleSeizures' for plural named seizure types such as 'focal seizures' or 'generalised tonic clonic seizures', and for phrases that represent multiple seizure types or recurrent seizures as a category.",
+    "Keep plural seizure-type wording plural in Diagnosis text. Source phrases such as 'absence like seizures' or 'absence-like seizures' render as plural Diagnosis text with DiagCategory='MultipleSeizures', not singular 'absence like seizure'.",
+    "For seizure frequency, mention text is only the seizure-type anchor; do not include counts, dates, or the words 'seizure frequency' in text. event_state and attributes carry counts, periods, dates, and changes.",
+    "Never emit a SeizureFrequency mention with empty attributes, only Negation, or only CUI/CUIPhrase. A valid SeizureFrequency mention must include a frequency-state attribute such as NumberOfSeizures, LowerNumberOfSeizures, FrequencyChange, TimeSince_or_TimeOfEvent, PointInTime, DayDate, MonthDate, YearDate, AgeLower, or AgeUpper.",
+    "For SeizureFrequency anchors, use the generic seizure phrase when the count refers to seizures generally; use a named seizure type only when the count explicitly belongs to that type.",
+    "SF recall: Seizure type and frequency headings are high-value evidence. If a heading says 'seizures every 3 to 4 weeks', 'several seizures since last clinic', '2 generalised tonic clonic seizures 2014', or a named seizure type plus a date, render a SeizureFrequency mention for that anchor even when the count is approximate or dated. Do not replace a heading frequency with a later vague narrative estimate unless the later statement is an explicit newer quantified correction.",
+    "When a seizure-frequency heading names a plural seizure type followed only by a year or date, treat it as one dated occurrence of that named type unless another count is attached to that same type. For example, 'absence like seizures 2014' has NumberOfSeizures='1', YearDate='2014', and TimeSince_or_TimeOfEvent='During'.",
+    "SF state choice: statements that seizures have returned or have been experienced since a triggering event are active seizure states, not unknown states. Use active-rate attributes when a count, cadence, date, or since-frame is present; use unknown only when the letter names current seizures but gives no count, cadence, change, or seizure-free time frame.",
+    "For named seizure types, preserve clinically meaningful modifiers that are part of the exact phrase, including 'with altered awareness', 'focal to bilateral', lobe qualifiers, convulsive, tonic clonic, absence-like, and myoclonic.",
+    "When a named seizure-frequency row says 'focal seizures with altered awareness approximately 1 per fortnight', keep the full named anchor 'focal seizures with altered awareness' rather than shortening it to 'focal seizures'.",
+    "Do not render SeizureFrequency for generic events, blackouts, collapse, anxiety attacks, or dissociative/non-epileptic events unless the same phrase is explicitly asserted as epileptic seizures.",
+    "SF precision: reject generic spell anchors such as 'events', 'episodes', 'episodes of loss of consciousness', 'minor seizures', and 'jerks' when the letter describes uncertain attacks, dizziness, loss of consciousness, shaking, or light-triggered jerks without explicitly asserting that the anchor itself is an epileptic seizure type.",
+    "Do not render childhood febrile seizures, family-history seizures, risk discussion, or old previous-event context as current SeizureFrequency unless the sentence explicitly gives the patient's current frequency state.",
+    "SF precision: do not render risk or counselling statements such as 'risk of further seizures', 'at risk of further seizures', or 'even though he has only had one seizure' as SeizureFrequency.",
+    "SF precision: do not render non-epileptic or diagnostically vague episode descriptions as SeizureFrequency, even when they include a cadence, such as 'episodes around twice a week of an unusual thought'.",
+    "SF precision: do not render old or contextual minor-seizure episode phrases such as 'the episodes occur 4 to 5 times a year' unless the sentence explicitly asserts a current scorable epileptic seizure type.",
+    "Onset-history statements such as 'seizures since the age of 13' are not SeizureFrequency by themselves. Use them only as a seizure-free since-age anchor when the same sentence says the last seizures were in a past age range such as the teenage years.",
+    "For seizure-frequency ranges, never write values like '2 to 3', '2-4', or '3 or 4' in NumberOfSeizures. Use LowerNumberOfSeizures and UpperNumberOfSeizures instead.",
+    "For approximate count words without exact numbers, use conservative integer counts only when the letter clearly describes seizures: 'couple'='2', 'few'='2', and 'several'='3'.",
+    "For interval rates such as 'one every 3 to 4 weeks', set NumberOfSeizures='1', LowerNumberOfTimePeriods='3', UpperNumberOfTimePeriods='4', and TimePeriod='Week'. Do not convert the interval into 3 to 4 seizures.",
+    "For cluster statements, keep the cluster as the clinical event when the note counts clusters, for example text 'cluster of seizures' with NumberOfSeizures='1' and the stated date or time frame.",
+    "For frequency-change statements without an exact count, render a SeizureFrequency mention with FrequencyChange only, such as Frequent, Infrequent, Increased, Decreased, or Same.",
+    "For dated counts such as '2 to 3 in March', use Lower/Upper count fields plus MonthDate or YearDate and TimeSince_or_TimeOfEvent='During'; do not invent TimePeriod='Month' unless the note says per month.",
+    "For 'since last clinic', use TimeSince_or_TimeOfEvent='Since' and PointInTime='LastClinic'; do not put 'since last clinic' in TimePeriod.",
+    "For last-event or seizure-free statements, use NumberOfSeizures='0' with TimeSince_or_TimeOfEvent='Since' and the stated MonthDate, YearDate, or PointInTime. Do not convert last-event dates into an annual recurring rate.",
+    "Phrases like 'last seizure', 'last event', or 'has had none since' mean seizure-free since that anchor for the named seizure type; do not render them as one seizure during that date or as an active current-rate statement.",
+    "Do not infer seizure-free from phrases like 'last seizure coincided with missing medication' or 'previous seizure was a year ago' unless the source also gives a clear no-further/since frame for the same seizure type.",
+    "For seizure-free statements, anchor text to the underlying seizure phrase when it is present in the same sentence, such as 'seizures' or 'focal seizures'; otherwise use the exact seizure-free phrase.",
+    "SF precision: do not render safety-advice, conditional, or instructional statements as SeizureFrequency. Phrases such as 'if you have a seizure', 'in the event of a seizure', 'advised what to do if seizures occur', or general SUDEP/driving advice describe guidance, not a current rate.",
+    "SF precision: do not emit a bare seizure-free or 'well controlled' SeizureFrequency mention unless it is tied to a seizure type, a count, or a temporal anchor (since/last/date). A standalone 'seizure free' with no seizure type and no time frame is not a scorable SF state.",
+    "Phrases such as 'remains seizure free and is now driving' or 'seizures were well controlled on medication' are not enough for a SeizureFrequency mention unless they name the seizure type and give a since/date/drug-change frame.",
+    "SF precision: do not use an anaphoric anchor such as 'these seizures', 'such episodes', or 'the events' as the SeizureFrequency text. Use the specific named seizure type stated earlier in the same context, or the generic 'seizures' when the count refers to seizures in general.",
+    "SF precision: when a sentence names two seizure types joined by 'and' with a single shared count, render the count against the seizure type it actually belongs to, not a merged 'X and Y' anchor; only split into two SF mentions if the letter gives each type its own count or state.",
+    "SF precision: emit at most one SeizureFrequency mention per distinct rate statement. Do not emit both a generic 'seizures' mention and a named-type mention for the same single count in the same clause.",
+    "For medication, mention text is the medication name where possible; dose and frequency belong in attributes.",
+    "Medication decision lane: current ordinary regimens and rescue as-required regimens render Prescription mentions; previous trials, stopped drugs, future starts, titration targets, options, and if-further-seizures plans are usually rejected.",
+    "Medication current-list split dosing: if a current regimen gives unequal time-of-day doses such as 'Epilim 300 mg mane and 600 mg nocte' or 'Lamictal 100 mg in the morning, 175 mg in the afternoon', render separate Prescription mentions with Frequency='1'. Do not mark these current scheduled doses as As_Required.",
+    "Medication plan boundary: future starts, requested dose increases, taper targets, or if-further-seizures instructions are not current Prescription mentions unless a separate current/taking/on-medication statement supports them.",
+    "Medication frequency completion: when the selected current regimen says 'twice a day', 'twice daily', or 'bd', include Frequency='2'; when it says once daily, mane, nocte, morning, or evening, include Frequency='1'.",
+    "For medication list entries that contain a compact regimen, render text as the exact medication item span including dose and frequency when those words are part of the same short line, for example 'Topiramate 100 mg BD'.",
+    "For investigations, use one event per modality such as EEG, MRI, or CT; put performed, result, and EEG type in attributes.",
+    "ECG is not an ExECTv2 target investigation. Never map ECG to EEG, MRI, or CT, and do not emit an Investigations mention from ECG-only evidence.",
+    "Investigation decision lane: completed historical tests and tests with results render Investigations mentions; planned/requested/repeat tests without a completed result are rejected.",
+    "Do not render future planned, requested, repeat, or follow-up investigations as performed tests. Only render completed tests or tests with a stated result.",
+    "Investigation pending-test cues are decisive: if the test sentence contains 'will', 'arrange', 'request', 'await'/'awaiting', 'appointment', 'suggest', 'recommend', 'should update', 'chase', 'up to date', 'not yet performed/received', or 'planned', treat it as a pending test and do not emit an Investigations mention for it unless a separate completed result for the same modality is also stated.",
+    "Never emit an Investigations mention whose only support is a pending cue with Performed='No' or an unknown result; a requested or awaited test is not a completed historical test.",
+    "Do not render a bare modality-only investigation when the note gives no completion/result statement, and do not add a duplicate modality-only mention when a result-bearing mention for the same modality is already rendered.",
+    "Phrases such as 'EEG did show temporal slowing', 'EEG has shown spike and wave', or 'MRI does show signal change' are completed abnormal investigation results.",
+    "For investigation text, use the shortest exact modality phrase: 'MRI scan' if those words occur together, otherwise 'MRI'; likewise 'EEG' or 'CT'. Do not include dates or results in text.",
+    "Only include EEG_Type when the letter explicitly says sleep-deprived EEG or video telemetry. Do not default a plain EEG to Standard.",
+    "Every rendered mention object must include both entity and text. Do not emit projection-only companion mentions such as objects with only CUI/CUIPhrase attributes; omit CUI and CUIPhrase unless they are explicitly available in the source.",
+    "Do not invent CUI values. If a CUI is not explicitly available, omit it.",
+    "If no requested findings are present, return {\"clinical_events\": []}.",
+    "Return exactly one JSON object. No markdown code fences."
+  ],
+  "decision_procedure": [
+    "Scan the letter globally for the four key families; do not stop at section headers.",
+    "Use candidate_evidence_ledger rows as likely evidence anchors, but do not emit a row unless the full sentence supports a requested family.",
+    "For each candidate, choose a lane, then keep/reject/split/merge. Write the lane decision into event_state when it helps transparency.",
+    "Render final mentions only after the source-near event state is clear. Counts, dates, result status, dose, and certainty belong in attributes, not in improvised text.",
+    "Before returning JSON, remove duplicates and remove events whose evidence or mention text is not an exact source substring."
+  ],
+  "event_lane_guide": {
+    "diagnosis": [
+      "diagnosis_assertion: patient-level epilepsy syndrome or named seizure type",
+      "diagnosis_context_only: discussion, family history, risk, SUDEP, or education",
+      "symptom_or_nonepileptic: blackout, collapse, anxiety, dissociative event, aura only",
+      "reject: no explicit epileptic diagnosis or named epileptic seizure type"
+    ],
+    "investigation": [
+      "performed_investigation: completed MRI/CT/EEG/telemetry, especially with result",
+      "not_performed: never had/no MRI/no EEG/no CT",
+      "planned_investigation: arrange/request/repeat/future/follow-up",
+      "reject: bare modality without performed/result/not-performed status"
+    ],
+    "medication": [
+      "current_regimen: current/taking/on medication with dose or frequency",
+      "rescue_regimen: as required, if necessary, or for clusters",
+      "future_or_historical_medication: start/introduce/increase/previous/stopped/trial",
+      "reject: non-anti-seizure medication or unsupported plan"
+    ],
+    "seizure_frequency": [
+      "active_rate: count/rate/current cadence for generic or named seizures",
+      "seizure_free_anchor: no further seizures, seizure-free, last seizure/event date",
+      "qualitative_change: frequent/infrequent/increased/decreased/returned/controlled",
+      "reject: diagnosis-only, family history, unlabelled events, historical best period"
+    ]
+  },
+  "extra_clinical_guidance": [
+    "For seizure frequency, emit every current state the letter clearly supports, and only those states. Common states are an active rate, seizure-free, changed, and unknown.",
+    "If the letter gives a current or recent countable rate, keep that active-rate mention. Do not also invent a seizure-free mention unless the letter clearly says the patient is now seizure-free.",
+    "If the letter leaves the current frequency only partly clear, keep an unknown mention together with any supported active-rate or seizure-free mention. Do not drop unknown only to make the set look complete.",
+    "When several seizure types have their own rates, keep the types the letter supports. Do not add a sibling seizure type or drop a stated type to simplify the set.",
+    "Prefer a clear count over a stated period, such as once or twice a month or several per month, over vague control language when both describe the same current burden."
+  ],
+  "family_guidance": {
+    "diagnosis": "Diagnostic concepts such as epilepsy, focal epilepsy, seizure disorder, or named seizure types. Render atomic Diagnosis mentions with DiagCategory, Certainty, and Negation. Preserve uncertainty words and avoid vague symptoms or non-epileptic differentials unless they are explicitly asserted as epileptic diagnoses, even when they appear in a Diagnosis/problem-list section. Mention text should be the clean core concept span; hedging belongs in Certainty.",
+    "investigation": "EEG, MRI, CT, telemetry, and related investigation statements. Render Investigations with performed/result/type attributes only for completed or resulted tests, not planned repeats or bare modality references.",
+    "medication": "Anti-seizure medication events. Render Prescription mentions with DrugName, DrugDose, DoseUnit, and Frequency when stated. The rendered text should preserve the medication item's annotation-facing span: full compact regimen when present in a medication list, bare drug name when that is all the note states.",
+    "seizure_frequency": "How often a seizure type occurs, including seizure-free duration, ranges, interval cadence, cluster counts, dated counts, and frequency change. Preserve the stated seizure anchor and temporal frame instead of converting it into a guessed rate; exclude non-epileptic events and blackouts unless the letter states they are epileptic seizures."
+  },
+  "letter_id": "SNAP001",
+  "letter_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
+  "output_schema": {
+    "clinical_events": [
+      {
+        "anchor_text": "Short exact substring naming the clinical event. Use the family guidance below.",
+        "confidence": "low | medium | high",
+        "event_state": "Source-near state for clinical reasoning, such as medication dose/frequency, diagnostic assertion, seizure rate, or test result. Values must be strings.",
+        "evidence": "Exact clause or sentence copied from the letter that supports the event and all rendered mentions.",
+        "family": "medication | diagnosis | seizure_frequency | investigation",
+        "mentions": [
+          {
+            "attributes": "Only attributes legal for that entity.",
+            "entity": "One of Prescription, Diagnosis, SeizureFrequency, Investigations.",
+            "text": "Short exact substring used for scoring this entity."
+          }
+        ],
+        "rationale": "One brief sentence explaining the event."
+      }
+    ]
+  },
+  "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.25_luna_sf_state",
+  "task": "Read the clinical letter once. Use the candidate_evidence_ledger as attention scaffolding, then build a compact list of source-near clinical events for medication, diagnosis, seizure frequency, and investigations. Each event may render one or more entity mentions when the same clinical fact validly belongs to more than one requested family.",
+  "worked_examples": [
+    {
+      "correct_event": {
+        "anchor_text": "focal seizures",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "focal epilepsy",
+          "rate": "2 per 1 Month",
+          "seizure_type": "focal seizures"
+        },
+        "evidence": "focal epilepsy with 2 focal seizures per month",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal epilepsy"
+          },
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal seizures"
+          },
+          {
+            "attributes": {
+              "NumberOfSeizures": "2",
+              "NumberOfTimePeriods": "1",
+              "TimePeriod": "Month"
+            },
+            "entity": "SeizureFrequency",
+            "text": "focal seizures"
+          }
+        ],
+        "rationale": "The diagnosis and dated seizure count are directly stated."
+      },
+      "note_fragment": "She has focal epilepsy with 2 focal seizures per month."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "secondary generalised seizures",
+        "confidence": "high",
+        "event_state": {
+          "count": "4",
+          "frame": "since last clinic",
+          "seizure_type": "secondary generalised seizures"
+        },
+        "evidence": "Since her last clinic appointment she has had four secondary generalised seizures.",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "secondary generalised seizures"
+          },
+          {
+            "attributes": {
+              "NumberOfSeizures": "4",
+              "PointInTime": "LastClinic",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "entity": "SeizureFrequency",
+            "text": "secondary generalised seizures"
+          }
+        ],
+        "rationale": "The count is tied to the period since last clinic."
+      },
+      "note_fragment": "Since her last clinic appointment she has had four secondary generalised seizures."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "focal epilepsy-Probable temporal",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "focal epilepsy",
+          "probable_anatomical_qualifier": "temporal lobe epilepsy"
+        },
+        "evidence": "Diagnosis: focal epilepsy-Probable temporal",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal epilepsy"
+          },
+          {
+            "attributes": {
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "temporal lobe epilepsy"
+          }
+        ],
+        "rationale": "The heading states focal epilepsy and a probable temporal qualifier."
+      },
+      "note_fragment": "Diagnosis: focal epilepsy-Probable temporal"
+    },
+    {
+      "correct_event": {
+        "anchor_text": "epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "certainty": "probable",
+          "generic_diagnosis": "epilepsy",
+          "specific_diagnosis": "focal epilepsy"
+        },
+        "evidence": "Diagnosis: epilepsy - probable focal",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "epilepsy"
+          },
+          {
+            "attributes": {
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal epilepsy"
+          }
+        ],
+        "rationale": "The generic diagnosis is stated and the focal qualifier is probable."
+      },
+      "note_fragment": "Diagnosis: epilepsy - probable focal"
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Epilepsy - unclassified, possibly generalised",
+        "confidence": "high",
+        "event_state": {
+          "generic_diagnosis": "epilepsy",
+          "possible_subtype": "generalised epilepsy"
+        },
+        "evidence": "Diagnosis: Epilepsy - unclassified, possibly generalised.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "epilepsy"
+          },
+          {
+            "attributes": {
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "generalised epilepsy"
+          }
+        ],
+        "rationale": "The generic epilepsy diagnosis is stated; only the generalised subtype is possible."
+      },
+      "note_fragment": "Diagnosis: Epilepsy - unclassified, possibly generalised."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "absence like seizures",
+        "confidence": "high",
+        "event_state": {
+          "seizure_type": "absence like seizures"
+        },
+        "evidence": "Seizure type and frequency: absence like seizures 2014.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "absence like seizures"
+          },
+          {
+            "attributes": {
+              "NumberOfSeizures": "1",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "entity": "SeizureFrequency",
+            "text": "absence like seizures"
+          }
+        ],
+        "rationale": "The source names plural absence-like seizures in 2014."
+      },
+      "note_fragment": "Seizure type and frequency: absence like seizures 2014."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizure-free",
+        "confidence": "high",
+        "event_state": {
+          "since": "July 2016",
+          "state": "seizure-free"
+        },
+        "evidence": "seizure-free since July 2016",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "MonthDate": "7",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2016"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizure-free"
+          }
+        ],
+        "rationale": "The note states seizure-free since a month and year."
+      },
+      "note_fragment": "She has been seizure-free since July 2016."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizures",
+        "confidence": "medium",
+        "event_state": {
+          "count": "several",
+          "frame": "since last clinic"
+        },
+        "evidence": "several seizures since the last clinic visit",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "NumberOfSeizures": "3",
+              "PointInTime": "LastClinic",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizures"
+          }
+        ],
+        "rationale": "Several is an approximate seizure count since last clinic."
+      },
+      "note_fragment": "He has had several seizures since the last clinic visit."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "several seizures",
+        "confidence": "medium",
+        "event_state": {
+          "count": "several",
+          "frame": "since last clinic"
+        },
+        "evidence": "several seizures since the last clinic appointment",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "NumberOfSeizures": "3",
+              "PointInTime": "LastClinic",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizures"
+          }
+        ],
+        "rationale": "The frequency heading gives an approximate count since clinic."
+      },
+      "note_fragment": "Seizure type and frequency: Uncertain, several seizures since the last clinic appointment."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizures",
+        "confidence": "high",
+        "event_state": {
+          "rate": "1 per 3 to 4 Week",
+          "seizure_type": "seizures"
+        },
+        "evidence": "seizures every 3 to 4 weeks",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "LowerNumberOfTimePeriods": "3",
+              "NumberOfSeizures": "1",
+              "TimePeriod": "Week",
+              "UpperNumberOfTimePeriods": "4"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizures"
+          }
+        ],
+        "rationale": "The count is one seizure over a 3 to 4 week interval."
+      },
+      "note_fragment": "She has seizures every 3 to 4 weeks."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "generalised tonic clonic seizures",
+        "confidence": "high",
+        "event_state": {
+          "date": "2014",
+          "seizure_types": [
+            "generalised tonic clonic seizures",
+            "absence like seizures"
+          ]
+        },
+        "evidence": "2 generalised tonic clonic seizures 2014, absence like seizures 2014",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "NumberOfSeizures": "2",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "entity": "SeizureFrequency",
+            "text": "generalised tonic clonic seizures"
+          },
+          {
+            "attributes": {
+              "NumberOfSeizures": "1",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2014"
+            },
+            "entity": "SeizureFrequency",
+            "text": "absence like seizures"
+          }
+        ],
+        "rationale": "The heading gives dated frequency states for both seizure types."
+      },
+      "note_fragment": "Seizure type and frequency: 2 generalised tonic clonic seizures 2014, absence like seizures 2014."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizures",
+        "confidence": "medium",
+        "event_state": {
+          "seizure_type": "seizures",
+          "state": "returned"
+        },
+        "evidence": "the seizures have returned",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "FrequencyChange": "Increased"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizures"
+          }
+        ],
+        "rationale": "Returned seizures indicate an active frequency change."
+      },
+      "note_fragment": "Unfortunately after a period of seizure freedom the seizures have returned."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Focal seizures with altered awareness",
+        "confidence": "high",
+        "event_state": {
+          "rate": "1 per 2 Week",
+          "seizure_type": "focal seizures with altered awareness"
+        },
+        "evidence": "Focal seizures with altered awareness approximately 1 per fortnight",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "NumberOfSeizures": "1",
+              "NumberOfTimePeriods": "2",
+              "TimePeriod": "Week"
+            },
+            "entity": "SeizureFrequency",
+            "text": "Focal seizures with altered awareness"
+          }
+        ],
+        "rationale": "The cadence belongs to the full named seizure type."
+      },
+      "note_fragment": "Focal seizures with altered awareness approximately 1 per fortnight."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "cluster of seizures",
+        "confidence": "high",
+        "event_state": {
+          "date": "August 2017",
+          "event": "cluster"
+        },
+        "evidence": "cluster of seizures in August 2017",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "MonthDate": "8",
+              "NumberOfSeizures": "1",
+              "TimeSince_or_TimeOfEvent": "During",
+              "YearDate": "2017"
+            },
+            "entity": "SeizureFrequency",
+            "text": "cluster of seizures"
+          }
+        ],
+        "rationale": "The note counts one cluster rather than individual seizures."
+      },
+      "note_fragment": "She had a cluster of seizures in August 2017."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "focal seizures",
+        "confidence": "high",
+        "event_state": {
+          "anchor": "DrugChange",
+          "change": "infrequent"
+        },
+        "evidence": "focal seizures are infrequent",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "FrequencyChange": "Infrequent",
+              "PointInTime": "DrugChange"
+            },
+            "entity": "SeizureFrequency",
+            "text": "focal seizures"
+          }
+        ],
+        "rationale": "The statement gives frequency change without an exact count."
+      },
+      "note_fragment": "Since changing medication her focal seizures are infrequent."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Focal to bilateral convulsive seizures",
+        "confidence": "high",
+        "event_state": {
+          "seizure_type": "Focal to bilateral convulsive seizures",
+          "state": "none since Christmas 2017"
+        },
+        "evidence": "Focal to bilateral convulsive seizures, last event around Christmas 2017",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "MonthDate": "12",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2017"
+            },
+            "entity": "SeizureFrequency",
+            "text": "Focal to bilateral convulsive seizures"
+          }
+        ],
+        "rationale": "The last-event date implies no later events of that type."
+      },
+      "note_fragment": "Focal to bilateral convulsive seizures, last event around Christmas 2017."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "focal seizures",
+        "confidence": "medium",
+        "event_state": {
+          "anchor": "DrugChange",
+          "state": "controlled"
+        },
+        "evidence": "focal seizures are completely under control",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "FrequencyChange": "Infrequent",
+              "NumberOfSeizures": "0",
+              "PointInTime": "DrugChange"
+            },
+            "entity": "SeizureFrequency",
+            "text": "focal seizures"
+          }
+        ],
+        "rationale": "Controlled focal seizures indicate no current events after treatment."
+      },
+      "note_fragment": "The focal seizures are completely under control on lamotrigine."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizure free",
+        "confidence": "medium",
+        "event_state": {
+          "state": "bare_seizure_free_without_since_frame"
+        },
+        "evidence": "remains seizure free and is now driving",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "The statement has no seizure type or since/date anchor."
+      },
+      "note_fragment": "He remains seizure free and is now driving."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "generalised tonic clonic seizures",
+        "confidence": "medium",
+        "event_state": {
+          "state": "well_controlled_without_current_frame"
+        },
+        "evidence": "generalised tonic clonic seizures, which were well controlled on Sodium Valproate",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "Well controlled historical context is not a current frequency state."
+      },
+      "note_fragment": "He suffered with generalised tonic clonic seizures, which were well controlled on Sodium Valproate."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizures",
+        "confidence": "medium",
+        "event_state": {
+          "since": "teenage years",
+          "state": "seizure-free"
+        },
+        "evidence": "last seizures were in his teenage years",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "AgeLower": "13",
+              "AgeUnit": "Year",
+              "AgeUpper": "19",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since"
+            },
+            "entity": "SeizureFrequency",
+            "text": "seizures"
+          }
+        ],
+        "rationale": "Last seizures in teenage years means none since that age range."
+      },
+      "note_fragment": "His last seizures were in his teenage years where he probably had around 3 or 4 focal to bilateral convulsive seizures."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "focal seizures",
+        "confidence": "high",
+        "event_state": {
+          "rate": "2 per 1 Month",
+          "seizure_type": "focal seizures"
+        },
+        "evidence": "2 focal seizures per month",
+        "family": "seizure_frequency",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal seizures"
+          },
+          {
+            "attributes": {
+              "NumberOfSeizures": "2",
+              "NumberOfTimePeriods": "1",
+              "TimePeriod": "Month"
+            },
+            "entity": "SeizureFrequency",
+            "text": "focal seizures"
+          }
+        ],
+        "rationale": "The diagnosis and seizure rate are directly stated."
+      },
+      "note_fragment": "She has 2 focal seizures per month."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "lamotrigine",
+        "confidence": "high",
+        "event_state": {
+          "dose": "200 mg",
+          "drug": "lamotrigine",
+          "frequency": "twice daily"
+        },
+        "evidence": "lamotrigine 200 mg twice daily",
+        "family": "medication",
+        "mentions": [
+          {
+            "attributes": {
+              "DoseUnit": "mg",
+              "DrugDose": "200",
+              "DrugName": "lamotrigine",
+              "Frequency": "2"
+            },
+            "entity": "Prescription",
+            "text": "lamotrigine 200 mg twice daily"
+          }
+        ],
+        "rationale": "Medication, dose, and frequency are stated."
+      },
+      "note_fragment": "Current treatment is lamotrigine 200 mg twice daily."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Keppra",
+        "confidence": "high",
+        "event_state": {
+          "dose": "1000 milligrams",
+          "drug": "Keppra",
+          "frequency": "twice a day"
+        },
+        "evidence": "Keppra 1000 milligrams twice a day",
+        "family": "medication",
+        "mentions": [
+          {
+            "attributes": {
+              "DoseUnit": "mg",
+              "DrugDose": "1000",
+              "DrugName": "Keppra",
+              "Frequency": "2"
+            },
+            "entity": "Prescription",
+            "text": "Keppra 1000 milligrams twice a day"
+          }
+        ],
+        "rationale": "Twice a day maps to Frequency 2."
+      },
+      "note_fragment": "Medication: Keppra 1000 milligrams twice a day."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Epilim",
+        "confidence": "high",
+        "event_state": {
+          "dose_schedule": "300 mg mane and 600 mg nocte",
+          "drug": "Epilim"
+        },
+        "evidence": "Epilim 300 mg mane and 600 mg nocte",
+        "family": "medication",
+        "mentions": [
+          {
+            "attributes": {
+              "DoseUnit": "mg",
+              "DrugDose": "300",
+              "DrugName": "Epilim",
+              "Frequency": "1"
+            },
+            "entity": "Prescription",
+            "text": "Epilim 300 mg mane"
+          },
+          {
+            "attributes": {
+              "DoseUnit": "mg",
+              "DrugDose": "600",
+              "DrugName": "Epilim",
+              "Frequency": "1"
+            },
+            "entity": "Prescription",
+            "text": "Epilim 600 mg nocte"
+          }
+        ],
+        "rationale": "The current regimen has two unequal once-daily doses."
+      },
+      "note_fragment": "Current medication: Epilim 300 mg mane and 600 mg nocte."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "levetiracetam and valproate",
+        "confidence": "high",
+        "event_state": {
+          "planned": "future start and conditional increase"
+        },
+        "evidence": "start levetiracetam and increase valproate to 800 mg bd if further seizures occur",
+        "family": "medication",
+        "mentions": [],
+        "rationale": "Future and conditional medication plans are not current regimens."
+      },
+      "note_fragment": "Plan: start levetiracetam and increase valproate to 800 mg bd if further seizures occur."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "temporal lobe epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "certainty": "probable",
+          "diagnosis": "temporal lobe epilepsy"
+        },
+        "evidence": "probable temporal lobe epilepsy",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "4",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "temporal lobe epilepsy"
+          }
+        ],
+        "rationale": "Probable maps to Certainty 4 while preserving the specific syndrome."
+      },
+      "note_fragment": "Diagnosis: probable temporal lobe epilepsy."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Temporal lobe epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "generic_diagnosis": "epilepsy",
+          "specific_diagnosis": "Temporal lobe epilepsy"
+        },
+        "evidence": "Diagnosis: Temporal lobe epilepsy.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "Temporal lobe epilepsy"
+          },
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "epilepsy"
+          }
+        ],
+        "rationale": "The source states an epilepsy subtype and contains generic epilepsy."
+      },
+      "note_fragment": "Diagnosis: Temporal lobe epilepsy."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "symptomatic structural focal epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "symptomatic structural focal epilepsy"
+        },
+        "evidence": "Diagnosis: symptomatic structural focal epilepsy.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "symptomatic structural focal epilepsy"
+          }
+        ],
+        "rationale": "The heading gives one specific epilepsy subtype."
+      },
+      "note_fragment": "Diagnosis: symptomatic structural focal epilepsy."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "intractable epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "intractable epilepsy"
+        },
+        "evidence": "intractable epilepsy",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "intractable epilepsy"
+          }
+        ],
+        "rationale": "The modifier is part of the stated diagnosis."
+      },
+      "note_fragment": "I reviewed this lady with intractable epilepsy in clinic today."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "generalised tonic clonic seizures",
+        "confidence": "high",
+        "event_state": {
+          "possible_syndrome": "JME",
+          "seizure_type": "generalised tonic clonic seizures",
+          "symptom_not_diagnosis": "myoclonic jerks"
+        },
+        "evidence": "Diagnosis: generalised tonic clonic seizures with myoclonic jerks, possible JME.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "generalised tonic clonic seizures"
+          },
+          {
+            "attributes": {
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "JME"
+          }
+        ],
+        "rationale": "The heading states GTC seizures and only possible JME."
+      },
+      "note_fragment": "Diagnosis: generalised tonic clonic seizures with myoclonic jerks, possible JME."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "Complex partial seizures",
+        "confidence": "high",
+        "event_state": {
+          "seizure_types": [
+            "Complex partial seizures",
+            "secondary generalised tonic clonic seizures"
+          ]
+        },
+        "evidence": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures.",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "Complex partial seizures"
+          },
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "secondary generalised tonic clonic seizures"
+          }
+        ],
+        "rationale": "The compound heading names two seizure-type diagnoses."
+      },
+      "note_fragment": "Diagnosis: Complex partial seizures with secondary generalised tonic clonic seizures."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "complex partial seizures",
+        "confidence": "high",
+        "event_state": {
+          "seizure_type": "complex partial seizures"
+        },
+        "evidence": "general and complex partial seizures",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "MultipleSeizures",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "complex partial seizures"
+          }
+        ],
+        "rationale": "General is a modifier in this phrase, not a seizure type."
+      },
+      "note_fragment": "Despite this she continues to get general and complex partial seizures."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "JME",
+        "confidence": "high",
+        "event_state": {
+          "certainty": "possible",
+          "diagnosis": "JME"
+        },
+        "evidence": "possible JME",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "3",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "JME"
+          }
+        ],
+        "rationale": "Possible is captured in Certainty; the mention text is the core span."
+      },
+      "note_fragment": "Diagnosis: possible JME."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "focal seizure",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "focal seizure"
+        },
+        "evidence": "single focal seizure",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "SingleSeizure",
+              "Negation": "Affirmed"
+            },
+            "entity": "Diagnosis",
+            "text": "focal seizure"
+          }
+        ],
+        "rationale": "The quantifier single is not part of the core concept span."
+      },
+      "note_fragment": "He had a single focal seizure."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "epilepsy diagnosis",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "epilepsy",
+          "negation": "negated"
+        },
+        "evidence": "no epilepsy diagnosis",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Negated"
+            },
+            "entity": "Diagnosis",
+            "text": "epilepsy"
+          }
+        ],
+        "rationale": "Jerks and flashing lights are symptoms here, not Diagnosis concepts."
+      },
+      "note_fragment": "She has myoclonic jerks and flashing lights but no epilepsy diagnosis."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "no diagnosis of epilepsy",
+        "confidence": "high",
+        "event_state": {
+          "diagnosis": "epilepsy",
+          "negation": "negated"
+        },
+        "evidence": "no diagnosis of epilepsy",
+        "family": "diagnosis",
+        "mentions": [
+          {
+            "attributes": {
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Negated"
+            },
+            "entity": "Diagnosis",
+            "text": "epilepsy"
+          }
+        ],
+        "rationale": "Anxiety and blackouts are not rendered as Diagnosis; epilepsy is negated."
+      },
+      "note_fragment": "She has anxiety and unwitnessed blackouts, but no diagnosis of epilepsy."
+    },
+    {
+      "correct_event": [
+        {
+          "anchor_text": "MRI",
+          "confidence": "high",
+          "event_state": {
+            "modality": "MRI",
+            "result": "Normal"
+          },
+          "evidence": "MRI brain was normal",
+          "family": "investigation",
+          "mentions": [
+            {
+              "attributes": {
+                "MRI_Performed": "Yes",
+                "MRI_Results": "Normal"
+              },
+              "entity": "Investigations",
+              "text": "MRI"
+            }
+          ],
+          "rationale": "MRI result is normal."
+        },
+        {
+          "anchor_text": "sleep-deprived EEG",
+          "confidence": "high",
+          "event_state": {
+            "modality": "EEG",
+            "result": "Abnormal",
+            "type": "SleepDeprived"
+          },
+          "evidence": "sleep-deprived EEG showed sharp waves",
+          "family": "investigation",
+          "mentions": [
+            {
+              "attributes": {
+                "EEG_Performed": "Yes",
+                "EEG_Results": "Abnormal",
+                "EEG_Type": "SleepDeprived"
+              },
+              "entity": "Investigations",
+              "text": "sleep-deprived EEG"
+            }
+          ],
+          "rationale": "Sleep-deprived EEG showed sharp waves."
+        }
+      ],
+      "note_fragment": "MRI brain was normal; sleep-deprived EEG showed sharp waves."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "ECG",
+        "confidence": "high",
+        "event_state": {
+          "modality": "ECG",
+          "target": false
+        },
+        "evidence": "ECG was normal",
+        "family": "investigation",
+        "mentions": [],
+        "rationale": "ECG is not one of the requested MRI, CT, or EEG targets."
+      },
+      "note_fragment": "Her ECG was normal."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "EEG",
+        "confidence": "high",
+        "event_state": {
+          "modality": "EEG",
+          "result": "Abnormal"
+        },
+        "evidence": "EEG 2012 generalised spike and wave",
+        "family": "investigation",
+        "mentions": [
+          {
+            "attributes": {
+              "EEG_Performed": "Yes",
+              "EEG_Results": "Abnormal"
+            },
+            "entity": "Investigations",
+            "text": "EEG"
+          }
+        ],
+        "rationale": "The plain EEG is abnormal; no EEG_Type is stated."
+      },
+      "note_fragment": "EEG 2012 generalised spike and wave."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "MRI scan",
+        "confidence": "high",
+        "event_state": {
+          "planned": "repeat MRI"
+        },
+        "evidence": "I will request a repeat MRI scan next year.",
+        "family": "investigation",
+        "mentions": [],
+        "rationale": "A planned repeat MRI is not a completed investigation mention."
+      },
+      "note_fragment": "I will request a repeat MRI scan next year."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "EEG",
+        "confidence": "high",
+        "event_state": {
+          "pending": "EEG awaiting appointment"
+        },
+        "evidence": "awaiting an EEG appointment",
+        "family": "investigation",
+        "mentions": [],
+        "rationale": "An awaited EEG appointment is a pending test, not a completed one."
+      },
+      "note_fragment": "We are awaiting an EEG appointment for her."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "seizure",
+        "confidence": "high",
+        "event_state": {
+          "advice": "conditional safety advice"
+        },
+        "evidence": "what to do if she has a seizure",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "Conditional safety advice is not a current seizure-frequency state."
+      },
+      "note_fragment": "I advised her what to do if she has a seizure while driving."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "further seizures",
+        "confidence": "high",
+        "event_state": {
+          "risk_discussion": "not_current_frequency"
+        },
+        "evidence": "at risk of further seizures",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "Risk counselling is not a current seizure-frequency state."
+      },
+      "note_fragment": "I explained that even though he's only had one seizure he is at risk of further seizures."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "episodes",
+        "confidence": "high",
+        "event_state": {
+          "episode_description": "diagnostically_vague"
+        },
+        "evidence": "episodes around twice a week of an unusual thought",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "The cadence belongs to vague thought episodes, not a scorable seizure type."
+      },
+      "note_fragment": "She tells me that she has been getting episodes around twice a week of an unusual thought."
+    },
+    {
+      "correct_event": {
+        "anchor_text": "episodes",
+        "confidence": "high",
+        "event_state": {
+          "episode_description": "contextual_minor_events"
+        },
+        "evidence": "episodes last no longer than 3 minutes and occur 4 to 5 times a year",
+        "family": "seizure_frequency",
+        "mentions": [],
+        "rationale": "Episodes without a current scorable seizure-type anchor are excluded."
+      },
+      "note_fragment": "The episodes last no longer than 3 minutes and occur 4 to 5 times a year."
+    },
+    {
+      "correct_event": [],
+      "note_fragment": "Unwitnessed blackouts and anxiety, no epileptic seizures."
+    },
+    {
+      "correct_event": [],
+      "note_fragment": "The events have been going on for 9 months. He has suffered around 10 events in total and none for the last 2 weeks."
+    },
+    {
+      "correct_event": [],
+      "note_fragment": "He has had around 7 episodes of loss of consciousness since the beginning of the year."
+    },
+    {
+      "correct_event": [],
+      "note_fragment": "She has jerks while travelling in a car when light flickers through passing trees."
+    }
+  ]
+}
