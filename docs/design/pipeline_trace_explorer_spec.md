@@ -213,8 +213,10 @@ Show the operation followed by a structural before/after diff:
 
 - additions, removals, replacements, selections, and suppressions have
   separate labels;
-- a change that alters clinical meaning names the deterministic rule and rule
-  category;
+- a deterministic change that alters clinical meaning names the deterministic
+  rule and rule category; a model-owned change that alters clinical meaning
+  declares `owner_kind: model` instead, because it has no deterministic rule to
+  name and must not claim one;
 - format-only repair states `clinical meaning unchanged by this operation`;
 - unchanged fields are collapsed by default;
 - every finding transition retains its stable finding or event identifier.
@@ -639,7 +641,8 @@ Do not estimate missing latency, cost, token, energy, or hardware fields.
 
 Required fields:
 
-- `change_id`, `stage_id`, and operation owner;
+- `change_id`, `stage_id`, and operation owner, including the owner's
+  `owner_kind`: model, deterministic, or scorer;
 - `kind`: add, remove, replace, select, suppress, split, merge, normalize,
   validate, format_repair, or project;
 - JSON pointers or finding/event IDs for before and after values;
