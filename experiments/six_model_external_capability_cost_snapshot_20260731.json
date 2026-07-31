@@ -1,0 +1,184 @@
+{
+  "schema_version": "six_model.external_capability_cost.v1",
+  "generated_at_utc": "2026-07-31T00:00:00Z",
+  "retrieved_at_utc": "2026-07-31",
+  "source": {
+    "provider": "Artificial Analysis",
+    "healthcare_index_url": "https://artificialanalysis.ai/models/capabilities/healthcare-and-medical",
+    "intelligence_index_version": "Artificial Analysis Intelligence Index v4.1",
+    "healthcare_index_name": "Artificial Analysis Healthcare & Medical Index",
+    "healthcare_weights": {
+      "medical_and_health_knowledge": 0.35,
+      "agentic_knowledge_work": 0.25,
+      "non_hallucination": 0.15,
+      "reasoning": 0.15,
+      "agentic_customer_interaction": 0.10
+    },
+    "healthcare_component_evaluations": {
+      "medical_and_health_knowledge": "AA-Omniscience Health Accuracy",
+      "agentic_knowledge_work": "GDPval-AA v2",
+      "non_hallucination": "AA-Omniscience Non-Hallucination",
+      "reasoning": "Humanity's Last Exam",
+      "agentic_customer_interaction": "tau3-Banking"
+    },
+    "claim_boundary": "External capability and list-price context only. Not matched ExECT/Gan run telemetry. AA reasoning-effort variants are not asserted to equal the project's extraction runtime settings. Local Qwen/Gemma project routes are Ollama; hosted API list prices are proxies, not measured local hardware cost."
+  },
+  "illustrative_extraction_token_budget": {
+    "label": "illustrative_only_not_measured",
+    "input_tokens_per_note": 3000,
+    "output_tokens_per_note": 1500,
+    "notes": "Does not include reasoning/thinking tokens. Used only for labeled dollar illustrations."
+  },
+  "models": [
+    {
+      "roster_display_name": "GPT-4.1-mini",
+      "aa_slug": "gpt-4-1-mini",
+      "aa_variant_label": "GPT-4.1 mini",
+      "aa_reasoning": false,
+      "intelligence_index": 14.7656334909109,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 19.1,
+        "agentic_knowledge_work": 0.3889999999999986,
+        "non_hallucination": 24.474660074165634,
+        "reasoning": 4.599156118143459,
+        "agentic_customer_interaction": 5.1546391752577305
+      },
+      "healthcare_index": 11.659,
+      "healthcare_index_provenance": "computed_from_aa_component_fields_with_published_weights",
+      "list_price_usd_per_million_tokens": {
+        "input": 0.4,
+        "output": 1.6,
+        "blended_7_2_1_cache_hit_input_output": 0.31,
+        "price_basis": "Artificial Analysis first-party API listing"
+      },
+      "aa_output_tokens_per_second": 83.5,
+      "aa_ttft_seconds": 0.92,
+      "project_route": "hosted"
+    },
+    {
+      "roster_display_name": "GPT-5.6 Luna",
+      "aa_slug": "gpt-5-6-luna",
+      "aa_variant_label": "GPT-5.6 Luna (max)",
+      "aa_reasoning": true,
+      "intelligence_index": 51.2359331798034,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 36.199999999999996,
+        "agentic_knowledge_work": 54.09700000000001,
+        "non_hallucination": 7.68025078369906,
+        "reasoning": 37.2103799814643,
+        "agentic_customer_interaction": 27.2164948453608
+      },
+      "healthcare_index": 35.649,
+      "healthcare_index_provenance": "matches_aa_published_chart_and_component_recompute",
+      "list_price_usd_per_million_tokens": {
+        "input": 0.2,
+        "output": 1.2,
+        "blended_7_2_1_cache_hit_input_output": 0.17,
+        "price_basis": "Artificial Analysis first-party API listing"
+      },
+      "aa_output_tokens_per_second": 184.4,
+      "aa_ttft_seconds": 116.5,
+      "project_route": "hosted"
+    },
+    {
+      "roster_display_name": "GPT-5.6 Sol",
+      "aa_slug": "gpt-5-6-sol",
+      "aa_variant_label": "GPT-5.6 Sol (max)",
+      "aa_reasoning": true,
+      "intelligence_index": 58.889831189723,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 50.5,
+        "agentic_knowledge_work": 61.8035,
+        "non_hallucination": 9.898989898989896,
+        "reasoning": 47.173308619091806,
+        "agentic_customer_interaction": 32.9896907216495
+      },
+      "healthcare_index": 44.986,
+      "healthcare_index_provenance": "matches_aa_published_chart_and_component_recompute",
+      "list_price_usd_per_million_tokens": {
+        "input": 5.0,
+        "output": 30.0,
+        "blended_7_2_1_cache_hit_input_output": 4.35,
+        "price_basis": "Artificial Analysis first-party API listing"
+      },
+      "aa_output_tokens_per_second": 65.5,
+      "aa_ttft_seconds": 147.3,
+      "project_route": "hosted"
+    },
+    {
+      "roster_display_name": "DeepSeek V4 Flash",
+      "aa_slug": "deepseek-v4-flash",
+      "aa_variant_label": "DeepSeek V4 Flash 0731 (Reasoning, Max Effort)",
+      "aa_reasoning": true,
+      "intelligence_index": 49.9276679335021,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 32.1,
+        "agentic_knowledge_work": 52.930499999999995,
+        "non_hallucination": 21.79675994108984,
+        "reasoning": 36.8396663577386,
+        "agentic_customer_interaction": 31.1340206185567
+      },
+      "healthcare_index": 36.376,
+      "healthcare_index_provenance": "matches_aa_published_chart_and_component_recompute",
+      "list_price_usd_per_million_tokens": {
+        "input": 0.14,
+        "output": 0.28,
+        "blended_7_2_1_cache_hit_input_output": 0.06,
+        "price_basis": "Artificial Analysis first-party API listing"
+      },
+      "aa_output_tokens_per_second": null,
+      "aa_ttft_seconds": null,
+      "project_route": "hosted"
+    },
+    {
+      "roster_display_name": "Qwen 3.6:35B",
+      "aa_slug": "qwen3-6-35b-a3b",
+      "aa_variant_label": "Qwen3.6 35B A3B (Reasoning)",
+      "aa_reasoning": true,
+      "intelligence_index": 31.649611240178,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 16.8,
+        "agentic_knowledge_work": 27.622000000000003,
+        "non_hallucination": 39.90384615384615,
+        "reasoning": 20.1575532900834,
+        "agentic_customer_interaction": 8.65979381443299
+      },
+      "healthcare_index": 22.661,
+      "healthcare_index_provenance": "computed_from_aa_component_fields_with_published_weights",
+      "list_price_usd_per_million_tokens": {
+        "input": 0.248,
+        "output": 1.485,
+        "blended_7_2_1_cache_hit_input_output": null,
+        "price_basis": "Artificial Analysis median hosted-provider listing; project route is local Ollama"
+      },
+      "aa_output_tokens_per_second": 140.8,
+      "aa_ttft_seconds": null,
+      "project_route": "local_ollama"
+    },
+    {
+      "roster_display_name": "Gemma 4 26B",
+      "aa_slug": "gemma-4-26b-a4b",
+      "aa_variant_label": "Gemma 4 26B A4B (Reasoning)",
+      "aa_reasoning": true,
+      "intelligence_index": 25.6946061195095,
+      "healthcare_components_raw": {
+        "medical_and_health_knowledge": 15.0,
+        "agentic_knowledge_work": 13.5125,
+        "non_hallucination": 19.882352941176475,
+        "reasoning": 18.2576459684893,
+        "agentic_customer_interaction": 11.7525773195876
+      },
+      "healthcare_index": 15.524,
+      "healthcare_index_provenance": "computed_from_aa_component_fields_with_published_weights",
+      "list_price_usd_per_million_tokens": {
+        "input": 0.13,
+        "output": 0.4,
+        "blended_7_2_1_cache_hit_input_output": 0.13,
+        "price_basis": "Artificial Analysis median hosted-provider listing; project route is local Ollama"
+      },
+      "aa_output_tokens_per_second": null,
+      "aa_ttft_seconds": null,
+      "project_route": "local_ollama"
+    }
+  ]
+}

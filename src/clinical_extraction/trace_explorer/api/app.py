@@ -50,7 +50,7 @@ def create_app(
         index = TraceIndex(resolved_index_dir)
 
     resolved_frontend_data = frontend_fixture_root or (
-        _repository_root() / "frontend" / "frontend" / "public" / "mock-data"
+        _repository_root() / "frontend" / "public" / "mock-data"
     )
     frontend_data = FrontendDataStore(resolved_frontend_data)
     review_store = ReviewStore(review_db_path or (resolved_index_dir / "reviews.sqlite3"))
