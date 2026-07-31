@@ -51,6 +51,13 @@ def prediction_label_from_selected_evidence(
     if monthly_diary:
         return monthly_diary
 
+    # Only promote range-over-window before early-rate when the evidence uses an
+    # ``or`` count range. Broader promotion regresses ordinary monthly rates.
+    if re.search(r"\b\d+\s+or\s+\d+\b", text):
+        range_count = range_count_over_window(text)
+        if range_count:
+            return range_count
+
     early_rate = early_rate_label_from_selected_evidence(text)
     if early_rate:
         return early_rate
@@ -146,7 +153,12 @@ def should_prefer_selected_evidence_label(
         for marker in ("≤", "<=", "up to", "at most", "no more than", "quarter")
     ):
         return True
-    return not _raw_label_is_simple_rate(normalized_raw)
+    normalized_raw_rate = re.sub(
+        r"\b(\d+(?:\.\d+)?)\s+or\s+(\d+(?:\.\d+)?)\b",
+        r"\1 to \2",
+        normalized_raw,
+    )
+    return not _raw_label_is_simple_rate(normalized_raw_rate)
 
 
 def _raw_label_is_simple_rate(normalized_raw: str) -> bool:

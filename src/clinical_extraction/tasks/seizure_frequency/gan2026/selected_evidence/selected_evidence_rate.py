@@ -418,7 +418,8 @@ def late_rate_label_from_selected_evidence(
         return _format_prediction_rate(monthly_shorthand.group("count"), "month")
 
     single_last_period = re.search(
-        rf"\b(?:single|1)\b.*\b(?:last|past)\s+(?P<unit>{_UNIT})\b",
+        rf"\b(?:single|1)\b(?!\s*(?:to|or|-|–|—)\s*\d+)"
+        rf".*\b(?:last|past)\s+(?P<unit>{_UNIT})\b",
         text,
     )
     if single_last_period:

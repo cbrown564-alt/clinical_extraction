@@ -1,0 +1,75 @@
+{
+  "event_schema": {
+    "applies_to": "seizure type or clinical target, or null",
+    "assertion_status": [
+      "asserted",
+      "negated",
+      "historical",
+      "hypothetical",
+      "unknown"
+    ],
+    "event_id": "stable string such as e1",
+    "evidence": "exact note substring",
+    "kind": [
+      "frequency_rate",
+      "cluster_frequency",
+      "seizure_free",
+      "last_event_only",
+      "unknown_frequency",
+      "no_reference"
+    ],
+    "notes": "optional short note or null",
+    "raw_value": "source-near expression or null",
+    "temporality": [
+      "current",
+      "recent",
+      "historical",
+      "future",
+      "unclear"
+    ],
+    "time_window": "source-near current/recent/historical window, or null"
+  },
+  "instructions": [
+    "Read the full clinical note and extract source-near seizure-frequency facts.",
+    "Return events as slim clinical facts, not fully normalized answer records. Use raw_value for the text's stated rate, duration, last-event statement, or unknown/no-reference cue.",
+    "Event kind must be one of frequency_rate, cluster_frequency, seizure_free, last_event_only, unknown_frequency, or no_reference.",
+    "Use one no_reference event only when the note contains no usable seizure-frequency evidence. Do not use no_reference when seizures are discussed but frequency is unclear; use unknown_frequency instead.",
+    "Keep seizure-free statements separate from unknown or last-event-only statements. Do not select seizure-free if other current seizure-like events remain active.",
+    "Selection must choose the highest current or recent seizure burden across semiologies when several current seizure types are present.",
+    "If the note gives an overall current seizure count plus a breakdown by seizure type, select the overall count for final_label rather than only the clinically most severe subtype count.",
+    "Selection final_label may be a normalized label such as 1 per day, 2 to 3 per month, multiple per week, 1 cluster per week, seizure free for 6 month, unknown, or no seizure frequency reference.",
+    "If the selected event has a countable raw_value, prefer putting the source expression in raw_value and a concise normalized label in final_label.",
+    "When the note says a last event occurred on a date and the patient has been well, stable, or seizure-free since, still extract the dated last-event fact as its own event even if the selection is seizure-free.",
+    "When the note says a count such as 3 or 4 jerks occurred since a dated last tonic-clonic seizure, keep the source count and the dated anchor available in the event list.",
+    "Every evidence value must be an exact substring from the note when possible.",
+    "When the note gives a count range such as one to three or 2 to 4 in a stated period, keep the full range in the seizure-frequency label (for example 1 to 3 per month). Do not collapse the range to one end, and do not mark it unresolved_multiple only because the exact count inside the range is uncertain.",
+    "Prefer a clear count over a stated period, such as 8 in 2 months or 11 in the past week, over a vague rate such as several times per week or multiple per week when both describe the same current burden.",
+    "If the note gives an overall current seizure or cluster count and also breaks that count down by seizure type, select the overall count. Do not replace it with only the most severe or most frequent subtype.",
+    "For clusters, keep how often clusters occur and how many events occur in a typical cluster. When both are stated, put both in the seizure-frequency label, for example 2 cluster per month, 4 per cluster. Do not drop the events-per-cluster side when it is present.",
+    "A short quiet spell after a recent cluster or recent count does not erase that recent countable burden when the cluster or count is still the current clinical story. Prefer the recent countable cluster or count over a brief seizure-free interval measured from that same recent burst.",
+    "When clinic or diary totals give a usable recent count, prefer those totals over a device hint or a guess from one seizure type alone.",
+    "Return exactly one JSON object with no markdown."
+  ],
+  "note_text": "Clinic note: known focal epilepsy. Two seizures per month over the last year. Last seizure was yesterday. Continues levetiracetam 500mg twice daily. MRI brain reported normal.",
+  "prompt_version": "gan2026_hybrid_structured_events_v0.8_luna_rate",
+  "selection_schema": {
+    "confidence": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "evidence": "exact note substring supporting the final selection",
+    "final_kind": [
+      "frequency",
+      "seizure_free",
+      "unknown",
+      "no_reference",
+      "unresolved_multiple"
+    ],
+    "final_label": "normalized label, or null if not directly countable",
+    "rationale": "brief clinical reason for selecting these events",
+    "selected_event_ids": "list of selected event_id strings"
+  },
+  "source_row_index": 1,
+  "task": "Gan 2026 LLM-only structured-events extraction and clinical selection"
+}

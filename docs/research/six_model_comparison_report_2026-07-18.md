@@ -1,9 +1,10 @@
 # Six-model comparison across ExECTv2 and Gan 2026
 
-Date: 2026-07-18
-Updated: 2026-07-27
-Status: primary test comparison complete; Gan v0.5 dev750 coverage pending;
-test results are aggregate-only
+Date: 2026-07-18  
+Updated: 2026-07-31  
+Status: primary test comparison complete; Gan v0.5 six-model `dev750` coverage
+complete; Gan LLM-with-rules ruleset finalized 2026-07-31; test results remain
+aggregate-only
 
 ## Terms used in this report
 
@@ -44,11 +45,17 @@ The tasks use different data and scores, so this does not establish general
 model superiority.
 
 Adding deterministic checks improves the ExECT development score for every
-model. A complete matched Gan v0.5 development panel does not yet exist, so
-this report does not combine the historical v0.7 dev750 results with the
-selected v0.5 test450 results. All test results are aggregate-only, so they
-support comparison under these protocols but not row-level test error analysis
-or tuning.
+model. The matched Gan v0.5 six-model `dev750` panel is complete; do not combine
+the historical v0.7 `dev750` panel with the selected v0.5 `test450` results.
+All test results are aggregate-only, so they support comparison under these
+protocols but not row-level test error analysis or tuning.
+
+As of 2026-07-31, the Gan **LLM with rules** ruleset is finalized as working-
+tree `hybrid_full_stack` with the projection/anti-regression, dated-count,
+competing-rate, and narrow cross-model guards described below. Frozen July
+panel artifacts remain the historical matched-panel record under the prior
+repair; current LLM-with-rules readouts use no-call replay of the same saved
+raw outputs through the final ruleset.
 
 ### Results at a glance
 
@@ -56,9 +63,9 @@ or tuning.
 | --- | --- | --- |
 | What is extracted? | Facts from four parts of an epilepsy letter | One current seizure-frequency label |
 | Primary measure | Internal clinical-fact F1 | Purist accuracy |
-| Best test result | GPT-5.6 Sol: `0.80` | GPT-5.6 Sol: `0.83` |
-| Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | Pending matched v0.5 dev750 coverage |
-| Main limitation | Internal metric; 59 loadable test letters | Previously used locked test split |
+| Best test result | GPT-5.6 Sol: `0.80` | GPT-5.6 Sol: `0.83` frozen panel; `0.85` final-ruleset no-call replay |
+| Effect of deterministic checks | F1 gain of `0.08` to `0.11` on dev140 | Matched v0.5 `dev750` complete; final ruleset lifts most models on no-call replay |
+| Main limitation | Internal metric; 59 loadable test letters | Locked test split; final-ruleset scores are no-call replays of saved raws |
 
 ## 1. What the two tasks measure
 
@@ -153,7 +160,7 @@ models within a task. Scores from the two tasks are not combined.
 | Test split | `test60`; 59 loadable letters; aggregate only | `test450`; 450 rows; aggregate only |
 | Model call | One structured call for all four parts of each letter | One structured call for seizure events in each note |
 | Prompt | `exectv2_hybrid_key_family_event_ledger_v0.9.24` | `gan2026_hybrid_structured_events_v0.5` |
-| Fixed code after the model | Checks and standardizes each part, then assembles the facts | Repairs format, links evidence, applies clinical rules, and converts the label (`hybrid_full_stack`) |
+| Fixed code after the model | Checks and standardizes each part, then assembles the facts | Final Gan LLM-with-rules ruleset: `hybrid_full_stack` (see below) |
 | Primary score | `clinical_headline` F1 | Purist accuracy |
 
 ### ExECTv2: development and test F1
@@ -220,13 +227,36 @@ Development results by part:
 | Qwen 3.6:35B | 0.87 | 0.71 | 0.92 | 0.91 |
 | Gemma 4 26B | 0.84 | 0.62 | 0.90 | 0.80 |
 
+### Gan 2026: final LLM-with-rules ruleset (2026-07-31)
+
+The Gan **LLM with rules** implementation is finalized as working-tree
+`hybrid_full_stack` under prompt `gan2026_hybrid_structured_events_v0.5`.
+Further rule tuning for this comparison is closed unless a new predeclared
+study reopens it.
+
+The final ruleset includes the matched-panel repair stack plus:
+
+1. projection / anti-regression floors (range/cluster projection; diary
+   anti-overwrite of sustained seizure-free and explicit fortnight/week rates);
+2. dated-count and competing-rate floors (`N in/within M months` projection;
+   note-mined dated sequences with two distinct months; typical rate over
+   explicit year-to-date selection);
+3. narrow cross-model guards (bare singleton `1 cluster per …` → `unknown`;
+   typical-over-YTD requires YTD selection language; diary may overwrite only
+   explicit current-month seizure-free).
+
+Owners:
+[dated-count / guard report](gan2026_luna_dated_count_competing_rate_report_2026-07-31.md),
+[projection floor](gan2026_luna_projection_antiregression_floor_report_2026-07-31.md),
+[six-model final-ruleset replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json).
+
 ### Gan 2026: development coverage
 
-The selected v0.5 prompt has complete test450 coverage but not complete
-six-model dev750 coverage. One historical GPT-4.1-mini v0.5 artifact has 750
-rows and requires current-stack reconciliation. The attempted Qwen v0.5 run
-contains 45 rows and is not evidence. Complete v0.5 dev750 conditions are
-missing for Luna, Sol, DeepSeek, Qwen, and Gemma.
+The selected v0.5 prompt has complete six-model `test450` and `dev750`
+coverage. The July 2026 matched `dev750` panel artifacts remain the row-trace
+and attribution owners under the prior repair. Current LLM-with-rules
+development scores use no-call replay of those saved raw outputs through the
+final ruleset.
 
 The earlier complete v0.7 development panel is excluded from primary results
 because combining v0.7 development scores with v0.5 test scores would create a
@@ -236,11 +266,11 @@ interaction diagnostic under [decision 0043](../decisions/0043-gan-hosted-compar
 ### Gan 2026: Purist and Pragmatic accuracy
 
 Purist accuracy remains the primary result. Pragmatic accuracy is shown as a
-separate score rather than combined with the Purist ranking; it is
-higher for every model. Sol leads the Purist ranking; Sol and Qwen tie on
-Pragmatic correctness.
+separate score rather than combined with the Purist ranking.
 
 ![Grouped horizontal bars comparing Gan test450 Purist and Pragmatic accuracy by model](assets/six_model_comparison_2026-07-18/gan_purist_pragmatic.svg)
+
+#### Frozen matched panel (prior `hybrid_full_stack`; historical record)
 
 | Model | Purist | Pragmatic | Rank | Answers with exact evidence | Format or repair record |
 | --- | ---: | ---: | ---: | ---: | --- |
@@ -251,10 +281,28 @@ Pragmatic correctness.
 | Gemma 4 26B | 355/450 (0.79) | 374/450 (0.83) | 5 | 436/450 | 2 parse/validation failures; 295 repair-note rows |
 | DeepSeek V4 Flash | 344/450 (0.76) | 366/450 (0.81) | 6 | 433/450 | 3 parse/validation failures; 250 repair-note rows |
 
-Qwen and Gemma use the same prompt, pipeline, repair policy, and scorer as the
-hosted models, but run locally. This difference is recorded in the saved
-results. Only totals are available, so this comparison does not establish a general model
-ranking.
+#### Final ruleset no-call replay (same saved raw outputs)
+
+All six `dev750` and `test450` conditions are covered. Local Qwen/Gemma
+`test450` artifacts are under `scratch/holdout/gan2026_matched_v05_local/`.
+
+| Model | `dev750` Purist (final) | Δ vs frozen panel | `test450` Purist (final) | Δ vs frozen aggregate |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 677/750 | +9 | 369/450 | +8 |
+| GPT-5.6 Luna | 660/750 | +14 | 364/450 | +2 |
+| GPT-5.6 Sol | 660/750 | +4 | 381/450 | +8 |
+| DeepSeek V4 Flash | 627/750 | +8 | 348/450 | +4 |
+| Qwen 3.6:35B | 657/750 | −3 | 360/450 | −2 |
+| Gemma 4 26B | 647/750 | +4 | 356/450 | +1 |
+
+Under the final ruleset on `dev750`, mini leads Purist; Luna and Sol tie second;
+Qwen is slightly below its frozen-panel score. On `test450` replay, Sol still
+leads; Qwen dips by 2 rows and Gemma gains 1. Only totals are available for
+locked test rows. Qwen and Gemma use the same prompt and final ruleset as the
+hosted models, but run locally; that route difference is recorded in the saved
+results.
+
+This comparison does not establish a general model ranking.
 
 ## 3. Other findings about errors and evidence
 
@@ -301,9 +349,14 @@ The report supports:
 - a fixed six-model comparison on both named task pipelines;
 - the change made by fixed code on ExECT development data, and ExECT test60
   totals produced without changing the development procedure;
-- Gan v0.5 aggregate-only test450 Purist and Pragmatic evidence;
+- Gan v0.5 aggregate-only test450 Purist and Pragmatic evidence under the
+  frozen matched panel, plus no-call final-ruleset replay of the same saved
+  outputs for all six conditions;
+- the finalized Gan LLM-with-rules ruleset identity (`hybrid_full_stack` with
+  the 2026-07-31 floors and narrow guards);
 - the result, limited to these task-specific procedures, that Sol leads both
-  selected test panels; and
+  selected frozen test panels and the final-ruleset `test450` no-call replay;
+  and
 - a negative, data-limited result for transferring Gan's unknown-versus-rate
   measure to ExECT.
 
@@ -323,5 +376,8 @@ review is required before making stronger clinical-validity claims.
 - [ExECT test60 protocol](../experiments/exectv2/reliability/exectv2_hosted_test60_protocol_2026-07-15.md)
 - [Gan v0.5 hosted test450 protocol](../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
 - [Gan v0.5 local and replay protocol](../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md)
+- [Gan v0.5 six-model dev750 panel](../experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md)
+- [Gan final LLM-with-rules floors and guards](gan2026_luna_dated_count_competing_rate_report_2026-07-31.md)
+- [Six-model final-ruleset no-call replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json)
 - [ExECT SF reliability protocol](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_protocol_2026-07-18.md)
 - [ExECT SF reliability result](../experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)

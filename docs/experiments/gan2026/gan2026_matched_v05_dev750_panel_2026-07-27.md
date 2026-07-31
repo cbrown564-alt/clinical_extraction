@@ -30,4 +30,15 @@ The raw model boundary, format repair, deterministic semantic repair, final labe
 
 ## Claim boundary
 
-Development evidence for the named models, routes, v0.5 prompt, hybrid_full_stack repair, Gan scorers, and validation750 distribution; not clinical validation, a model-neutral ranking, or new holdout evidence.
+Development evidence for the named models, routes, v0.5 prompt, the then-
+current `hybrid_full_stack` repair, Gan scorers, and validation750
+distribution; not clinical validation, a model-neutral ranking, or new holdout
+evidence.
+
+**Note (2026-07-31):** This panel remains the historical row-trace and
+attribution owner under the prior repair. The Gan LLM-with-rules ruleset is
+now finalized with additional floors/guards; current LLM-with-rules scores are
+no-call replays through that final ruleset. See
+[six-model comparison](../../research/six_model_comparison_report_2026-07-18.md)
+and
+[final-ruleset replay](../../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json).

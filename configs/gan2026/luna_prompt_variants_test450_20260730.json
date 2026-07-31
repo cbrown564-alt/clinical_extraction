@@ -1,0 +1,39 @@
+{
+  "protocol": "docs/experiments/gan2026/gan2026_luna_prompt_variants_test450_protocol_2026-07-30.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "split": "test",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "pipeline": "llm_with_rules",
+  "repair_mode": "hybrid_full_stack",
+  "dspy_cache": false,
+  "row_trace_schema": "gan2026.row_trace.v1",
+  "model": "openai/gpt-5.6-luna",
+  "model_slug": "gpt56luna",
+  "temperature": 1,
+  "max_tokens": 10000,
+  "artifact_root": "scratch/holdout/gan2026_luna_prompt_variants_test450_20260730",
+  "variants": [
+    {
+      "slug": "A_v05_control",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.5.txt",
+      "call_mode": "saved_raw_output_no_call",
+      "reuse_source": "scratch/holdout/gan2026_matched_v05/gpt56luna/rows.jsonl",
+      "reuse_source_sha256": "292169c5a3c0f786ace2e9505e40e026c2b55a4cb0a1d73401d8c925a4de06de"
+    },
+    {
+      "slug": "B_luna_rate",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.8_luna_rate",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.8_luna_rate.txt",
+      "call_mode": "live"
+    },
+    {
+      "slug": "C_luna_current",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.8_luna_current",
+      "prompt_snapshot": "tests/snapshots/prompt_contracts/gan2026__hybrid_structured_events_v0.8_luna_current.txt",
+      "call_mode": "live"
+    }
+  ]
+}

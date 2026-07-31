@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-07-28 on the working tree after commit `085be7c5`
+Last updated: 2026-07-31 after finalizing Gan LLM-with-rules ruleset docs
 
 ## Current outcome
 
@@ -99,8 +99,34 @@ the published benchmark. See the
 
 ### Gan selected v0.5 comparison
 
-All six v0.5 `test450` conditions use one structured-event call per note,
-`hybrid_full_stack` repair, and the Gan Purist and Pragmatic scorers.
+All six v0.5 conditions use one structured-event call per note, the Gan Purist
+and Pragmatic scorers, and prompt `gan2026_hybrid_structured_events_v0.5`.
+
+**Final LLM-with-rules ruleset (2026-07-31):** working-tree `hybrid_full_stack`
+including projection/anti-regression, dated-count, competing-rate floors, and
+narrow cross-model guards (singleton-cluster unknown; YTD-gated typical rate;
+current-month seizure-free diary override). Further rule tuning for this
+comparison is closed unless a new predeclared study reopens it. Owners:
+[six-model comparison](docs/research/six_model_comparison_report_2026-07-18.md),
+[dated-count / guards](docs/research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md),
+[final-ruleset replay](experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json).
+
+Frozen July matched-panel artifacts remain the historical row-trace record
+under the prior repair. Current LLM-with-rules scores are no-call replays of
+the same saved raw outputs through the final ruleset.
+
+#### Final ruleset no-call replay
+
+| Model | `dev750` Purist | `dev750` Pragmatic | `test450` Purist | `test450` Pragmatic |
+| --- | ---: | ---: | ---: | ---: |
+| GPT-4.1-mini | 677/750 | 695/750 | 369/450 | 386/450 |
+| GPT-5.6 Luna | 660/750 | 687/750 | 364/450 | 378/450 |
+| GPT-5.6 Sol | 660/750 | 685/750 | 381/450 | 392/450 |
+| DeepSeek V4 Flash | 627/750 | 653/750 | 348/450 | 370/450 |
+| Qwen 3.6:35B | 657/750 | 676/750 | 360/450 | 380/450 |
+| Gemma 4 26B | 647/750 | 681/750 | 356/450 | 375/450 |
+
+#### Frozen matched panel (historical; prior repair)
 
 | Model | Purist | Pragmatic | Exact evidence |
 | --- | ---: | ---: | ---: |
@@ -114,12 +140,12 @@ All six v0.5 `test450` conditions use one structured-event call per note,
 The [hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md),
 [local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md),
 and [aggregate artifact](experiments/gan2026_matched_v05_test450_aggregate_20260716.json)
-own the primary test result.
+own the frozen test450 panel.
 
-The matched v0.5 six-model dev750 panel is complete under
+The matched v0.5 six-model `dev750` panel artifacts are complete under
 [the development protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
 
-| Model | Purist | Pragmatic | Exact evidence | Raw to final W→C / C→W |
+| Model | Frozen Purist | Frozen Pragmatic | Exact evidence | Raw to final W→C / C→W |
 | --- | ---: | ---: | ---: | ---: |
 | GPT-4.1-mini | 668/750 | 686/750 | 692/750 | 314 / 5 |
 | GPT-5.6 Luna | 646/750 | 671/750 | 744/750 | 240 / 5 |
@@ -128,14 +154,15 @@ The matched v0.5 six-model dev750 panel is complete under
 | Qwen 3.6:35B | 660/750 | 680/750 | 567/750 | 339 / 4 |
 | Gemma 4 26B | 643/750 | 676/750 | 734/750 | 223 / 5 |
 
-Across all 4,500 rows, fixed processing produces 1,607 wrong-to-correct and 29
-correct-to-wrong raw-boundary transitions. It also regresses 514 rows that the
-independent rules comparator gets correct. Exact selected evidence is present
-on 4,214 rows and grounded selected evidence on 4,328. This supports a bounded
-development comparison and component audit, not method promotion or a
-model-neutral ranking. The [panel report](docs/experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md)
+Across all 4,500 frozen-panel rows, fixed processing produces 1,607
+wrong-to-correct and 29 correct-to-wrong raw-boundary transitions. It also
+regresses 514 rows that the independent rules comparator gets correct. Exact
+selected evidence is present on 4,214 rows and grounded selected evidence on
+4,328. This supports a bounded development comparison and component audit, not
+method promotion or a model-neutral ranking. The
+[panel report](docs/experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md)
 and [row attribution](experiments/gan2026_matched_v05_dev750_attribution_20260727.json)
-own the detailed evidence.
+own the frozen detailed evidence.
 
 The historical v0.7 [Qwen-versus-Sol row audit](docs/experiments/gan2026/gan2026_qwen_sol_rule_benefit_audit_2026-07-20.md)
 and its [machine artifact](experiments/gan2026_qwen_sol_rule_benefit_audit_20260720.json)
@@ -181,9 +208,11 @@ records source and replay fingerprints.
 ### Reliability and cross-task comparison
 
 The [six-model comparison report](docs/research/six_model_comparison_report_2026-07-18.md)
-synthesizes the fixed panels without pooling their task-specific scores. Sol
-leads ExECT test60 and the selected Gan v0.5 test450 panel. The cross-task
-model-rank Spearman correlation is `0.61`.
+synthesizes the fixed panels without pooling their task-specific scores and
+records the finalized Gan LLM-with-rules ruleset (2026-07-31). Sol leads ExECT
+test60 and both the frozen Gan v0.5 test450 panel and the final-ruleset
+test450 no-call replay (all six models). The cross-task model-rank Spearman
+correlation on the frozen panels is `0.61`.
 
 The [ExECT SF over-inference result](docs/experiments/exectv2/reliability/exectv2_six_model_sf_overinference_2026-07-18.md)
 compares the model-structured state set with the final projected/suppressed
@@ -269,6 +298,12 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   adjudication rule are frozen; the review interface is ready.
 - Supervisor endpoint and unaided README verification remain the next handoff
   dependency; no private data is needed to perform them.
+- Gan LLM-with-rules ruleset is finalized (2026-07-31). Luna prompt-variant
+  residual work that produced the floors/guards is complete; further rule
+  tuning for this comparison is closed unless a new predeclared study
+  reopens it. See
+  [six-model comparison](docs/research/six_model_comparison_report_2026-07-18.md)
+  and [dated-count / guards](docs/research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md).
 
 ## Next
 
@@ -283,7 +318,11 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 4. Export the completed reviewer and adjudication artifacts, validate their
    completeness, then update the reliability scorecard and paper claim owner
    within the protocol's development-only limits.
-5. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
+5. Treat Gan LLM-with-rules as finalized; do not reopen rule tuning without a
+   new predeclared study. Keep sealed `test450` unused for tuning. Any later
+   residual work must separate prompt/selection candidates from the closed
+   ruleset.
+6. If Gan rule revision resumes, predeclare narrow challenge fixtures for the
    eight audited deterministic regression rows and matched non-regression
    controls; do not tune the frozen six-model panel in place.
 
@@ -348,6 +387,13 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   [panel report](docs/experiments/gan2026/gan2026_matched_v05_dev750_panel_2026-07-27.md),
   [machine panel](experiments/gan2026_matched_v05_dev750_panel_20260727.json),
   and [row attribution](experiments/gan2026_matched_v05_dev750_attribution_20260727.json)
+- Gan final LLM-with-rules ruleset (2026-07-31):
+  [six-model comparison](docs/research/six_model_comparison_report_2026-07-18.md),
+  [dated-count / guards](docs/research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md),
+  [final-ruleset replay](experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json),
+  [projection floor](docs/research/gan2026_luna_projection_antiregression_floor_report_2026-07-31.md),
+  and Luna thread owners under
+  [prompt variants](docs/research/gan2026_luna_prompt_variants_report_2026-07-30.md)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Independent semantic-support review:

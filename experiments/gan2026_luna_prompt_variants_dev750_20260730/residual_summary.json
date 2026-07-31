@@ -1,0 +1,755 @@
+{
+  "schema_version": "gan2026.luna_prompt_variants_residual.v1",
+  "generated_at_utc": "2026-07-31T05:17:31.710359+00:00",
+  "protocol": "docs/experiments/gan2026/gan2026_luna_prompt_variants_residual_analysis_protocol_2026-07-31.md",
+  "report": "docs/research/gan2026_luna_prompt_variants_residual_analysis_2026-07-31.md",
+  "claim_boundary": "Development mechanism evidence for Luna A/B/C on validation750; theme labels are heuristics; test450 sealed.",
+  "n": 750,
+  "aggregates": {
+    "A": {
+      "llm_only_purist": 411,
+      "llm_rules_purist": 646,
+      "llm_rules_pragmatic": 671,
+      "exact_evidence": 744,
+      "final_wrong": 104,
+      "raw_wrong": 339,
+      "transition": {
+        "wrong_to_correct": 240,
+        "unchanged_correct": 406,
+        "unchanged_wrong": 99,
+        "correct_to_wrong": 5
+      },
+      "final_wrong_by_attr_subproblem": {
+        "rate_denominator": 28,
+        "cluster_or_diary_aggregation": 30,
+        "seizure_free_boundary": 18,
+        "competing_event_selection": 10,
+        "temporal_selection": 5,
+        "uncertainty_boundary": 13
+      },
+      "raw_wrong_by_attr_subproblem": {
+        "rate_denominator": 150,
+        "temporal_selection": 31,
+        "cluster_or_diary_aggregation": 82,
+        "competing_event_selection": 11,
+        "seizure_free_boundary": 43,
+        "uncertainty_boundary": 22
+      },
+      "final_wrong_themes": {
+        "range_collapsed": 4,
+        "false_seizure_free_vs_rate": 13,
+        "wrong_count_same_period": 17,
+        "vague_multiple_vs_countable": 7,
+        "over_abstain_vs_countable": 35,
+        "overconfident_rate_vs_unknown": 1,
+        "wrong_period_unit": 2,
+        "parse_or_schema_failure": 3,
+        "range_invented": 2,
+        "false_seizure_free_vs_unknown": 6,
+        "temporal_conflict_selection": 1,
+        "max_burden_selection_error": 2,
+        "over_abstain_vs_seizure_free": 4,
+        "missed_cluster_structure": 7
+      },
+      "raw_wrong_themes": {
+        "range_invented": 18,
+        "other_clinical_selection": 27,
+        "temporal_conflict_selection": 20,
+        "spurious_cluster_structure": 12,
+        "over_abstain_vs_countable": 27,
+        "wrong_count_same_period": 45,
+        "false_seizure_free_vs_rate": 36,
+        "max_burden_selection_error": 55,
+        "vague_multiple_vs_countable": 12,
+        "missed_cluster_structure": 17,
+        "vague_multiple_mismatch": 4,
+        "range_collapsed": 18,
+        "wrong_period_unit": 23,
+        "over_abstain_other": 4,
+        "overconfident_rate_vs_unknown": 6,
+        "parse_or_schema_failure": 3,
+        "false_seizure_free_vs_unknown": 6,
+        "over_abstain_vs_seizure_free": 5,
+        "device_vs_clinical_selection": 1
+      },
+      "final_wrong_kinds": {
+        "unresolved_multiple": 4,
+        "seizure_free": 19,
+        "frequency": 66,
+        "None": 3,
+        "unknown": 12
+      },
+      "final_wrong_gold_buckets": {
+        "gold_range": 10,
+        "gold_numeric_rate": 42,
+        "gold_seizure_free": 6,
+        "gold_cluster": 32,
+        "gold_unknown": 12,
+        "gold_vague_multiple": 2
+      },
+      "unrescued_rules_correct": 91,
+      "unrescued_rules_wrong": 13,
+      "b_slice_final_correct": 383,
+      "b_slice_n": 441,
+      "c_slice_final_correct": 263,
+      "c_slice_n": 309,
+      "b_slice_raw_correct": 209,
+      "c_slice_raw_correct": 202
+    },
+    "B": {
+      "llm_only_purist": 422,
+      "llm_rules_purist": 656,
+      "llm_rules_pragmatic": 675,
+      "exact_evidence": 739,
+      "final_wrong": 94,
+      "raw_wrong": 328,
+      "transition": {
+        "wrong_to_correct": 240,
+        "unchanged_correct": 416,
+        "unchanged_wrong": 88,
+        "correct_to_wrong": 6
+      },
+      "final_wrong_by_attr_subproblem": {
+        "rate_denominator": 26,
+        "seizure_free_boundary": 21,
+        "cluster_or_diary_aggregation": 22,
+        "uncertainty_boundary": 15,
+        "temporal_selection": 6,
+        "competing_event_selection": 4
+      },
+      "raw_wrong_by_attr_subproblem": {
+        "rate_denominator": 144,
+        "temporal_selection": 33,
+        "cluster_or_diary_aggregation": 75,
+        "uncertainty_boundary": 24,
+        "competing_event_selection": 8,
+        "seizure_free_boundary": 44
+      },
+      "final_wrong_themes": {
+        "range_collapsed": 3,
+        "wrong_count_same_period": 14,
+        "vague_multiple_vs_countable": 3,
+        "parse_or_schema_failure": 6,
+        "false_seizure_free_vs_rate": 12,
+        "over_abstain_vs_countable": 32,
+        "overconfident_rate_vs_unknown": 2,
+        "over_abstain_other": 2,
+        "range_invented": 2,
+        "false_seizure_free_vs_unknown": 5,
+        "temporal_conflict_selection": 1,
+        "over_abstain_vs_seizure_free": 5,
+        "missed_cluster_structure": 6,
+        "max_burden_selection_error": 1
+      },
+      "raw_wrong_themes": {
+        "range_invented": 23,
+        "max_burden_selection_error": 64,
+        "temporal_conflict_selection": 22,
+        "other_clinical_selection": 44,
+        "spurious_cluster_structure": 14,
+        "missed_cluster_structure": 11,
+        "wrong_count_same_period": 32,
+        "vague_multiple_mismatch": 8,
+        "over_abstain_vs_countable": 19,
+        "vague_multiple_vs_countable": 6,
+        "parse_or_schema_failure": 6,
+        "wrong_period_unit": 30,
+        "range_collapsed": 4,
+        "overconfident_rate_vs_unknown": 4,
+        "false_seizure_free_vs_unknown": 5,
+        "over_abstain_vs_seizure_free": 5,
+        "device_vs_clinical_selection": 1,
+        "false_seizure_free_vs_rate": 30
+      },
+      "final_wrong_kinds": {
+        "frequency": 53,
+        "None": 6,
+        "seizure_free": 17,
+        "unknown": 17,
+        "unresolved_multiple": 1
+      },
+      "final_wrong_gold_buckets": {
+        "gold_range": 10,
+        "gold_numeric_rate": 38,
+        "gold_seizure_free": 9,
+        "gold_unknown": 12,
+        "gold_cluster": 24,
+        "gold_vague_multiple": 1
+      },
+      "unrescued_rules_correct": 81,
+      "unrescued_rules_wrong": 13,
+      "b_slice_final_correct": 393,
+      "b_slice_n": 441,
+      "c_slice_final_correct": 263,
+      "c_slice_n": 309,
+      "b_slice_raw_correct": 222,
+      "c_slice_raw_correct": 200
+    },
+    "C": {
+      "llm_only_purist": 414,
+      "llm_rules_purist": 666,
+      "llm_rules_pragmatic": 680,
+      "exact_evidence": 742,
+      "final_wrong": 84,
+      "raw_wrong": 336,
+      "transition": {
+        "wrong_to_correct": 258,
+        "unchanged_correct": 408,
+        "unchanged_wrong": 78,
+        "correct_to_wrong": 6
+      },
+      "final_wrong_by_attr_subproblem": {
+        "rate_denominator": 28,
+        "cluster_or_diary_aggregation": 26,
+        "seizure_free_boundary": 12,
+        "uncertainty_boundary": 10,
+        "temporal_selection": 6,
+        "competing_event_selection": 2
+      },
+      "raw_wrong_by_attr_subproblem": {
+        "rate_denominator": 153,
+        "cluster_or_diary_aggregation": 83,
+        "temporal_selection": 30,
+        "competing_event_selection": 9,
+        "seizure_free_boundary": 40,
+        "uncertainty_boundary": 21
+      },
+      "final_wrong_themes": {
+        "over_abstain_vs_countable": 32,
+        "false_seizure_free_vs_rate": 7,
+        "vague_multiple_vs_countable": 6,
+        "wrong_count_same_period": 17,
+        "range_collapsed": 3,
+        "overconfident_rate_vs_unknown": 3,
+        "wrong_period_unit": 1,
+        "range_invented": 1,
+        "false_seizure_free_vs_unknown": 5,
+        "over_abstain_other": 2,
+        "parse_or_schema_failure": 1,
+        "missed_cluster_structure": 5,
+        "max_burden_selection_error": 1
+      },
+      "raw_wrong_themes": {
+        "range_invented": 21,
+        "max_burden_selection_error": 61,
+        "vague_multiple_vs_countable": 17,
+        "other_clinical_selection": 43,
+        "spurious_cluster_structure": 13,
+        "temporal_conflict_selection": 15,
+        "wrong_count_same_period": 50,
+        "range_collapsed": 15,
+        "over_abstain_vs_countable": 22,
+        "false_seizure_free_vs_rate": 30,
+        "missed_cluster_structure": 5,
+        "wrong_period_unit": 25,
+        "overconfident_rate_vs_unknown": 9,
+        "vague_multiple_mismatch": 1,
+        "false_seizure_free_vs_unknown": 5,
+        "parse_or_schema_failure": 1,
+        "over_abstain_vs_seizure_free": 3
+      },
+      "final_wrong_kinds": {
+        "unknown": 17,
+        "seizure_free": 12,
+        "frequency": 54,
+        "None": 1
+      },
+      "final_wrong_gold_buckets": {
+        "gold_range": 11,
+        "gold_numeric_rate": 33,
+        "gold_seizure_free": 3,
+        "gold_unknown": 13,
+        "gold_vague_multiple": 2,
+        "gold_cluster": 22
+      },
+      "unrescued_rules_correct": 71,
+      "unrescued_rules_wrong": 13,
+      "b_slice_final_correct": 387,
+      "b_slice_n": 441,
+      "c_slice_final_correct": 279,
+      "c_slice_n": 309,
+      "b_slice_raw_correct": 205,
+      "c_slice_raw_correct": 209
+    }
+  },
+  "final_correctness_patterns": {
+    "(True, True, True)": 601,
+    "(False, False, False)": 48,
+    "(False, True, True)": 28,
+    "(True, False, True)": 21,
+    "(False, False, True)": 16,
+    "(True, True, False)": 15,
+    "(False, True, False)": 12,
+    "(True, False, False)": 9
+  },
+  "raw_correctness_patterns": {
+    "(True, True, True)": 358,
+    "(False, False, False)": 269,
+    "(False, True, False)": 34,
+    "(False, False, True)": 22,
+    "(True, False, True)": 20,
+    "(True, False, False)": 17,
+    "(True, True, False)": 16,
+    "(False, True, True)": 14
+  },
+  "persistent_final_wrong": {
+    "n": 48,
+    "rules_correct": 39,
+    "rules_wrong": 9,
+    "attr_subproblem": {
+      "rate_denominator": 11,
+      "seizure_free_boundary": 10,
+      "cluster_or_diary_aggregation": 14,
+      "temporal_selection": 5,
+      "uncertainty_boundary": 7,
+      "competing_event_selection": 1
+    },
+    "gold_bucket": {
+      "gold_range": 7,
+      "gold_numeric_rate": 17,
+      "gold_seizure_free": 1,
+      "gold_unknown": 9,
+      "gold_cluster": 13,
+      "gold_vague_multiple": 1
+    },
+    "theme_A": {
+      "range_collapsed": 2,
+      "vague_multiple_vs_countable": 2,
+      "wrong_count_same_period": 8,
+      "false_seizure_free_vs_rate": 5,
+      "overconfident_rate_vs_unknown": 1,
+      "over_abstain_vs_countable": 16,
+      "range_invented": 2,
+      "false_seizure_free_vs_unknown": 5,
+      "temporal_conflict_selection": 1,
+      "missed_cluster_structure": 5,
+      "max_burden_selection_error": 1
+    },
+    "theme_consensus": {
+      "mixed:over_abstain_vs_countable|range_collapsed": 1,
+      "vague_multiple_vs_countable": 2,
+      "range_collapsed": 1,
+      "wrong_count_same_period": 8,
+      "false_seizure_free_vs_rate": 4,
+      "overconfident_rate_vs_unknown": 1,
+      "over_abstain_vs_countable": 13,
+      "range_invented": 1,
+      "false_seizure_free_vs_unknown": 5,
+      "mixed:over_abstain_other|temporal_conflict_selection": 1,
+      "mixed:missed_cluster_structure|over_abstain_vs_countable": 4,
+      "mixed:over_abstain_vs_countable|range_invented": 1,
+      "max_burden_selection_error": 1,
+      "missed_cluster_structure": 2,
+      "mixed:missed_cluster_structure|vague_multiple_vs_countable": 1,
+      "mixed:false_seizure_free_vs_rate|wrong_count_same_period": 1,
+      "mixed:over_abstain_vs_countable|wrong_count_same_period": 1
+    },
+    "same_final_label_all_three": 35,
+    "same_evidence_all_three": 26,
+    "pragmatic_ok_any": 12,
+    "pragmatic_ok_all": 9,
+    "category_pairs_using_A_final": {
+      "seizure_freq_more1week_less1day->seizure_freq_unknown": 7,
+      "seizure_freq_unknown->currently_no_seizure": 4,
+      "seizure_freq_unknown->seizure_freq_more1mon_less1week": 3,
+      "seizure_freq_more1mon_less1week->seizure_freq_unknown": 3,
+      "seizure_freq_more1per6mon_less1mon->seizure_freq_unknown": 3,
+      "seizure_freq_more1week_less1day->seizure_freq_more1mon_less1week": 3,
+      "seizure_freq_more1per6mon_less1mon->seizure_freq_more1mon_less1week": 3,
+      "seizure_freq_unknown->seizure_freq_more1per6mon_less1mon": 2,
+      "seizure_freq_1_per_6mon->seizure_freq_unknown": 2,
+      "seizure_freq_more1mon_less1week->seizure_freq_more1week_less1day": 2,
+      "seizure_freq_more1mon_less1week->seizure_freq_1_per_mon": 1,
+      "seizure_freq_1_per_week->seizure_freq_unknown": 1,
+      "seizure_freq_more1week_less1day->seizure_freq_1_per_mon": 1,
+      "seizure_freq_1_per_mon->seizure_freq_more1per6mon_less1mon": 1,
+      "currently_no_seizure->seizure_freq_more1week_less1day": 1,
+      "seizure_freq_unknown->seizure_freq_1_per_mon": 1,
+      "seizure_freq_more1week_less1day->seizure_freq_more1per6mon_less1mon": 1,
+      "seizure_freq_1_per_yr->seizure_freq_more1per6mon_less1mon": 1,
+      "seizure_freq_more1per6mon_less1mon->currently_no_seizure": 1,
+      "seizure_freq_1_per_mon->seizure_freq_unknown": 1,
+      "seizure_freq_more1mon_less1week->currently_no_seizure": 1,
+      "seizure_freq_more1per6mon_less1mon->seizure_freq_1_per_6mon": 1,
+      "seizure_freq_more1week_less1day->seizure_freq_1ormore_daily": 1,
+      "seizure_freq_more1mon_less1week->seizure_freq_1ormore_daily": 1,
+      "seizure_freq_more1per6mon_less1mon->seizure_freq_1_per_mon": 1,
+      "seizure_freq_1ormore_daily->seizure_freq_more1week_less1day": 1
+    },
+    "kind_A": {
+      "unresolved_multiple": 4,
+      "frequency": 26,
+      "seizure_free": 10,
+      "unknown": 8
+    },
+    "exact_A": 48
+  },
+  "persistent_raw_wrong": {
+    "n": 269,
+    "attr_subproblem": {
+      "rate_denominator": 108,
+      "cluster_or_diary_aggregation": 68,
+      "temporal_selection": 27,
+      "competing_event_selection": 7,
+      "seizure_free_boundary": 40,
+      "uncertainty_boundary": 19
+    },
+    "theme_A": {
+      "range_invented": 17,
+      "other_clinical_selection": 18,
+      "spurious_cluster_structure": 12,
+      "temporal_conflict_selection": 15,
+      "max_burden_selection_error": 44,
+      "missed_cluster_structure": 16,
+      "wrong_count_same_period": 30,
+      "vague_multiple_vs_countable": 9,
+      "wrong_period_unit": 20,
+      "range_collapsed": 11,
+      "over_abstain_vs_countable": 26,
+      "over_abstain_other": 1,
+      "overconfident_rate_vs_unknown": 5,
+      "vague_multiple_mismatch": 1,
+      "parse_or_schema_failure": 2,
+      "false_seizure_free_vs_unknown": 5,
+      "device_vs_clinical_selection": 1,
+      "false_seizure_free_vs_rate": 33,
+      "over_abstain_vs_seizure_free": 3
+    },
+    "gold_bucket": {
+      "gold_numeric_rate": 153,
+      "gold_range": 27,
+      "gold_unknown": 21,
+      "gold_cluster": 53,
+      "gold_vague_multiple": 12,
+      "gold_seizure_free": 3
+    },
+    "rules_correct": 241
+  },
+  "any_final_wrong_n": 149,
+  "rescue_regress": {
+    "B_vs_A_final": {
+      "rescue": 40,
+      "regress": 30
+    },
+    "C_vs_A_final": {
+      "rescue": 44,
+      "regress": 24
+    },
+    "B_vs_A_raw": {
+      "rescue": 48,
+      "regress": 37
+    },
+    "C_vs_A_raw": {
+      "rescue": 36,
+      "regress": 33
+    }
+  },
+  "particular": {
+    "only_A_final_wrong": {
+      "n": 28,
+      "themes": {
+        "over_abstain_vs_countable": 7,
+        "wrong_count_same_period": 5,
+        "vague_multiple_vs_countable": 4,
+        "range_collapsed": 2,
+        "parse_or_schema_failure": 2,
+        "max_burden_selection_error": 1,
+        "false_seizure_free_vs_unknown": 1,
+        "missed_cluster_structure": 2,
+        "false_seizure_free_vs_rate": 3,
+        "wrong_period_unit": 1
+      },
+      "subproblems": {
+        "cluster_or_diary_aggregation": 8,
+        "rate_denominator": 10,
+        "competing_event_selection": 5,
+        "seizure_free_boundary": 4,
+        "uncertainty_boundary": 1
+      },
+      "gold_buckets": {
+        "gold_numeric_rate": 16,
+        "gold_cluster": 7,
+        "gold_range": 2,
+        "gold_unknown": 3
+      }
+    },
+    "only_B_final_wrong": {
+      "n": 21,
+      "themes": {
+        "range_collapsed": 1,
+        "parse_or_schema_failure": 5,
+        "over_abstain_other": 1,
+        "over_abstain_vs_countable": 5,
+        "false_seizure_free_vs_rate": 4,
+        "over_abstain_vs_seizure_free": 2,
+        "missed_cluster_structure": 1,
+        "wrong_count_same_period": 2
+      },
+      "subproblems": {
+        "rate_denominator": 8,
+        "uncertainty_boundary": 1,
+        "temporal_selection": 1,
+        "seizure_free_boundary": 7,
+        "cluster_or_diary_aggregation": 4
+      },
+      "gold_buckets": {
+        "gold_range": 3,
+        "gold_numeric_rate": 10,
+        "gold_unknown": 1,
+        "gold_seizure_free": 4,
+        "gold_cluster": 3
+      }
+    },
+    "only_C_final_wrong": {
+      "n": 15,
+      "themes": {
+        "wrong_count_same_period": 3,
+        "over_abstain_vs_countable": 4,
+        "false_seizure_free_vs_rate": 2,
+        "overconfident_rate_vs_unknown": 1,
+        "missed_cluster_structure": 1,
+        "range_collapsed": 2,
+        "vague_multiple_vs_countable": 2
+      },
+      "subproblems": {
+        "rate_denominator": 9,
+        "seizure_free_boundary": 2,
+        "uncertainty_boundary": 1,
+        "cluster_or_diary_aggregation": 2,
+        "temporal_selection": 1
+      },
+      "gold_buckets": {
+        "gold_numeric_rate": 8,
+        "gold_range": 3,
+        "gold_seizure_free": 1,
+        "gold_unknown": 2,
+        "gold_cluster": 1
+      }
+    },
+    "A_B_wrong_C_rescues": {
+      "n": 16,
+      "themes_A": {
+        "wrong_count_same_period": 2,
+        "over_abstain_vs_seizure_free": 4,
+        "false_seizure_free_vs_rate": 4,
+        "over_abstain_vs_countable": 6
+      },
+      "subproblems": {
+        "rate_denominator": 3,
+        "uncertainty_boundary": 5,
+        "competing_event_selection": 3,
+        "seizure_free_boundary": 4,
+        "cluster_or_diary_aggregation": 1
+      }
+    },
+    "A_C_wrong_B_rescues": {
+      "n": 12,
+      "themes_A": {
+        "false_seizure_free_vs_rate": 1,
+        "wrong_count_same_period": 2,
+        "wrong_period_unit": 1,
+        "over_abstain_vs_countable": 6,
+        "parse_or_schema_failure": 1,
+        "vague_multiple_vs_countable": 1
+      },
+      "subproblems": {
+        "cluster_or_diary_aggregation": 7,
+        "rate_denominator": 4,
+        "competing_event_selection": 1
+      }
+    },
+    "B_C_wrong_A_only_correct": {
+      "n": 9,
+      "themes_B": {
+        "over_abstain_vs_countable": 5,
+        "wrong_count_same_period": 2,
+        "overconfident_rate_vs_unknown": 1,
+        "over_abstain_other": 1
+      },
+      "subproblems": {
+        "cluster_or_diary_aggregation": 3,
+        "rate_denominator": 4,
+        "uncertainty_boundary": 2
+      }
+    }
+  },
+  "exact_among_final_wrong": {
+    "A": {
+      "exact": 101,
+      "inexact": 3
+    },
+    "B": {
+      "exact": 88,
+      "inexact": 6
+    },
+    "C": {
+      "exact": 82,
+      "inexact": 2
+    }
+  },
+  "row_ids": {
+    "persistent_final_wrong": [
+      1030,
+      1880,
+      2459,
+      2748,
+      2932,
+      5491,
+      5837,
+      6368,
+      6571,
+      7195,
+      7615,
+      8419,
+      9937,
+      9943,
+      10097,
+      10237,
+      10245,
+      10630,
+      10673,
+      11216,
+      11254,
+      11272,
+      11282,
+      13209,
+      13267,
+      14137,
+      14282,
+      14524,
+      14540,
+      14587,
+      14628,
+      14635,
+      15108,
+      15306,
+      15317,
+      15376,
+      15431,
+      15470,
+      15982,
+      16161,
+      16220,
+      16645,
+      16714,
+      16728,
+      16774,
+      16867,
+      17110,
+      17135
+    ],
+    "only_A_final_wrong": [
+      1979,
+      2023,
+      3261,
+      3262,
+      4100,
+      5791,
+      6065,
+      6321,
+      7409,
+      7475,
+      7859,
+      10434,
+      10984,
+      11002,
+      11109,
+      14250,
+      14530,
+      14672,
+      15029,
+      15593,
+      15772,
+      15774,
+      16108,
+      16356,
+      16429,
+      16757,
+      16772,
+      16780
+    ],
+    "only_B_final_wrong": [
+      1046,
+      2678,
+      6204,
+      6244,
+      6251,
+      6509,
+      8089,
+      8805,
+      8969,
+      10517,
+      11035,
+      12412,
+      13627,
+      13843,
+      14335,
+      14581,
+      14611,
+      14645,
+      15267,
+      15513,
+      16432
+    ],
+    "only_C_final_wrong": [
+      1794,
+      2548,
+      3015,
+      7168,
+      7573,
+      9496,
+      10542,
+      12751,
+      14973,
+      15404,
+      15745,
+      15768,
+      15771,
+      16091,
+      16574
+    ],
+    "A_B_wrong_C_rescues": [
+      1866,
+      7275,
+      8144,
+      8160,
+      8400,
+      9002,
+      13051,
+      13149,
+      13858,
+      14562,
+      15442,
+      15479,
+      15497,
+      15503,
+      15519,
+      15529
+    ],
+    "A_C_wrong_B_rescues": [
+      1165,
+      1573,
+      5827,
+      7167,
+      7401,
+      8794,
+      10386,
+      10965,
+      10967,
+      11197,
+      15766,
+      16203
+    ],
+    "B_C_wrong_A_only_correct": [
+      4337,
+      5696,
+      5763,
+      10183,
+      11259,
+      14706,
+      15242,
+      15262,
+      16408
+    ]
+  }
+}

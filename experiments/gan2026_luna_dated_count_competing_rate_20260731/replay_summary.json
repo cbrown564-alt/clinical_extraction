@@ -1,0 +1,272 @@
+{
+  "schema_version": "gan2026.luna_dated_count_competing_rate_replay.v1",
+  "generated_at_utc": "2026-07-31T06:19:37.835604+00:00",
+  "protocol": "docs/experiments/gan2026/gan2026_luna_dated_count_competing_rate_protocol_2026-07-31.md",
+  "variants": {
+    "A": {
+      "rows": 750,
+      "before_purist": 646,
+      "after_purist": 660,
+      "delta": 14,
+      "wrong_to_correct": 17,
+      "correct_to_wrong": 3,
+      "unchanged_wrong": 87,
+      "parse_fail": 3,
+      "persistent_fff_correct_before": 0,
+      "persistent_fff_correct_after": 10,
+      "exemplars": [
+        {
+          "source_row_index": 1030,
+          "gold_label": "1 to 3 per month",
+          "before_label": "1 per month",
+          "after_label": "1 to 3 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2459,
+          "gold_label": "7 to 9 per 2 week",
+          "before_label": "5 per 5 month",
+          "after_label": "7 to 9 per 2 week",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2748,
+          "gold_label": "1 per month",
+          "before_label": "7 per 10 month",
+          "after_label": "1 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2932,
+          "gold_label": "seizure free for 9 month",
+          "before_label": "13 per 2 month",
+          "after_label": "seizure free for multiple year",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 5837,
+          "gold_label": "2 cluster per 3 week, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "2 cluster per 3 week, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10097,
+          "gold_label": "3 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "3 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10237,
+          "gold_label": "4 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "4 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14587,
+          "gold_label": "2 per 3 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 3 month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14628,
+          "gold_label": "2 per 2 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 2 month",
+          "before_ok": false,
+          "after_ok": true
+        }
+      ]
+    },
+    "B": {
+      "rows": 750,
+      "before_purist": 656,
+      "after_purist": 668,
+      "delta": 12,
+      "wrong_to_correct": 16,
+      "correct_to_wrong": 4,
+      "unchanged_wrong": 78,
+      "parse_fail": 6,
+      "persistent_fff_correct_before": 0,
+      "persistent_fff_correct_after": 10,
+      "exemplars": [
+        {
+          "source_row_index": 1030,
+          "gold_label": "1 to 3 per month",
+          "before_label": "1 per month",
+          "after_label": "1 to 3 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2459,
+          "gold_label": "7 to 9 per 2 week",
+          "before_label": "5 per 5 month",
+          "after_label": "7 to 9 per 2 week",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2748,
+          "gold_label": "1 per month",
+          "before_label": "7 per 10 month",
+          "after_label": "1 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2932,
+          "gold_label": "seizure free for 9 month",
+          "before_label": "13 per 2 month",
+          "after_label": "seizure free for multiple year",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 5837,
+          "gold_label": "2 cluster per 3 week, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "2 cluster per 3 week, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10097,
+          "gold_label": "3 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "3 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10237,
+          "gold_label": "4 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "4 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14587,
+          "gold_label": "2 per 3 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 3 month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14628,
+          "gold_label": "2 per 2 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 2 month",
+          "before_ok": false,
+          "after_ok": true
+        }
+      ]
+    },
+    "C": {
+      "rows": 750,
+      "before_purist": 666,
+      "after_purist": 675,
+      "delta": 9,
+      "wrong_to_correct": 14,
+      "correct_to_wrong": 5,
+      "unchanged_wrong": 70,
+      "parse_fail": 1,
+      "persistent_fff_correct_before": 0,
+      "persistent_fff_correct_after": 10,
+      "exemplars": [
+        {
+          "source_row_index": 1030,
+          "gold_label": "1 to 3 per month",
+          "before_label": "1 per month",
+          "after_label": "1 to 3 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2459,
+          "gold_label": "7 to 9 per 2 week",
+          "before_label": "5 per 5 month",
+          "after_label": "7 to 9 per 2 week",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2748,
+          "gold_label": "1 per month",
+          "before_label": "7 per 10 month",
+          "after_label": "1 per month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 2932,
+          "gold_label": "seizure free for 9 month",
+          "before_label": "13 per 2 month",
+          "after_label": "seizure free for multiple year",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 5837,
+          "gold_label": "2 cluster per 3 week, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "2 cluster per 3 week, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10097,
+          "gold_label": "3 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "3 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 10237,
+          "gold_label": "4 cluster per month, multiple per cluster",
+          "before_label": "unknown",
+          "after_label": "4 cluster per month, multiple per cluster",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14587,
+          "gold_label": "2 per 3 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 3 month",
+          "before_ok": false,
+          "after_ok": true
+        },
+        {
+          "source_row_index": 14628,
+          "gold_label": "2 per 2 month",
+          "before_label": "no seizure frequency reference",
+          "after_label": "2 per 2 month",
+          "before_ok": false,
+          "after_ok": true
+        }
+      ]
+    }
+  },
+  "claim_boundary": "Development no-call hybrid replay of saved Luna A/B/C raw outputs through projection, anti-regression, dated-count, and competing-rate floors; not holdout evidence.",
+  "changed_row_count": 79,
+  "changed_transitions": {
+    "label_changed_same_score": 20,
+    "wrong_to_correct": 47,
+    "correct_to_wrong": 12
+  }
+}

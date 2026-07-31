@@ -42,28 +42,28 @@ must no longer claim that no test row was ever exposed.
 | Gemma 4 26B | v0.5 | 355/450 (0.7889) | 374/450 (0.8311) | 0 call failures; 2 parse/validation failures; 436/450 exact evidence |
 
 Only aggregate results from these locked-test runs may be cited. All six use
-the same v0.5 prompt, pipeline, repair policy, and scorer. The panel is
-matched on those fields, but provider-required transport and temperature
-differences remain. The local conditions and DeepSeek use aggregate-only
-current-schema replay of their sealed raw outputs; the replay changed no
-selected final label. Test450 has supported sequential aggregate evaluations. Report
-the result as a matched aggregate-only panel, not a pristine one-shot or
-model-neutral capability ranking. The local conditions have the same retained
-claim status as the hosted conditions; the route and reparse differences are
-caveats, not a lower evidence tier. See the
+the same v0.5 prompt, pipeline family, and scorers. The table above is the
+frozen matched panel under the prior `hybrid_full_stack`. As of 2026-07-31 the
+Gan **LLM with rules** ruleset is finalized (projection/anti-regression,
+dated-count, competing-rate floors, and narrow cross-model guards). Current
+LLM-with-rules readouts use no-call replay of the same saved raw outputs;
+see [six-model comparison](../research/six_model_comparison_report_2026-07-18.md).
+Provider-required transport and temperature differences remain. Report results
+as a matched aggregate-only panel, not a pristine one-shot or model-neutral
+capability ranking. The local conditions have the same retained claim status as
+the hosted conditions; the route and reparse differences are caveats, not a
+lower evidence tier. See the
 [hosted protocol](../experiments/gan2026/gan2026_matched_v05_test450_protocol_2026-07-16.md)
 and [local/replay extension](../experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md).
 
 ## Six-model development coverage
 
-The selected v0.5 `llm_with_rules` condition does not yet have a matched
-six-model dev750 panel. One historical GPT-4.1-mini v0.5 artifact has 750 rows,
-but it requires current-stack reconciliation before it can enter the new panel.
-The attempted Qwen v0.5 development run contains only 45/750 rows and is not
-evidence. Luna, Sol, DeepSeek, and Gemma have no complete v0.5 dev750 condition.
-
-Until full coverage exists, do not use the complete v0.7 dev750 panel as the
-development half of the primary v0.5 comparison.
+The selected v0.5 six-model `dev750` panel is complete under
+[the development protocol](../experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
+Frozen panel artifacts remain the row-trace/attribution owners under the prior
+repair. Final-ruleset development scores are no-call replays of those saved
+raw outputs. Do not use the quarantined v0.7 `dev750` panel as the development
+half of the primary v0.5 comparison.
 
 ## Quarantined prompt-interaction evidence
 

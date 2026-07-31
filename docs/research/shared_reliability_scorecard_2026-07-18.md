@@ -28,9 +28,12 @@ The exact selected sources and hashes are owned by the
 
 ### Gan matched six-model test450 panel
 
-All six conditions use `gan2026_hybrid_structured_events_v0.5`.
+All six conditions use `gan2026_hybrid_structured_events_v0.5`. The table is
+the frozen matched panel under the prior repair. As of 2026-07-31 the Gan
+LLM-with-rules ruleset is finalized; current scores are no-call replays through
+that ruleset ([six-model comparison](six_model_comparison_report_2026-07-18.md)).
 
-| Model | Purist | Pragmatic |
+| Model | Purist (frozen panel) | Pragmatic (frozen panel) |
 | --- | ---: | ---: |
 | GPT-4.1-mini | 361/450 | 379/450 |
 | GPT-5.6 Luna | 362/450 | 375/450 |

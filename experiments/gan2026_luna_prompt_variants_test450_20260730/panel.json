@@ -1,0 +1,61 @@
+{
+  "schema_version": "gan2026.luna_prompt_variants_test450_panel.v1",
+  "generated_at_utc": "2026-07-30T21:38:47.342303+00:00",
+  "protocol": "docs/experiments/gan2026/gan2026_luna_prompt_variants_test450_protocol_2026-07-30.md",
+  "configuration": "configs/gan2026/luna_prompt_variants_test450_20260730.json",
+  "dataset": "Gan 2026",
+  "split": "test450",
+  "split_manifest": "gan2026_split_v1",
+  "row_policy": "aggregate_only",
+  "model": "openai/gpt-5.6-luna",
+  "repair_mode": "hybrid_full_stack",
+  "complete": true,
+  "conditions": [
+    {
+      "variant": "A_v05_control",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+      "call_mode": "saved_raw_output_no_call",
+      "rows": 450,
+      "unique_source_rows": 450,
+      "llm_only_purist_correct": 222,
+      "llm_with_rules_purist_correct": 363,
+      "llm_with_rules_pragmatic_correct": 376,
+      "call_failures": 0,
+      "parse_or_validation_failures": 2,
+      "evidence_valid": 445,
+      "artifact": "scratch/holdout/gan2026_luna_prompt_variants_test450_20260730/A_v05_control/rows.jsonl",
+      "artifact_sha256": "af116f7c071e79be865f1e210515dbedda482963915f33bf6ba11757c32256a4"
+    },
+    {
+      "variant": "B_luna_rate",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.8_luna_rate",
+      "call_mode": "live",
+      "rows": 450,
+      "unique_source_rows": 450,
+      "llm_only_purist_correct": 235,
+      "llm_with_rules_purist_correct": 374,
+      "llm_with_rules_pragmatic_correct": 386,
+      "call_failures": 0,
+      "parse_or_validation_failures": 1,
+      "evidence_valid": 449,
+      "artifact": "scratch/holdout/gan2026_luna_prompt_variants_test450_20260730/B_luna_rate/rows.jsonl",
+      "artifact_sha256": "541ac4752c6ce34585d61c4d058040f8681c1e9195dfba127bd676bc71cff151"
+    },
+    {
+      "variant": "C_luna_current",
+      "prompt_version": "gan2026_hybrid_structured_events_v0.8_luna_current",
+      "call_mode": "live",
+      "rows": 450,
+      "unique_source_rows": 450,
+      "llm_only_purist_correct": 224,
+      "llm_with_rules_purist_correct": 373,
+      "llm_with_rules_pragmatic_correct": 384,
+      "call_failures": 0,
+      "parse_or_validation_failures": 1,
+      "evidence_valid": 447,
+      "artifact": "scratch/holdout/gan2026_luna_prompt_variants_test450_20260730/C_luna_current/rows.jsonl",
+      "artifact_sha256": "9e209cf3fd0cea2bdaac817b2fa5ab6db6b326180fb37461b9e23579b67f3f75"
+    }
+  ],
+  "claim_boundary": "Aggregate-only Luna-versus-Luna test450 transfer evidence for the named prompts and repair stack; not clinical validation, row-level analysis, or a rewrite of the frozen six-model v0.5 panel."
+}

@@ -1,6 +1,6 @@
 # Active roadmap
 
-Last updated: 2026-07-20
+Last updated: 2026-07-30
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
@@ -173,6 +173,17 @@ framework did not authorize model calls or locked-row inspection.
    retaining both original decisions and their revisions.
 3. Validate and export the completed review package, then update the shared
    reliability result and paper claim owner within the protocol's limits.
+
+## Active development research (separate from paper holdout)
+
+Gan LLM-with-rules ruleset finalized 2026-07-31. The Luna prompt-variant /
+residual / floor thread that produced it is closed for further rule tuning
+unless a new predeclared study reopens it.
+Owners: [six-model comparison](../research/six_model_comparison_report_2026-07-18.md),
+[dated-count / guards](../research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md),
+[final-ruleset replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json),
+[Luna summary](../research/gan2026_luna_prompt_variants_report_2026-07-30.md).
+Do not inspect sealed `test450` rows for tuning.
 
 ## Limits
 

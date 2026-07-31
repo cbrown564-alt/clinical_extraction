@@ -35,11 +35,12 @@ must not make a stronger claim than either source supports.
 | C8 | The recorded ExECT model rows do not implement one consistent model-led method across all four families | Strong for the saved-output ownership audit and verified corrected architecture replay | Full200 aggregate-only evidence; corrected scores remain unpromoted because deterministic correct-to-wrong counts are nonzero |
 | C9 | Model-reported confidence does not support either predeclared review rule for the three saved ExECT model outputs | Aggregate out-of-sample negative evidence | Test60 aggregate only; historical outputs with incomplete runtime metadata, and no deployment or six-model claim |
 | C10 | On the fixed six-model ExECT test60 panel, Sol scored 0.8047, Luna 0.7950, DeepSeek 0.7881, Qwen 0.7872, GPT-4.1-mini 0.7572, and Gemma 0.7169 clinical-headline F1 | Aggregate test evidence | Internal scorer, 59 loadable test letters, no row inspection; not the published benchmark or clinical validation; hosted and local runtime routes differ |
-| C11 | On the selected matched Gan v0.5 test450 panel, Sol scored 373/450, Luna and Qwen 362/450, GPT-4.1-mini 361/450, Gemma 355/450, and DeepSeek 344/450 Purist | Frozen aggregate evidence | Same v0.5 prompt, pipeline, repair policy, and scorer; provider transport and temperature differ; some conditions use aggregate-only current-schema replay of sealed outputs; test450 supported sequential aggregate runs, and a post-run documentation command exposed part of a historical row table without subsequent analysis or tuning |
+| C11 | On the selected matched Gan v0.5 test450 panel under the prior `hybrid_full_stack`, Sol scored 373/450, Luna and Qwen 362/450, GPT-4.1-mini 361/450, Gemma 355/450, and DeepSeek 344/450 Purist | Frozen aggregate evidence | Same v0.5 prompt and scorers; historical repair before the 2026-07-31 final ruleset; provider transport and temperature differ; some conditions use aggregate-only current-schema replay of sealed outputs |
 | C12 | The fixed deterministic ExECT SF projection/suppression stage improves dev140 state-profile F1 for all six model conditions, with 54 wrong-to-correct and one correct-to-wrong transition across the six panels | Development component evidence | The same 140 letters are repeated for each model; the unknown-only denominator is zero, so this does not establish cross-task over-inference transfer or factuality prevalence |
 | C13 | Gan 2026 and ExECTv2 are assessed with the same eight reliability questions using task-specific measures, explicit evidence states, and explicit comparability labels | Strong for the generated framework and selected retained evidence | The tasks do not share one metric; criterion evidence is uneven; construct-only and not-comparable values are not compared numerically; no composite score or clinical-validity claim |
 | C14 | The historical v0.7 Gan dev750 panel shows a model-by-method interaction and supports component diagnostics, but it is not the selected primary six-model `llm_with_rules` result | Quarantined development diagnostic from twelve retained 750-row traces and a no-call replay | The selected v0.5 six-model dev750 panel is now complete; do not merge v0.7 rows or scores into its ranking, development-to-test comparison, or paper headline |
-| C15 | On the selected matched Gan v0.5 dev750 panel, GPT-4.1-mini scored 668/750, Qwen 660/750, Sol 656/750, Luna 646/750, Gemma 643/750, and DeepSeek 619/750 Purist | Reproduced development evidence from 4,500 unique row traces and a companion attribution artifact | Named models, routes, v0.5 prompt, `hybrid_full_stack` repair, Gan scorers, and `gan2026_split_v1` validation rows only; not clinical validation, a model-neutral ranking, method promotion, or new holdout evidence |
+| C15 | On the selected matched Gan v0.5 dev750 panel under the prior `hybrid_full_stack`, GPT-4.1-mini scored 668/750, Qwen 660/750, Sol 656/750, Luna 646/750, Gemma 643/750, and DeepSeek 619/750 Purist | Reproduced development evidence from 4,500 unique row traces and a companion attribution artifact | Named models, routes, v0.5 prompt, historical repair, Gan scorers, and `gan2026_split_v1` validation rows only; not clinical validation, a model-neutral ranking, method promotion, or new holdout evidence |
+| C16 | The Gan LLM-with-rules ruleset is finalized as of 2026-07-31 as working-tree `hybrid_full_stack` with projection/anti-regression, dated-count, competing-rate floors, and narrow cross-model guards; no-call replay of the same saved raws yields `dev750` Purist mini 677, Luna/Sol 660, Qwen 657, Gemma 647, DeepSeek 627, and `test450` Purist Sol 381, mini 369, Luna 364, Qwen 360, Gemma 356, DeepSeek 348 | Development / aggregate-only final-ruleset replay | Same saved model outputs as the matched panel; not a fresh held-out call campaign; local Qwen/Gemma routes retained; not clinical validation or model-neutral ranking |
 
 ## Selected headline results
 
@@ -52,8 +53,10 @@ must not make a stronger claim than either source supports.
 | ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
 | ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
-| Gan matched six-model v0.5 panel, dev750 | GPT-4.1-mini 668/750; Luna 646/750; Sol 656/750; DeepSeek 619/750; Qwen 660/750; Gemma 643/750 Purist |
-| Gan matched six-model v0.5 panel, test450 | GPT-4.1-mini 361/450; Luna 362/450; Sol 373/450; DeepSeek 344/450; Qwen 362/450; Gemma 355/450 Purist |
+| Gan matched six-model v0.5 panel, dev750 (prior repair) | GPT-4.1-mini 668/750; Luna 646/750; Sol 656/750; DeepSeek 619/750; Qwen 660/750; Gemma 643/750 Purist |
+| Gan matched six-model v0.5 panel, test450 (prior repair) | GPT-4.1-mini 361/450; Luna 362/450; Sol 373/450; DeepSeek 344/450; Qwen 362/450; Gemma 355/450 Purist |
+| Gan final LLM-with-rules no-call replay, dev750 | GPT-4.1-mini 677/750; Luna 660/750; Sol 660/750; Qwen 657/750; Gemma 647/750; DeepSeek 627/750 Purist |
+| Gan final LLM-with-rules no-call replay, test450 | Sol 381/450; GPT-4.1-mini 369/450; Luna 364/450; Qwen 360/450; Gemma 356/450; DeepSeek 348/450 Purist |
 
 The historical DeepSeek full200 aggregate is `0.8566`, but its runtime metadata
 is incomplete. It is retained for audit only and excluded from the paper-facing
@@ -87,6 +90,10 @@ model table.
 - Do not use prompt v0.7 for a primary Gan `llm_with_rules` score, ranking,
   reliability cell, development-to-test comparison, or paper claim. It is
   retained only as a historical prompt-interaction diagnostic.
+- Do not mix prior-repair matched-panel scores with final-ruleset no-call
+  replay scores in one ranking without naming both ruleset identities.
+- Do not reopen Gan LLM-with-rules tuning for this comparison without a new
+  predeclared study; the 2026-07-31 ruleset is final for current claims.
 
 ## Open work
 
