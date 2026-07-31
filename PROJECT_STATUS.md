@@ -18,6 +18,11 @@ over/under-correction are a meaningful minority; further prompt or rule
 tuning is a marginal lever. Owner:
 [why the error floor persists](docs/research/why_the_error_floor_persists_2026-07-31.md).
 
+A companion policy catalog names the active selection, repair, assembly, and
+scoring conventions with implications, a help case, a hurt case, and where
+each lives (gold, prompt, fixed code, scorer, or architecture). Owner:
+[clinical selection policy catalog](docs/research/clinical_selection_policy_catalog_2026-07-31.md).
+
 Gan has complete selected six-model v0.5 `dev750` and aggregate-only `test450`
 panels. The development panel contains 4,500 unique row traces with the frozen
 prompt, repair policy, scorers, and split. Its companion attribution artifact
