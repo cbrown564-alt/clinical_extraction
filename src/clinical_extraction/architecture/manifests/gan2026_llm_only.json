@@ -1,0 +1,182 @@
+{
+  "method_id": "gan2026_llm_only",
+  "task": "gan2026",
+  "task_label": "Gan 2026",
+  "method": "llm_only",
+  "method_label": "LLM only",
+  "role": "selected",
+  "entry_point": {
+    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
+    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:run_split"
+  },
+  "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
+  "sixty_second": "The prompt carries the Gan rule taxonomy, and the model returns a single decision object: final label, evidence, answer kind, selected seizure type, time window, confidence, and rationale. The model owns the clinical decision - no deterministic extractor proposes candidates. After the call, code repairs JSON dialect and schema shape, validates the decision against the schema, and then applies one selected-evidence label repair. That repair is not cosmetic: it can change the final label when the model's label disagrees with the evidence span it quoted. The repaired label is checked for scorability and evidence containment, then projected into the Purist and Pragmatic categories. The honest summary is that the model makes the clinical decision and exactly one deterministic stage can overrule its wording.",
+  "prediction_owner": "the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair",
+  "scored_representation": "One Gan label string per letter, projected to a Purist and a Pragmatic category.",
+  "stages": [
+    {
+      "stage_id": "gan.llm.build_prompt",
+      "name": "Build the decision prompt",
+      "operation": "Render the note text and the Gan rule taxonomy into the prompt input for one structured decision call.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "GanFrequencyRecord",
+      "input_example": "note text plus source row index",
+      "output_type": "prompt input JSON (str)",
+      "output_example": "{\"note_text\": \"...\", \"instructions\": \"...\"}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:build_prompt_input"
+      },
+      "governing_test": "tests/test_gan2026_llm_prompt_hygiene.py",
+      "trace_fields": ["prompt_input_json", "prompt_version"],
+      "paper_wording": "A single prompt presents the note and the labelling taxonomy."
+    },
+    {
+      "stage_id": "gan.llm.model_call",
+      "name": "Model decides the final label",
+      "operation": "One structured call returns the final label, evidence, answer kind, selected seizure type, time window, confidence, and rationale.",
+      "owner": "model",
+      "effect_class": "clinical_meaning",
+      "input_type": "prompt input JSON (str)",
+      "input_example": "note text plus taxonomy instructions",
+      "output_type": "raw structured JSON (str)",
+      "output_example": "{\"final_label\": \"2 per month\", \"evidence\": \"about two seizures per month\", ...}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:DspyCanonicalLlmExtractor"
+      },
+      "governing_test": "tests/test_gan2026_llm_only_canonical_pipeline.py",
+      "trace_fields": ["raw_output", "row_trace.model_prediction.record"],
+      "paper_wording": "A single language-model call produces the final seizure-frequency label and its supporting evidence.",
+      "notes": "This is the prediction boundary. row_trace.model_prediction.record retains the model's answer before any deterministic stage touches it."
+    },
+    {
+      "stage_id": "gan.llm.json_schema_repair",
+      "name": "Repair JSON dialect and payload shape",
+      "operation": "Recover the JSON object from the raw output, repair Python-literal dialect, fix a known rationale key typo, coerce rule-family fields, and drop unsupported keys.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "raw structured JSON (str)",
+      "input_example": "output wrapped in prose, or using True/None instead of true/null",
+      "output_type": "payload dict",
+      "output_example": "a dict matching the decision schema keys",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:parse_decision_json_with_trace"
+      },
+      "governing_test": "tests/test_gan2026_schema_repair.py",
+      "trace_fields": ["row_trace.format_repair.schema_payload_changed", "row_trace.format_repair.events"],
+      "paper_wording": "Malformed model output is repaired at the transport and schema level only."
+    },
+    {
+      "stage_id": "gan.llm.schema_validation",
+      "name": "Validate the decision schema",
+      "operation": "Validate the repaired payload against the canonical decision record; a failure ends the row with no prediction.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "payload dict",
+      "input_example": "a dict missing the required final_label key",
+      "output_type": "CanonicalLlmDecisionRecord or a schema_validation_error",
+      "output_example": "schema_validation_error: Field required",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:CanonicalLlmDecisionRecord"
+      },
+      "governing_test": "tests/test_gan2026_llm_only_canonical_pipeline.py",
+      "trace_fields": ["parse_errors"],
+      "paper_wording": "Decisions that do not validate against the schema are recorded as failures rather than scored."
+    },
+    {
+      "stage_id": "gan.llm.selected_evidence_repair",
+      "name": "Evidence-based label repair",
+      "operation": "Compare the model's final label with the evidence span it quoted and rewrite the label when the evidence supports a different rate.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "model final_label plus model evidence",
+      "input_example": "final_label '2 per month' with evidence 'two seizures in the past fortnight'",
+      "output_type": "repaired label (str)",
+      "output_example": "'2 per 2 week'",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/normalize.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence"
+      },
+      "governing_test": "tests/test_gan2026_benchmark_prediction_repair_policy.py",
+      "trace_fields": ["row_trace.deterministic_adapter.before_label", "row_trace.deterministic_adapter.after_label", "row_trace.deterministic_adapter.events"],
+      "paper_wording": "A single deterministic repair reconciles the model's label with the evidence span it selected; this repair can change the final clinical answer.",
+      "notes": "The method is called LLM-only because the model owns the decision, but this stage is a clinical-meaning stage, not formatting. The row trace labels its rule_category 'benchmark_format', which understates it; the manifest is the authority. Reported in finding 4 of the 2026-07-30 review."
+    },
+    {
+      "stage_id": "gan.llm.scorable_label_check",
+      "name": "Check the label is scorable",
+      "operation": "Parse the repaired label into a frequency record; an unparseable label is recorded as unscorable.",
+      "owner": "deterministic",
+      "rule_category": "benchmark_format",
+      "effect_class": "validation_gate",
+      "input_type": "repaired label (str)",
+      "input_example": "'roughly a few a month'",
+      "output_type": "GanFrequencyRecord or an unscorable_final_label error",
+      "output_example": "unscorable_final_label: unrecognized label",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/contract/label_parser.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record"
+      },
+      "governing_test": "tests/test_gan2026_labels.py",
+      "trace_fields": ["parse_errors"],
+      "paper_wording": "Labels that cannot be parsed into the benchmark representation are recorded as unscorable."
+    },
+    {
+      "stage_id": "gan.llm.evidence_containment",
+      "name": "Check evidence is an exact substring",
+      "operation": "Require the model's quoted evidence to appear verbatim in the note text.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "note text plus model evidence",
+      "input_example": "evidence 'two seizures per month' against the note text",
+      "output_type": "bool",
+      "output_example": "evidence_valid True",
+      "implementation": {
+        "path": "src/clinical_extraction/core/evidence.py",
+        "symbol": "clinical_extraction.core.evidence:evidence_is_substring"
+      },
+      "governing_test": "tests/test_core_evidence.py",
+      "trace_fields": ["evidence_valid", "row_trace.evidence_validation.exact_substring"],
+      "paper_wording": "Evidence is required to be an exact substring of the source note."
+    },
+    {
+      "stage_id": "gan.llm.score",
+      "name": "Project to Purist and Pragmatic scoring",
+      "operation": "Map the predicted and gold monthly frequencies into the Purist and Pragmatic categories and compare.",
+      "owner": "scorer",
+      "effect_class": "benchmark_projection",
+      "input_type": "repaired label plus gold monthly frequency",
+      "input_example": "predicted 2.0 per month, gold 2.0 per month",
+      "output_type": "per-row category comparison",
+      "output_example": "purist_correct True, pragmatic_correct True",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/labels.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist"
+      },
+      "governing_test": "tests/test_gan2026_labels.py",
+      "trace_fields": ["comparison.purist_correct", "comparison.pragmatic_correct", "row_trace.scoring"],
+      "paper_wording": "Predictions are scored under the Purist and Pragmatic category projections."
+    }
+  ],
+  "related_paths": [
+    {
+      "name": "LLM-only research runner",
+      "role": "research entry point",
+      "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/llm_only_canonical.py",
+      "note": "CLI wrapper over run_split; adds no clinical stage."
+    }
+  ],
+  "evidence_owners": [
+    "docs/canon/06_gan_clinical_policy.md",
+    "docs/research/six_model_comparison_report_2026-07-18.md"
+  ]
+}

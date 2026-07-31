@@ -1,0 +1,343 @@
+{
+  "method_id": "exectv2_llm_with_rules",
+  "task": "exectv2",
+  "task_label": "ExECTv2",
+  "method": "llm_with_rules",
+  "method_label": "LLM with rules",
+  "role": "selected",
+  "entry_point": {
+    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py",
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.runner:run_split"
+  },
+  "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
+  "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis may rewrite, drop, or add concepts; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations validates, normalizes, and de-duplicates. Every final finding must carry exact source evidence, and the scored views are then materialized.",
+  "prediction_owner": "the named model proposes all four families (exect.hybrid.model_call); four family transforms may change findings afterwards",
+  "scored_representation": "A PredictedLetter of four-family mentions materialized into named score views; the canonical view is clinical_headline.",
+  "stages": [
+    {
+      "stage_id": "exect.hybrid.build_prompt",
+      "name": "Build the four-family prompt",
+      "operation": "Render the note text and the four-family event-ledger schema into the prompt input for one structured call.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "ExectLetter",
+      "input_example": "letter text plus letter id",
+      "output_type": "prompt input JSON (str)",
+      "output_example": "{\"note_text\": \"...\", \"families\": [\"Diagnosis\", \"SeizureFrequency\", \"Prescription\", \"Investigations\"]}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/prompt_builders.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.prompt_builders:build_prompt_input"
+      },
+      "governing_test": "tests/test_exectv2_llm_only_prompt_contract.py",
+      "trace_fields": ["prompt_version"],
+      "paper_wording": "A single prompt requests candidate findings for four clinical families."
+    },
+    {
+      "stage_id": "exect.hybrid.model_call",
+      "name": "Model proposes findings for four families",
+      "operation": "One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.",
+      "owner": "model",
+      "effect_class": "clinical_meaning",
+      "input_type": "prompt input JSON (str)",
+      "input_example": "letter text plus the four-family schema",
+      "output_type": "raw structured JSON (str)",
+      "output_example": "{\"events\": [{\"family\": \"Diagnosis\", \"text\": \"focal epilepsy\", \"evidence\": \"Diagnosis: focal epilepsy\"}]}",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/signatures.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.signatures"
+      },
+      "governing_test": "tests/test_exectv2_llm_only_prompt_contract.py",
+      "trace_fields": ["raw_output", "model", "prompt_version"],
+      "paper_wording": "A single language-model call proposes candidate findings for all four families.",
+      "notes": "Decision 0040: the named model supplies all four families. No deterministic extractor may replace or be unioned into its result. This is what historical v08 did differently."
+    },
+    {
+      "stage_id": "exect.hybrid.parse_and_retry",
+      "name": "Parse output, with format-only retry when eligible",
+      "operation": "Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "raw structured JSON (str)",
+      "input_example": "an events list with one unclosed mention object",
+      "output_type": "StructuredExtractionRecord plus parse notes",
+      "output_example": "a validated record with four events",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:parse_structured_events_json"
+      },
+      "governing_test": "tests/test_exectv2_local_format_retry.py",
+      "trace_fields": ["parse_errors", "format_retry_notes"],
+      "paper_wording": "Malformed model output is repaired at the transport and schema level, with one format-only retry for local models."
+    },
+    {
+      "stage_id": "exect.hybrid.flatten_events",
+      "name": "Flatten model events into mentions",
+      "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "representation",
+      "input_type": "StructuredExtractionRecord",
+      "input_example": "an event with family 'Diagnosis' and text 'focal epilepsy'",
+      "output_type": "list[MentionForEvidence]",
+      "output_example": "a Diagnosis mention 'focal epilepsy' with its evidence span",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/parsing.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.parsing:flatten_events"
+      },
+      "governing_test": "tests/test_exectv2_llm_only_parsing.py",
+      "trace_fields": ["n_mentions_raw"],
+      "paper_wording": "Model events are flattened into entity mentions."
+    },
+    {
+      "stage_id": "exect.hybrid.project_and_gate",
+      "name": "Enrich attributes and apply render-safety gates",
+      "operation": "Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "list[MentionForEvidence] plus note text",
+      "input_example": "a SeizureFrequency mention with no state attributes; a Prescription mention with Frequency 'twice a day'",
+      "output_type": "PredictedLetter plus gate warnings",
+      "output_example": "the SeizureFrequency mention is dropped; the out-of-vocabulary Frequency value is removed",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/projection.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter"
+      },
+      "governing_test": "tests/test_exectv2_llm_only_projection.py",
+      "trace_fields": ["gate_warnings", "n_evidence_invalid", "n_mentions_scored"],
+      "paper_wording": "Model mentions are enriched with concept identifiers and passed through render-safety gates before assembly.",
+      "notes": "Classed as clinical_meaning because it can remove a finding the model produced: a seizure-frequency mention without a frequency state is dropped outright. Its more common behaviour is representation enrichment, which is why it is easy to read as inert."
+    },
+    {
+      "stage_id": "exect.hybrid.sf_state_projection",
+      "name": "Project seizure-frequency facts into the state representation",
+      "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "row of seizure-frequency mentions",
+      "input_example": "a mention 'seizure free since March' with no state attribute",
+      "output_type": "row of projected seizure-frequency mentions plus recorded actions",
+      "output_example": "the same mention carrying a seizure-free state and last-event date attributes",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_state_projection.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_state_projection:project_row"
+      },
+      "governing_test": "tests/test_exectv2_sf_state_projection.py",
+      "trace_fields": ["diagnostics.actions", "diagnostics.action_counts"],
+      "paper_wording": "Model-produced seizure-frequency facts are projected into the scored state representation, with every projection action recorded.",
+      "notes": "Named 'projection' but classed here as clinical_meaning: it can create the state representation that is scored, and it can add mentions from a candidate. Finding 4 of the 2026-07-30 review names this exact case. The selected setting is ablation='combined', which enables both the state and ownership projections."
+    },
+    {
+      "stage_id": "exect.hybrid.sf_unknown_suppression",
+      "name": "Suppress unsupported unknown states",
+      "operation": "Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "clinical_meaning",
+      "input_type": "row of projected seizure-frequency mentions",
+      "input_example": "a seizure-frequency mention with an unknown state and no supporting rate",
+      "output_type": "row with the suppressed mentions removed plus recorded actions",
+      "output_example": "the unknown-state mention is dropped and the action recorded",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/sf_unknown_suppression.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.sf_unknown_suppression:suppress_row"
+      },
+      "governing_test": "tests/test_exectv2_sf_unknown_suppression.py",
+      "trace_fields": ["diagnostics.actions", "diagnostics.action_counts"],
+      "paper_wording": "A narrowly scoped deterministic rule suppresses unsupported unknown seizure-frequency states.",
+      "notes": "Removes model-produced findings. Suppression is a clinical change, not a filter on noise."
+    },
+    {
+      "stage_id": "exect.hybrid.register_findings",
+      "name": "Register raw and scored findings",
+      "operation": "Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "transport_or_schema",
+      "input_type": "per-entity rows plus the letter",
+      "input_example": "the Diagnosis row from the structured producer",
+      "output_type": "ClinicalFindingStore",
+      "output_example": "raw and scored surfaces for each of the four families",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/finding_store.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.finding_store:ClinicalFindingStore"
+      },
+      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "trace_fields": ["lanes[entity].raw_lane_mentions", "lanes[entity].predicted_mentions"],
+      "paper_wording": "Raw and scored findings are retained separately so every deterministic action stays attributable.",
+      "notes": "This stage is what makes component attribution possible: the model's raw output survives beside the reconciled output for every entity."
+    },
+    {
+      "stage_id": "exect.hybrid.lens.diagnosis",
+      "name": "Diagnosis family transform",
+      "operation": "Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "Diagnosis findings in the store",
+      "input_example": "model finding 'epilepsy' under a 'Diagnosis:' heading listing two conditions",
+      "output_type": "reconciled Diagnosis findings plus lens diagnostics",
+      "output_example": "two Diagnosis concepts, one recovered from the heading",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/diagnosis.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.diagnosis:DiagnosisDictionaryLens"
+      },
+      "governing_test": "tests/test_exectv2_diagnosis_decomposer.py",
+      "trace_fields": ["lanes.Diagnosis.lens_diagnostics", "provenance[].action"],
+      "paper_wording": "A deterministic Diagnosis transform reconciles model findings against heading structure and the standard dictionary.",
+      "notes": "The active policy variant is 'default' (decision 0045). The 'combined' variant is archived development evidence and must not be the default for new runs. This is the family transform with the widest licence: it is the only one that can add a concept the model did not produce."
+    },
+    {
+      "stage_id": "exect.hybrid.lens.seizure_frequency",
+      "name": "Seizure Frequency family transform",
+      "operation": "Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change.",
+      "owner": "deterministic",
+      "rule_category": "seizure_frequency",
+      "effect_class": "representation",
+      "input_type": "Seizure Frequency findings in the store",
+      "input_example": "projected seizure-free findings from the sf producer",
+      "output_type": "reconciled Seizure Frequency findings",
+      "output_example": "the same findings in assembled form",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/seizure_frequency.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens"
+      },
+      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "trace_fields": ["lanes.SeizureFrequency.lens_diagnostics"],
+      "paper_wording": "The Seizure Frequency transform assembles findings whose clinical projection has already been applied.",
+      "notes": "The clinical work for this family happened earlier, at exect.hybrid.sf_state_projection and exect.hybrid.sf_unknown_suppression. Reading the lens alone will understate what happened to Seizure Frequency."
+    },
+    {
+      "stage_id": "exect.hybrid.lens.prescription",
+      "name": "Prescription family transform",
+      "operation": "Apply dictionary-driven regimen processing and bounded correction to Prescription findings.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "clinical_meaning",
+      "input_type": "Prescription findings in the store",
+      "input_example": "model finding 'levetiracetam 500mg BD'",
+      "output_type": "reconciled Prescription findings plus lens diagnostics",
+      "output_example": "a Prescription finding with normalized drug, dose, and regimen attributes",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/prescription.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens"
+      },
+      "governing_test": "tests/test_exectv2_prescription_bounded_policy_candidate.py",
+      "trace_fields": ["lanes.Prescription.lens_diagnostics", "provenance[].action"],
+      "paper_wording": "A deterministic Prescription transform applies bounded post-model correction to regimen findings.",
+      "notes": "The active policy variant is 'default' (decision 0045). Decision 0040 requires bounded correction here rather than deterministic substitution: the rules may correct the model, they may not replace it as the producer."
+    },
+    {
+      "stage_id": "exect.hybrid.lens.investigations",
+      "name": "Investigations family transform",
+      "operation": "Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result.",
+      "owner": "deterministic",
+      "rule_category": "clinical_epilepsy",
+      "effect_class": "representation",
+      "input_type": "Investigations findings in the store",
+      "input_example": "'MRI brain' and 'MRI brain normal' from the same letter",
+      "output_type": "reconciled Investigations findings",
+      "output_example": "one Investigations finding 'MRI brain' with a normal result",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/lenses/investigations.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsLens"
+      },
+      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "trace_fields": ["lanes.Investigations.lens_diagnostics"],
+      "paper_wording": "A deterministic Investigations transform validates, normalizes, and de-duplicates findings."
+    },
+    {
+      "stage_id": "exect.hybrid.evidence_requirement",
+      "name": "Require exact evidence for every finding",
+      "operation": "Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note.",
+      "owner": "deterministic",
+      "rule_category": "general",
+      "effect_class": "validation_gate",
+      "input_type": "assembled findings plus note text",
+      "input_example": "a Diagnosis finding whose evidence was paraphrased",
+      "output_type": "the assembled letter, or a ValueError",
+      "output_example": "ValueError: assembled 'EA0117' with 1 finding(s) without exact source evidence",
+      "implementation": {
+        "path": "src/clinical_extraction/operational/exect.py",
+        "symbol": "clinical_extraction.operational.exect:_assemble_letter"
+      },
+      "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
+      "trace_fields": ["n_evidence_invalid"],
+      "paper_wording": "Every final finding is required to carry evidence that appears verbatim in the source note.",
+      "notes": "This gate raises rather than silently dropping. A family transform that invented an unevidenced concept fails the whole letter, which is why the Diagnosis transform's add licence is bounded in practice."
+    },
+    {
+      "stage_id": "exect.hybrid.materialize_views",
+      "name": "Materialize the score views",
+      "operation": "Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings.",
+      "owner": "deterministic",
+      "rule_category": "benchmark_format",
+      "effect_class": "benchmark_projection",
+      "input_type": "assembled findings",
+      "input_example": "four families of reconciled findings",
+      "output_type": "named FindingViewResult surfaces",
+      "output_example": "a clinical_headline view holding the headline unit keys",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/views.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views"
+      },
+      "governing_test": "tests/test_exectv2_scoring_headlines.py",
+      "trace_fields": ["prediction_surfaces"],
+      "paper_wording": "Findings are materialized into named scoring views; the canonical view is clinical_headline.",
+      "notes": "One set of findings, several numbers. Naming the view is part of naming the result."
+    },
+    {
+      "stage_id": "exect.hybrid.score",
+      "name": "Score against gold",
+      "operation": "Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1.",
+      "owner": "scorer",
+      "effect_class": "benchmark_projection",
+      "input_type": "materialized view plus gold annotations",
+      "input_example": "clinical_headline view against the four-family gold",
+      "output_type": "OverallScore plus per-entity EntityScore",
+      "output_example": "a clinical_headline overall F1",
+      "implementation": {
+        "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py",
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall"
+      },
+      "governing_test": "tests/test_exectv2_scoring_match_fidelity.py",
+      "trace_fields": ["scores.overall", "scores.per_entity"],
+      "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations under the named view."
+    }
+  ],
+  "related_paths": [
+    {
+      "name": "Operational wrapper",
+      "role": "operational wrapper",
+      "path": "src/clinical_extraction/operational/exect.py",
+      "note": "Adds endpoint handling and live assembly around the same stages. Not a separate method; it must not drift from this manifest."
+    },
+    {
+      "name": "Public readable wrapper",
+      "role": "operational wrapper",
+      "path": "src/clinical_extraction_local/clinical_findings/pipeline.py",
+      "note": "The readable public surface over the operational wrapper."
+    },
+    {
+      "name": "Historical v08 architecture",
+      "role": "historical performance control",
+      "path": "docs/experiments/exectv2/reliability/archive/exectv2_joint_policy_archive_README.md",
+      "note": "v08 used a deterministic Prescription producer and a Seizure Frequency extractor union. It does NOT meet decision 0040 and is not this method, despite sharing the label 'LLM with rules'."
+    },
+    {
+      "name": "Archived joint bounded policy",
+      "role": "rejected candidate or ablation",
+      "path": "scripts/check_exectv2_joint_bounded_policy_replay.py",
+      "note": "The combined/combined Diagnosis and Prescription policy. Demoted by decision 0045; requires an explicit opt-in flag."
+    }
+  ],
+  "evidence_owners": [
+    "docs/decisions/0040-final-exect-llm-with-rules-family-ownership.md",
+    "docs/decisions/0041-single-call-exect-model-comparison.md",
+    "docs/decisions/0045-exect-default-policy-not-joint-combined.md",
+    "docs/research/six_model_comparison_report_2026-07-18.md"
+  ]
+}
