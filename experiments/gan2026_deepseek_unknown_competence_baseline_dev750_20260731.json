@@ -1,0 +1,327 @@
+{
+  "schema_version": "gan2026.unknown_slice_metrics.v1",
+  "generated_at_utc": "2026-07-31T12:03:16.673641+00:00",
+  "protocol": "docs/experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md",
+  "thread": "docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md",
+  "dataset": "Gan 2026 synthetic clinical letters",
+  "split": "validation750",
+  "split_manifest": "gan2026_split_v1",
+  "scorer": "Gan Purist unknown-band slice",
+  "gold_unknown_count": 170,
+  "n": 750,
+  "sources": {
+    "attribution": "experiments/gan2026_matched_v05_dev750_attribution_20260727.json",
+    "gold_rows": "scratch/validation/gan2026_matched_v05_dev750_20260727/gpt41mini/validation750.rows.jsonl",
+    "floors_changed": "experiments/gan2026_six_model_current_floors_replay_20260731/dev750_changed_rows.jsonl"
+  },
+  "models": {
+    "deepseek_v4_flash": {
+      "n": 750,
+      "route_caveat": "Retained matched v0.5 DeepSeek condition is hosted V4 Flash API; not a local partner-server runtime.",
+      "overall_purist_llm_only": 449,
+      "overall_purist_llm_with_rules_frozen_panel": 619,
+      "llm_only": {
+        "metrics": {
+          "gold_unknown": 170,
+          "pred_unknown_band": 203,
+          "tp": 130,
+          "fp": 73,
+          "fn": 40,
+          "precision": 0.6404,
+          "recall": 0.7647,
+          "f1": 0.6971,
+          "unknown_gold_accuracy": 0.7647,
+          "overread_n": 7,
+          "overread_rate": 0.0412,
+          "false_seizure_free_n": 11,
+          "false_seizure_free_rate": 0.0647,
+          "false_abstention_n": 73,
+          "false_abstention_rate": 0.1259,
+          "overread_top": [
+            [
+              "1 per month => seizure_freq_1_per_mon",
+              3
+            ],
+            [
+              "2 to 3 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per day => seizure_freq_1ormore_daily",
+              1
+            ],
+            [
+              "2 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per week => seizure_freq_more1week_less1day",
+              1
+            ]
+          ],
+          "fn_pred_top": [
+            [
+              "<empty>",
+              7
+            ],
+            [
+              "1 cluster per month",
+              3
+            ],
+            [
+              "seizure free",
+              3
+            ],
+            [
+              "1 per month",
+              3
+            ],
+            [
+              "seizure free for 3 months",
+              2
+            ],
+            [
+              "1 cluster per day",
+              1
+            ],
+            [
+              "seizure free for <1 month",
+              1
+            ],
+            [
+              "1 cluster per week",
+              1
+            ],
+            [
+              "seizure free for 8 weeks",
+              1
+            ],
+            [
+              "perimenstrual clustering",
+              1
+            ]
+          ]
+        },
+        "collaboration_gate": {
+          "passed": false,
+          "checks": {
+            "unknown_accuracy_ge_0_80": false,
+            "overread_le_0_05": true
+          }
+        }
+      },
+      "llm_with_rules_frozen_panel": {
+        "metrics": {
+          "gold_unknown": 170,
+          "pred_unknown_band": 200,
+          "tp": 149,
+          "fp": 51,
+          "fn": 21,
+          "precision": 0.745,
+          "recall": 0.8765,
+          "f1": 0.8054,
+          "unknown_gold_accuracy": 0.8765,
+          "overread_n": 11,
+          "overread_rate": 0.0647,
+          "false_seizure_free_n": 9,
+          "false_seizure_free_rate": 0.0529,
+          "false_abstention_n": 51,
+          "false_abstention_rate": 0.0879,
+          "overread_top": [
+            [
+              "1 per month => seizure_freq_1_per_mon",
+              4
+            ],
+            [
+              "2 to 3 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per 1 month => seizure_freq_1_per_mon",
+              1
+            ],
+            [
+              "2 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per 1 to 2 week => seizure_freq_more1mon_less1week",
+              1
+            ],
+            [
+              "1 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per 3 month => seizure_freq_more1per6mon_less1mon",
+              1
+            ],
+            [
+              "2 per month => seizure_freq_more1mon_less1week",
+              1
+            ]
+          ],
+          "fn_pred_top": [
+            [
+              "seizure free for multiple year",
+              5
+            ],
+            [
+              "1 per month",
+              4
+            ],
+            [
+              "seizure free for 3 month",
+              2
+            ],
+            [
+              "2 to 3 per week",
+              1
+            ],
+            [
+              "1 per 1 month",
+              1
+            ],
+            [
+              "2 per week",
+              1
+            ],
+            [
+              "1 per 1 to 2 week",
+              1
+            ],
+            [
+              "1 per week",
+              1
+            ],
+            [
+              "seizure free for 4 month",
+              1
+            ],
+            [
+              "1 per 3 month",
+              1
+            ]
+          ]
+        },
+        "collaboration_gate": {
+          "passed": false,
+          "checks": {
+            "unknown_accuracy_ge_0_90": false,
+            "overread_le_0_05": false,
+            "false_seizure_free_le_0_03": false
+          }
+        }
+      },
+      "llm_with_rules_final_ruleset_proxy": {
+        "metrics": {
+          "gold_unknown": 170,
+          "pred_unknown_band": 188,
+          "tp": 148,
+          "fp": 40,
+          "fn": 22,
+          "precision": 0.7872,
+          "recall": 0.8706,
+          "f1": 0.8268,
+          "unknown_gold_accuracy": 0.8706,
+          "overread_n": 12,
+          "overread_rate": 0.0706,
+          "false_seizure_free_n": 9,
+          "false_seizure_free_rate": 0.0529,
+          "false_abstention_n": 40,
+          "false_abstention_rate": 0.069,
+          "overread_top": [
+            [
+              "1 per month => seizure_freq_1_per_mon",
+              4
+            ],
+            [
+              "2 to 3 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per 1 month => seizure_freq_1_per_mon",
+              1
+            ],
+            [
+              "2 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "1 per 1 to 2 week => seizure_freq_more1mon_less1week",
+              1
+            ],
+            [
+              "1 per week => seizure_freq_more1week_less1day",
+              1
+            ],
+            [
+              "multiple cluster per day, multiple per cluster => seizure_freq_1ormore_daily",
+              1
+            ],
+            [
+              "1 per 3 month => seizure_freq_more1per6mon_less1mon",
+              1
+            ],
+            [
+              "2 per month => seizure_freq_more1mon_less1week",
+              1
+            ]
+          ],
+          "fn_pred_top": [
+            [
+              "seizure free for multiple year",
+              5
+            ],
+            [
+              "1 per month",
+              4
+            ],
+            [
+              "seizure free for 3 month",
+              2
+            ],
+            [
+              "2 to 3 per week",
+              1
+            ],
+            [
+              "1 per 1 month",
+              1
+            ],
+            [
+              "2 per week",
+              1
+            ],
+            [
+              "1 per 1 to 2 week",
+              1
+            ],
+            [
+              "1 per week",
+              1
+            ],
+            [
+              "multiple cluster per day, multiple per cluster",
+              1
+            ],
+            [
+              "seizure free for 4 month",
+              1
+            ]
+          ]
+        },
+        "collaboration_gate": {
+          "passed": false,
+          "checks": {
+            "unknown_accuracy_ge_0_90": false,
+            "overread_le_0_05": false,
+            "false_seizure_free_le_0_03": false
+          }
+        },
+        "note": "Frozen-panel finals with final-ruleset changed labels overlaid from no-call floors replay."
+      }
+    }
+  },
+  "claim_boundary": "Development unknown-slice baseline on retained matched v0.5 validation750 traces. Hosted DeepSeek V4 Flash is not local-route evidence. Not Real(300), not test450 row inspection, not gate pass."
+}

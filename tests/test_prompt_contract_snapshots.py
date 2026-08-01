@@ -106,6 +106,12 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
             prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_8_LUNA_CURRENT,
         )
     ),
+    "gan2026__hybrid_structured_events_v0.8_deepseek_unknown": (
+        lambda: hybrid_structured_events.build_prompt_input(
+            _gan_record(),
+            prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN,
+        )
+    ),
     "gan2026__llm_only_canonical_pipeline": lambda: llm_only_canonical_pipeline.build_prompt_input(
         _gan_record()
     ),

@@ -1,0 +1,6605 @@
+{
+  "aggregate": {
+    "baseline_clinical_headline": {
+      "Diagnosis": 0.8764,
+      "Investigations": 0.9389,
+      "Prescription": 0.928,
+      "SeizureFrequency": 0.761,
+      "overall": 0.8767
+    },
+    "delta_clinical_headline": {
+      "Diagnosis": 0.0153,
+      "Investigations": 0.0117,
+      "Prescription": 0.0073,
+      "SeizureFrequency": 0.0672,
+      "overall": 0.0227
+    },
+    "update_clinical_headline": {
+      "Diagnosis": 0.8917,
+      "Investigations": 0.9506,
+      "Prescription": 0.9353,
+      "SeizureFrequency": 0.8282,
+      "overall": 0.8994
+    }
+  },
+  "baseline_artifact": "experiments/exectv2_six_model_single_call_deepseek_v4_flash_dev140_20260715.json",
+  "changed_letter_summary": {
+    "direction_counts": {
+      "prediction_only": 10,
+      "regression": 11,
+      "rescue": 38
+    },
+    "family_correctness_direction_counts": {
+      "Diagnosis": {
+        "regression": 4,
+        "rescue": 11
+      },
+      "Investigations": {
+        "rescue": 3
+      },
+      "Prescription": {
+        "regression": 3,
+        "rescue": 5
+      },
+      "SeizureFrequency": {
+        "regression": 4,
+        "rescue": 20
+      }
+    },
+    "family_prediction_change_counts": {
+      "Diagnosis": 17,
+      "Investigations": 4,
+      "Prescription": 8,
+      "SeizureFrequency": 36
+    },
+    "n_letters_with_prediction_or_correctness_change": 59
+  },
+  "changed_letters": [
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'genetic generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'genetic generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.5,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0494475'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0005"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '75', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -1.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0008"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Unknown')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '500', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '250', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '500', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '250', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0015"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'focal seizure')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'focal seizure')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('CT', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0751495'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0016"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "(('cui', 'C0751495'), 'seizure-free')",
+            "(('phrase', 'epileptic seizures'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0751495'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0022"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '1')",
+            "('ordinary', 'lamotrigine', '175', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0025"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '700', 'mg', '1')",
+            "('ordinary', 'topiramate', '100', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '700', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0026"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0028"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy with generalised tonic clonic seizures alone')",
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0035"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'secondary generalised tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'secondary generalised tonic clonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'clobazam', '10', 'mg', '2')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            5,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'clobazam', '10', 'mg', '2')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            5,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')",
+            "(('phrase', 'generalised tonic chronic seizure'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            2,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0038"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "('Diagnosis', 'absence')",
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'epileptic seizures')",
+            "('Diagnosis', 'myoclonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            3,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'epileptic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0043"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'myoclonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'myoclonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '250', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '250', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.75,
+          "baseline_keys": [
+            "(('cui', 'C0027066'), 'active-rate')",
+            "(('cui', 'C0494475'), 'active-rate')",
+            "(('cui', 'C0494475'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            2
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1389,
+          "prediction_changed": true,
+          "update_f1": 0.8889,
+          "update_keys": [
+            "(('cui', 'C0027066'), 'unknown')",
+            "(('cui', 'C0494475'), 'active-rate')",
+            "(('cui', 'C0494475'), 'unknown')",
+            "(('cui', 'C0563606'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0049"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8571,
+          "baseline_keys": [
+            "(('cui', 'C0027066'), 'active-rate')",
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1429,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0027066'), 'active-rate')",
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0494475'), 'active-rate')",
+            "(('cui', 'C0563606'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0050"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'partial motor seizures')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'partial motor seizures')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')",
+            "('ordinary', 'oxcarbazepine', '300', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')",
+            "('ordinary', 'oxcarbazepine', '300', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0270838'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0270838'), 'active-rate')",
+            "(('cui', 'C0270838'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0056"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.75,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures without changes in awareness')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.75,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures without changes in awareness')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            1,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.5,
+          "update_keys": [
+            "(('cui', 'C0877017'), 'seizure-free')",
+            "(('phrase', 'focal motor seizures without changes in awareness'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0057"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Unknown')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0062"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            2
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')",
+            "(('cui', 'C0751495'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0068"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0075"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "('Diagnosis', 'epileptic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0076"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.75,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'generlised tonic clonic seizure')",
+            "('Diagnosis', 'nocturnal seizures')",
+            "('Diagnosis', 'symptomatic epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.25,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'nocturnal seizures')",
+            "('Diagnosis', 'symptomatic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '1250', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '1250', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'generlised tonic clonic seizure'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('phrase', 'generlised tonic clonic seizure'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0079"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'juvenile absence epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile absence epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'clobazam', '10', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'clobazam', '10', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'seizure-free')",
+            "(('cui', 'C0563606'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'seizure-free')",
+            "(('cui', 'C0563606'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0082"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '1')",
+            "('ordinary', 'lamotrigine', '75', 'mg', '1')",
+            "('ordinary', 'levetiracetam', '1500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '1')",
+            "('ordinary', 'lamotrigine', '75', 'mg', '1')",
+            "('ordinary', 'levetiracetam', '1500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0027066'), 'active-rate')",
+            "(('cui', 'C0494475'), 'active-rate')",
+            "(('cui', 'C0494475'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.6,
+          "prediction_changed": true,
+          "update_f1": 0.4,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'active-rate')",
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            2
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0087"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'frontal lobe epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'frontal lobe epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '100', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '100', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0088"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '500', 'mg', '2')",
+            "('rescue', 'phenytoin', 'as_required')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('phrase', 'cluster of complex partial seizures'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0092"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'phenytoin', '120', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '440', 'mg', '2')",
+            "('ordinary', 'topiramate', '60', 'mg', '1')",
+            "('ordinary', 'topiramate', '75', 'mg', '1')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'phenytoin', '120', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '440', 'mg', '2')",
+            "('ordinary', 'topiramate', '60', 'mg', '1')",
+            "('ordinary', 'topiramate', '75', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'drops and absences'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            2
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.4,
+          "prediction_changed": true,
+          "update_f1": 0.4,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'unknown')",
+            "(('cui', 'C0563606'), 'unknown')",
+            "(('phrase', 'drops'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            2,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0096"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Unknown')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '200', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '200', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0102"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'secondary generalisation')",
+            "('Diagnosis', 'simple partial seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'simple partial seizures')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0104"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0106"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'generalised seizures')",
+            "('Diagnosis', 'intractable epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'generalised seizures')",
+            "('Diagnosis', 'intractable epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('CT', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '75', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '1000', 'mg', '1')",
+            "('ordinary', 'levetiracetam', '750', 'mg', '1')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '75', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '1', 'g', '1')",
+            "('ordinary', 'levetiracetam', '750', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0107"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal impaired awareness seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal to bilateral tonic clonic seizures')",
+            "('Diagnosis', 'right temporal lobe epilepsy')",
+            "('Diagnosis', 'temporal lobe onset seizure')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            3,
+            0
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.0833,
+          "prediction_changed": true,
+          "update_f1": 0.75,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal impaired awareness seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal to bilateral tonic clonic seizures')",
+            "('Diagnosis', 'temporal lobe onset seizure')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            2,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine-controlled-release', '400', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '750', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.5,
+          "update_keys": [
+            "('ordinary', 'carbamazepine-controlled-release', '400', 'mg', '2')",
+            "('ordinary', 'levetiracetam', '750', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0114"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal impaired awareness seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal impaired awareness seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'lacosamide', '100', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'lacosamide', '100', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0117"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'drug resistant epilepsy')",
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'drug resistant epilepsy')",
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.8889,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '1500', 'mg', '2')",
+            "('ordinary', 'perampanel', '8', 'mg', '1')",
+            "('ordinary', 'phenytoin', '350', 'mg', '1')",
+            "('ordinary', 'zonisamide', '200', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1111,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '1500', 'mg', '2')",
+            "('ordinary', 'perampanel', '8', 'mg', '1')",
+            "('ordinary', 'phenytoin', '350', 'mg', '1')",
+            "('ordinary', 'zonisamide', '200', 'mg', '2')",
+            "('rescue', 'midazolam', 'as_required')"
+          ],
+          "update_tp_fp_fn": [
+            5,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0270834'), 'unknown')",
+            "(('cui', 'C0877017'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0270834'), 'unknown')",
+            "(('cui', 'C0877017'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0121"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '500', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '1')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '500', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '700', 'mg', '1')",
+            "('ordinary', 'zonisamide', '50', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0563606'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'seizure-free')",
+            "(('cui', 'C0563606'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0124"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')",
+            "('Diagnosis', 'frontal lobe seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')",
+            "('Diagnosis', 'frontal lobe seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'eslicarbazepine', '800', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'eslicarbazepine', '800', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0085541'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0085541'), 'active-rate')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0126"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '400', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.6667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'unknown')",
+            "(('cui', 'C0494475'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0131"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8889,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizure')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8889,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizure')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            2
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            2
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0270834'), 'active-rate')",
+            "(('cui', 'C0877017'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            0
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0132"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.75,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            2
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1389,
+          "prediction_changed": true,
+          "update_f1": 0.8889,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('CT', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '500', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0016399'), 'active-rate')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0133"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'generalised epilepsy')",
+            "('Diagnosis', 'generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            2
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.6667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0234533'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0136"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'generalised seizures')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'generalised seizures')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '1', 'g', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')",
+            "('ordinary', 'sodium-valproate', '1', 'g', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')",
+            "(('cui', 'C0270838'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0270838'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0137"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epileptic seizures')",
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('CT', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0141"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.3333,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            2,
+            2
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.3333,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            2,
+            2
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')",
+            "(('cui', 'C0270834'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0143"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            1
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'brivaracetam', '50', 'mg', '2')",
+            "('ordinary', 'carbamazepine', '600', 'mg', '2')",
+            "('ordinary', 'clobazam', '5', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'brivaracetam', '50', 'mg', '2')",
+            "('ordinary', 'carbamazepine', '600', 'mg', '2')",
+            "('ordinary', 'clobazam', '5', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'grand mal episodes'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0146"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '125', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '125', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'cluster of 5 seizures'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0151"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'temporal lobe epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.6,
+          "prediction_changed": true,
+          "update_f1": 0.4,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'left temporal lobe')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            2,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0153"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.5,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'juvenile absence epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1667,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'juvenile absence epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'levetiracetam', '1250', 'mg', '2')",
+            "('ordinary', 'topiramate', '75', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'levetiracetam', '1250', 'mg', '2')",
+            "('ordinary', 'topiramate', '75', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0156"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.8889,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '2')",
+            "('ordinary', 'perampanel', '8', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')",
+            "('rescue', 'clobazam', 'as_required')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.1111,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '100', 'mg', '2')",
+            "('ordinary', 'perampanel', '8', 'mg', '1')",
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')",
+            "('rescue', 'clobazam', 'as_required')",
+            "('rescue', 'midazolam', 'as_required')"
+          ],
+          "update_tp_fp_fn": [
+            5,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0234533'), 'active-rate')",
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0234533'), 'active-rate')",
+            "(('cui', 'C0270834'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0158"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'status epilepticus')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'status epilepticus')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('phrase', 'cluster of three seizures'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            1
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0162"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'epileptic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'epileptic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('CT', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('CT', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'epileptic seizures'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0164"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'juvenile myoclonic epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '125', 'mg', '2')",
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '125', 'mg', '2')",
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            1,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'jerks'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0166"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.2,
+          "prediction_changed": true,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal epileptic seizures')",
+            "('Diagnosis', 'focal seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Normal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'focal epileptic seizures'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('phrase', 'further episdoes'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0171"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'drug refractory epilepsy')",
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'drug refractory epilepsy')",
+            "('Diagnosis', 'focal epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'brivaracetam', '100', 'mg', '2')",
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')",
+            "('ordinary', 'perampanel', '4', 'mg', '1')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'brivaracetam', '100', 'mg', '2')",
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')",
+            "('ordinary', 'perampanel', '4', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [
+            "(('phrase', 'nocturnal seizures'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            0,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'unknown')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0172"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'secondary generalised tonic clonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'secondary generalised tonic clonic seizures')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '300', 'mg', '1')",
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '200', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '300', 'mg', '1')",
+            "('ordinary', 'levetiracetam', '1000', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0036572'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0178"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'complex partial seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '300', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '300', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0179"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'temporal lobe epilepsy')",
+            "('Diagnosis', 'temporal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            1,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'temporal lobe epilepsy')",
+            "('Diagnosis', 'temporal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            1,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('EEG', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '150', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 1.0,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0182"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizure')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            4,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'focal epilepsy')",
+            "('Diagnosis', 'focal motor seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizure')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')"
+          ],
+          "update_tp_fp_fn": [
+            4,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '75', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -1.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            1
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0877017'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0877017'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0186"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.75,
+          "baseline_keys": [
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')",
+            "('Diagnosis', 'temporal lobe epilepsy')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            1,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.75,
+          "update_keys": [
+            "('Diagnosis', 'focal seizures with altered awareness')",
+            "('Diagnosis', 'focal seizures')",
+            "('Diagnosis', 'focal to bilateral convulsive seizures')",
+            "('Diagnosis', 'temporal lobe epilepsy')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            1,
+            1
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Abnormal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '200', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "(('cui', 'C0270834'), 'seizure-free')",
+            "(('cui', 'C0877017'), 'seizure-free')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.2,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0270834'), 'seizure-free')",
+            "(('cui', 'C0877017'), 'seizure-free')",
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0190"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "('Diagnosis', 'generalised')",
+            "('Diagnosis', 'symptomatic epilepsy')",
+            "('Diagnosis', 'symptomatic')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            2,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "('Diagnosis', 'generalised')",
+            "('Diagnosis', 'symptomatic epilepsy')",
+            "('Diagnosis', 'symptomatic')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            2,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '600', 'mg', '1')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'carbamazepine', '400', 'mg', '1')",
+            "('ordinary', 'carbamazepine', '600', 'mg', '1')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.6667,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            1
+          ],
+          "correctness_direction": "rescue",
+          "delta_f1": 0.3333,
+          "prediction_changed": true,
+          "update_f1": 1.0,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C1299590'), 'seizure-free')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            0
+          ]
+        }
+      },
+      "letter_direction": "rescue",
+      "letter_id": "EA0195"
+    },
+    {
+      "any_correctness_change": true,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'complex partial seizures')",
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'secondary generalised seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.0,
+          "update_keys": [],
+          "update_tp_fp_fn": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'sodium-valproate', '1000', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "(('cui', 'C0036572'), 'active-rate')",
+            "(('cui', 'C0036572'), 'unknown')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            0
+          ],
+          "correctness_direction": "regression",
+          "delta_f1": -0.3333,
+          "prediction_changed": true,
+          "update_f1": 0.6667,
+          "update_keys": [
+            "(('cui', 'C0036572'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            1
+          ]
+        }
+      },
+      "letter_direction": "regression",
+      "letter_id": "EA0198"
+    },
+    {
+      "any_correctness_change": false,
+      "any_prediction_change": true,
+      "entities": {
+        "Diagnosis": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'genetic generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "baseline_tp_fp_fn": [
+            3,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('Diagnosis', 'epilepsy')",
+            "('Diagnosis', 'genetic generalised epilepsy')",
+            "('Diagnosis', 'tonic clonic seizures')"
+          ],
+          "update_tp_fp_fn": [
+            3,
+            0,
+            0
+          ]
+        },
+        "Investigations": {
+          "baseline_f1": 0.8,
+          "baseline_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "baseline_tp_fp_fn": [
+            2,
+            0,
+            1
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 0.8,
+          "update_keys": [
+            "('EEG', 'Yes', 'Abnormal')",
+            "('MRI', 'Yes', 'Normal')"
+          ],
+          "update_tp_fp_fn": [
+            2,
+            0,
+            1
+          ]
+        },
+        "Prescription": {
+          "baseline_f1": 1.0,
+          "baseline_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')"
+          ],
+          "baseline_tp_fp_fn": [
+            1,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": false,
+          "update_f1": 1.0,
+          "update_keys": [
+            "('ordinary', 'lamotrigine', '50', 'mg', '2')"
+          ],
+          "update_tp_fp_fn": [
+            1,
+            0,
+            0
+          ]
+        },
+        "SeizureFrequency": {
+          "baseline_f1": 0.0,
+          "baseline_keys": [],
+          "baseline_tp_fp_fn": [
+            0,
+            0,
+            0
+          ],
+          "correctness_direction": "unchanged",
+          "delta_f1": 0.0,
+          "prediction_changed": true,
+          "update_f1": 0.0,
+          "update_keys": [
+            "(('cui', 'C0494475'), 'active-rate')"
+          ],
+          "update_tp_fp_fn": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      "letter_direction": "prediction_only",
+      "letter_id": "EA0200"
+    }
+  ],
+  "claim_boundary": "Development same-config provider-update comparison on ExECTv2 dev140; not holdout, published benchmark, or clinical validation.",
+  "date": "2026-07-31",
+  "examples": {
+    "regression": [
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('ordinary', 'lamotrigine', '75', 'mg', '2')"
+        ],
+        "delta_f1": -1.0,
+        "entity": "Prescription",
+        "letter_id": "EA0008",
+        "update_f1": 0.0,
+        "update_keys": []
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('ordinary', 'lamotrigine', '75', 'mg', '2')"
+        ],
+        "delta_f1": -1.0,
+        "entity": "Prescription",
+        "letter_id": "EA0186",
+        "update_f1": 0.0,
+        "update_keys": []
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "(('cui', 'C0027066'), 'active-rate')",
+          "(('cui', 'C0494475'), 'active-rate')",
+          "(('cui', 'C0494475'), 'unknown')"
+        ],
+        "delta_f1": -0.6,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0087",
+        "update_f1": 0.4,
+        "update_keys": [
+          "(('cui', 'C0494475'), 'active-rate')",
+          "(('cui', 'C1299590'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('Diagnosis', 'focal seizures with altered awareness')",
+          "('Diagnosis', 'temporal lobe epilepsy')"
+        ],
+        "delta_f1": -0.6,
+        "entity": "Diagnosis",
+        "letter_id": "EA0153",
+        "update_f1": 0.4,
+        "update_keys": [
+          "('Diagnosis', 'focal epilepsy')",
+          "('Diagnosis', 'focal seizures with altered awareness')",
+          "('Diagnosis', 'left temporal lobe')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('ordinary', 'sodium-valproate', '700', 'mg', '1')",
+          "('ordinary', 'topiramate', '100', 'mg', '2')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "Prescription",
+        "letter_id": "EA0026",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "('ordinary', 'sodium-valproate', '700', 'mg', '1')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('Diagnosis', 'frontal lobe epilepsy')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "Diagnosis",
+        "letter_id": "EA0088",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "('Diagnosis', 'epilepsy')",
+          "('Diagnosis', 'frontal lobe epilepsy')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('Diagnosis', 'secondary generalisation')",
+          "('Diagnosis', 'simple partial seizures')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "Diagnosis",
+        "letter_id": "EA0104",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "('Diagnosis', 'simple partial seizures')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "(('cui', 'C0036572'), 'seizure-free')",
+          "(('cui', 'C0270838'), 'active-rate')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0137",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "(('cui', 'C0270838'), 'active-rate')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "(('cui', 'C0036572'), 'active-rate')",
+          "(('cui', 'C0036572'), 'unknown')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0178",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'active-rate')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "(('cui', 'C0036572'), 'active-rate')",
+          "(('cui', 'C0036572'), 'unknown')"
+        ],
+        "delta_f1": -0.3333,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0198",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'active-rate')"
+        ]
+      },
+      {
+        "baseline_f1": 1.0,
+        "baseline_keys": [
+          "('Diagnosis', 'focal epilepsy')",
+          "('Diagnosis', 'focal seizures')"
+        ],
+        "delta_f1": -0.2,
+        "entity": "Diagnosis",
+        "letter_id": "EA0171",
+        "update_f1": 0.8,
+        "update_keys": [
+          "('Diagnosis', 'focal epilepsy')",
+          "('Diagnosis', 'focal epileptic seizures')",
+          "('Diagnosis', 'focal seizures')"
+        ]
+      }
+    ],
+    "rescue": [
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 1.0,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0028",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 1.0,
+        "entity": "Investigations",
+        "letter_id": "EA0062",
+        "update_f1": 1.0,
+        "update_keys": [
+          "('CT', 'Yes', 'Unknown')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 1.0,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0068",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'seizure-free')",
+          "(('cui', 'C0751495'), 'unknown')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 1.0,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0102",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C1299590'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [
+          "('EEG', 'Yes', 'Unknown')"
+        ],
+        "delta_f1": 1.0,
+        "entity": "Investigations",
+        "letter_id": "EA0117",
+        "update_f1": 1.0,
+        "update_keys": [
+          "('EEG', 'Yes', 'Abnormal')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [
+          "(('phrase', 'cluster of 5 seizures'), 'active-rate')"
+        ],
+        "delta_f1": 1.0,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0151",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'active-rate')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 1.0,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0182",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [
+          "(('cui', 'C0494475'), 'unknown')"
+        ],
+        "delta_f1": 0.6667,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0131",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'unknown')",
+          "(('cui', 'C0494475'), 'unknown')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [],
+        "delta_f1": 0.6667,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0136",
+        "update_f1": 0.6667,
+        "update_keys": [
+          "(('cui', 'C0234533'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 0.5,
+        "baseline_keys": [
+          "(('cui', 'C0036572'), 'active-rate')",
+          "(('cui', 'C0494475'), 'active-rate')"
+        ],
+        "delta_f1": 0.5,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0005",
+        "update_f1": 1.0,
+        "update_keys": [
+          "(('cui', 'C0036572'), 'active-rate')",
+          "(('cui', 'C0494475'), 'seizure-free')"
+        ]
+      },
+      {
+        "baseline_f1": 0.0,
+        "baseline_keys": [
+          "(('phrase', 'drops and absences'), 'unknown')"
+        ],
+        "delta_f1": 0.4,
+        "entity": "SeizureFrequency",
+        "letter_id": "EA0096",
+        "update_f1": 0.4,
+        "update_keys": [
+          "(('cui', 'C0494475'), 'unknown')",
+          "(('cui', 'C0563606'), 'unknown')",
+          "(('phrase', 'drops'), 'unknown')"
+        ]
+      },
+      {
+        "baseline_f1": 0.6667,
+        "baseline_keys": [
+          "('Diagnosis', 'epilepsy')"
+        ],
+        "delta_f1": 0.3333,
+        "entity": "Diagnosis",
+        "letter_id": "EA0075",
+        "update_f1": 1.0,
+        "update_keys": [
+          "('Diagnosis', 'epilepsy')",
+          "('Diagnosis', 'generalised seizures')"
+        ]
+      }
+    ]
+  },
+  "jsonl_rescored_clinical_headline": {
+    "baseline": {
+      "Diagnosis": {
+        "f1": 0.8731,
+        "fn": 31,
+        "fp": 46,
+        "tp": 266
+      },
+      "Investigations": {
+        "f1": 0.9389,
+        "fn": 13,
+        "fp": 3,
+        "tp": 123
+      },
+      "Prescription": {
+        "f1": 0.928,
+        "fn": 19,
+        "fp": 10,
+        "tp": 187
+      },
+      "SeizureFrequency": {
+        "f1": 0.761,
+        "fn": 47,
+        "fp": 29,
+        "tp": 121
+      },
+      "overall": {
+        "f1": 0.8755,
+        "fn": 110,
+        "fp": 88,
+        "tp": 697
+      }
+    },
+    "delta_f1": {
+      "Diagnosis": 0.0121,
+      "Investigations": 0.0116,
+      "Prescription": 0.0073,
+      "SeizureFrequency": 0.0672,
+      "overall": 0.0214
+    },
+    "update": {
+      "Diagnosis": {
+        "f1": 0.8851,
+        "fn": 26,
+        "fp": 44,
+        "tp": 271
+      },
+      "Investigations": {
+        "f1": 0.9506,
+        "fn": 11,
+        "fp": 2,
+        "tp": 125
+      },
+      "Prescription": {
+        "f1": 0.9353,
+        "fn": 18,
+        "fp": 8,
+        "tp": 188
+      },
+      "SeizureFrequency": {
+        "f1": 0.8282,
+        "fn": 33,
+        "fp": 23,
+        "tp": 135
+      },
+      "overall": {
+        "f1": 0.8969,
+        "fn": 88,
+        "fp": 77,
+        "tp": 719
+      }
+    }
+  },
+  "lane_diagnostics": {
+    "baseline": {
+      "Diagnosis": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 367,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 335,
+        "scored_mentions": 367
+      },
+      "Investigations": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 126,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 126,
+        "scored_mentions": 126
+      },
+      "Prescription": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 204,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 204,
+        "scored_mentions": 204
+      },
+      "SeizureFrequency": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 154,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 163,
+        "scored_mentions": 154
+      }
+    },
+    "update": {
+      "Diagnosis": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 361,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 334,
+        "scored_mentions": 361
+      },
+      "Investigations": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 127,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 127,
+        "scored_mentions": 127
+      },
+      "Prescription": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 205,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 206,
+        "scored_mentions": 205
+      },
+      "SeizureFrequency": {
+        "call_failures": 0,
+        "evidence_invalid_dropped": 0,
+        "exact_evidence_mentions": 164,
+        "exact_evidence_rate": 1.0,
+        "parse_schema_failures": 0,
+        "raw_mentions": 176,
+        "scored_mentions": 164
+      }
+    }
+  },
+  "row_coverage": {
+    "extra_in_update": [],
+    "missing_in_update": [],
+    "shared_letters": 140
+  },
+  "row_inspection_policy": "dev140_permitted",
+  "split": "dev140",
+  "study": "exectv2_deepseek_v4_flash_0731_update_dev140",
+  "update_artifact": "experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731.json"
+}

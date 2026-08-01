@@ -1,0 +1,47 @@
+{
+  "schema_version": "gan2026.deepseek_unknown_heavy_slice_compare.v1",
+  "generated_note": "Hosted DeepSeek U pilot on gold Purist-UNK slice (n=170) vs control A on the same ids.",
+  "protocol": "docs/experiments/gan2026/gan2026_deepseek_unknown_prompt_dev750_protocol_2026-07-31.md",
+  "slice": "configs/gan2026/deepseek_unknown_heavy_slice_dev750_20260731.json",
+  "model": "deepseek/deepseek-v4-flash",
+  "n_slice": 170,
+  "results": {
+    "A_v05_control": {
+      "prompt_version": "gan2026_hybrid_structured_events_v0.5",
+      "slice_final_purist_correct": 148,
+      "slice_final_purist_accuracy": 0.8706,
+      "llm_only_unk_accuracy": 0.7692,
+      "llm_only_overread_rate": 0.0414,
+      "llm_only_false_sf_rate": 0.0651,
+      "llm_with_rules_unk_accuracy": 0.8757,
+      "llm_with_rules_overread_rate": 0.071,
+      "llm_with_rules_false_sf_rate": 0.0533
+    },
+    "U_deepseek_unknown": {
+      "prompt_version": "gan2026_hybrid_structured_events_v0.8_deepseek_unknown",
+      "slice_final_purist_correct": 150,
+      "slice_final_purist_accuracy": 0.8824,
+      "llm_only_unk_accuracy": 0.7456,
+      "llm_only_overread_rate": 0.0237,
+      "llm_only_false_sf_rate": 0.0414,
+      "llm_with_rules_unk_accuracy": 0.8817,
+      "llm_with_rules_overread_rate": 0.0828,
+      "llm_with_rules_false_sf_rate": 0.0355,
+      "elapsed_seconds": 8722.9,
+      "call_failures": 0,
+      "parse_failures": 0
+    }
+  },
+  "delta_U_minus_A": {
+    "slice_final_purist": 2,
+    "llm_only_unk_accuracy": -0.0236,
+    "llm_only_overread_rate": -0.0177,
+    "llm_only_false_sf_rate": -0.0237,
+    "llm_with_rules_unk_accuracy": 0.006,
+    "llm_with_rules_overread_rate": 0.0118,
+    "llm_with_rules_false_sf_rate": -0.0178
+  },
+  "interpretation": "Small LLM-with-rules gain on the UNK slice (+2 Purist). LLM-only UNK accuracy did not improve; over-read and false seizure-free fell. Collaboration gates not cleared. User stop: full validation750 scale-up aborted as not justified.",
+  "decision": "stop_negative_do_not_scale_U_to_750",
+  "claim_boundary": "Hosted DeepSeek development pilot on the unknown-heavy validation slice only. Not local-route evidence, not Real(300), not full-750 result."
+}

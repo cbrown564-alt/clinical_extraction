@@ -176,6 +176,27 @@ framework did not authorize model calls or locked-row inspection.
 
 ## Active development research (separate from paper holdout)
 
+### DeepSeek unknown-competence (open)
+
+Author-collaboration track: local DeepSeek; product arms **LLM-only** and
+**LLM-with-rules** only (no rules-only). Tune on `dev750` unknown slices;
+design for Real(300)-like unknown prevalence; never tune on Real(300) or
+sealed `test450`.
+
+Phase 0 hosted baseline fails collaboration gates. Phase 2 candidate U
+(`v0.8_deepseek_unknown`) was piloted on the gold UNK slice (170): **+2**
+final Purist vs A, LLM-only UNK accuracy worse. **Full-750 scale-up aborted**
+as not worth the cost. Do not resume U. Local DeepSeek still deferred.
+Thread remains open only if a sharper next component is chosen.
+
+Owners:
+[thread](../research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md),
+[pilot compare](../../experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json),
+[protocol](../experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md),
+[baseline](../../experiments/gan2026_deepseek_unknown_competence_baseline_dev750_20260731.json).
+
+### Closed recent Gan / ExECT tracks
+
 Gan LLM-with-rules ruleset finalized 2026-07-31. The Luna prompt-variant /
 residual / floor thread that produced it is closed for further rule tuning
 unless a new predeclared study reopens it.

@@ -98,11 +98,14 @@ PROMPT_VERSION_V0_8_LUNA_RATE = "gan2026_hybrid_structured_events_v0.8_luna_rate
 PROMPT_VERSION_V0_8_LUNA_CURRENT = (
     "gan2026_hybrid_structured_events_v0.8_luna_current"
 )
+PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN = (
+    "gan2026_hybrid_structured_events_v0.8_deepseek_unknown"
+)
 # Primary prompt version. v0.5 is the shortest shared cross-model task and the
 # only version selected for paper-facing llm_with_rules comparisons. v0.6 and
 # v0.7 remain selectable for historical replay and prompt-interaction studies.
-# v0.8 Luna variants are Luna-only development candidates; they must not replace
-# the frozen six-model v0.5 panel.
+# v0.8 Luna and DeepSeek variants are development candidates; they must not
+# replace the frozen six-model v0.5 panel.
 PROMPT_VERSION = PROMPT_VERSION_V0_5
 ROW_TRACE_SCHEMA_VERSION = "gan2026.row_trace.v1"
 _SUPPORTED_PROMPT_VERSIONS = frozenset(
@@ -112,6 +115,7 @@ _SUPPORTED_PROMPT_VERSIONS = frozenset(
         PROMPT_VERSION_V0_7,
         PROMPT_VERSION_V0_8_LUNA_RATE,
         PROMPT_VERSION_V0_8_LUNA_CURRENT,
+        PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN,
     }
 )
 
@@ -208,6 +212,18 @@ PROMPT_POLICY_TAXONOMY: list[dict[str, str]] = [
             "short quiet intervals, uncertain events, dated counts versus no_reference, "
             "and when seizure-free should not override a clearer current burden. "
             "Schema and repair stack stay frozen at v0.5."
+        ),
+    },
+    {
+        "policy_id": "se_v0_8_deepseek_unknown.unknown_selection",
+        "controlled_variable": "deepseek_unknown_selection_instruction_policy",
+        "portability": "gan2026_specific",
+        "status": "candidate",
+        "description": (
+            "DeepSeek hosted development candidate: extra plain-language instructions "
+            "for quiet intervals versus unknown, incomplete or uncertain burden versus "
+            "invented rates, and keeping clear countable rates instead of vague "
+            "multiple labels. Schema and repair stack stay frozen at v0.5."
         ),
     },
 ]
@@ -672,6 +688,10 @@ def build_prompt_input(
         instructions = payload["instructions"]
         assert isinstance(instructions, list)
         instructions[-1:-1] = list(_LUNA_CURRENT_INSTRUCTIONS)
+    if selected_prompt_version == PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN:
+        instructions = payload["instructions"]
+        assert isinstance(instructions, list)
+        instructions[-1:-1] = list(_DEEPSEEK_UNKNOWN_INSTRUCTIONS)
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
 
 
@@ -755,6 +775,46 @@ _LUNA_CURRENT_INSTRUCTIONS = (
         "rate, do not by themselves create a frequency answer. If definite "
         "seizures have stopped for months, seizure_free may still be correct; "
         "if the seizure picture is unclear, use unknown."
+    ),
+)
+
+# DeepSeek hosted unknown-competence candidate. Instruction-heavier than v0.5
+# because the study tests whether plain-language unknown/rate boundaries move
+# DeepSeek LLM-only answers. Keep experiment names, gold labels, and residual
+# taxonomy out of the model-facing text.
+_DEEPSEEK_UNKNOWN_INSTRUCTIONS = (
+    (
+        "If the note only mentions a quiet spell of days, weeks, or a few "
+        "months, or a date since the last event, and the current frequency is "
+        "still unclear, use unknown_frequency and unknown. Do not select "
+        "seizure_free unless the note clearly says the patient is currently "
+        "seizure-free or that definite seizures have stopped."
+    ),
+    (
+        "Possible, uncertain, or single questionable events are not enough for "
+        "a frequency answer. Use unknown unless the note states a clear "
+        "countable current rate or cluster pattern."
+    ),
+    (
+        "Do not invent a numeric rate such as 2 per week or 1 cluster per month "
+        "when the note only gives vague, incomplete, or conflicting frequency "
+        "language. Prefer unknown."
+    ),
+    (
+        "When the note gives a clear count or count range with a time period, "
+        "keep that count in the seizure-frequency label. Do not replace it with "
+        "a vague label such as multiple per week or multiple per day."
+    ),
+    (
+        "For clusters, keep how often clusters occur and how many events occur "
+        "in a typical cluster when both are stated. If only the events inside a "
+        "cluster are known and the spacing between clusters is not, use unknown "
+        "or unknown with the known per-cluster count. Do not invent a smooth "
+        "weekly or monthly rate."
+    ),
+    (
+        "Keep countable dated counts such as 2 in 6 months as frequency_rate "
+        "evidence. Do not use no_reference when such a count exists."
     ),
 )
 

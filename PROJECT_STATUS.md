@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-01 after ExECT decision 0046 A→B→C evidence
+Last updated: 2026-08-01 after ExECT decision 0046 Phase A stage panel
 
 ## Current outcome
 
@@ -42,6 +42,12 @@ and two teaching cases that execute the real pipelines; a CI drift gate fails
 if the published explanation stops matching the code. No prediction-bearing
 code changed and no score moved. Owner:
 [architecture layer](docs/architecture/README.md).
+
+A bounded Gan **DeepSeek unknown-competence** thread is open for author
+collaboration (local DeepSeek; LLM-only and LLM-with-rules only). Phase 0
+hosted V4 Flash `dev750` unknown-slice baselines fail the predeclared
+collaboration gates. Real(300) and sealed `test450` remain off-limits for
+tuning.
 
 Gan has complete selected six-model v0.5 `dev750` and aggregate-only `test450`
 panels. The development panel contains 4,500 unique row traces with the frozen
@@ -128,6 +134,20 @@ archived development evidence only.
 | Qwen 3.6:35B | 0.8571 | 0.7872 | Retained dev run and aggregate test summary |
 | Gemma 4 26B | 0.8016 | 0.7169 | Retained dev run and aggregate test summary |
 
+A same-stack no-cache DeepSeek `deepseek-v4-flash` re-run after the
+2026-07-31 provider update (`DeepSeek-V4-Flash-0731`) scores **0.8994**
+clinical_headline on `dev140`. Against a no-call **current-rules** replay of
+the frozen 2026-07-15 DeepSeek structured outputs (also 0.8767; post-July-15
+deterministic changes do not move that cell), the delta is **+0.0227**, with
+the largest family gain in Seizure Frequency (+0.0672). Row-level: 59 changed
+letters (38 rescue / 11 regression / 10 prediction-only). This is development
+provider-update evidence and does **not** replace the retained six-model panel
+cell or test60 figure above. Owners:
+[protocol](docs/experiments/exectv2/reliability/exectv2_deepseek_v4_flash_0731_dev140_protocol_2026-07-31.md),
+[report](docs/experiments/exectv2/reliability/exectv2_deepseek_v4_flash_0731_dev140_2026-07-31.md),
+[ruleset-matched baseline](experiments/exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_20260731.json),
+[diff](experiments/exectv2_deepseek_v4_flash_0731_update_dev140_20260731_vs_20260715_current_rules.json).
+
 Exact evidence is `1.0` after assembly for every model. These are development
 results, not the published ExECT benchmark or clinical validation. The
 [per-model reports](docs/experiments/exectv2/reliability/) own family-level
@@ -184,6 +204,16 @@ The [hosted protocol](docs/experiments/gan2026/gan2026_matched_v05_test450_proto
 [local/replay protocol](docs/experiments/gan2026/gan2026_matched_v05_local_test450_and_qwen_val750_protocol_2026-07-18.md),
 and [aggregate artifact](experiments/gan2026_matched_v05_test450_aggregate_20260716.json)
 own the frozen test450 panel.
+
+A matched six-model **LLM-only** `test450` panel
+(`gan2026_llm_only_canonical_pipeline_v0.8`) is also complete as of 2026-08-01
+under
+[protocol](docs/experiments/gan2026/gan2026_six_model_llm_only_test450_protocol_2026-08-01.md)
+and
+[panel aggregate](experiments/gan2026_six_model_llm_only_test450_20260801/panel_aggregate.json).
+Purist leaders: Sol 335/450, DeepSeek 332/450, mini 330/450. This does **not**
+replace the frozen hybrid v0.5 LLM-with-rules panel; hosted vs local routes
+remain disclosed; readout is aggregate-only.
 
 The matched v0.5 six-model `dev750` panel artifacts are complete under
 [the development protocol](docs/experiments/gan2026/gan2026_matched_v05_dev750_protocol_2026-07-27.md).
@@ -350,6 +380,12 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
+- **DeepSeek unknown-competence thread (U stopped).** Hosted Phase 2 candidate
+  U piloted on the gold UNK slice (170): +2 final Purist vs A; LLM-only UNK
+  accuracy did not improve. Full-750 scale-up aborted. Do not resume U.
+  Local DeepSeek still deferred. Owners:
+  [thread](docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md),
+  [pilot compare](experiments/gan2026_deepseek_unknown_heavy_slice_u_vs_a_20260731.json).
 - [Decision 0045](docs/decisions/0045-exect-default-policy-not-joint-combined.md)
   demotes ExECT joint/`combined` assembly: active comparison and Luna A/B/C
   use `default`/`default`. Joint materials are archived and opt-in only.
@@ -361,34 +397,30 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   adjudication rule are frozen; the review interface is ready.
 - Supervisor endpoint and unaided README verification remain the next handoff
   dependency; no private data is needed to perform them.
-- Gan LLM-with-rules ruleset is finalized (2026-07-31). Luna prompt-variant
-  residual work that produced the floors/guards is complete; further rule
-  tuning for this comparison is closed unless a new predeclared study
-  reopens it. See
-  [six-model comparison](docs/research/six_model_comparison_report_2026-07-18.md)
-  and [dated-count / guards](docs/research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md).
+- Six-model Gan LLM-with-rules ruleset remains finalized (2026-07-31) for the
+  matched comparison. The unknown-competence thread may add a *named*
+  DeepSeek candidate (prompt and/or narrow unknown-preserving gate) under its
+  own protocol without reopening broad hybrid tuning from sealed rows.
 
 ## Next
 
-1. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
+1. Decide the next DeepSeek unknown-thread move after U's negative pilot: pause
+   until local DeepSeek, try one sharper prompt cycle, or a Phase 3
+   unknown-preserving rules gate. Do not resume U to 750.
+2. Defer local DeepSeek route parity until the partner runtime arrives.
+3. On the supervisor's intended Python 3.11 host, run handoff setup, `check`,
    and both bundled synthetic examples against the approved model route; record
    JSON/thinking/retry behavior and unaided README corrections in the handoff
    plan.
-2. Assign two independent clinical reviewer IDs and have each reviewer complete
+4. Assign two independent clinical reviewer IDs and have each reviewer complete
    all 48 items without sharing IDs or reviewing the other's export.
-3. Send every field-level disagreement to a third named clinical adjudicator;
+5. Send every field-level disagreement to a third named clinical adjudicator;
    retain both original decisions and every revision.
-4. Export the completed reviewer and adjudication artifacts, validate their
+6. Export the completed reviewer and adjudication artifacts, validate their
    completeness, then update the reliability scorecard and paper claim owner
    within the protocol's development-only limits.
-5. Treat Gan LLM-with-rules as finalized; do not reopen rule tuning without a
-   new predeclared study. Keep sealed `test450` unused for tuning. Any later
-   residual work must separate prompt/selection candidates from the closed
-   ruleset.
-6. Keep ExECT assembly on `default`/`default` (decision 0045). Do not re-enable
-   joint/`combined` for active studies. Treat Luna prompt-variant A/B/C as
-   answered under default repair; do not retarget frozen `v0.9.24` prompt
-   producers without a separate promotion protocol.
+7. Keep sealed `test450` and Real(300) unused for tuning. Keep ExECT assembly
+   on `default`/`default` (decision 0045).
 
 ## Blocked or unvalidated
 
@@ -459,6 +491,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   [projection floor](docs/research/gan2026_luna_projection_antiregression_floor_report_2026-07-31.md),
   and Luna thread owners under
   [prompt variants](docs/research/gan2026_luna_prompt_variants_report_2026-07-30.md)
+- DeepSeek unknown-competence (open):
+  [protocol](docs/experiments/gan2026/gan2026_deepseek_unknown_competence_protocol_2026-07-31.md),
+  [thread](docs/research/gan2026_deepseek_unknown_competence_thread_2026-07-31.md),
+  and [Phase 0 baseline](experiments/gan2026_deepseek_unknown_competence_baseline_dev750_20260731.json)
 - Shared eight-criterion synthesis:
   [reliability scorecard](docs/research/shared_reliability_scorecard_2026-07-18.md)
 - Independent semantic-support review:

@@ -1,5 +1,8 @@
 from pathlib import Path
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    llm_only_canonical_pipeline,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.reports import (
     llm_structured_events_report,
 )
@@ -9,6 +12,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.reports.base import (
 )
 
 write_structured_report = llm_structured_events_report.write_report
+write_llm_only_report = llm_only_canonical_pipeline.write_report
 
 
 def test_llm_model_metadata_lines_include_common_provenance() -> None:
@@ -173,6 +177,64 @@ def test_structured_holdout_report_is_aggregate_only(tmp_path: Path) -> None:
     ]
 
     write_structured_report(
+        rows,
+        metadata,
+        report_path,
+        jsonl_path=tmp_path / "sealed.jsonl",
+    )
+
+    report = report_path.read_text(encoding="utf-8")
+    assert "Holdout Aggregate" in report
+    assert "aggregate-only locked-holdout result" in report
+    assert "## Rows" not in report
+    assert "held-out-gold" not in report
+    assert "held-out-prediction" not in report
+
+
+def test_llm_only_holdout_report_is_aggregate_only(tmp_path: Path) -> None:
+    report_path = tmp_path / "holdout.md"
+    metadata = {
+        "summary": {
+            "examples": 1,
+            "decision_records": 1,
+            "call_failures": 0,
+            "parse_or_validation_failures": 0,
+            "repair_notes": 0,
+            "evidence_text_contained": 1,
+            "evidence_text_containment_rate": 1.0,
+            "purist_accuracy": 1.0,
+            "purist_correct": 1,
+            "pragmatic_accuracy": 1.0,
+            "pragmatic_correct": 1,
+            "applied_rule_family_counts": {},
+            "reused_raw_outputs": 0,
+        },
+        "split": "test",
+        "split_manifest": "gan2026_split_v1",
+        "date": "2026-08-01",
+        "escalation_reason": None,
+        "dspy_version": "3.0.0",
+        "model": "openai/gpt-4.1-mini",
+        "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+        "temperature": 0.0,
+        "max_tokens": 10000,
+        "mode": "live",
+        "dspy_cache": False,
+        "git_commit": "abc123",
+        "working_tree_note": "dirty",
+    }
+    rows = [
+        {
+            "source_row_index": 123,
+            "reference": {"gold_label": "held-out-gold"},
+            "decision_record": {"final_label": "held-out-prediction"},
+            "comparison": {"purist_correct": True},
+            "parse_errors": [],
+            "evidence_text_contained": True,
+        }
+    ]
+
+    write_llm_only_report(
         rows,
         metadata,
         report_path,
