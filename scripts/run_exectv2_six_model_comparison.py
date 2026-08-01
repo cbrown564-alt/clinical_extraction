@@ -63,6 +63,7 @@ def build_six_model_lm(
     max_tokens: int,
     cache: bool,
     api_base: str | None = None,
+    api_key: str | None = None,
     num_retries: int = 2,
     timeout: int | None = None,
 ) -> dspy.LM:
@@ -75,6 +76,7 @@ def build_six_model_lm(
             max_tokens=max_tokens,
             cache=cache,
             api_base=api_base,
+            api_key=api_key,
             num_retries=num_retries,
             timeout=timeout,
         )
@@ -87,6 +89,8 @@ def build_six_model_lm(
     }
     if api_base:
         kwargs["api_base"] = api_base
+    if api_key is not None:
+        kwargs["api_key"] = api_key
     kwargs["timeout"] = timeout if timeout is not None else SOL_REQUEST_TIMEOUT_SECONDS
     return dspy.LM(model, **kwargs)
 

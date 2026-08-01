@@ -1,0 +1,75 @@
+{
+  "protocol": "docs/experiments/gan2026/gan2026_six_model_llm_only_test450_protocol_2026-08-01.md",
+  "dataset": "Gan 2026",
+  "split_manifest": "gan2026_split_v1",
+  "split": "test",
+  "row_count": 450,
+  "row_policy": "aggregate_only",
+  "method": {
+    "method": "llm_only",
+    "pipeline": "llm",
+    "prompt_version": "gan2026_llm_only_canonical_pipeline_v0.8",
+    "repair_mode": "model_selected_evidence_benchmark_adapter"
+  },
+  "dspy_cache": false,
+  "conditions": [
+    {
+      "slug": "gpt41mini",
+      "model": "openai/gpt-4.1-mini",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI chat",
+      "temperature": 0,
+      "max_tokens": 10000,
+      "status": "pending_live"
+    },
+    {
+      "slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI chat",
+      "temperature": 1,
+      "max_tokens": 10000,
+      "status": "pending_live"
+    },
+    {
+      "slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "execution_group": "hosted_openai",
+      "transport": "DSPy/LiteLLM OpenAI Responses; temperature omitted by adapter",
+      "temperature": null,
+      "cli_temperature": 0,
+      "max_tokens": 10000,
+      "status": "pending_live"
+    },
+    {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "execution_group": "hosted_deepseek",
+      "transport": "Official DeepSeek route (V4-Flash-0731 API surface)",
+      "temperature": 0,
+      "max_tokens": 32000,
+      "status": "complete",
+      "artifact_root": "scratch/holdout/gan2026_test450_deepseek_v4_flash_0731_20260731/llm"
+    },
+    {
+      "slug": "qwen36_35b",
+      "model": "ollama_chat/qwen3.6:35b",
+      "execution_group": "local",
+      "transport": "Native Ollama chat; think=false",
+      "temperature": 0,
+      "max_tokens": 16000,
+      "status": "pending_live"
+    },
+    {
+      "slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "execution_group": "local",
+      "transport": "Native Ollama chat; think=false",
+      "temperature": 0,
+      "max_tokens": 16000,
+      "status": "pending_live"
+    }
+  ],
+  "artifact_root": "scratch/holdout/gan2026_six_model_llm_only_test450_20260801",
+  "claim_boundary": "Matched aggregate-only LLM-only test450 panel; does not replace frozen hybrid v0.5 LLM-with-rules test450; hosted vs local routes disclosed; no row inspection."
+}
