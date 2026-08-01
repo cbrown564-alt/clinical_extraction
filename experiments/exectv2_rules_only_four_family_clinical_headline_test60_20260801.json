@@ -1,0 +1,63 @@
+{
+  "schema_version": "exectv2.rules_only_four_family_clinical_headline.test60.v1",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md",
+  "decision": "docs/decisions/0046-exect-primary-method-comparison-boundary.md",
+  "generated_on": "2026-08-01",
+  "split": "test60",
+  "split_loader": "test",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "method": {
+    "pipeline": "deterministic_all9",
+    "scoring": "assembly_headline_target",
+    "production_rule": "restrict_and_rescore",
+    "include_diagnosis_resolution_candidate": false,
+    "include_diagnosis_benchmark_residuals": false,
+    "scored_families": [
+      "Diagnosis",
+      "SeizureFrequency",
+      "Prescription",
+      "Investigations"
+    ],
+    "non_key_entities_excluded_from_peer_score_only": true
+  },
+  "clinical_headline": {
+    "f1": 0.7154,
+    "precision": 0.727,
+    "recall": 0.7043
+  },
+  "clinical_headline_by_family": {
+    "Diagnosis": {
+      "f1": 0.855,
+      "precision": 0.8839,
+      "recall": 0.8279
+    },
+    "SeizureFrequency": {
+      "f1": 0.5797,
+      "precision": 0.625,
+      "recall": 0.5405
+    },
+    "Prescription": {
+      "f1": 0.8395,
+      "precision": 0.8831,
+      "recall": 0.8
+    },
+    "Investigations": {
+      "f1": 0.4037,
+      "precision": 0.3548,
+      "recall": 0.4681
+    }
+  },
+  "mention_accounting": {
+    "all9_mentions": 424,
+    "four_family_mentions": 340,
+    "dropped_non_key_mentions": 84
+  },
+  "sealed_predictions": {
+    "local_path": "scratch/holdout/exectv2_rules_only_four_family_test60_20260801/four_family_predictions.jsonl",
+    "sha256": "dab8210e8adc700e3828a1ed569c8e26e1dfd3e60390ce256d64746f71f180eb",
+    "bytes": 119246,
+    "note": "Sealed under scratch/holdout; not for row inspection or public copy."
+  },
+  "claim_boundary": "Aggregate-only rules-only four-family clinical_headline on ExECT test60 for decision 0046. Sol-matched assembly headline_target on all-nine deterministic predictions with non-key entities excluded from the peer score only. No letter identifiers, notes, predictions, or failure cases are included in this public artifact. Not the published ExECT benchmark or clinical validation."
+}

@@ -1,9 +1,20 @@
 # Project status
 
-Last updated: 2026-07-31 after the six-model capability/cost/error-pattern
-report extension and the architecture-recovery documentation layer
+Last updated: 2026-08-01 after ExECT decision 0046 A→B→C evidence
 
 ## Current outcome
+
+Decision 0046 locks the paper's primary ExECT three-method comparison on
+Sol-matched four-family `clinical_headline`, demoting `v08` and GEPA from the
+primary method rows. The A→B→C evidence protocol is complete. Primary fills:
+rules-only four-family `0.8160` (`dev140`) / `0.7154` (`test60`); Sol LLM-only
+`0.8097` / `0.7771`; Sol hybrid `0.8920` / `0.8047`. Canon and manuscript
+method rows still need updating to match. Phase 5 / finding 1 remains open.
+Owners: [decision 0046](docs/decisions/0046-exect-primary-method-comparison-boundary.md),
+[protocol](docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md),
+[stage panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json),
+[rules-only dev140](experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260801.json),
+[rules-only test60](experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json).
 
 The fixed one-call ExECTv2 comparison is implemented for all six selected
 models on `dev140` and has aggregate-only `test60` results for the same six

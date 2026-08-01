@@ -1,0 +1,57 @@
+{
+  "schema_version": "exectv2.rules_only_four_family_clinical_headline.dev140.v1",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md",
+  "decision": "docs/decisions/0046-exect-primary-method-comparison-boundary.md",
+  "generated_on": "2026-08-01",
+  "split": "dev140",
+  "split_loader": "dev",
+  "row_count": 140,
+  "row_policy": "dev140_rows_permitted_test60_forbidden",
+  "method": {
+    "pipeline": "deterministic_all9",
+    "scoring": "assembly_headline_target",
+    "production_rule": "restrict_and_rescore",
+    "include_diagnosis_resolution_candidate": false,
+    "include_diagnosis_benchmark_residuals": false,
+    "scored_families": [
+      "Diagnosis",
+      "SeizureFrequency",
+      "Prescription",
+      "Investigations"
+    ],
+    "non_key_entities_excluded_from_peer_score_only": true
+  },
+  "clinical_headline": {
+    "f1": 0.816,
+    "precision": 0.7944,
+    "recall": 0.8389
+  },
+  "clinical_headline_by_family": {
+    "Diagnosis": {
+      "f1": 0.8599,
+      "precision": 0.8715,
+      "recall": 0.8485
+    },
+    "SeizureFrequency": {
+      "f1": 0.8323,
+      "precision": 0.8373,
+      "recall": 0.8274
+    },
+    "Prescription": {
+      "f1": 0.9615,
+      "precision": 0.9524,
+      "recall": 0.9709
+    },
+    "Investigations": {
+      "f1": 0.5325,
+      "precision": 0.4599,
+      "recall": 0.6324
+    }
+  },
+  "mention_accounting": {
+    "all9_mentions": 1186,
+    "four_family_mentions": 929,
+    "dropped_non_key_mentions": 257
+  },
+  "claim_boundary": "Development rules-only four-family clinical_headline on ExECT dev140 for decision 0046. Sol-matched assembly headline_target on all-nine deterministic predictions with non-key entities excluded from the peer score only. Not nine-entity published metrics, not clinical_recovery_scorecard overall, not holdout evidence, and not clinical validation."
+}

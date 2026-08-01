@@ -71,6 +71,11 @@
 | Proposed pipeline trace explorer | [frontend and backend specification](design/pipeline_trace_explorer_spec.md) |
 | Final ExECT family ownership | [decision 0040](decisions/0040-final-exect-llm-with-rules-family-ownership.md) |
 | Single-call final comparison architecture | [decision 0041](decisions/0041-single-call-exect-model-comparison.md) |
+| ExECT primary method-comparison boundary | [decision 0046](decisions/0046-exect-primary-method-comparison-boundary.md) |
+| ExECT 0046 evidence protocol (A→B→C) | [primary method-comparison surface protocol](experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md) |
+| ExECT test60 stage panel (Phase A) | [stage panel report](experiments/exectv2/reliability/exectv2_six_model_test60_stage_panel_2026-08-01.md) |
+| ExECT rules-only four-family dev140 (Phase B) | [Phase B report](experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_dev140_2026-08-01.md) |
+| ExECT rules-only four-family test60 (Phase C) | [Phase C report](experiments/exectv2/reliability/exectv2_rules_only_four_family_clinical_headline_test60_2026-08-01.md) |
 | Model policy and final six-model roster | [model policy](design/model_strategy.md) and [decision 0039](decisions/0039-final-exect-six-model-roster.md) |
 | Shared hosted Gan prompt | [decision 0043](decisions/0043-gan-hosted-comparison-uses-v05-prompt.md) |
 | Evidence metric | [evidence groundedness](reference/evidence_groundedness_metric.md) |

@@ -1,0 +1,440 @@
+{
+  "schema_version": "exectv2.six_model_test60_stage_panel.v1",
+  "protocol": "docs/experiments/exectv2/reliability/exectv2_primary_method_comparison_surface_protocol_2026-08-01.md",
+  "decision": "docs/decisions/0046-exect-primary-method-comparison-boundary.md",
+  "split": "test60",
+  "split_manifest": "exectv2_split_v1",
+  "row_count": 59,
+  "row_policy": "aggregate_only",
+  "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24",
+  "llm_only_surface": "raw_lane_score",
+  "hybrid_surface": "headline_target",
+  "scorer": "ExECTv2 clinical_headline aggregate scorer",
+  "source_holdout_panel": "experiments/hosted_holdout_panels_20260715.json",
+  "conditions": [
+    {
+      "slug": "gpt41mini",
+      "model": "openai/gpt-4.1-mini",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.7343,
+        "precision": 0.736,
+        "recall": 0.7325
+      },
+      "clinical_headline": {
+        "f1": 0.7572,
+        "precision": 0.7742,
+        "recall": 0.7409
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.8201,
+          "precision": 0.8205,
+          "recall": 0.8197
+        },
+        "Investigations": {
+          "f1": 0.9091,
+          "precision": 0.9756,
+          "recall": 0.8511
+        },
+        "Prescription": {
+          "f1": 0.8161,
+          "precision": 0.7978,
+          "recall": 0.8353
+        },
+        "SeizureFrequency": {
+          "f1": 0.4,
+          "precision": 0.4,
+          "recall": 0.4
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.811,
+          "precision": 0.819,
+          "recall": 0.8033
+        },
+        "Investigations": {
+          "f1": 0.9091,
+          "precision": 0.9756,
+          "recall": 0.8511
+        },
+        "Prescription": {
+          "f1": 0.8144,
+          "precision": 0.8293,
+          "recall": 0.8
+        },
+        "SeizureFrequency": {
+          "f1": 0.5103,
+          "precision": 0.5211,
+          "recall": 0.5
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": null,
+      "aggregate_source": {
+        "local_path": "scratch/holdout/exectv2_test60/gpt41mini/gpt41mini_aggregate.json",
+        "sha256": "8bb21fd5ae3fe16145a631bd321990e148ac44eb31e2866eb31ba13b0fb6b6c0",
+        "bytes": 247828,
+        "hosted_holdout_panel_sha256": "8bb21fd5ae3fe16145a631bd321990e148ac44eb31e2866eb31ba13b0fb6b6c0",
+        "hosted_holdout_panel_bytes": 247828,
+        "hash_status": "matches_hosted_holdout_panel"
+      }
+    },
+    {
+      "slug": "gpt56luna",
+      "model": "openai/gpt-5.6-luna",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.7631,
+        "precision": 0.7928,
+        "recall": 0.7356
+      },
+      "clinical_headline": {
+        "f1": 0.795,
+        "precision": 0.8272,
+        "recall": 0.7652
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.8026,
+          "precision": 0.819,
+          "recall": 0.7869
+        },
+        "Investigations": {
+          "f1": 0.9231,
+          "precision": 0.9545,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.9091,
+          "precision": 0.9375,
+          "recall": 0.8824
+        },
+        "SeizureFrequency": {
+          "f1": 0.4173,
+          "precision": 0.4531,
+          "recall": 0.3867
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.8489,
+          "precision": 0.8621,
+          "recall": 0.8361
+        },
+        "Investigations": {
+          "f1": 0.9231,
+          "precision": 0.9545,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.8344,
+          "precision": 0.8718,
+          "recall": 0.8
+        },
+        "SeizureFrequency": {
+          "f1": 0.5693,
+          "precision": 0.619,
+          "recall": 0.527
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": null,
+      "aggregate_source": {
+        "local_path": "scratch/holdout/exectv2_test60/gpt56luna/gpt56luna_aggregate.json",
+        "sha256": "2e6f3ae017234bca5fd3298087eb9e90fa4d8de8a8427cdf67123e7cc4d6b9db",
+        "bytes": 154457,
+        "hosted_holdout_panel_sha256": "2e6f3ae017234bca5fd3298087eb9e90fa4d8de8a8427cdf67123e7cc4d6b9db",
+        "hosted_holdout_panel_bytes": 154457,
+        "hash_status": "matches_hosted_holdout_panel"
+      }
+    },
+    {
+      "slug": "gpt56sol",
+      "model": "openai/gpt-5.6-sol",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.7771,
+        "precision": 0.7918,
+        "recall": 0.7629
+      },
+      "clinical_headline": {
+        "f1": 0.8047,
+        "precision": 0.8237,
+        "recall": 0.7866
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.7886,
+          "precision": 0.7823,
+          "recall": 0.7951
+        },
+        "Investigations": {
+          "f1": 0.9032,
+          "precision": 0.913,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.9157,
+          "precision": 0.9383,
+          "recall": 0.8941
+        },
+        "SeizureFrequency": {
+          "f1": 0.5106,
+          "precision": 0.5455,
+          "recall": 0.48
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.8424,
+          "precision": 0.8487,
+          "recall": 0.8361
+        },
+        "Investigations": {
+          "f1": 0.9032,
+          "precision": 0.913,
+          "recall": 0.8936
+        },
+        "Prescription": {
+          "f1": 0.8554,
+          "precision": 0.8765,
+          "recall": 0.8353
+        },
+        "SeizureFrequency": {
+          "f1": 0.6143,
+          "precision": 0.6515,
+          "recall": 0.5811
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": null,
+      "aggregate_source": {
+        "local_path": "scratch/holdout/exectv2_test60_sol_credit_v2/gpt56sol/gpt56sol_aggregate.json",
+        "sha256": "66a89d15c38c9759029b99ee8c46e7a8981d80af19dc06386acb23793a02997c",
+        "bytes": 156182,
+        "hosted_holdout_panel_sha256": "66a89d15c38c9759029b99ee8c46e7a8981d80af19dc06386acb23793a02997c",
+        "hosted_holdout_panel_bytes": 156182,
+        "hash_status": "matches_hosted_holdout_panel"
+      }
+    },
+    {
+      "slug": "deepseek_v4_flash",
+      "model": "deepseek/deepseek-v4-flash",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.7575,
+        "precision": 0.7843,
+        "recall": 0.7325
+      },
+      "clinical_headline": {
+        "f1": 0.7881,
+        "precision": 0.8158,
+        "recall": 0.7622
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.7737,
+          "precision": 0.8036,
+          "recall": 0.7459
+        },
+        "Investigations": {
+          "f1": 0.9011,
+          "precision": 0.9318,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.9112,
+          "precision": 0.9167,
+          "recall": 0.9059
+        },
+        "SeizureFrequency": {
+          "f1": 0.4539,
+          "precision": 0.4848,
+          "recall": 0.4267
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.8187,
+          "precision": 0.8348,
+          "recall": 0.8033
+        },
+        "Investigations": {
+          "f1": 0.9011,
+          "precision": 0.9318,
+          "recall": 0.8723
+        },
+        "Prescription": {
+          "f1": 0.8503,
+          "precision": 0.8659,
+          "recall": 0.8353
+        },
+        "SeizureFrequency": {
+          "f1": 0.5839,
+          "precision": 0.6349,
+          "recall": 0.5405
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": null,
+      "aggregate_source": {
+        "local_path": "scratch/holdout/exectv2_test60/deepseek_v4_flash/deepseek_v4_flash_aggregate.json",
+        "sha256": "c060b4fc9e752c21b8d8b68b4cc433e9248ea59100f729ea4aae7985fb2d6de1",
+        "bytes": 158561,
+        "hosted_holdout_panel_sha256": "c060b4fc9e752c21b8d8b68b4cc433e9248ea59100f729ea4aae7985fb2d6de1",
+        "hosted_holdout_panel_bytes": 158561,
+        "hash_status": "matches_hosted_holdout_panel"
+      },
+      "thinking": "enabled by final hosted route"
+    },
+    {
+      "slug": "qwen36_35b",
+      "model": "ollama_chat/qwen3.6:35b",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.7267,
+        "precision": 0.7181,
+        "recall": 0.7356
+      },
+      "clinical_headline": {
+        "f1": 0.7872,
+        "precision": 0.7848,
+        "recall": 0.7896
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.7737,
+          "precision": 0.7769,
+          "recall": 0.7705
+        },
+        "Investigations": {
+          "f1": 0.8571,
+          "precision": 0.8864,
+          "recall": 0.8298
+        },
+        "Prescription": {
+          "f1": 0.8621,
+          "precision": 0.8427,
+          "recall": 0.8824
+        },
+        "SeizureFrequency": {
+          "f1": 0.4304,
+          "precision": 0.4096,
+          "recall": 0.4533
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.8374,
+          "precision": 0.8306,
+          "recall": 0.8443
+        },
+        "Investigations": {
+          "f1": 0.8571,
+          "precision": 0.8864,
+          "recall": 0.8298
+        },
+        "Prescription": {
+          "f1": 0.8383,
+          "precision": 0.8537,
+          "recall": 0.8235
+        },
+        "SeizureFrequency": {
+          "f1": 0.6104,
+          "precision": 0.5875,
+          "recall": 0.6351
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": 0,
+      "aggregate_source": {
+        "local_path": "scratch/local_queue/qwen36_35b_exect/test60/qwen36_35b/qwen36_35b_aggregate.json",
+        "sha256": "372ca5c0fbe090b0fcdd4d6481b1bbdb1cadbf112615ebcc3bc5183c30e72f17",
+        "bytes": 18554,
+        "hosted_holdout_panel_sha256": "3ff06c8fa331c8508b3025181e1b518ef7e2cc1adb2903d0da0fee4405a6e2c1",
+        "hosted_holdout_panel_bytes": 17860,
+        "hash_status": "local_sanitized_aggregate_drifted"
+      },
+      "runtime": "native Ollama chat; thinking disabled; temperature 0"
+    },
+    {
+      "slug": "gemma4_26b",
+      "model": "ollama_chat/gemma4:26b",
+      "row_count": 59,
+      "raw_lane_score": {
+        "f1": 0.6918,
+        "precision": 0.6968,
+        "recall": 0.6869
+      },
+      "clinical_headline": {
+        "f1": 0.7169,
+        "precision": 0.7299,
+        "recall": 0.7043
+      },
+      "raw_lane_score_by_family": {
+        "Diagnosis": {
+          "f1": 0.7531,
+          "precision": 0.7879,
+          "recall": 0.7213
+        },
+        "Investigations": {
+          "f1": 0.7865,
+          "precision": 0.8333,
+          "recall": 0.7447
+        },
+        "Prescription": {
+          "f1": 0.8208,
+          "precision": 0.8068,
+          "recall": 0.8353
+        },
+        "SeizureFrequency": {
+          "f1": 0.4103,
+          "precision": 0.3951,
+          "recall": 0.4267
+        }
+      },
+      "clinical_headline_by_family": {
+        "Diagnosis": {
+          "f1": 0.7934,
+          "precision": 0.8,
+          "recall": 0.7869
+        },
+        "Investigations": {
+          "f1": 0.7865,
+          "precision": 0.8333,
+          "recall": 0.7447
+        },
+        "Prescription": {
+          "f1": 0.7778,
+          "precision": 0.8182,
+          "recall": 0.7412
+        },
+        "SeizureFrequency": {
+          "f1": 0.4901,
+          "precision": 0.4805,
+          "recall": 0.5
+        }
+      },
+      "call_failures": 0,
+      "blocking_parse_failures": 0,
+      "parse_schema_failures": 6,
+      "aggregate_source": {
+        "local_path": "scratch/local_queue/gemma4_26b_exect/test60/gemma4_26b/gemma4_26b_aggregate.json",
+        "sha256": "deb5fc873a81f3ed1d084b8d7db55fa844493c938edea654e275134eda1fea3e",
+        "bytes": 18558,
+        "hosted_holdout_panel_sha256": "0b8bd5260a9ecf787499b5bf6befa1ffa5782e6a18a737d159d76245edd7c324",
+        "hosted_holdout_panel_bytes": 17864,
+        "hash_status": "local_sanitized_aggregate_drifted"
+      },
+      "runtime": "native Ollama chat; thinking disabled; temperature 0"
+    }
+  ],
+  "claim_boundary": "Aggregate-only ExECT test60 stage panel promoted from sealed or sanitized aggregate JSON for decision 0046. LLM-only identity is raw_lane_score; hybrid identity is final clinical_headline / headline_target. No sealed row JSONL was opened. Not the published ExECT benchmark or clinical validation. Hosted-versus-local route differences remain disclosed. Primary method table cites Sol only."
+}
