@@ -10,7 +10,7 @@ import dspy
 
 from clinical_extraction.core.schemas import FinalExtraction
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm_config import build_dspy_lm
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import llm as active_llm
 from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.contracts import (
     GanModelOutput,
     GanRecordResult,
@@ -291,7 +291,7 @@ def run_split(
     program = None
     if mode == "live":
         dspy.configure(
-            lm=build_dspy_lm(
+            lm=active_llm.build_dspy_lm(
                 model,
                 temperature=temperature,
                 max_tokens=max_tokens,

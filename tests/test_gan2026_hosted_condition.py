@@ -67,3 +67,32 @@ def test_main_rejects_any_other_prompt() -> None:
                 "llm_with_rules",
             ]
         )
+
+
+def test_legacy_llm_module_monkeypatch_is_the_active_transport(monkeypatch) -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm,
+        llm_only_canonical_pipeline,
+    )
+
+    calls: list[str] = []
+
+    def replacement(model: str, **kwargs: object) -> object:
+        calls.append(model)
+        return object()
+
+    monkeypatch.setattr(llm_only_canonical_pipeline, "build_dspy_lm", replacement)
+    monkeypatch.setattr(llm.dspy, "configure", lambda **kwargs: None)
+    llm.run_split(
+        [],
+        split="synthetic",
+        split_manifest="fixture",
+        model="fixture-model",
+        temperature=0.0,
+        max_tokens=1,
+        mode="live",
+        dspy_cache=False,
+    )
+
+    assert calls == ["fixture-model"]
+    assert hosted.llm_only_canonical_pipeline.build_dspy_lm is replacement
