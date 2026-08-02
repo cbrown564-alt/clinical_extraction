@@ -44,12 +44,16 @@ verified.
    shipped closure and the non-mutating checker pass. Supervisor-host
    verification and unaided README review remain open. Owner:
    [handoff plan](supervisor_local_extraction_handoff_plan.md).
-5. **Audited; first deletion slice complete:** retain selected architecture, evidence, replay,
-   component-attribution, safety, and validation owners. Delete only after an
-   owner check. Fifteen unreferenced run-note frontend fixtures were removed at
-   `23961479`; candidate-only prompt drafts,
-   broad deployment infrastructure, and archive-only experiments are the main
-   candidates.
+5. **Retention wave advanced (2026-08-02):** retain selected architecture,
+   evidence, replay, component-attribution, safety, and validation owners.
+   Completed slices: run-note mock fixtures removed; pipeline-flow HTML
+   prototype removed; three candidate-only prompt draft notes removed; ExECT
+   candidate configs audited and kept (5 files); frontend `mock-data/artifacts/`
+   audited and kept (`FrontendDataStore` loaders). Remaining candidates:
+   `experiments/archive/` (manifest-linked — classify carefully) and any broad
+   deployment leftovers. Owners:
+   [REGENERATION.md](../REGENERATION.md) and
+   `docs/research/maintenance/retention_slice_*_2026-08-02.md`.
 6. **Template complete; gate open:** the
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
    is linked. Run the strict Decision 0048 completion gate only after
