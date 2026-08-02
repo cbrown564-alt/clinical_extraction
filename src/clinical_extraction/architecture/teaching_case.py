@@ -462,7 +462,7 @@ def _gan_rules_only_run() -> MethodRun:
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     result = deterministic_canonical.run_item(
         _gan_record(),
-        PipelineConfiguration(architecture="deterministic_canonical_pipeline"),
+        PipelineConfiguration(architecture="rules"),
     )
     diagnostics = result.diagnostics
 

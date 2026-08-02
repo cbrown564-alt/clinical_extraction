@@ -133,7 +133,7 @@ export function useRunAblation(
     queryFn: () =>
       runAblation({
         split,
-        pipeline: "rules_only",
+        pipeline: "rules",
         limit,
         ablation_config: ablationConfig,
       }),
@@ -234,7 +234,7 @@ export function useArchitectUrlSync() {
     }
     const params = new URLSearchParams();
     preserveWorkbenchDataset(params, searchParams);
-    if (selectedRunId && selectedRunId !== "rules_only") params.set("run", selectedRunId);
+    if (selectedRunId && selectedRunId !== "rules") params.set("run", selectedRunId);
     if (split) params.set("split", split);
     if (sourceRowIndex !== null) params.set("row", String(sourceRowIndex));
     const ablationStr = serializeAblation(ablationConfig);

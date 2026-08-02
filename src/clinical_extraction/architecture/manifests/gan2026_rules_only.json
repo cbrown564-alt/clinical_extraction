@@ -2,7 +2,7 @@
   "method_id": "gan2026_rules_only",
   "task": "gan2026",
   "task_label": "Gan 2026",
-  "method": "rules_only",
+  "method": "rules",
   "method_label": "Rules only",
   "role": "selected",
   "entry_point": {

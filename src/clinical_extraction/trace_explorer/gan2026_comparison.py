@@ -236,7 +236,7 @@ def _rules_only_family() -> dict[str, Any]:
         "executable": True,
         "kind": "rules_only",
         "architecture_family": "rules_only",
-        "pipeline_family": "rules_only",
+        "pipeline_family": "rules",
         "model": "(model-independent)",
         "comparison_mode": "deterministic_only",
         "comparison_role": "control",

@@ -207,6 +207,8 @@ def artifact(
 
 @router.post("/run/note")
 def run_note(request: RunNoteRequest) -> dict[str, Any]:
+    # Active API name is ``rules``. Legacy inbound names remain accepted and
+    # echoed only for the established historical client response contract.
     if request.pipeline not in {"rules", "rules_only", "deterministic_canonical_pipeline"}:
         raise TraceExplorerError(
             status_code=400,

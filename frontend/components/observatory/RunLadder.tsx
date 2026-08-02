@@ -19,7 +19,7 @@ function formatPct(n: number): string {
 }
 
 function familyColorClass(family: string): string {
-  if (family.includes("rules_only") || family.includes("deterministic")) {
+  if (family === "rules" || family.includes("rules_only") || family.includes("deterministic")) {
     return "border-deterministic/25 bg-deterministic/5";
   }
   if (family.includes("hybrid")) {
@@ -29,7 +29,7 @@ function familyColorClass(family: string): string {
 }
 
 function familyTextClass(family: string): string {
-  if (family.includes("rules_only") || family.includes("deterministic")) {
+  if (family === "rules" || family.includes("rules_only") || family.includes("deterministic")) {
     return "text-deterministic";
   }
   if (family.includes("hybrid")) {

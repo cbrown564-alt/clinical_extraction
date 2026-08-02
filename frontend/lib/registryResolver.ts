@@ -15,6 +15,7 @@ import { laneForRun } from "@/lib/observatoryLanes";
 
 /** Bare family names historically accepted by the architect URL (?pipeline=…). */
 export const KNOWN_PIPELINE_FAMILIES = new Set<string>([
+  "rules",
   "rules_only",
   "hybrid_structured_events",
   "llm_only_canonical_pipeline",
