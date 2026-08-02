@@ -11,7 +11,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
     PipelineArchitecture,
     PipelineConfiguration,
 )
-from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import active_pipeline_name
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.naming import (
+    active_pipeline_name,
+    retained_pipeline_id,
+)
 
 
 def run_split(
@@ -48,7 +51,8 @@ def run_split(
             api_base=api_base,
         )
 
-    if architecture == "hybrid_structured_events":
+    retained_id = retained_pipeline_id(architecture)
+    if retained_id == "hybrid_structured_events":
         from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
             llm_with_rules,
         )
@@ -69,7 +73,7 @@ def run_split(
             checkpoint_report_path=checkpoint_report_path,
         )
 
-    if active_pipeline_name(architecture) == "llm":
+    if retained_id == "llm_only_canonical_pipeline":
         from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
             llm,
         )
