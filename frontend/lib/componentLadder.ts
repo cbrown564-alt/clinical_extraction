@@ -1,6 +1,36 @@
 import type { DatasetDescriptor, DatasetTone } from "@/lib/datasets";
 import { gan2026Dataset } from "@/lib/datasets";
+import { activeMethodLabel } from "@/lib/plainLanguageLabels";
 import type { Gan2026ComponentAblationResponse } from "@/lib/types";
+
+/** Supervisor-facing architecture labels use the active-method glossary forms. */
+function plainArchitectureLabel(label: string): string {
+  if (label === "Rules-only" || label === "Rules only") {
+    return activeMethodLabel("rules");
+  }
+  if (label === "LLM-only" || label.startsWith("LLM-only ·")) {
+    return label.replace(/^LLM-only/, activeMethodLabel("llm"));
+  }
+  return label;
+}
+
+const RULES_ARCHITECTURE_IDS = new Set([
+  "rules",
+  "deterministic_canonical_pipeline",
+]);
+
+/** True when a ladder column is the selected rules-only method. */
+export function isGanRulesArchitecture(arch: {
+  id: string;
+  model: string;
+  label: string;
+}): boolean {
+  return (
+    RULES_ARCHITECTURE_IDS.has(arch.id) ||
+    arch.model === "rules" ||
+    arch.label === activeMethodLabel("rules")
+  );
+}
 
 /**
  * Dataset-agnostic "component ladder" view-model.
@@ -115,7 +145,7 @@ export function adaptGan2026Ladder(
     });
     return {
       id: arch.run_id,
-      label: arch.label,
+      label: plainArchitectureLabel(arch.label),
       model: arch.model,
       decision: arch.decision,
       finalScore: arch.final_score,

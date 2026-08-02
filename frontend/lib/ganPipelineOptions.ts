@@ -1,3 +1,4 @@
+import { activeMethodLabel } from "./plainLanguageLabels";
 import type { ActiveMethod, PipelineFamilyItem } from "./types";
 
 const MODEL_ORDER = [
@@ -10,9 +11,9 @@ const MODEL_ORDER = [
 ];
 
 const GROUPS: Array<{ method: ActiveMethod; label: string }> = [
-  { method: "llm_with_rules", label: "Winning mode · LLM with rules" },
-  { method: "llm", label: "LLM only · raw one-call output" },
-  { method: "rules", label: "Deterministic only · no model" },
+  { method: "llm_with_rules", label: activeMethodLabel("llm_with_rules") },
+  { method: "llm", label: activeMethodLabel("llm") },
+  { method: "rules", label: activeMethodLabel("rules") },
 ];
 
 export function ganPipelineOptionLabel(label: string): string {

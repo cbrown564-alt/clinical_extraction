@@ -58,12 +58,11 @@ verified.
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
    is linked. Run the strict Decision 0048 completion gate only after
    supervisor-host and unaided review checks pass.
-7. **Label-leftover blockers (before 0048 status flip):** delete
-   `comparison_mode` (group on active method only); rename architecture stage
-   IDs `*.hybrid.*` → active-method namespaces and regenerate docs; remove the
-   ExECT component-ablation supervisor surface (historical mock only); retag
-   the Gan ablation three-way columns as selected active methods with plain
-   labels. Keep API `split: validation750` with prose `dev750`. Owner:
+7. **Complete:** Decision 0048 label-leftover blockers landed in `d8f39378`
+   (`comparison_mode` removed; stage IDs use active-method namespaces; ExECT
+   ablation supervisor surface removed; Gan ablation retagged). Residual plain
+   frontend group labels and Gan ablation display hygiene completed 2026-08-03.
+   Keep API `split: validation750` with prose `dev750`. Owner:
    [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md)
    completion gate; glossary terms in [CONTEXT.md](../../CONTEXT.md).
 8. **Broader corpus retention triage advanced (2026-08-02):** deleted unserved

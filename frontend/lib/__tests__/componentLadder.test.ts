@@ -7,7 +7,11 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-import { adaptGan2026Ladder, biggestMover } from "../componentLadder";
+import {
+  adaptGan2026Ladder,
+  biggestMover,
+  isGanRulesArchitecture,
+} from "../componentLadder";
 import type { Gan2026ComponentAblationResponse } from "../types";
 
 const payload = JSON.parse(
@@ -44,12 +48,14 @@ describe("adaptGan2026Ladder", () => {
     const llmWithRules = ladder.architectures.find((a) => a.id === GAN_LLM_WITH_RULES_GPT41_RUN);
     const llmOnly = ladder.architectures.find((a) => a.id === GAN_LLM_ONLY_GPT41_RUN);
 
-    expect(rules?.label).toBe("Rules-only");
+    expect(rules?.label).toBe("Rules only");
+    expect(rules && isGanRulesArchitecture(rules)).toBe(true);
     expect(rules?.decision).toBe("method");
     expect(llmWithRules?.label).toBe("LLM with rules · GPT-4.1-mini");
     expect(llmWithRules?.decision).toBe("method");
-    expect(llmOnly?.label).toBe("LLM-only · GPT-4.1-mini");
+    expect(llmOnly?.label).toBe("LLM only · GPT-4.1-mini");
     expect(llmOnly?.decision).toBe("method");
+    expect(llmOnly && isGanRulesArchitecture(llmOnly)).toBe(false);
   });
 
   it("renders llm_with_rules as a real four-stage ladder, not one bar", () => {

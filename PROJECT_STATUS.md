@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 after the README glance currency pass
+Last updated: 2026-08-03 after README glance currency and residual label polish
 
 ## Current handoff objective
 
@@ -34,8 +34,8 @@ separate claims.
 Active method names are `rules`, `llm`, and `llm_with_rules` across runtime,
 API/frontend, teaching material, and generated architecture. Historical
 replay identities remain. The Decision 0048 label-leftover blockers landed in
-`d8f39378`; residual polish (plain frontend group labels) and host/unaided
-review remain before the status flip.
+`d8f39378`; residual plain group-label and Gan ablation display polish landed
+2026-08-03. Host/unaided review remains before the status flip.
 
 Retention waves through 2026-08-02 removed unserved mocks, orphan docs, and
 large scoring-lane orphans; retained-evidence checks remain the gate. The
@@ -110,16 +110,14 @@ Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 
 ## In progress
 
-- Decision 0048 residual label polish (plain frontend group labels; status
-  truthfulness for leftovers already landed in `d8f39378`) and host/unaided
-  checks before status flip.
+- Decision 0048 host/unaided supervisor checks before status flip.
 
 ## Next
 
 1. Verify the rebuilt supervisor handoff on the intended host/endpoint and
    perform unaided README review against the decluttered glance layer.
-2. Finish residual Decision 0048 label polish; run the strict completion gate
-   only after host/unaided checks pass.
+2. Run the strict Decision 0048 completion gate only after host/unaided checks
+   pass.
 3. Keep research and validation dependencies intact: do not resume DeepSeek U
    to 750; defer local-route DeepSeek parity until its runtime exists; retain
    independent clinical review as unvalidated; never tune from sealed

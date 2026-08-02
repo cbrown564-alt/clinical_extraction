@@ -1,3 +1,4 @@
+import { activeMethodLabel } from "./plainLanguageLabels";
 import type {
   ActiveMethod,
   Exectv2RunWireResponse,
@@ -33,17 +34,17 @@ const GROUPS: ReadonlyArray<{
 }> = [
   {
     method: "llm_with_rules",
-    label: "Winning mode · LLM with rules",
+    label: activeMethodLabel("llm_with_rules"),
     caption: "Six models under the fixed one-call architecture after bounded assembly",
   },
   {
     method: "llm",
-    label: "LLM only · raw one-call output",
+    label: activeMethodLabel("llm"),
     caption: "The same six calls before deterministic assembly",
   },
   {
     method: "rules",
-    label: "Deterministic only · no model",
+    label: activeMethodLabel("rules"),
     caption: "No-call all-9 rules baseline",
   },
 ];

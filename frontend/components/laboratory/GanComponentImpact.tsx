@@ -5,7 +5,7 @@ import {
   fetchGan2026ComponentTransitions,
 } from "@/lib/api";
 import { gan2026Dataset } from "@/lib/datasets";
-import { adaptGan2026Ladder } from "@/lib/componentLadder";
+import { adaptGan2026Ladder, isGanRulesArchitecture } from "@/lib/componentLadder";
 import { SurfaceLink } from "@/components/surface";
 import GanTransitionSidebar from "@/components/laboratory/GanTransitionSidebar";
 import { createComponentImpactSurface } from "@/components/laboratory/createComponentImpactSurface";
@@ -28,8 +28,8 @@ export default createComponentImpactSurface<
   errorTitle: "Gan component data failed to load",
   resolveSelectedId: (ladder, activeId) => {
     const fromState = ladder.architectures.find((a) => a.id === activeId);
-    const rulesBaseline = ladder.architectures.find(
-      (a) => a.id === "deterministic_canonical_pipeline"
+    const rulesBaseline = ladder.architectures.find((a) =>
+      isGanRulesArchitecture(a)
     );
     return (fromState ?? rulesBaseline ?? ladder.architectures[0])?.id;
   },
