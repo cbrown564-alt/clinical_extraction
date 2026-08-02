@@ -353,10 +353,34 @@ def _legacy_parity(
     return {
         "exect_structured_prompt_only_rows": legacy_exect_rows
         == canonical_exect_rows,
-        "gan_hybrid_saved_output_rows": legacy_hybrid_rows
-        == canonical_hybrid_rows,
+        "gan_hybrid_saved_output_rows": _compatibility_rows_match(
+            legacy_hybrid_rows, canonical_hybrid_rows
+        ),
         "gan_llm_only_saved_output_rows": legacy_llm_rows == canonical_llm_rows,
     }
+
+
+def _compatibility_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Project a row to fields whose equality proves legacy compatibility.
+
+    The canonical hybrid entry point intentionally publishes its current
+    outward identity as ``llm_with_rules``.  The preserved legacy batch path
+    predates that identity field, so only this top-level metadata field is
+    excluded.  Nested traces and all other row fields remain part of the
+    comparison; semantic or provenance drift must still fail parity.
+    """
+
+    projected = dict(row)
+    projected.pop("pipeline_family", None)
+    return projected
+
+
+def _compatibility_rows_match(
+    legacy_rows: list[dict[str, Any]], canonical_rows: list[dict[str, Any]]
+) -> bool:
+    return [_compatibility_row(row) for row in legacy_rows] == [
+        _compatibility_row(row) for row in canonical_rows
+    ]
 
 
 def reports_match(expected: dict[str, Any], actual: dict[str, Any]) -> bool:

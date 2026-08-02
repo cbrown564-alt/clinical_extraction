@@ -35,6 +35,25 @@ def test_artifact_check_ignores_only_the_self_referential_source_commit() -> Non
     assert not parity.reports_match(expected, actual)
 
 
+def test_compatibility_row_projection_ignores_only_canonical_family_identity() -> None:
+    legacy = {
+        "label": "1 per month",
+        "row_trace": {"method": "legacy_hybrid", "after_label": "1 per month"},
+    }
+    canonical = {
+        **legacy,
+        "pipeline_family": "llm_with_rules",
+    }
+
+    assert parity._compatibility_rows_match([legacy], [canonical])
+
+    changed = {
+        **canonical,
+        "row_trace": {"method": "legacy_hybrid", "after_label": "2 per month"},
+    }
+    assert not parity._compatibility_rows_match([legacy], [changed])
+
+
 def test_text_hash_is_stable_across_windows_line_endings(tmp_path: Path) -> None:
     lf = tmp_path / "lf.py"
     crlf = tmp_path / "crlf.py"
