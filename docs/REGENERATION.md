@@ -44,6 +44,13 @@ current frontend has no caller for it. No source, test, selected evidence,
 replay input, or clinical behavior changed. Recovery is available from Git
 history or by reverting the cleanup commit.
 
+A second slice evaluated the seven tracked JSON files under
+`frontend/public/mock-data/artifacts/` and retained them. `FrontendDataStore`
+glob-loads that directory for `/artifacts/{run_id}` replay and for ExECT dev140
+letter allowlisting; frontend components and
+`tests/test_trace_explorer_frontend_api.py` depend on those loaders. See
+`docs/research/maintenance/retention_slice_frontend_mock_artifacts_2026-08-02.md`.
+
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
 new prediction-changing replay requires its own predeclared protocol and
