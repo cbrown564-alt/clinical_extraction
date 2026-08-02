@@ -23,7 +23,7 @@ flowchart TB
   end
 
   class gan2026_rules_only rules;
-  class gan2026_llm_only llm_only;
+  class gan2026_llm_only llm;
   class gan2026_llm_with_rules llm_with_rules;
   class exectv2_rules_only rules_only;
   class exectv2_llm_only llm_only;

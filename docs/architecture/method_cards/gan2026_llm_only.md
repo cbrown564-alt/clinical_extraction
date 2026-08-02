@@ -56,7 +56,7 @@ Render the note text and the Gan rule taxonomy into the prompt input for one str
 | In | GanFrequencyRecord | note text plus source row index |
 | Out | prompt input JSON (str) | {"note_text": "...", "instructions": "..."} |
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:build_prompt_input`)
+- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:build_prompt_input`)
 - Test: [`tests/test_gan2026_llm_prompt_hygiene.py`](../../../tests/test_gan2026_llm_prompt_hygiene.py)
 - Proven in a trace by: `prompt_input_json`, `prompt_version`
 - Paper wording: A single prompt presents the note and the labelling taxonomy.
@@ -74,8 +74,8 @@ One structured call returns the final label, evidence, answer kind, selected sei
 
 > This is the prediction boundary. row_trace.model_prediction.record retains the model's answer before any deterministic stage touches it.
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:DspyCanonicalLlmExtractor`)
-- Test: [`tests/test_gan2026_llm_only_canonical_pipeline.py`](../../../tests/test_gan2026_llm_only_canonical_pipeline.py)
+- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:DspyCanonicalLlmExtractor`)
+- Test: [`tests/test_gan2026_llm_pipeline.py`](../../../tests/test_gan2026_llm_pipeline.py)
 - Proven in a trace by: `raw_output`, `row_trace.model_prediction.record`
 - Paper wording: A single language-model call produces the final seizure-frequency label and its supporting evidence.
 
@@ -90,7 +90,7 @@ Recover the JSON object from the raw output, repair Python-literal dialect, fix 
 | In | raw structured JSON (str) | output wrapped in prose, or using True/None instead of true/null |
 | Out | payload dict | a dict matching the decision schema keys |
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:parse_decision_json_with_trace`)
+- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:parse_decision_json_with_trace`)
 - Test: [`tests/test_gan2026_schema_repair.py`](../../../tests/test_gan2026_schema_repair.py)
 - Proven in a trace by: `row_trace.format_repair.schema_payload_changed`, `row_trace.format_repair.events`
 - Paper wording: Malformed model output is repaired at the transport and schema level only.
@@ -106,8 +106,8 @@ Validate the repaired payload against the canonical decision record; a failure e
 | In | payload dict | a dict missing the required final_label key |
 | Out | CanonicalLlmDecisionRecord or a schema_validation_error | schema_validation_error: Field required |
 
-- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:CanonicalLlmDecisionRecord`)
-- Test: [`tests/test_gan2026_llm_only_canonical_pipeline.py`](../../../tests/test_gan2026_llm_only_canonical_pipeline.py)
+- Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:CanonicalLlmDecisionRecord`)
+- Test: [`tests/test_gan2026_llm_pipeline.py`](../../../tests/test_gan2026_llm_pipeline.py)
 - Proven in a trace by: `parse_errors`
 - Paper wording: Decisions that do not validate against the schema are recorded as failures rather than scored.
 
@@ -183,10 +183,10 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
-| `gan.llm.build_prompt` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:build_prompt_input` | `tests/test_gan2026_llm_prompt_hygiene.py` |
-| `gan.llm.model_call` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:DspyCanonicalLlmExtractor` | `tests/test_gan2026_llm_only_canonical_pipeline.py` |
-| `gan.llm.json_schema_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:parse_decision_json_with_trace` | `tests/test_gan2026_schema_repair.py` |
-| `gan.llm.schema_validation` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:CanonicalLlmDecisionRecord` | `tests/test_gan2026_llm_only_canonical_pipeline.py` |
+| `gan.llm.build_prompt` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:build_prompt_input` | `tests/test_gan2026_llm_prompt_hygiene.py` |
+| `gan.llm.model_call` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:DspyCanonicalLlmExtractor` | `tests/test_gan2026_llm_pipeline.py` |
+| `gan.llm.json_schema_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:parse_decision_json_with_trace` | `tests/test_gan2026_schema_repair.py` |
+| `gan.llm.schema_validation` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:CanonicalLlmDecisionRecord` | `tests/test_gan2026_llm_pipeline.py` |
 | `gan.llm.selected_evidence_repair` | `clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence` | `tests/test_gan2026_benchmark_prediction_repair_policy.py` |
 | `gan.llm.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
 | `gan.llm.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
