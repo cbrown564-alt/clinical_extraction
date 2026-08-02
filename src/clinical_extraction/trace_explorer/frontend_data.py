@@ -218,7 +218,7 @@ class FrontendDataStore:
             "generated_on": payload.get("generated_on"),
             "source_index": payload.get("source_index"),
             "runs": [
-                {**run, "letters": []}
+                {**self._canonical_exect_run(run), "letters": []}
                 for run in runs
                 if isinstance(run, dict)
             ],
@@ -233,14 +233,42 @@ class FrontendDataStore:
         if not isinstance(runs, list) or not isinstance(shared_letters, list):
             raise ValueError("ExECTv2 runs resource is malformed")
         for run in runs:
-            if isinstance(run, dict) and run.get("run_id") == run_id:
+            if isinstance(run, dict) and self._exect_run_matches(run, run_id):
                 return {
                     "generated_on": payload.get("generated_on"),
                     "source_index": payload.get("source_index"),
                     "shared_letters": shared_letters,
-                    "run": run,
+                    "run": self._canonical_exect_run(run),
                 }
         return None
+
+    @staticmethod
+    def _canonical_exect_run(run: dict[str, Any]) -> dict[str, Any]:
+        """Expose the active rules name while retaining saved-run lookup."""
+
+        if run.get("run_id") != "exectv2_deterministic_all9_dev140":
+            return run
+        return {
+            **run,
+            "run_id": "rules",
+            "saved_run_id": "exectv2_deterministic_all9_dev140",
+            "legacy_run_ids": ["exectv2_deterministic_all9_dev140"],
+            "architecture_family": "rules",
+            "pipeline_family": "rules",
+        }
+
+    @staticmethod
+    def _exect_run_matches(run: dict[str, Any], requested: str) -> bool:
+        if (
+            requested == "rules"
+            and run.get("run_id") == "exectv2_deterministic_all9_dev140"
+        ):
+            return True
+        return requested in {
+            str(run.get("run_id")),
+            str(run.get("saved_run_id")),
+            *(str(item) for item in run.get("legacy_run_ids", [])),
+        }
 
     def prompt_template(self, module_name: str) -> dict[str, Any] | None:
         prompts = self.named("prompts").get("prompts")
