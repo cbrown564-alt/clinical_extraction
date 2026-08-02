@@ -36,6 +36,8 @@ verified.
 6. Add the restricted external-validation readiness record and run the strict
    completion gate.
 
+Milestone 6: add the [restricted external-validation readiness template](../runbooks/external_validation_readiness.md); the strict completion gate remains open.
+
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.
 

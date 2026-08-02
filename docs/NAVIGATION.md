@@ -16,6 +16,7 @@ decision evidence remain available through the links below.
 | Ordered next work | [active roadmap](plans/ACTIVE_ROADMAP.md) |
 | Current refactor scope and completion gate | [Decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) |
 | Regeneration and historical-artifact triage | [regeneration guide](REGENERATION.md) |
+| Restricted external-validation run gate | [readiness template](runbooks/external_validation_readiness.md) |
 
 ## How the pipelines work
 
