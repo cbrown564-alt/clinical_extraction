@@ -141,3 +141,8 @@ def test_rendered_documents_cover_all_six_methods_and_both_cases() -> None:
         assert f"method_cards/{method_id}.md" in documents
     assert "teaching_cases/gan2026.md" in documents
     assert "teaching_cases/exectv2.md" in documents
+    walkthrough = documents["teaching_cases/six_paths.md"]
+    assert walkthrough.count("### ") == 6
+    assert "Deliberate failure and recovery" in walkthrough
+    assert "gan2026_llm_only" in walkthrough
+    assert "exectv2_llm_with_rules" in walkthrough
