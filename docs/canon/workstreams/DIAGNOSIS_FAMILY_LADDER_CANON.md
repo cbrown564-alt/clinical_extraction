@@ -16,7 +16,8 @@ which reports historical pre-D1 metric F1 0.6617 and internally adjusted F1
 `exectv2_gepa_multifamily_dedup` run. The current retained LLM-only comparator
 is the separate `exectv2_gepa_dedup` artifact; its registry record reports
 concept F1 moving from 0.6624 to 0.6861 under the D1 hierarchy-aware scorer. The
-[audit substrate](../../experiments/exectv2/diagnosis/exectv2_diagnosis_interpretation_audit_substrate_results_2026-07-14.md)
+audit substrate
+[`experiments/exectv2_diagnosis_interpretation_audit_dev140_20260714.json`](../../../experiments/exectv2_diagnosis_interpretation_audit_dev140_20260714.json)
 defines a separate 246-row union across rules-only, LLM-only, and hybrid
 outputs. That union is now completely reviewed: 173 rows are classified as
 representation/evaluation issues, 72 as extraction errors, and one as

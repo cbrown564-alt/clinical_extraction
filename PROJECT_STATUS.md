@@ -45,9 +45,11 @@ unaided README review remain open. Owner:
 [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md).
 
 Documentation corpus triage advanced 2026-08-03: thinned active index and
-live-view status; six orphan docs deleted; Decision 0046/0047 evidence rebound.
-Peer research-satellite cull and README currency remain deferred. Owner:
-[slice note](docs/research/maintenance/retention_slice_documentation_corpus_2026-08-03.md),
+live-view status; six orphan docs deleted; Decision 0046/0047 evidence rebound;
+five peer satellites deleted after living-cited rebinds. README currency
+remains deferred. Owners:
+[corpus slice](docs/research/maintenance/retention_slice_documentation_corpus_2026-08-03.md),
+[peer-satellite slice](docs/research/maintenance/retention_slice_peer_satellites_2026-08-03.md),
 [REGENERATION.md](docs/REGENERATION.md).
 
 ## Current outcome
@@ -99,9 +101,6 @@ Sol hybrid `0.8920` / `0.8047`. Owners:
 
 - Decision 0048 label-leftover blockers in the working tree, awaiting commit
   and the remaining host/unaided checks before status flip.
-- Optional follow-on: peer research-satellite cull (edit living-cited reports
-  before deleting satellites).
-
 ## Next
 
 1. Verify the rebuilt supervisor handoff on the intended host/endpoint and

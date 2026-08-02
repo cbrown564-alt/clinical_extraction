@@ -2,7 +2,7 @@
 
 Date: 2026-07-31  
 Status: complete; absorbed into final Gan LLM-with-rules ruleset  
-Parent: [projection floor](../../research/gan2026_luna_projection_antiregression_floor_report_2026-07-31.md)  
+Parent: [Luna prompt variants](../../research/gan2026_luna_prompt_variants_report_2026-07-30.md)  
 Report: [dated-count report](../../research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md)  
 Final ruleset owner: [six-model comparison](../../research/six_model_comparison_report_2026-07-18.md)
 

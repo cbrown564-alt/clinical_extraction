@@ -81,14 +81,16 @@ smaller margin than on development.
 
 ## Residual follow-up
 
-A no-call row-level residual analysis on `validation750` answers why the error
-rate stays high after A/B/C:
-[residual analysis](gan2026_luna_prompt_variants_residual_analysis_2026-07-31.md).
-Only 48 rows remain Purist-wrong under all three prompts; 39 of those are
-already rules-correct. The shared core is clinical selection, cluster/range
-label projection, and seizure-free/unknown boundary conflict—not missing
-evidence. Prompt variants rearrange the margins; they do not dissolve that
-core.
+A no-call row-level residual analysis on `validation750` found that only 48
+rows remain Purist-wrong under all three prompts; 39 of those are already
+rules-correct. The shared core is clinical selection, cluster/range label
+projection, and seizure-free/unknown boundary conflict—not missing evidence.
+Prompt variants rearrange the margins; they do not dissolve that core. The
+later dated-count / competing-rate floors and final-ruleset replay absorb the
+actionable stack fixes; see
+[dated-count / guard report](gan2026_luna_dated_count_competing_rate_report_2026-07-31.md)
+and
+[six-model comparison](six_model_comparison_report_2026-07-18.md).
 
 ## Claim boundary
 

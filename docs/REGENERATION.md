@@ -134,7 +134,18 @@ rules. Record:
 | `PROJECT_STATUS.md` | Live control panel; not an evidence catalog |
 | Six orphan experiment/protocol docs | Deleted (see slice note); Git history recovery |
 | Decision 0046 / 0047 | Rebound Phase A/B/C and parity summary as living owners |
-| Peer research satellites | Deferred (would break links inside living-cited reports) |
+| Peer research satellites | Partial cull 2026-08-03; see peer-satellite slice |
+
+### Peer-satellite cull (2026-08-03)
+
+Record:
+[peer-satellite slice](research/maintenance/retention_slice_peer_satellites_2026-08-03.md).
+
+Rebound living-cited synthesis/canon links, then deleted five satellite docs
+(projection-floor report, DeepSeek holdout stub, Diagnosis interpretation
+audit protocol/substrate, Diagnosis resolution protocol). Residual-analysis
+report/protocol kept because machine artifacts name them. Further protocol
+cull and ACTIVE_ROADMAP completed-link thinning remain deferred.
 
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.

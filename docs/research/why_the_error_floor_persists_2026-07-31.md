@@ -466,10 +466,8 @@ without a predeclared study.
 
 ## Evidence owners
 
-- [Gan Luna residual analysis](gan2026_luna_prompt_variants_residual_analysis_2026-07-31.md)
-- [Gan projection / anti-regression floors](gan2026_luna_projection_antiregression_floor_report_2026-07-31.md)
+- [Gan Luna prompt variants](gan2026_luna_prompt_variants_report_2026-07-30.md)
 - [Gan dated-count / competing-rate floors](gan2026_luna_dated_count_competing_rate_report_2026-07-31.md)
-- [ExECT Luna residual map](../experiments/exectv2/reliability/exectv2_luna_single_call_dev140_residual_map_2026-07-31.md)
 - [ExECT annotation-evidence synthesis](../experiments/exectv2/reliability/exectv2_annotation_evidence_synthesis_2026-07-15.md)
 - [Scoring canon](../canon/04_scoring.md)
 - [Six-model comparison](six_model_comparison_report_2026-07-18.md)

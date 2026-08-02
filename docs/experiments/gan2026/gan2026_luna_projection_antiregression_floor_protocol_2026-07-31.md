@@ -2,8 +2,9 @@
 
 Date: 2026-07-31  
 Status: complete; absorbed into final Gan LLM-with-rules ruleset; development answer  
-Parent: [residual analysis](../../research/gan2026_luna_prompt_variants_residual_analysis_2026-07-31.md)  
-Report: [floor report](../../research/gan2026_luna_projection_antiregression_floor_report_2026-07-31.md)
+Parent: [Luna prompt variants](../../research/gan2026_luna_prompt_variants_report_2026-07-30.md)  
+Absorbed into: [dated-count / guard report](../../research/gan2026_luna_dated_count_competing_rate_report_2026-07-31.md)
+and [six-model final-ruleset replay](../../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json)
 
 ## Primary question
 

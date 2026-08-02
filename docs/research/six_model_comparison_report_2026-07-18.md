@@ -275,7 +275,6 @@ The final ruleset includes the matched-panel repair stack plus:
 
 Owners:
 [dated-count / guard report](gan2026_luna_dated_count_competing_rate_report_2026-07-31.md),
-[projection floor](gan2026_luna_projection_antiregression_floor_report_2026-07-31.md),
 [six-model final-ruleset replay](../../experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json).
 
 ### Gan 2026: development coverage

@@ -76,13 +76,14 @@ verified.
    **243** collected/passing tests (~51 files), inside the 200–300 exit band.
    Deep allowlist empty. Owner:
    [Decision 0049](../decisions/0049-pytest-research-validity-firewall.md).
-10. **Documentation corpus triage pass advanced (2026-08-03):** thinned
+10. **Documentation corpus triage + peer-satellite cull (2026-08-03):** thinned
     `NAVIGATION.md` and `PROJECT_STATUS.md`; expanded `THREAD_MAP.md` durable
-    doors; rebound Decision 0046/0047 evidence owners; deleted six orphan
-    docs. Peer research-satellite cull and README currency remain deferred.
-    Record:
-    [documentation corpus slice](../research/maintenance/retention_slice_documentation_corpus_2026-08-03.md)
-    and [REGENERATION.md](../REGENERATION.md). Glossary:
+    doors; rebound Decision 0046/0047 evidence owners; deleted six orphan docs
+    then five peer satellites after living-cited rebinds. README currency and
+    further protocol/roadmap-link thinning remain deferred. Records:
+    [documentation corpus slice](../research/maintenance/retention_slice_documentation_corpus_2026-08-03.md),
+    [peer-satellite slice](../research/maintenance/retention_slice_peer_satellites_2026-08-03.md),
+    [REGENERATION.md](../REGENERATION.md). Glossary:
     [CONTEXT.md](../../CONTEXT.md) (Documentation reading paths).
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
