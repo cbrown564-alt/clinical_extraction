@@ -36,7 +36,7 @@ def get_cli_specs() -> dict[str, Any]:
             ),
             run_split=lambda records, **kwargs: run_split(
                 records,
-                architecture="deterministic_canonical_pipeline",
+                architecture="rules",
                 **kwargs,
             ),
             write_jsonl=write_jsonl,

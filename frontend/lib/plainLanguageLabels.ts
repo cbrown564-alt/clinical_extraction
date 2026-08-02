@@ -24,6 +24,7 @@ export function familyLabel(pipelineFamily: string): string {
   const RULES_ONLY = "Rules-only";
   const BUCKETS: Record<string, string> = {
     // rules-only
+    rules: RULES_ONLY,
     rules_only: RULES_ONLY,
 
     // LLM-only

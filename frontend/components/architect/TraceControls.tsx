@@ -39,7 +39,7 @@ import RuleConfigPanel from "./RuleConfigPanel";
 const SPLITS = ["train", "validation", "test"];
 
 function isDeterministicFamily(family: string): boolean {
-  return family === "rules_only" || family.includes("deterministic");
+  return family === "rules" || family === "rules_only" || family.includes("deterministic");
 }
 
 function isLiveFamily(family: string): boolean {

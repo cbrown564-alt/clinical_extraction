@@ -20,7 +20,7 @@ type SortKey = "family" | "split" | "rows" | "decision" | "date";
 type SortDir = "asc" | "desc";
 
 const FAMILY_ORDER = [
-  "rules_only",
+  "rules",
   "llm_only_direct_labeler",
   "hybrid_structured_events",
   "llm_structured_events",
@@ -34,7 +34,7 @@ const FAMILY_ORDER = [
 ];
 
 function familyColorClass(family: string): string {
-  if (family.includes("rules_only") || family.includes("deterministic")) {
+  if (family === "rules" || family.includes("rules_only") || family.includes("deterministic")) {
     return "text-deterministic bg-deterministic/8 border-deterministic/20";
   }
   if (family.includes("hybrid")) {
