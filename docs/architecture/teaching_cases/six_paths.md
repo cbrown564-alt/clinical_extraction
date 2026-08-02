@@ -5,7 +5,7 @@
 
 # Six-path teaching walkthrough
 
-Read this page as one continuous tour of the selected system. The tour uses two synthetic letters because Gan 2026 and ExECTv2 have different output contracts: `TEACH-GAN-01` supplies the competing frequency example, and `TEACH-EXECT-01` supplies the four-family example. No model call is made; fixture model outputs are marked at the model boundary, and every later observation comes from the real implementation.
+Read this page as one continuous tour of the selected system. The tour uses two synthetic letters because Gan 2026 and ExECTv2 have different output contracts: `TEACH-GAN-01` supplies the competing frequency example, and `TEACH-EXECT-01` supplies the four-family example. No model call is made; fixture model outputs are marked at the model boundary. Prediction-bearing stages and post-model gates use the real selected implementation; the final ExECT score entry is an unscored scorer-boundary illustration because the letter has no gold annotations.
 
 The five-stage diagram in the [repository README](../../../README.md) is the short orientation. Each link below opens the generated method card and the full stage trace for that path.
 

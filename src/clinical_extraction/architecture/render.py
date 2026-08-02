@@ -594,8 +594,10 @@ def render_six_path_walkthrough(cases: Sequence[TeachingCase]) -> str:
         "different output contracts: `TEACH-GAN-01` supplies the competing "
         "frequency example, and `TEACH-EXECT-01` supplies the four-family "
         "example. No model call is made; fixture model outputs are marked at "
-        "the model boundary, and every later observation comes from the real "
-        "implementation."
+        "the model boundary. Prediction-bearing stages and post-model gates "
+        "use the real selected implementation; the final ExECT score entry is "
+        "an unscored scorer-boundary illustration because the letter has no "
+        "gold annotations."
     )
     lines.append("")
     lines.append(

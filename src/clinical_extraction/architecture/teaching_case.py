@@ -889,8 +889,9 @@ def build_gan_case() -> TeachingCase:
         fixture_note=(
             "The letter is synthetic and the raw model outputs are fixtures "
             "standing in for one model call each. No model call is made when "
-            "this case is built. Every stage after the model boundary is the "
-            "real selected implementation."
+            "this case is built. Prediction-bearing stages and evidence gates "
+            "after the model boundary use the real selected implementation; "
+            "the Gan score projection is run over the synthetic gold label."
         ),
     )
     case.runs = [
@@ -1092,8 +1093,9 @@ def _exect_scoring(
         output_value=by_entity,
         changed=True,
         note=(
-            "Scored against gold in a real run. Here the point is the "
-            f"comparison boundary: this method is scored over {coverage}."
+            "Unscored scorer-boundary illustration: this synthetic letter has "
+            "no gold annotations. A real run scores the comparison over "
+            f"{coverage}."
         ),
     )
 
@@ -1115,8 +1117,10 @@ def build_exect_case() -> TeachingCase:
         fixture_note=(
             "The letter is synthetic and the raw model outputs are fixtures "
             "standing in for one model call each. No model call is made when "
-            "this case is built. Every stage after the model boundary is the "
-            "real selected implementation."
+            "this case is built. Prediction-bearing stages and post-model "
+            "gates use the real selected implementation; the final ExECT "
+            "score entry is an unscored scorer-boundary illustration because "
+            "this letter has no gold annotations."
         ),
     )
     case.runs = [

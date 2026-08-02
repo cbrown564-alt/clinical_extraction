@@ -28,16 +28,21 @@ supervisor to use it.
 This blocker is outside the bounded README-led milestone. No archive rebuild or
 new model call is authorized by that milestone.
 
-## Implementation state (2026-07-21)
+## Historical implementation snapshot (2026-07-21)
 
-The source-first handoff is implemented under `handoff/supervisor/` and in
-`handoff/clinical_extraction_supervisor_handoff.zip`. Its public source is
-owned in `src/clinical_extraction_local/`; `handoff/source/` owns the README,
-setup, examples, and operational documentation. The builder copies the
-selected internal runtime through an explicit path allowlist and writes every
-shipped file and SHA-256 hash to `SOURCE_MANIFEST.json`.
+The source-first handoff was built under `handoff/supervisor/` and in
+`handoff/clinical_extraction_supervisor_handoff.zip` at this snapshot. Its
+active public source is `src/clinical_extraction_local/`; `handoff/source/`
+owns the README, setup, examples, and operational documentation. The builder
+copies the selected internal runtime through an explicit path allowlist and
+writes every shipped file and SHA-256 hash to `SOURCE_MANIFEST.json`.
 
-Implemented behavior:
+The shipped tree and ZIP are now stale relative to the active source. The
+source-to-shipped closure test in the blocker above fails until they are
+rebuilt. The claims below describe the historical snapshot's behavior and
+checks; they do not certify the current shipped package.
+
+Historical behavior at that snapshot:
 
 - `show-config`, `validate-input`, real-schema `check`, `seizure-frequency`,
   `clinical-findings`, and independent two-call `all` commands;
@@ -52,7 +57,7 @@ Implemented behavior:
   examples, locked dependencies, tests, and a clean extraction archive with no
   `.pyz`, benchmark-result files, private configuration, or research reports.
 
-Local evidence:
+Historical local evidence for that snapshot:
 
 - 26 focused handoff, privacy, recovery, source-manifest, and five-fixture
   parity tests pass in the repository environment;
@@ -74,8 +79,9 @@ Still required before calling the handoff verified or usability-validated:
 - have the supervisor follow the README unaided and record any correction.
 
 No private note, locked row, or paid model call was used during implementation.
-This is operational implementation and local engineering evidence, not
-clinical validation or endpoint compatibility evidence.
+This was operational implementation and local engineering evidence, not
+clinical validation or endpoint compatibility evidence. Current source and
+shipped-package closure remain separate open checks.
 
 ## Objective
 

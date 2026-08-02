@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 at the decision 0048 pause point
+Last updated: 2026-08-02 at the bounded README supervisor milestone
 
 ## Current handoff objective
 
@@ -23,6 +23,15 @@ and reproduction commands without agent assistance. Engineering verification,
 research evidence, independent clinical review, and clinical validation remain
 separate claims.
 
+The bounded README-led supervisor milestone is implemented in the current
+working branch. It changes the README, navigation, generated walkthrough,
+roadmap, and focused documentation tests; it does not change clinical behavior.
+Focused architecture, link, and no-call checks pass. This does not complete
+Decision 0048: the standalone handoff tree and ZIP are stale relative to active
+source, and source-to-shipped closure, supervisor-host verification, and
+unaided review remain open. The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md)
+owns those checks.
+
 ## Decision 0048 pause point
 
 The regeneration/LFS ledger and restricted external-validation readiness
@@ -42,8 +51,10 @@ both. Gan parity now permits only the explicit absence-to-`llm_with_rules`
 identity transition, and ExECT alias resolution accepts only real string IDs.
 
 The work is intentionally paused. `main` contains the Gan migration, the
-canonical parity repair, and the bounded ExECT rules change. Nothing from this
-Decision 0048 sequence has been pushed to `origin/main`.
+canonical parity repair, and the bounded ExECT rules change. The README-led
+milestone is implemented in this working branch, but the ExECT migration and
+standalone handoff closure remain open. Nothing from this Decision 0048
+sequence has been pushed to `origin/main`.
 
 ## Current outcome
 
@@ -64,7 +75,7 @@ task-local typed canonical entry points, and active research, replay, and
 operational wrappers delegate to them. The permitted-development replay passes
 for all six task-method pairs; all six retained historical reference cells
 reproduce; four public locked-split aggregate artifacts pass the no-row-content
-safety check; and all 14 generated architecture documents match current code.
+safety check; and all 15 generated architecture documents match current code.
 A fresh checkout of commit `46fec88a` passes 1,488 tests, Ruff, and mypy over
 350 source files. This verifies implementation parity and reproducibility; it
 does not add clinical validation or authorize model calls or locked-row
@@ -94,8 +105,11 @@ each lives (gold, prompt, fixed code, scorer, or architecture). Owner:
 An explanatory architecture layer states, for each of the six selected
 task-method pairs, how a record moves through it and who owns each change.
 Six machine-readable stage manifests drive generated method cards, diagrams,
-and two teaching cases that execute the real pipelines; a CI drift gate fails
-if the published explanation stops matching the code. The 0047 refactor keeps
+two executable teaching cases, and the generated six-path walkthrough; a CI
+drift gate fails if the published explanation stops matching the code. The
+teaching cases use real implementation for prediction-bearing stages and
+post-model gates, while the ExECT score entry is an explicitly unscored
+scorer-boundary illustration. The 0047 refactor keeps
 prediction outputs and scores unchanged in the no-call characterization. Owner:
 [architecture layer](docs/architecture/README.md).
 
@@ -383,15 +397,19 @@ evidence-review structure while keeping their decisions separate. This is
 still not semantic-support evidence or independent clinical validation. No
 model call or locked row inspection was used.
 
-The supervisor source handoff is implemented in the working tree. It exposes
+The supervisor source handoff exists in the active working tree. The standalone
+handoff tree and ZIP are stale relative to that source, so their source-to-
+shipped closure is still open. The active source exposes
 readable Python source for the selected Gan v0.5 current-frequency and one-call
 ExECT four-family workflows, a direct OpenAI-compatible endpoint client, strict
 input validation, concise and trace outputs, partial success, synced recovery,
 resume identity checks, privacy-safe errors, synthetic examples, and an
 explicit hashed source manifest. The transfer archive contains no required
 `.pyz`, benchmark-result files, private configuration, or research reports.
-Focused and clean-extraction checks pass. Exact supervisor endpoint and
-unaided-usability checks have not occurred; this is not clinical validation.
+Focused README, architecture, link, and no-call checks pass. The historical
+archive checks do not certify the stale current package. Exact supervisor
+endpoint, host, source-to-shipped closure, and unaided-usability checks have
+not occurred; this is not clinical validation.
 The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md) owns
 the detailed evidence and remaining acceptance checks.
 
@@ -413,12 +431,12 @@ Current working-tree backend verification is green for tracked project files:
   excluding ignored workspace-local `.tmp` test fixtures, and mypy passes
   across 335 source files. Pytest reports one cache-write warning because the
   sandbox cannot write `.pytest_cache`; no test is skipped or failed.
-- **Verified for the handoff:** 26 focused source API, input/privacy, endpoint
-  request, format-retry, recovery, five-fixture parity, archive, manifest, and
-  clean-command tests pass under the repository `.venv`. The builder also runs
-  the shipped tests from a clean extracted archive. Manifest and archive
-  integrity checks now ignore runtime bytecode caches, which the builder
-  already excludes from shipped output.
+- **Historical handoff snapshot checks:** 26 focused source API,
+  input/privacy, endpoint request, format-retry, recovery, five-fixture parity,
+  archive, manifest, and clean-command tests passed under the repository
+  `.venv`. The builder also ran the shipped tests from a clean extracted
+  archive. These checks describe the historical package snapshot and do not
+  certify the stale archive against the active source.
 - **Verified for the Gan v0.5 dev750 panel:** all six conditions pass strict
   750-row identity checks; the 4,500-row panel and attribution artifacts
   reproduce with `finalize --check`; five focused panel tests and scoped Ruff
@@ -438,16 +456,19 @@ Current working-tree backend verification is green for tracked project files:
   overfull box, or LaTeX warning. The paper was not rebuilt for these
   implementation and documentation changes.
 
-The fresh handoff checks verify its implementation, source manifest, synthetic
-stage parity, recovery behavior, and clean extracted execution. They do not
-verify the supervisor endpoint, host setup, private-data performance, clinical
-correctness, retained research hashes, or a new clean-checkout reproduction.
+The historical handoff checks verify that snapshot's implementation, source
+manifest, synthetic stage parity, recovery behavior, and clean extracted
+execution. They do not verify the active source-to-shipped closure, supervisor
+endpoint, host setup, private-data performance, clinical correctness, retained
+research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
 - **Decision 0048 is paused after the Gan migration and first bounded ExECT
-  rules change.** Resume from the ordered steps below. Do not treat the ExECT
-  method rename or supervisor path as complete.
+  rules change.** The bounded README-led supervisor path is implemented;
+  resume from the ordered steps below. Do not treat the ExECT migration,
+  standalone handoff archive, supervisor host, or unaided README review as
+  complete.
 
 - **DeepSeek unknown-competence thread (U stopped).** Hosted Phase 2 candidate
   U piloted on the gold UNK slice (170): +2 final Purist vs A; LLM-only UNK
@@ -464,8 +485,9 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 - Independent review of the 48-item ExECT semantic-support substrate remains
   the next paper evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
-- Supervisor endpoint and unaided README verification remain the next handoff
-  dependency; no private data is needed to perform them.
+- Supervisor source-to-shipped closure, endpoint/host checks, and unaided
+  README verification remain the next handoff dependency; no private data is
+  needed to perform them.
 - Six-model Gan LLM-with-rules ruleset remains finalized (2026-07-31) for the
   matched comparison. The unknown-competence thread may add a *named*
   DeepSeek candidate (prompt and/or narrow unknown-preserving gate) under its
@@ -479,10 +501,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
 2. After ExECT names stabilize, update shared code and frontend routes, then run
    the full engineering, architecture, retained-manifest, six-cell replay,
    lint, and production-build gate.
-3. Complete the README-led supervisor path: expose the five-stage diagram, one
-   contiguous six-path teaching walkthrough, a deliberate failure/recovery
-   example, canonical results and limits, frontend startup, and exact replay
-   commands.
+3. Complete the remaining README-led supervisor checks: rebuild the stale
+   standalone handoff tree and ZIP from active source, pass source-to-shipped
+   closure, verify the supervisor host/endpoint, and perform unaided README
+   review. The bounded documentation slice is already implemented.
 4. Apply the completed retention audit before deleting anything. Keep selected
    architecture/evidence/replay/safety/validation owners; separately review
    unreferenced frontend mocks, candidate-only prompt drafts, broad deployment
@@ -505,9 +527,10 @@ correctness, retained research hashes, or a new clean-checkout reproduction.
   regressions; it is not active. The one-call Diagnosis decision also accepts a
   measured dev140 quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the
   two-call ablation.
-- The handoff is implemented and locally checked but not yet verified against
-  the supervisor's exact endpoint or validated for unaided use. Those checks,
-  not private-note testing, clear the operational dependency.
+- The bounded README-led slice is implemented and focused-checked. The
+  standalone handoff remains stale relative to active source; source-to-shipped
+  closure, exact endpoint/host setup, and unaided use remain open. Those
+  checks, not private-note testing, clear the operational dependency.
 
 ## Data and claim boundaries
 
