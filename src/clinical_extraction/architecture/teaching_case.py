@@ -506,7 +506,7 @@ def _gan_rules_only_run() -> MethodRun:
 def _gan_llm_only_run() -> MethodRun:
     from clinical_extraction.core.evidence import evidence_is_substring
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-        llm_only_canonical_pipeline as pipeline,
+        llm as pipeline,
     )
 
     manifest = load_manifest("gan2026_llm_only")

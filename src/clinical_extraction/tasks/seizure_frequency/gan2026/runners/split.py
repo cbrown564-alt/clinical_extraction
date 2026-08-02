@@ -69,7 +69,7 @@ def run_split(
             checkpoint_report_path=checkpoint_report_path,
         )
 
-    if architecture == "llm_only_canonical_pipeline":
+    if active_pipeline_name(architecture) == "llm":
         from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
             llm,
         )

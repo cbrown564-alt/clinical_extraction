@@ -15,7 +15,9 @@ def get_cli_specs() -> dict[str, Any]:
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
         hybrid_structured_events,
-        llm_only_canonical_pipeline,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        llm as llm_pipeline,
     )
     from clinical_extraction.tasks.seizure_frequency.gan2026.runners.reports import (
         write_deterministic_report,
@@ -45,16 +47,16 @@ def get_cli_specs() -> dict[str, Any]:
         ),
         "llm": GanLlmPipelineCliSpec(
             description="Run the Gan LLM-only pipeline (one model call per letter).",
-            default_jsonl_path=llm_only_canonical_pipeline.DEFAULT_JSONL_PATH,
-            default_report_path=llm_only_canonical_pipeline.DEFAULT_REPORT_PATH,
+            default_jsonl_path=llm_pipeline.DEFAULT_JSONL_PATH,
+            default_report_path=llm_pipeline.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
                 records,
-                architecture="llm_only_canonical_pipeline",
+                architecture="llm",
                 **kwargs,
             ),
-            write_jsonl=llm_only_canonical_pipeline.write_jsonl,
-            write_report=llm_only_canonical_pipeline.write_report,
-            summarize_rows=llm_only_canonical_pipeline.summarize_records,
+            write_jsonl=llm_pipeline.write_jsonl,
+            write_report=llm_pipeline.write_report,
+            summarize_rows=llm_pipeline.summarize_records,
             default_max_tokens=1200,
         ),
         "llm_with_rules": GanLlmPipelineCliSpec(

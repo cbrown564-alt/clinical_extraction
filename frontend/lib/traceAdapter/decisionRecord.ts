@@ -54,7 +54,9 @@ export function adaptDecisionRecordTrace(
     : [];
 
   const isCombinedModelDecision =
-    family === "llm_only_direct_labeler" || family === "llm_only_canonical_pipeline";
+    family === "llm_only_direct_labeler" ||
+    family === "llm" ||
+    family === "llm_only_canonical_pipeline";
 
   return {
     pipelineFamily: family,

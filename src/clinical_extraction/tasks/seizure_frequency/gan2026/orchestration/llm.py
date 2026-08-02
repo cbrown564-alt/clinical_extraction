@@ -40,7 +40,7 @@ def run_record(
     """
 
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-        llm_only_canonical_pipeline as legacy,
+        llm as legacy,
     )
 
     prompt_input_json = prompt_input_json or legacy.build_prompt_input(record)
@@ -259,12 +259,12 @@ def run_split(
     """Batch adapter: loading and checkpoint policy remain outside ``run_record``."""
 
     from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-        llm_only_canonical_pipeline as legacy,
+        llm as legacy,
     )
 
     reuse_raw_outputs = reuse_raw_outputs or {}
     config = PipelineConfiguration(
-        architecture="llm_only_canonical_pipeline",
+        architecture="llm",
         model=model,
         temperature=temperature,
         max_tokens=max_tokens,

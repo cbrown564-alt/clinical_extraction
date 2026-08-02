@@ -35,6 +35,7 @@ export function familyLabel(pipelineFamily: string): string {
     llm_heavy_evidence_selection_with_deterministic_adapters: "LLM-only (heavy + rules)",
     llm_replacement_postprocessing_ablation: "LLM-only (replacement)",
     llm_only_canonical_pipeline: "LLM-only (canonical)",
+    llm: "LLM-only",
 
     // hybrid
     hybrid_structured_events: "Hybrid (events)",
