@@ -50,9 +50,7 @@ export function resolveGanPipelineOption(
   selectedRunId: string
 ): PipelineFamilyItem | undefined {
   return (
-    options.find((option) => option.run_id === selectedRunId) ??
-    options.find((option) => option.comparison_mode === "deterministic_only") ??
-    options[0]
+    options.find((option) => option.run_id === selectedRunId)
   );
 }
 

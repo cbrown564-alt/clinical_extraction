@@ -86,15 +86,13 @@ describe("Gan architecture options", () => {
     expect(groups[1].options.every((item) => item.availability === "not_retained")).toBe(true);
   });
 
-  it("falls back to the deterministic option when a legacy registry id is selected", () => {
+  it("does not fall back when a legacy registry id is selected", () => {
     const options = [
       option("llm_plus_rules", MODELS[0], 0),
       option("deterministic_only", "(model-independent)", 0),
     ];
 
-    expect(resolveGanPipelineOption(options, "gan2026_rules_only_v1_baseline")?.run_id).toBe(
-      "deterministic_only-0"
-    );
+    expect(resolveGanPipelineOption(options, "gan2026_rules_only_v1_baseline")).toBeUndefined();
   });
 
   it("resolves the active rules run by exact selectedRunId", () => {
