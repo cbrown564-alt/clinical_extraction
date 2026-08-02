@@ -823,7 +823,7 @@ def write_report(
         "scorable, fully rendered label without any deterministic normalization or "
         "projection stage downstream.",
         "",
-        "Minimal change: add an `llm_only_canonical_pipeline` runner alongside "
+        "Minimal change: add the `llm` runner alongside "
         "`hybrid_structured_events`. No "
         "deterministic `CandidateSet` is built or consumed; final_label is the model's "
         "directly rendered answer.",

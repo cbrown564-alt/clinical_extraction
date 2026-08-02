@@ -15,6 +15,7 @@ PipelineArchitecture = Literal[
     "rules",
     "deterministic_canonical_pipeline",
     "hybrid_structured_events",
+    "llm",
     "llm_only_canonical_pipeline",
 ]
 
@@ -24,6 +25,7 @@ PIPELINE_METHOD: dict[str, str] = {
     "deterministic_canonical_pipeline": "rules_only",
     "hybrid_structured_events": "llm_with_rules",
     "llm_only_canonical_pipeline": "llm_only",
+    "llm": "llm_only",
 }
 
 # Kept for readers of saved run metadata and older imports.

@@ -2,7 +2,7 @@
   "method_id": "gan2026_llm_only",
   "task": "gan2026",
   "task_label": "Gan 2026",
-  "method": "llm_only",
+  "method": "llm",
   "method_label": "LLM only",
   "role": "selected",
   "entry_point": {
@@ -26,8 +26,8 @@
       "output_type": "prompt input JSON (str)",
       "output_example": "{\"note_text\": \"...\", \"instructions\": \"...\"}",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:build_prompt_input"
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:build_prompt_input"
       },
       "governing_test": "tests/test_gan2026_llm_prompt_hygiene.py",
       "trace_fields": ["prompt_input_json", "prompt_version"],
@@ -44,10 +44,10 @@
       "output_type": "raw structured JSON (str)",
       "output_example": "{\"final_label\": \"2 per month\", \"evidence\": \"about two seizures per month\", ...}",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:DspyCanonicalLlmExtractor"
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:DspyCanonicalLlmExtractor"
       },
-      "governing_test": "tests/test_gan2026_llm_only_canonical_pipeline.py",
+      "governing_test": "tests/test_gan2026_llm_pipeline.py",
       "trace_fields": ["raw_output", "row_trace.model_prediction.record"],
       "paper_wording": "A single language-model call produces the final seizure-frequency label and its supporting evidence.",
       "notes": "This is the prediction boundary. row_trace.model_prediction.record retains the model's answer before any deterministic stage touches it."
@@ -64,8 +64,8 @@
       "output_type": "payload dict",
       "output_example": "a dict matching the decision schema keys",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:parse_decision_json_with_trace"
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:parse_decision_json_with_trace"
       },
       "governing_test": "tests/test_gan2026_schema_repair.py",
       "trace_fields": ["row_trace.format_repair.schema_payload_changed", "row_trace.format_repair.events"],
@@ -83,10 +83,10 @@
       "output_type": "CanonicalLlmDecisionRecord or a schema_validation_error",
       "output_example": "schema_validation_error: Field required",
       "implementation": {
-        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
-        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:CanonicalLlmDecisionRecord"
+        "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm.py",
+        "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm:CanonicalLlmDecisionRecord"
       },
-      "governing_test": "tests/test_gan2026_llm_only_canonical_pipeline.py",
+      "governing_test": "tests/test_gan2026_llm_pipeline.py",
       "trace_fields": ["parse_errors"],
       "paper_wording": "Decisions that do not validate against the schema are recorded as failures rather than scored."
     },

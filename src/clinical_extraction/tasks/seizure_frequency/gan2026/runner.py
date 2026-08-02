@@ -19,7 +19,9 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.data import (
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
     deterministic_canonical,
     hybrid_structured_events,
-    llm_only_canonical,
+)
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
+    llm_only_canonical as llm,
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.runners.cli_specs import (
     get_cli_specs,
@@ -52,7 +54,8 @@ __all__ = [
 _ITEM_RUNNERS = {
     "deterministic_canonical_pipeline": deterministic_canonical.run_item,
     "hybrid_structured_events": hybrid_structured_events.run_item,
-    "llm_only_canonical_pipeline": llm_only_canonical.run_item,
+    "llm": llm.run_item,
+    "llm_only_canonical_pipeline": llm.run_item,
 }
 
 
@@ -74,8 +77,8 @@ class Gan2026PipelineRunner:
             )
         if self.config.architecture == "hybrid_structured_events":
             return hybrid_structured_events.run_item(item, self.config)
-        if self.config.architecture == "llm_only_canonical_pipeline":
-            return llm_only_canonical.run_item(item, self.config)
+        if self.config.architecture in {"llm", "llm_only_canonical_pipeline"}:
+            return llm.run_item(item, self.config)
         raise ValueError(
             f"Unsupported retained pipeline ID: {self.config.architecture}"
         )

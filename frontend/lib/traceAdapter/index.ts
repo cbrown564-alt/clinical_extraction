@@ -14,7 +14,7 @@ function isDecisionRecordFamily(family: string): boolean {
     family === "llm_first_direct_extractor" ||
     family === "dspy_final_selection_adjudicator" ||
     family === "llm_only_direct_labeler" ||
-    family === "llm_only_canonical_pipeline"
+    family === "llm" || family === "llm_only_canonical_pipeline"
   );
 }
 

@@ -203,7 +203,7 @@ def _model_family(
         "pipeline_family": (
             "hybrid_structured_events"
             if method_name == "llm_with_rules"
-            else "llm_only_canonical_pipeline"
+            else "llm"
         ),
         "model": condition.route,
         "comparison_mode": comparison_mode,
