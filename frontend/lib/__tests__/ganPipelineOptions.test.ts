@@ -97,6 +97,15 @@ describe("Gan architecture options", () => {
     );
   });
 
+  it("resolves the active rules run by exact selectedRunId", () => {
+    const options = [
+      option("llm_plus_rules", MODELS[0], 0),
+      { ...option("deterministic_only", "(model-independent)", 0), run_id: "rules" },
+    ];
+
+    expect(resolveGanPipelineOption(options, "rules")?.run_id).toBe("rules");
+  });
+
   it("recognises only the sealed Gan winning-mode run ids as aggregate-only", () => {
     expect(
       isGanAggregateRunId("gan2026_winning_mode_qwen36_35b_llm_plus_rules_test450")
