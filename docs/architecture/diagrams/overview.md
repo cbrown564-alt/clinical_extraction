@@ -26,7 +26,7 @@ flowchart TB
   class gan2026_llm_only llm;
   class gan2026_llm_with_rules llm_with_rules;
   class exectv2_rules_only rules;
-  class exectv2_llm_only llm_only;
+  class exectv2_llm_only llm;
   class exectv2_llm_with_rules llm_with_rules;
   classDef rules fill:#eef4ea,stroke:#5a7d4f;
   classDef rules_only fill:#eef4ea,stroke:#5a7d4f;

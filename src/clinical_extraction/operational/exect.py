@@ -51,7 +51,96 @@ def run_exect_notes(
             )
         return rules_output
     if active_method == "llm":
-        raise ValueError("ExECT llm-only migration is not part of the rules vertical slice")
+        import dspy
+
+        from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+            structured_one_call,
+        )
+
+        dspy.configure(
+            lm=structured_one_call.build_dspy_lm(
+                runtime.model,
+                temperature=runtime.temperature,
+                max_tokens=runtime.max_tokens,
+                cache=False,
+                api_base=runtime.base_url,
+                api_key=runtime.api_key,
+                timeout=int(runtime.timeout_seconds),
+            )
+        )
+        program = structured_one_call.DspyKeyEntitiesStructuredExtractor()
+        format_retry_program = (
+            structured_one_call.FormatOnlyJsonRetry()
+            if runtime.model.startswith("ollama_chat/")
+            else None
+        )
+        runner = Exectv2PipelineRunner(
+            Exectv2PipelineConfiguration(
+                method=method,
+                model=runtime.model,
+                temperature=runtime.temperature,
+                max_tokens=runtime.max_tokens,
+                mode="live",
+                api_base=runtime.base_url,
+                api_key=runtime.api_key,
+                timeout=int(runtime.timeout_seconds),
+                route=runtime.base_url,
+                dspy_cache=False,
+                program=program,
+                format_retry_program=format_retry_program,
+                split="operational",
+            )
+        )
+        llm_output: list[dict[str, Any]] = []
+        for note in notes:
+            result = runner.run(ExectLetter(note.note_id, note.text)).result
+            row = dict(result.row)
+            llm_failed = _llm_row_has_blocking_failure(row)
+            llm_output.append(
+                {
+                    "id": note.note_id,
+                    "task": "exect",
+                    "status": "error" if llm_failed else "ok",
+                    "model": runtime.model,
+                    "pipeline": "llm",
+                    "method": "llm",
+                    "run_id": "llm",
+                    "prediction": {
+                        "mentions": [
+                            mention.model_dump(mode="json")
+                            for mention in result.prediction.mentions
+                        ]
+                    },
+                    "scored_view": "raw_candidate",
+                    "prompt_version": row.get("prompt_version", ""),
+                    "prompt_profile": row.get("prompt_profile", ""),
+                    "route": row.get("route", runtime.base_url),
+                    "raw_output": row.get("raw_output", ""),
+                    "initial_parse_errors": row.get("initial_parse_errors", []),
+                    "parse_errors": row.get("parse_errors", []),
+                    "format_retry_output": row.get("format_retry_output", ""),
+                    "format_retry_notes": row.get("format_retry_notes", []),
+                    **(
+                        {
+                            "error": {
+                                "type": "model_or_parse_failure",
+                                "message": row.get("call_error")
+                                or "; ".join(
+                                    str(error) for error in row.get("parse_errors", [])
+                                )
+                                or "; ".join(
+                                    str(error)
+                                    for error in row.get("initial_parse_errors", [])
+                                ),
+                            }
+                        }
+                        if llm_failed
+                        else {}
+                    ),
+                    "trace": [event.to_dict() for event in result.stage_events],
+                }
+            )
+        return llm_output
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
         runner as structured_runner,
@@ -140,4 +229,16 @@ def _blocking_parse_error(errors: Sequence[Any]) -> bool:
     return any(
         str(error).startswith(("invalid_json:", "schema_validation_error:", "not_run"))
         for error in errors
+    )
+
+
+def _llm_row_has_blocking_failure(row: Mapping[str, Any]) -> bool:
+    """Apply the final-output parse policy while allowing an accepted retry."""
+
+    if row.get("call_error") or _blocking_parse_error(row.get("parse_errors", [])):
+        return True
+    return bool(
+        row.get("initial_parse_errors")
+        and not row.get("format_retry_output")
+        and _blocking_parse_error(row.get("initial_parse_errors", []))
     )

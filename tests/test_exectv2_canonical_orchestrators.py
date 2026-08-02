@@ -96,7 +96,8 @@ def test_primary_pair_reuses_one_immutable_producer(monkeypatch: pytest.MonkeyPa
     assert calls == 1
     assert llm_only.producer is producer
     assert hybrid.producer is producer
-    assert llm_only.row["method_id"] == "exectv2_llm_only"
+    assert llm_only.row["method_id"] == "llm"
+    assert llm_only.row["source_method_id"] == "exectv2_llm_only"
     assert hybrid.row["method_id"] == "exectv2_llm_with_rules"
 
 

@@ -979,7 +979,7 @@ def _exect_llm_only_run() -> MethodRun:
 
     producer = structured_one_call.produce_structured_letter(
         letter,
-        mode="prompt-only",
+        mode="replay",
         raw_output=EXECT_HYBRID_RAW_OUTPUT,
         config=StructuredMethodConfig.selected(),
     )
@@ -1017,7 +1017,7 @@ def _exect_llm_with_rules_run() -> MethodRun:
 
     producer = structured_one_call.produce_structured_letter(
         letter,
-        mode="prompt-only",
+        mode="replay",
         raw_output=EXECT_HYBRID_RAW_OUTPUT,
         config=StructuredMethodConfig.selected(),
     )
