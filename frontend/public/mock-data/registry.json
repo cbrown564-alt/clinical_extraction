@@ -57,33 +57,6 @@
       "supersedes": []
     },
     {
-      "artifact_paths": [
-        "experiments/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.jsonl",
-        "experiments/archive/gan2026_validation750_iterations/gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13.md"
-      ],
-      "date": "2026-06-13",
-      "decision": "promote",
-      "mode": "live",
-      "model": "openai/gpt-4.1",
-      "model_role": "V12 LLM-owned fresh-evidence reviewer over saved GPT/Qwen/DeepSeek structured-event scaffolding; ceiling comparator only, not production.",
-      "pipeline_family": "fresh_evidence_reasoner",
-      "primary_metrics": {
-        "final_purist_correct": 682,
-        "rows": 750
-      },
-      "replay_status": "live",
-      "row_count": 750,
-      "run_id": "gan2026_fresh_evidence_reasoner_validation750_live_gpt41_v0_4_2026-06-13",
-      "split": "validation",
-      "registry_roles": [
-        "ceiling_comparator",
-        "component_ladder",
-        "historical_lineage"
-      ],
-      "superseded_by": null,
-      "supersedes": []
-    },
-    {
       "task": "exectv2",
       "run_id": "exectv2_holistic_finding_assembly_v08_dev140",
       "pipeline_family": "exectv2_holistic_finding_assembly",
