@@ -41,6 +41,11 @@ class PipelineConfiguration(BaseModel):
     api_base: str | None = None
     api_key: str | None = None
     timeout: int | None = None
+    # Explicit identities keep replay and concurrent conditions from relying on
+    # process-global prompt state. ``None`` preserves the selected module
+    # default for older callers and historical artifacts.
+    prompt_version: str | None = None
+    repair_mode: str | None = None
 
 
 @dataclass(frozen=True)

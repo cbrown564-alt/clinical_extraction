@@ -96,15 +96,14 @@ def run_all9_on_letters(
     include_diagnosis_resolution_candidate: bool = False,
     include_diagnosis_benchmark_residuals: bool = False,
 ) -> list[PredictedLetter]:
-    """Run the deterministic active all-entity baseline over letters."""
+    """Compatibility batch adapter for the canonical rules orchestrator."""
 
-    return [
-        extract_deterministic_all9(
-            letter,
-            include_diagnosis_resolution_candidate=(
-                include_diagnosis_resolution_candidate
-            ),
-            include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
-        )
-        for letter in letters
-    ]
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules import (
+        run_all9_on_letters as canonical_run_all9_on_letters,
+    )
+
+    return canonical_run_all9_on_letters(
+        letters,
+        include_diagnosis_resolution_candidate=include_diagnosis_resolution_candidate,
+        include_diagnosis_benchmark_residuals=include_diagnosis_benchmark_residuals,
+    )

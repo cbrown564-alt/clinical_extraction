@@ -1,1 +1,0 @@
-{"source_row_index": 10, "raw_output": "{\"final_label\": \"2 per month\", \"evidence\": \"two seizures per month\", \"answer_kind\": \"frequency\", \"selected_seizure_type\": \"seizures\", \"time_window\": \"current\", \"applied_rule_families\": [], \"confidence\": \"high\", \"rationale\": \"The note gives the current frequency.\"}"}

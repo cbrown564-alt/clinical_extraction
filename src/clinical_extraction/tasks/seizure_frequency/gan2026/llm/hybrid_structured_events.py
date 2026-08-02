@@ -1177,6 +1177,51 @@ def run_split(
     checkpoint_report_path: Path | None = None,
     repair_config: StructuredRepairConfig | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Compatibility facade; prediction order lives in orchestration.llm_with_rules."""
+
+    from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules import (
+        run_split as canonical_run_split,
+    )
+
+    return canonical_run_split(
+        records,
+        split=split,
+        split_manifest=split_manifest,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode=mode,
+        dspy_cache=dspy_cache,
+        api_base=api_base,
+        reuse_raw_outputs=reuse_raw_outputs,
+        reuse_source=reuse_source,
+        escalation_reason=escalation_reason,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
+        repair_config=repair_config,
+    )
+
+
+def _legacy_run_split(
+    records: Sequence[GanFrequencyRecord],
+    *,
+    split: str,
+    split_manifest: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    mode: Literal["live", "prompt-only"],
+    dspy_cache: bool = True,
+    api_base: str | None = None,
+    reuse_raw_outputs: Mapping[int, str] | None = None,
+    reuse_source: str | None = None,
+    escalation_reason: str | None = None,
+    progress_every: int | None = None,
+    checkpoint_jsonl_path: Path | None = None,
+    checkpoint_report_path: Path | None = None,
+    repair_config: StructuredRepairConfig | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.repair_modes import (
         repair_mode_metadata,
     )

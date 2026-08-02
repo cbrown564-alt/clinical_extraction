@@ -935,254 +935,112 @@ def _fact_summary(fact: Any) -> str:
 
 
 def _exect_rules_only_run() -> MethodRun:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
-        orchestrator,
-    )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.pipeline import (
-        extract_seizure_frequency,
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        rules,
     )
 
     manifest = load_manifest("exectv2_rules_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = _exect_letter()
 
-    sf = extract_seizure_frequency(letter)
-    run.record(
-        "exect.rules.extract_seizure_frequency",
-        input_value=EXECT_NOTE_TEXT,
-        output_value=[_mention_summary(mention) for mention in sf.mentions],
-        changed=True,
-        note="Its own staged sub-pipeline, not a single pattern match.",
-    )
-
-    predicted = orchestrator.extract_deterministic_all9(letter)
-    counts = predicted.diagnostics["entity_counts"]
-    run.record(
-        "exect.rules.extract_entities",
-        input_value=EXECT_NOTE_TEXT,
-        output_value=counts,
-        changed=True,
-        note=(
-            "Nine independent extractors. This baseline covers nine entities "
-            "while the model-led comparison covers four."
-        ),
-    )
-    run.record(
-        "exect.rules.dedupe",
-        input_value=f"{sum(counts.values())} mention(s) before identity de-duplication",
-        output_value=f"{len(predicted.mentions)} mention(s) after",
-        changed=sum(counts.values()) != len(predicted.mentions),
-        note="Removes duplicates, never disagreements.",
-    )
-    _exect_scoring(run, "exect.rules.score", predicted.mentions, nine_entity=True)
+    result = rules.run_letter(letter)
+    for event in result.stage_events[:3]:
+        run.record(
+            event.stage_id,
+            input_value=event.input_value,
+            output_value=event.output_value,
+            changed=event.changed,
+            note=(
+                "Nine independent extractors. This baseline covers nine entities "
+                "while the model-led comparison covers four."
+                if event.stage_id == "exect.rules.extract_entities"
+                else "Canonical rules-only stage."
+            ),
+        )
+    _exect_scoring(run, "exect.rules.score", result.prediction.mentions, nine_entity=True)
     return run
 
 
 def _exect_llm_only_run() -> MethodRun:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa import dedup_adapter
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+        StructuredMethodConfig,
+    )
 
     manifest = load_manifest("exectv2_llm_only")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = _exect_letter()
 
-    run.record(
-        "exect.llm.gepa_program",
-        input_value=EXECT_NOTE_TEXT,
-        output_value=EXECT_LLM_ONLY_RAW_OUTPUT,
-        changed=True,
-        note="Fixture boundary. Everything after this line is real code.",
+    producer = structured_one_call.produce_structured_letter(
+        letter,
+        mode="prompt-only",
+        raw_output=EXECT_HYBRID_RAW_OUTPUT,
+        config=StructuredMethodConfig.selected(),
     )
-    record, notes = dedup_adapter.parse_dedup_clinical_facts_json(
-        EXECT_LLM_ONLY_RAW_OUTPUT
-    )
-    if record is None:  # pragma: no cover - the fixture is valid by construction
-        raise AssertionError(
-            "the ExECT LLM-only teaching fixture no longer parses: "
-            f"{notes}"
+    result = structured_one_call.run_llm_only_letter(letter, producer)
+    for event in result.stage_events:
+        if event.stage_id == "exect.llm.score":
+            continue
+        run.record(
+            event.stage_id,
+            input_value=event.input_value,
+            output_value=event.output_value,
+            changed=event.changed,
+            note=(
+                "Fixture boundary at the one-call producer; downstream stages "
+                "are the selected implementation."
+                if event.stage_id == "exect.llm.model_call"
+                else "Canonical LLM-only stage."
+            ),
         )
-    run.record(
-        "exect.llm.parse_and_coerce",
-        input_value=EXECT_LLM_ONLY_RAW_OUTPUT,
-        output_value=f"{len(record.clinical_facts) if record else 0} fact(s); notes {notes}",
-        changed=bool(notes),
-    )
-    facts = list(record.clinical_facts) if record else []
-    mentions, provenance, adapter_notes = dedup_adapter.clinical_facts_to_mentions(facts)
-    run.record(
-        "exect.llm.drop_unusable_facts",
-        input_value=f"{len(facts)} parsed fact(s)",
-        output_value=f"{len(mentions)} usable fact(s); notes {adapter_notes}",
-        changed=len(mentions) != len(facts),
-        note="A gate: it removes facts the model produced, it never invents one.",
-    )
-    run.record(
-        "exect.llm.map_to_mentions",
-        input_value=[_fact_summary(fact) for fact in facts],
-        output_value=[_mention_summary(mention) for mention in mentions],
-        changed=True,
-        note=(
-            "Every provenance entry records added_fact="
-            f"{ {entry['added_fact'] for entry in provenance} } and action="
-            f"{ {entry['action'] for entry in provenance} }, so the "
-            "no-addition claim is checkable per fact."
-        ),
-    )
-    predicted, gate_warnings, _, _ = dedup_adapter.to_predicted_letter_from_dedup_facts(
-        letter, record
-    )
-    run.record(
-        "exect.llm.evidence_schema_gates",
-        input_value=f"{len(mentions)} mapped mention(s)",
-        output_value=(
-            f"{len(predicted.mentions)} mention(s) survived; "
-            f"gate warnings {gate_warnings}"
-        ),
-        changed=len(predicted.mentions) != len(mentions),
-    )
-    _exect_scoring(run, "exect.llm.score", predicted.mentions, nine_entity=False)
+    _exect_scoring(run, "exect.llm.score", result.prediction.mentions, nine_entity=False)
     return run
 
 
 def _exect_llm_with_rules_run() -> MethodRun:
-    from clinical_extraction.operational import exect as operational
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-        sf_state_projection,
-        sf_unknown_suppression,
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
     )
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
-        parsing,
-        projection,
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+        StructuredMethodConfig,
     )
 
     manifest = load_manifest("exectv2_llm_with_rules")
     run = MethodRun(method_id=manifest.method_id, manifest=manifest)
     letter = _exect_letter()
 
-    run.record(
-        "exect.hybrid.build_prompt",
-        input_value=EXECT_NOTE_TEXT,
-        output_value="four-family prompt input",
-        changed=True,
-        note="Transport only.",
+    producer = structured_one_call.produce_structured_letter(
+        letter,
+        mode="prompt-only",
+        raw_output=EXECT_HYBRID_RAW_OUTPUT,
+        config=StructuredMethodConfig.selected(),
     )
-    run.record(
-        "exect.hybrid.model_call",
-        input_value="prompt input (fixture: no model call is made)",
-        output_value=EXECT_HYBRID_RAW_OUTPUT,
-        changed=True,
-        note=(
-            "Fixture boundary. The model supplies all four families; no "
-            "deterministic extractor proposes findings here."
-        ),
+    result = structured_one_call.run_llm_with_rules_letter(
+        letter,
+        producer,
+        config=StructuredMethodConfig.selected(),
     )
-    record, parse_notes = parsing.parse_structured_events_json(EXECT_HYBRID_RAW_OUTPUT)
-    run.record(
-        "exect.hybrid.parse_and_retry",
-        input_value=EXECT_HYBRID_RAW_OUTPUT,
-        output_value=f"parsed; notes {parse_notes}",
-        changed=bool(parse_notes),
-    )
-    mentions = parsing.flatten_events(record) if record else []
-    run.record(
-        "exect.hybrid.flatten_events",
-        input_value=f"{len(record.clinical_events) if record else 0} model event(s)",
-        output_value=[_mention_summary(mention) for mention in mentions],
-        changed=True,
-    )
-    predicted, gate_warnings = projection.to_predicted_letter(
-        letter.letter_id,
-        mentions,
-        note_text=letter.note_text,
-        prompt_version="teaching_case",
-        component_owner="teaching_case",
-        pipeline_family="teaching_case",
-    )
-    run.record(
-        "exect.hybrid.project_and_gate",
-        input_value=[_mention_summary(mention) for mention in mentions],
-        output_value=[_mention_summary(mention) for mention in predicted.mentions],
-        changed=True,
-        note=(
-            "Concept identifiers are attached here, which is why the findings "
-            "gain CUI attributes they did not have a moment ago. Gate "
-            f"warnings on this letter: {gate_warnings or 'none'}."
-        ),
-    )
-    structured_row = _structured_row(letter, predicted, gate_warnings)
-
-    direct = operational._direct_sf_row(structured_row)
-    projected = sf_state_projection.project_row(direct, ablation="combined")
-    run.record(
-        "exect.hybrid.sf_state_projection",
-        input_value=[_mention_summary(m) for m in direct["predicted_mentions"]],
-        output_value=[_mention_summary(m) for m in projected["predicted_mentions"]],
-        changed=(
-            _render([_mention_summary(m) for m in direct["predicted_mentions"]])
-            != _render([_mention_summary(m) for m in projected["predicted_mentions"]])
-        ),
-        note=(
-            "Named 'projection', but it can create the scored state "
-            "representation and add mentions. Recorded actions: "
-            f"{projected.get('diagnostics', {}).get('action_counts', {})}"
-        ),
-    )
-    suppressed = sf_unknown_suppression.suppress_row(projected)
-    run.record(
-        "exect.hybrid.sf_unknown_suppression",
-        input_value=f"{len(projected['predicted_mentions'])} projected mention(s)",
-        output_value=f"{len(suppressed['predicted_mentions'])} mention(s) after suppression",
-        changed=len(suppressed["predicted_mentions"]) != len(projected["predicted_mentions"]),
-        note="Removes model-produced findings; a clinical change, not noise filtering.",
-    )
-
-    assembled = operational._assemble([letter], [structured_row])[letter.letter_id]
-    run.record(
-        "exect.hybrid.register_findings",
-        input_value=f"{len(structured_row['predicted_mentions'])} model mention(s)",
-        output_value=(
-            f"{len(assembled['raw_lane_mentions'])} raw and "
-            f"{len(assembled['predicted_mentions'])} scored finding(s) registered"
-        ),
-        changed=True,
-        note="Raw survives beside scored, which is what makes attribution possible.",
-    )
-    for entity, stage_id in (
-        ("Diagnosis", "exect.hybrid.lens.diagnosis"),
-        ("SeizureFrequency", "exect.hybrid.lens.seizure_frequency"),
-        ("Prescription", "exect.hybrid.lens.prescription"),
-        ("Investigations", "exect.hybrid.lens.investigations"),
-    ):
-        lane = assembled["lanes"][entity]
-        raw_lane = [_mention_summary(m) for m in lane["raw_lane_mentions"]]
-        scored_lane = [_mention_summary(m) for m in lane["predicted_mentions"]]
+    for event in result.stage_events:
+        if event.stage_id == "exect.hybrid.score":
+            continue
         run.record(
-            stage_id,
-            input_value=raw_lane,
-            output_value=scored_lane,
-            changed=_render(raw_lane) != _render(scored_lane),
-            note=f"lens {lane['lens']}; diagnostics {lane['lens_diagnostics']}",
+            event.stage_id,
+            input_value=event.input_value,
+            output_value=event.output_value,
+            changed=event.changed,
+            note=(
+                "Fixture boundary at the one-call producer; no live model call "
+                "is made."
+                if event.stage_id == "exect.hybrid.model_call"
+                else "Canonical LLM-with-rules stage."
+            ),
         )
-    run.record(
-        "exect.hybrid.evidence_requirement",
-        input_value=f"{len(assembled['predicted_mentions'])} final finding(s)",
-        output_value="all findings carry exact source evidence (assembly did not raise)",
-        changed=False,
-        note="This gate raises rather than silently dropping.",
-    )
-    run.record(
-        "exect.hybrid.materialize_views",
-        input_value=f"{len(assembled['predicted_mentions'])} final finding(s)",
-        output_value={
-            surface: len(rows)
-            for surface, rows in assembled["prediction_surfaces"].items()
-        },
-        changed=True,
-        note="One set of findings, several numbers. Naming the view names the result.",
-    )
     _exect_scoring(
         run,
         "exect.hybrid.score",
-        assembled["predicted_mentions"],
+        result.prediction.mentions,
         nine_entity=False,
     )
     return run

@@ -6,8 +6,8 @@
   "method_label": "LLM only",
   "role": "selected",
   "entry_point": {
-    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py",
-    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:run_split"
+    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm.py",
+    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm:run_record"
   },
   "one_sentence": "One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer.",
   "sixty_second": "The prompt carries the Gan rule taxonomy, and the model returns a single decision object: final label, evidence, answer kind, selected seizure type, time window, confidence, and rationale. The model owns the clinical decision - no deterministic extractor proposes candidates. After the call, code repairs JSON dialect and schema shape, validates the decision against the schema, and then applies one selected-evidence label repair. That repair is not cosmetic: it can change the final label when the model's label disagrees with the evidence span it quoted. The repaired label is checked for scorability and evidence containment, then projected into the Purist and Pragmatic categories. The honest summary is that the model makes the clinical decision and exactly one deterministic stage can overrule its wording.",

@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -230,7 +230,7 @@ def main() -> None:
 
     payload = {
         "schema_version": "gan2026.unknown_slice_metrics.v1",
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "generated_at_utc": datetime.now(UTC).isoformat(),
         "protocol": (
             "docs/experiments/gan2026/"
             "gan2026_deepseek_unknown_competence_protocol_2026-07-31.md"

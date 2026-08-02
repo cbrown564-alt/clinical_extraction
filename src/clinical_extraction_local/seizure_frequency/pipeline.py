@@ -15,6 +15,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser i
 )
 from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
 from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
+from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import llm_with_rules
+from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
+    PipelineConfiguration,
+)
 
 from ..errors import SchemaValidationError
 from ..models import GenerationSettings, ModelClient, WorkflowOutput
@@ -113,8 +117,24 @@ class SeizureFrequencyPipeline:
                     )
         if extraction is None:
             raise SchemaValidationError()
+        canonical = llm_with_rules.run_record(
+            record,
+            PipelineConfiguration(
+                architecture="hybrid_structured_events",
+                model="local-model-client",
+                prompt_version=PROMPT_VERSION,
+            ),
+            mode="prompt-only",
+            raw_output=response.content,
+        )
+        extraction = canonical.parsed_model_output
+        if extraction is None:
+            raise SchemaValidationError()
         selection = extraction.selection
-        evidence_valid = bool(selection.evidence and selection.evidence in text)
+        evidence_valid = bool(canonical.scorer_projection["evidence_valid"])
+        row_trace = dict(canonical.diagnostics["row_trace"])
+        events = list(canonical.deterministic_output)
+        parse_errors = list(canonical.diagnostics["parse_errors"])
         semantic = row_trace["deterministic_semantic"]
         changes: list[dict[str, Any]] = []
         if semantic.get("before_label") != semantic.get("after_label"):

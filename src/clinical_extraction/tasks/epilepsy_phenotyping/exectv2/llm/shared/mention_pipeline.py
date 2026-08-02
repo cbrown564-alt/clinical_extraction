@@ -69,6 +69,21 @@ def raw_output_from_adapter_parse_error(error_text: str) -> str | None:
     return raw_output_from_adapter_error(error_text)
 
 
+def is_terminal_provider_error(message: str) -> bool:
+    """Identify provider failures that later rows or format retry cannot repair."""
+
+    normalized = message.lower()
+    return any(
+        marker in normalized
+        for marker in (
+            "insufficient_quota",
+            "invalid_api_key",
+            "authenticationerror",
+            "permissiondenied",
+        )
+    )
+
+
 def _coerce_payload(payload: Any) -> tuple[Any, list[str]]:
     """Coerce numeric attribute values to strings; note coercions."""
     notes: list[str] = []

@@ -48,11 +48,11 @@ def run_split(
         )
 
     if architecture == "hybrid_structured_events":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-            hybrid_structured_events,
+        from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
+            llm_with_rules,
         )
 
-        return hybrid_structured_events.run_split(
+        return llm_with_rules.run_split(
             records,
             split=split,
             split_manifest=split_manifest,
@@ -69,11 +69,11 @@ def run_split(
         )
 
     if architecture == "llm_only_canonical_pipeline":
-        from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-            llm_only_canonical_pipeline,
+        from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
+            llm,
         )
 
-        return llm_only_canonical_pipeline.run_split(
+        return llm.run_split(
             records,
             split=split,
             split_manifest=split_manifest,
@@ -115,9 +115,7 @@ def _run_deterministic_split(
         map_pragmatic,
         map_purist,
     )
-    from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
-        deterministic_canonical,
-    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import rules
 
     config = PipelineConfiguration(
         architecture=architecture,
@@ -127,10 +125,9 @@ def _run_deterministic_split(
         dspy_cache=dspy_cache,
         api_base=api_base,
     )
-    run_item = deterministic_canonical.run_item
     rows = []
     for record in records:
-        result = run_item(record, config)
+        result = rules.run_record(record, config).to_pipeline_result()
         final_label = result.output.final_value
         predicted_frequency = label_to_frequency_record(final_label).monthly_frequency
         comparison = {

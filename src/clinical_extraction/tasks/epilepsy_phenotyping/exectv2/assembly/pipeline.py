@@ -392,6 +392,37 @@ def _assemble_letter(
     prescription_policy_variant: str,
     diagnosis_policy_variant: str,
 ) -> tuple[ClinicalFindingStore, dict[str, Any]]:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+        StructuredMethodConfig,
+    )
+
+    from ..orchestration import letter_assembly
+
+    config = StructuredMethodConfig(
+        diagnosis_policy_variant=diagnosis_policy_variant,
+        prescription_policy_variant=prescription_policy_variant,
+        archived_replay=(
+            diagnosis_policy_variant == "combined"
+            or prescription_policy_variant == "combined"
+            or diagnosis_resolution_candidate
+            or model_preserving_policy_candidate
+            or prescription_rescue_scope_candidate
+        ),
+        diagnosis_resolution_candidate=diagnosis_resolution_candidate,
+        model_preserving_policy_candidate=model_preserving_policy_candidate,
+        prescription_rescue_scope_candidate=prescription_rescue_scope_candidate,
+    )
+    return letter_assembly.assemble_letter(
+        letter,
+        manifest=manifest,
+        producers=producers,
+        source_rows=source_rows,
+        config=config,
+    )
+
+    # Legacy implementation retained below as a rollback reference. Active
+    # replay callers delegate above; it can be removed after parity evidence is
+    # accepted in the follow-up cleanup change.
     store = ClinicalFindingStore(letter.letter_id, letter.note_text)
     lane_blocks: dict[str, Any] = {}
     predicted_mentions: list[dict[str, Any]] = []

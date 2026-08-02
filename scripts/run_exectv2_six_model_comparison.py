@@ -70,16 +70,17 @@ def build_six_model_lm(
     """Select the Responses transport for Sol and retain all other routes."""
 
     if model != SOL_MODEL:
-        return retained_build_dspy_lm(
-            model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            cache=cache,
-            api_base=api_base,
-            api_key=api_key,
-            num_retries=num_retries,
-            timeout=timeout,
-        )
+        kwargs: dict[str, Any] = {
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "cache": cache,
+            "api_base": api_base,
+            "num_retries": num_retries,
+            "timeout": timeout,
+        }
+        if api_key is not None:
+            kwargs["api_key"] = api_key
+        return retained_build_dspy_lm(model, **kwargs)
     kwargs: dict[str, Any] = {
         "model_type": "responses",
         "temperature": temperature,

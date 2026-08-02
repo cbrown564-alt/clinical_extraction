@@ -6,8 +6,8 @@
   "method_label": "Rules only",
   "role": "selected",
   "entry_point": {
-    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/deterministic_canonical.py",
-    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.runners.deterministic_canonical:run_item"
+    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/rules.py",
+    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules:run_record"
   },
   "one_sentence": "Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label.",
   "sixty_second": "No model is involved. Pattern rules read the letter and emit candidate seizure-frequency events, each carrying its own evidence span. A normalization stage converts the free text of each candidate into a comparable monthly rate. A selection stage then applies the Gan clinical policy - prefer a current, typical, overall burden - to choose one winning event, and renders it as a Gan label string. An evidence-and-trace check confirms the rendered answer is still supported by the span the rule matched. Finally the single label is projected into the Purist and Pragmatic scoring categories. Every clinical choice in this method belongs to a named rule group, so any error can be attributed to a rule rather than to a model.",

@@ -1,1 +1,0 @@
-{"schema_version": "exectv2_diagnosis_review_overlay_v1", "source_review_row_count": 2, "triaged_count": 2, "decisions": {"EA0001|spurious|stroke": {"triage": "extraction_error", "note": "[auto:non_target_diagnosis_scope] hypothesis"}, "EA0002|missed|focal epilepsy": {"triage": "representation", "note": "manual"}}}
