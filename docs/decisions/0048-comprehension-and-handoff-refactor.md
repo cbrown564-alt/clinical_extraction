@@ -1,6 +1,6 @@
 # 0048: Refocus the repository for comprehension, live use, and external validation
 
-Date: 2026-08-02  
+Date: 2026-08-02
 Status: accepted; implementation not yet complete
 
 ## Decision
