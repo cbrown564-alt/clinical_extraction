@@ -217,7 +217,14 @@ def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:
     get_cli_specs()["rules"].run_split([], split="dev", model="none")
 
     assert seen["method"] == "rules"
-    assert set(get_cli_specs()) == {"rules", "rules_only", "exectv2_rules_only"}
+    assert set(get_cli_specs()) == {
+        "rules",
+        "rules_only",
+        "exectv2_rules_only",
+        "llm",
+        "llm_only",
+        "exectv2_llm_only",
+    }
 
 
 def test_exect_rules_operational_api_is_no_call_and_traceable() -> None:

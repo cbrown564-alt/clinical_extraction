@@ -2,7 +2,7 @@
   "method_id": "exectv2_llm_only",
   "task": "exectv2",
   "task_label": "ExECTv2",
-  "method": "llm_only",
+  "method": "llm",
   "method_label": "LLM only",
   "role": "selected",
   "entry_point": {

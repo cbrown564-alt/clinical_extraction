@@ -67,7 +67,7 @@ def produce_structured_letter(
     model: str = "",
     temperature: float = 0.0,
     max_tokens: int = 900,
-    mode: Literal["live", "prompt-only"] = "prompt-only",
+    mode: Literal["live", "prompt-only", "replay"] = "prompt-only",
     dspy_cache: bool = True,
     api_base: str | None = None,
     api_key: str | None = None,
@@ -83,8 +83,10 @@ def produce_structured_letter(
     config = config or StructuredMethodConfig.selected()
     prompt_version = prompt_version_for(config.prompt_profile)
     prompt_input_json = build_prompt_input(letter, prompt_profile=config.prompt_profile)
-    raw_text = raw_output or ""
-    reused = raw_output is not None and raw_output != ""
+    if mode == "replay" and raw_output is None:
+        raise ValueError("replay mode requires a saved raw_output")
+    raw_text = raw_output if raw_output is not None else ""
+    reused = raw_output is not None
     call_error: str | None = None
     if mode == "live" and not reused:
         if program is None:
@@ -264,8 +266,13 @@ def run_llm_only_letter(
 
     _require_matching_letter(letter, producer)
     row = dict(producer.row)
-    row["method_id"] = "exectv2_llm_only"
+    row["source_method_id"] = "exectv2_llm_only"
+    row["source_pipeline_family"] = row.get("pipeline_family", PIPELINE_FAMILY)
+    row["method_id"] = "llm"
+    row["pipeline_family"] = "llm"
+    row["run_id"] = "llm"
     row["scored_view"] = "raw_candidate"
+    row["route"] = row.get("route", "")
     stages = _llm_only_producer_stages(producer)
     stages += (
         ExectStageEvent(
@@ -558,7 +565,7 @@ def run_split(
     model: str,
     temperature: float,
     max_tokens: int,
-    mode: Literal["live", "prompt-only"],
+    mode: Literal["live", "prompt-only", "replay"],
     dspy_cache: bool = True,
     api_base: str | None = None,
     api_key: str | None = None,

@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from .runners import RULES_METHOD_ALIASES, split
+from .runners import LLM_METHOD_ALIASES, RULES_METHOD_ALIASES, split
 
 
 @dataclass(frozen=True)
@@ -18,14 +18,20 @@ class ExectCliSpec:
 
 
 def get_cli_specs() -> dict[str, ExectCliSpec]:
-    """Return the active rules CLI and its exact legacy method aliases."""
+    """Return active method CLIs and their exact legacy aliases."""
 
     def run_rules(letters, **kwargs):
         return split.run_split(letters, method="rules", **kwargs)
 
     spec = ExectCliSpec("Run the ExECT deterministic rules method.", run_rules)
+
+    def run_llm(letters, **kwargs):
+        return split.run_split(letters, method="llm", **kwargs)
+
+    llm_spec = ExectCliSpec("Run the ExECT LLM-only method.", run_llm)
     return {
-        name: spec for name in RULES_METHOD_ALIASES
+        **{name: spec for name in RULES_METHOD_ALIASES},
+        **{name: llm_spec for name in LLM_METHOD_ALIASES},
     }
 
 

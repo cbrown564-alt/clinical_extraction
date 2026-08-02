@@ -1,0 +1,7 @@
+{
+  "source_commit": "7c9d8b5d",
+  "source_artifact": "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl",
+  "source_artifact_sha256": "db2c2a84c681908cbf8865ba1b2bbb420b7e901559f5af9fdadb8bc20a97d50a",
+  "row_count": 140,
+  "normalized_sha256": "081b6a66e38f4cd13aac407e2f654ac7d5803c34e8b755d771daa31c4bc68a55"
+}
