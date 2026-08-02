@@ -192,8 +192,20 @@ def _exercise_runtime_paths() -> None:
     hybrid_structured_events.build_prompt_input(
         record, prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_5
     )
-    # Keep the conditional assembly path in the explicit import closure.
-    assert callable(_assemble)
+    # Exercise the lazy assembly import so letter_assembly enters the closure.
+    assembled = _assemble(
+        [ExectLetter("synthetic-002", "Assessment: focal epilepsy.")],
+        [
+            {
+                "letter_id": "synthetic-002",
+                "structured_events": [],
+                "gate_warnings": [],
+                "call_error": None,
+                "gold_mentions": [],
+            }
+        ],
+    )
+    assert "synthetic-002" in assembled
 
 
 def _loaded_source_modules() -> set[Path]:

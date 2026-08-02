@@ -1,45 +1,40 @@
 # Supervisor local clinical extraction handoff plan
 
 Date: 2026-07-20  
-Status: source implementation exists; shipped tree and ZIP are stale relative to current source; strict closure and supervisor-host checks pending
+Status: source-to-shipped closure current after 2026-08-02 rebuild; supervisor-host and unaided README checks pending
 Work mode: build one complete operational handoff, then verify it on the
 supervisor's endpoint  
 Owner: this document
 
-## Strict completion blocker: source-to-shipped closure
+## Source-to-shipped closure (implemented)
 
 The standalone `handoff/supervisor/` tree and
-`handoff/clinical_extraction_supervisor_handoff.zip` are not current. Their
-archive/hash self-consistency checks pass against the stale shipped tree, but
-they do not prove parity with the active source. The shipped ExECT runtime still
-identifies the older Decision 0040 `combined`/joint policy, while active source
-uses Decision 0045 `default`/`default`; shipped Gan code also predates the
-current canonical delegation.
+`handoff/clinical_extraction_supervisor_handoff.zip` were rebuilt from active
+source on 2026-08-02. The gate
+`tests/test_supervisor_source_handoff.py::test_shipped_package_matches_current_source_closure`
+and the non-mutating command
+`python scripts/build_supervisor_source_handoff.py --check-source-closure`
+both pass. The checker requires every file discovered by the traced runtime
+closure, reports content and path drift, and never rewrites the standalone
+tree or ZIP.
 
-The source-to-shipped closure gate is
-`tests/test_supervisor_source_handoff.py::test_shipped_package_matches_current_source_closure`.
-It compares the public handoff package exactly and every shipped internal
-runtime file against the current source. It is an intentional strict `xfail`
-until the handoff is rebuilt, so a clean archive/hash result must not be
-reported as a current supervisor package. Rebuild and re-run the handoff's
-focused checks before calling the standalone handoff verified or directing a
-supervisor to use it.
+The former rebuild blocker was an eager import in
+`tasks/seizure_frequency/gan2026/llm/__init__.py` that pulled
+`reports/base.py` into the hybrid runtime closure. That package init is now
+empty, and the builder exercises the lazy ExECT `_assemble` path so
+`letter_assembly` enters the shipped closure. Research `reports/` paths remain
+forbidden.
 
-The builder also exposes the non-mutating command
-`python scripts/build_supervisor_source_handoff.py --check-source-closure`.
-Run it before any rebuild. It requires every file discovered by the traced
-runtime closure, reports content and path drift, and never rewrites the
-standalone tree or ZIP. The checker and its missing-file/non-mutation tests are
-implemented at `2da860e1` and `c5b0739e`.
+Remaining before calling the handoff usability-validated:
 
-The current command stops before comparison because
-`tasks/seizure_frequency/gan2026/reports/base.py` enters the traced runtime
-closure and is forbidden by the handoff allowlist. This is a real rebuild
-blocker, not a checker failure: remove the runtime dependency or make an
-explicit owner decision to change the allowlist before rebuilding.
+- run setup and the synthetic examples on the supervisor's intended host and
+  Python 3.11 installation;
+- run `check` against the exact approved endpoint/model route; and
+- have the supervisor follow the README unaided and record any correction.
 
-This blocker is outside the bounded README-led milestone. No archive rebuild or
-new model call is authorized by that milestone.
+No archive rebuild or new model call is authorized merely by documentation
+updates. Rebuild again only after active source identities that enter the
+traced runtime change.
 
 ## Historical implementation snapshot (2026-07-21)
 
@@ -83,7 +78,7 @@ Historical local evidence for that snapshot:
   pre-existing artifact-root assertion affected by the workspace-local pytest
   temp location. The handoff-focused suite is green.
 
-Still required before calling the handoff verified or usability-validated:
+Still required before calling the handoff usability-validated:
 
 - run setup and the synthetic examples on the supervisor's intended host and
   Python 3.11 installation;
@@ -93,8 +88,8 @@ Still required before calling the handoff verified or usability-validated:
 
 No private note, locked row, or paid model call was used during implementation.
 This was operational implementation and local engineering evidence, not
-clinical validation or endpoint compatibility evidence. Current source and
-shipped-package closure remain separate open checks.
+clinical validation or endpoint compatibility evidence. Source-to-shipped
+closure is now current; host and unaided checks remain open.
 
 ## Objective
 

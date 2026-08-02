@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after the ExECT `llm_with_rules` migration gate
+Last updated: 2026-08-02 after supervisor source-to-shipped handoff rebuild
 
 ## Current handoff objective
 
@@ -26,10 +26,10 @@ separate claims.
 The bounded README-led supervisor milestone is implemented on `main`. It
 changes the README, navigation, generated walkthrough,
 roadmap, and focused documentation tests; it does not change clinical behavior.
-Focused architecture, link, and no-call checks pass. This does not complete
-Decision 0048: the standalone handoff tree and ZIP are stale relative to active
-source, and source-to-shipped closure, supervisor-host verification, and
-unaided review remain open. The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md)
+Focused architecture, link, and no-call checks pass. The standalone handoff
+tree and ZIP are rebuilt from active source and pass source-to-shipped
+closure. Decision 0048 remains open for supervisor-host verification and
+unaided README review. The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md)
 owns those checks.
 
 ## Decision 0048 current point
@@ -59,9 +59,9 @@ identity transition, and ExECT alias resolution accepts only real string IDs.
 
 `main` now contains the Gan and ExECT three-method migrations, canonical parity
 repairs, the first safe retention deletion, the bounded README-led milestone,
-and a non-mutating source-to-shipped closure checker. The standalone handoff
-rebuild and supervisor-host/unaided checks remain open. Nothing from this
-Decision 0048 sequence has been pushed to `origin/main`.
+a non-mutating source-to-shipped closure checker, and a rebuilt standalone
+handoff package whose source-to-shipped closure is current. Supervisor-host
+and unaided README checks remain open.
 
 ## Current outcome
 
@@ -404,37 +404,45 @@ evidence-review structure while keeping their decisions separate. This is
 still not semantic-support evidence or independent clinical validation. No
 model call or locked row inspection was used.
 
-The supervisor source handoff exists in the active working tree. The standalone
-handoff tree and ZIP are stale relative to that source, so their source-to-
-shipped closure is still open. The active source exposes
-readable Python source for the selected Gan v0.5 current-frequency and one-call
-ExECT four-family workflows, a direct OpenAI-compatible endpoint client, strict
-input validation, concise and trace outputs, partial success, synced recovery,
+The supervisor source handoff exists in the active working tree, and the
+standalone `handoff/supervisor/` tree plus ZIP were rebuilt from that source
+on 2026-08-02. Source-to-shipped closure passes for the public package and
+every traced internal runtime file. The package exposes readable Python source
+for the selected Gan v0.5 current-frequency and one-call ExECT four-family
+workflows, a direct OpenAI-compatible endpoint client, strict input
+validation, concise and trace outputs, partial success, synced recovery,
 resume identity checks, privacy-safe errors, synthetic examples, and an
 explicit hashed source manifest. The transfer archive contains no required
 `.pyz`, benchmark-result files, private configuration, or research reports.
-Focused README, architecture, link, and no-call checks pass. The historical
-archive checks do not certify the stale current package. Exact supervisor
-endpoint, host, source-to-shipped closure, and unaided-usability checks have
-not occurred; this is not clinical validation.
-The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md) owns
-the detailed evidence and remaining acceptance checks.
+An eager Gan `llm` package import that previously pulled
+`reports/base.py` into the traced closure was removed. Exact supervisor
+endpoint, host, and unaided-usability checks have not occurred; this is not
+clinical validation. The
+[handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md) owns
+the remaining acceptance checks.
 
 ## Verification state
 
 Current working-tree backend verification is green for tracked project files:
 
+- **Verified on 2026-08-02 after the supervisor handoff rebuild:** source-to-
+  shipped closure and the non-mutating closure checker pass. Focused handoff
+  tests cover package shape, manifest hashes, traced-runtime exclusion of
+  research `reports/`, and clean-copy synthetic validation. These checks
+  verify engineering packaging, not supervisor-host usability or clinical
+  validation.
+
 - **Verified on 2026-08-02 after the ExECT hybrid merge gate:** `main` passes
-  1,562 pytest tests with one expected strict `xfail` for the stale standalone
-  handoff. Ruff passes and mypy reports no issues across 358 source files. All
-  15 generated architecture documents match, the retained-evidence manifest
-  validates, and all six selected no-call reference replays reproduce. The
-  frontend passes 73 Jest tests, lint, `tsc --noEmit`, and a Next.js production
-  build. Focused hybrid tests bind checkpoints to exact replay content, reject
-  malformed output before deterministic assembly, preserve producer failure
-  provenance, freeze nested producer values, and compare the permitted dev140
-  result against the pinned pre-migration oracle and governing stage manifest.
-  These checks verify engineering and replay behavior, not clinical validation.
+  1,562 pytest tests. Ruff passes and mypy reports no issues across 358 source
+  files. All 15 generated architecture documents match, the retained-evidence
+  manifest validates, and all six selected no-call reference replays
+  reproduce. The frontend passes 73 Jest tests, lint, `tsc --noEmit`, and a
+  Next.js production build. Focused hybrid tests bind checkpoints to exact
+  replay content, reject malformed output before deterministic assembly,
+  preserve producer failure provenance, freeze nested producer values, and
+  compare the permitted dev140 result against the pinned pre-migration oracle
+  and governing stage manifest. These checks verify engineering and replay
+  behavior, not clinical validation.
 
 - **Verified on 2026-08-02 after the ExECT `llm` merge:** merged `main` passes
   1,542
@@ -495,10 +503,11 @@ research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
-- **Decision 0048 has completed the Gan and ExECT method migrations.** All six
-  selected task-method paths use the plain active names and preserve historical
-  replay identities. The standalone handoff archive, supervisor host, and
-  unaided README review are not complete.
+- **Decision 0048 has completed the Gan and ExECT method migrations and rebuilt
+  the standalone handoff.** All six selected task-method paths use the plain
+  active names and preserve historical replay identities. Source-to-shipped
+  closure is current. Supervisor-host and unaided README review are not
+  complete.
 
 - **DeepSeek unknown-competence thread (U stopped).** Hosted Phase 2 candidate
   U piloted on the gold UNK slice (170): +2 final Purist vs A; LLM-only UNK
@@ -515,9 +524,8 @@ research hashes, or a new clean-checkout reproduction.
 - Independent review of the 48-item ExECT semantic-support substrate remains
   the next paper evidence dependency. The rubric, reviewer separation, and
   adjudication rule are frozen; the review interface is ready.
-- Supervisor source-to-shipped closure, endpoint/host checks, and unaided
-  README verification remain the next handoff dependency; no private data is
-  needed to perform them.
+- Supervisor endpoint/host checks and unaided README verification remain the
+  next handoff dependency; no private data is needed to perform them.
 - Six-model Gan LLM-with-rules ruleset remains finalized (2026-07-31) for the
   matched comparison. The unknown-competence thread may add a *named*
   DeepSeek candidate (prompt and/or narrow unknown-preserving gate) under its
@@ -525,20 +533,16 @@ research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Complete the remaining README-led supervisor checks: remove the forbidden
-   `gan2026/reports/base.py` dependency from the traced handoff runtime closure,
-   rebuild the stale
-   standalone handoff tree and ZIP from active source, pass source-to-shipped
-   closure, verify the supervisor host/endpoint, and perform unaided README
-   review. The bounded documentation slice is already implemented.
+1. Verify the rebuilt supervisor handoff on the intended host/endpoint and
+   perform unaided README review. Source-to-shipped closure is already current.
 2. Continue applying the completed retention audit one safe slice at a time.
    The first slice removed 15 unreferenced run-note frontend fixtures. Keep selected
    architecture/evidence/replay/safety/validation owners; separately review
    unreferenced frontend mocks, candidate-only prompt drafts, broad deployment
    infrastructure, and archive-only experiment material.
 3. Run the Decision 0048 strict completion gate and update its status only
-   after all selected live, fixture, replay, frontend, generated-document, and
-   internal-link paths pass.
+   after supervisor-host, unaided review, selected live/fixture/replay,
+   frontend, generated-document, and internal-link paths pass.
 4. Keep the separate research and validation dependencies intact: do not resume
    DeepSeek U to 750; defer local-route parity until its runtime exists; retain
    independent clinical review and supervisor-host verification as unvalidated
@@ -554,15 +558,10 @@ research hashes, or a new clean-checkout reproduction.
   regressions; it is not active. The one-call Diagnosis decision also accepts a
   measured dev140 quality loss from 0.8727 to 0.8542 Diagnosis F1 versus the
   two-call ablation.
-- The bounded README-led slice is implemented and focused-checked. The
-  standalone handoff remains stale relative to active source; source-to-shipped
-  closure, exact endpoint/host setup, and unaided use remain open. Those
-  checks, not private-note testing, clear the operational dependency.
-- The non-mutating closure checker is implemented, but currently stops because
-  `tasks/seizure_frequency/gan2026/reports/base.py` enters the traced runtime
-  closure and is forbidden from the supervisor package. Removing that runtime
-  dependency or explicitly changing the allowlist through the handoff owner
-  clears the next rebuild gate.
+- The bounded README-led slice and standalone source-to-shipped handoff rebuild
+  are implemented and focused-checked. Exact endpoint/host setup and unaided
+  use remain open. Those checks, not private-note testing, clear the
+  operational dependency.
 
 ## Data and claim boundaries
 

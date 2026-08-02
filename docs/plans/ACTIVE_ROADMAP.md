@@ -36,14 +36,13 @@ verified.
    `31103533` and `76d0dbcd`, with final replay-content, immutability, and
    parity closure at `6fd70834`. The full backend, architecture, replay,
    frontend, Ruff, and mypy gates pass.
-4. **Implemented in the bounded slice; broader gate open:** the README-led
-   supervisor path now exposes the five-stage orientation, generated six-path
-   walkthrough, deliberate failure/recovery example, frontend startup,
-   canonical results/limits, and exact no-call replay commands. Focused checks
-   pass. This does not complete Decision 0048: standalone source-to-shipped
-   closure, supervisor-host verification, and
-   unaided review remain open. The stale standalone handoff package is a strict
-   blocker recorded in the
+4. **Source-to-shipped closure current; host/unaided checks open:** the
+   README-led supervisor path exposes the five-stage orientation, generated
+   six-path walkthrough, deliberate failure/recovery example, frontend
+   startup, canonical results/limits, and exact no-call replay commands. The
+   standalone handoff tree and ZIP were rebuilt from active source; source-to-
+   shipped closure and the non-mutating checker pass. Supervisor-host
+   verification and unaided README review remain open. Owner:
    [handoff plan](supervisor_local_extraction_handoff_plan.md).
 5. **Audited; first deletion slice complete:** retain selected architecture, evidence, replay,
    component-attribution, safety, and validation owners. Delete only after an
@@ -53,8 +52,8 @@ verified.
    candidates.
 6. **Template complete; gate open:** the
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
-   is linked. Run the strict Decision 0048 completion gate only after milestones
-   3-5 are complete.
+   is linked. Run the strict Decision 0048 completion gate only after
+   supervisor-host and unaided review checks pass.
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.

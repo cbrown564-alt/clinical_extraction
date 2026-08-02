@@ -56,6 +56,12 @@ def range_count_over_window(text: str) -> str | None:
         text,
     )
     if not window:
+        # Also accept bare ``last month`` / ``past week`` after a count range.
+        window = re.search(
+            r"\b(?:past|last)\s+(?:(?P<count>\d+)\s+)?(?P<unit>day|week|month|year)s?\b",
+            text,
+        )
+    if not window:
         return None
 
     range_match = re.search(
@@ -65,6 +71,15 @@ def range_count_over_window(text: str) -> str | None:
         text,
     )
     if not range_match:
+        return None
+
+    # An explicit ``per <unit>`` after the range is already a rate, not a
+    # count-over-window. Do not rebind it to a distant observation window.
+    after_range = text[range_match.end() : range_match.end() + 80]
+    if re.search(
+        r"^(?:\s+[a-z]+(?:-[a-z]+)?){0,6}\s+per\s+(?:day|week|month|year)s?\b",
+        after_range,
+    ):
         return None
 
     denominator = window.group("count") or "1"
@@ -79,7 +94,7 @@ def single_count_over_window(text: str) -> str | None:
     match = re.search(
         r"\b(?P<count>\d+)\s+(?:[a-z]+(?:-[a-z]+)?\s+){0,4}"
         r"(?:seizure|attack|convulsion|spasm|mal|event|episode)s?\s+"
-        r"(?:in|over|during|for)\s+(?:the\s+)?(?:past|last)?\s*"
+        r"(?:in|within|over|during|for)\s+(?:the\s+)?(?:past|last)?\s*"
         r"(?P<denominator>\d+)\s+(?P<unit>day|week|month|year)s?\b",
         text,
     )
