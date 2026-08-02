@@ -31,6 +31,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports.reliability.
     aggregate_scores,
     clinical_headline_scores,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
+    RULES_METHOD_ALIASES,
+)
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     clinical_headline_unit_keys,
 )
@@ -253,6 +256,7 @@ def _deterministic_run(root: Path, gold_letters: Sequence[ExectLetter]) -> dict[
         "saved_run_id": "exectv2_deterministic_all9_dev140",
         "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
         "legacy_run_ids": [
+            *RULES_METHOD_ALIASES[1:],
             "exectv2_deterministic_all9_dev140",
             "exectv2_deterministic_all9_dev_20260714",
         ],

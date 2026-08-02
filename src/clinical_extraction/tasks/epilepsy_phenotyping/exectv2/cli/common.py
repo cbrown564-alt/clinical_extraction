@@ -13,6 +13,9 @@ from typing import Any
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     load_letters_for_split,
 )
+from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split_policy import (
+    is_locked_split,
+)
 from clinical_extraction.tasks.seizure_frequency.gan2026.experiments.artifact_io import (
     write_jsonl_rows as write_jsonl,
 )
@@ -21,8 +24,8 @@ TEST_SPLIT_ERROR = "ERROR: test split is locked; only dev is permitted."
 
 
 def guard_test_split(split: str) -> None:
-    if split == "test":
-        print(TEST_SPLIT_ERROR, file=sys.stderr)
+    if is_locked_split(split):
+        print(f"{TEST_SPLIT_ERROR} Received {split!r}.", file=sys.stderr)
         sys.exit(1)
 
 

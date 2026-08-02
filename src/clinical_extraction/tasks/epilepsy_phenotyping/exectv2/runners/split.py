@@ -13,6 +13,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
 )
 
 from .naming import active_method_name
+from .split_policy import LOCKED_SPLIT_ALIASES, is_locked_split
+
+__all__ = ["LOCKED_SPLIT_ALIASES", "run_split"]
 
 
 def run_split(
@@ -35,6 +38,9 @@ def run_split(
     the model-led runners. They are intentionally inert for this no-call path.
     """
 
+    if is_locked_split(split):
+        raise ValueError(f"locked ExECT split is not permitted: {split!r}")
+
     del temperature, max_tokens, checkpoint_jsonl_path, checkpoint_report_path, resume
     if active_method_name(method) != "rules":
         raise ValueError("the ExECT rules split runner accepts only the rules method")
@@ -49,8 +55,7 @@ def run_split(
                 "split": split,
                 "pipeline_family": "rules",
                 "method_id": "rules",
-                "saved_run_id": "exectv2_deterministic_all9_dev140",
-                "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
+                "run_id": "rules",
                 "model": "(model-independent)",
                 "mode": "no-call",
                 "prompt_version": "n/a (deterministic rules)",
@@ -72,9 +77,7 @@ def run_split(
     metadata = {
         "method_id": "rules",
         "pipeline_family": "rules",
-        "retained_method_id": "exectv2_rules_only",
-        "saved_run_id": "exectv2_deterministic_all9_dev140",
-        "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
+        "run_id": "rules",
         "split": split,
         "model": "(model-independent)",
         "mode": "no-call",

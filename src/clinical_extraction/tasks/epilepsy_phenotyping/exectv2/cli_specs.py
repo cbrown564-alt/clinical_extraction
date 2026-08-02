@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from .runners import split
+from .runners import RULES_METHOD_ALIASES, split
 
 
 @dataclass(frozen=True)
@@ -25,8 +25,7 @@ def get_cli_specs() -> dict[str, ExectCliSpec]:
 
     spec = ExectCliSpec("Run the ExECT deterministic rules method.", run_rules)
     return {
-        name: spec
-        for name in ("rules", "rules_only", "exectv2_rules_only", "deterministic_all9")
+        name: spec for name in RULES_METHOD_ALIASES
     }
 
 

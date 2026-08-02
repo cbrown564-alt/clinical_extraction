@@ -37,8 +37,7 @@ def run_exect_notes(
                     "model": "(model-independent)",
                     "pipeline": "rules",
                     "method": "rules",
-                    "saved_run_id": "exectv2_deterministic_all9_dev140",
-                    "retained_evidence_id": "exectv2_deterministic_all9_dev_20260714",
+                    "run_id": "rules",
                     "prediction": {
                         "mentions": [
                             mention.model_dump(mode="json")

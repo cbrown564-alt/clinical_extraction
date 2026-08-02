@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from .data import ExectLetter
-from .deterministic.all_entities.orchestrator import extract_deterministic_all9
 from .orchestration import rules
 from .runners.naming import ActiveMethodName, active_method_name
 
@@ -44,35 +43,19 @@ class Exectv2PipelineRunner:
         self.config = config
 
     def run(self, letter: ExectLetter) -> Exectv2RunResult:
-        requested_method = self.config.method
-        method = active_method_name(requested_method)
+        method = active_method_name(self.config.method)
         if method != "rules":
             raise ValueError(
                 "ExECT llm and llm_with_rules runners remain on the existing structured path; "
                 "this vertical slice only exposes rules."
             )
-        if requested_method == "rules":
-            result = rules.run_letter(
-                letter,
-                include_diagnosis_resolution_candidate=(
-                    self.config.include_diagnosis_resolution_candidate
-                ),
-                include_diagnosis_benchmark_residuals=self.config.include_diagnosis_benchmark_residuals,
-            )
-        else:
-            prediction = extract_deterministic_all9(
-                letter,
-                include_diagnosis_resolution_candidate=(
-                    self.config.include_diagnosis_resolution_candidate
-                ),
-                include_diagnosis_benchmark_residuals=self.config.include_diagnosis_benchmark_residuals,
-            )
-            comparison = rules.project_primary_comparison(prediction)
-            result = rules.RulesRecordResult(
-                prediction=prediction,
-                comparison_projection=comparison,
-                stage_events=rules.build_stage_events(letter, prediction, comparison),
-            )
+        result = rules.run_letter(
+            letter,
+            include_diagnosis_resolution_candidate=(
+                self.config.include_diagnosis_resolution_candidate
+            ),
+            include_diagnosis_benchmark_residuals=self.config.include_diagnosis_benchmark_residuals,
+        )
         return Exectv2RunResult(method=method, result=result)
 
 

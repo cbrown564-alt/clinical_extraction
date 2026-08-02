@@ -8,6 +8,8 @@ import type {
   Exectv2RunSummary,
 } from "./types";
 
+const UNOWNED_RULES_ALIASES = new Set(["deterministic_all9", "exectv2_deterministic_all9"]);
+
 const MODEL_ORDER = [
   "openai/gpt-4.1-mini",
   "openai/gpt-5.6-luna",
@@ -55,6 +57,7 @@ export function resolveExectv2RunId(
   runs: Exectv2RunSummary[],
   requested: string
 ): string | null {
+  if (UNOWNED_RULES_ALIASES.has(requested)) return null;
   const exact = runs.find((run) => run.run_id === requested);
   if (exact) return exact.run_id;
   const matches = runs.filter((run) =>

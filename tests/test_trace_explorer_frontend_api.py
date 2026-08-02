@@ -59,12 +59,17 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
 
     for run_id in (
         "rules",
+        "rules_only",
+        "exectv2_rules_only",
         "exectv2_deterministic_all9_dev140",
         "exectv2_deterministic_all9_dev_20260714",
     ):
         selected = client.get(f"/exectv2/runs/{run_id}")
         assert selected.status_code == 200
         assert selected.json()["run"]["run_id"] == "rules"
+
+    for run_id in ("deterministic_all9", "exectv2_deterministic_all9"):
+        assert client.get(f"/exectv2/runs/{run_id}").status_code == 404
 
     assert client.get("/exectv2/runs/None").status_code == 404
 
@@ -79,7 +84,7 @@ def test_exect_alias_resolution_is_exact_and_collision_safe() -> None:
     store = FrontendDataStore(FRONTEND_FIXTURES)
     store._exectv2_payload = {
         "runs": [
-            {"run_id": "rules", "saved_run_id": "same-alias"},
+            {"run_id": "rules_only", "saved_run_id": "same-alias"},
             {"run_id": "llm", "saved_run_id": "same-alias"},
         ],
         "shared_letters": [],

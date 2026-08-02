@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from clinical_extraction.architecture import stage_manifest
 from clinical_extraction.architecture.teaching_case import build_exect_case
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLetter
@@ -24,52 +26,71 @@ def test_exect_rules_active_name_keeps_legacy_method_identity() -> None:
     assert active_method_name("rules") == "rules"
     assert active_method_name("rules_only") == "rules"
     assert active_method_name("exectv2_rules_only") == "rules"
-    assert active_method_name("deterministic_all9") == "rules"
+    with pytest.raises(ValueError):
+        active_method_name("deterministic_all9")
+    with pytest.raises(ValueError):
+        active_method_name("exectv2_deterministic_all9")
     assert retained_method_id("rules") == "exectv2_rules_only"
 
 
-def test_exect_rules_public_runner_has_exact_no_call_legacy_parity(monkeypatch) -> None:
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic import (
-        all_entities,
+def test_exect_rules_public_runner_routes_aliases_to_canonical_active_runner(monkeypatch) -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
+        orchestrator,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import rules
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
+        Exectv2PipelineConfiguration,
+        Exectv2PipelineRunner,
+    )
+
+    letter = _letter()
+    calls = 0
+    real_run_letter = rules.run_letter
+
+    def spy_run_letter(letter, **kwargs):
+        nonlocal calls
+        calls += 1
+        return real_run_letter(letter, **kwargs)
+
+    monkeypatch.setattr(rules, "run_letter", spy_run_letter)
+    aliases = ("rules", "rules_only", "exectv2_rules_only")
+    results = [
+        Exectv2PipelineRunner(Exectv2PipelineConfiguration(method=alias)).run(letter)
+        for alias in aliases
+    ]
+    retained_base = orchestrator.extract_deterministic_all9(letter)
+
+    assert calls == len(aliases)
+    assert all(result.method == "rules" for result in results)
+    assert all(
+        result.result.prediction.model_dump(mode="json") == retained_base.model_dump(mode="json")
+        for result in results
+    )
+    assert all(event.owner and event.action for event in results[0].result.stage_events)
+
+
+def test_exect_rules_active_runner_matches_permitted_dev_base_without_alias_reuse() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
+        load_letters_for_split,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
+        orchestrator,
     )
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
         Exectv2PipelineConfiguration,
         Exectv2PipelineRunner,
     )
 
-    monkeypatch.setattr(
-        all_entities,
-        "run_all9_on_letters",
-        lambda *_args, **_kwargs: (_ for _ in ()).throw(
-            AssertionError("compatibility batch adapter must not own runner parity")
-        ),
-    )
-    letter = _letter()
-    active = Exectv2PipelineRunner(
-        Exectv2PipelineConfiguration(method="rules")
-    ).run(letter)
-    legacy = Exectv2PipelineRunner(
-        Exectv2PipelineConfiguration(method="exectv2_rules_only")
-    ).run(letter)
+    letters = load_letters_for_split("dev")
+    runner = Exectv2PipelineRunner(Exectv2PipelineConfiguration(method="rules"))
 
-    assert active.result.prediction.letter_id == legacy.result.prediction.letter_id
-    assert [m.entity for m in active.result.prediction.mentions] == [
-        m.entity for m in legacy.result.prediction.mentions
+    active = [runner.run(letter).result.prediction.model_dump(mode="json") for letter in letters]
+    retained_base = [
+        orchestrator.extract_deterministic_all9(letter).model_dump(mode="json")
+        for letter in letters
     ]
-    assert [m.attributes for m in active.result.prediction.mentions] == [
-        m.attributes for m in legacy.result.prediction.mentions
-    ]
-    assert [m.evidence for m in active.result.prediction.mentions] == [
-        m.evidence for m in legacy.result.prediction.mentions
-    ]
-    assert active.result.prediction.diagnostics == legacy.result.prediction.diagnostics
-    assert active.result.comparison_projection.model_dump(mode="json") == (
-        legacy.result.comparison_projection.model_dump(mode="json")
-    )
-    assert active.model_dump(mode="json") == legacy.model_dump(mode="json")
-    assert all(event.owner and event.action for event in active.result.stage_events)
-    assert active.method == "rules"
-    assert active.result.stage_events
+
+    assert active == retained_base
 
 
 def test_exect_trace_generation_calls_active_rules_boundary(monkeypatch, tmp_path: Path) -> None:
@@ -117,6 +138,21 @@ def test_exect_rules_split_active_and_legacy_aliases_are_no_call_parity() -> Non
     assert active_metadata == legacy_metadata
     assert active_metadata["pipeline_family"] == "rules"
     assert active_rows[0]["call_error"] is None
+    assert "saved_run_id" not in active_rows[0]
+    assert "retained_evidence_id" not in active_rows[0]
+    assert "saved_run_id" not in active_metadata
+    assert "retained_evidence_id" not in active_metadata
+
+
+def test_exect_rules_split_rejects_every_governed_locked_alias_before_processing() -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import (
+        LOCKED_SPLIT_ALIASES,
+        run_split,
+    )
+
+    for locked_split in sorted(LOCKED_SPLIT_ALIASES):
+        with pytest.raises(ValueError, match="locked"):
+            run_split([object()], method="rules", split=locked_split)
 
 
 def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:
@@ -137,6 +173,7 @@ def test_exect_rules_cli_spec_dispatches_active_method(monkeypatch) -> None:
     get_cli_specs()["rules"].run_split([], split="dev", model="none")
 
     assert seen["method"] == "rules"
+    assert set(get_cli_specs()) == {"rules", "rules_only", "exectv2_rules_only"}
 
 
 def test_exect_rules_operational_api_is_no_call_and_traceable() -> None:
@@ -152,6 +189,9 @@ def test_exect_rules_operational_api_is_no_call_and_traceable() -> None:
 
     assert rows[0]["status"] == "ok"
     assert rows[0]["pipeline"] == "rules"
+    assert rows[0]["run_id"] == "rules"
+    assert "saved_run_id" not in rows[0]
+    assert "retained_evidence_id" not in rows[0]
     assert rows[0]["comparison_projection"]["letter_id"] == "RULES-API-1"
     assert rows[0]["trace"][-1]["owner"] == "scorer"
 
