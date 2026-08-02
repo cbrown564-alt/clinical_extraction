@@ -275,6 +275,7 @@ def render_overview_diagram() -> str:
     lines.append("")
     for manifest in manifests:
         lines.append(f"  class {manifest.method_id} {manifest.method};")
+    lines.append("  classDef rules fill:#eef4ea,stroke:#5a7d4f;")
     lines.append("  classDef rules_only fill:#eef4ea,stroke:#5a7d4f;")
     lines.append("  classDef llm_only fill:#eaf0f7,stroke:#4a6f9c;")
     lines.append("  classDef llm_with_rules fill:#f7f0e6,stroke:#a07b3c;")
