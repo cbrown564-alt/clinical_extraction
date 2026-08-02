@@ -6,7 +6,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from .runners import LLM_METHOD_ALIASES, RULES_METHOD_ALIASES, split
+from .runners import (
+    LLM_METHOD_ALIASES,
+    LLM_WITH_RULES_METHOD_ALIASES,
+    RULES_METHOD_ALIASES,
+    split,
+)
 
 
 @dataclass(frozen=True)
@@ -29,9 +34,17 @@ def get_cli_specs() -> dict[str, ExectCliSpec]:
         return split.run_split(letters, method="llm", **kwargs)
 
     llm_spec = ExectCliSpec("Run the ExECT LLM-only method.", run_llm)
+
+    def run_llm_with_rules(letters, **kwargs):
+        return split.run_split(letters, method="llm_with_rules", **kwargs)
+
+    hybrid_spec = ExectCliSpec(
+        "Run the ExECT LLM-with-rules method.", run_llm_with_rules
+    )
     return {
         **{name: spec for name in RULES_METHOD_ALIASES},
         **{name: llm_spec for name in LLM_METHOD_ALIASES},
+        **{name: hybrid_spec for name in LLM_WITH_RULES_METHOD_ALIASES},
     }
 
 

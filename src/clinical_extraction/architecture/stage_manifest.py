@@ -142,6 +142,7 @@ class Stage:
     paper_wording: str
     rule_category: str | None = None
     notes: str | None = None
+    runtime_action: str | None = None
 
     @property
     def may_change_clinical_meaning(self) -> bool:
@@ -175,6 +176,8 @@ class Stage:
             payload["rule_category"] = self.rule_category
         if self.notes:
             payload["notes"] = self.notes
+        if self.runtime_action:
+            payload["runtime_action"] = self.runtime_action
         return payload
 
 
@@ -276,6 +279,9 @@ def _stage(payload: Mapping[str, Any]) -> Stage:
             str(payload["rule_category"]) if payload.get("rule_category") else None
         ),
         notes=str(payload["notes"]) if payload.get("notes") else None,
+        runtime_action=(
+            str(payload["runtime_action"]) if payload.get("runtime_action") else None
+        ),
     )
 
 

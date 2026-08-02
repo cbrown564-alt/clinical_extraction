@@ -1,4 +1,4 @@
-"""Split runner for the active ExECT rules and LLM-only methods."""
+"""Split runner for the active ExECT methods."""
 
 from __future__ import annotations
 
@@ -71,8 +71,8 @@ def run_split(
             progress_every,
         )
         return _run_rules_split(letters, method=method, split=split)
-    if active_method != "llm":
-        raise ValueError("the ExECT llm_with_rules split runner remains a separate phase")
+    if active_method not in {"llm", "llm_with_rules"}:
+        raise ValueError(f"unsupported ExECT method: {active_method}")
     if mode not in {"live", "prompt-only", "replay"}:
         raise ValueError("ExECT llm mode must be live, prompt-only, or replay")
 
@@ -95,6 +95,7 @@ def run_split(
         program_factory=program_factory,
         format_retry_factory=format_retry_factory,
         config=config,
+        projection=active_method,
         progress_every=progress_every,
         checkpoint_jsonl_path=checkpoint_jsonl_path,
         checkpoint_report_path=checkpoint_report_path,
@@ -171,12 +172,13 @@ def _run_llm_split(
     program_factory: Callable[[], Any] | None,
     format_retry_factory: Callable[[], Any] | None,
     config: StructuredMethodConfig | None,
+    projection: str,
     progress_every: int | None,
     checkpoint_jsonl_path: Path | None,
     checkpoint_report_path: Path | None,
     resume: bool,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Run only the shared producer plus the selected raw-candidate projection."""
+    """Run the shared producer plus one selected canonical projection."""
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
         structured_one_call,
@@ -203,5 +205,5 @@ def _run_llm_split(
         program=program,
         format_retry_program=format_retry_program,
         raw_outputs=raw_outputs,
-        projection="llm",
+        projection=projection,  # type: ignore[arg-type]
     )

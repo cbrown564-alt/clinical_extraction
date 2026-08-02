@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -59,6 +61,9 @@ from .contracts import (
     StructuredProducerResult,
 )
 from .letter_assembly import assemble_structured_rows
+
+SOURCE_PIPELINE_FAMILY = "exectv2_hybrid_key_family_event_ledger"
+CHECKPOINT_SCHEMA_VERSION = "exectv2.checkpoint.v1"
 
 
 def produce_structured_letter(
@@ -258,6 +263,7 @@ def produce_structured_letter(
         route=api_base or "",
         dspy_cache=dspy_cache,
         row=row,
+        stage_events=_producer_stages,
     )
     return producer
 
@@ -360,7 +366,7 @@ def _run_llm_with_rules_letter(
 ) -> ExectRecordResult:
     _require_matching_letter(letter, producer)
     assembled = assemble_structured_rows([letter], [producer.row], config=config)[letter.letter_id]
-    stages = list(producer_stages_for(producer))
+    stages = list(_hybrid_producer_stages(producer))
     stages.extend(
         [
             ExectStageEvent(
@@ -386,7 +392,7 @@ def _run_llm_with_rules_letter(
             ExectStageEvent(
                 stage_id="exect.hybrid.register_findings",
                 owner="deterministic",
-                effect_class="representation",
+                effect_class="transport_or_schema",
                 input_value=len(producer.projected_letter.mentions),
                 output_value=len(assembled["predicted_mentions"]),
                 changed=True,
@@ -412,12 +418,20 @@ def _run_llm_with_rules_letter(
             ExectStageEvent(
                 stage_id=f"exect.hybrid.lens.{lens_stage_names[entity]}",
                 owner="deterministic",
-                effect_class="clinical_meaning",
+                effect_class=(
+                    "representation"
+                    if entity in {SEIZURE_FREQUENCY.name, INVESTIGATIONS.name}
+                    else "clinical_meaning"
+                ),
                 input_value=lane["raw_lane_mentions"],
                 output_value=lane["predicted_mentions"],
                 changed=lane["raw_lane_mentions"] != lane["predicted_mentions"],
                 action="apply_named_family_lens",
-                rule_category="clinical_epilepsy",
+                rule_category=(
+                    "seizure_frequency"
+                    if entity == SEIZURE_FREQUENCY.name
+                    else "clinical_epilepsy"
+                ),
             )
         )
     stages.extend(
@@ -458,8 +472,27 @@ def _run_llm_with_rules_letter(
     )
     prediction = _prediction_from_assembly(letter, assembled)
     row = dict(assembled)
-    row["method_id"] = "exectv2_llm_with_rules"
+    row["source_method_id"] = "exectv2_llm_with_rules"
+    row["source_pipeline_family"] = SOURCE_PIPELINE_FAMILY
+    row["active_method"] = "llm_with_rules"
+    row["method_id"] = "llm_with_rules"
+    row["pipeline_family"] = "llm_with_rules"
+    row["run_id"] = "llm_with_rules"
+    row["split"] = producer.row.get("split", row.get("split"))
+    row["route"] = producer.route
+    row["dspy_cache"] = producer.dspy_cache
+    row["producer_row"] = dict(producer.row)
+    row["prediction"] = prediction.model_dump(mode="json")
     row["scored_view"] = "clinical_headline"
+    row["stage_events"] = [event.to_dict() for event in stages]
+    row["scorer_projection"] = {
+        "view": "clinical_headline",
+        "n_mentions": len(prediction.mentions),
+    }
+    row["first_prediction_changing_owner"] = (
+        "model" if producer.raw_output else None
+    )
+    row["first_failure"] = producer.call_error or next(iter(producer.parse_errors), None)
     return ExectRecordResult(
         prediction=prediction,
         row=row,
@@ -501,56 +534,28 @@ def _require_matching_letter(
 
 
 def producer_stages_for(producer: StructuredProducerResult) -> tuple[ExectStageEvent, ...]:
-    return (
+    return producer.stage_events
+
+
+def _hybrid_producer_stages(
+    producer: StructuredProducerResult,
+) -> tuple[ExectStageEvent, ...]:
+    return tuple(
         ExectStageEvent(
-            stage_id="exect.hybrid.build_prompt",
-            owner="deterministic",
-            effect_class="transport_or_schema",
-            input_value=producer.letter_id,
-            output_value=producer.prompt_input_json,
-            changed=True,
-            action="build_four_family_prompt",
-            rule_category="general",
-        ),
-        ExectStageEvent(
-            stage_id="exect.hybrid.model_call",
-            owner="model",
-            effect_class="clinical_meaning",
-            input_value=producer.prompt_input_json,
-            output_value=producer.raw_output,
-            changed=bool(producer.raw_output),
-            action="one_model_or_replay_call",
-        ),
-        ExectStageEvent(
-            stage_id="exect.hybrid.parse_and_retry",
-            owner="deterministic",
-            effect_class="transport_or_schema",
-            input_value=producer.raw_output,
-            output_value=producer.row.get("structured_events", []),
-            changed=bool(producer.parse_errors or producer.format_retry_output),
-            action="parse_schema_and_optional_format_retry",
-            rule_category="general",
-        ),
-        ExectStageEvent(
-            stage_id="exect.hybrid.flatten_events",
-            owner="deterministic",
-            effect_class="representation",
-            input_value=producer.row.get("structured_events", []),
-            output_value=[_mention_to_row(m) for m in producer.flattened_mentions],
-            changed=True,
-            action="flatten_model_events",
-            rule_category="general",
-        ),
-        ExectStageEvent(
-            stage_id="exect.hybrid.project_and_gate",
-            owner="deterministic",
-            effect_class="validation_gate",
-            input_value=[_mention_to_row(m) for m in producer.flattened_mentions],
-            output_value=[_mention_to_row(m) for m in producer.projected_letter.mentions],
-            changed=len(producer.flattened_mentions) != len(producer.projected_letter.mentions),
-            action="repair_attributes_and_enforce_evidence",
-            rule_category="clinical_epilepsy",
-        ),
+            stage_id=event.stage_id,
+            owner=event.owner,
+            effect_class=(
+                "clinical_meaning"
+                if event.stage_id == "exect.hybrid.project_and_gate"
+                else event.effect_class
+            ),
+            input_value=event.input_value,
+            output_value=event.output_value,
+            changed=event.changed,
+            action=event.action,
+            rule_category=event.rule_category,
+        )
+        for event in producer_stages_for(producer)
     )
 
 
@@ -598,7 +603,7 @@ def run_split(
     program: Any | None = None,
     format_retry_program: Any | None = None,
     raw_outputs: Mapping[str, str] | None = None,
-    projection: Literal["producer", "llm"] = "producer",
+    projection: Literal["producer", "llm", "llm_with_rules"] = "producer",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Compatibility batch adapter around the shared producer."""
 
@@ -609,19 +614,46 @@ def run_split(
     if mode == "prompt-only" and raw_outputs is not None:
         raise ValueError("prompt-only mode does not accept raw_outputs")
     config = config or StructuredMethodConfig.selected()
+    if projection not in {"producer", "llm", "llm_with_rules"}:
+        raise ValueError(f"unsupported ExECT split projection: {projection}")
+    if projection == "llm_with_rules":
+        config.require_selected()
     order = [letter.letter_id for letter in letters]
+    if len(order) != len(set(order)):
+        raise ValueError("ExECT split letters must have unique letter_id values")
     if mode == "replay":
         if raw_outputs is None or set(raw_outputs) != set(order):
             raise ValueError("replay mode requires complete raw_outputs for the requested letters")
-    requested = set(order)
-    existing_rows, completed = read_completed(
-        checkpoint_jsonl_path if resume else None, key="letter_id"
+    run_contract = _run_contract(
+        projection=projection,
+        split=split,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode=mode,
+        dspy_cache=dspy_cache,
+        api_base=api_base,
+        config=config,
     )
-    rows: list[dict[str, Any]] = [r for r in existing_rows if r.get("letter_id") in requested]
+    run_fingerprint = _run_fingerprint(run_contract)
+    requested = set(order)
+    try:
+        existing_rows, completed = read_completed(
+            checkpoint_jsonl_path if resume else None, key="letter_id"
+        )
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError("checkpoint is malformed") from exc
+    if resume and checkpoint_jsonl_path is not None and checkpoint_jsonl_path.exists():
+        _validate_checkpoint(
+            existing_rows,
+            requested=requested,
+            run_contract=run_contract,
+            run_fingerprint=run_fingerprint,
+            report_path=checkpoint_report_path,
+        )
+    rows: list[dict[str, Any]] = list(existing_rows)
     n_resumed = len(rows)
     todo = pending_items(letters, completed, key_of=lambda letter: letter.letter_id)
-    if projection not in {"producer", "llm"}:
-        raise ValueError(f"unsupported ExECT split projection: {projection}")
     retry_program = format_retry_program
     if mode == "live" and todo:
         model_builder = model_builder or build_dspy_lm
@@ -669,8 +701,14 @@ def run_split(
         if projection == "llm":
             result = run_llm_only_letter(letter, producer)
             row = dict(result.row)
+        elif projection == "llm_with_rules":
+            result = run_llm_with_rules_letter(letter, producer, config=config)
+            row = dict(result.row)
         else:
             row = dict(producer.row)
+        if checkpoint_jsonl_path is not None or resume:
+            row["run_contract"] = dict(run_contract)
+            row["run_fingerprint"] = run_fingerprint
         if progress_every and (len(rows) - n_resumed + 1) % progress_every == 0:
             rows.append(row)
             _emit_checkpoint(
@@ -683,6 +721,8 @@ def run_split(
                 mode=mode,
                 prompt_version=prompt_version,
                 prompt_profile=config.prompt_profile,
+                run_contract=run_contract,
+                run_fingerprint=run_fingerprint,
             )
             continue
         rows.append(row)
@@ -701,15 +741,20 @@ def run_split(
         "dspy_version": getattr(dspy, "__version__", "unknown"),
         "diagnosis_policy_variant": config.diagnosis_policy_variant,
         "prescription_policy_variant": config.prescription_policy_variant,
+        "run_contract": run_contract,
+        "run_fingerprint": run_fingerprint,
     }
-    if projection == "llm":
+    if projection in {"llm", "llm_with_rules"}:
+        active_method = "llm" if projection == "llm" else "llm_with_rules"
+        method_id = active_method
+        scored_view = "raw_candidate" if projection == "llm" else "clinical_headline"
         metadata.update(
             {
-                "active_method": "llm",
-                "method_id": "llm",
-                "pipeline_family": "llm",
-                "run_id": "llm",
-                "scored_view": "raw_candidate",
+                "active_method": active_method,
+                "method_id": method_id,
+                "pipeline_family": active_method,
+                "run_id": active_method,
+                "scored_view": scored_view,
             }
         )
     metadata["summary"] = _summarize_rows(rows)
@@ -760,6 +805,8 @@ def _emit_checkpoint(
     mode: str,
     prompt_version: str,
     prompt_profile: str,
+    run_contract: Mapping[str, Any],
+    run_fingerprint: str,
 ) -> None:
     from ..llm.pipelines.key_entities_structured.runner import (
         _emit_checkpoint as legacy_emit_checkpoint,
@@ -776,3 +823,100 @@ def _emit_checkpoint(
         prompt_version=prompt_version,
         prompt_profile=cast(PromptProfile, prompt_profile),
     )
+    if report_path is not None and jsonl_path is not None:
+        _checkpoint_metadata_path(report_path).write_text(
+            json.dumps(
+                {
+                    "schema_version": CHECKPOINT_SCHEMA_VERSION,
+                    "run_contract": dict(run_contract),
+                    "run_fingerprint": run_fingerprint,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+
+def _run_contract(
+    *,
+    projection: str,
+    split: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    mode: str,
+    dspy_cache: bool,
+    api_base: str | None,
+    config: StructuredMethodConfig,
+) -> dict[str, Any]:
+    return {
+        "schema_version": CHECKPOINT_SCHEMA_VERSION,
+        "active_method": projection,
+        "method_id": projection,
+        "pipeline_family": projection if projection != "producer" else PIPELINE_FAMILY,
+        "split": split,
+        "model": model,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+        "mode": mode,
+        "dspy_cache": dspy_cache,
+        "route": api_base or "",
+        "prompt_profile": config.prompt_profile,
+        "prompt_version": prompt_version_for(config.prompt_profile),
+        "diagnosis_policy_variant": config.diagnosis_policy_variant,
+        "prescription_policy_variant": config.prescription_policy_variant,
+        "sf_projection_ablation": config.sf_projection_ablation,
+    }
+
+
+def _run_fingerprint(contract: Mapping[str, Any]) -> str:
+    payload = json.dumps(dict(contract), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _validate_checkpoint(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    requested: set[str],
+    run_contract: Mapping[str, Any],
+    run_fingerprint: str,
+    report_path: Path | None,
+) -> None:
+    seen: set[str] = set()
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise ValueError(f"checkpoint row {index} is malformed")
+        letter_id = row.get("letter_id")
+        if not isinstance(letter_id, str) or not letter_id:
+            raise ValueError(f"checkpoint row {index} is missing letter_id")
+        if letter_id not in requested:
+            raise ValueError(f"checkpoint row {letter_id} is foreign to the requested split")
+        if letter_id in seen:
+            raise ValueError(f"checkpoint contains duplicate letter_id {letter_id}")
+        seen.add(letter_id)
+        if row.get("run_fingerprint") != run_fingerprint:
+            raise ValueError(f"checkpoint row {letter_id} has mismatched run_fingerprint")
+        if row.get("run_contract") != dict(run_contract):
+            raise ValueError(f"checkpoint row {letter_id} has mismatched run provenance")
+
+    if report_path is None:
+        return
+    metadata_file = _checkpoint_metadata_path(report_path)
+    if not metadata_file.exists():
+        raise ValueError("checkpoint provenance metadata is missing for resume")
+    try:
+        report = json.loads(metadata_file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("checkpoint report is malformed") from exc
+    if not isinstance(report, Mapping):
+        raise ValueError("checkpoint report is malformed")
+    if report.get("run_fingerprint") != run_fingerprint:
+        raise ValueError("checkpoint report has mismatched run_fingerprint")
+    if report.get("run_contract") != dict(run_contract):
+        raise ValueError("checkpoint report has mismatched run provenance")
+
+
+def _checkpoint_metadata_path(path: Path) -> Path:
+    return path.with_name(f"{path.stem}_checkpoint.meta.json")

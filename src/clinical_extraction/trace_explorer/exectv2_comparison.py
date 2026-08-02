@@ -198,8 +198,7 @@ def _model_run(
         "architecture_family": "decision_0041_model_led_single_call",
         # The saved frontend run id and source artifact remain immutable.  Only
         # the active outward method identity changes for the raw lane.
-        "pipeline_family": "exectv2_model_led_key_family_event_ledger",
-        "active_method": "llm_with_rules" if is_final else None,
+    "pipeline_family": "exectv2_model_led_key_family_event_ledger",
         "split": "dev140",
         "row_count": 140,
         "date": "2026-07-15",
@@ -224,6 +223,9 @@ def _model_run(
         if retained.slug == "gpt56sol":
             payload["active_method"] = "llm"
             payload["method_id"] = "llm"
+    elif retained.slug == "gpt56sol":
+        payload["active_method"] = "llm_with_rules"
+        payload["method_id"] = "llm_with_rules"
     return payload
 
 

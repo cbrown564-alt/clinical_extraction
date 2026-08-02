@@ -99,8 +99,39 @@ class Exectv2PipelineRunner:
                 ),
             )
             result = structured_one_call.run_llm_only_letter(letter, producer)
+        elif method == "llm_with_rules":
+            if self.config.mode not in {"live", "prompt-only", "replay"}:
+                raise ValueError(
+                    "ExECT llm_with_rules mode must be live, prompt-only, or replay"
+                )
+            config = StructuredMethodConfig.selected(
+                prompt_profile=self.config.prompt_profile
+            )
+            producer = structured_one_call.produce_structured_letter(
+                letter,
+                model=self.config.model,
+                temperature=self.config.temperature,
+                max_tokens=self.config.max_tokens,
+                mode=self.config.mode,
+                raw_output=self.config.raw_output,
+                api_base=(
+                    self.config.route
+                    if self.config.route is not None
+                    else self.config.api_base
+                ),
+                api_key=self.config.api_key,
+                timeout=self.config.timeout,
+                dspy_cache=self.config.dspy_cache,
+                split=self.config.split,
+                program=self.config.program,
+                format_retry_program=self.config.format_retry_program,
+                config=config,
+            )
+            result = structured_one_call.run_llm_with_rules_letter(
+                letter, producer, config=config
+            )
         else:
-            raise ValueError("ExECT llm_with_rules remains a separate migration phase")
+            raise ValueError(f"unsupported ExECT method: {method}")
         return Exectv2RunResult(method=method, result=result)
 
 

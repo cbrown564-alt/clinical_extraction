@@ -129,6 +129,7 @@ class StructuredProducerResult:
     route: str = ""
     dspy_cache: bool = True
     row: Mapping[str, Any] = field(default_factory=dict)
+    stage_events: tuple[ExectStageEvent, ...] = ()
 
 
 @dataclass(frozen=True)
