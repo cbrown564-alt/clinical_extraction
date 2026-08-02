@@ -8,6 +8,8 @@ import type {
   Exectv2RunSummary,
 } from "./types";
 
+const UNOWNED_RULES_ALIASES = new Set(["deterministic_all9", "exectv2_deterministic_all9"]);
+
 const MODEL_ORDER = [
   "openai/gpt-4.1-mini",
   "openai/gpt-5.6-luna",
@@ -48,6 +50,23 @@ export interface Exectv2RunGroup {
   label: string;
   caption: string;
   runs: Exectv2RunSummary[];
+}
+
+/** Resolve only exact canonical or explicitly retained aliases. */
+export function resolveExectv2RunId(
+  runs: Exectv2RunSummary[],
+  requested: string
+): string | null {
+  if (UNOWNED_RULES_ALIASES.has(requested)) return null;
+  const matches = runs.filter((run) =>
+    [
+      run.run_id,
+      run.saved_run_id,
+      run.retained_evidence_id,
+      ...(run.legacy_run_ids ?? []),
+    ].includes(requested)
+  );
+  return matches.length === 1 ? matches[0].run_id : null;
 }
 
 export function comparisonModeLabel(mode: Exectv2ComparisonMode): string {

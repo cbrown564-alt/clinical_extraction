@@ -139,7 +139,7 @@ export interface PipelineFamilyItem {
   label: string;
   display_label?: string;
   executable: boolean;
-  kind: "rules_only" | "hybrid" | "llm_only";
+  kind: "rules" | "rules_only" | "hybrid" | "llm_only";
   pipeline_family: string;
   model?: string;
   model_label?: string;

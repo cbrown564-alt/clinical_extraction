@@ -28,7 +28,7 @@ import {
   type MetricChip,
   type HighlightTone,
 } from "@/components/surface";
-import { groupExectv2Runs } from "@/lib/exectv2RunOptions";
+import { groupExectv2Runs, resolveExectv2RunId } from "@/lib/exectv2RunOptions";
 import {
   compactRunLabel,
   useExectv2Run,
@@ -330,7 +330,11 @@ export default function Exectv2ExampleExplorer() {
   const runGroups = useMemo(() => groupExectv2Runs(runs), [runs]);
 
   const selectedRunSummary = useMemo(
-    () => runs.find((run) => run.run_id === get("run")) ?? runs[0],
+    () => {
+      const requested = get("run");
+      const resolved = requested ? resolveExectv2RunId(runs, requested) : null;
+      return runs.find((run) => run.run_id === resolved) ?? runs[0];
+    },
     [runs, get]
   );
   const selectedRunQuery = useExectv2Run(selectedRunSummary?.run_id);
