@@ -192,3 +192,78 @@ def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> No
         "gan.llm.evidence_containment",
         "gan.llm.score",
     ]
+
+
+def test_gan_hybrid_runner_active_and_legacy_dispatch_have_active_identity() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+        label_to_frequency_record,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runner import (
+        Gan2026PipelineRunner,
+    )
+
+    base = _record("The patient has one seizure per month.")
+    label = label_to_frequency_record("1 per month")
+    record = GanFrequencyRecord(
+        **base.__dict__,
+        gold_normalized_label=label.normalized_label,
+        gold_label_kind=label.kind,
+        gold_yearly_bounds=label.yearly_bounds,
+        gold_monthly_frequency=label.monthly_frequency,
+    )
+    active = Gan2026PipelineRunner(
+        PipelineConfiguration(architecture="llm_with_rules")
+    ).run(record)
+    legacy = Gan2026PipelineRunner(
+        PipelineConfiguration(architecture="hybrid_structured_events")
+    ).run(record)
+
+    assert active.model_dump() == legacy.model_dump()
+    assert active.output.final_value == "1 per month"
+    assert active.diagnostics["evidence_valid"] is True
+
+
+def test_gan_hybrid_split_active_and_legacy_parity_keeps_canonical_family() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+        label_to_frequency_record,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import run_split
+
+    label = label_to_frequency_record("1 per month")
+    record = GanFrequencyRecord(
+        **_record("The patient has one seizure per month.").__dict__,
+        gold_normalized_label=label.normalized_label,
+        gold_label_kind=label.kind,
+        gold_yearly_bounds=label.yearly_bounds,
+        gold_monthly_frequency=label.monthly_frequency,
+    )
+    kwargs = dict(
+        split="validation",
+        split_manifest="fixture_manifest",
+        model="none",
+        temperature=0.0,
+        max_tokens=900,
+        mode="prompt-only",
+        dspy_cache=False,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+    )
+    active_rows, active_metadata = run_split([record], architecture="llm_with_rules", **kwargs)
+    legacy_rows, legacy_metadata = run_split(
+        [record], architecture="hybrid_structured_events", **kwargs
+    )
+
+    assert active_rows == legacy_rows
+    assert {
+        key: value for key, value in active_metadata.items() if key != "created_at_utc"
+    } == {
+        key: value for key, value in legacy_metadata.items() if key != "created_at_utc"
+    }
+    assert active_rows[0]["pipeline_family"] == "llm_with_rules"
+    assert active_rows[0]["row_trace"] == legacy_rows[0]["row_trace"]
+    assert active_rows[0]["comparison"] == legacy_rows[0]["comparison"]

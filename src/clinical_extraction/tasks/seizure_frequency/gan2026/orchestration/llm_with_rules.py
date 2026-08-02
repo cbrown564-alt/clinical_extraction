@@ -421,6 +421,7 @@ def run_split(
     )
     metadata.update(
         {
+            "pipeline_family": "llm_with_rules",
             "dspy_cache": dspy_cache,
             "reuse_source": reuse_source,
             "escalation_reason": escalation_reason,
@@ -463,6 +464,7 @@ def run_split(
             "source_row_index": record.source_row_index,
             "split": split,
             "split_manifest": split_manifest,
+            "pipeline_family": "llm_with_rules",
             "prompt_version": legacy.PROMPT_VERSION,
             "prompt_input_json": result.diagnostics["prompt_input_json"],
             "raw_output": result.raw_model_output or "",

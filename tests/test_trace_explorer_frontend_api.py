@@ -244,12 +244,16 @@ def test_run_note_executes_the_real_deterministic_pipeline(client: TestClient) -
     assert body["result"]["diagnostics"]["candidate_events"]
     assert body["result"]["diagnostics"]["evidence_valid"] is True
 
-    model_call = client.post(
-        "/run/note",
-        json={"note_text": "four seizures per day", "pipeline": "hybrid_structured_events"},
-    )
-    assert model_call.status_code == 400
-    assert "model" in model_call.json()["error"]["message"].lower()
+    rejection_messages = []
+    for pipeline in ("llm_with_rules", "hybrid_structured_events"):
+        model_call = client.post(
+            "/run/note",
+            json={"note_text": "four seizures per day", "pipeline": pipeline},
+        )
+        assert model_call.status_code == 400
+        assert model_call.json()["error"]["code"] == "model_calls_disabled"
+        rejection_messages.append(model_call.json()["error"]["message"])
+    assert rejection_messages[0] == rejection_messages[1]
 
 
 def test_review_decisions_persist_separately_from_trace_data(client: TestClient) -> None:
