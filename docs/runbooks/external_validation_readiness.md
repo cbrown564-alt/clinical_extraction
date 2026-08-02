@@ -1,8 +1,34 @@
-# Restricted external-validation readiness record
+# Restricted external-validation readiness record template
 
-Decision 0048 milestone 6. This record is the required gate for any run on
+Decision 0048 milestone 6. This template is the required gate for any run on
 restricted external or real-patient data. It is a research-validation record,
 not an authorization for clinical deployment, clinical care, or production use.
+
+Copy this template into the run-record directory as one run-specific file;
+complete it without changing the template's control sections. The template
+itself is not a readiness approval and does not mark milestone 6 complete.
+
+## Record location and lifecycle
+
+Run-specific records belong in `docs/runbooks/external_validation_records/`
+with the naming convention
+`YYYY-MM-DD_<run-id>_external-validation-readiness_vNN.md`. `<run-id>` must be
+stable, unique, and free of patient or note identifiers; `vNN` starts at
+`v01` and increments for every amendment. Do not store private data in the
+record.
+
+Once any person signs a record, that version is immutable. Amendments create a
+new dated version and must state the reason, affected sections, new decision,
+and links to the prior version; never overwrite a signed record. Preserve all
+prior versions and their signatures, including blocked or superseded
+decisions. A revision may not authorize execution until the required
+signatures and checks are completed again. The run history must retain the
+record version used for execution.
+
+- **Revision/amendment number:** `[REQUIRED: vNN]`
+- **Revision date:** `[REQUIRED: YYYY-MM-DD]`
+- **Amends record/version:** `[REQUIRED: path and version, or INITIAL]`
+- **Amendment reason and affected sections:** `[REQUIRED: reason and sections]`
 
 ## Gate status
 
@@ -84,6 +110,18 @@ Before execution, the technical run owner records pass/fail evidence for:
 - dry-run/schema/trace checks pass on approved non-private fixtures; and
 - the claim boundary and planned report are approved by the data owner and
   independent clinical reviewer.
+
+| Check | Status | Evidence/reference | Owner | Date |
+| --- | --- | --- | --- | --- |
+| Required fields and signatures complete | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Dataset membership and split policy verified | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Technical configuration and run manifest frozen | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Privacy, access, retention, and incident controls active | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Reviewer independence, blinding, and adjudication ready | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Dry-run, schema, and trace checks pass on fixtures | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+| Claim boundary and report plan approved | `NOT CHECKED` | `[REQUIRED: reference]` | `[REQUIRED]` | `[REQUIRED]` |
+
+Every `NOT CHECKED`, `BLOCKED`, or blank status blocks execution.
 
 **Stop immediately** and set the state to `BLOCKED` if any required field is
 blank, authorization expires, dataset membership is uncertain, an unauthorized
