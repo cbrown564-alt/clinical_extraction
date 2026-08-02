@@ -41,12 +41,14 @@ surfaces, teaching material, and generated architecture. Historical filenames,
 run IDs, prompt versions, manifests, replay metadata, and explicit inbound
 aliases remain unchanged.
 
-The ExECT `rules` vertical slice is implemented and verified through runtime,
-split/CLI, API, registry, trace/frontend, teaching material, generated
-architecture, and exact permitted-development parity. Active, saved frontend,
-retained-evidence, and historical manifest identities remain separate. The
-`llm` and `llm_with_rules` vertical slices remain open and must proceed in that
-order.
+The ExECT `rules` and `llm` vertical slices are implemented and verified
+through runtime, split/CLI, API, registry, trace/frontend, teaching material,
+generated architecture, and exact permitted-development parity. Active, saved
+frontend, retained-evidence, and historical manifest identities remain
+separate. Sol's final `llm` review found no actionable finding at `c93c80b4`,
+and the slice is merged into `main` at `e177482d`. The `llm_with_rules` slice is
+now open under the entry, implementation, evidence, negative, exit, and stop
+gates in [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md).
 
 Sol's strict review found two compatibility-helper defects; `7d9c4000` fixes
 both. Gan parity now permits only the explicit absence-to-`llm_with_rules`
@@ -419,15 +421,17 @@ the detailed evidence and remaining acceptance checks.
 
 Current working-tree backend verification is green for tracked project files:
 
-- **Verified on 2026-08-02 after integration:** merged `main` passes 1,525
+- **Verified on 2026-08-02 after the ExECT `llm` merge:** merged `main` passes
+  1,542
   pytest tests with one expected strict `xfail` for the stale standalone
   handoff package. Ruff, mypy across 358 source files, all 15 generated
   architecture checks, the retained-evidence manifest, all six selected
-  no-call reference replays, 69 frontend Jest tests, TypeScript, focused source
-  lint, and the Next.js production build pass. Sol's final synthetic split,
-  provenance, alias-collision, and base-parity probes found no remaining
-  actionable issue in the ExECT `rules` slice. These checks verify engineering
-  and replay behavior, not clinical validation.
+  no-call reference replays, locked-artifact safety, 71 frontend Jest tests,
+  TypeScript, focused source lint, and the Next.js production build pass. Sol's
+  final synthetic split, provenance, alias-collision, and base-parity probes
+  found no remaining actionable issue in the ExECT `llm` slice. The combined
+  gate also caught and fixed a test-fixture TypeScript widening defect. These
+  checks verify engineering and replay behavior, not clinical validation.
 
 - **Verified on 2026-08-02:** at merged commit `716b6de8`, all 1,512 pytest
   tests, Ruff, mypy across 352 source files, 14 architecture-document checks,
@@ -477,7 +481,8 @@ research hashes, or a new clean-checkout reproduction.
 ## In progress
 
 - **Decision 0048 is paused after the Gan migration and complete ExECT `rules`
-  vertical slice.** The bounded README-led supervisor path is implemented;
+  and `llm` vertical slices.** The `llm_with_rules` execution gate is defined
+  in Decision 0048, and the bounded README-led supervisor path is implemented;
   resume from the ordered steps below. Do not treat the full ExECT migration,
   standalone handoff archive, supervisor host, or unaided README review as
   complete.
@@ -507,9 +512,10 @@ research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Complete ExECT `llm`, then `llm_with_rules`, using the verified `rules`
-   vertical slice as the identity, split-safety, alias, and exact-parity
-   pattern.
+1. Complete ExECT `llm_with_rules` using the verified `rules` and `llm`
+   vertical slices and the explicit Decision 0048 gate. Preserve the shared
+   one-call producer, selected `default/default` assembly, identity separation,
+   split safety, and independent exact-parity evidence.
 2. After all ExECT names stabilize, update shared code and frontend routes,
    then run the full engineering, architecture, retained-manifest, six-cell
    replay, lint, and production-build gate.

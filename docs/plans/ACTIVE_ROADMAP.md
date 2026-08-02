@@ -27,13 +27,15 @@ verified.
 2. **Implemented and verified:** promote all three Gan methods to `rules`,
    `llm`, and `llm_with_rules`, with explicit legacy identity boundaries and
    no-call parity. The final canonical parity repair is `7ddc116a`.
-3. **Rules complete; two methods open:** the ExECT `rules` vertical slice now
-   covers runtime, split/CLI, API, registry, trace/frontend, teaching material,
-   generated architecture, locked-split rejection, distinct active/replay
-   identities, and exact permitted-development parity. Sol's final review
-   found no remaining actionable issue at `bee48c6c`. Complete ExECT `llm`,
-   then `llm_with_rules`; shared code and route cleanup follows stabilized
-   method identities.
+3. **Rules and LLM complete; hybrid open:** the ExECT `rules` and `llm`
+   vertical slices now cover runtime, split/CLI, API, registry, trace/frontend,
+   teaching material, generated architecture, locked-split rejection,
+   distinct active/replay identities, and exact permitted-development parity.
+   Sol's final reviews found no remaining actionable issue for `rules` at
+   `bee48c6c` or `llm` at `c93c80b4`. Execute `llm_with_rules` against the
+   explicit entry, evidence, negative, exit, and stop gates in
+   [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md);
+   shared code and route cleanup follows stabilized method identities.
 4. **Implemented in the bounded slice; broader gate open:** the README-led
    supervisor path now exposes the five-stage orientation, generated six-path
    walkthrough, deliberate failure/recovery example, frontend startup,

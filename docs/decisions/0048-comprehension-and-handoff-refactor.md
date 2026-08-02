@@ -88,6 +88,87 @@ call. Exact live model text is not promised for nondeterministic providers.
   results matrix. Focused reports own prompt, component, negative, safety, and
   validation evidence.
 
+## ExECT `llm_with_rules` vertical-slice gate
+
+This is the next execution phase after the verified `rules` and `llm` slices.
+It is a behavior-preserving migration of the selected Decision 0046 Sol
+hybrid, not a new model, prompt, scorer, repair policy, or experiment.
+
+### Entry gate
+
+Work may start only from merged `main` with the ExECT `llm` slice green. The
+implementation must pin the governed baseline commit and the full permitted
+`dev140` comparison fingerprint. It must use the Decision 0041 structured
+one-call producer and Decision 0040 family ownership with
+`diagnosis_policy_variant="default"` and
+`prescription_policy_variant="default"`. No model call or locked-row access is
+part of the migration gate.
+
+### Required implementation invariants
+
+- The active public identity is `llm_with_rules`. Saved frontend run IDs,
+  retained-evidence IDs, manifest IDs, filenames, prompt/program versions, and
+  artifact hashes remain immutable and occupy separate provenance fields.
+  Resolution accepts a unique exact active, saved, retained, or supported
+  legacy alias and rejects collisions across those fields in both backend and
+  frontend.
+- `run_llm_with_rules_letter` consumes the same immutable
+  `produce_structured_letter` result used by `run_llm_only_letter`.
+  `run_primary_pair` makes exactly one producer call per letter; batch callers
+  reuse one configured program and preserve route, cache, mode, retry, and raw
+  output provenance. The hybrid must not make a second model call or invoke an
+  independent family extractor.
+- Only the selected `default/default` assembly is active. The archived
+  `combined` policy, `v08`, GEPA, and rejected candidate switches must be
+  unavailable through the selected runner. Historical replay, where retained,
+  requires an explicitly named opt-in path.
+- The trace keeps raw model clinical selection separate from deterministic
+  format, representation, family-transform, evidence, and final-view stages.
+  Stage order, IDs, actions, component owners, first owner/failure, mention
+  order, attributes, evidence, fact origin, and scorer-facing raw and final
+  projections must remain attributable.
+- Public runner, API, CLI, operational, split/checkpoint/resume, teaching, and
+  frontend paths delegate to the canonical orchestrator. LLM split access is
+  row-level `dev`/`dev140` only and requires an explicit `live`,
+  `prompt-only`, or `replay` mode. Every forbidden split or mode must reject
+  before consuming input, reading checkpoints, or configuring a provider.
+  Live mode rejects supplied raw outputs; replay preflights an exact complete
+  ID set; prompt-only makes no call; resume preserves completed-ID call counts.
+
+### Evidence and negative gate
+
+An independent full-value replay over all 140 governed Sol development rows
+must compare the pre-migration selected hybrid with the canonical path. The
+fingerprint must cover the producer row, raw candidate, final prediction,
+mentions and their order/attributes/evidence, parse and format-retry layers,
+model/prompt/profile/route/mode fields, every stage action and owner, first
+owner/failure, deterministic actions, and scorer raw/final projections. Only
+the declared outward active identity transition may be excluded. A paired spy
+test must additionally prove that `llm` and `llm_with_rules` receive the same
+producer object and require one call per letter.
+
+Negative probes must cover malformed and schema-blocking output, empty and
+partial families, evidence-invalid findings, duplicate/order behavior, SF
+projection and unknown suppression, mismatched producer/letter IDs, archived
+policy rejection, every forbidden split and mode, incomplete replay maps,
+checkpoint resume, fresh-provenance absence, alias collisions against the
+hydrated six-run payload, legacy delegation, and absence of any second
+producer or independent extractor call.
+
+### Exit and stop gate
+
+Before integration, generated architecture and teaching claims must describe
+the selected one-call four-family hybrid and regenerate check-clean. Hydrated
+Git LFS evidence, retained-manifest verification, all six no-call reference
+replays, locked-artifact safety, the full backend suite, Ruff, mypy, frontend
+unit tests, type checking, lint, and production build must pass. A Sol strict
+post-change review must report no actionable finding.
+
+Stop and open a separate decision or predeclared study for any prompt, model,
+route, scorer, split, clinical meaning, assembly policy, evidence policy, or
+call-count change; any locked-row exposure; any unexplained parity difference;
+or any route from the selected API into an archived policy.
+
 ## Completion gate
 
 Completion requires no unexplained obsolete active labels, broken internal
