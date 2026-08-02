@@ -145,6 +145,23 @@ def test_projection_order_preserves_deep_producer_and_requested_provenance() -> 
         assert {result.row["method_id"] for result in results} == {"llm", "llm_with_rules"}
 
 
+def test_structured_producer_rejects_nested_mutation() -> None:
+    producer = structured_one_call.produce_structured_letter(
+        LETTER,
+        raw_output=_raw(),
+        mode="replay",
+        split="dev140",
+        model="fixture/model",
+    )
+
+    with pytest.raises(TypeError, match="immutable"):
+        producer.row["structured_events"][0]["family"] = "prescription"
+    with pytest.raises(TypeError, match="immutable"):
+        producer.row["predicted_mentions"].append({})
+    with pytest.raises(TypeError, match="immutable"):
+        producer.stage_events[2].output_value.append({})
+
+
 def test_combined_policy_requires_an_archived_replay_opt_in() -> None:
     with pytest.raises(ValueError, match="archived_replay"):
         StructuredMethodConfig(diagnosis_policy_variant="combined")

@@ -59,6 +59,7 @@ from .contracts import (
     ExectStageEvent,
     StructuredMethodConfig,
     StructuredProducerResult,
+    deep_thaw,
 )
 from .letter_assembly import assemble_structured_rows
 
@@ -365,7 +366,14 @@ def _run_llm_with_rules_letter(
     config: StructuredMethodConfig,
 ) -> ExectRecordResult:
     _require_matching_letter(letter, producer)
-    assembled = assemble_structured_rows([letter], [producer.row], config=config)[letter.letter_id]
+    failure = _blocking_producer_failure(producer)
+    if failure is not None:
+        return _fail_closed_hybrid_result(letter, producer, config=config, failure=failure)
+
+    producer_row = deep_thaw(producer.row)
+    assembled = assemble_structured_rows([letter], [producer_row], config=config)[
+        letter.letter_id
+    ]
     stages = list(_hybrid_producer_stages(producer))
     stages.extend(
         [
@@ -373,7 +381,7 @@ def _run_llm_with_rules_letter(
                 stage_id="exect.hybrid.sf_state_projection",
                 owner="deterministic",
                 effect_class="clinical_meaning",
-                input_value=producer.row.get("predicted_mentions", []),
+                input_value=producer_row.get("predicted_mentions", []),
                 output_value=assembled["lanes"][SEIZURE_FREQUENCY.name]["predicted_mentions"],
                 changed=True,
                 action="project_seizure_frequency_state",
@@ -383,7 +391,7 @@ def _run_llm_with_rules_letter(
                 stage_id="exect.hybrid.sf_unknown_suppression",
                 owner="deterministic",
                 effect_class="clinical_meaning",
-                input_value=producer.row.get("predicted_mentions", []),
+                input_value=producer_row.get("predicted_mentions", []),
                 output_value=assembled["lanes"][SEIZURE_FREQUENCY.name]["predicted_mentions"],
                 changed=False,
                 action="suppress_unsupported_unknown_state",
@@ -471,7 +479,8 @@ def _run_llm_with_rules_letter(
         ]
     )
     prediction = _prediction_from_assembly(letter, assembled)
-    row = dict(assembled)
+    row = producer_row
+    row.update(assembled)
     row["source_method_id"] = "exectv2_llm_with_rules"
     row["source_pipeline_family"] = SOURCE_PIPELINE_FAMILY
     row["active_method"] = "llm_with_rules"
@@ -481,7 +490,7 @@ def _run_llm_with_rules_letter(
     row["split"] = producer.row.get("split", row.get("split"))
     row["route"] = producer.route
     row["dspy_cache"] = producer.dspy_cache
-    row["producer_row"] = dict(producer.row)
+    row["producer_row"] = deep_thaw(producer.row)
     row["prediction"] = prediction.model_dump(mode="json")
     row["scored_view"] = "clinical_headline"
     row["stage_events"] = [event.to_dict() for event in stages]
@@ -492,7 +501,7 @@ def _run_llm_with_rules_letter(
     row["first_prediction_changing_owner"] = (
         "model" if producer.raw_output else None
     )
-    row["first_failure"] = producer.call_error or next(iter(producer.parse_errors), None)
+    row["first_failure"] = _producer_first_failure(producer)
     return ExectRecordResult(
         prediction=prediction,
         row=row,
@@ -500,7 +509,121 @@ def _run_llm_with_rules_letter(
         producer=producer,
         scorer_projection={"view": "clinical_headline", "n_mentions": len(prediction.mentions)},
         first_prediction_changing_owner="model" if producer.raw_output else None,
-        first_failure=producer.call_error or next(iter(producer.parse_errors), None),
+        first_failure=_producer_first_failure(producer),
+    )
+
+
+def _blocking_producer_failure(producer: StructuredProducerResult) -> str | None:
+    """Return a terminal producer failure before any deterministic assembly runs."""
+
+    if producer.call_error:
+        return producer.call_error
+    for error in producer.parse_errors:
+        if str(error).startswith(("invalid_json:", "schema_validation_error:", "not_run")):
+            return str(error)
+    if producer.initial_parse_errors and not producer.format_retry_output:
+        for error in producer.initial_parse_errors:
+            if str(error).startswith(
+                ("invalid_json:", "schema_validation_error:", "not_run")
+            ):
+                return str(error)
+    if producer.parsed_record is None:
+        failure_codes = producer.row.get("structured_output_failure_codes", [])
+        return "; ".join(str(code) for code in failure_codes) or "schema_blocking_output"
+    return None
+
+
+def _producer_first_failure(producer: StructuredProducerResult) -> str | None:
+    return (
+        producer.call_error
+        or next(iter(producer.parse_errors), None)
+        or next(iter(producer.initial_parse_errors), None)
+    )
+
+
+def _fail_closed_hybrid_result(
+    letter: ExectLetter,
+    producer: StructuredProducerResult,
+    *,
+    config: StructuredMethodConfig,
+    failure: str,
+) -> ExectRecordResult:
+    """Return an explicit empty clinical result when model output is unusable."""
+
+    stages = list(_hybrid_producer_stages(producer))
+    stages.append(
+        ExectStageEvent(
+            stage_id="exect.hybrid.fail_closed",
+            owner="deterministic",
+            effect_class="validation_gate",
+            input_value={
+                "call_error": producer.call_error,
+                "initial_parse_errors": list(producer.initial_parse_errors),
+                "parse_errors": list(producer.parse_errors),
+                "structured_output_failure_codes": producer.row.get(
+                    "structured_output_failure_codes", []
+                ),
+            },
+            output_value={"predicted_mentions": [], "failure": failure},
+            changed=True,
+            action="fail_closed_on_producer_error",
+            rule_category="general",
+        )
+    )
+    prediction = PredictedLetter(
+        letter_id=letter.letter_id,
+        mentions=(),
+        diagnostics={
+            "view": "clinical_headline",
+            "policy": {
+                "diagnosis_policy_variant": config.diagnosis_policy_variant,
+                "prescription_policy_variant": config.prescription_policy_variant,
+                "sf_projection_ablation": config.sf_projection_ablation,
+            },
+            "status": "blocked",
+            "failure": failure,
+        },
+    )
+    row = deep_thaw(producer.row)
+    row.update(
+        {
+            "source_method_id": "exectv2_llm_with_rules",
+            "source_pipeline_family": SOURCE_PIPELINE_FAMILY,
+            "active_method": "llm_with_rules",
+            "method_id": "llm_with_rules",
+            "pipeline_family": "llm_with_rules",
+            "run_id": "llm_with_rules",
+            "split": producer.row.get("split", "operational"),
+            "route": producer.route,
+            "dspy_cache": producer.dspy_cache,
+            "producer_row": deep_thaw(producer.row),
+            "predicted_mentions": [],
+            "prediction": prediction.model_dump(mode="json"),
+            "scored_view": "clinical_headline",
+            "stage_events": [event.to_dict() for event in stages],
+            "scorer_projection": {
+                "view": "clinical_headline",
+                "n_mentions": 0,
+                "status": "blocked",
+            },
+            "first_prediction_changing_owner": "model" if producer.raw_output else None,
+            "first_failure": failure,
+            "status": "blocked",
+        }
+    )
+    scorer_projection = {
+        "view": "clinical_headline",
+        "n_mentions": 0,
+        "status": "blocked",
+    }
+    return ExectRecordResult(
+        prediction=prediction,
+        row=row,
+        stage_events=tuple(stages),
+        producer=producer,
+        scorer_projection=scorer_projection,
+        first_prediction_changing_owner="model" if producer.raw_output else None,
+        first_failure=failure,
     )
 
 
