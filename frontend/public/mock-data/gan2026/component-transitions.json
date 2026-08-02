@@ -49,7 +49,7 @@
   "architectures": [
     {
       "run_id": "deterministic_canonical_pipeline",
-      "label": "Rules-only",
+      "label": "Rules only",
       "model": "rules",
       "decision": "method",
       "examples": [
@@ -506,7 +506,7 @@
     },
     {
       "run_id": "llm_only_canonical_pipeline",
-      "label": "LLM-only",
+      "label": "LLM only",
       "model": "openai/gpt-4.1-mini",
       "decision": "method",
       "examples": [

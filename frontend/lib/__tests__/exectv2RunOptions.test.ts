@@ -182,9 +182,9 @@ describe("ExECTv2 architecture options", () => {
       "rules",
     ]);
     expect(groups.map((group) => group.runs.length)).toEqual([6, 6, 1]);
-    expect(groups[0].label).toBe("Winning mode · LLM with rules");
-    expect(groups[1].label).toBe("LLM only · raw one-call output");
-    expect(groups[2].label).toBe("Deterministic only · no model");
+    expect(groups[0].label).toBe("LLM with rules");
+    expect(groups[1].label).toBe("LLM only");
+    expect(groups[2].label).toBe("Rules only");
     expect(groups[0].runs.map((item) => item.model)).toEqual(MODELS);
   });
 

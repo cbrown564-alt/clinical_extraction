@@ -33,21 +33,22 @@ export function activeMethodLabel(method: ActiveMethod): string {
 }
 
 export function familyLabel(pipelineFamily: string): string {
-  const RULES_ONLY = "Rules-only";
+  const RULES_ONLY = activeMethodLabel("rules");
+  const LLM_ONLY = activeMethodLabel("llm");
   const BUCKETS: Record<string, string> = {
     // rules-only
     rules: RULES_ONLY,
     rules_only: RULES_ONLY,
 
     // LLM-only
-    llm_only_direct_labeler: "LLM-only (direct)",
-    llm_structured_events: "LLM-only (events)",
-    llm_first_direct_extractor: "LLM-only (direct)",
-    llm_heavy_clinical_frequency_reasoner: "LLM-only (heavy)",
-    llm_heavy_evidence_selection_with_deterministic_adapters: "LLM-only (heavy + rules)",
-    llm_replacement_postprocessing_ablation: "LLM-only (replacement)",
-    llm_only_canonical_pipeline: "LLM-only",
-    llm: "LLM-only",
+    llm_only_direct_labeler: `${LLM_ONLY} (direct)`,
+    llm_structured_events: `${LLM_ONLY} (events)`,
+    llm_first_direct_extractor: `${LLM_ONLY} (direct)`,
+    llm_heavy_clinical_frequency_reasoner: `${LLM_ONLY} (heavy)`,
+    llm_heavy_evidence_selection_with_deterministic_adapters: `${LLM_ONLY} (heavy + rules)`,
+    llm_replacement_postprocessing_ablation: `${LLM_ONLY} (replacement)`,
+    llm_only_canonical_pipeline: LLM_ONLY,
+    llm: LLM_ONLY,
 
     // llm_with_rules (retained legacy family ids resolve to the same label)
     hybrid_structured_events: "LLM with rules",
@@ -57,7 +58,7 @@ export function familyLabel(pipelineFamily: string): string {
     dspy_final_selection_adjudicator: "LLM with rules (DSPy adjudicator)",
 
     // fresh-evidence / ceiling architectures
-    fresh_evidence_reasoner: "LLM-only (fresh-evidence)",
+    fresh_evidence_reasoner: `${LLM_ONLY} (fresh-evidence)`,
   };
 
   return BUCKETS[pipelineFamily] ?? deSnake(pipelineFamily);
