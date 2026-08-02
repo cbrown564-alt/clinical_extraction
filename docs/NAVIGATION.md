@@ -7,10 +7,11 @@ owns the claim. Short task routes live in [THREAD_MAP.md](THREAD_MAP.md).
 
 ## Supervisor handoff
 
-Start with [README.md](../README.md). The supervisor path covers the one-sentence
-claim, five-stage pipeline diagram, six selected methods, frontend demonstration,
-six-path teaching case, canonical results report, evidence and limits, and exact
-reproduction instructions.
+Start with [README.md](../README.md). The supervisor path covers the two-task ×
+three-method story, equal Gan and ExECT primary results at a glance, five-stage
+pipeline diagram, six selected methods, frontend demonstration, six-path teaching
+case, canonical results report, evidence and limits, and exact reproduction
+instructions.
 
 The direct handoff links are [six-path walkthrough](architecture/teaching_cases/six_paths.md),
 [frontend startup](../frontend/README.md), [canonical results](research/six_model_comparison_report_2026-07-18.md),

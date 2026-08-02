@@ -147,6 +147,18 @@ audit protocol/substrate, Diagnosis resolution protocol). Residual-analysis
 report/protocol kept because machine artifacts name them. Further protocol
 cull and ACTIVE_ROADMAP completed-link thinning remain deferred.
 
+### README glance currency (2026-08-03)
+
+Decluttered the repository front door under Decision 0048 supervisor-path
+rules. `README.md` now leads with two tasks × three methods, an at-a-glance
+results table that treats Gan Purist and ExECT `clinical_headline` as equal
+primary strips, short system-state bullets, then the supervisor path.
+Research chronology moved out of the glance layer into existing owners
+(`PROJECT_STATUS.md`, comparison report, claim status). Recorded also in the
+[documentation corpus slice](research/maintenance/retention_slice_documentation_corpus_2026-08-03.md)
+follow-on note. Rebuild the standalone handoff package so shipped `README.md`
+matches active source.
+
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 

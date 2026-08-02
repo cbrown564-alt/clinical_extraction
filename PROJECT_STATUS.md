@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-03 during the documentation corpus triage pass
+Last updated: 2026-08-03 after the README glance currency pass
 
 ## Current handoff objective
 
@@ -33,10 +33,9 @@ separate claims.
 
 Active method names are `rules`, `llm`, and `llm_with_rules` across runtime,
 API/frontend, teaching material, and generated architecture. Historical
-replay identities remain. Label-leftover blockers (`comparison_mode` removal,
-stage-ID rename to active-method namespaces, ExECT component-ablation removal
-from the supervisor path, Gan ablation retag) are implemented in the working
-tree and still need to land before the 0048 status flip.
+replay identities remain. The Decision 0048 label-leftover blockers landed in
+`d8f39378`; residual polish (plain frontend group labels) and host/unaided
+review remain before the status flip.
 
 Retention waves through 2026-08-02 removed unserved mocks, orphan docs, and
 large scoring-lane orphans; retained-evidence checks remain the gate. The
@@ -46,23 +45,34 @@ unaided README review remain open. Owner:
 
 Documentation corpus triage advanced 2026-08-03: thinned active index and
 live-view status; six orphan docs deleted; Decision 0046/0047 evidence rebound;
-five peer satellites deleted after living-cited rebinds. README currency
-remains deferred. Owners:
+five peer satellites deleted after living-cited rebinds. README currency pass
+complete: glance layer shows Gan and ExECT primary results as peers. Owners:
 [corpus slice](docs/research/maintenance/retention_slice_documentation_corpus_2026-08-03.md),
 [peer-satellite slice](docs/research/maintenance/retention_slice_peer_satellites_2026-08-03.md),
-[REGENERATION.md](docs/REGENERATION.md).
+[REGENERATION.md](docs/REGENERATION.md), [README](README.md).
 
 ## Current outcome
 
 The selected six-model × three-method × two-task system is operational for
 live generation, saved/fixture demonstration, frontend development workflows,
 and exact no-call replay of the six retained reference cells. Decision 0047
-canonical orchestrators own the six selected task-method paths.
+canonical orchestrators own the six selected task-method paths. Gan and ExECT
+results are equally primary; scores are not interchangeable across tasks.
 
-Decision 0046 locks the paper's primary ExECT three-method comparison on
-Sol-matched four-family `clinical_headline`. Primary fills: rules-only
-`0.8160` (`dev140`) / `0.7154` (`test60`); Sol LLM-only `0.8097` / `0.7771`;
-Sol hybrid `0.8920` / `0.8047`. Owners:
+**Gan 2026 (Purist):** selected `llm_with_rules` final-ruleset no-call replay
+gives Sol `381/450` on `test450`; on `dev750`, mini `677/750` and Sol/Luna
+`660/750`. Development method peers on `dev750` (GPT-4.1-mini three-way
+reference): rules `697/750`, llm `581/750`. Owners:
+[comparison report](docs/research/six_model_comparison_report_2026-07-18.md),
+[paper claim status C16](docs/canon/10_paper_provenance.md),
+[final-ruleset replay](experiments/gan2026_six_model_current_floors_replay_20260731/replay_summary.json),
+retained three-way reference cells in
+[retained evidence index](docs/experiments/retained_evidence_manifest.md).
+
+**ExECTv2 (`clinical_headline` F1):** Decision 0046 locks the paper's primary
+three-method comparison on Sol-matched four-family scores. Primary fills:
+rules `0.8160` (`dev140`) / `0.7154` (`test60`); Sol llm `0.8097` / `0.7771`;
+Sol llm_with_rules `0.8920` / `0.8047`. Owners:
 [decision 0046](docs/decisions/0046-exect-primary-method-comparison-boundary.md),
 [stage panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json),
 [rules-only dev140](experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260801.json),
@@ -74,8 +84,9 @@ Sol hybrid `0.8920` / `0.8047`. Owners:
   [retained evidence index](docs/experiments/retained_evidence_manifest.md),
   [paper claim status](docs/canon/10_paper_provenance.md).
 - **Decision 0048/0049:** method migrations and pytest firewall are verified on
-  the stated dates above; host/unaided handoff checks and the 0048 status flip
-  remain open.
+  the stated dates above; README glance currency pass complete with Gan and
+  ExECT as equal primary strips; host/unaided handoff checks and the 0048
+  status flip remain open.
 - **Decision 0046 primary fills:** A→B→C protocol complete; numbers above.
   A consistency glance may still find residual manuscript wording drift; that
   is a separate Next item, not part of index triage.
@@ -99,21 +110,25 @@ Sol hybrid `0.8920` / `0.8047`. Owners:
 
 ## In progress
 
-- Decision 0048 label-leftover blockers in the working tree, awaiting commit
-  and the remaining host/unaided checks before status flip.
+- Decision 0048 residual label polish (plain frontend group labels; status
+  truthfulness for leftovers already landed in `d8f39378`) and host/unaided
+  checks before status flip.
+
 ## Next
 
 1. Verify the rebuilt supervisor handoff on the intended host/endpoint and
-   perform unaided README review.
-2. Land remaining Decision 0048 label-leftover working-tree changes; run the
-   strict completion gate only after host/unaided checks pass.
+   perform unaided README review against the decluttered glance layer.
+2. Finish residual Decision 0048 label polish; run the strict completion gate
+   only after host/unaided checks pass.
 3. Keep research and validation dependencies intact: do not resume DeepSeek U
    to 750; defer local-route DeepSeek parity until its runtime exists; retain
    independent clinical review as unvalidated; never tune from sealed
    `test450`, Real(300), or ExECT `test60`.
-4. README currency pass (deferred from documentation corpus triage).
-5. If manuscript wording still contradicts Decision 0046 primary rows, open a
+4. If manuscript wording still contradicts Decision 0046 primary rows, open a
    separate provenance edit.
+5. Optional: if the standalone handoff package should point supervisors at the
+   repository glance layer, add a short link from `handoff/source/README.md`
+   (operational package README remains distinct from the research front door).
 
 ## Blocked or unvalidated
 

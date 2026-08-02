@@ -8,7 +8,10 @@ import zipfile
 from pathlib import Path
 
 from scripts import build_supervisor_source_handoff as handoff_builder
-from scripts.build_supervisor_source_handoff import closure_mismatches
+from scripts.build_supervisor_source_handoff import (
+    canonical_bytes,
+    closure_mismatches,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 HANDOFF = ROOT / "handoff" / "supervisor"
@@ -55,8 +58,9 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
         )
     }
     assert set(recorded) == set(actual)
+    assert manifest.get("hash_policy"), "manifest must declare the text-hash policy"
     for name, path in actual.items():
-        content = path.read_bytes()
+        content = canonical_bytes(path)
         assert recorded[name]["sha256"] == hashlib.sha256(content).hexdigest()
         assert recorded[name]["bytes"] == len(content)
 

@@ -79,8 +79,9 @@ verified.
 10. **Documentation corpus triage + peer-satellite cull (2026-08-03):** thinned
     `NAVIGATION.md` and `PROJECT_STATUS.md`; expanded `THREAD_MAP.md` durable
     doors; rebound Decision 0046/0047 evidence owners; deleted six orphan docs
-    then five peer satellites after living-cited rebinds. README currency and
-    further protocol/roadmap-link thinning remain deferred. Records:
+    then five peer satellites after living-cited rebinds. README currency pass
+    complete: glance layer shows Gan and ExECT primary results as peers; further
+    protocol/roadmap-link thinning remains deferred. Records:
     [documentation corpus slice](../research/maintenance/retention_slice_documentation_corpus_2026-08-03.md),
     [peer-satellite slice](../research/maintenance/retention_slice_peer_satellites_2026-08-03.md),
     [REGENERATION.md](../REGENERATION.md). Glossary:
