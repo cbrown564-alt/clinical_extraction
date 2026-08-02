@@ -148,6 +148,7 @@ def test_teaching_cases_claim_no_correctness_without_gold(
     for run in cases[1].runs:
         assert run.correct is None
         assert "no correctness verdict is claimed" in run.correctness_note
+        assert "unscored scorer-boundary illustration" in run.observations[-1].note.lower()
 
 
 def test_teaching_cases_label_their_fixture_boundary(

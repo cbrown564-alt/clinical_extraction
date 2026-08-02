@@ -8,6 +8,10 @@ six-path teaching case, canonical results report, evidence and limits, and exact
 reproduction instructions. Detailed stage manifests, code maps, and historical
 decision evidence remain available through the links below.
 
+The direct handoff links are [six-path walkthrough](architecture/teaching_cases/six_paths.md),
+[frontend startup](../frontend/README.md), [canonical results](research/six_model_comparison_report_2026-07-18.md),
+[claim limits](canon/10_paper_provenance.md), and [exact no-call replay](../scripts/verify_reference_evidence.py).
+
 ## Current work
 
 | Need | Read |

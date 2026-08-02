@@ -32,10 +32,14 @@ verified.
    vertical slice before starting ExECT `llm`, then `llm_with_rules`; shared
    code and route cleanup follows stabilized method identities. Sol's review
    findings are closed by `7d9c4000`.
-4. **Audited, implementation open:** build the README-led supervisor path. The
-   remaining gaps are a directly exposed five-stage diagram, one contiguous
-   six-path walkthrough, a deliberate failure/recovery path, and shallower
-   links to frontend startup, results, limits, and replay commands.
+4. **Implemented in the bounded slice; broader gate open:** the README-led
+   supervisor path now exposes the five-stage orientation, generated six-path
+   walkthrough, deliberate failure/recovery example, frontend startup,
+   canonical results/limits, and exact no-call replay commands. Focused checks
+   pass. This does not complete Decision 0048: ExECT migration, standalone
+   source-to-shipped closure, supervisor-host verification, and unaided review
+   remain open. The stale standalone handoff package is a strict blocker
+   recorded in the [handoff plan](supervisor_local_extraction_handoff_plan.md).
 5. **Audited, deletion open:** retain selected architecture, evidence, replay,
    component-attribution, safety, and validation owners. Delete only after an
    owner check; unreferenced frontend mocks, candidate-only prompt drafts,
@@ -159,8 +163,8 @@ held-out rows, so it is not an independent holdout.
     panels are synthesized with task-specific scores, component attribution,
     operational caveats, and no pooled capability ranking. Sol leads both
     selected test panels, and their cross-task rank correlation is `0.61`.
-    Matched six-model Gan v0.5 dev750 coverage remains pending; the complete
-    v0.7 development panel is quarantined as a historical diagnostic.
+    Matched six-model Gan v0.5 dev750 coverage is complete; the complete v0.7
+    development panel is quarantined as a historical diagnostic.
 21. **ExECT SF over-inference analogue closed as diagnostic.** A predeclared
     no-call replay covers all six models and 840 model-letter dev140 pairs. The
     deterministic SF stage improves state-profile F1 for every model, with 54

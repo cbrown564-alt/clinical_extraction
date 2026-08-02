@@ -10,7 +10,7 @@ Letter: `TEACH-EXECT-01`
 
 ## How to read this
 
-The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Every stage after the model boundary is the real selected implementation.
+The letter is synthetic and the raw model outputs are fixtures standing in for one model call each. No model call is made when this case is built. Prediction-bearing stages and post-model gates use the real selected implementation; the final ExECT score entry is an unscored scorer-boundary illustration because this letter has no gold annotations.
 
 ## The letter
 
@@ -88,7 +88,7 @@ in : 5 finding(s) over nine entities
 out: {'Diagnosis': 2, 'Investigations': 1, 'Prescription': 1, 'SeizureFrequency': 1}
 ```
 
-> Scored against gold in a real run. Here the point is the comparison boundary: this method is scored over nine entities.
+> Unscored scorer-boundary illustration: this synthetic letter has no gold annotations. A real run scores the comparison over nine entities.
 
 ## LLM only
 
@@ -177,7 +177,7 @@ in : 4 finding(s) over four families
 out: {'Diagnosis': 1, 'SeizureFrequency': 1, 'Investigations': 1, 'Prescription': 1}
 ```
 
-> Scored against gold in a real run. Here the point is the comparison boundary: this method is scored over four families.
+> Unscored scorer-boundary illustration: this synthetic letter has no gold annotations. A real run scores the comparison over four families.
 
 ## LLM with rules
 
@@ -354,4 +354,4 @@ in : 4 finding(s) over four families
 out: {'Diagnosis': 1, 'SeizureFrequency': 1, 'Prescription': 1, 'Investigations': 1}
 ```
 
-> Scored against gold in a real run. Here the point is the comparison boundary: this method is scored over four families.
+> Unscored scorer-boundary illustration: this synthetic letter has no gold annotations. A real run scores the comparison over four families.

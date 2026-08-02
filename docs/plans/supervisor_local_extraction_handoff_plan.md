@@ -1,21 +1,48 @@
 # Supervisor local clinical extraction handoff plan
 
 Date: 2026-07-20  
-Status: implemented in source; focused and clean-archive checks pass; supervisor endpoint and usability validation pending  
+Status: source implementation exists; shipped tree and ZIP are stale relative to current source; strict closure and supervisor-host checks pending
 Work mode: build one complete operational handoff, then verify it on the
 supervisor's endpoint  
 Owner: this document
 
-## Implementation state (2026-07-21)
+## Strict completion blocker: source-to-shipped closure
 
-The source-first handoff is implemented under `handoff/supervisor/` and in
-`handoff/clinical_extraction_supervisor_handoff.zip`. Its public source is
-owned in `src/clinical_extraction_local/`; `handoff/source/` owns the README,
-setup, examples, and operational documentation. The builder copies the
-selected internal runtime through an explicit path allowlist and writes every
-shipped file and SHA-256 hash to `SOURCE_MANIFEST.json`.
+The standalone `handoff/supervisor/` tree and
+`handoff/clinical_extraction_supervisor_handoff.zip` are not current. Their
+archive/hash self-consistency checks pass against the stale shipped tree, but
+they do not prove parity with the active source. The shipped ExECT runtime still
+identifies the older Decision 0040 `combined`/joint policy, while active source
+uses Decision 0045 `default`/`default`; shipped Gan code also predates the
+current canonical delegation.
 
-Implemented behavior:
+The source-to-shipped closure gate is
+`tests/test_supervisor_source_handoff.py::test_shipped_package_matches_current_source_closure`.
+It compares the public handoff package exactly and every shipped internal
+runtime file against the current source. It is an intentional strict `xfail`
+until the handoff is rebuilt, so a clean archive/hash result must not be
+reported as a current supervisor package. Rebuild and re-run the handoff's
+focused checks before calling the standalone handoff verified or directing a
+supervisor to use it.
+
+This blocker is outside the bounded README-led milestone. No archive rebuild or
+new model call is authorized by that milestone.
+
+## Historical implementation snapshot (2026-07-21)
+
+The source-first handoff was built under `handoff/supervisor/` and in
+`handoff/clinical_extraction_supervisor_handoff.zip` at this snapshot. Its
+active public source is `src/clinical_extraction_local/`; `handoff/source/`
+owns the README, setup, examples, and operational documentation. The builder
+copies the selected internal runtime through an explicit path allowlist and
+writes every shipped file and SHA-256 hash to `SOURCE_MANIFEST.json`.
+
+The shipped tree and ZIP are now stale relative to the active source. The
+source-to-shipped closure test in the blocker above fails until they are
+rebuilt. The claims below describe the historical snapshot's behavior and
+checks; they do not certify the current shipped package.
+
+Historical behavior at that snapshot:
 
 - `show-config`, `validate-input`, real-schema `check`, `seizure-frequency`,
   `clinical-findings`, and independent two-call `all` commands;
@@ -30,7 +57,7 @@ Implemented behavior:
   examples, locked dependencies, tests, and a clean extraction archive with no
   `.pyz`, benchmark-result files, private configuration, or research reports.
 
-Local evidence:
+Historical local evidence for that snapshot:
 
 - 26 focused handoff, privacy, recovery, source-manifest, and five-fixture
   parity tests pass in the repository environment;
@@ -52,8 +79,9 @@ Still required before calling the handoff verified or usability-validated:
 - have the supervisor follow the README unaided and record any correction.
 
 No private note, locked row, or paid model call was used during implementation.
-This is operational implementation and local engineering evidence, not
-clinical validation or endpoint compatibility evidence.
+This was operational implementation and local engineering evidence, not
+clinical validation or endpoint compatibility evidence. Current source and
+shipped-package closure remain separate open checks.
 
 ## Objective
 
