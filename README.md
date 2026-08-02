@@ -11,7 +11,7 @@ clinical result and where each method fails.
 The current work is a comprehension and handoff refactor. The repository must
 remain able to generate live runs and support external validation while becoming
 clear enough for a supervisor to understand the system, inspect the frontend,
-follow one teaching case through all six selected paths, and reproduce selected
+follow the six-path teaching walkthrough, and reproduce selected
 results exactly from saved outputs. See [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
 and [project status](PROJECT_STATUS.md) for the scope, current results, and
 limits.
@@ -55,7 +55,8 @@ Current state, as of 2026-08-02:
 - Retained evidence index v3 records the source commit and exact dependency,
   prompt, scorer, split, repair, model, runbook, and CI versions.
 - The Markdown manuscript and IEEE source use only selected evidence. The
-  compiled three-page PDF has been visually checked.
+  compiled four-page PDF was previously visually checked; it was not rebuilt
+  for this handoff milestone.
 - The Gan efficiency audit records a 15/450 Purist gain for V12 at three cold
   model passes per note rather than one; unmatched cost and latency claims were
   rejected because the old runs lack telemetry.
@@ -73,10 +74,9 @@ Current state, as of 2026-08-02:
   no confidence-based review policy was adopted.
 - One bounded Prescription study and one separate Diagnosis-guard study both
   improved dev140 aggregates but failed their predeclared mechanism gates. No
-  further rule iteration is planned. A frozen joint replay composes those
-  implemented components without interaction and is now the disclosed fallback:
-  172 rescues, 3 regressions, and 153/160 current-policy rescues retained,
-  compared with 161, 9, and 143/160 for the previous fallback.
+  further rule iteration is planned. ExECT `joint`/`combined` is archived
+  development evidence only; active comparison uses `default`/`default` under
+  Decision 0045.
 - A no-call GPT-4.1-mini ablation found that the one-call Diagnosis
   architecture lowers final Diagnosis F1 from 0.8727 to 0.8542, with 3 rescues
   and 11 regressions. The same study exposed a first-140 versus manifest-dev140
@@ -89,7 +89,7 @@ Current state, as of 2026-08-02:
   0.7872 for Qwen 3.6:35B, and 0.7169 for Gemma 4 26B. The selected matched Gan
   v0.5 aggregate-only test450 panel retains the same six models, with the hosted
   and local route differences disclosed. Matched six-model v0.5 dev750 coverage
-  is pending.
+  is complete; its detailed evidence remains bounded development evidence.
 - The retained six-model comparison report keeps the task-specific scores
   separate. A predeclared no-call ExECT SF reliability replay improves the
   state-profile result for every model, but its unknown-only gold denominator
@@ -211,12 +211,16 @@ separate run-readiness protocol.
 
 ## Method names
 
-Current commands use three plain names:
+Gan commands use three plain names:
 
 - `rules`: deterministic rules produce the clinical interpretation;
 - `llm`: the model produces the clinical interpretation;
 - `llm_with_rules`: the model extracts or selects facts and deterministic code
   can normalize, select, or repair them.
+
+The ExECT migration is partial. Its trace/frontend outward identity has started,
+but the remaining ExECT runtime, CLI, registry, and shared-code migration is
+paused. Do not assume every ExECT command uses these names yet.
 
 Older long identifiers and version codes remain in saved filenames because
 replay hashes and research provenance depend on them. The
