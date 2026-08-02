@@ -1,10 +1,13 @@
 # Clinical extraction trace explorer specification
 
-Status: working local prototype; not part of the retained evidence deliverables  
+Status: implemented local application; not part of the retained evidence deliverables  
 Implementation: [`frontend`](../../frontend/) and
 [`clinical_extraction.trace_explorer`](../../src/clinical_extraction/trace_explorer/)  
-Prototype: [`experiments/pipeline_flow_prototypes_20260716.html`](../../experiments/pipeline_flow_prototypes_20260716.html)  
-Last updated: 2026-07-18
+Demonstration: run the API and Next.js frontend per
+[`frontend/README.md`](../../frontend/README.md) (`/workbench`, `/clinical-review`,
+and related routes); architecture teaching paths live in
+[`docs/architecture/`](../../docs/architecture/)  
+Last updated: 2026-08-02
 
 ## Purpose
 
