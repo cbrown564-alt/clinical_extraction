@@ -1,6 +1,27 @@
 # Project status
 
-Last updated: 2026-08-01 after decision 0047 canonical orchestrator refactor
+Last updated: 2026-08-02 after decision 0048 comprehension and handoff refactor
+
+## Current handoff objective
+
+[Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
+sets the active priority: turn the verified research system into a clean,
+immediately useful handoff package without removing the live-run capability
+needed for new experiments and external validation.
+
+The retained operational boundary is the selected six-model × three-method ×
+two-task system, its frontend development workflows, saved/fixture and live
+demonstrations, exact no-call replay, essential decision evidence, and a
+restricted research-validation workflow. Historical and supporting material is
+being triaged for value and regeneration status. This cleanup is behavior-
+preserving by default; any clinical, scoring, split, prompt, routing, or
+evidence-policy change requires a separate predeclared study.
+
+Completion requires a supervisor to navigate from the README to the frontend,
+the six-path teaching case, the canonical results report, evidence and limits,
+and reproduction commands without agent assistance. Engineering verification,
+research evidence, independent clinical review, and clinical validation remain
+separate claims.
 
 ## Current outcome
 

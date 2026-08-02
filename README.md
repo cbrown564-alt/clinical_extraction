@@ -8,10 +8,13 @@ values, validating evidence, scoring predictions, and analysing errors. It is
 also the research code for a paper about which pipeline component improves a
 clinical result and where each method fails.
 
-Repository cleanup, engineering repair, pipeline fixation, and clean-checkout
-verification are complete. The active work fills the remaining paper evidence
-gaps. Gan 2026 test evidence remains locked. See
-[project status](PROJECT_STATUS.md) for current results and limits.
+The current work is a comprehension and handoff refactor. The repository must
+remain able to generate live runs and support external validation while becoming
+clear enough for a supervisor to understand the system, inspect the frontend,
+follow one teaching case through all six selected paths, and reproduce selected
+results exactly from saved outputs. See [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md)
+and [project status](PROJECT_STATUS.md) for the scope, current results, and
+limits.
 
 ## Current work
 
@@ -29,7 +32,16 @@ recovery (`clinical_headline`). The ExECT score is an internal research metric,
 not the published strict benchmark. Paper-derived normalized-phrase, CUI, and
 full-attribute views are also available for explicit benchmark comparison.
 
-Current state, as of 2026-07-20:
+Current state, as of 2026-08-02:
+
+- The selected system remains operational: six models, three methods, and two
+  tasks must continue to support live generation, saved/fixture demonstrations,
+  frontend development workflows, and exact no-call replay.
+- The frontend is a retained demonstration and operational surface. External
+  validation uses a separate restricted workflow and readiness record.
+- Historical artifacts are being reviewed for value and regeneration status;
+  anything outside the selected system, decision evidence, reproducibility, or
+  stated limits is a deletion or simplification candidate.
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.

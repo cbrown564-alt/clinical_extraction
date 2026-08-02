@@ -1,12 +1,21 @@
 # Documentation navigation
 
+## Supervisor handoff
+
+Start with [README.md](../README.md). The supervisor path covers the one-sentence
+claim, five-stage pipeline diagram, six selected methods, frontend demonstration,
+six-path teaching case, canonical results report, evidence and limits, and exact
+reproduction instructions. Detailed stage manifests, code maps, and historical
+decision evidence remain available through the links below.
+
 ## Current work
 
 | Need | Read |
 | --- | --- |
 | Current outcome and checks | [project status](../PROJECT_STATUS.md) |
 | Ordered next work | [active roadmap](plans/ACTIVE_ROADMAP.md) |
-| Cleanup history and measurements | [repository cleanup record](research/maintenance/repository_surgery_assessment_2026-07-14.md) |
+| Current refactor scope and completion gate | [Decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) |
+| Regeneration and historical-artifact triage | [regeneration guide](REGENERATION.md) |
 
 ## How the pipelines work
 

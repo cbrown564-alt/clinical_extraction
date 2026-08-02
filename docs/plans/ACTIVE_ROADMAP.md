@@ -1,15 +1,40 @@
 # Active roadmap
 
-Last updated: 2026-08-01
+Last updated: 2026-08-02
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
 
 ## Objective
 
-Close the paper's named evidence gaps and complete the authorized canonical
-orchestrator refactor without changing selected clinical behavior, data splits,
-or limits on what each result supports.
+Implement [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md):
+make the verified two-task, three-method research system clear and immediately
+useful for supervisor review while preserving live generation, frontend
+development workflows, exact selected-result replay, essential decision
+evidence, and readiness for restricted external validation.
+
+The cleanup is behavior-preserving by default. Historical material must be
+reviewed for value and regeneration status before deletion. The final gate is
+not a polished document alone: the selected live and replay paths, frontend,
+generated outputs, canonical results report, and internal links must all be
+verified.
+
+## Active comprehension and handoff work
+
+1. Freeze `c3a6fbb7` as the clean baseline and complete the working-tree,
+   Git-history, and Git-LFS regeneration ledger in [REGENERATION.md](../REGENERATION.md).
+2. Refactor the Gan three-method slice using plain active names, then regenerate
+   and verify live, fixture, replay, frontend, and architecture paths.
+3. Apply the proven pattern to ExECT, shared code, and frontend routes; remove
+   obsolete interfaces, duplicate reports, and dead compatibility paths.
+4. Build the README-led supervisor path: concise claim, five-stage diagram, six
+   method summaries, six-path teaching case, frontend link, canonical results,
+   evidence/limits, and reproduction note.
+5. Review supporting prompt, component, negative, safety, and validation
+   evidence; delete anything that does not serve the five retention purposes in
+   Decision 0048.
+6. Add the restricted external-validation readiness record and run the strict
+   completion gate.
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.
@@ -276,9 +301,10 @@ safety checks, architecture drift checks, and repository checks are complete.
 A fresh checkout of commit `46fec88a` passes 1,488 tests, Ruff, mypy, and the
 documented no-call evidence checks.
 
-No model calls or locked-row inspection are authorized. Any semantic
-difference stops the refactor until it is repaired or handled as a separate,
-versioned decision.
+No model calls or locked-row inspection are authorized merely to establish
+parity or restore historical evidence. The selected live-run paths remain
+supported under decision 0048. Any semantic difference stops the cleanup until
+it is repaired or handled as a separate, versioned decision.
 
 ## Limits
 
@@ -289,10 +315,14 @@ versioned decision.
 - No cross-task ExECT over-reading claim is active. The selected diagnostic
   replay has zero gold unknown-only letters, so the current ExECT annotations
   cannot estimate the predeclared measure.
-- MLflow, the frontend, and Observatory are outside the retained deliverables.
+- MLflow and Observatory remain outside the retained deliverables. The
+  frontend is retained as the selected system's live and saved-run
+  demonstration and development workflow.
 - The five largest selected ExECT replay files are immutable Git LFS objects;
   the retained evidence index records their identities and retrieval details.
-- Fixing the pipeline does not authorize model calls or locked-row inspection.
+- Fixing the pipeline does not authorize model calls or locked-row inspection
+  for evidence repair or tuning. New live experiments require their own
+  protocol and run-readiness record.
 - Internal annotation review does not establish clinical validity; that claim
   still requires independent clinical review.
 
