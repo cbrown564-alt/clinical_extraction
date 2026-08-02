@@ -41,6 +41,7 @@ Do not create another roadmap, status board, evidence register, or research cano
 .venv/bin/python -m mypy src
 ```
 
+- Pytest tiers follow [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md): plain `pytest` is the always-on research-validity firewall (`-m "not deep"`). Use `pytest -m deep` only for the capped deep allowlist. New always-on cases must pass always-on admission and should replace or narrow an existing case for the same obligation. Terms: `CONTEXT.md` Verification.
 - Never run expensive model calls, inspect locked data, or regenerate broad artifacts merely to update documentation.
 
 ## Data, scoring, and evidence

@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after mock-registry fresh-evidence hygiene
+Last updated: 2026-08-02 after Decision 0049 Wave 1 gate mechanics
 
 ## Current handoff objective
 
@@ -8,6 +8,14 @@ Last updated: 2026-08-02 after mock-registry fresh-evidence hygiene
 sets the active priority: turn the verified research system into a clean,
 immediately useful handoff package without removing the live-run capability
 needed for new experiments and external validation.
+
+[Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md)
+adds a pytest simplification track: always-on research-validity firewall with
+a capped deep allowlist. Wave 1 (marker, default `-m "not deep"`, governing
+gate contract, AGENTS/TDD/README pointers) is implemented in the working tree;
+Waves 2–4 (deletes, fat-table thinning, scoreboard to ~200–300) are not
+started. No mass test deletion yet — plain `pytest` still collects the full
+pre-cull suite until cases are marked `deep` or removed.
 
 The retained operational boundary is the selected six-model × three-method ×
 two-task system, its frontend development workflows, saved/fixture and live

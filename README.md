@@ -293,6 +293,9 @@ python -m pip install -e ".[dev,trace-ui]"
 python -m pytest
 ```
 
+Plain `pytest` runs the always-on tier only (Decision 0049). Use
+`python -m pytest -m deep` for the optional deep allowlist.
+
 Use the repository environment for all Python commands. For local Ollama runs,
 start with one row, then five, then 25. Record the model route and API base in
 the run metadata.

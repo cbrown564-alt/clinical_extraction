@@ -19,6 +19,7 @@ The direct handoff links are [six-path walkthrough](architecture/teaching_cases/
 | Current outcome and checks | [project status](../PROJECT_STATUS.md) |
 | Ordered next work | [active roadmap](plans/ACTIVE_ROADMAP.md) |
 | Current refactor scope and completion gate | [Decision 0048](decisions/0048-comprehension-and-handoff-refactor.md) |
+| Pytest suite as research-validity firewall | [Decision 0049](decisions/0049-pytest-research-validity-firewall.md) |
 | Regeneration and historical-artifact triage | [regeneration guide](REGENERATION.md) |
 | Restricted external-validation run gate | [readiness template](runbooks/external_validation_readiness.md) |
 

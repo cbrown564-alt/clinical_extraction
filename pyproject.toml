@@ -57,6 +57,11 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# Decision 0049: plain pytest / CI = always-on tier only. Opt in with: pytest -m deep
+addopts = ["-m", "not deep"]
+markers = [
+  "deep: optional deep-tier mechanism tables; not part of the default gate (Decision 0049)",
+]
 filterwarnings = [
   "ignore:The 'prefix' argument in InputField/OutputField is deprecated:DeprecationWarning",
 ]
