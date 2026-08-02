@@ -11,9 +11,47 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import ExectLet
 
 
 def run_exect_notes(
-    notes: Sequence[InputNote], runtime: RuntimeConfig
+    notes: Sequence[InputNote], runtime: RuntimeConfig, *, method: str = "llm_with_rules"
 ) -> list[dict[str, Any]]:
-    """Run live provider concerns, then delegate prediction assembly."""
+    """Run the selected ExECT method while preserving the live default."""
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
+        Exectv2PipelineConfiguration,
+        Exectv2PipelineRunner,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
+        active_method_name,
+    )
+
+    active_method = active_method_name(method)
+    if active_method == "rules":
+        runner = Exectv2PipelineRunner(Exectv2PipelineConfiguration(method=method))
+        rules_output: list[dict[str, Any]] = []
+        for note in notes:
+            result = runner.run(ExectLetter(note.note_id, note.text)).result
+            rules_output.append(
+                {
+                    "id": note.note_id,
+                    "task": "exect",
+                    "status": "ok",
+                    "model": "(model-independent)",
+                    "pipeline": "rules",
+                    "method": "rules",
+                    "run_id": "rules",
+                    "prediction": {
+                        "mentions": [
+                            mention.model_dump(mode="json")
+                            for mention in result.prediction.mentions
+                        ]
+                    },
+                    "comparison_projection": result.comparison_projection.model_dump(mode="json"),
+                    "diagnostics": dict(result.prediction.diagnostics),
+                    "trace": [event.to_dict() for event in result.stage_events],
+                }
+            )
+        return rules_output
+    if active_method == "llm":
+        raise ValueError("ExECT llm-only migration is not part of the rules vertical slice")
 
     from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
         runner as structured_runner,

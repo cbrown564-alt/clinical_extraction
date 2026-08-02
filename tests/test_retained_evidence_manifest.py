@@ -258,6 +258,6 @@ def test_deterministic_all9_registry_entry_is_the_rules_reference() -> None:
         md_path=Path("docs/experiments/example.md"),
     )
 
-    assert entry.architecture_family == "rules_only"
+    assert entry.architecture_family == "rules"
     assert entry.comparison_role == "control"
     assert entry.registry_roles == ("architecture_comparator",)

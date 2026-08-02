@@ -2,6 +2,7 @@ import {
   groupExectv2Runs,
   hydrateExectv2Run,
   hydrateExectv2Runs,
+  resolveExectv2RunId,
 } from "../exectv2RunOptions";
 import type {
   Exectv2ComparisonMode,
@@ -31,6 +32,49 @@ function run(
 }
 
 describe("ExECTv2 architecture options", () => {
+  it("resolves retained aliases exactly and rejects unknown or colliding aliases", () => {
+    const rules = {
+      ...run("deterministic_only", "rules", 0),
+      run_id: "rules",
+      saved_run_id: "exectv2_deterministic_all9_dev140",
+      retained_evidence_id: "exectv2_deterministic_all9_dev_20260714",
+      legacy_run_ids: [
+        "rules_only",
+        "exectv2_rules_only",
+        "exectv2_deterministic_all9_dev140",
+      ],
+    };
+    const other = run("llm_only", MODELS[0], 1);
+    const collision = {
+      ...run("llm_plus_rules", MODELS[1], 2),
+      saved_run_id: "same-alias",
+    };
+    const collision2 = {
+      ...run("llm_plus_rules", MODELS[2], 3),
+      saved_run_id: "same-alias",
+    };
+
+    expect(resolveExectv2RunId([rules, other], "rules")).toBe("rules");
+    expect(resolveExectv2RunId([rules, other], "rules_only")).toBe("rules");
+    expect(resolveExectv2RunId([rules, other], "exectv2_rules_only")).toBe("rules");
+    expect(
+      resolveExectv2RunId([rules, other], "exectv2_deterministic_all9_dev140")
+    ).toBe("rules");
+    expect(
+      resolveExectv2RunId([rules, other], "exectv2_deterministic_all9_dev_20260714")
+    ).toBe("rules");
+    expect(resolveExectv2RunId([rules, other], "missing")).toBeNull();
+    expect(resolveExectv2RunId([rules, other], "deterministic_all9")).toBeNull();
+    expect(resolveExectv2RunId([rules, other], "exectv2_deterministic_all9")).toBeNull();
+    expect(resolveExectv2RunId([collision, collision2], "same-alias")).toBeNull();
+
+    const exactAliasCollision = [
+      rules,
+      { ...run("llm_only", MODELS[3], 4), legacy_run_ids: ["rules"] },
+    ];
+    expect(resolveExectv2RunId(exactAliasCollision, "rules")).toBeNull();
+  });
+
   it("groups the winning mode first, then its raw and no-call comparators", () => {
     const runs = [
       run("deterministic_only", "(model-independent)", 0),
