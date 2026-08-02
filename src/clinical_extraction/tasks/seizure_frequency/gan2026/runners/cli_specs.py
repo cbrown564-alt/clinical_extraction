@@ -68,7 +68,7 @@ def get_cli_specs() -> dict[str, Any]:
             default_report_path=hybrid_structured_events.DEFAULT_REPORT_PATH,
             run_split=lambda records, **kwargs: run_split(
                 records,
-                architecture="hybrid_structured_events",
+                architecture="llm_with_rules",
                 **kwargs,
             ),
             write_jsonl=hybrid_structured_events.write_jsonl,

@@ -39,6 +39,7 @@ export function familyLabel(pipelineFamily: string): string {
 
     // hybrid
     hybrid_structured_events: "Hybrid (events)",
+    llm_with_rules: "LLM with rules",
     hybrid_clinical_frequency_state_graph: "Hybrid (state graph)",
     reset_clinical_assessment_pipeline: "Hybrid (reset)",
     dspy_final_selection_adjudicator: "Hybrid (DSPy adjudicator)",
