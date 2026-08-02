@@ -57,6 +57,19 @@ def test_frontend_catalog_and_read_only_surfaces_use_the_live_api(client: TestCl
     assert rules["saved_run_id"] == "exectv2_deterministic_all9_dev140"
     assert rules["retained_evidence_id"] == "exectv2_deterministic_all9_dev_20260714"
 
+    hybrid = [
+        run
+        for run in exect_runs.json()["runs"]
+        if run["comparison_mode"] == "llm_plus_rules"
+    ]
+    active_hybrid = [run for run in hybrid if run.get("active_method") == "llm_with_rules"]
+    assert len(active_hybrid) == 1
+    assert active_hybrid[0]["model"] == "openai/gpt-5.6-sol"
+    for alias in ("llm_with_rules", "exectv2_llm_with_rules"):
+        selected = client.get(f"/exectv2/runs/{alias}")
+        assert selected.status_code == 200
+        assert selected.json()["run"]["run_id"] == active_hybrid[0]["run_id"]
+
     for run_id in (
         "rules",
         "rules_only",
@@ -84,7 +97,7 @@ def test_exect_alias_resolution_is_exact_and_collision_safe() -> None:
     store = FrontendDataStore(FRONTEND_FIXTURES)
     store._exectv2_payload = {
         "runs": [
-            {"run_id": "rules_only", "saved_run_id": "same-alias"},
+            {"run_id": "rules_only", "saved_run_id": "same-alias", "method_id": "llm_with_rules"},
             {"run_id": "llm", "saved_run_id": "same-alias"},
         ],
         "shared_letters": [],
@@ -96,7 +109,7 @@ def test_exect_alias_resolution_is_exact_and_collision_safe() -> None:
     store._exectv2_payload = {
         "runs": [
             {"run_id": "rules", "saved_run_id": "saved-rules"},
-            {"run_id": "llm", "legacy_run_ids": ["rules"]},
+            {"run_id": "llm", "method_id": "rules", "legacy_run_ids": ["rules"]},
         ],
         "shared_letters": [],
     }

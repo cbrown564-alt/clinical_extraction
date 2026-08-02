@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.naming import (
+    LLM_METHOD_ALIASES,
+    LLM_WITH_RULES_METHOD_ALIASES,
     RULES_METHOD_ALIASES,
     UNOWNED_RULES_ALIASES,
 )
@@ -288,12 +290,25 @@ class FrontendDataStore:
     def _exect_run_matches(run: dict[str, Any], requested: str) -> bool:
         if requested in UNOWNED_RULES_ALIASES:
             return False
+        active_aliases = {
+            **{alias: "llm" for alias in LLM_METHOD_ALIASES},
+            **{alias: "llm_with_rules" for alias in LLM_WITH_RULES_METHOD_ALIASES},
+            **{alias: "rules" for alias in RULES_METHOD_ALIASES},
+        }
+        requested_active = active_aliases.get(requested)
+        if requested_active is not None and requested_active in {
+            run.get("active_method"),
+            run.get("method_id"),
+        }:
+            return True
         aliases = {
             value
             for value in (
                 run.get("run_id"),
                 run.get("saved_run_id"),
                 run.get("retained_evidence_id"),
+                run.get("active_method"),
+                run.get("method_id"),
             )
             if isinstance(value, str)
         }

@@ -586,8 +586,8 @@ def test_exect_llm_split_delegates_checkpoint_resume_and_skips_completed_ids(
 
     second_rows, second_meta = run_split(
         letters,
-        method="exectv2_llm_only",
-        split="dev140",
+        method="llm",
+        split="dev",
         model="fixture/model",
         mode="live",
         resume=True,
@@ -599,6 +599,110 @@ def test_exect_llm_split_delegates_checkpoint_resume_and_skips_completed_ids(
     assert second_rows == first_rows
     assert second_meta["n_resumed"] == 2
     assert counts == {"build": 1, "programs": 1, "calls": 2}
+
+
+def test_exect_llm_resume_rejects_foreign_run_provenance_before_provider_setup(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    import dspy
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    letters = [ExectLetter("LLM-FOREIGN-1", _letter().note_text)]
+    checkpoint = tmp_path / "rows.jsonl"
+    report = tmp_path / "report.json"
+    counts = {"build": 0, "calls": 0}
+
+    def build(_model: str, **_kwargs: Any) -> object:
+        counts["build"] += 1
+        return object()
+
+    monkeypatch.setattr(dspy, "configure", lambda **_kwargs: None)
+
+    run_split(
+        letters,
+        method="llm",
+        split="dev",
+        model="fixture/model",
+        mode="replay",
+        progress_every=1,
+        checkpoint_jsonl_path=checkpoint,
+        checkpoint_report_path=report,
+        raw_outputs={letters[0].letter_id: _raw()},
+    )
+    with pytest.raises(ValueError, match="mismatched run_(fingerprint|provenance)"):
+        run_split(
+            letters,
+            method="llm_with_rules",
+            split="dev",
+            model="fixture/model",
+            mode="live",
+            resume=True,
+            checkpoint_jsonl_path=checkpoint,
+            checkpoint_report_path=report,
+            model_builder=build,
+        )
+    assert counts["build"] == 0
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("duplicate", "duplicate letter_id"),
+        ("foreign", "foreign to the requested split"),
+        ("missing_fingerprint", "mismatched run_fingerprint"),
+        ("malformed", "checkpoint is malformed"),
+    ],
+)
+def test_exect_llm_resume_rejects_malformed_or_extra_checkpoint_rows(
+    mutation: str,
+    message: str,
+    tmp_path: Path,
+) -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    letter = ExectLetter(f"LLM-CHECKPOINT-{mutation}", _letter().note_text)
+    checkpoint = tmp_path / "rows.jsonl"
+    report = tmp_path / "report.json"
+    run_split(
+        [letter],
+        method="llm",
+        split="dev",
+        model="fixture/model",
+        mode="replay",
+        progress_every=1,
+        checkpoint_jsonl_path=checkpoint,
+        checkpoint_report_path=report,
+        raw_outputs={letter.letter_id: _raw()},
+    )
+    if mutation == "malformed":
+        checkpoint.write_text("not-json\n", encoding="utf-8")
+    else:
+        rows = [json.loads(line) for line in checkpoint.read_text(encoding="utf-8").splitlines()]
+        if mutation == "duplicate":
+            rows.append(dict(rows[0]))
+        elif mutation == "foreign":
+            rows[0]["letter_id"] = "FOREIGN-CHECKPOINT-ROW"
+        else:
+            rows[0].pop("run_fingerprint")
+        checkpoint.write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+            encoding="utf-8",
+        )
+
+    with pytest.raises(ValueError, match=message):
+        run_split(
+            [letter],
+            method="llm",
+            split="dev",
+            model="fixture/model",
+            mode="replay",
+            resume=True,
+            checkpoint_jsonl_path=checkpoint,
+            checkpoint_report_path=report,
+            raw_outputs={letter.letter_id: _raw()},
+        )
 
 
 def test_exect_llm_independent_dev140_raw_lane_parity_is_pinned() -> None:

@@ -16,6 +16,7 @@
   "stages": [
     {
       "stage_id": "exect.hybrid.build_prompt",
+      "runtime_action": "build_four_family_prompt",
       "name": "Build the four-family prompt",
       "operation": "Render the note text and the four-family event-ledger schema into the prompt input for one structured call.",
       "owner": "deterministic",
@@ -35,6 +36,7 @@
     },
     {
       "stage_id": "exect.hybrid.model_call",
+      "runtime_action": "one_model_or_replay_call",
       "name": "Model proposes findings for four families",
       "operation": "One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.",
       "owner": "model",
@@ -54,6 +56,7 @@
     },
     {
       "stage_id": "exect.hybrid.parse_and_retry",
+      "runtime_action": "parse_schema_and_optional_format_retry",
       "name": "Parse output, with format-only retry when eligible",
       "operation": "Recover and repair the JSON payload, coerce legacy mention shapes into events, and for eligible local models make one format-only retry that is accepted only if it validates.",
       "owner": "deterministic",
@@ -73,6 +76,7 @@
     },
     {
       "stage_id": "exect.hybrid.flatten_events",
+      "runtime_action": "flatten_model_events",
       "name": "Flatten model events into mentions",
       "operation": "Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.",
       "owner": "deterministic",
@@ -92,6 +96,7 @@
     },
     {
       "stage_id": "exect.hybrid.project_and_gate",
+      "runtime_action": "repair_attributes_and_enforce_evidence",
       "name": "Enrich attributes and apply render-safety gates",
       "operation": "Attach CUI and canonical-phrase attributes, drop attribute values outside the closed vocabulary, drop seizure-frequency mentions that carry no frequency state, and drop modality-only Investigations duplicates.",
       "owner": "deterministic",
@@ -112,6 +117,7 @@
     },
     {
       "stage_id": "exect.hybrid.sf_state_projection",
+      "runtime_action": "project_seizure_frequency_state",
       "name": "Project seizure-frequency facts into the state representation",
       "operation": "Convert the model's seizure-frequency facts into the state and ownership representation the ExECT scorer expects, adding state attributes and named-type ownership the model did not supply.",
       "owner": "deterministic",
@@ -132,6 +138,7 @@
     },
     {
       "stage_id": "exect.hybrid.sf_unknown_suppression",
+      "runtime_action": "suppress_unsupported_unknown_state",
       "name": "Suppress unsupported unknown states",
       "operation": "Remove seizure-frequency findings whose state is unknown and unsupported under the narrowly defined suppression rule.",
       "owner": "deterministic",
@@ -152,6 +159,7 @@
     },
     {
       "stage_id": "exect.hybrid.register_findings",
+      "runtime_action": "register_raw_and_scored_findings",
       "name": "Register raw and scored findings",
       "operation": "Record both the raw and the scored surface of every finding in the finding store, with its producer, source lane, and ownership label.",
       "owner": "deterministic",
@@ -172,6 +180,7 @@
     },
     {
       "stage_id": "exect.hybrid.lens.diagnosis",
+      "runtime_action": "apply_named_family_lens",
       "name": "Diagnosis family transform",
       "operation": "Reconcile Diagnosis findings using heading recovery and the standard dictionary; may rewrite, drop, or add concepts.",
       "owner": "deterministic",
@@ -192,6 +201,7 @@
     },
     {
       "stage_id": "exect.hybrid.lens.seizure_frequency",
+      "runtime_action": "apply_named_family_lens",
       "name": "Seizure Frequency family transform",
       "operation": "Assemble the already-projected and already-suppressed seizure-frequency findings; a thin transform that adds no further clinical change.",
       "owner": "deterministic",
@@ -212,6 +222,7 @@
     },
     {
       "stage_id": "exect.hybrid.lens.prescription",
+      "runtime_action": "apply_named_family_lens",
       "name": "Prescription family transform",
       "operation": "Apply dictionary-driven regimen processing and bounded correction to Prescription findings.",
       "owner": "deterministic",
@@ -232,6 +243,7 @@
     },
     {
       "stage_id": "exect.hybrid.lens.investigations",
+      "runtime_action": "apply_named_family_lens",
       "name": "Investigations family transform",
       "operation": "Validate, normalize, and de-duplicate Investigations findings, including dropping modality-only duplicates of a finding that already carries a result.",
       "owner": "deterministic",
@@ -251,6 +263,7 @@
     },
     {
       "stage_id": "exect.hybrid.evidence_requirement",
+      "runtime_action": "require_exact_source_evidence",
       "name": "Require exact evidence for every finding",
       "operation": "Reject the assembled letter if any final finding lacks evidence or carries evidence that is not an exact substring of the note.",
       "owner": "deterministic",
@@ -271,6 +284,7 @@
     },
     {
       "stage_id": "exect.hybrid.materialize_views",
+      "runtime_action": "materialize_scoring_views",
       "name": "Materialize the score views",
       "operation": "Build the named prediction surfaces - raw candidate, evidence valid, and clinical headline - from the same assembled findings.",
       "owner": "deterministic",
@@ -291,6 +305,7 @@
     },
     {
       "stage_id": "exect.hybrid.score",
+      "runtime_action": "defer_gold_comparison_to_scorer",
       "name": "Score against gold",
       "operation": "Match the materialized view's mentions to gold annotations and report per-entity and overall precision, recall, and F1.",
       "owner": "scorer",

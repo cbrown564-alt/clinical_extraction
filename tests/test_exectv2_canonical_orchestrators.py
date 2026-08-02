@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+from copy import deepcopy
 
 import pytest
 
@@ -98,7 +100,49 @@ def test_primary_pair_reuses_one_immutable_producer(monkeypatch: pytest.MonkeyPa
     assert hybrid.producer is producer
     assert llm_only.row["method_id"] == "llm"
     assert llm_only.row["source_method_id"] == "exectv2_llm_only"
-    assert hybrid.row["method_id"] == "exectv2_llm_with_rules"
+    assert hybrid.row["method_id"] == "llm_with_rules"
+    assert hybrid.row["source_method_id"] == "exectv2_llm_with_rules"
+
+
+def test_projection_order_preserves_deep_producer_and_requested_provenance() -> None:
+    projections = {
+        "hybrid": structured_one_call.run_llm_with_rules_letter,
+        "llm": structured_one_call.run_llm_only_letter,
+    }
+    for order in (("hybrid", "llm"), ("llm", "hybrid")):
+        producer = structured_one_call.produce_structured_letter(
+            LETTER,
+            raw_output=_raw(),
+            mode="replay",
+            split="dev140",
+            model="fixture/model",
+        )
+        before_row = deepcopy(dict(producer.row))
+        before_stages = tuple(event.to_dict() for event in producer.stage_events)
+        before_fingerprint = hashlib.sha256(
+            json.dumps(
+                {"row": before_row, "stages": before_stages},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        results = [projections[name](LETTER, producer) for name in order]
+        assert producer.row == before_row
+        assert tuple(event.to_dict() for event in producer.stage_events) == before_stages
+        after_fingerprint = hashlib.sha256(
+            json.dumps(
+                {"row": dict(producer.row), "stages": before_stages},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        assert after_fingerprint == before_fingerprint
+        for result in results:
+            assert result.producer is producer
+            assert result.row["split"] == "dev140"
+            assert result.row["producer_row"] == before_row
+            assert result.row["producer_row"]["model"] == "fixture/model"
+        assert {result.row["method_id"] for result in results} == {"llm", "llm_with_rules"}
 
 
 def test_combined_policy_requires_an_archived_replay_opt_in() -> None:

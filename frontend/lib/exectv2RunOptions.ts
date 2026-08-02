@@ -13,6 +13,8 @@ const ACTIVE_METHOD_ALIASES: Readonly<Record<string, string>> = {
   llm: "llm",
   llm_only: "llm",
   exectv2_llm_only: "llm",
+  llm_with_rules: "llm_with_rules",
+  exectv2_llm_with_rules: "llm_with_rules",
 };
 
 const MODEL_ORDER = [

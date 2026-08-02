@@ -142,65 +142,104 @@ def run_exect_notes(
             )
         return llm_output
 
-    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured import (  # noqa: E501
-        runner as structured_runner,
+    import dspy
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration import (
+        structured_one_call,
+    )
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
+        Exectv2PipelineConfiguration,
+        Exectv2PipelineRunner,
     )
 
-    letters = [ExectLetter(note.note_id, note.text) for note in notes]
-    rows, _ = structured_runner.run_split(
-        letters,
-        split="operational",
-        model=runtime.model,
-        temperature=runtime.temperature,
-        max_tokens=runtime.max_tokens,
-        mode="live",
-        dspy_cache=False,
-        api_base=runtime.base_url,
-        api_key=runtime.api_key,
-        timeout=int(runtime.timeout_seconds),
-        prompt_profile="full",
+    dspy.configure(
+        lm=structured_one_call.build_dspy_lm(
+            runtime.model,
+            temperature=runtime.temperature,
+            max_tokens=runtime.max_tokens,
+            cache=False,
+            api_base=runtime.base_url,
+            api_key=runtime.api_key,
+            timeout=int(runtime.timeout_seconds),
+        )
     )
-    failed = {
-        str(row["letter_id"]): row
-        for row in rows
-        if row.get("call_error") or _blocking_parse_error(row.get("parse_errors", []))
-    }
-    usable_letters = [letter for letter in letters if letter.letter_id not in failed]
-    usable_rows = [row for row in rows if str(row["letter_id"]) not in failed]
-    assembled_by_id: dict[str, dict[str, Any]] = {}
-    if usable_rows:
-        assembled_by_id = _assemble(usable_letters, usable_rows)
-
+    program = structured_one_call.DspyKeyEntitiesStructuredExtractor()
+    format_retry_program = (
+        structured_one_call.FormatOnlyJsonRetry()
+        if runtime.model.startswith("ollama_chat/")
+        else None
+    )
+    runner = Exectv2PipelineRunner(
+        Exectv2PipelineConfiguration(
+            method=method,
+            model=runtime.model,
+            temperature=runtime.temperature,
+            max_tokens=runtime.max_tokens,
+            mode="live",
+            api_base=runtime.base_url,
+            api_key=runtime.api_key,
+            timeout=int(runtime.timeout_seconds),
+            route=runtime.base_url,
+            dspy_cache=False,
+            program=program,
+            format_retry_program=format_retry_program,
+            split="operational",
+        )
+    )
     output: list[dict[str, Any]] = []
     for note in notes:
-        if note.note_id in failed:
-            row = failed[note.note_id]
+        letter = ExectLetter(note.note_id, note.text)
+        try:
+            result = runner.run(letter).result
+        except Exception as exc:
             output.append(
                 {
                     "id": note.note_id,
                     "task": "exect",
                     "status": "error",
                     "model": runtime.api_model,
-                    "pipeline": "llm_with_rules_one_call",
-                    "error": {
-                        "type": "model_or_parse_failure",
-                        "message": row.get("call_error")
-                        or "; ".join(row.get("parse_errors", [])),
-                    },
+                    "pipeline": "llm_with_rules",
+                    "error": {"type": type(exc).__name__, "message": str(exc)},
                 }
             )
             continue
-        assembled = assembled_by_id[note.note_id]
+        row = dict(result.row)
+        if _llm_row_has_blocking_failure(row):
+            output.append(
+                {
+                    "id": note.note_id,
+                    "task": "exect",
+                    "status": "error",
+                    "model": runtime.api_model,
+                    "pipeline": "llm_with_rules",
+                    "method": "llm_with_rules",
+                    "run_id": "llm_with_rules",
+                    "error": {
+                        "type": "model_or_parse_failure",
+                        "message": row.get("call_error")
+                        or "; ".join(str(error) for error in row.get("parse_errors", [])),
+                    },
+                    "trace": [event.to_dict() for event in result.stage_events],
+                }
+            )
+            continue
         output.append(
             {
                 "id": note.note_id,
                 "task": "exect",
                 "status": "ok",
                 "model": runtime.api_model,
-                "pipeline": "llm_with_rules_one_call",
-                "prompt_version": usable_rows[0].get("prompt_version", ""),
-                "prediction": {"mentions": assembled["predicted_mentions"]},
-                "lanes": assembled["lanes"],
+                "pipeline": "llm_with_rules",
+                "method": "llm_with_rules",
+                "run_id": "llm_with_rules",
+                "scored_view": "clinical_headline",
+                "prompt_version": row.get("prompt_version", ""),
+                "prompt_profile": row.get("prompt_profile", ""),
+                "route": row.get("route", runtime.base_url),
+                "raw_output": row.get("raw_output", ""),
+                "prediction": {"mentions": row.get("predicted_mentions", [])},
+                "lanes": row.get("lanes", {}),
+                "trace": [event.to_dict() for event in result.stage_events],
             }
         )
     return output

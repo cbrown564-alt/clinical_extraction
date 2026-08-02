@@ -98,6 +98,27 @@ describe("ExECTv2 architecture options", () => {
     expect(resolveExectv2RunId([savedLlmRun, collidingRun], "llm")).toBeNull();
   });
 
+  it("resolves the active hybrid aliases without rewriting the saved run id", () => {
+    const savedHybridRun = {
+      ...run("llm_plus_rules", MODELS[2], 10),
+      run_id: "exectv2_winning_mode_gpt56sol_llm_plus_rules_dev140",
+      active_method: "llm_with_rules",
+      method_id: "llm_with_rules",
+    };
+    expect(resolveExectv2RunId([savedHybridRun], "llm_with_rules")).toBe(
+      savedHybridRun.run_id
+    );
+    expect(resolveExectv2RunId([savedHybridRun], "exectv2_llm_with_rules")).toBe(
+      savedHybridRun.run_id
+    );
+
+    const collidingRun = {
+      ...run("llm_only", MODELS[3], 11),
+      legacy_run_ids: ["llm_with_rules"],
+    };
+    expect(resolveExectv2RunId([savedHybridRun, collidingRun], "llm_with_rules")).toBeNull();
+  });
+
   it("uses only the Decision-0046 Sol raw lane for the active aliases in the actual payload", () => {
     const hydrated = hydrateExectv2Runs(actualRuns);
     const rawRuns = hydrated.runs.filter((item) => item.comparison_mode === "llm_only");
@@ -114,6 +135,26 @@ describe("ExECTv2 architecture options", () => {
       )
     ).toBe(true);
     expect(resolveExectv2RunId(rawRuns, sol?.run_id ?? "")).toBe(sol?.run_id);
+  });
+
+  it("uses only the Decision-0046 Sol final lane for the active hybrid aliases", () => {
+    const hydrated = hydrateExectv2Runs(actualRuns);
+    const finalRuns = hydrated.runs.filter(
+      (item) => item.comparison_mode === "llm_plus_rules"
+    );
+    const sol = finalRuns.find((item) => item.model === "openai/gpt-5.6-sol");
+    expect(finalRuns).toHaveLength(6);
+    expect(sol).toBeDefined();
+    expect(resolveExectv2RunId(finalRuns, "llm_with_rules")).toBe(sol?.run_id);
+    expect(resolveExectv2RunId(finalRuns, "exectv2_llm_with_rules")).toBe(
+      sol?.run_id
+    );
+    expect(
+      finalRuns.every((item) =>
+        item.run_id === sol?.run_id ||
+        (item.active_method === undefined && item.method_id === undefined)
+      )
+    ).toBe(true);
   });
 
   it("groups the winning mode first, then its raw and no-call comparators", () => {
