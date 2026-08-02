@@ -85,6 +85,51 @@ def test_gan_public_runner_rules_path_preserves_full_result_contract() -> None:
     assert active.diagnostics["final_selection"]["final_label"] == "1 per month"
 
 
+def test_gan_rules_split_active_alias_parity_preserves_rows_and_metadata() -> None:
+    from clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser import (
+        label_to_frequency_record,
+    )
+    from clinical_extraction.tasks.seizure_frequency.gan2026.data import GanFrequencyRecord
+    from clinical_extraction.tasks.seizure_frequency.gan2026.runners.split import run_split
+
+    label = label_to_frequency_record("1 per month")
+    record = GanFrequencyRecord(
+        **_record("The patient has one seizure per month.").__dict__,
+        gold_normalized_label=label.normalized_label,
+        gold_label_kind=label.kind,
+        gold_yearly_bounds=label.yearly_bounds,
+        gold_monthly_frequency=label.monthly_frequency,
+    )
+    kwargs = dict(
+        split="validation",
+        split_manifest="fixture_manifest",
+        model="none",
+        temperature=0.0,
+        max_tokens=900,
+        mode="prompt-only",
+        dspy_cache=False,
+        api_base=None,
+        escalation_reason=None,
+        progress_every=None,
+        checkpoint_jsonl_path=None,
+        checkpoint_report_path=None,
+    )
+    active_rows, active_metadata = run_split([record], architecture="rules", **kwargs)
+    legacy_rows, legacy_metadata = run_split(
+        [record], architecture="deterministic_canonical_pipeline", **kwargs
+    )
+
+    assert active_rows == legacy_rows
+    row = active_rows[0]
+    assert row["final_label"] == "1 per month"
+    assert row["evidence_valid"] is True
+    assert row["comparison"]["purist_correct"] is True
+    assert active_metadata["prompt_version"] == "rules_v1"
+    assert legacy_metadata["prompt_version"] == active_metadata["prompt_version"]
+    assert row["diagnostics"]["final_selection"]["final_label"] == row["final_label"]
+    assert row["diagnostics"]["evidence_valid"] is True
+
+
 def test_gan_llm_canonical_replay_keeps_model_boundary_and_evidence_gate() -> None:
     record = _record("The patient has one seizure per month.")
     raw = (
