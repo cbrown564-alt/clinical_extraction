@@ -22,20 +22,13 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.validate im
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
     ExectAnnotation,
     ExectLetter,
-    load_letters_for_split,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities import (
     ACTIVE_DETERMINISTIC_ENTITIES,
     extract_deterministic_all9,
-    run_all9_on_letters,
-)
-from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.reports import (
-    clinical_recovery_scorecard,
-    deterministic_all9_scorecard,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
     score_overall,
-    score_prescription_components,
     semantic_config_for,
 )
 
@@ -306,343 +299,55 @@ def test_deterministic_all9_scores_tiny_active_entity_gold() -> None:
     assert score.per_letter.f1 == 1.0
 
 
-def test_onset_engine_extracts_age_and_relative_duration_forms() -> None:
+def test_onset_and_when_diagnosed_extract_multiple_temporal_entities() -> None:
     letter = ExectLetter(
-        "DALL9-ONSET",
+        "DALL9-MULTI",
         (
             "Her epilepsy started at the age of fourteen. "
-            "His epilepsy started around 10 years ago after surgery."
+            "She was diagnosed with epilepsy at the age of eighteen."
         ),
     )
 
     prediction = extract_deterministic_all9(letter)
     onsets = [mention for mention in prediction.mentions if mention.entity == ONSET.name]
-
-    assert [mention.text for mention in onsets] == ["epilepsy", "epilepsy"]
-    assert onsets[0].attributes == {
-        "Age": "14",
-        "AgeUnit": "Year",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0014544",
-        "CUIPhrase": "epilepsy",
-    }
-    assert onsets[1].attributes == {
-        "NumberOfTimePeriods": "10",
-        "TimePeriod": "Year",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0014544",
-        "CUIPhrase": "epilepsy",
-    }
-
-
-def test_when_diagnosed_engine_extracts_age_duration_and_date_forms() -> None:
-    letter = ExectLetter(
-        "DALL9-WDX",
-        (
-            "She was diagnosed with epilepsy at the age of eighteen. "
-            "The diagnosis of epilepsy was made approximately 6 years ago. "
-            "His epilepsy was diagnosed in May 2017."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    mentions = [m for m in prediction.mentions if m.entity == WHEN_DIAGNOSED.name]
-
-    assert [mention.text for mention in mentions] == ["epileps", "epileps", "epileps"]
-    assert mentions[0].attributes == {
-        "Age": "18",
-        "AgeUnit": "Year",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0014544",
-        "CUIPhrase": "epilepsy",
-    }
-    assert mentions[1].attributes == {
-        "NumberOfTimePeriods": "6",
-        "TimePeriod": "Year",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0014544",
-        "CUIPhrase": "epilepsy",
-    }
-    assert mentions[2].attributes == {
-        "MonthDate": "5",
-        "YearDate": "2017",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0014544",
-        "CUIPhrase": "epilepsy",
-    }
-
-
-def test_birth_history_and_epilepsy_cause_engines_use_explicit_lexicons() -> None:
-    letter = ExectLetter(
-        "DALL9-BH-CAUSE",
-        (
-            "Birth history: he was born slightly premature at 35 weeks. "
-            "His epilepsy is secondary to previous cerebral abcess. "
-            "The cause of his epilepsy was a significant traumatic brain injury in 2006."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    birth_history = [m for m in prediction.mentions if m.entity == BIRTH_HISTORY.name]
-    causes = [m for m in prediction.mentions if m.entity == EPILEPSY_CAUSE.name]
-
-    assert birth_history[0].text == "born-slightly-premature"
-    assert birth_history[0].attributes["PrematureBirth"] == "34to<37_LatePretermBirth"
-    assert birth_history[0].attributes["CUI"] == "C3829315"
-
-    assert [mention.text for mention in causes] == [
-        "cerebral-abcess",
-        "traumatic-brain-injury",
-    ]
-    assert causes[0].attributes["CUI"] == "C1510428"
-    assert causes[1].attributes["CUI"] == "C0876926"
-
-
-def test_patient_history_engine_extracts_compact_concepts_negation_and_temporal_features() -> None:
-    letter = ExectLetter(
-        "DALL9-PH",
-        (
-            "Past medical history of severe head injury due to an RTA in 2010, "
-            "migraine, and depression. "
-            "There is no history of febrile convulsions. "
-            "She had febrile seizures at the age of 3 and 5."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    mentions = [m for m in prediction.mentions if m.entity == PATIENT_HISTORY.name]
-
-    head_injury = next(m for m in mentions if m.text == "head-injury")
-    assert head_injury.attributes == {
-        "YearDate": "2010",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0497301",
-        "CUIPhrase": "head-injury",
-    }
-    assert head_injury.evidence == "severe head injury due to an RTA in 2010"
-
-    migraine = next(m for m in mentions if m.text == "migraine")
-    assert migraine.attributes["CUI"] == "C0149931"
-
-    negated = next(m for m in mentions if m.text == "febrile-convulsions")
-    assert negated.attributes["Certainty"] == "1"
-    assert negated.attributes["Negation"] == "Negated"
-
-    affirmed = next(m for m in mentions if m.text == "febrile-seizures")
-    assert affirmed.attributes == {
-        "AgeLower": "3",
-        "AgeUpper": "5",
-        "AgeUnit": "Year",
-        "Certainty": "5",
-        "Negation": "Affirmed",
-        "CUI": "C0009952",
-        "CUIPhrase": "febrile-seizures",
-    }
-
-
-def test_investigations_extracts_standard_eeg_and_unknown_results() -> None:
-    letter = ExectLetter(
-        "DALL9-INV",
-        (
-            "Investigations: EEG showed a single burst of generalised spike and wave. "
-            "I do not have the results of his recent CT scan."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    investigations = [m for m in prediction.mentions if m.entity == INVESTIGATIONS.name]
-
-    eeg = next(m for m in investigations if m.text == "EEG")
-    assert eeg.attributes["EEG_Type"] == "Standard"
-    assert eeg.attributes["EEG_Results"] == "Abnormal"
-
-    ct = next(m for m in investigations if m.text == "CT")
-    assert ct.attributes["CT_Results"] == "Unknown"
-    assert ct.attributes["CUI"] == "C3515741"
-    assert ct.attributes["CUIPhrase"] == "ct-unknown"
-
-
-def test_deterministic_all9_scorecard_reports_prescription_projection_ladder() -> None:
-    letter = _letter()
-    gold = ExectLetter(
-        letter.letter_id,
-        letter.note_text,
-        (
-            _ann(
-                PRESCRIPTION.name,
-                "Lamotrigine 150mg bd",
-                DrugName="lamotrigine",
-                DrugDose="150",
-                DoseUnit="mg",
-                Frequency="2",
-                CUI="C0064636",
-                CUIPhrase="lamotrigine",
-            ),
-            _ann(
-                PRESCRIPTION.name,
-                "levetiracetam 500 mg od",
-                DrugName="levetiracetam",
-                DrugDose="500",
-                DoseUnit="mg",
-                Frequency="1",
-                CUI="C0377265",
-                CUIPhrase="levetiracetam",
-            ),
-            _ann(
-                PATIENT_HISTORY.name,
-                "depression",
-                Certainty="5",
-                Negation="Affirmed",
-                CUI="C0011570",
-                CUIPhrase="depression",
-            ),
-            _ann(
-                PATIENT_HISTORY.name,
-                "migraine",
-                Certainty="5",
-                Negation="Affirmed",
-                CUI="C0149931",
-                CUIPhrase="migraine",
-            ),
-            _ann(
-                PATIENT_HISTORY.name,
-                "febrile-convulsions",
-                Certainty="1",
-                Negation="Negated",
-                CUI="C0009952",
-                CUIPhrase="febrile-convulsions",
-            ),
-        ),
-    )
-
-    scorecard = deterministic_all9_scorecard.build_scorecard(
-        [gold],
-        [extract_deterministic_all9(letter)],
-    )
-
-    projection = scorecard["prescription_benchmark_projection_scores"]
-    assert set(projection) == {
-        "phrase_scope",
-        "semantic_without_cui",
-        "benchmark_with_cui",
-        "clinical_medication_identity",
-        "drugname_cui_projection",
-        "source_stated_frequency",
-        "guideline_defaulted_frequency",
-    }
-    assert projection["clinical_medication_identity"]["f1"] == 1.0
-
-    patient_history = scorecard["patient_history_error_ledger"]
-    assert patient_history["gold_mentions"] == 3
-    assert patient_history["predicted_mentions"] == 3
-    assert patient_history["predicted_with_cui"] == 3
-    assert set(patient_history["gap_families"]) == {
-        "phrase_scope_or_missing",
-        "attribute_bundle",
-        "cui_projection",
-    }
-
-
-def test_clinical_recovery_scorecard_separates_headline_from_projection() -> None:
-    letter = _letter()
-    gold = ExectLetter(
-        letter.letter_id,
-        letter.note_text,
-        (
-            _ann(
-                DIAGNOSIS.name,
-                "focal epilepsy",
-                DiagCategory="Epilepsy",
-                Certainty="5",
-                Negation="Affirmed",
-                CUI="C0014547",
-                CUIPhrase="focal epilepsy",
-            ),
-            _ann(
-                PRESCRIPTION.name,
-                "Lamotrigine 150mg bd",
-                DrugName="lamotrigine",
-                DrugDose="150",
-                DoseUnit="mg",
-                Frequency="2",
-                CUI="C0064636",
-                CUIPhrase="lamotrigine",
-            ),
-            _ann(
-                PATIENT_HISTORY.name,
-                "depression",
-                Certainty="5",
-                Negation="Affirmed",
-                CUI="C0011570",
-                CUIPhrase="depression",
-            ),
-        ),
-    )
-
-    scorecard = clinical_recovery_scorecard.build_scorecard(
-        [gold],
-        [extract_deterministic_all9(letter)],
-    )
-
-    assert PATIENT_HISTORY.name not in scorecard["headline_entities"]
-    assert PATIENT_HISTORY.name in scorecard["coverage_diagnostic_entities"]
-    assert scorecard["entity_classes"][PATIENT_HISTORY.name] == "coverage_diagnostic"
-    assert "overall_clinical_recovery" in scorecard
-    assert scorecard["headline_scores"][PRESCRIPTION.name]["headline_kind"] == (
-        "Clinical Component Score"
-    )
-    assert scorecard["headline_scores"][DIAGNOSIS.name]["headline_kind"] == (
-        "Concept-Identity Headline"
-    )
-    assert scorecard["headline_scores"][SEIZURE_FREQUENCY.name]["headline_kind"] == (
-        "Frequency State Recovery"
-    )
-    assert set(scorecard["artifact_projection_scores"]) == {
-        "phrase_only",
-        "semantic",
-        "benchmark",
-    }
-    assert "patient_history_coverage" in scorecard
-
-
-def test_run_all9_on_letters_preserves_order() -> None:
-    letters = [_letter(), ExectLetter("DALL9-002", "No epilepsy-related content.")]
-    predictions = run_all9_on_letters(letters)
-
-    assert [prediction.letter_id for prediction in predictions] == [
-        "DALL9-001",
-        "DALL9-002",
+    when_diagnosed = [
+        mention for mention in prediction.mentions if mention.entity == WHEN_DIAGNOSED.name
     ]
 
+    assert len(onsets) == 1
+    assert onsets[0].attributes["Age"] == "14"
+    assert len(when_diagnosed) == 1
+    assert when_diagnosed[0].attributes["Age"] == "18"
 
-def test_dev_split_all9_predictions_are_schema_clean() -> None:
-    letters = load_letters_for_split("dev")
-    predictions = run_all9_on_letters(letters)
 
-    errors = []
-    for letter, prediction in zip(letters, predictions, strict=True):
-        result = validate_letter(prediction, source_text=letter.note_text)
-        errors.extend(
-            (letter.letter_id, issue.code, issue.message)
-            for issue in result.issues
-            if issue.severity == "error"
+def test_prescription_extracts_current_regimen_after_previous_trials() -> None:
+    letter = ExectLetter(
+        "PRESC-CURRENT-AFTER-TRIALS",
+        (
+            "He has previously tried topiramate and phenytoin and he is currently "
+            "taking levetiracetam 1250mg twice a day and carbamazepine 400mg "
+            "twice a day."
+        ),
+    )
+
+    prediction = extract_deterministic_all9(letter)
+    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
+
+    assert {
+        (
+            m.attributes["DrugName"],
+            m.attributes["DrugDose"],
+            m.attributes["DoseUnit"],
+            m.attributes["Frequency"],
         )
-
-    assert errors == []
+        for m in prescriptions
+    } == {
+        ("levetiracetam", "1250", "mg", "2"),
+        ("carbamazepine", "400", "mg", "2"),
+    }
 
 
 def test_patient_history_keeps_distinct_occurrences_diagnosis_collapses_prose() -> None:
-    # Two history mentions of "diabetes" at distinct offsets with identical
-    # attributes are kept as separate predictions (per-occurrence emission), so the
-    # offset-based benchmark's duplicate gold copies are recoverable. A diagnosis
-    # surface form repeated in prose still collapses to one (the rules cannot tell a
-    # repeat assertion from a prose token, so per-occurrence is PatientHistory-only).
     text = (
         "Past medical history includes diabetes and depression. "
         "She has epilepsy. Her epilepsy is well controlled. The epilepsy diagnosis stands. "
@@ -673,167 +378,3 @@ def test_patient_history_keeps_distinct_occurrences_diagnosis_collapses_prose() 
         for span in spans
     )
     assert len(epilepsy) == 1
-
-
-def test_prescription_extracts_current_regimen_after_previous_trials() -> None:
-    letter = ExectLetter(
-        "PRESC-CURRENT-AFTER-TRIALS",
-        (
-            "He has previously tried topiramate and phenytoin and he is currently "
-            "taking levetiracetam 1250mg twice a day and carbamazepine 400mg "
-            "twice a day."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert {
-        (
-            m.attributes["DrugName"],
-            m.attributes["DrugDose"],
-            m.attributes["DoseUnit"],
-            m.attributes["Frequency"],
-        )
-        for m in prescriptions
-    } == {
-        ("levetiracetam", "1250", "mg", "2"),
-        ("carbamazepine", "400", "mg", "2"),
-    }
-
-
-def test_prescription_keeps_current_dose_before_parenthetical_titration() -> None:
-    letter = ExectLetter(
-        "PRESC-CURRENT-BEFORE-TITRATION",
-        "Medication: lamtorigine 250mg bd (to reduce as detailed below).",
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert len(prescriptions) == 1
-    assert prescriptions[0].text == "lamtorigine 250mg bd"
-    assert prescriptions[0].attributes["DrugName"] == "lamotrigine"
-    assert prescriptions[0].attributes["DrugDose"] == "250"
-    assert prescriptions[0].attributes["Frequency"] == "2"
-
-
-def test_prescription_extracts_left_regimen_of_medication() -> None:
-    letter = ExectLetter(
-        "PRESC-LEFT-REGIMEN",
-        "Current medication is 500mg bd of levetiracetam.",
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert len(prescriptions) == 1
-    assert prescriptions[0].attributes["DrugName"] == "levetiracetam"
-    assert prescriptions[0].attributes["DrugDose"] == "500"
-    assert prescriptions[0].attributes["Frequency"] == "2"
-
-
-def test_prescription_splits_current_am_pm_before_titration_tail() -> None:
-    letter = ExectLetter(
-        "PRESC-SPLIT-BEFORE-TITRATION",
-        "Medication: Lamotrigine 50mg am, 75mg pm increasing by 25mg every 2 weeks.",
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    regimen_keys = [
-        (m.text, m.attributes["DrugDose"], m.attributes["Frequency"]) for m in prescriptions
-    ]
-
-    assert regimen_keys == [
-        ("Lamotrigine 50mg am", "50", "1"),
-        ("Lamotrigine 50mg am, 75mg pm", "75", "1"),
-    ]
-
-
-def test_prescription_suppresses_future_and_weight_based_headline_contexts() -> None:
-    letter = ExectLetter(
-        "PRESC-FUTURE-WEIGHT",
-        (
-            "I suggest that the dose should be increased by 100mg so that he is on "
-            "Sodium Valproate 800mg bd. Medication: Levetiracetam 1500mg bd "
-            "(60mg/kg/day). I suggest adding in some Clobazam to take on an as "
-            "required basis for seizure clusters."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert prescriptions == []
-
-
-def test_prescription_suppresses_to_start_and_suggest_introducing_plans() -> None:
-    letter = ExectLetter(
-        "PRESC-FUTURE-STARTS",
-        (
-            "Medication: To start Carbamazepine 100mg bd increasing gradually to "
-            "400mg bd. If this increase is not successful then I would suggest "
-            "introducing zonisamide 25mg od increasing by 25mg every fortnight."
-        ),
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert prescriptions == []
-
-
-def test_prescription_weight_based_restatement_does_not_drop_other_current_doses() -> None:
-    """P7 (2026-07-02): a trailing mg/kg/day total for ONE dose must not silently
-    drop OTHER, unrelated current doses in the same multi-dose evidence span.
-
-    The whole-evidence weight-context search used to fire once per dose-loop
-    iteration regardless of which dose it actually described, so a single
-    trailing "(8mg/kg/day)" restatement suppressed every current dose in the
-    sentence, not just the weight-based one.
-    """
-
-    letter = ExectLetter(
-        "PRESC-MULTI-DOSE-WEIGHT-TAIL",
-        "Medications: Carbamazepine 100mg am, 200mg pm (8mg/kg/day).",
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    doses = sorted(m.attributes["DrugDose"] for m in prescriptions)
-    assert doses == ["100", "200"]
-    # The weight-only figure (8) must never surface as its own current dose.
-    assert "8" not in doses
-
-
-def test_prescription_handles_twice_aday_typo() -> None:
-    letter = ExectLetter(
-        "PRESC-TWICE-ADAY",
-        "Medications: Lamotrigine 100mg twice aday.",
-    )
-
-    prediction = extract_deterministic_all9(letter)
-    prescriptions = [m for m in prediction.mentions if m.entity == PRESCRIPTION.name]
-
-    assert len(prescriptions) == 1
-    assert prescriptions[0].attributes["DrugDose"] == "100"
-    assert prescriptions[0].attributes["Frequency"] == "2"
-
-
-def test_dev_split_prescription_component_scores_clear_goal_threshold() -> None:
-    letters = load_letters_for_split("dev")
-    predictions = run_all9_on_letters(letters)
-    adapted = [
-        to_exect_letter(prediction, note_text=letter.note_text)
-        for prediction, letter in zip(predictions, letters, strict=True)
-    ]
-
-    score = score_prescription_components(letters, adapted)
-
-    assert score.name.f1 >= 0.9
-    assert score.dose.f1 >= 0.9
-    assert score.frequency.f1 >= 0.9
-    assert score.complete.f1 >= 0.9

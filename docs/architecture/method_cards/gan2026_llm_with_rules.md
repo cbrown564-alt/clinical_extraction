@@ -205,7 +205,7 @@ Derive a label from a month-by-month diary in the ledger and override the curren
 | Out | repaired label (str) | '3 per month' |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_monthly_diary.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_diaries.py`](../../../tests/test_gan2026_hybrid_structured_events_diaries.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair converts month-by-month diary entries into a single rate.
 
@@ -221,7 +221,7 @@ Convert a stated usual interval between seizures into a rate label when the ledg
 | Out | repaired label (str) | '1 per 6 week' |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_repair.py`](../../../tests/test_gan2026_hybrid_structured_events_repair.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair converts a stated usual interval into a rate.
 
@@ -239,7 +239,7 @@ When the ledger holds both a typical recurring rate and a year-to-date total, pr
 > Policy A1 in docs/research/clinical_selection_policy_catalog_2026-07-31.md. Unlike its neighbours this repair is not gated by a repair_config flag; it runs whenever its precondition holds.
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events`)
-- Test: [`tests/test_gan2026_floor_regression_guards.py`](../../../tests/test_gan2026_floor_regression_guards.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair prefers a stated typical recurring rate over a year-to-date total.
 
@@ -255,7 +255,7 @@ Handle letters where the current burden is expressed as breakthrough seizures ag
 | Out | repaired label (str) | '2 per year' |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_repair.py`](../../../tests/test_gan2026_hybrid_structured_events_repair.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair resolves breakthrough-seizure phrasing against a controlled background.
 
@@ -271,7 +271,7 @@ Prevent events the ledger marks as non-epileptic from supplying the seizure-freq
 | Out | repaired label (str) | the epileptic rate, not the combined rate |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_repair.py`](../../../tests/test_gan2026_hybrid_structured_events_repair.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair excludes events recorded as non-epileptic from the frequency answer.
 
@@ -287,7 +287,7 @@ Decide whether residual myoclonic jerks count toward the current seizure-frequen
 | Out | repaired label (str) | the label the residual-jerk policy selects |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_repair.py`](../../../tests/test_gan2026_hybrid_structured_events_repair.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair applies the residual-jerk policy to the frequency answer.
 
@@ -303,7 +303,7 @@ Handle a burst of seizures that follows a named medication or lifestyle change, 
 | Out | repaired label (str) | the settled post-burst rate |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_temporal.py`](../../../tests/test_gan2026_hybrid_structured_events_temporal.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair separates a post-change seizure burst from the settled current rate.
 
@@ -319,7 +319,7 @@ Derive a rate from a sequence of individually dated seizures and the window they
 | Out | repaired label (str) | '3 per 3 month' |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events`)
-- Test: [`tests/test_gan2026_dated_count_competing_rate_floor.py`](../../../tests/test_gan2026_dated_count_competing_rate_floor.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair converts a dated seizure sequence into a rate over its observed window.
 
@@ -335,7 +335,7 @@ Derive a seizure-free duration from the elapsed time since the last dated event,
 | Out | repaired label (str) | a seizure-free label over the elapsed window |
 
 - Code: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_structured_repair_families.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events`)
-- Test: [`tests/test_gan2026_hybrid_structured_events_repair.py`](../../../tests/test_gan2026_hybrid_structured_events_repair.py)
+- Test: [`tests/test_gan2026_hybrid_structured_events_contract.py`](../../../tests/test_gan2026_hybrid_structured_events_contract.py)
 - Proven in a trace by: `row_trace.deterministic_semantic.events`
 - Paper wording: A deterministic repair converts an elapsed interval since the last dated seizure into a seizure-free window.
 
@@ -403,15 +403,15 @@ Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestra
 | `gan.llm_with_rules.normalize_events` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_normalize_event` | `tests/test_gan2026_normalize_governance.py` |
 | `gan.llm_with_rules.resolve_label` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:_resolve_final_label` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
 | `gan.llm_with_rules.repair.selected_evidence` | `clinical_extraction.tasks.seizure_frequency.gan2026.normalize:repair_prediction_label_with_evidence` | `tests/test_gan2026_selected_evidence_derivation.py` |
-| `gan.llm_with_rules.repair.monthly_diary` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events` | `tests/test_gan2026_hybrid_structured_events_diaries.py` |
-| `gan.llm_with_rules.repair.usual_interval` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.llm_with_rules.repair.typical_over_ytd` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events` | `tests/test_gan2026_floor_regression_guards.py` |
-| `gan.llm_with_rules.repair.breakthrough` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.llm_with_rules.repair.non_epileptic` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.llm_with_rules.repair.residual_jerk` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
-| `gan.llm_with_rules.repair.post_change_burst` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events` | `tests/test_gan2026_hybrid_structured_events_temporal.py` |
-| `gan.llm_with_rules.repair.dated_sequence` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events` | `tests/test_gan2026_dated_count_competing_rate_floor.py` |
-| `gan.llm_with_rules.repair.elapsed_anchor` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events` | `tests/test_gan2026_hybrid_structured_events_repair.py` |
+| `gan.llm_with_rules.repair.monthly_diary` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_monthly_diary:monthly_diary_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.usual_interval` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:usual_interval_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.typical_over_ytd` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:typical_recurring_rate_over_ytd_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.breakthrough` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:breakthrough_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.non_epileptic` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:non_epileptic_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.residual_jerk` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:residual_jerk_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.post_change_burst` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:post_change_burst_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.dated_sequence` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:dated_sequence_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
+| `gan.llm_with_rules.repair.elapsed_anchor` | `clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_structured_repair_families:elapsed_since_anchor_label_from_events` | `tests/test_gan2026_hybrid_structured_events_contract.py` |
 | `gan.llm_with_rules.scorable_label_check` | `clinical_extraction.tasks.seizure_frequency.gan2026.contract.label_parser:label_to_frequency_record` | `tests/test_gan2026_labels.py` |
 | `gan.llm_with_rules.evidence_containment` | `clinical_extraction.core.evidence:evidence_is_substring` | `tests/test_core_evidence.py` |
 | `gan.llm_with_rules.score` | `clinical_extraction.tasks.seizure_frequency.gan2026.labels:map_purist` | `tests/test_gan2026_labels.py` |

@@ -72,12 +72,9 @@ verified.
    mock-registry `artifact_paths` to served artifacts. Records:
    `docs/research/maintenance/retention_slice_*_2026-08-02.md` and
    [REGENERATION.md](../REGENERATION.md).
-9. **Decision 0049 pytest firewall — Waves 1–2 landed; Waves 3–4 open:** shrink
-   pytest to a research-validity always-on tier (~200–300 exit band) with a
-   capped deep allowlist. Wave 1: marker/gate. Wave 2: deleted 46
-   non-selected/redundant pytest files (~730 cases) with manifest/retention
-   rebinds. Next: Wave 3 fat-table thinning + owner rebinds; Wave 4
-   scoreboard. Owner:
+9. **Decision 0049 pytest firewall — Waves 1–4 complete:** always-on suite is
+   **243** collected/passing tests (~51 files), inside the 200–300 exit band.
+   Deep allowlist empty. Owner:
    [Decision 0049](../decisions/0049-pytest-research-validity-firewall.md).
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and

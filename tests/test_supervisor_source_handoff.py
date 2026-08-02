@@ -7,8 +7,6 @@ import sys
 import zipfile
 from pathlib import Path
 
-import pytest
-
 from scripts import build_supervisor_source_handoff as handoff_builder
 from scripts.build_supervisor_source_handoff import closure_mismatches
 
@@ -19,41 +17,10 @@ PUBLIC_SOURCE = ROOT / "src" / "clinical_extraction_local"
 SHIPPED_PUBLIC = HANDOFF / "clinical_extraction_local"
 INTERNAL_SOURCE = ROOT / "src" / "clinical_extraction"
 SHIPPED_INTERNAL = HANDOFF / "clinical_extraction"
-TEXT_FILENAMES = frozenset({".env.example", ".gitignore"})
-TEXT_SUFFIXES = frozenset(
-    {
-        ".json",
-        ".jsonl",
-        ".lock",
-        ".md",
-        ".ps1",
-        ".py",
-        ".sh",
-        ".txt",
-        ".yaml",
-        ".yml",
-    }
-)
 
 
 def _is_runtime_generated(path: Path) -> bool:
     return "__pycache__" in path.parts or path.suffix in {".pyc", ".pyo"}
-
-
-def _canonical_bytes(path: Path) -> bytes:
-    content = path.read_bytes()
-    if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
-        content = content.replace(b"\r\n", b"\n")
-    return content
-
-
-def _tree_hash(root: Path) -> str:
-    digest = hashlib.sha256()
-    for path in sorted(root.rglob("*")):
-        if path.is_file():
-            digest.update(path.relative_to(root).as_posix().encode("utf-8"))
-            digest.update(path.read_bytes())
-    return digest.hexdigest()
 
 
 def test_handoff_is_readable_source_first_and_has_both_workflows() -> None:
@@ -89,14 +56,12 @@ def test_source_manifest_lists_every_shipped_file_with_matching_hash() -> None:
     }
     assert set(recorded) == set(actual)
     for name, path in actual.items():
-        content = _canonical_bytes(path)
+        content = path.read_bytes()
         assert recorded[name]["sha256"] == hashlib.sha256(content).hexdigest()
         assert recorded[name]["bytes"] == len(content)
 
 
 def test_shipped_package_matches_current_source_closure() -> None:
-    """Hash self-consistency is insufficient; compare shipped code to source."""
-
     runtime_files, runtime_assets = handoff_builder._trace_runtime_closure()
     required_runtime_files = tuple(
         sorted(
@@ -116,154 +81,6 @@ def test_shipped_package_matches_current_source_closure() -> None:
         )
     )
     assert mismatches == [], "\n".join(mismatches)
-
-
-def test_traced_runtime_closure_excludes_research_reports() -> None:
-    runtime_files, runtime_assets = handoff_builder._trace_runtime_closure()
-    forbidden = sorted(
-        path.relative_to(INTERNAL_SOURCE).as_posix()
-        for path in runtime_files | runtime_assets
-        if any(part in handoff_builder.FORBIDDEN_PARTS for part in path.parts)
-    )
-    assert forbidden == []
-    assert not any(
-        path.name == "base.py" and "reports" in path.parts
-        for path in runtime_files | runtime_assets
-    )
-
-
-def test_closure_mismatches_reports_drift_and_respects_internal_subset(tmp_path: Path) -> None:
-    source = tmp_path / "source"
-    shipped = tmp_path / "shipped"
-    (source / "nested").mkdir(parents=True)
-    (shipped / "nested").mkdir(parents=True)
-    (source / "same.py").write_text("value = 1\n", encoding="utf-8")
-    (shipped / "same.py").write_text("value = 2\n", encoding="utf-8")
-    (source / "nested" / "missing.py").write_text("value = 3\n", encoding="utf-8")
-    (shipped / "extra.py").write_text("value = 4\n", encoding="utf-8")
-
-    assert closure_mismatches(source, shipped, exact_tree=True) == [
-        "extra shipped file: extra.py",
-        "missing shipped file: nested/missing.py",
-        "content drift: same.py",
-    ]
-    assert closure_mismatches(source, shipped, exact_tree=False) == [
-        "extra shipped file: extra.py",
-        "content drift: same.py",
-    ]
-
-
-def test_closure_mismatches_rejects_missing_internal_subtree(tmp_path: Path) -> None:
-    source = tmp_path / "source"
-    shipped = tmp_path / "shipped"
-    (source / "required").mkdir(parents=True)
-    shipped.mkdir()
-    (source / "required" / "runtime.py").write_text("value = 1\n", encoding="utf-8")
-    (source / "required_file.py").write_text("value = 2\n", encoding="utf-8")
-
-    assert closure_mismatches(
-        source,
-        shipped,
-        exact_tree=False,
-        required_paths=("required/", "required_file.py"),
-    ) == [
-        "missing shipped subtree: required/",
-        "missing shipped file: required_file.py",
-    ]
-
-
-def test_source_closure_check_rejects_missing_file_in_populated_runtime_subtree(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    template = tmp_path / "template"
-    public_source = tmp_path / "public-source"
-    internal_source = tmp_path / "internal-source"
-    handoff = tmp_path / "handoff"
-    public_shipped = handoff / "clinical_extraction_local"
-    internal_shipped = handoff / "clinical_extraction"
-    archive = tmp_path / "handoff.zip"
-    template.mkdir()
-    public_source.mkdir()
-    internal_source.mkdir()
-    public_shipped.mkdir(parents=True)
-    (internal_source / "runtime").mkdir()
-    (internal_shipped / "runtime").mkdir(parents=True)
-    (public_source / "api.py").write_text("value = 1\n", encoding="utf-8")
-    (public_shipped / "api.py").write_text("value = 1\n", encoding="utf-8")
-    retained = internal_source / "runtime" / "retained.py"
-    missing = internal_source / "runtime" / "new.py"
-    retained.write_text("value = 2\n", encoding="utf-8")
-    missing.write_text("value = 3\n", encoding="utf-8")
-    (internal_shipped / "runtime" / "retained.py").write_text(
-        "value = 2\n", encoding="utf-8"
-    )
-    archive.write_bytes(b"zip-placeholder")
-    monkeypatch.setattr(handoff_builder, "TEMPLATE", template)
-    monkeypatch.setattr(handoff_builder, "PUBLIC_PACKAGE", public_source)
-    monkeypatch.setattr(handoff_builder, "SOURCE_PACKAGE", internal_source)
-    monkeypatch.setattr(handoff_builder, "HANDOFF", handoff)
-    monkeypatch.setattr(handoff_builder, "ARCHIVE", archive)
-    monkeypatch.setattr(handoff_builder, "ALLOWED_RUNTIME_PREFIXES", ("runtime/",))
-    monkeypatch.setattr(
-        handoff_builder,
-        "_trace_runtime_closure",
-        lambda: ({retained, missing}, set()),
-    )
-
-    tree_before = _tree_hash(handoff)
-    archive_before = hashlib.sha256(archive.read_bytes()).hexdigest()
-    with pytest.raises(RuntimeError, match="source-to-shipped handoff closure is stale"):
-        handoff_builder.main(["--check-source-closure"])
-    assert _tree_hash(handoff) == tree_before
-    assert hashlib.sha256(archive.read_bytes()).hexdigest() == archive_before
-
-
-def test_source_closure_check_is_non_mutating(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    template = tmp_path / "template"
-    public_source = tmp_path / "public-source"
-    internal_source = tmp_path / "internal-source"
-    handoff = tmp_path / "handoff"
-    public_shipped = handoff / "clinical_extraction_local"
-    internal_shipped = handoff / "clinical_extraction"
-    archive = tmp_path / "handoff.zip"
-    template.mkdir()
-    public_source.mkdir()
-    internal_source.mkdir()
-    public_shipped.mkdir(parents=True)
-    internal_shipped.mkdir(parents=True)
-    (public_source / "api.py").write_text("value = 1\n", encoding="utf-8")
-    (internal_source / "runtime.py").write_text("value = 2\n", encoding="utf-8")
-    (public_shipped / "api.py").write_text("value = 1\n", encoding="utf-8")
-    (internal_shipped / "runtime.py").write_text("value = 2\n", encoding="utf-8")
-    archive.write_bytes(b"zip-placeholder")
-    monkeypatch.setattr(handoff_builder, "TEMPLATE", template)
-    monkeypatch.setattr(handoff_builder, "PUBLIC_PACKAGE", public_source)
-    monkeypatch.setattr(handoff_builder, "SOURCE_PACKAGE", internal_source)
-    monkeypatch.setattr(handoff_builder, "HANDOFF", handoff)
-    monkeypatch.setattr(handoff_builder, "ARCHIVE", archive)
-    monkeypatch.setattr(handoff_builder, "ALLOWED_RUNTIME_PREFIXES", ("runtime.py",))
-    monkeypatch.setattr(
-        handoff_builder,
-        "_trace_runtime_closure",
-        lambda: ({internal_source / "runtime.py"}, set()),
-    )
-
-    tree_before_success = _tree_hash(handoff)
-    archive_before_success = hashlib.sha256(archive.read_bytes()).hexdigest()
-    handoff_builder.main(["--check-source-closure"])
-    assert _tree_hash(handoff) == tree_before_success
-    assert hashlib.sha256(archive.read_bytes()).hexdigest() == archive_before_success
-    (internal_shipped / "runtime.py").unlink()
-
-    tree_before_failure = _tree_hash(handoff)
-    archive_before_failure = hashlib.sha256(archive.read_bytes()).hexdigest()
-    with pytest.raises(RuntimeError, match="source-to-shipped handoff closure is stale"):
-        handoff_builder.main(["--check-source-closure"])
-    assert _tree_hash(handoff) == tree_before_failure
-    assert hashlib.sha256(archive.read_bytes()).hexdigest() == archive_before_failure
-    assert not (internal_shipped / "runtime.py").exists()
 
 
 def test_archive_matches_readable_tree_and_excludes_private_or_research_files() -> None:
@@ -299,11 +116,3 @@ def test_clean_handoff_validates_synthetic_input_without_endpoint() -> None:
     )
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout) == {"status": "ok", "notes": 1}
-
-
-def test_readme_leads_with_frequency_then_documents_findings_and_all() -> None:
-    readme = (HANDOFF / "README.md").read_text(encoding="utf-8")
-    assert readme.index("seizure-frequency") < readme.index("clinical-findings")
-    assert "normally makes two model calls per note" in readme
-    assert "--trace-output" in readme
-    assert "--resume" in readme

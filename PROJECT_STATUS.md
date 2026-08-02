@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after Decision 0049 Wave 2 pytest deletes
+Last updated: 2026-08-02 after Decision 0049 Waves 3–4 pytest scoreboard
 
 ## Current handoff objective
 
@@ -10,12 +10,11 @@ immediately useful handoff package without removing the live-run capability
 needed for new experiments and external validation.
 
 [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md)
-adds a pytest simplification track: always-on research-validity firewall with
-a capped deep allowlist. Waves 1–2 are landed: gate mechanics plus deletion of
-46 non-selected/redundant pytest files. Plain `pytest` now collects **839**
-tests and passes (**verified 2026-08-02**). Waves 3–4 (remaining fat-table
-thinning and scoreboard to ~200–300) are open. Supervisor handoff still traces
-`tests/test_clinical_extraction_local_parity.py`, so that file was kept.
+is complete through Wave 4: plain `pytest` is the always-on research-validity
+firewall and collects **243** tests (**verified 2026-08-02**, all passed,
+~40s). Architecture manifests name short governing owners; the deep allowlist
+is empty. Supervisor handoff still traces
+`tests/test_clinical_extraction_local_parity.py`.
 
 The retained operational boundary is the selected six-model × three-method ×
 two-task system, its frontend development workflows, saved/fixture and live

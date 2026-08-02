@@ -1,25 +1,4 @@
-"""Snapshot tests that pin model-facing prompt/schema contracts.
-
-Guardrail FM4 (``docs/research/predecessor_lessons/01_failure_modes_and_guardrails.md``):
-prompt and schema contract bugs can dominate architecture. The recorded
-predecessor disaster was a verifier prompt that silently changed medication
-output from structured objects to flat strings, collapsing medication
-full-tuple F1 from ~0.60 to 0.018 (a 33x collapse) with no architectural
-change. The existing ``test_gan2026_llm_prompt_hygiene`` suite checks that
-model-facing text does not *leak internal protocol language*, but nothing
-guards against a contract *drifting* (an output schema field disappearing, an
-adapter clause being dropped, a dedup rule being reworded). These snapshot
-tests close that gap: they render each deterministic, no-LLM prompt builder
-against a fixed fixture and diff it against a committed snapshot, so any change
-to a model-facing contract becomes a reviewable diff in the pull request.
-
-To intentionally update a contract: review the diff, then regenerate with
-
-    UPDATE_PROMPT_SNAPSHOTS=1 uv run pytest tests/test_prompt_contract_snapshots.py
-
-and commit the updated ``tests/snapshots/prompt_contracts/*.txt`` files
-alongside the code change.
-"""
+"""Snapshot tests that pin model-facing prompt/schema contracts."""
 
 from __future__ import annotations
 
@@ -51,9 +30,6 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 SNAPSHOT_DIR = Path(__file__).parent / "snapshots" / "prompt_contracts"
 UPDATE_ENV_VAR = "UPDATE_PROMPT_SNAPSHOTS"
 
-# A single fixed note shared by every fixture so a snapshot diff reflects a
-# contract change, never input drift. Kept deliberately small but exercising
-# seizure-type, frequency, and temporal cues.
 _NOTE_TEXT = (
     "Clinic note: known focal epilepsy. Two seizures per month over the last "
     "year. Last seizure was yesterday. Continues levetiracetam 500mg twice "
@@ -83,55 +59,18 @@ def _exect_letter() -> ExectLetter:
     return ExectLetter(letter_id="SNAP001", note_text=_NOTE_TEXT)
 
 
-# Each entry renders one model-facing contract from a fixed fixture with no LLM
-# call. Name -> zero-arg callable returning the payload (str or JSON-able dict).
 PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
-    # Gan 2026 seizure-frequency surfaces.
     "gan2026__hybrid_structured_events": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record()
-    ),
-    "gan2026__hybrid_structured_events_v0.5": lambda: hybrid_structured_events.build_prompt_input(
-        _gan_record(), prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_5
     ),
     "gan2026__hybrid_structured_events_v0.7": lambda: hybrid_structured_events.build_prompt_input(
         _gan_record(), prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_7
     ),
-    "gan2026__hybrid_structured_events_v0.8_luna_rate": (
-        lambda: hybrid_structured_events.build_prompt_input(
-            _gan_record(),
-            prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_8_LUNA_RATE,
-        )
-    ),
-    "gan2026__hybrid_structured_events_v0.8_luna_current": (
-        lambda: hybrid_structured_events.build_prompt_input(
-            _gan_record(),
-            prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_8_LUNA_CURRENT,
-        )
-    ),
-    "gan2026__hybrid_structured_events_v0.8_deepseek_unknown": (
-        lambda: hybrid_structured_events.build_prompt_input(
-            _gan_record(),
-            prompt_version=hybrid_structured_events.PROMPT_VERSION_V0_8_DEEPSEEK_UNKNOWN,
-        )
-    ),
     "gan2026__llm": lambda: llm_only_canonical_pipeline.build_prompt_input(
         _gan_record()
     ),
-    # ExECTv2 broad-phenotyping surfaces.
     "exectv2__structured_key_families": lambda: exectv2_structured.build_prompt_input(
         _exect_letter()
-    ),
-    "exectv2__structured_key_families_v0.9.25_luna_sf_state": (
-        lambda: exectv2_structured.build_prompt_input(
-            _exect_letter(),
-            prompt_version=exectv2_structured.PROMPT_VERSION_V0_9_25_LUNA_SF_STATE,
-        )
-    ),
-    "exectv2__structured_key_families_v0.9.25_luna_sf_boundary_dx": (
-        lambda: exectv2_structured.build_prompt_input(
-            _exect_letter(),
-            prompt_version=exectv2_structured.PROMPT_VERSION_V0_9_25_LUNA_SF_BOUNDARY_DX,
-        )
     ),
     "exectv2__diagnosis_decomposer": lambda: exectv2_diagnosis.build_prompt_input(
         _exect_letter(), []
@@ -140,11 +79,6 @@ PROMPT_BUILDERS: dict[str, Callable[[], str | dict[str, object]]] = {
 
 
 def _normalize(payload: str | dict[str, object]) -> str:
-    """Render a payload to stable, human-reviewable snapshot text.
-
-    Dict payloads and JSON-string payloads are pretty-printed with sorted keys
-    so a contract diff reads line-by-line. Non-JSON strings are stored verbatim.
-    """
     if isinstance(payload, str):
         try:
             parsed = json.loads(payload)
@@ -167,8 +101,6 @@ def test_model_facing_contract_matches_snapshot(name: str) -> None:
     builder = PROMPT_BUILDERS[name]
 
     rendered = _normalize(builder())
-    # Render a second time to catch per-call non-determinism (set ordering,
-    # dict insertion order, timestamps) before it is baked into a snapshot.
     assert rendered == _normalize(builder()), f"{name}: builder output is non-deterministic"
 
     path = _snapshot_path(name)

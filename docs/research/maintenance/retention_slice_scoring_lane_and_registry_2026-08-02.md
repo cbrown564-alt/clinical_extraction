@@ -53,6 +53,6 @@ Frontend selectors now treat `mock-data/artifacts/*.json` as replayable via
 
 ```powershell
 .venv\Scripts\python.exe scripts\check_retained_evidence_manifest.py
-.venv\Scripts\python.exe -m pytest tests/test_doc_hygiene.py tests/test_trace_explorer_frontend_api.py -q
+.venv\Scripts\python.exe -m pytest tests/test_trace_explorer_frontend_api.py -q
 Set-Location frontend; npm test -- --runInBand --testPathPattern="registryResolver|ganPipelineOptions|exectv2RunOptions"
 ```

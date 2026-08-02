@@ -1,7 +1,7 @@
 # 0049: Shrink pytest to a research-validity firewall
 
 Date: 2026-08-02
-Status: accepted; Waves 1–2 landed; Waves 3–4 not started
+Status: accepted; Waves 1–4 landed (always-on exit band met)
 
 ## Decision
 
@@ -105,4 +105,10 @@ Demoted deep tests are not owners. Do not rebind one-for-one every old stage
    ExECT candidate-config retention slice example command. Kept
    `tests/test_clinical_extraction_local_parity.py` because the supervisor
    handoff source allowlist still traces it.
-3. **Waves 3–4:** not started (fat-table exemplar thinning + scoreboard).
+3. **Wave 3 landed:** deleted ~54 more mid-surface / diagnostic / breadcrumb
+   files; rebound architecture manifests (ExECT LLM-only vertical slice; Gan
+   hybrid repair stages → hybrid contract); regenerated architecture docs;
+   thinned remaining fat owners to exemplars.
+4. **Wave 4 scoreboard:** plain `pytest` collects and passes **243** always-on
+   tests (~51 files), inside the 200–300 exit band. Deep allowlist empty.
+   Suite runtime ~40s on the Wave 4 host.

@@ -56,7 +56,7 @@ Render the note text and the four-family event-ledger schema into the prompt inp
 | Out | prompt input JSON (str) | {"note_text": "...", "families": ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"]} |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
-- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Test: [`tests/test_exectv2_llm_vertical_slice.py`](../../../tests/test_exectv2_llm_vertical_slice.py)
 - Proven in a trace by: `prompt_input_json`, `prompt_version`
 - Paper wording: The selected LLM-only method starts from one structured four-family prompt.
 
@@ -72,7 +72,7 @@ One structured call returns candidate findings for Diagnosis, Seizure Frequency,
 | Out | raw structured JSON (str) | {"clinical_events": [{"family": "diagnosis", "evidence": "Diagnosis: focal epilepsy"}]} |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
-- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Test: [`tests/test_exectv2_llm_vertical_slice.py`](../../../tests/test_exectv2_llm_vertical_slice.py)
 - Proven in a trace by: `raw_output`, `model`, `prompt_version`
 - Paper wording: A single language-model call proposes candidate findings for all four families.
 
@@ -104,7 +104,7 @@ Turn each model event into an ExECT mention with its entity, text, attributes, a
 | Out | list[MentionForEvidence] | a Diagnosis mention with its evidence span |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
-- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Test: [`tests/test_exectv2_llm_vertical_slice.py`](../../../tests/test_exectv2_llm_vertical_slice.py)
 - Proven in a trace by: `n_events_raw`, `n_mentions_raw`
 - Paper wording: Model events are flattened into entity mentions without adding a deterministic extractor.
 
@@ -136,7 +136,7 @@ Expose the producer's gated mentions as the selected LLM-only scoring view witho
 | Out | raw_candidate PredictedLetter | the same four-family mentions with raw_candidate provenance |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter`)
-- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Test: [`tests/test_exectv2_llm_vertical_slice.py`](../../../tests/test_exectv2_llm_vertical_slice.py)
 - Proven in a trace by: `scored_view`, `predicted_mentions`
 - Paper wording: The selected LLM-only view is the raw candidate from the one-call producer.
 
@@ -162,12 +162,12 @@ Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orches
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
-| `exect.llm.build_prompt` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
-| `exect.llm.model_call` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.build_prompt` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_llm_vertical_slice.py` |
+| `exect.llm.model_call` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_llm_vertical_slice.py` |
 | `exect.llm.parse_and_retry` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_local_format_retry.py` |
-| `exect.llm.flatten_events` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.flatten_events` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_llm_vertical_slice.py` |
 | `exect.llm.project_and_gate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_llm_only_projection.py` |
-| `exect.llm.raw_candidate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.raw_candidate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter` | `tests/test_exectv2_llm_vertical_slice.py` |
 | `exect.llm.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |
 
 ## Not this method

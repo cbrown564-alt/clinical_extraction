@@ -29,8 +29,11 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
       },
-      "governing_test": "tests/test_exectv2_canonical_orchestrators.py",
-      "trace_fields": ["prompt_input_json", "prompt_version"],
+      "governing_test": "tests/test_exectv2_llm_vertical_slice.py",
+      "trace_fields": [
+        "prompt_input_json",
+        "prompt_version"
+      ],
       "paper_wording": "The selected LLM-only method starts from one structured four-family prompt."
     },
     {
@@ -47,8 +50,12 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
       },
-      "governing_test": "tests/test_exectv2_canonical_orchestrators.py",
-      "trace_fields": ["raw_output", "model", "prompt_version"],
+      "governing_test": "tests/test_exectv2_llm_vertical_slice.py",
+      "trace_fields": [
+        "raw_output",
+        "model",
+        "prompt_version"
+      ],
       "paper_wording": "A single language-model call proposes candidate findings for all four families."
     },
     {
@@ -67,7 +74,11 @@
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
       },
       "governing_test": "tests/test_exectv2_local_format_retry.py",
-      "trace_fields": ["initial_parse_errors", "parse_errors", "format_retry_notes"],
+      "trace_fields": [
+        "initial_parse_errors",
+        "parse_errors",
+        "format_retry_notes"
+      ],
       "paper_wording": "Malformed model output is handled at the transport and schema boundary."
     },
     {
@@ -85,8 +96,11 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
       },
-      "governing_test": "tests/test_exectv2_canonical_orchestrators.py",
-      "trace_fields": ["n_events_raw", "n_mentions_raw"],
+      "governing_test": "tests/test_exectv2_llm_vertical_slice.py",
+      "trace_fields": [
+        "n_events_raw",
+        "n_mentions_raw"
+      ],
       "paper_wording": "Model events are flattened into entity mentions without adding a deterministic extractor."
     },
     {
@@ -105,7 +119,11 @@
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter"
       },
       "governing_test": "tests/test_exectv2_llm_only_projection.py",
-      "trace_fields": ["gate_warnings", "n_mentions_scored", "n_evidence_invalid"],
+      "trace_fields": [
+        "gate_warnings",
+        "n_mentions_scored",
+        "n_evidence_invalid"
+      ],
       "paper_wording": "The LLM-only candidate must pass evidence and render-safety gates before scoring."
     },
     {
@@ -123,8 +141,11 @@
         "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter"
       },
-      "governing_test": "tests/test_exectv2_canonical_orchestrators.py",
-      "trace_fields": ["scored_view", "predicted_mentions"],
+      "governing_test": "tests/test_exectv2_llm_vertical_slice.py",
+      "trace_fields": [
+        "scored_view",
+        "predicted_mentions"
+      ],
       "paper_wording": "The selected LLM-only view is the raw candidate from the one-call producer."
     },
     {
@@ -142,7 +163,10 @@
         "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall"
       },
       "governing_test": "tests/test_exectv2_scoring_match_fidelity.py",
-      "trace_fields": ["scores.overall", "scores.per_entity"],
+      "trace_fields": [
+        "scores.overall",
+        "scores.per_entity"
+      ],
       "paper_wording": "The raw candidate view is scored by mention matching against ExECTv2 gold."
     }
   ],
