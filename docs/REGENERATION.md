@@ -44,6 +44,14 @@ current frontend has no caller for it. No source, test, selected evidence,
 replay input, or clinical behavior changed. Recovery is available from Git
 history or by reverting the cleanup commit.
 
+The ExECT candidate config trees (`configs/exectv2/model_swap/`,
+`configs/exectv2/diagnosis_ablation/`, and non-reference-cell files under
+`configs/exectv2/finding_assembly/`) were audited on 2026-08-02. No additional
+files were removed: five configs remain, each referenced by the retained-evidence
+manifest, a focused replay/check script, or a focused test. Seventy-nine sibling
+candidate manifests were already deleted in July 2026. See
+`docs/research/maintenance/retention_slice_exectv2_candidate_configs_2026-08-02.md`.
+
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
 new prediction-changing replay requires its own predeclared protocol and
