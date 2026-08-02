@@ -71,6 +71,15 @@ Seventy-nine sibling candidate manifests were already deleted in July 2026.
 Record:
 [retention slice note](../research/maintenance/retention_slice_exectv2_candidate_configs_2026-08-02.md).
 
+The fifth slice evaluated the seven tracked JSON files under
+`frontend/public/mock-data/artifacts/` and retained them. `FrontendDataStore`
+glob-loads that directory for `/artifacts/{run_id}` replay and for ExECT
+dev140 letter allowlisting; frontend components and
+`tests/test_trace_explorer_frontend_api.py` depend on those loaders. Record:
+[retention slice note](../research/maintenance/retention_slice_frontend_mock_artifacts_2026-08-02.md).
+A later delete would require refactoring those loaders onto governed
+`experiments/` sources first.
+
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
 new prediction-changing replay requires its own predeclared protocol and
