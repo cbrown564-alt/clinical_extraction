@@ -58,12 +58,13 @@ export function resolveExectv2RunId(
   requested: string
 ): string | null {
   if (UNOWNED_RULES_ALIASES.has(requested)) return null;
-  const exact = runs.find((run) => run.run_id === requested);
-  if (exact) return exact.run_id;
   const matches = runs.filter((run) =>
-    [run.saved_run_id, run.retained_evidence_id, ...(run.legacy_run_ids ?? [])].includes(
-      requested
-    )
+    [
+      run.run_id,
+      run.saved_run_id,
+      run.retained_evidence_id,
+      ...(run.legacy_run_ids ?? []),
+    ].includes(requested)
   );
   return matches.length === 1 ? matches[0].run_id : null;
 }

@@ -13,9 +13,9 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runner import (
 )
 
 from .naming import active_method_name
-from .split_policy import LOCKED_SPLIT_ALIASES, is_locked_split
+from .split_policy import DEVELOPMENT_SPLIT_ALIASES, require_development_split
 
-__all__ = ["LOCKED_SPLIT_ALIASES", "run_split"]
+__all__ = ["DEVELOPMENT_SPLIT_ALIASES", "run_split"]
 
 
 def run_split(
@@ -38,8 +38,7 @@ def run_split(
     the model-led runners. They are intentionally inert for this no-call path.
     """
 
-    if is_locked_split(split):
-        raise ValueError(f"locked ExECT split is not permitted: {split!r}")
+    require_development_split(split)
 
     del temperature, max_tokens, checkpoint_jsonl_path, checkpoint_report_path, resume
     if active_method_name(method) != "rules":
