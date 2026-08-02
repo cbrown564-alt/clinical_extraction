@@ -7,6 +7,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from pydantic import BaseModel
+
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.contract.prediction import (
     PredictedLetter,
 )
@@ -18,7 +20,9 @@ class _FrozenDict(dict[str, Any]):
     def _immutable(self, *_args: Any, **_kwargs: Any) -> None:
         raise TypeError("producer values are immutable")
 
-    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = _immutable
+    __setitem__ = __delitem__ = __setattr__ = clear = pop = popitem = setdefault = update = (  # type: ignore[assignment]
+        _immutable
+    )
 
     def __deepcopy__(self, memo: dict[int, Any]) -> dict[str, Any]:
         copied = {deepcopy(key, memo): deepcopy(value, memo) for key, value in self.items()}
@@ -32,9 +36,9 @@ class _FrozenList(list[Any]):
     def _immutable(self, *_args: Any, **_kwargs: Any) -> None:
         raise TypeError("producer values are immutable")
 
-    __setitem__ = __delitem__ = append = clear = extend = insert = pop = remove = reverse = sort = (
-        _immutable
-    )
+    __setitem__ = __delitem__ = __setattr__ = append = clear = extend = insert = pop = remove = (
+        reverse
+    ) = sort = _immutable
 
     def __deepcopy__(self, memo: dict[int, Any]) -> list[Any]:
         copied = [deepcopy(value, memo) for value in self]
@@ -42,9 +46,33 @@ class _FrozenList(list[Any]):
         return copied
 
 
+class _FrozenModelView:
+    """Read-only attribute view of a Pydantic producer model."""
+
+    __slots__ = ("_data",)
+
+    def __init__(self, model: BaseModel) -> None:
+        object.__setattr__(self, "_data", deep_freeze(model.model_dump(mode="python")))
+
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self._data[name]
+        except KeyError as exc:
+            raise AttributeError(name) from exc
+
+    def __setattr__(self, _name: str, _value: Any) -> None:
+        raise TypeError("producer values are immutable")
+
+    def model_dump(self, *, mode: str = "python", **_kwargs: Any) -> dict[str, Any]:
+        del mode
+        return deep_thaw(self._data)
+
+
 def deep_freeze(value: Any) -> Any:
     """Copy nested producer data into JSON-compatible immutable containers."""
 
+    if isinstance(value, BaseModel):
+        return _FrozenModelView(value)
     if isinstance(value, Mapping):
         frozen = _FrozenDict()
         dict.update(frozen, {key: deep_freeze(item) for key, item in value.items()})
@@ -195,6 +223,8 @@ class StructuredProducerResult:
     stage_events: tuple[ExectStageEvent, ...] = ()
 
     def __post_init__(self) -> None:
+        object.__setattr__(self, "parsed_record", deep_freeze(self.parsed_record))
+        object.__setattr__(self, "flattened_mentions", deep_freeze(self.flattened_mentions))
         object.__setattr__(self, "row", deep_freeze(self.row))
         object.__setattr__(self, "stage_events", tuple(self.stage_events))
 

@@ -757,6 +757,9 @@ def run_split(
         dspy_cache=dspy_cache,
         api_base=api_base,
         config=config,
+        replay_content_sha256=(
+            _replay_content_fingerprint(raw_outputs) if mode == "replay" else None
+        ),
     )
     run_fingerprint = _run_fingerprint(run_contract)
     requested = set(order)
@@ -973,6 +976,7 @@ def _run_contract(
     dspy_cache: bool,
     api_base: str | None,
     config: StructuredMethodConfig,
+    replay_content_sha256: str | None,
 ) -> dict[str, Any]:
     return {
         "schema_version": CHECKPOINT_SCHEMA_VERSION,
@@ -991,7 +995,15 @@ def _run_contract(
         "diagnosis_policy_variant": config.diagnosis_policy_variant,
         "prescription_policy_variant": config.prescription_policy_variant,
         "sf_projection_ablation": config.sf_projection_ablation,
+        "replay_content_sha256": replay_content_sha256,
     }
+
+
+def _replay_content_fingerprint(raw_outputs: Mapping[str, str] | None) -> str:
+    if raw_outputs is None:
+        raise ValueError("replay mode requires raw outputs")
+    payload = json.dumps(dict(raw_outputs), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _run_fingerprint(contract: Mapping[str, Any]) -> str:

@@ -160,6 +160,12 @@ def test_structured_producer_rejects_nested_mutation() -> None:
         producer.row["predicted_mentions"].append({})
     with pytest.raises(TypeError, match="immutable"):
         producer.stage_events[2].output_value.append({})
+    with pytest.raises((TypeError, ValueError, AttributeError)):
+        producer.parsed_record.clinical_events[0].family = "medication"
+    with pytest.raises((TypeError, ValueError, AttributeError)):
+        producer.flattened_mentions[0].attributes["Frequency"] = "3"
+    with pytest.raises((TypeError, ValueError, AttributeError)):
+        producer.projected_letter.mentions[0].attributes["Frequency"] = "3"
 
 
 def test_combined_policy_requires_an_archived_replay_opt_in() -> None:

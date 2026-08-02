@@ -25,6 +25,9 @@ class PredictedMention(BaseModel):
     uncertainty_flags: tuple[str, ...] = ()
     component_owner: str = ""
 
+    def model_post_init(self, _context: Any) -> None:
+        object.__setattr__(self, "attributes", _freeze_mapping(self.attributes))
+
 
 class PredictedLetter(BaseModel):
     model_config = {"frozen": True}
@@ -32,6 +35,28 @@ class PredictedLetter(BaseModel):
     letter_id: str
     mentions: tuple[PredictedMention, ...]
     diagnostics: Mapping[str, Any] = {}
+
+    def model_post_init(self, _context: Any) -> None:
+        object.__setattr__(self, "diagnostics", _freeze_mapping(self.diagnostics))
+
+
+class _ImmutableDict(dict[str, Any]):
+    def _immutable(self, *_args: Any, **_kwargs: Any) -> None:
+        raise TypeError("producer values are immutable")
+
+    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = _immutable  # type: ignore[assignment]
+
+
+def _freeze_mapping(value: Mapping[str, Any]) -> Mapping[str, Any]:
+    frozen = _ImmutableDict()
+    dict.update(
+        frozen,
+        {
+            key: _freeze_mapping(item) if isinstance(item, Mapping) else item
+            for key, item in value.items()
+        },
+    )
+    return frozen
 
 
 def to_exect_annotation(mention: PredictedMention) -> ExectAnnotation:

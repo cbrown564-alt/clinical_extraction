@@ -646,6 +646,41 @@ def test_exect_llm_resume_rejects_foreign_run_provenance_before_provider_setup(
     assert counts["build"] == 0
 
 
+def test_exect_llm_resume_binds_checkpoint_to_exact_replay_content(
+    tmp_path: Path,
+) -> None:
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.runners.split import run_split
+
+    letter = ExectLetter("LLM-REPLAY-CONTENT-1", _letter().note_text)
+    checkpoint = tmp_path / "rows.jsonl"
+    report = tmp_path / "report.json"
+    run_split(
+        [letter],
+        method="llm",
+        split="dev",
+        model="fixture/model",
+        mode="replay",
+        progress_every=1,
+        checkpoint_jsonl_path=checkpoint,
+        checkpoint_report_path=report,
+        raw_outputs={letter.letter_id: _raw()},
+    )
+
+    changed_raw = json.dumps({"clinical_events": []}, separators=(",", ":"))
+    with pytest.raises(ValueError, match="mismatched run_(fingerprint|provenance)"):
+        run_split(
+            [letter],
+            method="llm",
+            split="dev",
+            model="fixture/model",
+            mode="replay",
+            resume=True,
+            checkpoint_jsonl_path=checkpoint,
+            checkpoint_report_path=report,
+            raw_outputs={letter.letter_id: changed_raw},
+        )
+
+
 @pytest.mark.parametrize(
     ("mutation", "message"),
     [
