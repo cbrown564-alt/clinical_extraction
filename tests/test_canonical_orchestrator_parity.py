@@ -47,6 +47,14 @@ def test_compatibility_row_projection_ignores_only_canonical_family_identity() -
 
     assert parity._compatibility_rows_match([legacy], [canonical])
 
+    wrong_family = {**canonical, "pipeline_family": "unexpected_family"}
+    assert not parity._compatibility_rows_match([legacy], [wrong_family])
+
+    legacy_with_unexpected_identity = {**legacy, "pipeline_family": "legacy_hybrid"}
+    assert not parity._compatibility_rows_match(
+        [legacy_with_unexpected_identity], [canonical]
+    )
+
     changed = {
         **canonical,
         "row_trace": {"method": "legacy_hybrid", "after_label": "2 per month"},

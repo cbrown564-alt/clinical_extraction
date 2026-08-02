@@ -378,7 +378,9 @@ def _compatibility_row(row: dict[str, Any]) -> dict[str, Any]:
 def _compatibility_rows_match(
     legacy_rows: list[dict[str, Any]], canonical_rows: list[dict[str, Any]]
 ) -> bool:
-    return [_compatibility_row(row) for row in legacy_rows] == [
+    return all("pipeline_family" not in row for row in legacy_rows) and all(
+        row.get("pipeline_family") == "llm_with_rules" for row in canonical_rows
+    ) and [_compatibility_row(row) for row in legacy_rows] == [
         _compatibility_row(row) for row in canonical_rows
     ]
 
