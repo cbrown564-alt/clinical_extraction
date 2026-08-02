@@ -22,8 +22,8 @@
       {
         "role": "dependency",
         "path": "pyproject.toml",
-        "sha256": "3220ab098c604701a7bdce6be7454dda35f45bff10d581e09870e799d728ead4",
-        "bytes": 1629
+        "sha256": "7f91c7ca35c5c945e3b363d0c5019ead0961f217af2dbd22b5fed477c3b16c5e",
+        "bytes": 1851
       },
       {
         "role": "dependency",
@@ -375,8 +375,6 @@
           "experiments/exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.instruction.txt"
         ],
         "tests": [
-          "tests/test_exectv2_gepa_metric.py",
-          "tests/test_exectv2_gepa_dedup_adapter.py",
           "tests/test_exectv2_scoring_concept_identity.py",
           "tests/test_exectv2_scoring_headlines.py",
           "tests/test_exectv2_scoring_match_fidelity.py",
@@ -670,7 +668,8 @@
           "tests/snapshots/prompt_contracts/gan2026__llm_only_canonical_pipeline.txt"
         ],
         "tests": [
-          "tests/test_gan2026_llm_only_canonical_pipeline.py",
+          "tests/test_gan2026_llm_pipeline.py",
+          "tests/test_gan2026_canonical_orchestrators.py",
           "tests/test_gan2026_llm_prompt_hygiene.py",
           "tests/test_gan2026_labels.py"
         ]

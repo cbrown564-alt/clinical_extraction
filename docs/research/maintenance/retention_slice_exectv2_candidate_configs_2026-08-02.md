@@ -69,7 +69,7 @@ as historical metadata; those artifacts are replay-only records, not config load
 
 | File | Action | Reference evidence |
 | --- | --- | --- |
-| `gpt41mini_single_call_dev140.json` | **KEEP** | Not in retained-evidence manifest, but loaded by `scripts/check_exectv2_gpt41mini_single_call_diagnosis_ablation.py` (`CANDIDATE_CONFIG_PATH`); asserted in `tests/test_exectv2_gpt41mini_single_call_diagnosis_ablation.py::test_retained_single_call_config_is_attributable_and_uses_one_model_pass`; experiment record `experiments/exectv2_gpt41mini_single_call_diagnosis_ablation_dev140_20260715.json` |
+| `gpt41mini_single_call_dev140.json` | **KEEP** | Not in retained-evidence manifest, but loaded by `scripts/check_exectv2_gpt41mini_single_call_diagnosis_ablation.py` (`CANDIDATE_CONFIG_PATH`); experiment record `experiments/exectv2_gpt41mini_single_call_diagnosis_ablation_dev140_20260715.json`. The dedicated pytest owner was removed under Decision 0049 Wave 2; config retention is script + experiment artifact, not pytest. |
 
 ## Stale path mentions (no keep signal)
 
@@ -86,7 +86,7 @@ Cleaning mock registry strings is out of scope for this config-tree slice.
 ## Verification run
 
 ```powershell
-.venv\Scripts\python.exe -m pytest tests/test_retained_evidence_manifest.py tests/test_exectv2_gpt41mini_single_call_diagnosis_ablation.py tests/test_exectv2_same_core_model_swap.py -q
+.venv\Scripts\python.exe -m pytest tests/test_retained_evidence_manifest.py tests/test_exectv2_same_core_model_swap.py -q
 .venv\Scripts\python.exe scripts/check_retained_evidence_manifest.py
 ```
 

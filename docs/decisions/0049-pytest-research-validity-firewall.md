@@ -1,7 +1,7 @@
 # 0049: Shrink pytest to a research-validity firewall
 
 Date: 2026-08-02
-Status: accepted; Wave 1 gate mechanics landed; Waves 2–4 not started
+Status: accepted; Waves 1–2 landed; Waves 3–4 not started
 
 ## Decision
 
@@ -98,4 +98,11 @@ Demoted deep tests are not owners. Do not rebind one-for-one every old stage
 1. **Wave 1 landed:** `pyproject.toml` registers `deep` and defaults to
    `-m "not deep"`; `tests/test_pytest_tier_gate.py` owns the gate contract;
    AGENTS, README, TDD skill, navigation, roadmap, and project status point here.
-2. **Wave 2–4:** not started.
+2. **Wave 2 landed:** deleted 46 non-selected or redundant pytest files (~730
+   cases), including GEPA/v09/closed-candidate surfaces and fat
+   pipeline_v1 / normalize / SF-split encyclopedias whose living owners remain.
+   Rebinds: retained-evidence manifest GEPA and Gan LLM-only test lists;
+   ExECT candidate-config retention slice example command. Kept
+   `tests/test_clinical_extraction_local_parity.py` because the supervisor
+   handoff source allowlist still traces it.
+3. **Waves 3–4:** not started (fat-table exemplar thinning + scoreboard).

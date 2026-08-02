@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 after Decision 0049 Wave 1 gate mechanics
+Last updated: 2026-08-02 after Decision 0049 Wave 2 pytest deletes
 
 ## Current handoff objective
 
@@ -11,11 +11,11 @@ needed for new experiments and external validation.
 
 [Decision 0049](docs/decisions/0049-pytest-research-validity-firewall.md)
 adds a pytest simplification track: always-on research-validity firewall with
-a capped deep allowlist. Wave 1 (marker, default `-m "not deep"`, governing
-gate contract, AGENTS/TDD/README pointers) is implemented in the working tree;
-Waves 2–4 (deletes, fat-table thinning, scoreboard to ~200–300) are not
-started. No mass test deletion yet — plain `pytest` still collects the full
-pre-cull suite until cases are marked `deep` or removed.
+a capped deep allowlist. Waves 1–2 are landed: gate mechanics plus deletion of
+46 non-selected/redundant pytest files. Plain `pytest` now collects **839**
+tests and passes (**verified 2026-08-02**). Waves 3–4 (remaining fat-table
+thinning and scoreboard to ~200–300) are open. Supervisor handoff still traces
+`tests/test_clinical_extraction_local_parity.py`, so that file was kept.
 
 The retained operational boundary is the selected six-model × three-method ×
 two-task system, its frontend development workflows, saved/fixture and live
