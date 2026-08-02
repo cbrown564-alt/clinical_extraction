@@ -31,7 +31,7 @@ inputs support now; it does not authorize a new prediction run.
 | Historical experiments and decisions: `experiments/`, `docs/experiments/`, `docs/decisions/0040-0047*.md`, focused `docs/research/` | Each decision/report; lineage in `experiments/registry.jsonl` | Mixed: selected evidence replayable; closed candidates explanatory; others unclassified. | Superseded producers/policies may not support current claims. | Rejected rules, negative studies, and design limits. | Keep named decision evidence; trace unselected candidates before deletion. |
 | Removed generated/cache noise visible in `c3a6fbb7`: `.tmp/`, notebook charts, review HTML, cache-like files | Baseline cleanup commit | Retired; not retained deliverables. | No current claim or replay dependency identified. | None identified. | Leave removed; do not restore without a named owner. |
 | Early HTML prototype `experiments/pipeline_flow_prototypes_20260716.html` (removed 2026-08-02) | Decision 0048 cleanup slice; [`docs/design/pipeline_trace_explorer_spec.md`](design/pipeline_trace_explorer_spec.md) | Deleted after classification; superseded by live frontend and trace explorer. | Not in manifest, registry, or six reference replays; no code or test caller. | Design decisions captured in the trace explorer specification. | Removed in cleanup commit; recover from Git history if needed. |
-| Unreferenced candidates: `experiments/archive/` | No owner until classified | Unclassified; this review does not authorize deletion. | Requires reference, claim, and producer-closure checks. | Possible historical context; unknown until traced. | Classify against manifest, decisions, claim owner, and registry; later remove only as a complete vertical slice or assign owner. |
+| `experiments/archive/gan2026_validation750_iterations/` (three Gan three-way comparison Markdown reports) | Retained evidence index; Gan reference cells in [`retained_evidence_manifest.json`](experiments/retained_evidence_manifest.json) | Classified 2026-08-02: **keep**. | Hashed artifacts on `gan2026_*_reference` cells; registry `artifact_paths`; manifest check fails if removed. | Original run summaries for the three Gan reference packages. | Keep; see [retention slice note](research/maintenance/retention_slice_experiments_archive_2026-08-02.md). |
 
 ## Bounded cleanup applied 2026-08-02
 
@@ -80,17 +80,24 @@ dev140 letter allowlisting; frontend components and
 A later delete would require refactoring those loaders onto governed
 `experiments/` sources first.
 
+The sixth slice classified `experiments/archive/`. The directory holds exactly
+three tracked Markdown companions for the Gan rules / LLM-only / hybrid
+reference cells. Each is a hashed retained-evidence artifact and a registry
+`artifact_path`. Decision: **keep**; do not delete under an `archive/` name
+alone. Record:
+[retention slice note](../research/maintenance/retention_slice_experiments_archive_2026-08-02.md).
+
 The review covers the working tree, Git history, and Git LFS. It must not inspect
 locked rows or make model calls merely to restore an old name or result. Any
 new prediction-changing replay requires its own predeclared protocol and
 baseline.
 
-The initial bounded inventory is complete; dependency classification and
-cleanup continue for remaining unclassified material such as
-`experiments/archive/`. Owner decisions still needed are which unselected
-historical families prevent misunderstanding and when the first plain-name
-source refactor is ready for replay. None authorizes locked-row inspection or
-a model call.
+The initial bounded inventory and the 2026-08-02 classification wave are
+complete for the named Decision 0048 cleanup candidates. Remaining optional
+hygiene includes the stale missing archive path in
+`frontend/public/mock-data/registry.json`. Owner decisions still needed for
+broader plain-name source refactor readiness do not authorize locked-row
+inspection or a model call.
 The retained evidence index records selected paths, hashes, source commit, and
 policy versions.
 

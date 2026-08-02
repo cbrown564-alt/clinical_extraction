@@ -48,11 +48,11 @@ verified.
    evidence, replay, component-attribution, safety, and validation owners.
    Completed slices: run-note mock fixtures removed; pipeline-flow HTML
    prototype removed; three candidate-only prompt draft notes removed; ExECT
-   candidate configs audited and kept (5 files); frontend `mock-data/artifacts/`
-   audited and kept (`FrontendDataStore` loaders). Remaining candidates:
-   `experiments/archive/` (manifest-linked — classify carefully) and any broad
-   deployment leftovers. Owners:
-   [REGENERATION.md](../REGENERATION.md) and
+   candidate configs kept (5); frontend `mock-data/artifacts/` kept;
+   `experiments/archive/` classified **keep** (three Gan reference Markdown
+   companions hashed in the retained-evidence manifest). Optional follow-up:
+   stale missing archive path in `frontend/public/mock-data/registry.json`.
+   Owners: [REGENERATION.md](../REGENERATION.md) and
    `docs/research/maintenance/retention_slice_*_2026-08-02.md`.
 6. **Template complete; gate open:** the
    [restricted external-validation readiness template](../runbooks/external_validation_readiness.md)
