@@ -1,6 +1,6 @@
 # 10 — Paper claims and supporting evidence
 
-Last updated: 2026-07-28
+Last updated: 2026-08-01
 
 This file states how strongly the paper may make each claim. The
 [retained evidence index](../experiments/retained_evidence_manifest.md) records
@@ -12,7 +12,7 @@ must not make a stronger claim than either source supports.
 | ID | Statement | Current evidence | State |
 | --- | --- | --- | --- |
 | S1 | One modular package is evaluated on Gan and ExECT | Six selected runs replay from retained code and outputs | Partial |
-| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | One selected run per task and method; ExECT `v08` remains a historical hybrid control; the Gan six-model development panel now has retained row-level score layers, first-failure ownership, evidence, rules-regression, and matched transition records | Bounded development answer |
+| S2 | Rules-only, LLM-only, and LLM-with-rules methods have attributable results on both tasks | Gan has one selected run per method; ExECT's primary comparison is the Sol-matched four-family rules-only, raw LLM-only, and one-call hybrid surface defined by decision 0046; `v08` and GEPA remain historical/secondary controls | Bounded development answer |
 | S3 | The Gan multi-model method adds modest quality with three model passes rather than one | Saved test quality, run metadata, and aggregate input availability | Bounded |
 | S4 | Six exact models run on one fixed ExECT pipeline | All six completed matched dev140 and aggregate-only test60 conditions; the retained panel gives local Qwen and Gemma the same claim status as the four hosted models | Confirmed |
 | S5 | Unknown-versus-rate overconfidence appears across models and tasks | Gan evidence exists; the predeclared six-model ExECT dev140 analogue has zero unknown-only gold letters, so transfer is not measurable from current gold | Unsupported |
@@ -41,6 +41,7 @@ must not make a stronger claim than either source supports.
 | C14 | The historical v0.7 Gan dev750 panel shows a model-by-method interaction and supports component diagnostics, but it is not the selected primary six-model `llm_with_rules` result | Quarantined development diagnostic from twelve retained 750-row traces and a no-call replay | The selected v0.5 six-model dev750 panel is now complete; do not merge v0.7 rows or scores into its ranking, development-to-test comparison, or paper headline |
 | C15 | On the selected matched Gan v0.5 dev750 panel under the prior `hybrid_full_stack`, GPT-4.1-mini scored 668/750, Qwen 660/750, Sol 656/750, Luna 646/750, Gemma 643/750, and DeepSeek 619/750 Purist | Reproduced development evidence from 4,500 unique row traces and a companion attribution artifact | Named models, routes, v0.5 prompt, historical repair, Gan scorers, and `gan2026_split_v1` validation rows only; not clinical validation, a model-neutral ranking, method promotion, or new holdout evidence |
 | C16 | The Gan LLM-with-rules ruleset is finalized as of 2026-07-31 as working-tree `hybrid_full_stack` with projection/anti-regression, dated-count, competing-rate floors, and narrow cross-model guards; no-call replay of the same saved raws yields `dev750` Purist mini 677, Luna/Sol 660, Qwen 657, Gemma 647, DeepSeek 627, and `test450` Purist Sol 381, mini 369, Luna 364, Qwen 360, Gemma 356, DeepSeek 348 | Development / aggregate-only final-ruleset replay | Same saved model outputs as the matched panel; not a fresh held-out call campaign; local Qwen/Gemma routes retained; not clinical validation or model-neutral ranking |
+| C17 | The primary ExECT three-method comparison is Sol-matched across four families: rules-only, Sol LLM-only from `raw_lane_score`, and Sol one-call LLM-with-rules from final `clinical_headline` | Strong for the named dev140 and aggregate-only test60 comparison surface | Decision 0046 and its A→B→C protocol; rules-only test60 is aggregate-only, the surface is not the published ExECT benchmark, and it is not clinical validation |
 
 ## Selected headline results
 
@@ -49,8 +50,11 @@ must not make a stronger claim than either source supports.
 | Gan single-pass system, test450 | 364/450 Purist |
 | Gan multi-model comparison, test450 | 379/450 Purist |
 | ExECT rules only, dev140 | paper-derived macro item F1: phrase 0.5687, CUI 0.7144, all features 0.6020; strict micro item F1 0.3548 |
-| ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393 |
-| ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; reproducible development control, not the final decision-0040 architecture |
+| ExECT primary rules-only, four-family Sol-matched, dev140 | clinical_headline F1 0.8160 |
+| ExECT primary LLM-only, Sol `raw_lane_score`, dev140 | F1 0.8097 |
+| ExECT primary LLM-with-rules, Sol one-call hybrid, dev140 | clinical_headline F1 0.8920 |
+| ExECT GEPA LLM only, dev140 | clinical fact F1 0.7393; historical/negative comparator |
+| ExECT historical LLM with rules (`v08`), dev140 | clinical fact F1 0.9189; secondary development control, not the final decision-0040/0041 architecture |
 | ExECT GPT / Qwen historical full200 rows | 0.8356 / 0.8197 clinical fact F1 |
 | ExECT fixed six-model panel, test60 | GPT-4.1-mini 0.7572; Luna 0.7950; Sol 0.8047; DeepSeek 0.7881; Qwen 0.7872; Gemma 0.7169 clinical-headline F1 |
 | Gan matched six-model v0.5 panel, dev750 (prior repair) | GPT-4.1-mini 668/750; Luna 646/750; Sol 656/750; DeepSeek 619/750; Qwen 660/750; Gemma 643/750 Purist |
@@ -94,6 +98,9 @@ model table.
   replay scores in one ranking without naming both ruleset identities.
 - Do not reopen Gan LLM-with-rules tuning for this comparison without a new
   predeclared study; the 2026-07-31 ruleset is final for current claims.
+- Do not place ExECT all-nine rules-only metrics, GEPA LLM-only, or historical
+  `v08` beside the Sol-matched primary three-method rows as if they were the
+  same experiment. They are secondary or historical evidence.
 
 ## Open work
 

@@ -1,14 +1,15 @@
 # Active roadmap
 
-Last updated: 2026-07-31
+Last updated: 2026-08-01
 
 [Project status](../../PROJECT_STATUS.md) owns current evidence and checks.
 [Paper claim status](../canon/10_paper_provenance.md) owns claim strength.
 
 ## Objective
 
-Close the paper's named evidence gaps without changing the verified pipeline,
-data splits, or limits on what each result supports.
+Close the paper's named evidence gaps and complete the authorized canonical
+orchestrator refactor without changing selected clinical behavior, data splits,
+or limits on what each result supports.
 
 Gan test450 remains aggregate-only. ExECT full200 combines development and
 held-out rows, so it is not an independent holdout.
@@ -256,12 +257,28 @@ resolving and optionally repairing that selection. The trace contract gained an
 `owner_kind` on `OperationOwner` because it previously could not express a
 model-owned clinical change at all.
 
-**Not closed by this work.** Finding 1 (no single canonical execution path) and
-the Phase 5 refactor remain open, as the review intended — they were gated on
-the explanation existing first. Finding 7's paper-facing decision also remains
-open: `docs/canon/04_scoring.md` still carries historical `v08` as the
-LLM-with-rules row, and whether to replace it with the current one-call
-architecture is a research decision, not a documentation one.
+**Closed by decision 0047.** The selected methods have task-local canonical
+entry points, active wrappers delegate to them, and the selected-development,
+locked-aggregate, retained-evidence, architecture, and clean-checkout gates
+pass.
+Finding 7's method-identity decision is closed by decision 0046: the primary
+ExECT comparison uses matched Sol one-call peers, while `v08` and GEPA are
+historical or negative comparators.
+
+## Canonical orchestrator refactor (complete)
+
+[Decision 0047](../decisions/0047-full-canonical-pipeline-orchestrator-refactor.md)
+owns the implementation plan, guardrails, parity evidence, stop rules, and
+method-by-method migration order. Typed orchestrators, selected-policy guards,
+delegation, one-call ExECT sharing, focused legacy parity, full permitted-
+development replay, retained six-cell replay, aggregate-only locked-split
+safety checks, architecture drift checks, and repository checks are complete.
+A fresh checkout of commit `46fec88a` passes 1,488 tests, Ruff, mypy, and the
+documented no-call evidence checks.
+
+No model calls or locked-row inspection are authorized. Any semantic
+difference stops the refactor until it is repaired or handled as a separate,
+versioned decision.
 
 ## Limits
 

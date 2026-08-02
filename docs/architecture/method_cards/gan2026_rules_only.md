@@ -132,7 +132,7 @@ Map the predicted and gold monthly frequencies into the Purist and Pragmatic cat
 
 ## Code map
 
-Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/deterministic_canonical.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/runners/deterministic_canonical.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.runners.deterministic_canonical:run_item`)
+Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/rules.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/rules.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules:run_record`)
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |

@@ -1,1 +1,0 @@
-{"review_key": "EA0001|missed|focal epilepsy", "letter_id": "EA0001", "direction": "missed", "normalized_concept": "focal epilepsy", "methods": ["llm_only"], "note_text": "Diagnosis: focal epilepsy", "gold_diagnosis_mentions": [], "method_records": {}}

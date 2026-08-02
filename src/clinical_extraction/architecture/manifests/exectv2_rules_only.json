@@ -6,13 +6,13 @@
   "method_label": "Rules only",
   "role": "selected",
   "entry_point": {
-    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/deterministic/all_entities/orchestrator.py",
-    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.deterministic.all_entities.orchestrator:extract_deterministic_all9"
+    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/rules.py",
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules:run_letter"
   },
-  "one_sentence": "Nine independent deterministic extractors read the letter, their findings are pooled and de-duplicated, and the result is scored.",
-  "sixty_second": "No model is involved. Nine entity-specific extractors run over the same note text: Diagnosis, Investigations, Onset, When Diagnosed, Birth History, Epilepsy Cause, Patient History, Prescription, and Seizure Frequency. Seizure Frequency is not a flat extractor - it runs its own staged deterministic sub-pipeline. The nine mention lists are concatenated and passed through mention-identity de-duplication, which is the only place where one extractor's output can suppress another's. The pooled mentions become the predicted letter and are scored against gold. The critical framing point for the paper is coverage, not architecture: this baseline covers nine entities while the model-led comparison covers four, so any score placed beside a four-family model result is not measuring the same task.",
-  "prediction_owner": "the nine deterministic extractors (stage exect.rules.extract_entities)",
-  "scored_representation": "A PredictedLetter of entity mentions with attributes and evidence, scored per entity and overall.",
+  "one_sentence": "Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison.",
+  "sixty_second": "No model is involved. Nine entity-specific extractors run over the same note text: Diagnosis, Investigations, Onset, When Diagnosed, Birth History, Epilepsy Cause, Patient History, Prescription, and Seizure Frequency. Seizure Frequency is not a flat extractor - it runs its own staged deterministic sub-pipeline. The nine mention lists are concatenated and passed through mention-identity de-duplication, which is the only place where one extractor's output can suppress another's. The canonical orchestrator preserves that all-nine prediction and also materializes an explicit pure four-family comparison projection for Diagnosis, Seizure Frequency, Prescription, and Investigations. The all-nine result remains available for the secondary published-metric view; the primary model comparison uses only the named four-family projection.",
+  "prediction_owner": "the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing",
+  "scored_representation": "An all-nine PredictedLetter plus an explicit four-family comparison projection, each scored under its named view.",
   "stages": [
     {
       "stage_id": "exect.rules.extract_seizure_frequency",
@@ -77,7 +77,7 @@
     {
       "stage_id": "exect.rules.score",
       "name": "Score against gold",
-      "operation": "Match predicted mentions to gold annotations under the configured match policy and report per-entity and overall precision, recall, and F1.",
+      "operation": "Keep the all-nine prediction intact, project a separate four-family comparison view, and match each named view to gold under the configured policy.",
       "owner": "scorer",
       "effect_class": "benchmark_projection",
       "input_type": "PredictedLetter plus gold annotations",
@@ -91,7 +91,7 @@
       "governing_test": "tests/test_exectv2_scoring_match_fidelity.py",
       "trace_fields": ["scores.overall", "scores.per_entity"],
       "paper_wording": "Predictions are scored by mention matching against the ExECTv2 gold annotations.",
-      "notes": "This baseline is scored over nine entities. The model-led comparison is scored over four. Never place the two overall numbers side by side without saying so."
+      "notes": "The canonical result exposes all-nine output and the pure four-family comparison projection. Never place the two overall numbers side by side without naming the view."
     }
   ],
   "related_paths": [

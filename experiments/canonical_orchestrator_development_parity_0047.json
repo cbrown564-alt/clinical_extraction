@@ -1,0 +1,104 @@
+{
+  "claim_boundary": "Implementation and mechanism parity on permitted development distributions; not new performance evidence or clinical validation.",
+  "datasets": {
+    "exectv2": "dev140",
+    "gan2026": "dev750/validation750"
+  },
+  "decision": "0047-full-canonical-pipeline-orchestrator-refactor",
+  "methods": {
+    "exectv2_llm_only": {
+      "comparison_fields": [
+        "entity",
+        "text",
+        "attributes",
+        "evidence",
+        "rationale",
+        "confidence"
+      ],
+      "mismatch_rows": 0,
+      "ownership_check": "canonical stage trace identifies model as first prediction-changing owner",
+      "passed": true,
+      "rows": 140
+    },
+    "exectv2_llm_with_rules": {
+      "exact_evidence_failures": 0,
+      "mismatch_rows": 0,
+      "passed": true,
+      "rows": 140
+    },
+    "exectv2_rules_only": {
+      "mismatch_rows": 0,
+      "passed": true,
+      "rows": 140
+    },
+    "gan2026_llm_only": {
+      "comparison_fields": [
+        "source_row_index",
+        "decision_record",
+        "structured_record",
+        "normalized_events",
+        "evidence_text_contained",
+        "evidence_valid",
+        "call_error",
+        "parse_errors",
+        "initial_parse_errors",
+        "format_retry_output",
+        "format_retry_notes",
+        "comparison",
+        "row_trace"
+      ],
+      "first_mismatch_ids": [],
+      "mismatches_by_field": {},
+      "passed": true,
+      "rows": 750
+    },
+    "gan2026_llm_with_rules": {
+      "comparison_fields": [
+        "source_row_index",
+        "decision_record",
+        "structured_record",
+        "normalized_events",
+        "evidence_text_contained",
+        "evidence_valid",
+        "call_error",
+        "parse_errors",
+        "initial_parse_errors",
+        "format_retry_output",
+        "format_retry_notes",
+        "comparison",
+        "row_trace"
+      ],
+      "first_mismatch_ids": [],
+      "mismatches_by_field": {},
+      "passed": true,
+      "rows": 750
+    },
+    "gan2026_rules_only": {
+      "mismatch_rows": 0,
+      "passed": true,
+      "rows": 750
+    }
+  },
+  "mode": "saved-output no-call replay",
+  "operational_policy_drift": {
+    "changed_row_ids_sha256": "fac0e8ab06972b204af50af8a794dea17a1dacfb7fd7052740513a1b534c530b",
+    "changed_rows": 3,
+    "claim_boundary": "ExECT dev140 saved-output policy characterization; not structural parity, holdout evidence, or clinical validation.",
+    "historical_additions_vs_selected": 2,
+    "historical_removals_vs_selected": 1,
+    "historical_variant": "diagnosis_resolution_candidate=True",
+    "row_ids_emitted": false,
+    "rows": 140,
+    "selected_policy": "default/default; candidate switches off",
+    "status": "historical_development_policy_delta"
+  },
+  "result": "pass",
+  "row_policy": "permitted development rows only; no held-out rows loaded",
+  "schema_version": "decision_0047_development_parity_v1",
+  "source_commit": "e2b368d1147de03ffb68a91e5df7b6606896e859",
+  "sources": {
+    "experiments/exectv2_six_model_single_call_gpt56sol_dev140_20260715_structured.jsonl": "1b173d9085c172c5ffd1b320e4178d999432e112a42707cec8b283b6e697351b",
+    "experiments/gan2026_six_model_validation_20260718/gpt56sol--llm_only.jsonl": "b19b9effac818b5596d00b57189b278e1b8bb6e64b4cadef15a5b851f9e712eb",
+    "experiments/gan2026_six_model_validation_20260718/gpt56sol--llm_with_rules.jsonl": "12dcbf28fcd6b8274cb2a0ecefecebeb79f829f107d3ae3ce227753b71bc12f7"
+  }
+}

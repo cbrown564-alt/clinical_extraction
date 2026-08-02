@@ -1,6 +1,6 @@
 # 04 — ExECT scoring and annotation evidence
 
-Last updated: 2026-07-15
+Last updated: 2026-08-01
 
 | Score | Question | Use |
 | --- | --- | --- |
@@ -15,12 +15,28 @@ repository now implements the paper-derived normalized-phrase, CUI, and
 full-attribute views, but it has not reproduced the paper's original system or
 reported validation scores.
 
-| Method | Split | Selected result |
+The primary ExECT method comparison is now the Sol-matched four-family
+surface defined by [decision 0046](../decisions/0046-exect-primary-method-comparison-boundary.md).
+It uses the same `headline_target` / `clinical_headline` surface for the
+rules-only and hybrid rows, and `raw_lane_score` for the Sol LLM-only row.
+The all-nine rules-only results and the historical GEPA and `v08` results
+remain secondary evidence.
+
+| Primary method | Split | Selected result |
+| --- | --- | ---: |
+| Rules only, Sol-matched four families | dev140 | clinical_headline F1 0.8160 |
+| LLM only, GPT-5.6 Sol (`raw_lane_score`) | dev140 | F1 0.8097 |
+| LLM with rules, GPT-5.6 Sol one-call hybrid | dev140 | clinical_headline F1 0.8920 |
+| Rules only, Sol-matched four families | test60 | clinical_headline F1 0.7154; aggregate-only |
+| LLM only, GPT-5.6 Sol (`raw_lane_score`) | test60 | F1 0.7771; aggregate-only |
+| LLM with rules, GPT-5.6 Sol one-call hybrid | test60 | clinical_headline F1 0.8047; aggregate-only |
+
+| Secondary or historical method | Split | Selected result |
 | --- | --- | ---: |
 | Rules only, all nine entities | dev140 | strict item F1 0.3548 |
 | Rules only, all nine entities | dev140 | published-view macro item F1: phrase 0.5687, CUI 0.7144, all features 0.6020 |
 | GEPA LLM only | dev140 | clinical fact F1 0.7393 |
-| LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189 |
+| Historical LLM with rules (`v08`) | dev140 | clinical fact F1 0.9189; not the selected family-ownership architecture |
 
 The published-view replay is a no-call development result over all nine entity
 types. Its per-letter macro F1 is 0.7518 for normalized phrase, 0.8534 for CUI,

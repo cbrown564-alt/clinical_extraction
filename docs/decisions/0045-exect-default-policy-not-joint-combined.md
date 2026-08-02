@@ -48,6 +48,14 @@ does not justify a second model call).
 - Navigation and status documents must not present joint as the selected live
   comparison policy.
 - Do not retune joint guards to chase the marginal F1 lift.
+- The research runner, operational wrapper, and local clinical-findings wrapper
+  all use the same selected `default` / `default` policy. The pre-2026-08-01
+  operational path that unconditionally enabled
+  `diagnosis_resolution_candidate=True` is historical policy drift, not selected
+  behavior that the canonical-orchestrator refactor must preserve.
+- Any comparison with that older operational path is a development-only policy
+  delta. It must be reported separately from structural parity and may be
+  replayed only through an explicitly archived entry point.
 
 ## Evidence owners
 

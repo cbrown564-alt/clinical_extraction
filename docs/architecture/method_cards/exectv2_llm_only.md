@@ -7,25 +7,25 @@
 
 Method id: `exectv2_llm_only`  
 Role: **selected**  
-Stages: 6  
+Stages: 7  
 Stages that may change clinical meaning: 1
 
 ## One sentence
 
-> A GEPA-optimized program emits de-duplicated clinical facts for four families, and an adapter maps them into ExECT mentions without adding or merging any fact.
+> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses.
 
 ## Sixty seconds
 
-The retained GEPA program produces a list of clinical facts, each with a family, evidence, and attributes, already de-duplicated by the program itself. The adapter then does four things: it repairs JSON dialect and coerces the facts list; it drops facts that are malformed or carry no evidence; it maps each surviving fact into an ExECT mention, normalizing representation fields such as negation, dose units, medication frequency, modality, investigation state, and seizure-frequency state; and it passes the mentions through the shared evidence and schema gates. The adapter explicitly does not add or merge clinical facts, and records that claim per fact in its provenance. The honest caveat is that representation normalization is not nothing: a fact whose dose unit or seizure state normalizes differently can match or miss gold on that basis alone.
+The canonical LLM-only lane shares one structured producer with the hybrid method. It builds the four-family prompt, makes or replays one model call, parses the event ledger, optionally performs a format-only retry for eligible local models, flattens events, and applies evidence and render-safety gates. Its selected prediction is the raw candidate view from that producer. It does not run seizure-frequency projection, Diagnosis reconciliation, Prescription rescue, or any other hybrid family lens. The old GEPA program remains named as a historical comparison rather than silently serving as the current selected entry point.
 
 ## The five recall questions
 
 | Question | Answer |
 | --- | --- |
-| What enters? | ExectLetter - see `exect.llm.gepa_program` |
-| Who first proposes the clinical answer? | the GEPA program (stage exect.llm.gepa_program) |
+| What enters? | ExectLetter - see `exect.llm.build_prompt` |
+| Who first proposes the clinical answer? | the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings |
 | Which later stages may change clinical meaning? | none - the first proposer is the only one |
-| What final representation is scored? | A PredictedLetter of four-family mentions with attributes and evidence, scored per entity and overall. |
+| What final representation is scored? | The raw_candidate four-family PredictedLetter from the shared one-call producer, scored per entity and overall. |
 | What evidence shows whether each component helped or harmed? | `docs/canon/08_gepa.md`, `docs/canon/07_exect_plan11.md` |
 
 ## Stages
@@ -34,128 +34,140 @@ Read the `Effect` column first. `CLINICAL MEANING` marks every stage that can ch
 
 | # | Stage | Owner | Effect | What it does |
 | --- | --- | --- | --- | --- |
-| 1 | `exect.llm.gepa_program`<br>GEPA program emits clinical facts | model | CLINICAL MEANING | The optimized program reads the letter and returns de-duplicated clinical facts across Diagnosis, Seizure Frequency, Prescription, and Investigations. |
-| 2 | `exect.llm.parse_and_coerce`<br>Parse JSON and coerce the facts list | rules | transport/schema only | Recover the JSON object, repair Python-literal dialect, accept either the clinical_facts or facts key, and coerce each entry to a fact-shaped mapping. |
-| 3 | `exect.llm.drop_unusable_facts`<br>Drop malformed or unevidenced facts | rules | gate | Discard facts that fail fact-level validation, name an unsupported family, or carry no evidence span. |
-| 4 | `exect.llm.map_to_mentions`<br>Map facts to ExECT mentions | rules | representation | Turn each fact into an ExECT mention and attribute set, normalizing negation, dose units, medication frequency, modality, investigation performed and result state, and seizure-frequency state. |
-| 5 | `exect.llm.evidence_schema_gates`<br>Apply evidence and schema gates | rules | gate | Run the shared projection gates: require grounded evidence, enforce the render-safety rules, and emit gate warnings for anything rejected. |
-| 6 | `exect.llm.score`<br>Score against gold | scorer | benchmark projection | Match predicted mentions to gold annotations under the configured match policy and report per-entity and overall precision, recall, and F1. |
+| 1 | `exect.llm.build_prompt`<br>Build the four-family prompt | rules | transport/schema only | Render the note text and the four-family event-ledger schema into the prompt input for one structured call. |
+| 2 | `exect.llm.model_call`<br>Model proposes four-family findings | model | CLINICAL MEANING | One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence. |
+| 3 | `exect.llm.parse_and_retry`<br>Parse output with format-only retry | rules | transport/schema only | Recover the structured event record and, when eligible, accept one format-only retry only after schema validation. |
+| 4 | `exect.llm.flatten_events`<br>Flatten events into mentions | rules | representation | Turn each model event into an ExECT mention with its entity, text, attributes, and evidence. |
+| 5 | `exect.llm.project_and_gate`<br>Apply representation and evidence gates | rules | gate | Normalize closed-vocabulary attributes, require exact source evidence, and withhold mentions rejected by the shared render-safety gates. |
+| 6 | `exect.llm.raw_candidate`<br>Materialize the raw candidate view | rules | benchmark projection | Expose the producer's gated mentions as the selected LLM-only scoring view without applying the hybrid family transforms. |
+| 7 | `exect.llm.score`<br>Score against gold | scorer | benchmark projection | Match predicted mentions to gold annotations under the configured ExECT match policy and report per-entity and overall metrics. |
 
 ## Stage walkthrough
 
-### 1. GEPA program emits clinical facts
+### 1. Build the four-family prompt
 
-`exect.llm.gepa_program` - model-owned, CLINICAL MEANING
+`exect.llm.build_prompt` - rules-owned, transport/schema only, rule category `general`
 
-The optimized program reads the letter and returns de-duplicated clinical facts across Diagnosis, Seizure Frequency, Prescription, and Investigations.
-
-|  | Type | Example |
-| --- | --- | --- |
-| In | ExectLetter | "Diagnosis: focal epilepsy. MRI brain normal. Levetiracetam 500mg twice daily." |
-| Out | raw structured JSON (str) | {"clinical_facts": [{"family": "diagnosis", "text": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy"}]} |
-
-> GEPA optimization is closed. One saved run is retained as a negative comparison; see docs/canon/08_gepa.md.
-
-- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:PROMPT_VERSION`)
-- Test: [`tests/test_exectv2_gepa_dedup_adapter.py`](../../../tests/test_exectv2_gepa_dedup_adapter.py)
-- Proven in a trace by: `raw_output`, `prompt_version`
-- Paper wording: A GEPA-optimized program produces de-duplicated clinical facts for four families.
-
-### 2. Parse JSON and coerce the facts list
-
-`exect.llm.parse_and_coerce` - rules-owned, transport/schema only, rule category `general`
-
-Recover the JSON object, repair Python-literal dialect, accept either the clinical_facts or facts key, and coerce each entry to a fact-shaped mapping.
+Render the note text and the four-family event-ledger schema into the prompt input for one structured call.
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | raw structured JSON (str) | output wrapped in prose, or using the 'facts' key |
-| Out | DedupClinicalFactsRecord plus notes | a validated record with two clinical facts |
+| In | ExectLetter | letter text plus letter id |
+| Out | prompt input JSON (str) | {"note_text": "...", "families": ["Diagnosis", "SeizureFrequency", "Prescription", "Investigations"]} |
 
-- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:parse_dedup_clinical_facts_json`)
-- Test: [`tests/test_exectv2_gepa_dedup_adapter.py`](../../../tests/test_exectv2_gepa_dedup_adapter.py)
-- Proven in a trace by: `parse_errors`
-- Paper wording: Malformed program output is repaired at the transport and schema level only.
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
+- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Proven in a trace by: `prompt_input_json`, `prompt_version`
+- Paper wording: The selected LLM-only method starts from one structured four-family prompt.
 
-### 3. Drop malformed or unevidenced facts
+### 2. Model proposes four-family findings
 
-`exect.llm.drop_unusable_facts` - rules-owned, gate, rule category `general`
+`exect.llm.model_call` - model-owned, CLINICAL MEANING
 
-Discard facts that fail fact-level validation, name an unsupported family, or carry no evidence span.
-
-|  | Type | Example |
-| --- | --- | --- |
-| In | list of candidate facts | a fact with family 'diagnosis' and an empty evidence field |
-| Out | filtered list of facts plus notes | the unevidenced fact is dropped and noted |
-
-> A gate, not a rewrite: it removes facts the model produced, and it never invents one.
-
-- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:_coerce_facts`)
-- Test: [`tests/test_exectv2_gepa_dedup_adapter.py`](../../../tests/test_exectv2_gepa_dedup_adapter.py)
-- Proven in a trace by: `adapter_notes`
-- Paper wording: Facts that are malformed or carry no evidence are dropped rather than scored.
-
-### 4. Map facts to ExECT mentions
-
-`exect.llm.map_to_mentions` - rules-owned, representation, rule category `clinical_epilepsy`
-
-Turn each fact into an ExECT mention and attribute set, normalizing negation, dose units, medication frequency, modality, investigation performed and result state, and seizure-frequency state.
+One structured call returns candidate findings for Diagnosis, Seizure Frequency, Prescription, and Investigations, each with evidence.
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | list[DedupClinicalFactRecord] | a prescription fact with dose_unit 'milligrams' and frequency 'twice a day' |
-| Out | tuple[list[MentionForEvidence], provenance, notes] | a Prescription mention with dose_unit 'mg' and frequency 'BD' |
+| In | prompt input JSON (str) | letter text plus the four-family schema |
+| Out | raw structured JSON (str) | {"clinical_events": [{"family": "diagnosis", "evidence": "Diagnosis: focal epilepsy"}]} |
 
-> Every provenance entry records action 'representation_mapping_only', added_fact false, and deduplicated_by_adapter false, so the no-addition claim is checkable per fact rather than asserted in prose. The normalization itself can still change whether a fact matches gold.
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
+- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Proven in a trace by: `raw_output`, `model`, `prompt_version`
+- Paper wording: A single language-model call proposes candidate findings for all four families.
 
-- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:clinical_facts_to_mentions`)
-- Test: [`tests/test_exectv2_gepa_dedup_adapter.py`](../../../tests/test_exectv2_gepa_dedup_adapter.py)
-- Proven in a trace by: `provenance[].action`, `provenance[].added_fact`, `provenance[].deduplicated_by_adapter`
-- Paper wording: An adapter maps program facts into the ExECT representation without adding or merging clinical facts.
+### 3. Parse output with format-only retry
 
-### 5. Apply evidence and schema gates
+`exect.llm.parse_and_retry` - rules-owned, transport/schema only, rule category `general`
 
-`exect.llm.evidence_schema_gates` - rules-owned, gate, rule category `general`
+Recover the structured event record and, when eligible, accept one format-only retry only after schema validation.
 
-Run the shared projection gates: require grounded evidence, enforce the render-safety rules, and emit gate warnings for anything rejected.
+|  | Type | Example |
+| --- | --- | --- |
+| In | raw structured JSON (str) | an events list with a transport or JSON dialect error |
+| Out | StructuredExtractionRecord plus parse notes | a validated event record with parse and retry notes |
+
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
+- Test: [`tests/test_exectv2_local_format_retry.py`](../../../tests/test_exectv2_local_format_retry.py)
+- Proven in a trace by: `initial_parse_errors`, `parse_errors`, `format_retry_notes`
+- Paper wording: Malformed model output is handled at the transport and schema boundary.
+
+### 4. Flatten events into mentions
+
+`exect.llm.flatten_events` - rules-owned, representation, rule category `general`
+
+Turn each model event into an ExECT mention with its entity, text, attributes, and evidence.
+
+|  | Type | Example |
+| --- | --- | --- |
+| In | StructuredExtractionRecord | an event with family 'Diagnosis' and text 'focal epilepsy' |
+| Out | list[MentionForEvidence] | a Diagnosis mention with its evidence span |
+
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
+- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Proven in a trace by: `n_events_raw`, `n_mentions_raw`
+- Paper wording: Model events are flattened into entity mentions without adding a deterministic extractor.
+
+### 5. Apply representation and evidence gates
+
+`exect.llm.project_and_gate` - rules-owned, gate, rule category `clinical_epilepsy`
+
+Normalize closed-vocabulary attributes, require exact source evidence, and withhold mentions rejected by the shared render-safety gates.
 
 |  | Type | Example |
 | --- | --- | --- |
 | In | list[MentionForEvidence] plus note text | a mention whose evidence does not appear in the note |
 | Out | PredictedLetter plus gate warnings | the ungrounded mention is withheld and a gate warning is recorded |
 
-- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/projection.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/projection.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter`)
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter`)
 - Test: [`tests/test_exectv2_llm_only_projection.py`](../../../tests/test_exectv2_llm_only_projection.py)
-- Proven in a trace by: `gate_warnings`, `n_evidence_invalid`
-- Paper wording: Findings must pass evidence-grounding and schema gates before scoring.
+- Proven in a trace by: `gate_warnings`, `n_mentions_scored`, `n_evidence_invalid`
+- Paper wording: The LLM-only candidate must pass evidence and render-safety gates before scoring.
 
-### 6. Score against gold
+### 6. Materialize the raw candidate view
 
-`exect.llm.score` - scorer-owned, benchmark projection
+`exect.llm.raw_candidate` - rules-owned, benchmark projection, rule category `benchmark_format`
 
-Match predicted mentions to gold annotations under the configured match policy and report per-entity and overall precision, recall, and F1.
+Expose the producer's gated mentions as the selected LLM-only scoring view without applying the hybrid family transforms.
 
 |  | Type | Example |
 | --- | --- | --- |
-| In | PredictedLetter plus gold annotations | predicted Diagnosis 'focal epilepsy' against gold 'focal epilepsy' |
+| In | gated PredictedLetter | four-family mentions from the shared producer |
+| Out | raw_candidate PredictedLetter | the same four-family mentions with raw_candidate provenance |
+
+- Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter`)
+- Test: [`tests/test_exectv2_canonical_orchestrators.py`](../../../tests/test_exectv2_canonical_orchestrators.py)
+- Proven in a trace by: `scored_view`, `predicted_mentions`
+- Paper wording: The selected LLM-only view is the raw candidate from the one-call producer.
+
+### 7. Score against gold
+
+`exect.llm.score` - scorer-owned, benchmark projection
+
+Match predicted mentions to gold annotations under the configured ExECT match policy and report per-entity and overall metrics.
+
+|  | Type | Example |
+| --- | --- | --- |
+| In | raw_candidate PredictedLetter plus gold annotations | predicted Diagnosis 'focal epilepsy' against gold 'focal epilepsy' |
 | Out | OverallScore plus per-entity EntityScore | a four-family overall F1 |
 
 - Code: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/scoring/match.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall`)
 - Test: [`tests/test_exectv2_scoring_match_fidelity.py`](../../../tests/test_exectv2_scoring_match_fidelity.py)
 - Proven in a trace by: `scores.overall`, `scores.per_entity`
-- Paper wording: Predictions are scored by mention matching against the ExECTv2 gold annotations.
+- Paper wording: The raw candidate view is scored by mention matching against ExECTv2 gold.
 
 ## Code map
 
-Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/dedup_adapter.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:to_predicted_letter_from_dedup_facts`)
+Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter`)
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
-| `exect.llm.gepa_program` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:PROMPT_VERSION` | `tests/test_exectv2_gepa_dedup_adapter.py` |
-| `exect.llm.parse_and_coerce` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:parse_dedup_clinical_facts_json` | `tests/test_exectv2_gepa_dedup_adapter.py` |
-| `exect.llm.drop_unusable_facts` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:_coerce_facts` | `tests/test_exectv2_gepa_dedup_adapter.py` |
-| `exect.llm.map_to_mentions` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.gepa.dedup_adapter:clinical_facts_to_mentions` | `tests/test_exectv2_gepa_dedup_adapter.py` |
-| `exect.llm.evidence_schema_gates` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.projection:to_predicted_letter` | `tests/test_exectv2_llm_only_projection.py` |
+| `exect.llm.build_prompt` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.model_call` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.parse_and_retry` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_local_format_retry.py` |
+| `exect.llm.flatten_events` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
+| `exect.llm.project_and_gate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:produce_structured_letter` | `tests/test_exectv2_llm_only_projection.py` |
+| `exect.llm.raw_candidate` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter` | `tests/test_exectv2_canonical_orchestrators.py` |
 | `exect.llm.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |
 
 ## Not this method
@@ -164,7 +176,7 @@ These paths exist and are easy to mistake for the selected method. They are name
 
 | Path | Role | Why it is not the selected method |
 | --- | --- | --- |
-| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/` | rejected candidate or ablation | The optimization loop that produced the retained program. Closed; see docs/canon/08_gepa.md. |
+| `src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/gepa/` | historical performance control | The closed GEPA program is retained for historical comparison only; it is not the selected LLM-only entry point. |
 
 ## Executable trace
 

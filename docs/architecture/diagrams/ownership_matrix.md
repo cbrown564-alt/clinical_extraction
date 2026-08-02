@@ -25,7 +25,7 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | Gan 2026 | LLM only | 8 | 2 | 0 | 2 | 1 | 3 |
 | Gan 2026 | LLM with rules | 20 | 3 | 2 | 11 | 1 | 3 |
 | ExECTv2 | Rules only | 4 | 0 | 1 | 2 | 1 | 0 |
-| ExECTv2 | LLM only | 6 | 1 | 1 | 1 | 1 | 2 |
+| ExECTv2 | LLM only | 7 | 2 | 1 | 1 | 2 | 1 |
 | ExECTv2 | LLM with rules | 15 | 3 | 3 | 6 | 2 | 1 |
 
 ## Who owns the first clinical answer
@@ -35,8 +35,8 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | Gan 2026 | Rules only | deterministic rules (stage gan.rules.select_and_render) | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
 | Gan 2026 | LLM only | the model (stage gan.llm.model_call), with one deterministic override at gan.llm.selected_evidence_repair | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
 | Gan 2026 | LLM with rules | the model proposes and selects (gan.hybrid.model_call); ten deterministic repair families may change the answer afterwards | One Gan label string per letter, projected to a Purist and a Pragmatic category. |
-| ExECTv2 | Rules only | the nine deterministic extractors (stage exect.rules.extract_entities) | A PredictedLetter of entity mentions with attributes and evidence, scored per entity and overall. |
-| ExECTv2 | LLM only | the GEPA program (stage exect.llm.gepa_program) | A PredictedLetter of four-family mentions with attributes and evidence, scored per entity and overall. |
+| ExECTv2 | Rules only | the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing | An all-nine PredictedLetter plus an explicit four-family comparison projection, each scored under its named view. |
+| ExECTv2 | LLM only | the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings | The raw_candidate four-family PredictedLetter from the shared one-call producer, scored per entity and overall. |
 | ExECTv2 | LLM with rules | the named model proposes all four families (exect.hybrid.model_call); four family transforms may change findings afterwards | A PredictedLetter of four-family mentions materialized into named score views; the canonical view is clinical_headline. |
 
 ## Every clinical-meaning stage in the system
@@ -60,7 +60,7 @@ Every stage of every selected method, counted by what it is allowed to change. A
 | Gan 2026 | LLM with rules | `gan.hybrid.repair.elapsed_anchor` | rules | seizure_frequency |
 | ExECTv2 | Rules only | `exect.rules.extract_seizure_frequency` | rules | seizure_frequency |
 | ExECTv2 | Rules only | `exect.rules.extract_entities` | rules | clinical_epilepsy |
-| ExECTv2 | LLM only | `exect.llm.gepa_program` | model | - |
+| ExECTv2 | LLM only | `exect.llm.model_call` | model | - |
 | ExECTv2 | LLM with rules | `exect.hybrid.model_call` | model | - |
 | ExECTv2 | LLM with rules | `exect.hybrid.project_and_gate` | rules | clinical_epilepsy |
 | ExECTv2 | LLM with rules | `exect.hybrid.sf_state_projection` | rules | seizure_frequency |

@@ -68,7 +68,7 @@ flowchart LR
 
 ## ExECTv2 - Rules only
 
-First proposer: the nine deterministic extractors (stage exect.rules.extract_entities)
+First proposer: the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing
 
 ```mermaid
 flowchart LR
@@ -81,13 +81,13 @@ flowchart LR
 
 ## ExECTv2 - LLM only
 
-First proposer: the GEPA program (stage exect.llm.gepa_program)
+First proposer: the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings
 
 ```mermaid
 flowchart LR
   origin_exectv2_llm_only["answer changed"]
-  exect_llm_gepa_program["GEPA program emits clinical facts"]
-  origin_exectv2_llm_only --> exect_llm_gepa_program
+  exect_llm_model_call["Model proposes four-family findings"]
+  origin_exectv2_llm_only --> exect_llm_model_call
 ```
 
 ## ExECTv2 - LLM with rules

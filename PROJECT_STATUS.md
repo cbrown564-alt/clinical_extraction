@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-01 after ExECT decision 0046 Phase A stage panel
+Last updated: 2026-08-01 after decision 0047 canonical orchestrator refactor
 
 ## Current outcome
 
@@ -15,6 +15,19 @@ Owners: [decision 0046](docs/decisions/0046-exect-primary-method-comparison-boun
 [stage panel](experiments/exectv2_six_model_test60_stage_panel_20260801/panel_aggregate.json),
 [rules-only dev140](experiments/exectv2_rules_only_four_family_clinical_headline_dev140_20260801.json),
 [rules-only test60](experiments/exectv2_rules_only_four_family_clinical_headline_test60_20260801.json).
+
+Decision 0047 is implemented and verified. All six selected methods now use
+task-local typed canonical entry points, and active research, replay, and
+operational wrappers delegate to them. The permitted-development replay passes
+for all six task-method pairs; all six retained historical reference cells
+reproduce; four public locked-split aggregate artifacts pass the no-row-content
+safety check; and all 14 generated architecture documents match current code.
+A fresh checkout of commit `46fec88a` passes 1,488 tests, Ruff, and mypy over
+350 source files. This verifies implementation parity and reproducibility; it
+does not add clinical validation or authorize model calls or locked-row
+inspection. Owner:
+[decision 0047 parity](docs/experiments/canonical_orchestrator_parity_0047.md),
+[machine artifact](experiments/canonical_orchestrator_parity_0047.json).
 
 The fixed one-call ExECTv2 comparison is implemented for all six selected
 models on `dev140` and has aggregate-only `test60` results for the same six
@@ -35,12 +48,12 @@ scoring conventions with implications, a help case, a hurt case, and where
 each lives (gold, prompt, fixed code, scorer, or architecture). Owner:
 [clinical selection policy catalog](docs/research/clinical_selection_policy_catalog_2026-07-31.md).
 
-An explanatory architecture layer now states, for each of the six selected
+An explanatory architecture layer states, for each of the six selected
 task-method pairs, how a record moves through it and who owns each change.
 Six machine-readable stage manifests drive generated method cards, diagrams,
 and two teaching cases that execute the real pipelines; a CI drift gate fails
-if the published explanation stops matching the code. No prediction-bearing
-code changed and no score moved. Owner:
+if the published explanation stops matching the code. The 0047 refactor keeps
+prediction outputs and scores unchanged in the no-call characterization. Owner:
 [architecture layer](docs/architecture/README.md).
 
 A bounded Gan **DeepSeek unknown-competence** thread is open for author

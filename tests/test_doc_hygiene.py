@@ -17,6 +17,12 @@ from scripts.check_doc_hygiene import (
 def test_load_allowlist_names_only_retained_root_markdown() -> None:
     assert load_allowlist() == {
         "README.md",
+        "exectv2_deepseek_v4_flash_0731_update_dev140_20260731_sf_state_projection_combined.md",
+        "exectv2_deepseek_v4_flash_0731_update_dev140_20260731_sf_unknown_suppression.md",
+        "exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured_checkpoint.md",
+        "exectv2_deepseek_v4_flash_0731_update_dev140_20260731_structured.md",
+        "exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_20260731_sf_state_projection_combined.md",
+        "exectv2_deepseek_v4_flash_20260715_model_current_rules_dev140_20260731_sf_unknown_suppression.md",
         "exectv2_gepa_dedup_gpt41mini_h2mb8_20260628.md",
         "exectv2_six_model_gpt41mini_dev140_20260715_diagnosis_decomposer.md",
         "exectv2_six_model_gpt41mini_dev140_20260715_sf_state_projection_combined.md",

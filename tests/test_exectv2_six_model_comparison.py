@@ -9,7 +9,13 @@ from scripts.run_exectv2_six_model_comparison import configure_declared_runtime
 
 
 def test_six_model_configs_freeze_exact_roster_runtime_and_graph() -> None:
-    paths = sorted(Path("configs/exectv2/six_model_comparison").glob("*.json"))
+    paths = sorted(
+        path
+        for path in Path("configs/exectv2/six_model_comparison").glob("*.json")
+        if json.loads(path.read_text(encoding="utf-8"))["candidate_id"].startswith(
+            "exectv2_six_model_single_call_"
+        )
+    )
     configs = [model_swap.load_model_swap_config(path) for path in paths]
     payloads = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
 

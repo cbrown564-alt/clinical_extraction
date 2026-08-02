@@ -37,6 +37,7 @@ from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.data import (
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.shared.mention_pipeline import (
     has_blocking_parse_issue,
+    is_terminal_provider_error,
     raw_output_from_adapter_parse_error,
 )
 from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring import (
@@ -76,8 +77,58 @@ from .signatures import (
     DspyKeyEntitiesStructuredExtractor,
 )
 
+_is_terminal_provider_error = is_terminal_provider_error
+
 
 def run_split(
+    letters: Sequence[ExectLetter],
+    *,
+    split: str,
+    model: str,
+    temperature: float,
+    max_tokens: int,
+    mode: Literal["live", "prompt-only"],
+    dspy_cache: bool = True,
+    api_base: str | None = None,
+    api_key: str | None = None,
+    timeout: int | None = None,
+    progress_every: int | None = None,
+    checkpoint_jsonl_path: Path | None = None,
+    checkpoint_report_path: Path | None = None,
+    resume: bool = False,
+    prompt_profile: PromptProfile = "full",
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Compatibility facade; the one-call producer lives in orchestration."""
+
+    from clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.contracts import (
+        StructuredMethodConfig,
+    )
+
+    from ....orchestration import structured_one_call
+
+    return structured_one_call.run_split(
+        letters,
+        split=split,
+        model=model,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        mode=mode,
+        dspy_cache=dspy_cache,
+        api_base=api_base,
+        api_key=api_key,
+        timeout=timeout,
+        progress_every=progress_every,
+        checkpoint_jsonl_path=checkpoint_jsonl_path,
+        checkpoint_report_path=checkpoint_report_path,
+        resume=resume,
+        config=StructuredMethodConfig.selected(prompt_profile=prompt_profile),
+        model_builder=build_dspy_lm,
+        program_factory=DspyKeyEntitiesStructuredExtractor,
+        format_retry_factory=FormatOnlyJsonRetry,
+    )
+
+
+def _legacy_run_split(
     letters: Sequence[ExectLetter],
     *,
     split: str,
@@ -254,21 +305,6 @@ def run_split(
     }
     metadata["summary"] = summarize_rows(rows)
     return rows, metadata
-
-
-def _is_terminal_provider_error(message: str) -> bool:
-    """Identify provider failures that retries or later rows cannot repair."""
-
-    normalized = message.lower()
-    return any(
-        marker in normalized
-        for marker in (
-            "insufficient_quota",
-            "invalid_api_key",
-            "authenticationerror",
-            "permissiondenied",
-        )
-    )
 
 
 def summarize_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:

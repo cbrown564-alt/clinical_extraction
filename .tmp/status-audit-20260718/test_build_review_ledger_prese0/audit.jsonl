@@ -1,2 +1,0 @@
-{"review_key": "EA0001|spurious|stroke", "letter_id": "EA0001", "direction": "spurious", "normalized_concept": "stroke", "methods": ["llm_only"]}
-{"review_key": "EA0002|missed|focal epilepsy", "letter_id": "EA0002", "direction": "missed", "normalized_concept": "focal epilepsy", "methods": ["rules_only"]}

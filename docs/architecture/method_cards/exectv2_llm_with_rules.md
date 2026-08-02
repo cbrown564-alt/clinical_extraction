@@ -273,7 +273,7 @@ Reject the assembled letter if any final finding lacks evidence or carries evide
 
 > This gate raises rather than silently dropping. A family transform that invented an unevidenced concept fails the whole letter, which is why the Diagnosis transform's add licence is bounded in practice.
 
-- Code: [`src/clinical_extraction/operational/exect.py`](../../../src/clinical_extraction/operational/exect.py) (`clinical_extraction.operational.exect:_assemble_letter`)
+- Code: [`src/clinical_extraction/operational/exect.py`](../../../src/clinical_extraction/operational/exect.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter`)
 - Test: [`tests/test_exectv2_clinical_finding_assembly.py`](../../../tests/test_exectv2_clinical_finding_assembly.py)
 - Proven in a trace by: `n_evidence_invalid`
 - Paper wording: Every final finding is required to carry evidence that appears verbatim in the source note.
@@ -314,7 +314,7 @@ Match the materialized view's mentions to gold annotations and report per-entity
 
 ## Code map
 
-Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.runner:run_split`)
+Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py`](../../../src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py) (`clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter`)
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |
@@ -330,7 +330,7 @@ Entry point: [`src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pi
 | `exect.hybrid.lens.seizure_frequency` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.seizure_frequency:SeizureFrequencyLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
 | `exect.hybrid.lens.prescription` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.prescription:PrescriptionDictionaryLens` | `tests/test_exectv2_prescription_bounded_policy_candidate.py` |
 | `exect.hybrid.lens.investigations` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.lenses.investigations:InvestigationsLens` | `tests/test_exectv2_clinical_finding_assembly.py` |
-| `exect.hybrid.evidence_requirement` | `clinical_extraction.operational.exect:_assemble_letter` | `tests/test_exectv2_clinical_finding_assembly.py` |
+| `exect.hybrid.evidence_requirement` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter` | `tests/test_exectv2_clinical_finding_assembly.py` |
 | `exect.hybrid.materialize_views` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.assembly.views:build_scoring_views` | `tests/test_exectv2_scoring_headlines.py` |
 | `exect.hybrid.score` | `clinical_extraction.tasks.epilepsy_phenotyping.exectv2.scoring.match:score_overall` | `tests/test_exectv2_scoring_match_fidelity.py` |
 

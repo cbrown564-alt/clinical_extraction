@@ -6,8 +6,8 @@
   "method_label": "LLM with rules",
   "role": "selected",
   "entry_point": {
-    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
-    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.llm.hybrid_structured_events:run_split"
+    "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_with_rules.py",
+    "symbol": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules:run_record"
   },
   "one_sentence": "The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer.",
   "sixty_second": "One structured call returns two linked objects: an event ledger of source-near seizure-frequency facts, and a selection naming which event IDs won, the answer kind, the final label, evidence, confidence, and rationale. The model therefore makes the initial clinical selection - this is the single most misread fact about the method. Deterministic code then repairs JSON and schema, normalizes every event to a comparable rate, resolves an initial label from the model's chosen events, and runs ten named repair families in a fixed order. Each family can rewrite the final label, and each records a named event when it fires, so a changed answer is always attributable to one rule. The repaired label is checked for scorability and exact evidence, then projected to Purist and Pragmatic categories. Model owns the first answer; rules own every subsequent change to it.",

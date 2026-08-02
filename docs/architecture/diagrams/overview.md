@@ -38,6 +38,6 @@ flowchart TB
 | Gan 2026 | Rules only | Deterministic rules find every seizure-frequency statement in the letter, normalize them, pick one as the current answer, and render it as a Gan label. |
 | Gan 2026 | LLM only | One model call reads the letter and returns the final Gan label directly; deterministic code then repairs, validates, and scores that answer. |
 | Gan 2026 | LLM with rules | The model extracts the event history and chooses an answer; deterministic rules then check and sometimes correct that answer. |
-| ExECTv2 | Rules only | Nine independent deterministic extractors read the letter, their findings are pooled and de-duplicated, and the result is scored. |
-| ExECTv2 | LLM only | A GEPA-optimized program emits de-duplicated clinical facts for four families, and an adapter maps them into ExECT mentions without adding or merging any fact. |
+| ExECTv2 | Rules only | Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison. |
+| ExECTv2 | LLM only | One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses. |
 | ExECTv2 | LLM with rules | The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation. |

@@ -51,8 +51,20 @@ FORBIDDEN_PARTS = {
     "reports",
 }
 TEMPLATE_EXCLUSIONS = {".env", ".venv", "__pycache__", ".pytest_cache"}
+TEXT_FILENAMES = frozenset({".env.example", ".gitignore"})
 TEXT_SUFFIXES = frozenset(
-    {".json", ".jsonl", ".md", ".ps1", ".py", ".sh", ".txt", ".yaml", ".yml"}
+    {
+        ".json",
+        ".jsonl",
+        ".lock",
+        ".md",
+        ".ps1",
+        ".py",
+        ".sh",
+        ".txt",
+        ".yaml",
+        ".yml",
+    }
 )
 
 
@@ -208,7 +220,7 @@ def _remove_generated_junk() -> None:
 
 def _canonical_bytes(path: Path) -> bytes:
     content = path.read_bytes()
-    if path.suffix.lower() in TEXT_SUFFIXES:
+    if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
         content = content.replace(b"\r\n", b"\n")
     return content
 

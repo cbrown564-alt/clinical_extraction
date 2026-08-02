@@ -17,14 +17,10 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.runners.config import (
 
 
 def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[dict[str, Any]]:
-    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import hybrid_structured_events
-    from clinical_extraction.tasks.seizure_frequency.gan2026.runners import (
-        hybrid_structured_events as runner,
+    from clinical_extraction.tasks.seizure_frequency.gan2026.orchestration import (
+        llm_with_rules,
     )
 
-    hybrid_structured_events.set_active_prompt_version(
-        hybrid_structured_events.PROMPT_VERSION_V0_5
-    )
     config = PipelineConfiguration(
         architecture="hybrid_structured_events",
         dspy_cache=False,
@@ -34,6 +30,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
         api_base=runtime.base_url,
         api_key=runtime.api_key,
         timeout=int(runtime.timeout_seconds),
+        prompt_version="gan2026_hybrid_structured_events_v0.5",
     )
     empty_label = label_to_frequency_record("unknown")
     output: list[dict[str, Any]] = []
@@ -53,7 +50,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
             gold_monthly_frequency=empty_label.monthly_frequency,
         )
         try:
-            result = runner.run_item(record, config)
+            result = llm_with_rules.run_record(record, config)
             output.append(
                 {
                     "id": note.note_id,
@@ -61,7 +58,7 @@ def run_gan_notes(notes: Sequence[InputNote], runtime: RuntimeConfig) -> list[di
                     "status": "ok",
                     "model": runtime.api_model,
                     "pipeline": "llm_with_rules",
-                    "prompt_version": hybrid_structured_events.PROMPT_VERSION_V0_5,
+                    "prompt_version": config.prompt_version,
                     "prediction": {
                         "seizure_frequency": result.output.final_value,
                         "evidence": result.output.evidence,

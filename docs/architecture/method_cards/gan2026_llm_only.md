@@ -179,7 +179,7 @@ Map the predicted and gold monthly frequencies into the Purist and Pragmatic cat
 
 ## Code map
 
-Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/llm_only_canonical_pipeline.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.llm.llm_only_canonical_pipeline:run_split`)
+Entry point: [`src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm.py`](../../../src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm.py) (`clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm:run_record`)
 
 | Stage | Implementation | Governing test |
 | --- | --- | --- |

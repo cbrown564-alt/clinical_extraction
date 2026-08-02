@@ -10,8 +10,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HANDOFF = ROOT / "handoff" / "supervisor"
 ARCHIVE = ROOT / "handoff" / "clinical_extraction_supervisor_handoff.zip"
+TEXT_FILENAMES = frozenset({".env.example", ".gitignore"})
 TEXT_SUFFIXES = frozenset(
-    {".json", ".jsonl", ".md", ".ps1", ".py", ".sh", ".txt", ".yaml", ".yml"}
+    {
+        ".json",
+        ".jsonl",
+        ".lock",
+        ".md",
+        ".ps1",
+        ".py",
+        ".sh",
+        ".txt",
+        ".yaml",
+        ".yml",
+    }
 )
 
 
@@ -21,7 +33,7 @@ def _is_runtime_generated(path: Path) -> bool:
 
 def _canonical_bytes(path: Path) -> bytes:
     content = path.read_bytes()
-    if path.suffix.lower() in TEXT_SUFFIXES:
+    if path.name.lower() in TEXT_FILENAMES or path.suffix.lower() in TEXT_SUFFIXES:
         content = content.replace(b"\r\n", b"\n")
     return content
 

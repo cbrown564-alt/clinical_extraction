@@ -1895,8 +1895,8 @@
         },
         {
           "path": "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/hybrid_structured_events.py",
-          "sha256": "f41c8f342e08d940b60105562ba18f988c7e4d2ac6fd1598a06758fc3a34197f",
-          "bytes": 64432,
+          "sha256": "2122f664d2ab4207bbb1fc0cc83500c86d78afc6d26f8a180ba6cc33c90b4a4b",
+          "bytes": 68811,
           "retrieval": "git_path"
         },
         {
@@ -2012,8 +2012,8 @@
         },
         {
           "path": "docs/canon/10_paper_provenance.md",
-          "sha256": "92636ac6ac867f5a1da69828664e2f8afbb8a930ae890ac016a965ef1d2a79bb",
-          "bytes": 12301,
+          "sha256": "15a109f0058e44326bb0a986c31be3a59cb85112a288831900fe69802ac7e8ae",
+          "bytes": 13225,
           "retrieval": "git_path"
         }
       ]

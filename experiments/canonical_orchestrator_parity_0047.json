@@ -1,0 +1,723 @@
+{
+  "allowed_metadata_exclusions": [
+    "fixture source text from serialized outputs",
+    "source_commit during artifact check; implementation_hashes detect code drift"
+  ],
+  "claim_boundary": "No-call implementation characterization and compatibility parity; not clinical validation, holdout evidence, or model performance.",
+  "commands": [
+    ".venv\\Scripts\\python.exe scripts\\check_canonical_orchestrator_parity.py",
+    ".venv\\Scripts\\python.exe -m pytest tests\\test_*canonical_orchestrators.py tests\\test_architecture_teaching_cases.py -q"
+  ],
+  "comparison_fields": [
+    "entry_point",
+    "stage_ids",
+    "output",
+    "scorer_projection",
+    "first_prediction_changing_owner",
+    "first_failure"
+  ],
+  "compatibility": {
+    "exect_pair_uses_one_producer": true,
+    "exect_rules_adapter_matches": true,
+    "gan_rules_adapter_matches": true
+  },
+  "decision": "0047-full-canonical-pipeline-orchestrator-refactor",
+  "environment_lock": {
+    "pyproject.toml": "3220ab098c604701a7bdce6be7454dda35f45bff10d581e09870e799d728ead4",
+    "uv.lock": "371e4187d54eec0ee2e6d5104d0e3c28e35f5bbfe5c83b853868eb8d8c95525d"
+  },
+  "implementation_hashes": {
+    "docs/experiments/retained_evidence_manifest.json": "e0fc33b90bf83902ebcea3502f959d4ed8fdb1aedaf179633ca71b98ecf57332",
+    "experiments/canonical_orchestrator_development_parity_0047.json": "c4d2e99a5fdea0def0af4b21e457928b155bcca88df1af370f13fe702e8f814d",
+    "scripts/build_architecture_docs.py": "bd371665fa49540cc0dfb0befc7d6b312040602bda193fc6d37c2048134ed971",
+    "scripts/check_canonical_orchestrator_development_parity.py": "f7ecd8a6e7f82e36bbeff66abccb58a023e03e6c6d5d09421d72cb9799a88969",
+    "scripts/check_canonical_orchestrator_parity.py": "abac406355b3873d7df905acd04dded83fdf0738d9af6c7b47ec139e4dcddfe1",
+    "scripts/check_locked_aggregate_safety.py": "4503a1fc574a29b2dde69c99f60edb3d91c594a289bc4d31676e0a544a0932ad",
+    "scripts/verify_reference_evidence.py": "fcded6a263646e90d42c299fe8858284e0438da3b0d312e4edb8b477ed4bbd88",
+    "src/clinical_extraction/architecture/manifests/exectv2_llm_only.json": "6b33b3710000ce4fffee4408bb9c73de2690ba1eee02d1c70429db6d7b543414",
+    "src/clinical_extraction/architecture/manifests/exectv2_llm_with_rules.json": "79bcb81a4bcc246f1332a618ef8d917e2165b7f87616fc1f0409d8a79e58202f",
+    "src/clinical_extraction/architecture/manifests/exectv2_rules_only.json": "0774aa2deaf61583b43c5ba61e764a6b16cfb4b658ea6cffa4135fd159e170ef",
+    "src/clinical_extraction/architecture/manifests/gan2026_llm_only.json": "33fc31491103127fc5a5ee5d2b9f6a61c8c76f7cd6b01dcbfad7428831e7a931",
+    "src/clinical_extraction/architecture/manifests/gan2026_llm_with_rules.json": "70a54bdbbacd065884cfed8b43737234bb69de9c8e50d5cf948251cf6017a64d",
+    "src/clinical_extraction/architecture/manifests/gan2026_rules_only.json": "d19f2c9ee8dd68d4d4d3a75f0345cc2c6a31723eb462e0c0ec5348bac6e4071d",
+    "src/clinical_extraction/operational/exect.py": "58afa13227f3a97a414b6bb35df96c197846eefed6c8d413836fd6b2872ae3be",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/assembly/pipeline.py": "f8def2a963cab8c3d984e7cae39e458d5ebf38af12b59f1e14c49aad687d77ca",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py": "064956e019970945256b9fc8c882971d035e812110523a77cf1a9fda1acd7ea1",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/shared/mention_pipeline.py": "68bac1dfafef495c221dea30f7cc95bcb21eab8cc45577558ffdebb0e4b86d04",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/__init__.py": "f3fd9fd1397d94666185598ad9d14c5d337eeb18ea0a3ec5b6ae60c0c823dbb5",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/contracts.py": "4947d7cf5b8863c6a363495c727fec34b871f3e36ffa7f142bc2f8b2a72e08de",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/letter_assembly.py": "59d90370391028ed3e254b992cbcf4fe433ed3bb574c5f05fa8b96c3cf0d880f",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/rules.py": "b769c7673e0138cb6251610644d9a1856a35544ae1458418bbc2d852522e53a0",
+    "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py": "d07d6a73a5ce3992c7b4a6e1d5187149440165aae3d6e03d6349e3724521c082",
+    "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/__init__.py": "65c97c66489c27b5b6b44893d332d94bcfcc418dd511172f492f180a6a878154",
+    "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/contracts.py": "49fc9c62a1b56ce95532a8719f01194489069fea18b1dc9fb4052aeb8cc45408",
+    "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm.py": "5f3714380a578fa0fc52e32861e7327c3e481d28bb4f30d866caab36429037a4",
+    "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/llm_with_rules.py": "18574cb928a7b85b60ae46243a0359feadedd27936c1c1c6eb5575250b1d5d69",
+    "src/clinical_extraction/tasks/seizure_frequency/gan2026/orchestration/rules.py": "3f742946cb4c3ea63b22f5b03dd3723c0cb74cb55edd079945cc85dc78cf64ec"
+  },
+  "input_fixtures": {
+    "exect": {
+      "note_hash": "94f657026f203ce4a8e8c746240c2af5e4b0d257e6a187fb51681eb5e8fa04ef",
+      "source_id": "TEACH-EXECT-01"
+    },
+    "gan": {
+      "note_hash": "c543974ff6c4473ba8b806f13bac14411d6af9d34c86d45f521fc0b109908fbf",
+      "source_id": "TEACH-GAN-01"
+    }
+  },
+  "legacy_parity": {
+    "exect_structured_prompt_only_rows": true,
+    "gan_hybrid_saved_output_rows": true,
+    "gan_llm_only_saved_output_rows": true
+  },
+  "methods": {
+    "exectv2_llm_only": {
+      "declared_stage_ids": [
+        "exect.llm.build_prompt",
+        "exect.llm.model_call",
+        "exect.llm.parse_and_retry",
+        "exect.llm.flatten_events",
+        "exect.llm.project_and_gate",
+        "exect.llm.raw_candidate",
+        "exect.llm.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_only_letter",
+      "first_failure": null,
+      "first_prediction_changing_owner": "model",
+      "method_id": "exectv2_llm_only",
+      "output": {
+        "diagnostics": {
+          "attribute_warnings": [],
+          "cui_projected_mentions": 4,
+          "n_evidence_invalid": 0,
+          "pipeline_family": "exectv2_hybrid_key_family_event_ledger",
+          "prompt_version": "exectv2_hybrid_key_family_event_ledger_v0.9.24"
+        },
+        "letter_id": "TEACH-EXECT-01",
+        "mentions": [
+          {
+            "attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal epilepsy",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "component_owner": "hybrid_key_family_event_ledger",
+            "confidence": "high",
+            "entity": "Diagnosis",
+            "evidence": "Diagnosis: focal epilepsy",
+            "evidence_span": null,
+            "rationale": "stated under the diagnosis heading",
+            "text": "focal epilepsy",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "NumberOfSeizures": "0"
+            },
+            "component_owner": "hybrid_key_family_event_ledger",
+            "confidence": "high",
+            "entity": "SeizureFrequency",
+            "evidence": "Mr B has been seizure free since March 2025",
+            "evidence_span": null,
+            "rationale": "explicit seizure-free statement",
+            "text": "seizures",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0436481",
+              "CUIPhrase": "mri normal",
+              "MRI_Performed": "Yes",
+              "MRI_Results": "Normal"
+            },
+            "component_owner": "hybrid_key_family_event_ledger",
+            "confidence": "high",
+            "entity": "Investigations",
+            "evidence": "MRI brain was normal",
+            "evidence_span": null,
+            "rationale": "investigation with a stated result",
+            "text": "MRI",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0377265",
+              "CUIPhrase": "levetiracetam",
+              "DoseUnit": "mg",
+              "DrugDose": "500",
+              "DrugName": "levetiracetam",
+              "Frequency": "2"
+            },
+            "component_owner": "hybrid_key_family_event_ledger",
+            "confidence": "high",
+            "entity": "Prescription",
+            "evidence": "He continues on levetiracetam 500mg twice daily",
+            "evidence_span": null,
+            "rationale": "current regimen",
+            "text": "levetiracetam",
+            "uncertainty_flags": []
+          }
+        ]
+      },
+      "scorer_projection": {
+        "n_mentions": 4,
+        "view": "raw_candidate"
+      },
+      "stage_ids": [
+        "exect.llm.build_prompt",
+        "exect.llm.model_call",
+        "exect.llm.parse_and_retry",
+        "exect.llm.flatten_events",
+        "exect.llm.project_and_gate",
+        "exect.llm.raw_candidate",
+        "exect.llm.score"
+      ]
+    },
+    "exectv2_llm_with_rules": {
+      "declared_stage_ids": [
+        "exect.hybrid.build_prompt",
+        "exect.hybrid.model_call",
+        "exect.hybrid.parse_and_retry",
+        "exect.hybrid.flatten_events",
+        "exect.hybrid.project_and_gate",
+        "exect.hybrid.sf_state_projection",
+        "exect.hybrid.sf_unknown_suppression",
+        "exect.hybrid.register_findings",
+        "exect.hybrid.lens.diagnosis",
+        "exect.hybrid.lens.seizure_frequency",
+        "exect.hybrid.lens.prescription",
+        "exect.hybrid.lens.investigations",
+        "exect.hybrid.evidence_requirement",
+        "exect.hybrid.materialize_views",
+        "exect.hybrid.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter",
+      "first_failure": null,
+      "first_prediction_changing_owner": "model",
+      "method_id": "exectv2_llm_with_rules",
+      "output": {
+        "diagnostics": {
+          "policy": {
+            "diagnosis_policy_variant": "default",
+            "prescription_policy_variant": "default",
+            "sf_projection_ablation": "combined"
+          },
+          "view": "clinical_headline"
+        },
+        "letter_id": "TEACH-EXECT-01",
+        "mentions": [
+          {
+            "attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal epilepsy",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "component_owner": "named_model_structured_facts",
+            "confidence": "high",
+            "entity": "Diagnosis",
+            "evidence": "Diagnosis: focal epilepsy",
+            "evidence_span": null,
+            "rationale": "stated under the diagnosis heading",
+            "text": "focal epilepsy",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0036572",
+              "CUIPhrase": "seizures",
+              "NumberOfSeizures": "0"
+            },
+            "component_owner": "named_model_sf_plus_projection_suppression",
+            "confidence": "high",
+            "entity": "SeizureFrequency",
+            "evidence": "Mr B has been seizure free since March 2025",
+            "evidence_span": null,
+            "rationale": "explicit seizure-free statement",
+            "text": "seizures",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0377265",
+              "CUIPhrase": "levetiracetam",
+              "DoseUnit": "mg",
+              "DrugDose": "500",
+              "DrugName": "levetiracetam",
+              "Frequency": "2"
+            },
+            "component_owner": "named_model_structured_facts",
+            "confidence": "high",
+            "entity": "Prescription",
+            "evidence": "He continues on levetiracetam 500mg twice daily",
+            "evidence_span": null,
+            "rationale": "current regimen",
+            "text": "levetiracetam",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0436481",
+              "CUIPhrase": "mri normal",
+              "MRI_Performed": "Yes",
+              "MRI_Results": "Normal"
+            },
+            "component_owner": "named_model_structured_facts",
+            "confidence": "high",
+            "entity": "Investigations",
+            "evidence": "MRI brain was normal",
+            "evidence_span": null,
+            "rationale": "investigation with a stated result",
+            "text": "MRI",
+            "uncertainty_flags": []
+          }
+        ]
+      },
+      "scorer_projection": {
+        "n_mentions": 4,
+        "view": "clinical_headline"
+      },
+      "stage_ids": [
+        "exect.hybrid.build_prompt",
+        "exect.hybrid.model_call",
+        "exect.hybrid.parse_and_retry",
+        "exect.hybrid.flatten_events",
+        "exect.hybrid.project_and_gate",
+        "exect.hybrid.sf_state_projection",
+        "exect.hybrid.sf_unknown_suppression",
+        "exect.hybrid.register_findings",
+        "exect.hybrid.lens.diagnosis",
+        "exect.hybrid.lens.seizure_frequency",
+        "exect.hybrid.lens.prescription",
+        "exect.hybrid.lens.investigations",
+        "exect.hybrid.evidence_requirement",
+        "exect.hybrid.materialize_views",
+        "exect.hybrid.score"
+      ]
+    },
+    "exectv2_rules_only": {
+      "declared_stage_ids": [
+        "exect.rules.extract_seizure_frequency",
+        "exect.rules.extract_entities",
+        "exect.rules.dedupe",
+        "exect.rules.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.rules:run_letter",
+      "first_failure": null,
+      "first_prediction_changing_owner": null,
+      "method_id": "exectv2_rules_only",
+      "output": {
+        "diagnostics": {
+          "active_entities": [
+            "Prescription",
+            "Investigations",
+            "Diagnosis",
+            "Onset",
+            "WhenDiagnosed",
+            "BirthHistory",
+            "EpilepsyCause",
+            "PatientHistory",
+            "SeizureFrequency"
+          ],
+          "architecture_track": "rules_only",
+          "diagnosis_benchmark_residuals": false,
+          "diagnosis_resolution_candidate": false,
+          "entity_counts": {
+            "BirthHistory": 0,
+            "Diagnosis": 2,
+            "EpilepsyCause": 0,
+            "Investigations": 1,
+            "Onset": 0,
+            "PatientHistory": 0,
+            "Prescription": 1,
+            "SeizureFrequency": 1,
+            "WhenDiagnosed": 0
+          },
+          "rule_families": {
+            "birth_history": {
+              "cui_projection": "benchmark_format",
+              "entity": "BirthHistory",
+              "group": "anchor_phrase",
+              "portability": "clinical_epilepsy"
+            },
+            "diagnosis_phrase": {
+              "cui_projection": "benchmark_format",
+              "entity": "Diagnosis",
+              "group": "anchor_phrase",
+              "portability": "clinical_epilepsy"
+            },
+            "epilepsy_cause": {
+              "cui_projection": "benchmark_format",
+              "entity": "EpilepsyCause",
+              "group": "anchor_phrase",
+              "portability": "clinical_epilepsy"
+            },
+            "investigation_result": {
+              "cui_projection": "benchmark_format",
+              "entity": "Investigations",
+              "group": "anchor_phrase",
+              "portability": "clinical_epilepsy"
+            },
+            "onset_epilepsy_age": {
+              "cui_projection": "benchmark_format",
+              "entity": "Onset",
+              "group": "temporal_anchor",
+              "portability": "clinical_epilepsy"
+            },
+            "onset_epilepsy_duration": {
+              "cui_projection": "benchmark_format",
+              "entity": "Onset",
+              "group": "temporal_anchor",
+              "portability": "clinical_epilepsy"
+            },
+            "patient_history": {
+              "cui_projection": "benchmark_format",
+              "entity": "PatientHistory",
+              "group": "anchor_phrase",
+              "portability": "clinical_epilepsy",
+              "temporal_attributes": "clinical_epilepsy"
+            },
+            "prescription_medication": {
+              "cui_projection": "benchmark_format",
+              "entity": "Prescription",
+              "group": "anchor_phrase",
+              "phrase_scope_projection": "benchmark_format",
+              "portability": "clinical_epilepsy"
+            },
+            "seizure_frequency": {
+              "cui_projection": "benchmark_format",
+              "entity": "SeizureFrequency",
+              "group": "see deterministic.pipeline diagnostics",
+              "portability": "seizure_frequency"
+            },
+            "when_diagnosed": {
+              "cui_projection": "benchmark_format",
+              "entity": "WhenDiagnosed",
+              "group": "temporal_anchor",
+              "phrase_scope_projection": "benchmark_format",
+              "portability": "clinical_epilepsy"
+            }
+          },
+          "rule_set": "deterministic_all9_v0_active_structured_plus_sf",
+          "sf_diagnostics": {
+            "anchor_count": 1,
+            "attribute_count": 2,
+            "mention_count": 1,
+            "rule_set": "deterministic_sf_v2_anchor_association"
+          }
+        },
+        "letter_id": "TEACH-EXECT-01",
+        "mentions": [
+          {
+            "attributes": {
+              "CUI": "C0014544",
+              "CUIPhrase": "epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "component_owner": "deterministic:deterministic_diagnosis_phrase:anchor_phrase:clinical_epilepsy:benchmark_format",
+            "confidence": null,
+            "entity": "Diagnosis",
+            "evidence": "Epilepsy",
+            "evidence_span": {
+              "end_char": 8,
+              "start_char": 0,
+              "text": "Epilepsy"
+            },
+            "rationale": "",
+            "text": "Epilepsy",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0014547",
+              "CUIPhrase": "focal epilepsy",
+              "Certainty": "5",
+              "DiagCategory": "Epilepsy",
+              "Negation": "Affirmed"
+            },
+            "component_owner": "deterministic:deterministic_diagnosis_phrase:anchor_phrase:clinical_epilepsy:benchmark_format",
+            "confidence": null,
+            "entity": "Diagnosis",
+            "evidence": "focal epilepsy",
+            "evidence_span": {
+              "end_char": 65,
+              "start_char": 51,
+              "text": "focal epilepsy"
+            },
+            "rationale": "",
+            "text": "focal epilepsy",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0436481",
+              "CUIPhrase": "mri normal",
+              "MRI_Performed": "Yes",
+              "MRI_Results": "Normal"
+            },
+            "component_owner": "deterministic:investigation_result:anchor_phrase:clinical_epilepsy:benchmark_format",
+            "confidence": null,
+            "entity": "Investigations",
+            "evidence": "MRI brain was normal",
+            "evidence_span": {
+              "end_char": 122,
+              "start_char": 113,
+              "text": "MRI brain"
+            },
+            "rationale": "",
+            "text": "MRI",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C0377265",
+              "CUIPhrase": "levetiracetam",
+              "DoseUnit": "mg",
+              "DrugDose": "500",
+              "DrugName": "levetiracetam",
+              "Frequency": "2"
+            },
+            "component_owner": "deterministic:prescription_regimen:anchor_phrase:clinical_epilepsy:benchmark_format",
+            "confidence": null,
+            "entity": "Prescription",
+            "evidence": "levetiracetam 500mg twice daily",
+            "evidence_span": {
+              "end_char": 164,
+              "start_char": 151,
+              "text": "levetiracetam"
+            },
+            "rationale": "",
+            "text": "levetiracetam 500mg twice daily",
+            "uncertainty_flags": []
+          },
+          {
+            "attributes": {
+              "CUI": "C1299590",
+              "CUIPhrase": "seizure free",
+              "MonthDate": "3",
+              "NumberOfSeizures": "0",
+              "TimeSince_or_TimeOfEvent": "Since",
+              "YearDate": "2025"
+            },
+            "component_owner": "deterministic",
+            "confidence": null,
+            "entity": "SeizureFrequency",
+            "evidence": "seizure free",
+            "evidence_span": null,
+            "rationale": "",
+            "text": "seizure free",
+            "uncertainty_flags": []
+          }
+        ]
+      },
+      "scorer_projection": {},
+      "stage_ids": [
+        "exect.rules.extract_seizure_frequency",
+        "exect.rules.extract_entities",
+        "exect.rules.dedupe",
+        "exect.rules.score"
+      ]
+    },
+    "gan2026_llm_only": {
+      "declared_stage_ids": [
+        "gan.llm.build_prompt",
+        "gan.llm.model_call",
+        "gan.llm.json_schema_repair",
+        "gan.llm.schema_validation",
+        "gan.llm.selected_evidence_repair",
+        "gan.llm.scorable_label_check",
+        "gan.llm.evidence_containment",
+        "gan.llm.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm:run_record",
+      "first_failure": null,
+      "first_prediction_changing_owner": "model",
+      "method_id": "gan2026_llm_only",
+      "output": {
+        "evidence": "He has had seven seizures so far this year",
+        "final_value": "7 per year",
+        "rationale": "The counted total so far this year is the most concrete figure in the letter."
+      },
+      "scorer_projection": {
+        "evidence_text_contained": true,
+        "final_label": "7 per year"
+      },
+      "stage_ids": [
+        "gan.llm.build_prompt",
+        "gan.llm.model_call",
+        "gan.llm.json_schema_repair",
+        "gan.llm.schema_validation",
+        "gan.llm.selected_evidence_repair",
+        "gan.llm.scorable_label_check",
+        "gan.llm.evidence_containment",
+        "gan.llm.score"
+      ]
+    },
+    "gan2026_llm_with_rules": {
+      "declared_stage_ids": [
+        "gan.hybrid.build_prompt",
+        "gan.hybrid.model_call",
+        "gan.hybrid.json_schema_repair",
+        "gan.hybrid.format_only_retry",
+        "gan.hybrid.schema_validation",
+        "gan.hybrid.normalize_events",
+        "gan.hybrid.resolve_label",
+        "gan.hybrid.repair.selected_evidence",
+        "gan.hybrid.repair.monthly_diary",
+        "gan.hybrid.repair.usual_interval",
+        "gan.hybrid.repair.typical_over_ytd",
+        "gan.hybrid.repair.breakthrough",
+        "gan.hybrid.repair.non_epileptic",
+        "gan.hybrid.repair.residual_jerk",
+        "gan.hybrid.repair.post_change_burst",
+        "gan.hybrid.repair.dated_sequence",
+        "gan.hybrid.repair.elapsed_anchor",
+        "gan.hybrid.scorable_label_check",
+        "gan.hybrid.evidence_containment",
+        "gan.hybrid.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.llm_with_rules:run_record",
+      "first_failure": "final_label_repaired: '7 per year' -> '1 per month'",
+      "first_prediction_changing_owner": "model",
+      "method_id": "gan2026_llm_with_rules",
+      "output": {
+        "evidence": "He has had seven seizures so far this year",
+        "final_value": "1 per month",
+        "rationale": "The counted total so far this year is the most concrete figure in the letter."
+      },
+      "scorer_projection": {
+        "evidence_valid": true,
+        "final_label": "1 per month"
+      },
+      "stage_ids": [
+        "gan.hybrid.build_prompt",
+        "gan.hybrid.model_call",
+        "gan.hybrid.json_schema_repair",
+        "gan.hybrid.format_only_retry",
+        "gan.hybrid.schema_validation",
+        "gan.hybrid.normalize_events",
+        "gan.hybrid.resolve_label",
+        "gan.hybrid.repair.selected_evidence",
+        "gan.hybrid.repair.monthly_diary",
+        "gan.hybrid.repair.usual_interval",
+        "gan.hybrid.repair.typical_over_ytd",
+        "gan.hybrid.repair.breakthrough",
+        "gan.hybrid.repair.non_epileptic",
+        "gan.hybrid.repair.residual_jerk",
+        "gan.hybrid.repair.post_change_burst",
+        "gan.hybrid.repair.dated_sequence",
+        "gan.hybrid.repair.elapsed_anchor",
+        "gan.hybrid.scorable_label_check",
+        "gan.hybrid.evidence_containment",
+        "gan.hybrid.score"
+      ]
+    },
+    "gan2026_rules_only": {
+      "declared_stage_ids": [
+        "gan.rules.extract",
+        "gan.rules.normalize",
+        "gan.rules.select_and_render",
+        "gan.rules.evidence_trace_check",
+        "gan.rules.score"
+      ],
+      "entry_point": "clinical_extraction.tasks.seizure_frequency.gan2026.orchestration.rules:run_record",
+      "first_failure": null,
+      "first_prediction_changing_owner": "deterministic",
+      "method_id": "gan2026_rules_only",
+      "output": {
+        "evidence": "focal seizure monthly",
+        "final_value": "1 per month",
+        "rationale": "Selected the highest normalized current frequency candidate."
+      },
+      "scorer_projection": {
+        "evidence_valid": true,
+        "final_label": "1 per month"
+      },
+      "stage_ids": [
+        "gan.rules.extract",
+        "gan.rules.normalize",
+        "gan.rules.select_and_render",
+        "gan.rules.evidence_trace_check",
+        "gan.rules.score"
+      ]
+    }
+  },
+  "result": "pass",
+  "schema_version": "decision_0047_parity_v4",
+  "selected_configurations": {
+    "exect": {
+      "diagnosis_policy_variant": "default",
+      "prescription_policy_variant": "default",
+      "prompt_profile": "full",
+      "sf_projection_ablation": "combined"
+    },
+    "gan": {
+      "architecture": "llm_only_canonical_pipeline",
+      "mode": "prompt-only",
+      "prompt_version": null
+    }
+  },
+  "source_commit": "46fec88a36d10241c69e63a1c23cea743da7e6ff",
+  "stage_mismatches": {},
+  "unverified_gates": [],
+  "verification_gates": {
+    "architecture_drift": {
+      "command": ".venv\\Scripts\\python.exe scripts\\build_architecture_docs.py --check",
+      "passed": true
+    },
+    "locked_aggregate_safety": {
+      "command": ".venv\\Scripts\\python.exe scripts\\check_locked_aggregate_safety.py",
+      "passed": true
+    },
+    "retained_historical_reference": {
+      "cells": {
+        "exectv2_hybrid_reference": {
+          "benchmark_cui_f1": 0.4791,
+          "clinical_headline_f1": 0.9189,
+          "evidence_valid_f1": 0.8913,
+          "row_count": 140
+        },
+        "exectv2_llm_only_reference": {
+          "clinical_headline_f1": 0.7393,
+          "row_count": 140,
+          "strict_benchmark_per_item_f1": 0.1356
+        },
+        "exectv2_rules_reference": {
+          "benchmark_per_item_f1": 0.3548,
+          "evidence_validity_rate": 1.0,
+          "row_count": 140
+        },
+        "gan2026_hybrid_reference": {
+          "pragmatic_correct": 679,
+          "prediction_records": 748,
+          "purist_correct": 661,
+          "rows": 750
+        },
+        "gan2026_llm_only_reference": {
+          "pragmatic_correct": 626,
+          "prediction_records": 750,
+          "purist_correct": 581,
+          "rows": 750
+        },
+        "gan2026_rules_reference": {
+          "pragmatic_correct": 704,
+          "prediction_records": 750,
+          "purist_correct": 697,
+          "rows": 750
+        }
+      },
+      "command": ".venv\\Scripts\\python.exe scripts\\verify_reference_evidence.py",
+      "passed": true
+    },
+    "selected_method_development_parity": {
+      "command": ".venv\\Scripts\\python.exe scripts\\check_canonical_orchestrator_development_parity.py --check",
+      "passed": true
+    }
+  },
+  "verification_state": "verified"
+}

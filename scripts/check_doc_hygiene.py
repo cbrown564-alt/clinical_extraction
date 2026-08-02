@@ -73,7 +73,7 @@ def check_forbidden_tool_state(
         tracked_paths = [
             path
             for path in result.stdout.splitlines()
-            if (root / Path(path)).is_file()
+            if _is_file_without_access_error(root / Path(path))
         ]
     return [
         f"tool-generated state directory: {name}/ "
@@ -81,6 +81,15 @@ def check_forbidden_tool_state(
         for name in FORBIDDEN_TOOL_STATE
         if any(path == name or path.startswith(f"{name}/") for path in tracked_paths)
     ]
+
+
+def _is_file_without_access_error(path: Path) -> bool:
+    """Treat inaccessible stale paths like absent working-tree files."""
+
+    try:
+        return path.is_file()
+    except OSError:
+        return False
 
 
 def check_experiments_root_allowlist(root: Path, allowlist: frozenset[str]) -> list[str]:

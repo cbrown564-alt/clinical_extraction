@@ -36,9 +36,9 @@ This case teaches the shape of the pipeline and the comparison boundary, not acc
 
 ## Rules only
 
-> Nine independent deterministic extractors read the letter, their findings are pooled and de-duplicated, and the result is scored.
+> Nine independent deterministic extractors produce the all-nine prediction, while an explicit four-family projection defines the primary model comparison.
 
-**Prediction owner:** the nine deterministic extractors (stage exect.rules.extract_entities)
+**Prediction owner:** the nine deterministic extractors (stage exect.rules.extract_entities); the four-family projection is scorer-facing
 
 **Final answer:** Diagnosis x2, Investigations x1, Prescription x1, SeizureFrequency x1
 
@@ -52,10 +52,10 @@ rules-owned, CLINICAL MEANING - **changed**
 
 ```text
 in : Epilepsy clinic letter, 14 March 2026.  Diagnosis: focal epilepsy.  Mr B has been seizure free since March 2025. MRI brain was normal. He continues on levetiracetam 500mg twice daily.
-out: ['SeizureFrequency: seizure free [CUI=C1299590, CUIPhrase=seizure free, MonthDate=3, NumberOfSeizures=0, TimeSince_or_TimeOfEvent=Since, YearDate=2025]']
+out: 1
 ```
 
-> Its own staged sub-pipeline, not a single pattern match.
+> Canonical rules-only stage.
 
 ### 2. Extract the other eight entities <sub>`exect.rules.extract_entities`</sub>
 
@@ -73,11 +73,11 @@ out: {'Prescription': 1, 'Investigations': 1, 'Diagnosis': 2, 'Onset': 0, 'WhenD
 rules-owned, representation - no change
 
 ```text
-in : 5 mention(s) before identity de-duplication
-out: 5 mention(s) after
+in : 5
+out: 5
 ```
 
-> Removes duplicates, never disagreements.
+> Canonical rules-only stage.
 
 ### 4. Score against gold <sub>`exect.rules.score`</sub>
 
@@ -92,68 +92,83 @@ out: {'Diagnosis': 2, 'Investigations': 1, 'Prescription': 1, 'SeizureFrequency'
 
 ## LLM only
 
-> A GEPA-optimized program emits de-duplicated clinical facts for four families, and an adapter maps them into ExECT mentions without adding or merging any fact.
+> One structured model call proposes four-family findings, and the selected LLM-only view scores those findings without the hybrid family lenses.
 
-**Prediction owner:** the GEPA program (stage exect.llm.gepa_program)
+**Prediction owner:** the named model (stage exect.llm.model_call); deterministic stages only parse, represent, and gate its findings
 
 **Final answer:** Diagnosis x1, Investigations x1, Prescription x1, SeizureFrequency x1
 
 This teaching letter carries no gold annotations, so no correctness verdict is claimed. The comparable unit is four families.
 
-3 of 6 stages changed something on this letter.
+4 of 7 stages changed something on this letter.
 
-### 1. GEPA program emits clinical facts <sub>`exect.llm.gepa_program`</sub>
+### 1. Build the four-family prompt <sub>`exect.llm.build_prompt`</sub>
+
+rules-owned, transport/schema only - **changed**
+
+```text
+in : TEACH-EXECT-01
+out: {"architecture": {"component_ownership": "The deterministic ledger proposes possible evidence spans only. The model owns keep/reject/split/merge decisions and final rendered mentions. Deterministic code later validates evidence, strips illegal attributes, attaches finite ontology codes, and evaluates outputs.", "inspiration": "Gan structured-events discipline: source-near candidate evidence, typed state lanes, exact evidence, then final mention renderings.", "name": "single hybrid key-family event ledger"}, "attribute_vocabulary": {"Diagnosis": {"CUI": "UMLS CUI only if explicitly available; o ... (truncated)
+```
+
+> Canonical LLM-only stage.
+
+### 2. Model proposes four-family findings <sub>`exect.llm.model_call`</sub>
 
 model-owned, CLINICAL MEANING - **changed**
 
 ```text
-in : Epilepsy clinic letter, 14 March 2026.  Diagnosis: focal epilepsy.  Mr B has been seizure free since March 2025. MRI brain was normal. He continues on levetiracetam 500mg twice daily.
-out: {"clinical_facts": [{"family": "diagnosis", "concept": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "negation": "affirmed"}, {"family": "seizure_frequency", "seizure_type": "seizures", "state": "seizure_free", "evidence": "Mr B has been seizure free since March 2025"}, {"family": "investigations", "evidence": "MRI brain was normal", "modality": "MRI", "performed": "yes", "result": "normal"}, {"family": "prescription", "source_text": "levetiracetam 500mg twice daily", "evidence": "He continues on levetiracetam 500mg twice daily", "drug": "levetiracetam", "dose": "500", "dose_unit" ... (truncated)
+in : {"architecture": {"component_ownership": "The deterministic ledger proposes possible evidence spans only. The model owns keep/reject/split/merge decisions and final rendered mentions. Deterministic code later validates evidence, strips illegal attributes, attaches finite ontology codes, and evaluates outputs.", "inspiration": "Gan structured-events discipline: source-near candidate evidence, typed state lanes, exact evidence, then final mention renderings.", "name": "single hybrid key-family event ledger"}, "attribute_vocabulary": {"Diagnosis": {"CUI": "UMLS CUI only if explicitly available; o ... (truncated)
+out: {"clinical_events": [{"family": "diagnosis", "anchor_text": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "event_state": {}, "mentions": [{"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {"DiagCategory": "Epilepsy", "Negation": "Affirmed"}}], "confidence": "high", "rationale": "stated under the diagnosis heading"}, {"family": "seizure_frequency", "anchor_text": "seizure free since March 2025", "evidence": "Mr B has been seizure free since March 2025", "event_state": {}, "mentions": [{"entity": "SeizureFrequency", "text": "seizures", "attributes": {"NumberOfSeizures" ... (truncated)
 ```
 
-> Fixture boundary. Everything after this line is real code.
+> Fixture boundary at the one-call producer; downstream stages are the selected implementation.
 
-### 2. Parse JSON and coerce the facts list <sub>`exect.llm.parse_and_coerce`</sub>
+### 3. Parse output with format-only retry <sub>`exect.llm.parse_and_retry`</sub>
 
 rules-owned, transport/schema only - no change
 
 ```text
-in : {"clinical_facts": [{"family": "diagnosis", "concept": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "negation": "affirmed"}, {"family": "seizure_frequency", "seizure_type": "seizures", "state": "seizure_free", "evidence": "Mr B has been seizure free since March 2025"}, {"family": "investigations", "evidence": "MRI brain was normal", "modality": "MRI", "performed": "yes", "result": "normal"}, {"family": "prescription", "source_text": "levetiracetam 500mg twice daily", "evidence": "He continues on levetiracetam 500mg twice daily", "drug": "levetiracetam", "dose": "500", "dose_unit" ... (truncated)
-out: 4 fact(s); notes []
+in : {"clinical_events": [{"family": "diagnosis", "anchor_text": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "event_state": {}, "mentions": [{"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {"DiagCategory": "Epilepsy", "Negation": "Affirmed"}}], "confidence": "high", "rationale": "stated under the diagnosis heading"}, {"family": "seizure_frequency", "anchor_text": "seizure free since March 2025", "evidence": "Mr B has been seizure free since March 2025", "event_state": {}, "mentions": [{"entity": "SeizureFrequency", "text": "seizures", "attributes": {"NumberOfSeizures" ... (truncated)
+out: [{'family': 'diagnosis', 'anchor_text': 'focal epilepsy', 'evidence': 'Diagnosis: focal epilepsy', 'event_state': {}, 'mentions': [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}}], 'confidence': 'high', 'rationale': 'stated under the diagnosis heading'}, {'family': 'seizure_frequency', 'anchor_text': 'seizure free since March 2025', 'evidence': 'Mr B has been seizure free since March 2025', 'event_state': {}, 'mentions': [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}}], 'confidenc ... (truncated)
 ```
 
-### 3. Drop malformed or unevidenced facts <sub>`exect.llm.drop_unusable_facts`</sub>
+> Canonical LLM-only stage.
 
-rules-owned, gate - no change
-
-```text
-in : 4 parsed fact(s)
-out: 4 usable fact(s); notes []
-```
-
-> A gate: it removes facts the model produced, it never invents one.
-
-### 4. Map facts to ExECT mentions <sub>`exect.llm.map_to_mentions`</sub>
+### 4. Flatten events into mentions <sub>`exect.llm.flatten_events`</sub>
 
 rules-owned, representation - **changed**
 
 ```text
-in : ['diagnosis: concept=focal epilepsy, negation=affirmed', 'seizure_frequency: seizure_type=seizures, state=seizure_free', 'investigation: modality=MRI, performed=yes, result=normal', 'prescription: dose=500, dose_unit=milligrams, drug=levetiracetam, frequency=twice a day, source_text=levetiracetam 500mg twice daily']
-out: ['Diagnosis: focal epilepsy [Negation=Affirmed]', 'SeizureFrequency: seizures [NumberOfSeizures=0]', 'Investigations: MRI [MRI_Performed=Yes, MRI_Results=Normal]', 'Prescription: levetiracetam 500mg twice daily [DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=twice a day]']
+in : [{'family': 'diagnosis', 'anchor_text': 'focal epilepsy', 'evidence': 'Diagnosis: focal epilepsy', 'event_state': {}, 'mentions': [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}}], 'confidence': 'high', 'rationale': 'stated under the diagnosis heading'}, {'family': 'seizure_frequency', 'anchor_text': 'seizure free since March 2025', 'evidence': 'Mr B has been seizure free since March 2025', 'event_state': {}, 'mentions': [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}}], 'confidenc ... (truncated)
+out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': ''}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement', 'component_owner': ''}, {'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results':  ... (truncated)
 ```
 
-> Every provenance entry records added_fact={False} and action={'representation_mapping_only'}, so the no-addition claim is checkable per fact.
+> Canonical LLM-only stage.
 
-### 5. Apply evidence and schema gates <sub>`exect.llm.evidence_schema_gates`</sub>
+### 5. Apply representation and evidence gates <sub>`exect.llm.project_and_gate`</sub>
 
 rules-owned, gate - no change
 
 ```text
-in : 4 mapped mention(s)
-out: 4 mention(s) survived; gate warnings ["Prescription: dropped_illegal_value: 'Frequency'='twice a day' not in ['1', '2', '3', 'As_Required']"]
+in : [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': ''}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement', 'component_owner': ''}, {'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results':  ... (truncated)
+out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': 'hybrid_key_family_event_ledger'}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement' ... (truncated)
 ```
 
-### 6. Score against gold <sub>`exect.llm.score`</sub>
+> Canonical LLM-only stage.
+
+### 6. Materialize the raw candidate view <sub>`exect.llm.raw_candidate`</sub>
+
+rules-owned, benchmark projection - no change
+
+```text
+in : 4
+out: 4
+```
+
+> Canonical LLM-only stage.
+
+### 7. Score against gold <sub>`exect.llm.score`</sub>
 
 scorer-owned, benchmark projection - **changed**
 
@@ -174,29 +189,29 @@ out: {'Diagnosis': 1, 'SeizureFrequency': 1, 'Investigations': 1, 'Prescription'
 
 This teaching letter carries no gold annotations, so no correctness verdict is claimed. The comparable unit is four families.
 
-7 of 15 stages changed something on this letter.
+11 of 15 stages changed something on this letter.
 
 ### 1. Build the four-family prompt <sub>`exect.hybrid.build_prompt`</sub>
 
 rules-owned, transport/schema only - **changed**
 
 ```text
-in : Epilepsy clinic letter, 14 March 2026.  Diagnosis: focal epilepsy.  Mr B has been seizure free since March 2025. MRI brain was normal. He continues on levetiracetam 500mg twice daily.
-out: four-family prompt input
+in : TEACH-EXECT-01
+out: {"architecture": {"component_ownership": "The deterministic ledger proposes possible evidence spans only. The model owns keep/reject/split/merge decisions and final rendered mentions. Deterministic code later validates evidence, strips illegal attributes, attaches finite ontology codes, and evaluates outputs.", "inspiration": "Gan structured-events discipline: source-near candidate evidence, typed state lanes, exact evidence, then final mention renderings.", "name": "single hybrid key-family event ledger"}, "attribute_vocabulary": {"Diagnosis": {"CUI": "UMLS CUI only if explicitly available; o ... (truncated)
 ```
 
-> Transport only.
+> Canonical LLM-with-rules stage.
 
 ### 2. Model proposes findings for four families <sub>`exect.hybrid.model_call`</sub>
 
 model-owned, CLINICAL MEANING - **changed**
 
 ```text
-in : prompt input (fixture: no model call is made)
+in : {"architecture": {"component_ownership": "The deterministic ledger proposes possible evidence spans only. The model owns keep/reject/split/merge decisions and final rendered mentions. Deterministic code later validates evidence, strips illegal attributes, attaches finite ontology codes, and evaluates outputs.", "inspiration": "Gan structured-events discipline: source-near candidate evidence, typed state lanes, exact evidence, then final mention renderings.", "name": "single hybrid key-family event ledger"}, "attribute_vocabulary": {"Diagnosis": {"CUI": "UMLS CUI only if explicitly available; o ... (truncated)
 out: {"clinical_events": [{"family": "diagnosis", "anchor_text": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "event_state": {}, "mentions": [{"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {"DiagCategory": "Epilepsy", "Negation": "Affirmed"}}], "confidence": "high", "rationale": "stated under the diagnosis heading"}, {"family": "seizure_frequency", "anchor_text": "seizure free since March 2025", "evidence": "Mr B has been seizure free since March 2025", "event_state": {}, "mentions": [{"entity": "SeizureFrequency", "text": "seizures", "attributes": {"NumberOfSeizures" ... (truncated)
 ```
 
-> Fixture boundary. The model supplies all four families; no deterministic extractor proposes findings here.
+> Fixture boundary at the one-call producer; no live model call is made.
 
 ### 3. Parse output, with format-only retry when eligible <sub>`exect.hybrid.parse_and_retry`</sub>
 
@@ -204,127 +219,131 @@ rules-owned, transport/schema only - no change
 
 ```text
 in : {"clinical_events": [{"family": "diagnosis", "anchor_text": "focal epilepsy", "evidence": "Diagnosis: focal epilepsy", "event_state": {}, "mentions": [{"entity": "Diagnosis", "text": "focal epilepsy", "attributes": {"DiagCategory": "Epilepsy", "Negation": "Affirmed"}}], "confidence": "high", "rationale": "stated under the diagnosis heading"}, {"family": "seizure_frequency", "anchor_text": "seizure free since March 2025", "evidence": "Mr B has been seizure free since March 2025", "event_state": {}, "mentions": [{"entity": "SeizureFrequency", "text": "seizures", "attributes": {"NumberOfSeizures" ... (truncated)
-out: parsed; notes []
+out: [{'family': 'diagnosis', 'anchor_text': 'focal epilepsy', 'evidence': 'Diagnosis: focal epilepsy', 'event_state': {}, 'mentions': [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}}], 'confidence': 'high', 'rationale': 'stated under the diagnosis heading'}, {'family': 'seizure_frequency', 'anchor_text': 'seizure free since March 2025', 'evidence': 'Mr B has been seizure free since March 2025', 'event_state': {}, 'mentions': [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}}], 'confidenc ... (truncated)
 ```
+
+> Canonical LLM-with-rules stage.
 
 ### 4. Flatten model events into mentions <sub>`exect.hybrid.flatten_events`</sub>
 
 rules-owned, representation - **changed**
 
 ```text
-in : 4 model event(s)
-out: ['Diagnosis: focal epilepsy [DiagCategory=Epilepsy, Negation=Affirmed]', 'SeizureFrequency: seizures [NumberOfSeizures=0]', 'Investigations: MRI [MRI_Performed=Yes, MRI_Results=Normal]', 'Prescription: levetiracetam [DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=2]']
+in : [{'family': 'diagnosis', 'anchor_text': 'focal epilepsy', 'evidence': 'Diagnosis: focal epilepsy', 'event_state': {}, 'mentions': [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}}], 'confidence': 'high', 'rationale': 'stated under the diagnosis heading'}, {'family': 'seizure_frequency', 'anchor_text': 'seizure free since March 2025', 'evidence': 'Mr B has been seizure free since March 2025', 'event_state': {}, 'mentions': [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}}], 'confidenc ... (truncated)
+out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': ''}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement', 'component_owner': ''}, {'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results':  ... (truncated)
 ```
+
+> Canonical LLM-with-rules stage.
 
 ### 5. Enrich attributes and apply render-safety gates <sub>`exect.hybrid.project_and_gate`</sub>
-
-rules-owned, CLINICAL MEANING - **changed**
-
-```text
-in : ['Diagnosis: focal epilepsy [DiagCategory=Epilepsy, Negation=Affirmed]', 'SeizureFrequency: seizures [NumberOfSeizures=0]', 'Investigations: MRI [MRI_Performed=Yes, MRI_Results=Normal]', 'Prescription: levetiracetam [DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=2]']
-out: ['Diagnosis: focal epilepsy [CUI=C0014547, CUIPhrase=focal epilepsy, DiagCategory=Epilepsy, Negation=Affirmed]', 'SeizureFrequency: seizures [CUI=C0036572, CUIPhrase=seizures, NumberOfSeizures=0]', 'Investigations: MRI [CUI=C0436481, CUIPhrase=mri normal, MRI_Performed=Yes, MRI_Results=Normal]', 'Prescription: levetiracetam [CUI=C0377265, CUIPhrase=levetiracetam, DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=2]']
-```
-
-> Concept identifiers are attached here, which is why the findings gain CUI attributes they did not have a moment ago. Gate warnings on this letter: none.
-
-### 6. Project seizure-frequency facts into the state representation <sub>`exect.hybrid.sf_state_projection`</sub>
 
 rules-owned, CLINICAL MEANING - no change
 
 ```text
-in : ['SeizureFrequency: seizures [CUI=C0036572, CUIPhrase=seizures, NumberOfSeizures=0]']
-out: ['SeizureFrequency: seizures [CUI=C0036572, CUIPhrase=seizures, NumberOfSeizures=0]']
+in : [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': ''}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement', 'component_owner': ''}, {'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results':  ... (truncated)
+out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': 'hybrid_key_family_event_ledger'}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement' ... (truncated)
 ```
 
-> Named 'projection', but it can create the scored state representation and add mentions. Recorded actions: {}
+> Canonical LLM-with-rules stage.
+
+### 6. Project seizure-frequency facts into the state representation <sub>`exect.hybrid.sf_state_projection`</sub>
+
+rules-owned, CLINICAL MEANING - **changed**
+
+```text
+in : [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': 'hybrid_key_family_event_ledger'}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement' ... (truncated)
+out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'rationale': 'explicit seizure-free statement', 'confidence': 'high', 'component_owner': 'named_model_sf_plus_projection_suppression', 'source_artifact': 'sf.jsonl', 'source_lane': 'model_sf_projection_suppression', 'source_pipeline_family': 'exectv2_hybrid_sf_unknown_suppression', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_sf_unknown_suppression_v0.7', 'fact_origin': 'target_model_g ... (truncated)
+```
+
+> Canonical LLM-with-rules stage.
 
 ### 7. Suppress unsupported unknown states <sub>`exect.hybrid.sf_unknown_suppression`</sub>
 
 rules-owned, CLINICAL MEANING - no change
 
 ```text
-in : 1 projected mention(s)
-out: 1 mention(s) after suppression
+in : [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'confidence': 'high', 'rationale': 'stated under the diagnosis heading', 'component_owner': 'hybrid_key_family_event_ledger'}, {'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'confidence': 'high', 'rationale': 'explicit seizure-free statement' ... (truncated)
+out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'rationale': 'explicit seizure-free statement', 'confidence': 'high', 'component_owner': 'named_model_sf_plus_projection_suppression', 'source_artifact': 'sf.jsonl', 'source_lane': 'model_sf_projection_suppression', 'source_pipeline_family': 'exectv2_hybrid_sf_unknown_suppression', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_sf_unknown_suppression_v0.7', 'fact_origin': 'target_model_g ... (truncated)
 ```
 
-> Removes model-produced findings; a clinical change, not noise filtering.
+> Canonical LLM-with-rules stage.
 
 ### 8. Register raw and scored findings <sub>`exect.hybrid.register_findings`</sub>
 
 rules-owned, transport/schema only - **changed**
 
 ```text
-in : 4 model mention(s)
-out: 4 raw and 4 scored finding(s) registered
+in : 4
+out: 4
 ```
 
-> Raw survives beside scored, which is what makes attribution possible.
+> Canonical LLM-with-rules stage.
 
 ### 9. Diagnosis family transform <sub>`exect.hybrid.lens.diagnosis`</sub>
 
-rules-owned, CLINICAL MEANING - no change
+rules-owned, CLINICAL MEANING - **changed**
 
 ```text
-in : ['Diagnosis: focal epilepsy [CUI=C0014547, CUIPhrase=focal epilepsy, DiagCategory=Epilepsy, Negation=Affirmed]']
-out: ['Diagnosis: focal epilepsy [CUI=C0014547, CUIPhrase=focal epilepsy, DiagCategory=Epilepsy, Negation=Affirmed]']
+in : [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'rationale': 'stated under the diagnosis heading', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_event_ledger_v0.9.24', 'fact_origin': ' ... (truncated)
+out: [{'entity': 'Diagnosis', 'text': 'focal epilepsy', 'attributes': {'DiagCategory': 'Epilepsy', 'Negation': 'Affirmed', 'CUI': 'C0014547', 'CUIPhrase': 'focal epilepsy'}, 'evidence': 'Diagnosis: focal epilepsy', 'rationale': 'stated under the diagnosis heading', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_event_ledger_v0.9.24', 'fact_origin': ' ... (truncated)
 ```
 
-> lens diagnosis_heading_recovery_residual_benchmark_v05; diagnostics {'selected_findings': 1, 'added_heading_recovery_findings': 0, 'producer_id': 'structured_key_family_event_ledger', 'source_lane': 'model_structured_key_families', 'lens_id': 'diagnosis_heading_recovery_residual_benchmark_v05', 'rewritten_dictionary_findings': 0, 'added_dictionary_findings': 0, 'companion_dictionary_findings': 0, 'dropped_dictionary_findings': 0, 'diagnosis_policy_variant': 'default'}
+> Canonical LLM-with-rules stage.
 
 ### 10. Seizure Frequency family transform <sub>`exect.hybrid.lens.seizure_frequency`</sub>
 
-rules-owned, representation - no change
+rules-owned, representation - **changed**
 
 ```text
-in : ['SeizureFrequency: seizures [CUI=C0036572, CUIPhrase=seizures, NumberOfSeizures=0]']
-out: ['SeizureFrequency: seizures [CUI=C0036572, CUIPhrase=seizures, NumberOfSeizures=0]']
+in : [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'rationale': 'explicit seizure-free statement', 'confidence': 'high', 'component_owner': 'named_model_sf_plus_projection_suppression', 'source_artifact': 'sf.jsonl', 'source_lane': 'model_sf_projection_suppression', 'source_pipeline_family': 'exectv2_hybrid_sf_unknown_suppression', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_sf_unknown_suppression_v0.7', 'fact_origin': 'target_model_g ... (truncated)
+out: [{'entity': 'SeizureFrequency', 'text': 'seizures', 'attributes': {'NumberOfSeizures': '0', 'CUI': 'C0036572', 'CUIPhrase': 'seizures'}, 'evidence': 'Mr B has been seizure free since March 2025', 'rationale': 'explicit seizure-free statement', 'confidence': 'high', 'component_owner': 'named_model_sf_plus_projection_suppression', 'source_artifact': 'sf.jsonl', 'source_lane': 'model_sf_projection_suppression', 'source_pipeline_family': 'exectv2_hybrid_sf_unknown_suppression', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_sf_unknown_suppression_v0.7', 'fact_origin': 'target_model_g ... (truncated)
 ```
 
-> lens sf_state_projection_suppression_v01; diagnostics {'selected_findings': 1, 'producer_id': 'sf_model_projection_suppression', 'source_lane': 'model_sf_projection_suppression'}
+> Canonical LLM-with-rules stage.
 
 ### 11. Prescription family transform <sub>`exect.hybrid.lens.prescription`</sub>
 
-rules-owned, CLINICAL MEANING - no change
+rules-owned, CLINICAL MEANING - **changed**
 
 ```text
-in : ['Prescription: levetiracetam [CUI=C0377265, CUIPhrase=levetiracetam, DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=2]']
-out: ['Prescription: levetiracetam [CUI=C0377265, CUIPhrase=levetiracetam, DoseUnit=mg, DrugDose=500, DrugName=levetiracetam, Frequency=2]']
+in : [{'entity': 'Prescription', 'text': 'levetiracetam', 'attributes': {'DrugName': 'levetiracetam', 'DrugDose': '500', 'DoseUnit': 'mg', 'Frequency': '2', 'CUI': 'C0377265', 'CUIPhrase': 'levetiracetam'}, 'evidence': 'He continues on levetiracetam 500mg twice daily', 'rationale': 'current regimen', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_eve ... (truncated)
+out: [{'entity': 'Prescription', 'text': 'levetiracetam', 'attributes': {'DrugName': 'levetiracetam', 'DrugDose': '500', 'DoseUnit': 'mg', 'Frequency': '2', 'CUI': 'C0377265', 'CUIPhrase': 'levetiracetam'}, 'evidence': 'He continues on levetiracetam 500mg twice daily', 'rationale': 'current regimen', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_eve ... (truncated)
 ```
 
-> lens prescription_dictionary_v09; diagnostics {'lens_id': 'prescription_dictionary_v09', 'normalized_dictionary_findings': 0, 'split_regimen_dictionary_findings': 0, 'added_dictionary_findings': 0, 'dropped_dictionary_findings': 0, 'selected_findings': 1, 'prescription_policy_variant': 'default', 'available_residual_rule_groups': {}, 'added_residual_rule_groups': {}}
+> Canonical LLM-with-rules stage.
 
 ### 12. Investigations family transform <sub>`exect.hybrid.lens.investigations`</sub>
 
-rules-owned, representation - no change
+rules-owned, representation - **changed**
 
 ```text
-in : ['Investigations: MRI [CUI=C0436481, CUIPhrase=mri normal, MRI_Performed=Yes, MRI_Results=Normal]']
-out: ['Investigations: MRI [CUI=C0436481, CUIPhrase=mri normal, MRI_Performed=Yes, MRI_Results=Normal]']
+in : [{'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results': 'Normal', 'CUI': 'C0436481', 'CUIPhrase': 'mri normal'}, 'evidence': 'MRI brain was normal', 'rationale': 'investigation with a stated result', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_event_ledger_v0.9.24', 'fact_origin': 'target_model_gener ... (truncated)
+out: [{'entity': 'Investigations', 'text': 'MRI', 'attributes': {'MRI_Performed': 'Yes', 'MRI_Results': 'Normal', 'CUI': 'C0436481', 'CUIPhrase': 'mri normal'}, 'evidence': 'MRI brain was normal', 'rationale': 'investigation with a stated result', 'confidence': 'high', 'component_owner': 'named_model_structured_facts', 'source_artifact': 'structured.jsonl', 'source_lane': 'model_structured_key_families', 'source_pipeline_family': 'exectv2_hybrid_key_family_event_ledger', 'source_model': '', 'source_prompt_version': 'exectv2_hybrid_key_family_event_ledger_v0.9.24', 'fact_origin': 'target_model_gener ... (truncated)
 ```
 
-> lens investigations_result_v01; diagnostics {'selected_findings': 1, 'producer_id': 'structured_key_family_event_ledger', 'source_lane': 'model_structured_key_families'}
+> Canonical LLM-with-rules stage.
 
 ### 13. Require exact evidence for every finding <sub>`exect.hybrid.evidence_requirement`</sub>
 
 rules-owned, gate - no change
 
 ```text
-in : 4 final finding(s)
-out: all findings carry exact source evidence (assembly did not raise)
+in : 4
+out: True
 ```
 
-> This gate raises rather than silently dropping.
+> Canonical LLM-with-rules stage.
 
 ### 14. Materialize the score views <sub>`exect.hybrid.materialize_views`</sub>
 
 rules-owned, benchmark projection - **changed**
 
 ```text
-in : 4 final finding(s)
+in : 4
 out: {'source_scored': 4, 'evidence_valid': 4, 'protocol_model_preserving_canonical': 4, 'dictionary_normalized': 4, 'residual_benchmark_added': 4}
 ```
 
-> One set of findings, several numbers. Naming the view names the result.
+> Canonical LLM-with-rules stage.
 
 ### 15. Score against gold <sub>`exect.hybrid.score`</sub>
 

@@ -6,8 +6,8 @@
   "method_label": "LLM with rules",
   "role": "selected",
   "entry_point": {
-    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/llm/pipelines/key_entities_structured/runner.py",
-    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.llm.pipelines.key_entities_structured.runner:run_split"
+    "path": "src/clinical_extraction/tasks/epilepsy_phenotyping/exectv2/orchestration/structured_one_call.py",
+    "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.structured_one_call:run_llm_with_rules_letter"
   },
   "one_sentence": "The model proposes findings for four families in one call; deterministic family transforms reconcile those findings into the final scored representation.",
   "sixty_second": "One structured call per letter asks the named model for candidate findings across Diagnosis, Seizure Frequency, Prescription, and Investigations. No deterministic extractor proposes findings and none is unioned in - that is the family-ownership rule from decision 0040. After the call, code parses and may make one format-only retry, flattens the model's events into ExECT mentions, projects the model's seizure-frequency facts into the required state representation, and suppresses a narrowly defined class of unsupported unknown states. Raw and scored findings are both registered in a finding store, so every later change stays attributable. Then one family transform runs per entity, and the four behave differently: Diagnosis may rewrite, drop, or add concepts; Seizure Frequency is a thin assembly over the earlier projection; Prescription applies dictionary-driven regimen processing with bounded correction; Investigations validates, normalizes, and de-duplicates. Every final finding must carry exact source evidence, and the scored views are then materialized.",
@@ -262,7 +262,7 @@
       "output_example": "ValueError: assembled 'EA0117' with 1 finding(s) without exact source evidence",
       "implementation": {
         "path": "src/clinical_extraction/operational/exect.py",
-        "symbol": "clinical_extraction.operational.exect:_assemble_letter"
+        "symbol": "clinical_extraction.tasks.epilepsy_phenotyping.exectv2.orchestration.letter_assembly:assemble_letter"
       },
       "governing_test": "tests/test_exectv2_clinical_finding_assembly.py",
       "trace_fields": ["n_evidence_invalid"],
