@@ -27,27 +27,28 @@ verified.
 2. **Implemented and verified:** promote all three Gan methods to `rules`,
    `llm`, and `llm_with_rules`, with explicit legacy identity boundaries and
    no-call parity. The final canonical parity repair is `7ddc116a`.
-3. **Rules and LLM complete; hybrid open:** the ExECT `rules` and `llm`
+3. **Implemented and verified:** the ExECT `rules`, `llm`, and `llm_with_rules`
    vertical slices now cover runtime, split/CLI, API, registry, trace/frontend,
    teaching material, generated architecture, locked-split rejection,
    distinct active/replay identities, and exact permitted-development parity.
    Sol's final reviews found no remaining actionable issue for `rules` at
-   `bee48c6c` or `llm` at `c93c80b4`. Execute `llm_with_rules` against the
-   explicit entry, evidence, negative, exit, and stop gates in
-   [Decision 0048](../decisions/0048-comprehension-and-handoff-refactor.md);
-   shared code and route cleanup follows stabilized method identities.
+   `bee48c6c` or `llm` at `c93c80b4`. The hybrid migration is implemented by
+   `31103533` and `76d0dbcd`, with final replay-content, immutability, and
+   parity closure at `6fd70834`. The full backend, architecture, replay,
+   frontend, Ruff, and mypy gates pass.
 4. **Implemented in the bounded slice; broader gate open:** the README-led
    supervisor path now exposes the five-stage orientation, generated six-path
    walkthrough, deliberate failure/recovery example, frontend startup,
    canonical results/limits, and exact no-call replay commands. Focused checks
-   pass. This does not complete Decision 0048: the remaining ExECT migration,
-   standalone source-to-shipped closure, supervisor-host verification, and
+   pass. This does not complete Decision 0048: standalone source-to-shipped
+   closure, supervisor-host verification, and
    unaided review remain open. The stale standalone handoff package is a strict
    blocker recorded in the
    [handoff plan](supervisor_local_extraction_handoff_plan.md).
-5. **Audited, deletion open:** retain selected architecture, evidence, replay,
+5. **Audited; first deletion slice complete:** retain selected architecture, evidence, replay,
    component-attribution, safety, and validation owners. Delete only after an
-   owner check; unreferenced frontend mocks, candidate-only prompt drafts,
+   owner check. Fifteen unreferenced run-note frontend fixtures were removed at
+   `23961479`; candidate-only prompt drafts,
    broad deployment infrastructure, and archive-only experiments are the main
    candidates.
 6. **Template complete; gate open:** the

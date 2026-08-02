@@ -27,8 +27,16 @@ supervisor to use it.
 
 The builder also exposes the non-mutating command
 `python scripts/build_supervisor_source_handoff.py --check-source-closure`.
-Run it before any rebuild; it reports all source drift and never rewrites the
-standalone tree or ZIP.
+Run it before any rebuild. It requires every file discovered by the traced
+runtime closure, reports content and path drift, and never rewrites the
+standalone tree or ZIP. The checker and its missing-file/non-mutation tests are
+implemented at `2da860e1` and `c5b0739e`.
+
+The current command stops before comparison because
+`tasks/seizure_frequency/gan2026/reports/base.py` enters the traced runtime
+closure and is forbidden by the handoff allowlist. This is a real rebuild
+blocker, not a checker failure: remove the runtime dependency or make an
+explicit owner decision to change the allowlist before rebuilding.
 
 This blocker is outside the bounded README-led milestone. No archive rebuild or
 new model call is authorized by that milestone.

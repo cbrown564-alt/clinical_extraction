@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-02 at the bounded README supervisor milestone
+Last updated: 2026-08-02 after the ExECT `llm_with_rules` migration gate
 
 ## Current handoff objective
 
@@ -32,7 +32,7 @@ source, and source-to-shipped closure, supervisor-host verification, and
 unaided review remain open. The [handoff plan](docs/plans/supervisor_local_extraction_handoff_plan.md)
 owns those checks.
 
-## Decision 0048 pause point
+## Decision 0048 current point
 
 The regeneration/LFS ledger and restricted external-validation readiness
 template are complete. The active Gan method names are now `rules`, `llm`, and
@@ -41,24 +41,27 @@ surfaces, teaching material, and generated architecture. Historical filenames,
 run IDs, prompt versions, manifests, replay metadata, and explicit inbound
 aliases remain unchanged.
 
-The ExECT `rules` and `llm` vertical slices are implemented and verified
+The ExECT `rules`, `llm`, and `llm_with_rules` vertical slices are implemented and verified
 through runtime, split/CLI, API, registry, trace/frontend, teaching material,
 generated architecture, and exact permitted-development parity. Active, saved
 frontend, retained-evidence, and historical manifest identities remain
 separate. Sol's final `llm` review found no actionable finding at `c93c80b4`,
-and the slice is merged into `main` at `e177482d`. The `llm_with_rules` slice is
-now open under the entry, implementation, evidence, negative, exit, and stop
-gates in [Decision 0048](docs/decisions/0048-comprehension-and-handoff-refactor.md).
+and the slice is merged into `main` at `e177482d`. The hybrid implementation
+and fail-closed repair are `31103533` and `76d0dbcd`; `6fd70834` closes the
+remaining replay-content, deep-immutability, and full-parity review gates.
+The selected hybrid keeps one structured producer, `default/default` assembly,
+Sol-only active identity, exact checkpoint provenance, and historical replay
+identities without model calls or locked-row inspection during migration.
 
 Sol's strict review found two compatibility-helper defects; `7d9c4000` fixes
 both. Gan parity now permits only the explicit absence-to-`llm_with_rules`
 identity transition, and ExECT alias resolution accepts only real string IDs.
 
-The work is intentionally paused. `main` contains the Gan migration, canonical
-parity repair, complete ExECT `rules` vertical slice, and bounded README-led
-milestone. The remaining ExECT method migration and standalone handoff closure
-remain open. Nothing from this Decision 0048 sequence has been pushed to
-`origin/main`.
+`main` now contains the Gan and ExECT three-method migrations, canonical parity
+repairs, the first safe retention deletion, the bounded README-led milestone,
+and a non-mutating source-to-shipped closure checker. The standalone handoff
+rebuild and supervisor-host/unaided checks remain open. Nothing from this
+Decision 0048 sequence has been pushed to `origin/main`.
 
 ## Current outcome
 
@@ -421,6 +424,18 @@ the detailed evidence and remaining acceptance checks.
 
 Current working-tree backend verification is green for tracked project files:
 
+- **Verified on 2026-08-02 after the ExECT hybrid merge gate:** `main` passes
+  1,562 pytest tests with one expected strict `xfail` for the stale standalone
+  handoff. Ruff passes and mypy reports no issues across 358 source files. All
+  15 generated architecture documents match, the retained-evidence manifest
+  validates, and all six selected no-call reference replays reproduce. The
+  frontend passes 73 Jest tests, lint, `tsc --noEmit`, and a Next.js production
+  build. Focused hybrid tests bind checkpoints to exact replay content, reject
+  malformed output before deterministic assembly, preserve producer failure
+  provenance, freeze nested producer values, and compare the permitted dev140
+  result against the pinned pre-migration oracle and governing stage manifest.
+  These checks verify engineering and replay behavior, not clinical validation.
+
 - **Verified on 2026-08-02 after the ExECT `llm` merge:** merged `main` passes
   1,542
   pytest tests with one expected strict `xfail` for the stale standalone
@@ -480,12 +495,10 @@ research hashes, or a new clean-checkout reproduction.
 
 ## In progress
 
-- **Decision 0048 is paused after the Gan migration and complete ExECT `rules`
-  and `llm` vertical slices.** The `llm_with_rules` execution gate is defined
-  in Decision 0048, and the bounded README-led supervisor path is implemented;
-  resume from the ordered steps below. Do not treat the full ExECT migration,
-  standalone handoff archive, supervisor host, or unaided README review as
-  complete.
+- **Decision 0048 has completed the Gan and ExECT method migrations.** All six
+  selected task-method paths use the plain active names and preserve historical
+  replay identities. The standalone handoff archive, supervisor host, and
+  unaided README review are not complete.
 
 - **DeepSeek unknown-competence thread (U stopped).** Hosted Phase 2 candidate
   U piloted on the gold UNK slice (170): +2 final Purist vs A; LLM-only UNK
@@ -512,25 +525,21 @@ research hashes, or a new clean-checkout reproduction.
 
 ## Next
 
-1. Complete ExECT `llm_with_rules` using the verified `rules` and `llm`
-   vertical slices and the explicit Decision 0048 gate. Preserve the shared
-   one-call producer, selected `default/default` assembly, identity separation,
-   split safety, and independent exact-parity evidence.
-2. After all ExECT names stabilize, update shared code and frontend routes,
-   then run the full engineering, architecture, retained-manifest, six-cell
-   replay, lint, and production-build gate.
-3. Complete the remaining README-led supervisor checks: rebuild the stale
+1. Complete the remaining README-led supervisor checks: remove the forbidden
+   `gan2026/reports/base.py` dependency from the traced handoff runtime closure,
+   rebuild the stale
    standalone handoff tree and ZIP from active source, pass source-to-shipped
    closure, verify the supervisor host/endpoint, and perform unaided README
    review. The bounded documentation slice is already implemented.
-4. Apply the completed retention audit before deleting anything. Keep selected
+2. Continue applying the completed retention audit one safe slice at a time.
+   The first slice removed 15 unreferenced run-note frontend fixtures. Keep selected
    architecture/evidence/replay/safety/validation owners; separately review
    unreferenced frontend mocks, candidate-only prompt drafts, broad deployment
    infrastructure, and archive-only experiment material.
-5. Run the Decision 0048 strict completion gate and update its status only
+3. Run the Decision 0048 strict completion gate and update its status only
    after all selected live, fixture, replay, frontend, generated-document, and
    internal-link paths pass.
-6. Keep the separate research and validation dependencies intact: do not resume
+4. Keep the separate research and validation dependencies intact: do not resume
    DeepSeek U to 750; defer local-route parity until its runtime exists; retain
    independent clinical review and supervisor-host verification as unvalidated
    work; and never tune from sealed `test450`, Real(300), or ExECT `test60`.
@@ -549,6 +558,11 @@ research hashes, or a new clean-checkout reproduction.
   standalone handoff remains stale relative to active source; source-to-shipped
   closure, exact endpoint/host setup, and unaided use remain open. Those
   checks, not private-note testing, clear the operational dependency.
+- The non-mutating closure checker is implemented, but currently stops because
+  `tasks/seizure_frequency/gan2026/reports/base.py` enters the traced runtime
+  closure and is forbidden from the supervisor package. Removing that runtime
+  dependency or explicitly changing the allowlist through the handoff owner
+  clears the next rebuild gate.
 
 ## Data and claim boundaries
 

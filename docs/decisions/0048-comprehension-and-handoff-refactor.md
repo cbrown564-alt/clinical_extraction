@@ -1,7 +1,7 @@
 # 0048: Refocus the repository for comprehension, live use, and external validation
 
 Date: 2026-08-02
-Status: accepted; implementation in progress and currently paused
+Status: accepted; implementation in progress
 
 ## Decision
 

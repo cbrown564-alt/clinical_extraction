@@ -45,10 +45,10 @@ Current state, as of 2026-08-02:
 
 - The retained evidence index selects six no-call reference runs. The five
   largest replay files are content-addressed Git LFS objects.
-- Decision 0048 has promoted all three Gan methods to the plain active names
+- Decision 0048 has promoted all three Gan and ExECT methods to the plain active names
   `rules`, `llm`, and `llm_with_rules` while preserving historical replay
-  identities. The ExECT migration has started at the trace/frontend boundary;
-  the remaining ExECT runtime and shared-code migration is paused for handoff.
+  identities. The six selected task-method paths now use the canonical
+  orchestrators; the standalone supervisor handoff rebuild remains open.
 - The latest repository-wide verification state is recorded in
   [project status](PROJECT_STATUS.md). CI continues to run pytest, Ruff, and
   mypy; selected evidence also has six exact no-call replay checks.
@@ -218,9 +218,9 @@ Gan commands use three plain names:
 - `llm_with_rules`: the model extracts or selects facts and deterministic code
   can normalize, select, or repair them.
 
-The ExECT migration is partial. Its trace/frontend outward identity has started,
-but the remaining ExECT runtime, CLI, registry, and shared-code migration is
-paused. Do not assume every ExECT command uses these names yet.
+ExECT active runtime, CLI, registry, API, trace, and frontend paths use the same
+three plain method names. Saved run IDs, retained evidence IDs, filenames, and
+historical aliases remain unchanged for exact replay.
 
 Older long identifiers and version codes remain in saved filenames because
 replay hashes and research provenance depend on them. The
